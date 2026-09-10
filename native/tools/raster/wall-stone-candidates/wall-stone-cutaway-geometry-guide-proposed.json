@@ -1,0 +1,41 @@
+{
+  "status": "proposal_pending_root_height_confirmation",
+  "canvas": [
+    96,
+    128
+  ],
+  "module_bounds": [
+    16,
+    16,
+    80,
+    112
+  ],
+  "cap": [
+    16,
+    16,
+    80,
+    80
+  ],
+  "south_face": [
+    16,
+    80,
+    80,
+    112
+  ],
+  "ground_footprint": [
+    16,
+    48,
+    80,
+    112
+  ],
+  "native_module_canvas": [
+    64,
+    96
+  ],
+  "pivot_module": [
+    32,
+    96
+  ],
+  "guide_role": "geometry and plane-region guide only, not generated art",
+  "construction": "Pillow two solid orthographic rectangles at exact integer bounds, per explicitly authorized geometry-guide preparation"
+}

@@ -8,7 +8,7 @@ from PIL import Image
 import numpy as np
 
 ROOT = Path(__file__).resolve().parent
-ORDER = ("inventory", "terrain", "props", "gate", "actors", "bestiary", "weapons", "hero-single", "bestiary-singles", "hero-walk", "hero-directions", "environment-singles", "large-props", "hero-strike-se", "hit-spark", "hero-walk-sw", "hero-walk-nw", "hero-walk-ne", "hero-strike-nw", "hero-strike-sw", "terrain-quiet", "raider-walk-sw", "hero-strike-ne", "raider-strike-sw", "ground-dust", "slash-trail", "raider-death-sw", "raider-walk-ne", "raider-walk-nw", "raider-walk-se", "wight-walk-sw")
+ORDER = ("inventory", "terrain", "props", "gate", "actors", "bestiary", "weapons", "hero-single", "bestiary-singles", "hero-walk", "hero-directions", "environment-singles", "large-props", "hero-strike-se", "hit-spark", "hero-walk-sw", "hero-walk-nw", "hero-walk-ne", "hero-strike-nw", "hero-strike-sw", "terrain-quiet", "raider-walk-sw", "hero-strike-ne", "raider-strike-sw", "ground-dust", "slash-trail", "raider-death-sw", "raider-walk-ne", "raider-walk-nw", "raider-walk-se", "wight-walk-sw", "terrain-quiet-stone", "wall-stone-cutaway")
 
 
 def collect_cycles(entries, action, family="hero"):

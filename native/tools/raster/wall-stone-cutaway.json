@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "defaults": {
+    "cell_size": 1,
+    "alpha_mode": "crisp",
+    "canvas": [
+      64,
+      96
+    ],
+    "trim": false,
+    "fill": true,
+    "align": "top_left",
+    "acceptance": "production_trial_reviewed_with_documented_visual_limits"
+  },
+  "palette_reference": {
+    "source": "../../client/assets/raster/source/wall-stone-cutaway-v2-module.png",
+    "max_colors": 24
+  },
+  "known_limitations": [
+    "Imagegen source painted its background and stretched the cap. Actual Pixel Respecter reconstruction uses measured cap/face crops, explicit64x64/64x32 plane normalization and exact row64 assembly; the source remains unchanged.",
+    "Root reviewed native module, literal3x3wall and offline actor-context comparisons. Recurring cap motifs and mismatched masonry at module joins remain; this is not a seamless-wall claim.",
+    "Runtime uses the entire opaque64x96 module over a64x64 authoritative footprint with32px lift. Pivot[32,96], depth, exposure, player cutaway and final game acceptance are renderer responsibilities."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/wall-stone-cutaway-v2-module.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "wall_stone_cutaway",
+          "cell": [
+            0,
+            0
+          ],
+          "anchor_px": [
+            32,
+            96
+          ]
+        }
+      ]
+    }
+  ]
+}

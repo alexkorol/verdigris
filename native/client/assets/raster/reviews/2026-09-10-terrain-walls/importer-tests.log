@@ -1,0 +1,15 @@
+pose: source 6x8 / cell 1 -> [6, 8] -> 6x8
+..........
+Imported 1 assets into C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\tools\raster\tmp3b6mt8cz\before
+----------------------------------------------------------------------
+pose: source 6x8 / cell 1 -> [6, 8] -> 6x8
+Imported 1 assets into C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\tools\raster\tmp3b6mt8cz\after
+first: source 8x8 / cell 2 -> [4, 4] -> 4x6
+second: source 8x8 / cell 2 -> [4, 4] -> 4x6
+Imported 2 assets into C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\tools\raster\tmpp0iyc0ch\out
+first: source 8x8 / cell 2 -> [4, 4] -> 4x6
+second: source 8x8 / cell 2 -> [4, 4] -> 4x6
+Imported 2 assets into C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\tools\raster\tmpp0iyc0ch\out
+Ran 10 tests in 0.872s
+
+OK

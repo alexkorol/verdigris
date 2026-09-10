@@ -31,7 +31,9 @@
     "raider-walk-ne",
     "raider-walk-nw",
     "raider-walk-se",
-    "wight-walk-sw"
+    "wight-walk-sw",
+    "terrain-quiet-stone",
+    "wall-stone-cutaway"
   ],
   "assets": [
     {
@@ -11659,6 +11661,136 @@
       "palette_scope": "manifest_reference",
       "sha256": "18606fe5684cb36f6e0bb05ca62e7fa9b577f1c65811592d76a3de6c7c7274a9",
       "provenance": "wight-walk-sw.provenance.json"
+    },
+    {
+      "name": "terrain_quiet_stone",
+      "file": "terrain_quiet_stone.png",
+      "source": "../../client/assets/raster/source/terrain-quiet-stone-v1-edge2.png",
+      "acceptance": "production_trial_reviewed_with_documented_visual_limits",
+      "source_box": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "cell_size": 1,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 23,
+      "alpha_range": [
+        255,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        64,
+        64
+      ],
+      "trim_box": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "before_resize": [
+        64,
+        64
+      ],
+      "placed_size": [
+        64,
+        64
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "content_bounds": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "anchor_px": [
+        32,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "palette_scope": "manifest_reference",
+      "sha256": "8dc78bbb0e473ed8153b6fe44646849dfe1f433964ce98127b5117ffe2a61e24",
+      "provenance": "terrain-quiet-stone.provenance.json"
+    },
+    {
+      "name": "wall_stone_cutaway",
+      "file": "wall_stone_cutaway.png",
+      "source": "../../client/assets/raster/source/wall-stone-cutaway-v2-module.png",
+      "acceptance": "production_trial_reviewed_with_documented_visual_limits",
+      "source_box": [
+        0,
+        0,
+        64,
+        96
+      ],
+      "cell_size": 1,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 24,
+      "alpha_range": [
+        255,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        64,
+        96
+      ],
+      "trim_box": [
+        0,
+        0,
+        64,
+        96
+      ],
+      "before_resize": [
+        64,
+        96
+      ],
+      "placed_size": [
+        64,
+        96
+      ],
+      "canvas": [
+        64,
+        96
+      ],
+      "content_bounds": [
+        0,
+        0,
+        64,
+        96
+      ],
+      "anchor_px": [
+        32,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "palette_scope": "manifest_reference",
+      "sha256": "69d9bd08e777a9a17f45d11e09836fa81b6918fd076fd5e202a936a56c859e0b",
+      "provenance": "wall-stone-cutaway.provenance.json"
     }
   ],
   "known_limitations": [
@@ -11743,7 +11875,13 @@
     "The walk has a narrower torso than idle, and the robe obscures hip continuity. Anatomical support continuity remains difficult to establish; screen-space leading-foot position alone does not establish a repeated physical leg.",
     "All eight phases come from the original v1 source. No v3 pose is spliced into the cycle. One cell6 reconstruction, 80x96 canvas and [40,96] pivot preserve shared placement without per-frame resizing.",
     "Blue-biased border-distance cleanup preserves the pale phase1 hand erased by the rejected gray-distance recipe. The accepted recipe removes 20 reviewed neutral background components through 538 exact row-run windows; source RGB pixels remain unchanged.",
-    "Only SW has an authored Wight walk cycle. Root reports supported native suites/all 72 scenarios, browser 32/32, importer 10/10 and equipment checks passing. No completed manual combat or smooth-video claim is made."
+    "Only SW has an authored Wight walk cycle. Root reports supported native suites/all 72 scenarios, browser 32/32, importer 10/10 and equipment checks passing. No completed manual combat or smooth-video claim is made.",
+    "Original generated stone was reconstructed by the actual Pixel Respecter; published edge_match_blend then normalized two opposite border pixels against the exact accepted palette. This import preserves that derived native source.",
+    "Root viewed native repeated and actor comparisons. The narrow repair closes opposite-edge RGB mismatches; repeating slab arrangements and interrupted joints remain. A zero edge score is not seamless visual acceptance.",
+    "The imagegen offset repair and wider eight-pixel blend were rejected. Normal-game floor shading, wall composition and visual acceptance are recorded separately.",
+    "Imagegen source painted its background and stretched the cap. Actual Pixel Respecter reconstruction uses measured cap/face crops, explicit64x64/64x32 plane normalization and exact row64 assembly; the source remains unchanged.",
+    "Root reviewed native module, literal3x3wall and offline actor-context comparisons. Recurring cap motifs and mismatched masonry at module joins remain; this is not a seamless-wall claim.",
+    "Runtime uses the entire opaque64x96 module over a64x64 authoritative footprint with32px lift. Pivot[32,96], depth, exposure, player cutaway and final game acceptance are renderer responsibilities."
   ],
   "missing_direction_assets": [],
   "walk_sequence": {

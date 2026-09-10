@@ -2,7 +2,7 @@
 
 - coordinator: codex
 - worker: /root, with d1_architecture, d2_architecture, d2_local_tables, verdigris_combat_gap
-- state: IMPLEMENTED (Diablo study); IN_PROGRESS (owner-directed pixel world continuation)
+- state: IMPLEMENTED (Diablo study and terrain/wall milestone); PAUSED_BY_OWNER (broader pixel world continuation)
 - authorization: owner request, 2026-09-08, to reverse engineer the installed D2R as a Verdigris development reference and use subagents
 - base: 2b5da07b1
 - branch: codex/diablo-reference-study-20260908
@@ -13,17 +13,27 @@
 
 This is an owner-directed study and implementation milestone, not a claim on an existing orchestration task. No architect-owned specifications or product documents are edited.
 
-Latest source audit, September 10: firsthand combat criticism, walking prompt
+Latest checkpoint, September 10: owner requested wrap-up, sync/ship/push and
+pause. Terrain/wall integration is verified and prepared for the configured
+origin upstream. Final client 73/73, browser 32/32, importer 10/10 and ground
+cache pass; native suites passed before the final presentation-only null guard.
+Root viewed production fixtures and supported live remote town/dungeon;
+client exit 0 and no owned orphan processes. Catalog 176 PNGs / 33 manifests /
+62 sources / 185 import records. Older 174 PNGs remain unchanged. Repetition,
+wall joins and abrupt cutaway remain provisional. The broader work is paused,
+not complete. See the terrain/wall review and latest HANDOFF entry.
+
+Historical source audit, September 10: firsthand combat criticism, walking prompt
 screenshots, separate-image fallback and explicit reference preserve/replace
 instructions rechecked. Existing terrain-seam source is recorded as other-model
 engineering, not an Image 2.5 success. RESEARCH/PROMPTING corrections are
 documentation only. Production code and 174 active PNGs remain unchanged;
 quiet stone is held outside production after root review of visible repeats.
-The owner-directed pixel-world continuation remains IN_PROGRESS.
+At that source-audit checkpoint, the pixel-world continuation remained IN_PROGRESS.
 
 The owner extended the work to pixel-art world assets, actual Pixel Respecter
 conversion, reference-led image generation, and research into firsthand Image
-2.5 game/animation workflows. That continuation is active. The first raster
+2.5 game/animation workflows. That continuation is now paused by the owner. The first raster
 integration milestone is documented in `native/client/assets/raster/README.md`;
 it does not claim final animation or visual acceptance.
 

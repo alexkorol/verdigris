@@ -8,7 +8,7 @@ visible content height; animation uses the shared full-canvas pivot and scale.
 `source/` retains generated candidates, including rejected ones. `prompts/`
 records the actual image requests, reference paths and observed failures.
 `runtime/catalog.json` resolves import order and records the active source,
-conversion settings, hashes and limitations for each of 174 PNGs. The importer
+conversion settings, hashes and limitations for each of 176 PNGs. The importer
 uses the owner's actual Pixel Respecter project at
 `Z:/Code/Python/pixel-perfecter`; it is not a substitute pixelation filter.
 
@@ -17,7 +17,25 @@ and critical feedback, and [PROMPTING.md](PROMPTING.md) for the resulting local
 workflow. Model variant names are recorded only where the source actually
 identifies them; our image tool has no model selector.
 
-## Current milestone: native server pursuit and reference-guided monster walks
+## Current milestone: quieter interior floors and depth-sorted stone walls
+
+Dungeons use quiet earth and crypts use the new quiet stone tile. Opaque
+64x96 wall modules cover the authoritative 64x64 blocked-cell footprints,
+share actor depth sorting and fade over the player's visible sprite.
+Actual Pixel Respecter imports bring the catalog to 176 PNGs, 33 manifests
+and 62 sources; all 174 previous PNGs remain byte-identical. Published MIT
+seam-processing code, original prompts and plane-normalization recipes are
+retained with the selected assets.
+
+Native suites passed; the final client run passed all 73 scenarios after a
+backend-free fixture lookup fix. Browser 32/32, importer 10/10 and ground cache
+checks pass. Static/moving fullscreen averages are 22.429/24.785 ms. Root viewed
+production wall/floor captures and the supported live remote dungeon, then
+verified clean exit. Repeating slabs, wall joins and abrupt cutaway transitions
+remain provisional. The owner requested pause and ship; broader work is unfinished.
+[Evidence and acceptance scope](reviews/2026-09-10-terrain-walls/README.md).
+
+## Previous milestone: native server pursuit and reference-guided monster walks
 
 The normal native server's `WorldSimulation` now moves ordinary melee enemies.
 The earlier pursuit milestone below covered the smaller local `Simulation`.

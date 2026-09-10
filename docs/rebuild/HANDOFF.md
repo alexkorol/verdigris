@@ -1,5 +1,31 @@
 # Native reconstitution handoff
 
+## 2026-09-10 — Terrain/wall integration; owner-requested ship and pause
+
+Quiet earth now serves dungeons; the new quiet stone serves crypts. Raster
+stone walls use the authoritative blocked grid, actor depth ordering and
+player cutaway. No collision/simulation changes. Source generation failures,
+published MIT edge processing, explicit wall-plane normalization, selected
+native art and production evidence are retained. Catalog: 176 PNGs / 33
+manifests / 62 sources / 185 import records; all 174 older PNGs unchanged.
+
+Native core/headless suites passed in the first run, whose client portion
+then crashed on a backend-free wall fixture's pickup lookup. The null guard
+and explicit fixture assertion resolve it. Final supported build and all 73
+client scenarios pass; browser 32/32, importer 10/10 and ground cache pass.
+Static/moving 3440x1440 averages: 22.429/24.785 ms; moving peak 34.795 ms,
+under unchanged 40 ms average gates. The normal remote game entered town
+and dungeon, loaded PNG art and showed 18.9 ms live paint at observation;
+Escape exited 0 and launcher/window checks found no owned orphan processes.
+
+Root viewed production captures and the actual live window. Slab repetition,
+masonry joins, abrupt cutaway transitions and held-equipment bounds remain
+limitations. No manual fight or completed expedition was demonstrated.
+The owner explicitly requested wrap-up, sync/ship/push and pause. Ship this
+green milestone to the configured origin upstream; do not continue the
+broader pixel-world work until resumed. Goal completion is not claimed.
+[Review and exact evidence](../../native/client/assets/raster/reviews/2026-09-10-terrain-walls/README.md).
+
 ## 2026-09-10 — Firsthand Image 2.5 source audit
 
 Reopened creator prompts and critical replies for combat sheets, walking,

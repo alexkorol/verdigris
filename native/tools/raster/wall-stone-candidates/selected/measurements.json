@@ -1,0 +1,83 @@
+{
+  "canvas": [
+    64,
+    96
+  ],
+  "pivot": [
+    32,
+    96
+  ],
+  "ground_footprint": [
+    0,
+    32,
+    64,
+    96
+  ],
+  "cap": [
+    0,
+    0,
+    64,
+    64
+  ],
+  "south_face": [
+    0,
+    64,
+    64,
+    96
+  ],
+  "colors": 24,
+  "alpha_values": [
+    255
+  ],
+  "cap_edge_mad_left_right": 32.63,
+  "cap_edge_mad_top_bottom": 20.724,
+  "cap_ordinary_adjacent_mad_x": 6.18,
+  "cap_ordinary_adjacent_mad_y": 5.753,
+  "face_edge_mad_left_right": 16.104,
+  "face_ordinary_adjacent_mad_x": 7.463,
+  "context": {
+    "tile_pixels": 64,
+    "tile_world_units": 107.25,
+    "hero_full_canvas_height": 112,
+    "hero_native_source_canvas": [
+      80,
+      96
+    ],
+    "hero_height_formula": "1.75*64",
+    "wall_ground_origin": [
+      96,
+      128
+    ],
+    "north_actor_ground_pivot": [
+      192,
+      124
+    ],
+    "south_actor_ground_pivot": [
+      242,
+      350
+    ],
+    "cutaway_alpha": 80,
+    "overlapped_modules": [
+      [
+        1,
+        0
+      ]
+    ],
+    "scope": "offline geometric approximation of current renderer; not production-game acceptance"
+  },
+  "assembly": {
+    "operation": "unaltered cap paste at[0,0], face paste at[0,64]",
+    "recipe": "wall-stone-cutaway-v2-planes.json",
+    "report": "v2-planes/wall-stone-cutaway-v2-planes.provenance.json",
+    "script_sha256": "a9d6d7a88116225834857992e84c2653ff7a783194e21b600ea906230bba3aa1",
+    "original_script_raw_sha256": "1b8c199e3d5d62cf792e58877b1bf15a9ac78e9047a86b73c8569499d2f674ea",
+    "script_hash_policy": "canonical_lf",
+    "packaging_note": "Only redundant final blank line removed from original assembly script; executable content unchanged."
+  },
+  "output_sha256": "69d9bd08e777a9a17f45d11e09836fa81b6918fd076fd5e202a936a56c859e0b",
+  "reference_hashes": {
+    "terrain_quiet_earth": "059b101504c96b84a3541f5021dfd1811a7bb1ddb81ebd40fd03be9dbad2af70",
+    "hero_nw": "2fd7271f16f65eceefc583746d8373f1a81e25a74e505af7917e8ec722b0becc",
+    "hero_se": "56a882d079b83d942c42340ac9155b25ddbd923d436173019e8f2bd4ed5d28f7"
+  }
+}

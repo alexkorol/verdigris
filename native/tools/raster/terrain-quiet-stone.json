@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "defaults": {
+    "cell_size": 1,
+    "alpha_mode": "crisp",
+    "canvas": [
+      64,
+      64
+    ],
+    "trim": false,
+    "fill": true,
+    "align": "top_left",
+    "acceptance": "production_trial_reviewed_with_documented_visual_limits"
+  },
+  "palette_reference": {
+    "source": "../../client/assets/raster/source/terrain-quiet-stone-v1-edge2.png",
+    "max_colors": 24
+  },
+  "known_limitations": [
+    "Original generated stone was reconstructed by the actual Pixel Respecter; published edge_match_blend then normalized two opposite border pixels against the exact accepted palette. This import preserves that derived native source.",
+    "Root viewed native repeated and actor comparisons. The narrow repair closes opposite-edge RGB mismatches; repeating slab arrangements and interrupted joints remain. A zero edge score is not seamless visual acceptance.",
+    "The imagegen offset repair and wider eight-pixel blend were rejected. Normal-game floor shading, wall composition and visual acceptance are recorded separately."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/terrain-quiet-stone-v1-edge2.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "terrain_quiet_stone",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  ]
+}

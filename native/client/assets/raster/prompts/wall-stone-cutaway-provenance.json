@@ -1,0 +1,130 @@
+{
+  "date": "2026-09-10",
+  "baseline_task": "e0e1beaa9",
+  "head_during_work": "7d56519adcd370a43713397e7302c008124f0117",
+  "scope": "Candidate-only wall module; no runtime/catalog/main/shared importer edits or production acceptance.",
+  "recipe_evidence": {
+    "original_url": "https://x.com/higgsfield/status/2097514684811554911",
+    "demo_url": "https://x.com/higgsfield/status/2097514650518831462",
+    "published_excerpt": "the supplied guide already contains the correct rotation for this frame, so copy its pose exactly.",
+    "verification": "Parent research worker directly read expanded original; current RESEARCH.md records it. It is a spring-turntable geometry-guide recipe, not a tested masonry/seam recipe.",
+    "adaptation": "Guide fixes orthographic shape and plane layout; accepted column supplies limestone/pixel identity. Guide colors, material shading and background are explicitly replaced.",
+    "seam_claim": "No verified Image2.5 terrain/wall seam recipe; literal repeat reviewed locally."
+  },
+  "calls": [
+    {
+      "call": 1,
+      "tool": "built-in image_gen.imagegen",
+      "model_selection": "No model/variant selector exposed or claimed",
+      "intent": "new reference-led asset",
+      "prompt_file": "native/client/assets/raster/prompts/wall-stone-cutaway-v1.txt",
+      "prompt_sha256": "dd18ee5ddbd6c2a10fca7128bf85a589e54a9e13f4355ecb694e1189c4549a42",
+      "exact_prompt": "Create one pixel-art cutaway limestone wall module for an axis-aligned orthographic game.\n\nImage 1 is a geometry guide only. Preserve its exact rectangular silhouette, camera, proportions, placement and horizontal plane boundary: an upper square top cap and a lower rectangular south-facing vertical wall face. Discard the guide's colors, flat shading and background; replace them with the stone rendering described below. Keep the same empty margins and genuine transparent alpha outside the rectangle.\n\nImage 2 supplies only the natural warm-gray limestone material and crisp pixel-cluster style. Do not copy the column's shape. Author rough-cut masonry with broad quiet stone surfaces, narrow muted mortar, and a few restrained chips. The top cap consists of fitted limestone slabs; the darker south face shows two staggered masonry courses. Use warm beige-gray lights and earthy gray-brown shadows with 24\u00e2\u20ac\u201c32 purposeful colors. Keep readable square pixel clusters for a 64\u00c3\u201496 logical-pixel module.\n\nThe cap is exactly 64\u00c3\u201464 logical pixels; the front face is exactly 64\u00c3\u201432. These fill the same straight-sided rectangle as Image 1. Every shared edge reaches the rectangle boundary. Continue stone and horizontal courses across the left and right edges. The cap should continue naturally into another identical cap on all sides. Avoid an outlined perimeter, enclosing border, raised rim or per-module bevel. No perspective slant, side planes, broken outer corners, exterior floor, cast shadow, rubble, objects or text. Return one complete module.\n",
+      "references": [
+        {
+          "path": "native/tools/raster/wall-stone-candidates/wall-stone-cutaway-geometry-guide-proposed.png",
+          "sha256": "1110966836a0899cd1a2c7f9296c21aee9b0f52543b09894022379b396f7bb2d",
+          "role": "geometry guide only",
+          "preserve": "silhouette, camera, proportions, plane join, placement and margins",
+          "replace": "guide colors, shading and background",
+          "viewed_before_call": true
+        },
+        {
+          "path": "native/client/assets/raster/runtime/column.png",
+          "sha256": "3073e69247d2d2355b3d12c556e851d4e85bb80e9fb54a3aac166777ef41b33c",
+          "role": "stone material and pixel-style reference only",
+          "preserve": "natural limestone palette and crisp clusters",
+          "replace": "column shape and scene composition",
+          "viewed_before_call": true
+        }
+      ],
+      "original_generated_path": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-fda7bd73-c5e6-4583-bd99-90ca56ad19c2.png",
+      "source_file": "native/client/assets/raster/source/wall-stone-cutaway-v1.png",
+      "source_sha256": "7c9a7f43e42389b51f0bf21dc8d9edb97df1917fe6bd5ddcb16866dc0dc23dd6",
+      "source_mode": "RGB",
+      "source_size": [
+        1086,
+        1448
+      ],
+      "observed_result": "Rejected as final: RGB painted background, dense microtexture, extra cap rim, imperfect64:32 plane registration."
+    },
+    {
+      "call": 2,
+      "tool": "built-in image_gen.imagegen",
+      "model_selection": "No model/variant selector exposed or claimed",
+      "intent": "focused material simplification edit",
+      "prompt_file": "native/client/assets/raster/prompts/wall-stone-cutaway-v2.txt",
+      "prompt_sha256": "2146ace4ec0ee8365580e927b022a7fefe5e67363c92f909530d13df45bf7c9b",
+      "exact_prompt": "Edit Image 1 into a quieter pixel-art limestone wall module. Remove the dense granular speckle and raised-looking cap rim. Use broad solid pixel-color clusters on each slab, with only a few small chips and restrained shadow variation. Avoid outlining or highlighting the whole module perimeter; its cap and masonry courses continue straight through the shared boundaries.\n\nImage 2 supplies exact geometry only: copy its rectangular silhouette, placement, camera and plane proportions. The upper square is the 64\u00c3\u201464 logical-pixel top cap; the lower rectangle is the 64\u00c3\u201432 logical-pixel south face. Discard Image 2's flat colors and shading. Image 3 supplies natural warm-gray limestone colors and crisp pixel style only, not its column shape.\n\nRetain readable fitted top slabs and two staggered front-face courses from Image 1, while making the slab interiors mostly quiet. Use 24 purposeful colors at a 64\u00c3\u201496 logical-pixel construction. Keep the cap square and all shared edges straight, full and unbroken, with no exterior floor or shadow. Replace Image 1's entire surrounding background with genuine transparent alpha, retaining generous empty margins. One complete rectangular module, no text or other objects.\n",
+      "references": [
+        {
+          "path": "native/client/assets/raster/source/wall-stone-cutaway-v1.png",
+          "sha256": "7c9a7f43e42389b51f0bf21dc8d9edb97df1917fe6bd5ddcb16866dc0dc23dd6",
+          "role": "edit target",
+          "preserve": "two-plane masonry concept",
+          "replace": "dense speckle, cap rim and painted background",
+          "viewed_before_call": true
+        },
+        {
+          "path": "native/tools/raster/wall-stone-candidates/wall-stone-cutaway-geometry-guide-proposed.png",
+          "sha256": "1110966836a0899cd1a2c7f9296c21aee9b0f52543b09894022379b396f7bb2d",
+          "role": "geometry guide only",
+          "preserve": "rectangular silhouette and64:32 plane ratio",
+          "replace": "flat colors and shading",
+          "viewed_before_call": true
+        },
+        {
+          "path": "native/client/assets/raster/runtime/column.png",
+          "sha256": "3073e69247d2d2355b3d12c556e851d4e85bb80e9fb54a3aac166777ef41b33c",
+          "role": "material and pixel-style reference only",
+          "preserve": "natural limestone palette and clusters",
+          "replace": "column geometry",
+          "viewed_before_call": true
+        }
+      ],
+      "original_generated_path": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-3c043e9d-da01-44b5-9b63-7297aa8f7aed.png",
+      "source_file": "native/client/assets/raster/source/wall-stone-cutaway-v2.png",
+      "source_sha256": "0f102c68882885437a70b1c8069d40ecde7f203e52d179a0750c8f16a7622f65",
+      "source_mode": "RGB",
+      "source_size": [
+        1024,
+        1536
+      ],
+      "observed_result": "Selected as candidate source: quieter broad clusters; RGB background, cap stretch and rim remain. Measured plane reconstruction corrects registration, but repeated joins remain visually imperfect."
+    }
+  ],
+  "conversion": {
+    "actual_project": "Z:/Code/Python/pixel-perfecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "importer": "native/tools/raster/import_assets.py",
+    "candidate_manifest": "native/tools/raster/wall-stone-candidates/wall-stone-cutaway-v2-planes.json",
+    "report": "native/tools/raster/wall-stone-candidates/v2-planes/wall-stone-cutaway-v2-planes.provenance.json",
+    "assembly_script": "native/tools/raster/wall-stone-candidates/assemble_review.py",
+    "assembly": "Paste unchanged imported64x64 cap at0,0 and64x32 face at0,64; no further pixel resampling or painting.",
+    "source_plane_crops": {
+      "cap": [
+        194,
+        261,
+        828,
+        959
+      ],
+      "face": [
+        194,
+        997,
+        828,
+        1277
+      ]
+    },
+    "excluded_rim_y": [
+      959,
+      997
+    ],
+    "registration": "Actual engine cell10 reconstructs cap63x69 and face63x28; existing importer nearest-normalizes each fixed plane to64x64 and64x32. This measured adjustment is not claimed as exact source geometry compliance.",
+    "alpha": "Both source images are RGB and failed real-alpha requests. Complete rectangular plane crops contain only authored stone; final module fully opaque is the renderer adjacency contract. No alpha cleanup applied.",
+    "palette": "Actual Pixel Respecter palettes.reduce_colors shared across both imported planes,24 colors, no dithering."
+  },
+  "candidate_output": "native/tools/raster/wall-stone-candidates/selected/wall_stone_cutaway.png",
+  "candidate_sha256": "69d9bd08e777a9a17f45d11e09836fa81b6918fd076fd5e202a936a56c859e0b",
+  "review_file": "native/tools/raster/wall-stone-candidates/selected/measurements.json",
+  "acceptance": "Root viewed native64x96,3x3 wall3x and actor context1x; approved integrated production trial2026-09-10 with cap-motif/join limits. Actual production capture and gates pending root."
+}

@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "input": "native/tools/raster/quiet-stone-candidates/v1/terrain_quiet_stone.png",
+  "input_raw_sha256": "5d869d24b6714586b9f14598b99f33384005db385a369a2b0ab78ee2bcc5db56",
+  "output": "native/client/assets/raster/source/terrain-quiet-stone-edge-width2-v1.png",
+  "output_raw_sha256": "8dc78bbb0e473ed8153b6fe44646849dfe1f433964ce98127b5117ffe2a61e24",
+  "output_rgba_pixels_sha256": "1a7397132074a20ad07c85a742d87378e7974dda9a5d867c1c93107400536967",
+  "algorithm": "Unmodified published seamless.edge_match_blend",
+  "blend_width": 2,
+  "palette_hex": [
+    "#6e665b",
+    "#76695f",
+    "#7a7062",
+    "#7e746a",
+    "#837567",
+    "#847a6e",
+    "#887c72",
+    "#8b7f6e",
+    "#908276",
+    "#958675",
+    "#95897a",
+    "#9c8c7d",
+    "#9e917f",
+    "#a09285",
+    "#a49381",
+    "#a79688",
+    "#aa9e8b",
+    "#b0a291",
+    "#b7a996",
+    "#b9a692",
+    "#bcae98",
+    "#c0ac94",
+    "#c2b09d"
+  ],
+  "palette_policy": "Process-local registration of exact v1 palette in original palettes.PALETTES; no palette substitution",
+  "canvas": [
+    64,
+    64
+  ],
+  "alpha": "unchanged opaque",
+  "original_generated_source": "native/client/assets/raster/source/terrain-quiet-stone-v1.png",
+  "original_generated_source_raw_sha256": "f6141a97b2cb8e0685d99fea8a8fae24c94bd0cc539e6e06723ee0837e771903",
+  "pixel_respecter_import_recipe": "native/tools/raster/quiet-stone-candidates/v1/import.json",
+  "pixel_respecter_import_report": "native/tools/raster/quiet-stone-candidates/v1/import.provenance.json",
+  "production_trial_authorization": {
+    "reviewer": "root",
+    "viewed": [
+      "repeat-comparison-1x.png",
+      "actors-comparison-1x.png"
+    ],
+    "status": "accepted_for_integrated_production_trial_pending_normal_game_captures_and_gates",
+    "remaining_limitations": [
+      "Repeating slab arrangement remains",
+      "Interrupted joint geometry remains",
+      "Exact edge RGB agreement is not full seamlessness or final visual polish"
+    ],
+    "rejected_alternative": "Width8 broad cloudy grid bands"
+  },
+  "candidate_cell1_roundtrip": {
+    "byte_identical": true,
+    "pixel_identical": true,
+    "raw_sha256": "8dc78bbb0e473ed8153b6fe44646849dfe1f433964ce98127b5117ffe2a61e24",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "cell_size": 1
+  }
+}

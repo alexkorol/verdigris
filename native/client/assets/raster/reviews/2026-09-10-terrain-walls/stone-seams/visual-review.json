@@ -1,0 +1,37 @@
+{
+  "reviewer": "pixel_pipeline",
+  "status": "candidate_only_root_decision_pending",
+  "viewed": [
+    "repeat-comparison-1x.png",
+    "repeat-comparison-3x.png",
+    "actors-comparison-1x.png"
+  ],
+  "comparison_order": ["unchanged v1", "edge match width2", "edge match default width8"],
+  "width2": {
+    "verdict": "Least damaging candidate. Exact matching RGB edges close the abrupt border mismatch, but repeated slab arrangement and some interrupted joints remain apparent.",
+    "changed_pixels": 414,
+    "unchanged_center": "60x60",
+    "potential_next_step": "Root may inspect a production trial of this exact derived PNG; this review does not claim polished joint geometry or seamless terrain."
+  },
+  "width8": {
+    "verdict": "Reject: broad cloudy dark/bright feather bands form a conspicuous repeated grid at native and3x size despite zero edge error.",
+    "changed_pixels": 1577,
+    "unchanged_center": "48x48"
+  },
+  "common_checks": {
+    "native_canvas": [64, 64],
+    "fixed_v1_palette_colors": 23,
+    "alpha_unchanged_opaque": true,
+    "exact_rgb_opposite_edges_after": true,
+    "palette_only_control_changed_pixels": 0,
+    "old_runtime_pngs_unchanged": 174
+  },
+  "width2_cell1_roundtrip": {
+    "recipe": "cell1-import.json",
+    "report": "cell1-import/cell1-import.provenance.json",
+    "verification": "cell1-equivalence.json",
+    "byte_and_pixel_identical": true,
+    "raw_sha256": "8dc78bbb0e473ed8153b6fe44646849dfe1f433964ce98127b5117ffe2a61e24"
+  },
+  "scope": "Actual unmodified published edge_match_blend, process-local exact v1 palette registration, no model call or hand painting; candidate-only actual Pixel Respecter cell1 roundtrip. Mechanical actor compositions are not game captures. No production/source PNG writes, catalog/freeze changes, builds or staging."
+}

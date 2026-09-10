@@ -1,0 +1,177 @@
+[
+  {
+    "retained": "raster-walls-border-interior.png",
+    "sha256": "7ffb9133127e564d32b43033caf2f5a26ff9a089e9eb76d8acc7030bd3cd97ab",
+    "source": ".ci-artifacts/terrain-wall-wave/captures-final/raster-walls-border-interior.png",
+    "source_sha256": "7ffb9133127e564d32b43033caf2f5a26ff9a089e9eb76d8acc7030bd3cd97ab",
+    "hash_policy": "raw_bytes"
+  },
+  {
+    "retained": "raster-walls-camera-edge.png",
+    "sha256": "daa8e2d91274bca002b526973b608a1656295edc54b7f164f95b51028b4a27d7",
+    "source": ".ci-artifacts/terrain-wall-wave/captures-final/raster-walls-camera-edge.png",
+    "source_sha256": "daa8e2d91274bca002b526973b608a1656295edc54b7f164f95b51028b4a27d7",
+    "hash_policy": "raw_bytes"
+  },
+  {
+    "retained": "raster-walls-corner.png",
+    "sha256": "e3b9497014f023bdf558504abda85d81a1f29f57dd786c821ce99bbd5de3bb15",
+    "source": ".ci-artifacts/terrain-wall-wave/captures-final/raster-walls-corner.png",
+    "source_sha256": "e3b9497014f023bdf558504abda85d81a1f29f57dd786c821ce99bbd5de3bb15",
+    "hash_policy": "raw_bytes"
+  },
+  {
+    "retained": "raster-walls-crypt-north-1366x768.png",
+    "sha256": "e497135be0b5bf45ef4a7b68c103b0332e7ea3ef5f7065c53f2cd97ebfb54e96",
+    "source": ".ci-artifacts/terrain-wall-wave/captures-final/raster-walls-crypt-north-1366x768.png",
+    "source_sha256": "e497135be0b5bf45ef4a7b68c103b0332e7ea3ef5f7065c53f2cd97ebfb54e96",
+    "hash_policy": "raw_bytes"
+  },
+  {
+    "retained": "raster-walls-crypt-north-3440x1440.png",
+    "sha256": "b34395261955f36b314206ad6b4048abfa7da18aa9fe77824fac132979bb7c7b",
+    "source": ".ci-artifacts/terrain-wall-wave/captures-final/raster-walls-crypt-north-3440x1440.png",
+    "source_sha256": "b34395261955f36b314206ad6b4048abfa7da18aa9fe77824fac132979bb7c7b",
+    "hash_policy": "raw_bytes"
+  },
+  {
+    "retained": "raster-walls-crypt-south-1366x768.png",
+    "sha256": "553c515d0f48f2f957c992ad509960a2c56ee39ea6bc4a563b6bd199d26d90a0",
+    "source": ".ci-artifacts/terrain-wall-wave/captures-final/raster-walls-crypt-south-1366x768.png",
+    "source_sha256": "553c515d0f48f2f957c992ad509960a2c56ee39ea6bc4a563b6bd199d26d90a0",
+    "hash_policy": "raw_bytes"
+  },
+  {
+    "retained": "raster-walls-crypt-south-3440x1440.png",
+    "sha256": "ac57eb20d0c590fdb6a9642369dd3c1318974cf7544b7d00b0e32803907fe1bf",
+    "source": ".ci-artifacts/terrain-wall-wave/captures-final/raster-walls-crypt-south-3440x1440.png",
+    "source_sha256": "ac57eb20d0c590fdb6a9642369dd3c1318974cf7544b7d00b0e32803907fe1bf",
+    "hash_policy": "raw_bytes"
+  },
+  {
+    "retained": "raster-walls-dungeon-north-1366x768.png",
+    "sha256": "edbcca7f700feb2d018520847fd24c588709f9c53406962c008acb7630ba6f74",
+    "source": ".ci-artifacts/terrain-wall-wave/captures-final/raster-walls-dungeon-north-1366x768.png",
+    "source_sha256": "edbcca7f700feb2d018520847fd24c588709f9c53406962c008acb7630ba6f74",
+    "hash_policy": "raw_bytes"
+  },
+  {
+    "retained": "raster-walls-dungeon-north-3440x1440.png",
+    "sha256": "73b5a89090959902fc2a0007180ad54c042fa4c29b80393d4e59f951327a9bc8",
+    "source": ".ci-artifacts/terrain-wall-wave/captures-final/raster-walls-dungeon-north-3440x1440.png",
+    "source_sha256": "73b5a89090959902fc2a0007180ad54c042fa4c29b80393d4e59f951327a9bc8",
+    "hash_policy": "raw_bytes"
+  },
+  {
+    "retained": "raster-walls-dungeon-south-1366x768.png",
+    "sha256": "0a721b250db615b324ffd2688c12bd8b50b740cc8f0e3166608644a6e15d1d79",
+    "source": ".ci-artifacts/terrain-wall-wave/captures-final/raster-walls-dungeon-south-1366x768.png",
+    "source_sha256": "0a721b250db615b324ffd2688c12bd8b50b740cc8f0e3166608644a6e15d1d79",
+    "hash_policy": "raw_bytes"
+  },
+  {
+    "retained": "raster-walls-dungeon-south-3440x1440.png",
+    "sha256": "759e9084db9a945765e58e43aff7b2d81e7639ea3fa8d52aa25af7cca1b6eb5b",
+    "source": ".ci-artifacts/terrain-wall-wave/captures-final/raster-walls-dungeon-south-3440x1440.png",
+    "source_sha256": "759e9084db9a945765e58e43aff7b2d81e7639ea3fa8d52aa25af7cca1b6eb5b",
+    "hash_policy": "raw_bytes"
+  },
+  {
+    "retained": "raster-walls-elevated-culling-probe.png",
+    "sha256": "af84ee6891c1c2b30e5020989418ce015af33d9d38441f65722022c266cd8049",
+    "source": ".ci-artifacts/terrain-wall-wave/captures-final/raster-walls-elevated-culling-probe.png",
+    "source_sha256": "af84ee6891c1c2b30e5020989418ce015af33d9d38441f65722022c266cd8049",
+    "hash_policy": "raw_bytes"
+  },
+  {
+    "retained": "live-expedition-overlay.png",
+    "sha256": "3a8548765dc057502e391ca27768cce8279f1a489d968daf6f1af42af9a164a1",
+    "source": ".ci-artifacts/terrain-wall-wave/live-expedition-overlay.png",
+    "source_sha256": "3a8548765dc057502e391ca27768cce8279f1a489d968daf6f1af42af9a164a1",
+    "hash_policy": "raw_bytes"
+  },
+  {
+    "retained": "live-expedition.png",
+    "sha256": "be1e82b87378f5f6a86ea03fca155beb6062c25259d3b87c8c41bac73e549059",
+    "source": ".ci-artifacts/terrain-wall-wave/live-expedition.png",
+    "source_sha256": "be1e82b87378f5f6a86ea03fca155beb6062c25259d3b87c8c41bac73e549059",
+    "hash_policy": "raw_bytes"
+  },
+  {
+    "retained": "live-title.png",
+    "sha256": "d0fa32ed52f75360592ac8ebd054cb2df08aa3080617ca90c4e9cb48c2abee0d",
+    "source": ".ci-artifacts/terrain-wall-wave/live-title.png",
+    "source_sha256": "d0fa32ed52f75360592ac8ebd054cb2df08aa3080617ca90c4e9cb48c2abee0d",
+    "hash_policy": "raw_bytes"
+  },
+  {
+    "retained": "live-town.png",
+    "sha256": "2fbb67be1bb2be84374421dafc663d4264865b164303f80f378074f30ecb6179",
+    "source": ".ci-artifacts/terrain-wall-wave/live-town.png",
+    "source_sha256": "2fbb67be1bb2be84374421dafc663d4264865b164303f80f378074f30ecb6179",
+    "hash_policy": "raw_bytes"
+  },
+  {
+    "retained": "native-build-all.log",
+    "sha256": "3c9ca9c1735faad9ef5e56a8359b4919476e189c81a8a0e0375438c369786980",
+    "source": ".ci-artifacts/terrain-wall-wave/native-build-all.log",
+    "source_sha256": "b285d0d104d01520b0f26ab307bd49cad4f16fdf9fb30370a761a38e06673353",
+    "hash_policy": "canonical_lf"
+  },
+  {
+    "retained": "native-final-build-scenarios.log",
+    "sha256": "a0918fe2802310d69dd6a3f46f2451a7c269f677994953dfe8de4428ca7f1eb1",
+    "source": ".ci-artifacts/terrain-wall-wave/native-final-build-scenarios.log",
+    "source_sha256": "409338e9f00a8db557bc192ef43fc538962c1c7184aac7c2d01811f1d4cda470",
+    "hash_policy": "canonical_lf"
+  },
+  {
+    "retained": "focused-raster-world.log",
+    "sha256": "f4e3bcbaabc873ddf02d939e53e590b42226a5bbaa47d28080420dcfdd7ef44a",
+    "source": ".ci-artifacts/terrain-wall-wave/focused-raster-world.log",
+    "source_sha256": "a8d8655bc3f967fdf5a700b33ed56944389660e6316c3792af2bf0fa43d9839c",
+    "hash_policy": "canonical_lf"
+  },
+  {
+    "retained": "focused-raster-walls.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source": ".ci-artifacts/terrain-wall-wave/focused-raster-walls.log",
+    "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "hash_policy": "canonical_lf"
+  },
+  {
+    "retained": "browser-playtest.log",
+    "sha256": "6ef961241bbfcb26e479fa52172e798d90f298f3b3bc176cb542260a3057d1eb",
+    "source": ".ci-artifacts/terrain-wall-wave/browser-playtest.log",
+    "source_sha256": "210b5855ab90938a9b012e15cc868e35fbd0709365e71f59927f5e52063e2d01",
+    "hash_policy": "canonical_lf"
+  },
+  {
+    "retained": "importer-tests.log",
+    "sha256": "05562ed8e1b01415839b0b44192b463b3e2841be6c2a71727199ab0634836dc0",
+    "source": ".ci-artifacts/terrain-wall-wave/importer-tests.log",
+    "source_sha256": "92d8dc1401fd425f85e4fd9400837d7aabccd609e0073b3fe0de61aed4dcdf41",
+    "hash_policy": "canonical_lf"
+  },
+  {
+    "retained": "ground-raster.log",
+    "sha256": "e094e1d2dc4e1503d3cee80ecf38adbc6ab83e4ac7dd0fcd360c70178a70eee0",
+    "source": ".ci-artifacts/terrain-wall-wave/ground-raster.log",
+    "source_sha256": "33b75646c1c14c798dd80a4ddb3b4ab7cd69269a511ab95331fcc1f9a349dfc4",
+    "hash_policy": "canonical_lf"
+  },
+  {
+    "retained": "live-launch.log",
+    "sha256": "9d33b7ac533ac029522d7aeaee1647de18511c60380de88cb3e923c04396afbb",
+    "source": ".ci-artifacts/terrain-wall-wave/live-launch.log",
+    "source_sha256": "140f5ad7fd49c421f9104f8d4827ed364227c25a3d25a6c47a30f72b98046185",
+    "hash_policy": "canonical_lf"
+  },
+  {
+    "retained": "frame-budget-report.txt",
+    "sha256": "7fbeefe2fa71a774da0f563e4943fb40ad3aeda2a0794c8af229de9108589d5d",
+    "source": ".ci-artifacts/terrain-wall-wave/captures-final/frame-budget-report.txt",
+    "source_sha256": "7fbeefe2fa71a774da0f563e4943fb40ad3aeda2a0794c8af229de9108589d5d",
+    "hash_policy": "canonical_lf"
+  }
+]

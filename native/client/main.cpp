@@ -52,6 +52,7 @@ namespace phase_a = verdigris::client::phase_a;
 #include "vector_art.hpp"
 #include "raster_art.hpp"
 #include "raster_ground.hpp"
+#include "raster_walls.hpp"
 #include "raster_scenery.hpp"
 #include "raster_equipment.hpp"
 #include "raster_loot.hpp"
@@ -2235,7 +2236,7 @@ void dispatch_skill(ClientState& state, const SkillInfo& skill) {
 }
 
 std::string nearest_pickup_id(const ClientState& state) {
-  if (is_remote(state)) return {};
+  if (is_remote(state) || !state.simulation) return {};
   const auto* player = state.simulation->actor(state.simulation->scion().actor_id);
   if (!player) return {};
 
@@ -2985,6 +2986,13 @@ void draw_ground_grid(HDC dc, const Camera& camera, const RECT& bounds) {
   }
 }
 
+const char* quiet_ground_asset(const std::string& theme) {
+  const char* name = theme == "crypt" ? "terrain_quiet_stone"
+      : theme == "dungeon" || theme == "town" || theme == "tin" ? "terrain_quiet_earth"
+      : nullptr;
+  return name && raster_art::available(name) ? name : nullptr;
+}
+
 raster_ground::Layout ground_layout(const std::string& route_id,
                                     const std::string& theme,
                                     const std::vector<SceneryItem>& scenery) {
@@ -2992,8 +3000,14 @@ raster_ground::Layout ground_layout(const std::string& route_id,
   layout.tile_units = kTileUnits;
   const bool town = route_id.rfind("town:", 0) == 0;
   const bool village = route_id.find(":1:") != std::string::npos;
-  layout.active = town || (village && (theme == "town" || theme == "tin"));
+  const bool village_roads = village && (theme == "town" || theme == "tin");
+  const bool interior = theme == "dungeon" || theme == "crypt";
+  layout.active = (town || village_roads || interior) && quiet_ground_asset(theme);
   if (!layout.active) return layout;
+  layout.key = scenery_seed(route_id + "|ground-material-v2");
+  // Interior material uses broad shading only. Village paths and tree planting
+  // must never become implied passages or greenery on the crypt floor.
+  if (interior) return layout;
   if (town) {
     // Existing Crossroads landmark contract, in server tile coordinates.
     // The material only describes the open square and roads already present.
@@ -3021,7 +3035,6 @@ raster_ground::Layout ground_layout(const std::string& route_id,
     layout.road(-260, 70, -330, 90, 38);
     layout.road(15, -15, 15, -15, 80);
   }
-  layout.key = scenery_seed(route_id + "|ground-material-v1");
   for (const SceneryItem& item : scenery) {
     const raster_ground::Point p{static_cast<double>(item.position.x),
                                   static_cast<double>(item.position.y)};
@@ -3090,10 +3103,24 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
   (void)assets;
   // Texture coordinates follow world tiles, so grain stays fixed under movement.
   rl.push_back({render::Op::Floor, 0.0, 0.0, 0.0, 1, "tiled"});
-  if (material_layout.active)
+  const char* quiet_material = material_layout.active ? quiet_ground_asset(theme) : nullptr;
+  if (quiet_material)
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 1, "raster:ground:quiet-material"});
+  if (material_layout.road_count > 0)
     rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 1, "raster:ground:landmark-paths"});
+  bool traced_asset = false;
+  const auto trace_asset = [&](const char* name) {
+    if (traced_asset) return;
+    traced_asset = true;
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 1,
+                  std::string("raster:ground:asset:") + name});
+  };
+  const char* base_terrain = theme == "crypt" ? "terrain_stone"
+      : theme == "marsh" ? "terrain_moss"
+      : theme == "town" || theme == "tin" ? "terrain_packed_earth" : "terrain_dark";
   const std::string cache_key = route_id + "|" + theme + "|" +
                                 std::to_string(material_layout.key) + "|" +
+                                (quiet_material ? quiet_material : base_terrain) + "|" +
                                 std::to_string(raster_art::asset_generation());
 
   HBRUSH background = CreateSolidBrush(vector_art::dc_color(dc, RGB(23, 29, 32)));
@@ -3150,14 +3177,16 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
         const ScreenPoint corner0 = project(cam, frame, wx, wy);
         const ScreenPoint corner1 = project(cam, frame, wx + tile, wy + tile);
         const RECT cell{corner0.x, corner0.y, corner1.x, corner1.y};
-        const char* terrain = theme == "crypt" ? "terrain_stone"
-            : theme == "marsh" ? "terrain_moss"
-            : theme == "town" || theme == "tin" ? "terrain_packed_earth"
-            : "terrain_dark";
-        if (raster_ground::draw(target, material_layout, tx, ty, cell,
-                               "terrain_quiet_earth")) continue;
-        if (!raster_art::draw_ground(target, terrain, cell))
+        if (quiet_material && raster_ground::draw(target, material_layout, tx, ty, cell,
+                                                   quiet_material)) {
+          trace_asset(quiet_material);
+          continue;
+        }
+        if (raster_art::draw_ground(target, base_terrain, cell)) trace_asset(base_terrain);
+        else {
           vector_art::terrain_tile(target, cell, theme, terrain_tile_hash(tx, ty));
+          trace_asset("vector-fallback");
+        }
       }
     }
   };
@@ -3220,6 +3249,8 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
     cache->view_h = static_cast<int>(bounds.bottom);
     cache->valid = true;
   }
+
+  if (!traced_asset) trace_asset(quiet_material ? quiet_material : base_terrain);
 
   // Blit alignment: both frames share the zoom, so aligning any one world
   // point aligns every tile. Anchor on the cached region's north-west tile
@@ -4069,7 +4100,7 @@ void ingest_events(ClientState& state, const RECT& bounds) {
 struct DepthDraw {
   double depth = 0.0;
   int order = 0;
-  enum class What { Scenery, Player, Monster, Npc, Loot, Effect } what = What::Player;
+  enum class What { Wall, Scenery, Player, Monster, Npc, Loot, Effect } what = What::Player;
   std::size_t index = 0;
 };
 
@@ -6187,78 +6218,6 @@ TopHudLayout plan_top_hud(int width, int height, bool gear_open, bool tree_open,
   return result;
 }
 
-
-// -- Wall tiles -----------------------------------------------------------
-// Blocked cells of the authoritative walkable grid, drawn as chunky raised
-// stone so collision is always visible. Vector-only: no assets required.
-void draw_wall_tiles(const WorldView& world, HDC dc, const Camera& camera,
-                     const RECT& bounds) {
-  if (world.map_width <= 0 || world.map_height <= 0 ||
-      world.map_walkable.size() !=
-          static_cast<std::size_t>(world.map_width) * world.map_height)
-    return;
-  const double tile = kTileUnits;
-  const double half_w_units =
-      (static_cast<double>(bounds.right) * 0.5) / std::max(0.05, camera.zoom) +
-      tile;
-  const double half_h_units =
-      (static_cast<double>(bounds.bottom) * 0.5) / std::max(0.05, camera.zoom) +
-      tile;
-  int start_tx = static_cast<int>(std::floor((camera.x - half_w_units) / tile));
-  int end_tx = static_cast<int>(std::ceil((camera.x + half_w_units) / tile));
-  int start_ty = static_cast<int>(std::floor((camera.y - half_h_units) / tile));
-  int end_ty = static_cast<int>(std::ceil((camera.y + half_h_units) / tile));
-  start_tx = std::max(start_tx, 0);
-  start_ty = std::max(start_ty, 0);
-  end_tx = std::min(end_tx, world.map_width - 1);
-  end_ty = std::min(end_ty, world.map_height - 1);
-  for (int ty = start_ty; ty <= end_ty; ++ty) {
-    for (int tx = start_tx; tx <= end_tx; ++tx) {
-      if (world.map_walkable[static_cast<std::size_t>(ty) * world.map_width +
-                             tx])
-        continue;
-      // The tile occupies [tx-0.5, tx+0.5) in protocol space (positions round
-      // to the nearest tile), so the block is centred on the tile coordinate.
-      const double wx = (static_cast<double>(tx) - 0.5) * tile;
-      const double wy = (static_cast<double>(ty) - 0.5) * tile;
-      const ScreenPoint c0 = project(camera, bounds, wx, wy);
-      const ScreenPoint c1 = project(camera, bounds, wx + tile, wy + tile);
-      if (c1.x < 0 || c1.y < 0 || c0.x > bounds.right || c0.y > bounds.bottom)
-        continue;
-      const int lift = std::max(4, static_cast<int>((c1.y - c0.y) * 0.30));
-      // Theme-tinted stone so each road's walls belong to its palette.
-      COLORREF slab = RGB(88, 78, 66);
-      if (world.theme == "crypt") slab = RGB(78, 82, 96);
-      else if (world.theme == "marsh") slab = RGB(72, 88, 64);
-      else if (world.theme == "wilds") slab = RGB(96, 80, 58);
-      else if (world.theme == "grove") slab = RGB(76, 96, 70);
-      // Shadowed face below the slab: a dark shade of the same stone, with
-      // mortar seams, so wall rows read as masonry instead of a void band.
-      RECT face{c0.x, c1.y - lift, c1.x, c1.y};
-      HBRUSH face_brush = CreateSolidBrush(RGB(
-          GetRValue(slab) / 3, GetGValue(slab) / 3, GetBValue(slab) / 3));
-      FillRect(dc, &face, face_brush);
-      DeleteObject(face_brush);
-      draw_line(dc, c0.x + (c1.x - c0.x) / 2, c1.y - lift,
-                c0.x + (c1.x - c0.x) / 2, c1.y, RGB(14, 12, 10), 1);
-      // Raised top slab, clearly lighter than any floor plate.
-      RECT top{c0.x, c0.y - lift, c1.x, c1.y - lift};
-      HBRUSH top_brush = CreateSolidBrush(slab);
-      FillRect(dc, &top, top_brush);
-      DeleteObject(top_brush);
-      // Lit rim + seams for the cut-stone read.
-      draw_line(dc, c0.x, top.top, c1.x, top.top, RGB(146, 132, 108), 2);
-      draw_line(dc, c0.x, top.top, c0.x, top.bottom, RGB(118, 106, 88), 1);
-      draw_line(dc, c1.x - 1, top.top, c1.x - 1, top.bottom, RGB(30, 26, 22), 1);
-      const int mid_y = (top.top + top.bottom) / 2;
-      draw_line(dc, c0.x, mid_y, c1.x, mid_y, RGB(52, 46, 38), 1);
-      draw_line(dc, c0.x + (c1.x - c0.x) / 2, top.top,
-                c0.x + (c1.x - c0.x) / 2, mid_y, RGB(52, 46, 38), 1);
-      draw_line(dc, c0.x + (c1.x - c0.x) / 4, mid_y,
-                c0.x + (c1.x - c0.x) / 4, top.bottom, RGB(52, 46, 38), 1);
-    }
-  }
-}
 
 // -- Character sheet pane ------------------------------------------------
 // Authoritative Scion sheet: identity, vitals, combat totals, attributes.
@@ -9678,7 +9637,6 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   draw_floor(state.billboards, dc, state.camera, bounds, world.route_id, rl,
              &state.floor_cache, world.theme,
              ground_layout(world.route_id, world.theme, state.scenery));
-  draw_wall_tiles(world, dc, state.camera, bounds);
   QueryPerformanceCounter(&section_t1);
   state.paint_ms_floor = section_ms(section_t0, section_t1);
 
@@ -9733,7 +9691,15 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   // painter's key (world y first, then world x) so lower entities render in
   // front. camera2d::draw_order_key is translation-invariant like the rest of
   // the camera math.
+  const auto walls = raster_walls::collect(
+      {world.map_width, world.map_height, world.map_walkable},
+      {state.camera.x, state.camera.y, state.camera.zoom},
+      {static_cast<int>(bounds.right), static_cast<int>(bounds.bottom)}, kTileUnits);
   std::vector<DepthDraw> order;
+  order.reserve(walls.size() + state.scenery.size() + world.monsters.size() +
+                world.npcs.size() + state.effects.size() + state.loot_positions.size() + 1);
+  for (std::size_t i = 0; i < walls.size(); ++i)
+    order.push_back({walls[i].depth, 0, DepthDraw::What::Wall, i});
   for (std::size_t i = 0; i < state.scenery.size(); ++i)
     order.push_back({camera2d::draw_order_key(
                          static_cast<double>(state.scenery[i].position.y),
@@ -9789,8 +9755,27 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     return lhs.order < rhs.order;
   });
 
+  // Populated when the actual resolved player pose is painted. Only later
+  // walls can obscure it; north/south collision coordinates remain untouched.
+  RECT wall_player_ink{};
   for (const auto& entry : order) {
     switch (entry.what) {
+      case DepthDraw::What::Wall: {
+        const auto& wall = walls[entry.index];
+        const auto painted = raster_walls::draw(dc, wall, wall_player_ink);
+        rl.push_back({render::Op::Scenery, static_cast<double>(wall.pixels.left),
+                      static_cast<double>(wall.pixels.top),
+                      static_cast<double>(wall.pixels.bottom - wall.pixels.top),
+                      static_cast<int>(wall.exposed),
+                      "wall:" + std::to_string(wall.x) + ":" + std::to_string(wall.y)});
+        const char* label = painted == raster_walls::Paint::Raster ? "raster:wall"
+            : painted == raster_walls::Paint::Cutaway ? "raster:wall-cutaway"
+            : painted == raster_walls::Paint::MissingFallback ? "raster:wall-fallback"
+            : "raster:wall-invalid";
+        rl.push_back({render::Op::Hud, static_cast<double>(wall.pixels.left),
+                      static_cast<double>(wall.pixels.top), 0.0, 0, label});
+        break;
+      }
       case DepthDraw::What::Scenery:
         draw_scenery_item(state.billboards, dc, state.camera, bounds,
                           state.scenery[entry.index], rl,
@@ -9844,9 +9829,12 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
             draw_raster_target_flash(dc, state, player.id, raster_pose,
                                       base, height, rl);
             draw_raster_equipment(dc, held, base, height, raster_pose);
+            wall_player_ink = raster_walls::sprite_ink(raster_pose.c_str(), base.x, base.y, height);
           } else {
             vector_art::humanoid(dc, base.x, base.y, height,
                                  vector_art::player_style(), pose, held);
+            wall_player_ink = {base.x - height / 3, base.y - height,
+                               base.x + height / 3, base.y};
           }
           rl.push_back({render::Op::Hud, static_cast<double>(base.x),
                         static_cast<double>(base.y), 0.0, 0,
@@ -19662,6 +19650,231 @@ int scenario_loot_label_budget() {
 
 bool save_hbitmap_png(BillboardAssets& assets, HBITMAP bitmap, const std::string& path);
 
+int scenario_raster_walls() {
+  const std::string dir = art_wave_capture_dir();
+  scenario_check(!dir.empty(), "raster-walls: capture directory accepted");
+  if (dir.empty()) return scenario_failures;
+  auto* source = raster_art::detail::asset(raster_walls::kAsset);
+  scenario_check(source && source->size.width == 64 && source->size.height == 96 && source->opaque,
+                 "raster-walls: promoted module has opaque64x96 cap/face contract");
+
+  // Pure topology negative controls, separate from the untouched authority map.
+  std::vector<std::uint8_t> cells(25, 1);
+  for (int y = 1; y <= 3; ++y) for (int x = 1; x <= 3; ++x) cells[y * 5 + x] = 0;
+  const raster_walls::Grid grid{5, 5, cells};
+  scenario_check(grid.exposure(2, 2) == 0 && grid.exposure(1, 1) ==
+                     (raster_walls::North | raster_walls::West) &&
+                     grid.exposure(2, 1) == raster_walls::North &&
+                     grid.exposure(3, 3) == (raster_walls::East | raster_walls::South),
+                 "raster-walls: four neighbours distinguish interior, straight edge and corners");
+  const auto original = cells;
+  for (const double zoom : {.73, 1.088, 2.04}) {
+    const camera2d::Camera camera{2 * kTileUnits + .37, 2 * kTileUnits - .29, zoom};
+    const camera2d::Screen screen{1366, 768};
+    const auto modules = raster_walls::collect(grid, camera, screen, kTileUnits);
+    bool geometry = modules.size() == 9, interior = false;
+    for (const auto& module : modules) {
+      const auto east = raster_walls::place(module.x + 1, module.y, 0, camera, screen, kTileUnits);
+      const auto south = raster_walls::place(module.x, module.y + 1, 0, camera, screen, kTileUnits);
+      geometry &= module.ground.right == east.ground.left &&
+          module.pixels.right == east.pixels.left && module.pixels.top == east.pixels.top &&
+          module.ground.bottom == south.ground.top && south.pixels.top < module.pixels.bottom &&
+          std::abs((module.ground.top - module.pixels.top) - kTileUnits * .5 * zoom) <= .5 &&
+          module.depth == camera2d::draw_order_key((module.y + .5) * kTileUnits, module.x * kTileUnits);
+      interior |= module.x == 2 && module.y == 2 && module.exposed == 0;
+    }
+    scenario_check(geometry && interior,
+                   "raster-walls: fractional pan/zoom shares edges, covers row faces and keeps interiors");
+  }
+  const camera2d::Camera edge_camera{128, -40, 1};
+  const auto edge_module = raster_walls::place(2, 2, 0, edge_camera, {256, 256}, 64);
+  const auto edge_modules = raster_walls::collect(grid, edge_camera, {256, 256}, 64);
+  scenario_check(edge_module.ground.top >= 256 && edge_module.pixels.top < 256 &&
+      std::any_of(edge_modules.begin(), edge_modules.end(), [](const auto& m) { return m.x == 2 && m.y == 2; }),
+      "raster-walls: elevated cap is retained while its footprint is below camera edge");
+  scenario_check(raster_walls::collect({4, 5, cells}, edge_camera, {256, 256}, 64).empty() &&
+                     raster_walls::collect(grid, {0, 0, 0}, {256, 256}, 64).empty() && cells == original,
+                 "raster-walls: malformed maps/zoom rejected without changing walkability");
+
+  // Actual raster sampling and opacity: compare both compositing paths with
+  // the same decoded source at native and fractional production sizes.
+  raster_art::detail::Surface surface;
+  scenario_check(surface.create(520, 520), "raster-walls: colour probe surface allocated");
+  if (surface.dc) {
+    const auto missing = raster_walls::place(0, 0, 0, {0, 0, 1}, {520, 520}, 64);
+    scenario_check(raster_walls::draw(surface.dc, missing, {}, "__missing_wall_probe") ==
+                       raster_walls::Paint::MissingFallback,
+                   "raster-walls: missing asset selects explicit ordered fallback");
+    scenario_check(raster_walls::draw(surface.dc, missing, {}, "hero_se") == raster_walls::Paint::Invalid,
+                   "raster-walls: wrong present asset cannot certify the fallback");
+    if (source) for (const int width : {64, 117, 219}) {
+      const int height = static_cast<int>(std::lround(width * 1.5));
+      const raster_walls::Module module{0, 0, 15, {16, 16 + height - width, 16 + width, 16 + height},
+                                         {16, 16, 16 + width, 16 + height}, 0};
+      const RECT overlap{32, 32, 48, 48};
+      GdiFlush();
+      std::fill_n(static_cast<std::uint32_t*>(surface.pixels), 520 * 520, 0xff31577bu);
+      scenario_check(raster_walls::draw(surface.dc, module, {}) == raster_walls::Paint::Raster,
+                     "raster-walls: exact rectangle paints approved source pixels");
+      GdiFlush();
+      std::vector<std::uint32_t> opaque(520 * 520);
+      std::copy_n(static_cast<std::uint32_t*>(surface.pixels), opaque.size(), opaque.begin());
+      Gdiplus::BitmapData native_pixels{};
+      const Gdiplus::Rect native_rect(0, 0, 64, 96);
+      bool nearest = source->image->LockBits(&native_rect, Gdiplus::ImageLockModeRead,
+                       PixelFormat32bppPARGB, &native_pixels) == Gdiplus::Ok;
+      if (nearest) {
+        for (int y = 0; y < height; ++y) for (int x = 0; x < width; ++x) {
+          const int sx = std::min(63, static_cast<int>((x + .5) * 64 / width));
+          const int sy = std::min(95, static_cast<int>((y + .5) * 96 / height));
+          const auto* row = reinterpret_cast<const std::uint32_t*>(
+              static_cast<const BYTE*>(native_pixels.Scan0) + sy * native_pixels.Stride);
+          nearest &= (opaque[(y + 16) * 520 + x + 16] & 0xffffffu) == (row[sx] & 0xffffffu);
+        }
+        source->image->UnlockBits(&native_pixels);
+      }
+      scenario_check(nearest, "raster-walls: native and fractional rectangles preserve nearest source texels");
+      std::fill_n(static_cast<std::uint32_t*>(surface.pixels), 520 * 520, 0xff31577bu);
+      scenario_check(raster_walls::draw(surface.dc, module, overlap) == raster_walls::Paint::Cutaway,
+                     "raster-walls: actual overlapping body selects bounded opacity");
+      GdiFlush();
+      const auto* faded = static_cast<const std::uint32_t*>(surface.pixels);
+      bool alpha = true, changed = false;
+      for (int y = 16; y < 16 + height; ++y) for (int x = 16; x < 16 + width; ++x) {
+        const std::size_t i = y * 520 + x;
+        changed |= (faded[i] & 0xffffffu) != (opaque[i] & 0xffffffu);
+        for (int shift : {0, 8, 16}) {
+          const int expected = (((opaque[i] >> shift) & 255) * raster_walls::kCutawayAlpha +
+              ((0xff31577bu >> shift) & 255) * (255 - raster_walls::kCutawayAlpha)) / 255;
+          alpha &= std::abs(static_cast<int>((faded[i] >> shift) & 255) - expected) <= 1;
+        }
+      }
+      scenario_check(alpha && changed && (faded[0] & 0xffffffu) == 0x31577bu,
+                     "raster-walls: cutaway preserves exact source sampling, underlying colour and bounds");
+      const auto before = raster_art::cache_stats();
+      for (int repeat = 0; repeat < 12; ++repeat) raster_walls::draw(surface.dc, module, overlap);
+      const auto after = raster_art::cache_stats();
+      scenario_check(after.scale_builds == before.scale_builds &&
+                         after.image_loads == before.image_loads && after.cache_hits >= before.cache_hits + 12 &&
+                         after.scaled_bitmaps <= 192 && after.scaled_bytes <= 64u * 1024u * 1024u,
+                     "raster-walls: repeated cutaways reuse the bounded ordinary scale cache");
+    }
+  }
+
+  ClientState state;
+  load_billboards(state.billboards);
+  raster_art::detail::Surface edge_surface;
+  if (edge_surface.create(256, 256)) {
+    std::fill_n(static_cast<std::uint32_t*>(edge_surface.pixels), 256 * 256, 0xff262626u);
+    raster_walls::draw(edge_surface.dc, edge_module, {});
+    GdiFlush();
+    scenario_check(save_hbitmap_png(state.billboards, edge_surface.bitmap,
+                        dir + "\\raster-walls-elevated-culling-probe.png"),
+                   "raster-walls: unmasked native cap-at-viewport-edge pixels captured");
+  } else scenario_check(false, "raster-walls: cap probe surface allocated");
+  state.world.player.id = "wall-review-player";
+  state.world.player.life = state.world.player.life_max = 100;
+  state.world.player.resource = state.world.player.resource_max = 80;
+  state.world.player.facing = {1, 1};
+  state.world.scion_name = "Scion";
+  state.world.tick = 3;
+  scenario_check(!state.simulation && !state.session && nearest_pickup_id(state).empty(),
+                 "raster-walls: presentation fixture without a loot backend has no pickup");
+  verdigris::WorldSimulation authority(0x57A11ULL, state.world.player.id);
+  authority.set_spawn_suppressed(true);
+  const auto sync_fixture = [&] {
+    const auto& authoritative = authority.grid();
+    state.world.map_width = authoritative.width;
+    state.world.map_height = authoritative.height;
+    state.world.map_walkable = authoritative.walkable;
+    state.world.theme = authority.metadata().theme;
+    state.world.route_id = authority.scene_id();
+    const auto p = authority.position();
+    state.world.player.position = {
+        static_cast<int>(std::lround(p.x * kTileUnits)), static_cast<int>(std::lround(p.y * kTileUnits))};
+  };
+  for (const char* theme : {"dungeon", "crypt"}) {
+    authority.enter_solo_instance(theme, "gauntlet");
+    const auto authoritative_cells = authority.grid().walkable;
+    sync_fixture();
+    const raster_walls::Grid actual{state.world.map_width, state.world.map_height, state.world.map_walkable};
+    bool neighbours = true;
+    for (int y = 0; y < actual.height; ++y) for (int x = 0; x < actual.width; ++x) {
+      const unsigned expected = (authority.grid().walkable_at(x, y - 1) ? 1u : 0u) |
+          (authority.grid().walkable_at(x + 1, y) ? 2u : 0u) |
+          (authority.grid().walkable_at(x, y + 1) ? 4u : 0u) |
+          (authority.grid().walkable_at(x - 1, y) ? 8u : 0u);
+      neighbours &= actual.exposure(x, y) == expected;
+    }
+    scenario_check(neighbours, "raster-walls: every exposed edge agrees with untouched WorldSimulation grid");
+    const auto layout = ground_layout(state.world.route_id, theme, state.scenery);
+    scenario_check(layout.road_count == 0 && layout.planting_count == 0 &&
+                       layout.active == (quiet_ground_asset(theme) != nullptr),
+                   "raster-walls: interior quiet floor is asset-gated with no village paths/planting");
+    for (const bool north : {true, false}) {
+      authority.teleport(10, north ? 13 : 15, 0);
+      bool blocked = false;
+      for (int i = 0; i < 20; ++i)
+        if (!authority.apply_movement_sample(north ? "down" : "up", 50 * (i + 1))) {
+          blocked = true; break;
+        }
+      sync_fixture();
+      scenario_check(blocked && authority.grid().walkable == authoritative_cells &&
+          authority.grid().walkable_at(static_cast<int>(std::lround(authority.position().x)),
+                                        static_cast<int>(std::lround(authority.position().y))),
+          "raster-walls: real movement stops at wall, player remains on its legal side");
+      state.telegraphs.clear();
+      state.telegraphs.emplace("wall-warning", ActiveTelegraph{"wall-warning", "thrust",
+          {static_cast<int>(10 * kTileUnits), static_cast<int>(14 * kTileUnits)}, {1, 0}, 0, 12,
+          static_cast<int>(2 * kTileUnits)});
+      for (const auto screen : {camera2d::Screen{1366, 768}, camera2d::Screen{3440, 1440}}) {
+        state.camera = {10 * kTileUnits, 14 * kTileUnits, .85 * zoom_height_factor(screen.height)};
+        const std::string stem = std::string("raster-walls-") + theme + (north ? "-north-" : "-south-") +
+                                 std::to_string(screen.width) + "x" + std::to_string(screen.height);
+        scenario_check(reference_present(state, screen.width, screen.height, dir + "\\" + stem + ".png"),
+                       (stem + ": production paint captured").c_str());
+        std::size_t player_index = state.render_list.size(), first_wall = state.render_list.size(),
+                    last_wall = 0, warning_index = 0;
+        bool cutaway = false, invalid = false, floor = false;
+        const char* expected_floor = quiet_ground_asset(theme);
+        if (!expected_floor) expected_floor = std::string(theme) == "crypt" ? "terrain_stone" : "terrain_dark";
+        for (std::size_t i = 0; i < state.render_list.size(); ++i) {
+          const auto& op = state.render_list[i];
+          if (op.op == render::Op::Player) player_index = i;
+          if (op.label.rfind("wall:", 0) == 0) { first_wall = std::min(first_wall, i); last_wall = i; }
+          if (op.op == render::Op::Telegraph) warning_index = i;
+          cutaway |= op.label == "raster:wall-cutaway";
+          invalid |= op.label == "raster:wall-invalid" || op.label == "raster:wall-fallback";
+          floor |= op.label == std::string("raster:ground:asset:") + expected_floor;
+        }
+        scenario_check(!invalid && floor && warning_index > last_wall &&
+            (north ? player_index < first_wall && cutaway : player_index > last_wall && !cutaway),
+            (stem + ": actual floor asset, correct actor/wall order, cutaway and final warning overlay").c_str());
+      }
+    }
+  }
+  // Existing authority layouts supply a2x2 corner and a fully blocked border
+  // corner. These are presentation fixtures, not synthetic collision clearance.
+  for (const bool border : {false, true}) {
+    authority.enter_solo_instance("crypt", "clearings");
+    authority.teleport(border ? authority.grid().width - 2 : 13,
+                       border ? authority.grid().height - 2 : 8, 0);
+    sync_fixture(); state.telegraphs.clear();
+    state.camera = {border ? (authority.grid().width - 1.0) * kTileUnits : 14.5 * kTileUnits,
+                    border ? (authority.grid().height - 1.0) * kTileUnits : 9.5 * kTileUnits,
+                    .85 * zoom_height_factor(768)};
+    scenario_check(reference_present(state, 1366, 768, dir +
+        (border ? "\\raster-walls-border-interior.png" : "\\raster-walls-corner.png")),
+        "raster-walls: authoritative corner/interior production capture saved");
+  }
+  // The same live painter with only a raised cap entering the bottom edge.
+  state.camera.y = 9.5 * kTileUnits - (384 + 12) / state.camera.zoom;
+  state.camera.x = 14.5 * kTileUnits;
+  scenario_check(reference_present(state, 1366, 768, dir + "\\raster-walls-camera-edge.png"),
+                 "raster-walls: production elevated camera-edge capture saved");
+  return scenario_failures;
+}
+
 int scenario_raster_world() {
   // Asset absence must not silently certify the old geometric fallback as
   // the new world art. This checks the runtime decode and actual paint paths.
@@ -21260,6 +21473,7 @@ int run_scenarios(const std::string& which) {
       {"hud-chrome", scenario_hud_chrome},
       {"xp-meter", scenario_xp_meter},
       {"raster-world", scenario_raster_world},
+      {"raster-walls", scenario_raster_walls},
       {"raster-loot", scenario_raster_loot},
       {"raider-strike", scenario_raider_strike},
       {"raster-feedback", scenario_raster_feedback},

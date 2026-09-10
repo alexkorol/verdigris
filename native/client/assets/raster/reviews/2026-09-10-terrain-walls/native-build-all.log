@@ -1,0 +1,2793 @@
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+core.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\src\core.cpp(2328): warning C4100: 'player_level': unreferenced formal parameter
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+seasonal.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+networking.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\src\networking.cpp(2985): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+core_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+networking_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+camera2d_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+local_session.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+remote_session.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\remote_session.cpp(364): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+presentation_state.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+session_tests.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\tests\session_tests.cpp(1173): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+presentation_events_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+cue_spec.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+event_cues.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+audio_mixer.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+audio_mixer_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+server_main.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\src\server_main.cpp(16): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\src\server_main.cpp(22): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+main.cpp
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusHeaders.h(701): warning C4458: declaration of 'nativeCap' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusHeaders.h(716): note: see declaration of 'Gdiplus::CustomLineCap::nativeCap'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusImageAttributes.h(368): warning C4458: declaration of 'nativeImageAttr' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusImageAttributes.h(382): note: see declaration of 'Gdiplus::ImageAttributes::nativeImageAttr'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusMatrix.h(301): warning C4458: declaration of 'nativeMatrix' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusMatrix.h(315): note: see declaration of 'Gdiplus::Matrix::nativeMatrix'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusBrush.h(95): warning C4458: declaration of 'nativeBrush' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusBrush.h(108): note: see declaration of 'Gdiplus::Brush::nativeBrush'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPen.h(467): warning C4458: declaration of 'nativePen' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPen.h(481): note: see declaration of 'Gdiplus::Pen::nativePen'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(891): warning C4458: declaration of 'nativePath' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(905): note: see declaration of 'Gdiplus::GraphicsPath::nativePath'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(1078): warning C4458: declaration of 'nativeIterator' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(1092): note: see declaration of 'Gdiplus::GraphicsPathIterator::nativeIterator'
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(3884): warning C4100: 'bounds': unreferenced formal parameter
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(5726): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(11864): warning C4456: declaration of 'expect_x' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(11858): note: see declaration of 'expect_x'
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(11865): warning C4456: declaration of 'expect_y' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(11859): note: see declaration of 'expect_y'
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(12202): warning C4456: declaration of 'route' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(12161): note: see declaration of 'route'
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(14600): warning C4456: declaration of 'trace_find' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(14116): note: see declaration of 'trace_find'
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(15341): warning C4456: declaration of 'strip' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(15303): note: see declaration of 'strip'
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(22019): warning C4456: declaration of 'here' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(21971): note: see declaration of 'here'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.29.30133\include\memory(3382): warning C4244: 'argument': conversion from '_Ty' to 'uint16_t', possible loss of data
+        with
+        [
+            _Ty=int
+        ]
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(21148): note: see reference to function template instantiation 'std::unique_ptr<verdigris::client::RemoteProtocolSession,std::default_delete<verdigris::client::RemoteProtocolSession>> std::make_unique<verdigris::client::RemoteProtocolSession,const char(&)[10],int,const char(&)[20],bool,0>(const char (&)[10],int &&,const char (&)[20],bool &&)' being compiled
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+remote_play.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+native legacy denylist: PASS
+[swing] tgt=monster-1-0 now=1000 next=1000 range-ok
+[swing] tgt=monster-1-0 now=1001 next=1350 range-ok
+[swing] tgt=monster-1-0 now=1349 next=1350 range-ok
+[swing] tgt=monster-1-0 now=1350 next=1350 range-ok
+[swing] tgt=monster-1-1 now=1351 next=1700 range-ok
+[swing] tgt=monster-1-1 now=1699 next=1700 range-ok
+[swing] tgt=monster-1-1 now=1700 next=1700 range-ok
+[swing] tgt=monster-1-1 now=1702 next=2050 range-ok
+[swing] tgt=monster-1-1 now=2049 next=2050 range-ok
+[swing] tgt=monster-1-1 now=2050 next=2050 range-ok
+[swing] tgt=monster-1-1 now=3000 next=3000 range-ok
+[swing] tgt=monster-1-1 now=3000 next=3350 range-ok
+[swing] tgt=monster-1-14 now=300 next=300 range-ok
+[swing] tgt=monster-1-14 now=650 next=650 range-ok
+[swing] tgt=monster-1-19 now=0 next=0 range-ok
+[swing] tgt=monster-1-19 now=150 next=350 range-ok
+[swing] tgt=monster-1-19 now=300 next=350 range-ok
+[swing] tgt=monster-1-19 now=450 next=350 range-ok
+[swing] tgt=monster-1-19 now=600 next=800 range-ok
+[swing] tgt=monster-1-19 now=750 next=800 range-ok
+[swing] tgt=monster-1-19 now=900 next=800 range-ok
+[swing] tgt=monster-1-19 now=1050 next=1250 range-ok
+[swing] tgt=monster-1-19 now=1200 next=1250 range-ok
+verdigris core tests: PASS
+[swing] tgt=monster-1-19 now=1789047664818 next=0 range-ok
+[swing] tgt=monster-1-0 now=1789047664883 next=1789047664883 range-ok
+[swing] tgt=monster-1-0 now=1789047665236 next=1789047665233 range-ok
+[swing] tgt=monster-1-0 now=1789047665586 next=1789047665586 range-ok
+verdigris networking tests: PASS
+camera2d tests: PASS
+PASS local: start succeeds
+PASS local: state is ready without a handshake
+PASS local: scion uuid published
+PASS local: house name published
+PASS local: movement commands reach the simulation through the seam
+PASS local: SessionReady presentation event emitted
+PASS local: shutdown reaches disconnected state
+PASS local-clock: session starts
+PASS local-clock: aim spam and polling advance neither pursuit nor timers
+PASS local-clock: interface step advances pursuit and timers exactly once
+PASS local-clock: empty input batch still advances idle enemies
+PASS local-clock: move and aim bursts consume one movement step and keep held aim
+PASS local-clock: next tick movement preserves prior held aim
+PASS local-clock: session restarts
+PASS local-clock: restart discards queued movement and old clock state
+PASS local-clock: queued attack remains unresolved before fixed step
+PASS local-clock: AimEast Attack AimWest hits east before final west aim
+PASS local-clock: one confirmed attack precedes damage and one cooldown tick
+PASS local-clock: rendered owned strike keeps event-time east pose after final west aim
+PASS local-clock: action spam cannot accelerate cooldown
+PASS local-clock: bounded attack batch cannot bypass active cooldown
+PASS local-clock: polling cannot shorten the buff duration
+PASS local-clock: buff remains active until its last explicit step
+PASS local-clock: idle steps publish buff expiry once at the authoritative tick
+PASS local-clock: batched player movement obeys local authority obstacles
+PASS local-clock: dash cannot tunnel through authority obstacles
+PASS local-clock: replacing local obstacles restores one ordinary movement step
+PASS local-mirror: signed player, monster, facing and extraction data round-trip world units
+PASS local-mirror: live actor ownership, persistent Scion identity and scene identity stay distinct
+PASS local-mirror: navigation keepouts expose current world coordinates
+PASS local-mirror: item and trophy anchors keep the defeated actor position after later movement
+PASS local-mirror: dropped item event carries its actor-owned world anchor
+PASS local-mirror: pickup removes the floor anchor from the mirror
+PASS local-mirror: retirement clears scene identity, navigation, extraction and old loot anchors
+PASS local-mirror: surface dressing cannot reinstall retired instance collision
+PASS local-mirror: next route publishes stationary geometry-install boundary
+PASS local-mirror: next route accepts its own world-space geometry
+PASS local-mirror: stopped session exposes no stale keepouts
+PASS local-mirror: real idle pursuit round-trips every detour position outside world-space circles
+PASS local-mirror: detour arrival produces owned strike and incoming player feedback at actual positions
+PASS remote-negative: dead endpoint fails start()
+PASS remote-negative: state is rejected, not a silent local fallback
+PASS remote-negative: hard error message supplied
+PASS remote: test server bound inside the TASK-0163 capsule
+PASS remote: connect + upgrade + login sent
+PASS remote: player:login acknowledged -> ready
+PASS remote: authoritative identity mirrored into the client model
+PASS remote: scene snapshot mirrored
+PASS remote: SessionReady presentation event emitted
+PASS remote: session survives a submitted command
+PASS remote: clean shutdown reaches disconnected
+PASS remote: server stopped cleanly
+PASS journey: test server bound inside the TASK-0163 capsule 7160-7179
+PASS journey: connect + upgrade + login sent
+PASS journey: handshake ready
+PASS journey: zone enter mirrors instance scene
+PASS journey: transition publishes exit stairs
+PASS journey: movement echo updates x
+PASS journey: aim updates facing
+[swing] tgt=monster-1-2 now=1789047670252 next=1789047670252 range-ok
+[swing] tgt=monster-1-2 now=1789047670286 next=1789047670602 range-ok
+[swing] tgt=monster-1-2 now=1789047670319 next=1789047670602 range-ok
+[swing] tgt=monster-1-2 now=1789047670352 next=1789047670602 range-ok
+[swing] tgt=monster-1-2 now=1789047670370 next=1789047670602 range-ok
+[swing] tgt=monster-1-2 now=1789047670388 next=1789047670602 range-ok
+[swing] tgt=monster-1-2 now=1789047670399 next=1789047670602 range-ok
+[swing] tgt=monster-1-2 now=1789047670415 next=1789047670602 range-ok
+[swing] tgt=monster-1-2 now=1789047670435 next=1789047670602 range-ok
+[swing] tgt=monster-1-2 now=1789047670469 next=1789047670602 range-ok
+[swing] tgt=monster-1-2 now=1789047670502 next=1789047670602 range-ok
+[swing] tgt=monster-1-2 now=1789047670535 next=1789047670602 range-ok
+[swing] tgt=monster-1-2 now=1789047670553 next=1789047670602 range-ok
+[swing] tgt=monster-1-2 now=1789047670569 next=1789047670602 range-ok
+[swing] tgt=monster-1-2 now=1789047670602 next=1789047670602 range-ok
+[swing] tgt=monster-1-2 now=1789047670621 next=1789047670952 range-ok
+[swing] tgt=monster-1-2 now=1789047670637 next=1789047670952 range-ok
+[swing] tgt=monster-1-2 now=1789047670669 next=1789047670952 range-ok
+[swing] tgt=monster-1-2 now=1789047670703 next=1789047670952 range-ok
+[swing] tgt=monster-1-2 now=1789047670719 next=1789047670952 range-ok
+[swing] tgt=monster-1-2 now=1789047670734 next=1789047670952 range-ok
+[swing] tgt=monster-1-2 now=1789047670769 next=1789047670952 range-ok
+[swing] tgt=monster-1-2 now=1789047670803 next=1789047670952 range-ok
+[swing] tgt=monster-1-2 now=1789047670836 next=1789047670952 range-ok
+[swing] tgt=monster-1-2 now=1789047670869 next=1789047670952 range-ok
+[swing] tgt=monster-1-2 now=1789047670884 next=1789047670952 range-ok
+[swing] tgt=monster-1-2 now=1789047670896 next=1789047670952 range-ok
+[swing] tgt=monster-1-2 now=1789047670910 next=1789047670952 range-ok
+[swing] tgt=monster-1-2 now=1789047670935 next=1789047670952 range-ok
+[swing] tgt=monster-1-2 now=1789047670970 next=1789047670970 range-ok
+[swing] tgt=monster-1-2 now=1789047671002 next=1789047671320 range-ok
+[swing] tgt=monster-1-2 now=1789047671036 next=1789047671320 range-ok
+[swing] tgt=monster-1-2 now=1789047671050 next=1789047671320 range-ok
+[swing] tgt=monster-1-2 now=1789047671069 next=1789047671320 range-ok
+[swing] tgt=monster-1-2 now=1789047671102 next=1789047671320 range-ok
+[swing] tgt=monster-1-2 now=1789047671136 next=1789047671320 range-ok
+[swing] tgt=monster-1-2 now=1789047671160 next=1789047671320 range-ok
+[swing] tgt=monster-1-2 now=1789047671175 next=1789047671320 range-ok
+[swing] tgt=monster-1-2 now=1789047671202 next=1789047671320 range-ok
+[swing] tgt=monster-1-2 now=1789047671219 next=1789047671320 range-ok
+[swing] tgt=monster-1-2 now=1789047671235 next=1789047671320 range-ok
+[swing] tgt=monster-1-2 now=1789047671269 next=1789047671320 range-ok
+[swing] tgt=monster-1-2 now=1789047671302 next=1789047671320 range-ok
+[swing] tgt=monster-1-2 now=1789047671335 next=1789047671335 range-ok
+[swing] tgt=monster-1-2 now=1789047671367 next=1789047671685 range-ok
+[swing] tgt=monster-1-2 now=1789047671382 next=1789047671685 range-ok
+[swing] tgt=monster-1-2 now=1789047671398 next=1789047671685 range-ok
+[swing] tgt=monster-1-2 now=1789047671418 next=1789047671685 range-ok
+[swing] tgt=monster-1-2 now=1789047671423 next=1789047671685 range-ok
+[swing] tgt=monster-1-2 now=1789047671452 next=1789047671685 range-ok
+[swing] tgt=monster-1-2 now=1789047671484 next=1789047671685 range-ok
+[swing] tgt=monster-1-2 now=1789047671519 next=1789047671685 range-ok
+[swing] tgt=monster-1-2 now=1789047671537 next=1789047671685 range-ok
+[swing] tgt=monster-1-2 now=1789047671552 next=1789047671685 range-ok
+[swing] tgt=monster-1-2 now=1789047671585 next=1789047671685 range-ok
+[swing] tgt=monster-1-2 now=1789047671619 next=1789047671685 range-ok
+[swing] tgt=monster-1-2 now=1789047671652 next=1789047671685 range-ok
+[swing] tgt=monster-1-2 now=1789047671669 next=1789047671685 range-ok
+[swing] tgt=monster-1-2 now=1789047671689 next=1789047671689 range-ok
+[swing] tgt=monster-1-10 now=1789047671724 next=1789047672039 range-ok
+[swing] tgt=monster-1-10 now=1789047671752 next=1789047672039 range-ok
+[swing] tgt=monster-1-10 now=1789047671785 next=1789047672039 range-ok
+[swing] tgt=monster-1-10 now=1789047671805 next=1789047672039 range-ok
+[swing] tgt=monster-1-10 now=1789047671835 next=1789047672039 range-ok
+[swing] tgt=monster-1-10 now=1789047671868 next=1789047672039 range-ok
+[swing] tgt=monster-1-10 now=1789047671872 next=1789047672039 range-ok
+[swing] tgt=monster-1-10 now=1789047671900 next=1789047672039 range-ok
+[swing] tgt=monster-1-10 now=1789047671932 next=1789047672039 range-ok
+[swing] tgt=monster-1-10 now=1789047671950 next=1789047672039 range-ok
+[swing] tgt=monster-1-10 now=1789047671957 next=1789047672039 range-ok
+[swing] tgt=monster-1-10 now=1789047671985 next=1789047672039 range-ok
+[swing] tgt=monster-1-10 now=1789047672019 next=1789047672039 range-ok
+[swing] tgt=monster-1-10 now=1789047672035 next=1789047672039 range-ok
+[swing] tgt=monster-1-10 now=1789047672052 next=1789047672052 range-ok
+[swing] tgt=monster-1-10 now=1789047672085 next=1789047672402 range-ok
+[swing] tgt=monster-1-10 now=1789047672119 next=1789047672402 range-ok
+[swing] tgt=monster-1-10 now=1789047672149 next=1789047672402 range-ok
+[swing] tgt=monster-1-10 now=1789047672170 next=1789047672402 range-ok
+[swing] tgt=monster-1-10 now=1789047672189 next=1789047672402 range-ok
+[swing] tgt=monster-1-10 now=1789047672202 next=1789047672402 range-ok
+[swing] tgt=monster-1-10 now=1789047672219 next=1789047672402 range-ok
+[swing] tgt=monster-1-10 now=1789047672240 next=1789047672402 range-ok
+[swing] tgt=monster-1-10 now=1789047672269 next=1789047672402 range-ok
+[swing] tgt=monster-1-10 now=1789047672302 next=1789047672402 range-ok
+[swing] tgt=monster-1-10 now=1789047672335 next=1789047672402 range-ok
+[swing] tgt=monster-1-10 now=1789047672352 next=1789047672402 range-ok
+[swing] tgt=monster-1-10 now=1789047672369 next=1789047672402 range-ok
+[swing] tgt=monster-1-10 now=1789047672402 next=1789047672402 range-ok
+[swing] tgt=monster-1-10 now=1789047672433 next=1789047672752 range-ok
+[swing] tgt=monster-1-10 now=1789047672469 next=1789047672752 range-ok
+[swing] tgt=monster-1-10 now=1789047672487 next=1789047672752 range-ok
+[swing] tgt=monster-1-10 now=1789047672507 next=1789047672752 range-ok
+[swing] tgt=monster-1-10 now=1789047672519 next=1789047672752 range-ok
+[swing] tgt=monster-1-10 now=1789047672535 next=1789047672752 range-ok
+[swing] tgt=monster-1-10 now=1789047672569 next=1789047672752 range-ok
+[swing] tgt=monster-1-10 now=1789047672602 next=1789047672752 range-ok
+[swing] tgt=monster-1-10 now=1789047672636 next=1789047672752 range-ok
+[swing] tgt=monster-1-10 now=1789047672667 next=1789047672752 range-ok
+[swing] tgt=monster-1-10 now=1789047672685 next=1789047672752 range-ok
+[swing] tgt=monster-1-10 now=1789047672702 next=1789047672752 range-ok
+[swing] tgt=monster-1-10 now=1789047672735 next=1789047672752 range-ok
+[swing] tgt=monster-1-10 now=1789047672755 next=1789047672755 range-ok
+[swing] tgt=monster-1-10 now=1789047672775 next=1789047673105 range-ok
+[swing] tgt=monster-1-10 now=1789047672802 next=1789047673105 range-ok
+[swing] tgt=monster-1-10 now=1789047672837 next=1789047673105 range-ok
+[swing] tgt=monster-1-10 now=1789047672852 next=1789047673105 range-ok
+[swing] tgt=monster-1-10 now=1789047672869 next=1789047673105 range-ok
+[swing] tgt=monster-1-10 now=1789047672900 next=1789047673105 range-ok
+[swing] tgt=monster-1-10 now=1789047672920 next=1789047673105 range-ok
+[swing] tgt=monster-1-10 now=1789047672952 next=1789047673105 range-ok
+[swing] tgt=monster-1-10 now=1789047672985 next=1789047673105 range-ok
+[swing] tgt=monster-1-10 now=1789047673019 next=1789047673105 range-ok
+[swing] tgt=monster-1-10 now=1789047673023 next=1789047673105 range-ok
+[swing] tgt=monster-1-10 now=1789047673042 next=1789047673105 range-ok
+[swing] tgt=monster-1-10 now=1789047673057 next=1789047673105 range-ok
+[swing] tgt=monster-1-10 now=1789047673085 next=1789047673105 range-ok
+[swing] tgt=monster-1-10 now=1789047673117 next=1789047673117 range-ok
+[swing] tgt=monster-1-10 now=1789047673151 next=1789047673467 range-ok
+[swing] tgt=monster-1-10 now=1789047673171 next=1789047673467 range-ok
+[swing] tgt=monster-1-10 now=1789047673185 next=1789047673467 range-ok
+[swing] tgt=monster-1-10 now=1789047673202 next=1789047673467 range-ok
+[swing] tgt=monster-1-10 now=1789047673236 next=1789047673467 range-ok
+[swing] tgt=monster-1-10 now=1789047673269 next=1789047673467 range-ok
+[swing] tgt=monster-1-10 now=1789047673287 next=1789047673467 range-ok
+[swing] tgt=monster-1-10 now=1789047673307 next=1789047673467 range-ok
+[swing] tgt=monster-1-10 now=1789047673336 next=1789047673467 range-ok
+[swing] tgt=monster-1-10 now=1789047673352 next=1789047673467 range-ok
+[swing] tgt=monster-1-10 now=1789047673369 next=1789047673467 range-ok
+[swing] tgt=monster-1-10 now=1789047673402 next=1789047673467 range-ok
+[swing] tgt=monster-1-10 now=1789047673435 next=1789047673467 range-ok
+[swing] tgt=monster-1-10 now=1789047673467 next=1789047673467 range-ok
+[swing] tgt=monster-1-8 now=1789047673505 next=1789047673817 range-ok
+[swing] tgt=monster-1-8 now=1789047673519 next=1789047673817 range-ok
+[swing] tgt=monster-1-8 now=1789047673534 next=1789047673817 range-ok
+[swing] tgt=monster-1-8 now=1789047673552 next=1789047673817 range-ok
+[swing] tgt=monster-1-8 now=1789047673558 next=1789047673817 range-ok
+[swing] tgt=monster-1-8 now=1789047673585 next=1789047673817 range-ok
+[swing] tgt=monster-1-8 now=1789047673619 next=1789047673817 range-ok
+[swing] tgt=monster-1-8 now=1789047673652 next=1789047673817 range-ok
+[swing] tgt=monster-1-8 now=1789047673685 next=1789047673817 range-ok
+[swing] tgt=monster-1-8 now=1789047673689 next=1789047673817 range-ok
+[swing] tgt=monster-1-8 now=1789047673719 next=1789047673817 range-ok
+[swing] tgt=monster-1-8 now=1789047673752 next=1789047673817 range-ok
+[swing] tgt=monster-1-8 now=1789047673785 next=1789047673817 range-ok
+[swing] tgt=monster-1-8 now=1789047673804 next=1789047673817 range-ok
+[swing] tgt=monster-1-8 now=1789047673810 next=1789047673817 range-ok
+[swing] tgt=monster-1-8 now=1789047673836 next=1789047673836 range-ok
+[swing] tgt=monster-1-8 now=1789047673853 next=1789047674186 range-ok
+[swing] tgt=monster-1-8 now=1789047673869 next=1789047674186 range-ok
+[swing] tgt=monster-1-8 now=1789047673900 next=1789047674186 range-ok
+[swing] tgt=monster-1-8 now=1789047673931 next=1789047674186 range-ok
+[swing] tgt=monster-1-8 now=1789047673963 next=1789047674186 range-ok
+[swing] tgt=monster-1-8 now=1789047673985 next=1789047674186 range-ok
+[swing] tgt=monster-1-8 now=1789047674019 next=1789047674186 range-ok
+[swing] tgt=monster-1-8 now=1789047674022 next=1789047674186 range-ok
+[swing] tgt=monster-1-8 now=1789047674052 next=1789047674186 range-ok
+[swing] tgt=monster-1-8 now=1789047674071 next=1789047674186 range-ok
+[swing] tgt=monster-1-8 now=1789047674083 next=1789047674186 range-ok
+[swing] tgt=monster-1-8 now=1789047674104 next=1789047674186 range-ok
+[swing] tgt=monster-1-8 now=1789047674135 next=1789047674186 range-ok
+[swing] tgt=monster-1-8 now=1789047674169 next=1789047674186 range-ok
+[swing] tgt=monster-1-8 now=1789047674184 next=1789047674186 range-ok
+[swing] tgt=monster-1-8 now=1789047674202 next=1789047674202 range-ok
+[swing] tgt=monster-1-8 now=1789047674236 next=1789047674552 range-ok
+[swing] tgt=monster-1-8 now=1789047674269 next=1789047674552 range-ok
+[swing] tgt=monster-1-8 now=1789047674302 next=1789047674552 range-ok
+[swing] tgt=monster-1-8 now=1789047674320 next=1789047674552 range-ok
+[swing] tgt=monster-1-8 now=1789047674340 next=1789047674552 range-ok
+[swing] tgt=monster-1-8 now=1789047674345 next=1789047674552 range-ok
+[swing] tgt=monster-1-8 now=1789047674370 next=1789047674552 range-ok
+[swing] tgt=monster-1-8 now=1789047674402 next=1789047674552 range-ok
+[swing] tgt=monster-1-8 now=1789047674435 next=1789047674552 range-ok
+[swing] tgt=monster-1-8 now=1789047674469 next=1789047674552 range-ok
+[swing] tgt=monster-1-8 now=1789047674502 next=1789047674552 range-ok
+[swing] tgt=monster-1-8 now=1789047674506 next=1789047674552 range-ok
+[swing] tgt=monster-1-8 now=1789047674535 next=1789047674552 range-ok
+[swing] tgt=monster-1-8 now=1789047674556 next=1789047674552 range-ok
+[swing] tgt=monster-1-8 now=1789047674574 next=1789047674906 range-ok
+[swing] tgt=monster-1-8 now=1789047674591 next=1789047674906 range-ok
+[swing] tgt=monster-1-8 now=1789047674619 next=1789047674906 range-ok
+[swing] tgt=monster-1-8 now=1789047674650 next=1789047674906 range-ok
+[swing] tgt=monster-1-8 now=1789047674668 next=1789047674906 range-ok
+[swing] tgt=monster-1-8 now=1789047674672 next=1789047674906 range-ok
+[swing] tgt=monster-1-8 now=1789047674702 next=1789047674906 range-ok
+[swing] tgt=monster-1-8 now=1789047674734 next=1789047674906 range-ok
+[swing] tgt=monster-1-8 now=1789047674769 next=1789047674906 range-ok
+[swing] tgt=monster-1-8 now=1789047674803 next=1789047674906 range-ok
+[swing] tgt=monster-1-8 now=1789047674836 next=1789047674906 range-ok
+[swing] tgt=monster-1-8 now=1789047674840 next=1789047674906 range-ok
+[swing] tgt=monster-1-8 now=1789047674858 next=1789047674906 range-ok
+[swing] tgt=monster-1-8 now=1789047674873 next=1789047674906 range-ok
+[swing] tgt=monster-1-8 now=1789047674902 next=1789047674906 range-ok
+[swing] tgt=monster-1-8 now=1789047674934 next=1789047674934 range-ok
+[swing] tgt=monster-1-8 now=1789047674966 next=1789047675284 range-ok
+[swing] tgt=monster-1-8 now=1789047674998 next=1789047675284 range-ok
+[swing] tgt=monster-1-8 now=1789047675003 next=1789047675284 range-ok
+[swing] tgt=monster-1-8 now=1789047675021 next=1789047675284 range-ok
+[swing] tgt=monster-1-8 now=1789047675052 next=1789047675284 range-ok
+[swing] tgt=monster-1-8 now=1789047675076 next=1789047675284 range-ok
+[swing] tgt=monster-1-8 now=1789047675119 next=1789047675284 range-ok
+[swing] tgt=monster-1-8 now=1789047675137 next=1789047675284 range-ok
+[swing] tgt=monster-1-8 now=1789047675157 next=1789047675284 range-ok
+[swing] tgt=monster-1-8 now=1789047675167 next=1789047675284 range-ok
+[swing] tgt=monster-1-8 now=1789047675186 next=1789047675284 range-ok
+[swing] tgt=monster-1-8 now=1789047675219 next=1789047675284 range-ok
+[swing] tgt=monster-1-8 now=1789047675252 next=1789047675284 range-ok
+[swing] tgt=monster-1-8 now=1789047675285 next=1789047675285 range-ok
+[swing] tgt=monster-1-5 now=1789047675325 next=1789047675635 range-ok
+[swing] tgt=monster-1-5 now=1789047675335 next=1789047675635 range-ok
+[swing] tgt=monster-1-5 now=1789047675352 next=1789047675635 range-ok
+[swing] tgt=monster-1-5 now=1789047675385 next=1789047675635 range-ok
+[swing] tgt=monster-1-5 now=1789047675408 next=1789047675635 range-ok
+[swing] tgt=monster-1-5 now=1789047675424 next=1789047675635 range-ok
+[swing] tgt=monster-1-5 now=1789047675452 next=1789047675635 range-ok
+[swing] tgt=monster-1-5 now=1789047675483 next=1789047675635 range-ok
+[swing] tgt=monster-1-5 now=1789047675498 next=1789047675635 range-ok
+[swing] tgt=monster-1-5 now=1789047675514 next=1789047675635 range-ok
+[swing] tgt=monster-1-5 now=1789047675535 next=1789047675635 range-ok
+[swing] tgt=monster-1-5 now=1789047675569 next=1789047675635 range-ok
+[swing] tgt=monster-1-5 now=1789047675602 next=1789047675635 range-ok
+[swing] tgt=monster-1-5 now=1789047675635 next=1789047675635 range-ok
+[swing] tgt=monster-1-5 now=1789047675652 next=1789047675985 range-ok
+[swing] tgt=monster-1-5 now=1789047675669 next=1789047675985 range-ok
+[swing] tgt=monster-1-5 now=1789047675692 next=1789047675985 range-ok
+[swing] tgt=monster-1-5 now=1789047675706 next=1789047675985 range-ok
+[swing] tgt=monster-1-5 now=1789047675734 next=1789047675985 range-ok
+[swing] tgt=monster-1-5 now=1789047675754 next=1789047675985 range-ok
+[swing] tgt=monster-1-5 now=1789047675785 next=1789047675985 range-ok
+[swing] tgt=monster-1-5 now=1789047675806 next=1789047675985 range-ok
+[swing] tgt=monster-1-5 now=1789047675821 next=1789047675985 range-ok
+[swing] tgt=monster-1-5 now=1789047675836 next=1789047675985 range-ok
+[swing] tgt=monster-1-5 now=1789047675869 next=1789047675985 range-ok
+[swing] tgt=monster-1-5 now=1789047675902 next=1789047675985 range-ok
+[swing] tgt=monster-1-5 now=1789047675934 next=1789047675985 range-ok
+[swing] tgt=monster-1-5 now=1789047675953 next=1789047675985 range-ok
+[swing] tgt=monster-1-5 now=1789047675969 next=1789047675985 range-ok
+[swing] tgt=monster-1-5 now=1789047675985 next=1789047675985 range-ok
+[swing] tgt=monster-1-5 now=1789047676002 next=1789047676335 range-ok
+[swing] tgt=monster-1-5 now=1789047676034 next=1789047676335 range-ok
+[swing] tgt=monster-1-5 now=1789047676054 next=1789047676335 range-ok
+[swing] tgt=monster-1-5 now=1789047676085 next=1789047676335 range-ok
+[swing] tgt=monster-1-5 now=1789047676119 next=1789047676335 range-ok
+[swing] tgt=monster-1-5 now=1789047676152 next=1789047676335 range-ok
+[swing] tgt=monster-1-5 now=1789047676156 next=1789047676335 range-ok
+[swing] tgt=monster-1-5 now=1789047676185 next=1789047676335 range-ok
+[swing] tgt=monster-1-5 now=1789047676209 next=1789047676335 range-ok
+[swing] tgt=monster-1-5 now=1789047676223 next=1789047676335 range-ok
+[swing] tgt=monster-1-5 now=1789047676251 next=1789047676335 range-ok
+[swing] tgt=monster-1-5 now=1789047676286 next=1789047676335 range-ok
+[swing] tgt=monster-1-5 now=1789047676319 next=1789047676335 range-ok
+[swing] tgt=monster-1-5 now=1789047676322 next=1789047676335 range-ok
+[swing] tgt=monster-1-5 now=1789047676349 next=1789047676349 range-ok
+[swing] tgt=monster-1-5 now=1789047676384 next=1789047676699 range-ok
+[swing] tgt=monster-1-5 now=1789047676419 next=1789047676699 range-ok
+[swing] tgt=monster-1-5 now=1789047676452 next=1789047676699 range-ok
+[swing] tgt=monster-1-5 now=1789047676471 next=1789047676699 range-ok
+[swing] tgt=monster-1-5 now=1789047676485 next=1789047676699 range-ok
+[swing] tgt=monster-1-5 now=1789047676489 next=1789047676699 range-ok
+[swing] tgt=monster-1-5 now=1789047676519 next=1789047676699 range-ok
+[swing] tgt=monster-1-5 now=1789047676552 next=1789047676699 range-ok
+[swing] tgt=monster-1-5 now=1789047676587 next=1789047676699 range-ok
+[swing] tgt=monster-1-5 now=1789047676619 next=1789047676699 range-ok
+[swing] tgt=monster-1-5 now=1789047676652 next=1789047676699 range-ok
+[swing] tgt=monster-1-5 now=1789047676655 next=1789047676699 range-ok
+[swing] tgt=monster-1-5 now=1789047676685 next=1789047676699 range-ok
+[swing] tgt=monster-1-5 now=1789047676719 next=1789047676699 range-ok
+[swing] tgt=monster-1-16 now=1789047676763 next=1789047677069 range-ok
+[swing] tgt=monster-1-16 now=1789047676786 next=1789047677069 range-ok
+[swing] tgt=monster-1-16 now=1789047676821 next=1789047677069 range-ok
+[swing] tgt=monster-1-16 now=1789047676824 next=1789047677069 range-ok
+[swing] tgt=monster-1-16 now=1789047676852 next=1789047677069 range-ok
+[swing] tgt=monster-1-16 now=1789047676885 next=1789047677069 range-ok
+[swing] tgt=monster-1-16 now=1789047676919 next=1789047677069 range-ok
+[swing] tgt=monster-1-16 now=1789047676952 next=1789047677069 range-ok
+[swing] tgt=monster-1-16 now=1789047676984 next=1789047677069 range-ok
+[swing] tgt=monster-1-16 now=1789047676988 next=1789047677069 range-ok
+[swing] tgt=monster-1-16 now=1789047677007 next=1789047677069 range-ok
+[swing] tgt=monster-1-16 now=1789047677024 next=1789047677069 range-ok
+[swing] tgt=monster-1-16 now=1789047677052 next=1789047677069 range-ok
+[swing] tgt=monster-1-16 now=1789047677085 next=1789047677085 range-ok
+[swing] tgt=monster-1-16 now=1789047677119 next=1789047677435 range-ok
+[swing] tgt=monster-1-16 now=1789047677149 next=1789047677435 range-ok
+[swing] tgt=monster-1-16 now=1789047677153 next=1789047677435 range-ok
+[swing] tgt=monster-1-16 now=1789047677171 next=1789047677435 range-ok
+[swing] tgt=monster-1-16 now=1789047677203 next=1789047677435 range-ok
+[swing] tgt=monster-1-16 now=1789047677236 next=1789047677435 range-ok
+[swing] tgt=monster-1-16 now=1789047677255 next=1789047677435 range-ok
+[swing] tgt=monster-1-16 now=1789047677274 next=1789047677435 range-ok
+[swing] tgt=monster-1-16 now=1789047677302 next=1789047677435 range-ok
+[swing] tgt=monster-1-16 now=1789047677304 next=1789047677435 range-ok
+[swing] tgt=monster-1-16 now=1789047677335 next=1789047677435 range-ok
+[swing] tgt=monster-1-16 now=1789047677367 next=1789047677435 range-ok
+[swing] tgt=monster-1-16 now=1789047677388 next=1789047677435 range-ok
+[swing] tgt=monster-1-16 now=1789047677419 next=1789047677435 range-ok
+[swing] tgt=monster-1-16 now=1789047677451 next=1789047677451 range-ok
+[swing] tgt=monster-1-16 now=1789047677466 next=1789047677801 range-ok
+[swing] tgt=monster-1-16 now=1789047677482 next=1789047677801 range-ok
+[swing] tgt=monster-1-16 now=1789047677504 next=1789047677801 range-ok
+[swing] tgt=monster-1-16 now=1789047677524 next=1789047677801 range-ok
+[swing] tgt=monster-1-16 now=1789047677541 next=1789047677801 range-ok
+[swing] tgt=monster-1-16 now=1789047677569 next=1789047677801 range-ok
+[swing] tgt=monster-1-16 now=1789047677602 next=1789047677801 range-ok
+[swing] tgt=monster-1-16 now=1789047677635 next=1789047677801 range-ok
+[swing] tgt=monster-1-16 now=1789047677639 next=1789047677801 range-ok
+[swing] tgt=monster-1-16 now=1789047677669 next=1789047677801 range-ok
+[swing] tgt=monster-1-16 now=1789047677702 next=1789047677801 range-ok
+[swing] tgt=monster-1-16 now=1789047677735 next=1789047677801 range-ok
+[swing] tgt=monster-1-16 now=1789047677769 next=1789047677801 range-ok
+[swing] tgt=monster-1-16 now=1789047677787 next=1789047677801 range-ok
+[swing] tgt=monster-1-16 now=1789047677802 next=1789047677801 range-ok
+[swing] tgt=monster-1-16 now=1789047677807 next=1789047678152 range-ok
+[swing] tgt=monster-1-16 now=1789047677835 next=1789047678152 range-ok
+[swing] tgt=monster-1-16 now=1789047677867 next=1789047678152 range-ok
+[swing] tgt=monster-1-16 now=1789047677902 next=1789047678152 range-ok
+[swing] tgt=monster-1-16 now=1789047677935 next=1789047678152 range-ok
+[swing] tgt=monster-1-16 now=1789047677968 next=1789047678152 range-ok
+[swing] tgt=monster-1-16 now=1789047677972 next=1789047678152 range-ok
+[swing] tgt=monster-1-16 now=1789047678000 next=1789047678152 range-ok
+[swing] tgt=monster-1-16 now=1789047678035 next=1789047678152 range-ok
+[swing] tgt=monster-1-16 now=1789047678054 next=1789047678152 range-ok
+[swing] tgt=monster-1-16 now=1789047678073 next=1789047678152 range-ok
+[swing] tgt=monster-1-16 now=1789047678102 next=1789047678152 range-ok
+[swing] tgt=monster-1-16 now=1789047678133 next=1789047678152 range-ok
+[swing] tgt=monster-1-16 now=1789047678137 next=1789047678152 range-ok
+[swing] tgt=monster-1-16 now=1789047678154 next=1789047678154 range-ok
+[swing] tgt=monster-1-16 now=1789047678185 next=1789047678504 range-ok
+[swing] tgt=monster-1-16 now=1789047678219 next=1789047678504 range-ok
+[swing] tgt=monster-1-16 now=1789047678252 next=1789047678504 range-ok
+[swing] tgt=monster-1-16 now=1789047678285 next=1789047678504 range-ok
+[swing] tgt=monster-1-16 now=1789047678287 next=1789047678504 range-ok
+[swing] tgt=monster-1-16 now=1789047678307 next=1789047678504 range-ok
+[swing] tgt=monster-1-16 now=1789047678322 next=1789047678504 range-ok
+[swing] tgt=monster-1-16 now=1789047678352 next=1789047678504 range-ok
+[swing] tgt=monster-1-16 now=1789047678385 next=1789047678504 range-ok
+[swing] tgt=monster-1-16 now=1789047678418 next=1789047678504 range-ok
+[swing] tgt=monster-1-16 now=1789047678452 next=1789047678504 range-ok
+[swing] tgt=monster-1-16 now=1789047678469 next=1789047678504 range-ok
+[swing] tgt=monster-1-16 now=1789047678485 next=1789047678504 range-ok
+[swing] tgt=monster-1-16 now=1789047678517 next=1789047678517 range-ok
+[swing] tgt=monster-1-18 now=1789047678571 next=1789047678867 range-ok
+[swing] tgt=monster-1-18 now=1789047678590 next=1789047678867 range-ok
+[swing] tgt=monster-1-18 now=1789047678619 next=1789047678867 range-ok
+[swing] tgt=monster-1-18 now=1789047678635 next=1789047678867 range-ok
+[swing] tgt=monster-1-18 now=1789047678652 next=1789047678867 range-ok
+[swing] tgt=monster-1-18 now=1789047678685 next=1789047678867 range-ok
+[swing] tgt=monster-1-18 now=1789047678718 next=1789047678867 range-ok
+[swing] tgt=monster-1-18 now=1789047678752 next=1789047678867 range-ok
+[swing] tgt=monster-1-18 now=1789047678785 next=1789047678867 range-ok
+[swing] tgt=monster-1-18 now=1789047678802 next=1789047678867 range-ok
+[swing] tgt=monster-1-18 now=1789047678819 next=1789047678867 range-ok
+[swing] tgt=monster-1-18 now=1789047678837 next=1789047678867 range-ok
+[swing] tgt=monster-1-18 now=1789047678858 next=1789047678867 range-ok
+[swing] tgt=monster-1-18 now=1789047678884 next=1789047678884 range-ok
+[swing] tgt=monster-1-18 now=1789047678904 next=1789047679234 range-ok
+[swing] tgt=monster-1-18 now=1789047678935 next=1789047679234 range-ok
+[swing] tgt=monster-1-18 now=1789047678968 next=1789047679234 range-ok
+[swing] tgt=monster-1-18 now=1789047678972 next=1789047679234 range-ok
+[swing] tgt=monster-1-18 now=1789047678999 next=1789047679234 range-ok
+[swing] tgt=monster-1-18 now=1789047679020 next=1789047679234 range-ok
+[swing] tgt=monster-1-18 now=1789047679051 next=1789047679234 range-ok
+[swing] tgt=monster-1-18 now=1789047679076 next=1789047679234 range-ok
+[swing] tgt=monster-1-18 now=1789047679095 next=1789047679234 range-ok
+[swing] tgt=monster-1-18 now=1789047679106 next=1789047679234 range-ok
+[swing] tgt=monster-1-18 now=1789047679135 next=1789047679234 range-ok
+[swing] tgt=monster-1-18 now=1789047679138 next=1789047679234 range-ok
+[swing] tgt=monster-1-18 now=1789047679169 next=1789047679234 range-ok
+[swing] tgt=monster-1-18 now=1789047679202 next=1789047679234 range-ok
+[swing] tgt=monster-1-18 now=1789047679235 next=1789047679235 range-ok
+[swing] tgt=monster-1-18 now=1789047679269 next=1789047679585 range-ok
+[swing] tgt=monster-1-18 now=1789047679302 next=1789047679585 range-ok
+[swing] tgt=monster-1-18 now=1789047679305 next=1789047679585 range-ok
+[swing] tgt=monster-1-18 now=1789047679335 next=1789047679585 range-ok
+[swing] tgt=monster-1-18 now=1789047679353 next=1789047679585 range-ok
+[swing] tgt=monster-1-18 now=1789047679373 next=1789047679585 range-ok
+[swing] tgt=monster-1-18 now=1789047679401 next=1789047679585 range-ok
+[swing] tgt=monster-1-18 now=1789047679436 next=1789047679585 range-ok
+[swing] tgt=monster-1-18 now=1789047679468 next=1789047679585 range-ok
+[swing] tgt=monster-1-18 now=1789047679472 next=1789047679585 range-ok
+[swing] tgt=monster-1-18 now=1789047679501 next=1789047679585 range-ok
+[swing] tgt=monster-1-18 now=1789047679535 next=1789047679585 range-ok
+[swing] tgt=monster-1-18 now=1789047679569 next=1789047679585 range-ok
+[swing] tgt=monster-1-18 now=1789047679602 next=1789047679585 range-ok
+[swing] tgt=monster-1-18 now=1789047679620 next=1789047679952 range-ok
+[swing] tgt=monster-1-18 now=1789047679634 next=1789047679952 range-ok
+[swing] tgt=monster-1-18 now=1789047679639 next=1789047679952 range-ok
+[swing] tgt=monster-1-18 now=1789047679668 next=1789047679952 range-ok
+[swing] tgt=monster-1-18 now=1789047679702 next=1789047679952 range-ok
+[swing] tgt=monster-1-18 now=1789047679735 next=1789047679952 range-ok
+[swing] tgt=monster-1-18 now=1789047679769 next=1789047679952 range-ok
+[swing] tgt=monster-1-18 now=1789047679802 next=1789047679952 range-ok
+[swing] tgt=monster-1-18 now=1789047679806 next=1789047679952 range-ok
+[swing] tgt=monster-1-18 now=1789047679836 next=1789047679952 range-ok
+[swing] tgt=monster-1-18 now=1789047679868 next=1789047679952 range-ok
+[swing] tgt=monster-1-18 now=1789047679887 next=1789047679952 range-ok
+[swing] tgt=monster-1-18 now=1789047679906 next=1789047679952 range-ok
+[swing] tgt=monster-1-18 now=1789047679935 next=1789047679952 range-ok
+[swing] tgt=monster-1-18 now=1789047679968 next=1789047679952 range-ok
+[swing] tgt=monster-1-6 now=1789047680010 next=1789047680318 range-ok
+[swing] tgt=monster-1-6 now=1789047680033 next=1789047680318 range-ok
+[swing] tgt=monster-1-6 now=1789047680069 next=1789047680318 range-ok
+[swing] tgt=monster-1-6 now=1789047680100 next=1789047680318 range-ok
+[swing] tgt=monster-1-6 now=1789047680120 next=1789047680318 range-ok
+[swing] tgt=monster-1-6 now=1789047680127 next=1789047680318 range-ok
+[swing] tgt=monster-1-6 now=1789047680146 next=1789047680318 range-ok
+[swing] tgt=monster-1-6 now=1789047680154 next=1789047680318 range-ok
+[swing] tgt=monster-1-6 now=1789047680176 next=1789047680318 range-ok
+[swing] tgt=monster-1-6 now=1789047680199 next=1789047680318 range-ok
+[swing] tgt=monster-1-6 now=1789047680223 next=1789047680318 range-ok
+[swing] tgt=monster-1-6 now=1789047680250 next=1789047680318 range-ok
+[swing] tgt=monster-1-6 now=1789047680271 next=1789047680318 range-ok
+[swing] tgt=monster-1-6 now=1789047680303 next=1789047680318 range-ok
+[swing] tgt=monster-1-6 now=1789047680306 next=1789047680318 range-ok
+[swing] tgt=monster-1-6 now=1789047680336 next=1789047680336 range-ok
+[swing] tgt=monster-1-6 now=1789047680368 next=1789047680686 range-ok
+[swing] tgt=monster-1-6 now=1789047680388 next=1789047680686 range-ok
+[swing] tgt=monster-1-6 now=1789047680407 next=1789047680686 range-ok
+[swing] tgt=monster-1-6 now=1789047680424 next=1789047680686 range-ok
+[swing] tgt=monster-1-6 now=1789047680452 next=1789047680686 range-ok
+[swing] tgt=monster-1-6 now=1789047680469 next=1789047680686 range-ok
+[swing] tgt=monster-1-6 now=1789047680473 next=1789047680686 range-ok
+[swing] tgt=monster-1-6 now=1789047680502 next=1789047680686 range-ok
+[swing] tgt=monster-1-6 now=1789047680533 next=1789047680686 range-ok
+[swing] tgt=monster-1-6 now=1789047680563 next=1789047680686 range-ok
+[swing] tgt=monster-1-6 now=1789047680588 next=1789047680686 range-ok
+[swing] tgt=monster-1-6 now=1789047680619 next=1789047680686 range-ok
+[swing] tgt=monster-1-6 now=1789047680635 next=1789047680686 range-ok
+[swing] tgt=monster-1-6 now=1789047680640 next=1789047680686 range-ok
+[swing] tgt=monster-1-6 now=1789047680658 next=1789047680686 range-ok
+[swing] tgt=monster-1-6 now=1789047680673 next=1789047680686 range-ok
+[swing] tgt=monster-1-6 now=1789047680703 next=1789047680703 range-ok
+[swing] tgt=monster-1-6 now=1789047680723 next=1789047681053 range-ok
+[swing] tgt=monster-1-6 now=1789047680752 next=1789047681053 range-ok
+[swing] tgt=monster-1-6 now=1789047680775 next=1789047681053 range-ok
+[swing] tgt=monster-1-6 now=1789047680802 next=1789047681053 range-ok
+[swing] tgt=monster-1-6 now=1789047680805 next=1789047681053 range-ok
+[swing] tgt=monster-1-6 now=1789047680835 next=1789047681053 range-ok
+[swing] tgt=monster-1-6 now=1789047680870 next=1789047681053 range-ok
+[swing] tgt=monster-1-6 now=1789047680902 next=1789047681053 range-ok
+[swing] tgt=monster-1-6 now=1789047680922 next=1789047681053 range-ok
+[swing] tgt=monster-1-6 now=1789047680927 next=1789047681053 range-ok
+[swing] tgt=monster-1-6 now=1789047680951 next=1789047681053 range-ok
+[swing] tgt=monster-1-6 now=1789047680969 next=1789047681053 range-ok
+[swing] tgt=monster-1-6 now=1789047680973 next=1789047681053 range-ok
+[swing] tgt=monster-1-6 now=1789047681003 next=1789047681053 range-ok
+[swing] tgt=monster-1-6 now=1789047681024 next=1789047681053 range-ok
+[swing] tgt=monster-1-6 now=1789047681058 next=1789047681058 range-ok
+[swing] tgt=monster-1-6 now=1789047681085 next=1789047681408 range-ok
+[swing] tgt=monster-1-6 now=1789047681120 next=1789047681408 range-ok
+[swing] tgt=monster-1-6 now=1789047681134 next=1789047681408 range-ok
+[swing] tgt=monster-1-6 now=1789047681143 next=1789047681408 range-ok
+[swing] tgt=monster-1-6 now=1789047681169 next=1789047681408 range-ok
+[swing] tgt=monster-1-6 now=1789047681187 next=1789047681408 range-ok
+[swing] tgt=monster-1-6 now=1789047681194 next=1789047681408 range-ok
+[swing] tgt=monster-1-6 now=1789047681219 next=1789047681408 range-ok
+[swing] tgt=monster-1-6 now=1789047681239 next=1789047681408 range-ok
+[swing] tgt=monster-1-6 now=1789047681269 next=1789047681408 range-ok
+[swing] tgt=monster-1-6 now=1789047681302 next=1789047681408 range-ok
+[swing] tgt=monster-1-6 now=1789047681305 next=1789047681408 range-ok
+[swing] tgt=monster-1-6 now=1789047681328 next=1789047681408 range-ok
+[swing] tgt=monster-1-6 now=1789047681352 next=1789047681408 range-ok
+[swing] tgt=monster-1-6 now=1789047681376 next=1789047681408 range-ok
+[swing] tgt=monster-1-6 now=1789047681399 next=1789047681408 range-ok
+[swing] tgt=monster-1-6 now=1789047681421 next=1789047681408 range-ok
+[swing] tgt=monster-1-15 now=1789047681462 next=1789047681771 range-ok
+[swing] tgt=monster-1-15 now=1789047681468 next=1789047681771 range-ok
+[swing] tgt=monster-1-15 now=1789047681480 next=1789047681771 range-ok
+[swing] tgt=monster-1-15 now=1789047681503 next=1789047681771 range-ok
+[swing] tgt=monster-1-15 now=1789047681528 next=1789047681771 range-ok
+[swing] tgt=monster-1-15 now=1789047681559 next=1789047681771 range-ok
+[swing] tgt=monster-1-15 now=1789047681583 next=1789047681771 range-ok
+[swing] tgt=monster-1-15 now=1789047681608 next=1789047681771 range-ok
+[swing] tgt=monster-1-15 now=1789047681623 next=1789047681771 range-ok
+[swing] tgt=monster-1-15 now=1789047681631 next=1789047681771 range-ok
+[swing] tgt=monster-1-15 now=1789047681652 next=1789047681771 range-ok
+[swing] tgt=monster-1-15 now=1789047681673 next=1789047681771 range-ok
+[swing] tgt=monster-1-15 now=1789047681693 next=1789047681771 range-ok
+[swing] tgt=monster-1-15 now=1789047681700 next=1789047681771 range-ok
+[swing] tgt=monster-1-15 now=1789047681724 next=1789047681771 range-ok
+[swing] tgt=monster-1-15 now=1789047681759 next=1789047681771 range-ok
+[swing] tgt=monster-1-15 now=1789047681777 next=1789047681771 range-ok
+[swing] tgt=monster-1-15 now=1789047681785 next=1789047682127 range-ok
+[swing] tgt=monster-1-15 now=1789047681819 next=1789047682127 range-ok
+[swing] tgt=monster-1-15 now=1789047681851 next=1789047682127 range-ok
+[swing] tgt=monster-1-15 now=1789047681885 next=1789047682127 range-ok
+[swing] tgt=monster-1-15 now=1789047681920 next=1789047682127 range-ok
+[swing] tgt=monster-1-15 now=1789047681935 next=1789047682127 range-ok
+[swing] tgt=monster-1-15 now=1789047681941 next=1789047682127 range-ok
+[swing] tgt=monster-1-15 now=1789047681959 next=1789047682127 range-ok
+[swing] tgt=monster-1-15 now=1789047681973 next=1789047682127 range-ok
+[swing] tgt=monster-1-15 now=1789047682003 next=1789047682127 range-ok
+[swing] tgt=monster-1-15 now=1789047682035 next=1789047682127 range-ok
+[swing] tgt=monster-1-15 now=1789047682056 next=1789047682127 range-ok
+[swing] tgt=monster-1-15 now=1789047682087 next=1789047682127 range-ok
+[swing] tgt=monster-1-15 now=1789047682102 next=1789047682127 range-ok
+[swing] tgt=monster-1-15 now=1789047682116 next=1789047682127 range-ok
+[swing] tgt=monster-1-15 now=1789047682151 next=1789047682151 range-ok
+[swing] tgt=monster-1-15 now=1789047682183 next=1789047682501 range-ok
+[swing] tgt=monster-1-15 now=1789047682218 next=1789047682501 range-ok
+[swing] tgt=monster-1-15 now=1789047682236 next=1789047682501 range-ok
+[swing] tgt=monster-1-15 now=1789047682255 next=1789047682501 range-ok
+[swing] tgt=monster-1-15 now=1789047682267 next=1789047682501 range-ok
+[swing] tgt=monster-1-15 now=1789047682283 next=1789047682501 range-ok
+[swing] tgt=monster-1-15 now=1789047682319 next=1789047682501 range-ok
+[swing] tgt=monster-1-15 now=1789047682351 next=1789047682501 range-ok
+[swing] tgt=monster-1-15 now=1789047682384 next=1789047682501 range-ok
+[swing] tgt=monster-1-15 now=1789047682414 next=1789047682501 range-ok
+[swing] tgt=monster-1-15 now=1789047682434 next=1789047682501 range-ok
+[swing] tgt=monster-1-15 now=1789047682438 next=1789047682501 range-ok
+[swing] tgt=monster-1-15 now=1789047682469 next=1789047682501 range-ok
+[swing] tgt=monster-1-15 now=1789047682490 next=1789047682501 range-ok
+[swing] tgt=monster-1-15 now=1789047682506 next=1789047682506 range-ok
+[swing] tgt=monster-1-15 now=1789047682534 next=1789047682856 range-ok
+[swing] tgt=monster-1-15 now=1789047682565 next=1789047682856 range-ok
+[swing] tgt=monster-1-15 now=1789047682596 next=1789047682856 range-ok
+[swing] tgt=monster-1-15 now=1789047682601 next=1789047682856 range-ok
+[swing] tgt=monster-1-15 now=1789047682627 next=1789047682856 range-ok
+[swing] tgt=monster-1-15 now=1789047682654 next=1789047682856 range-ok
+[swing] tgt=monster-1-15 now=1789047682686 next=1789047682856 range-ok
+[swing] tgt=monster-1-15 now=1789047682728 next=1789047682856 range-ok
+[swing] tgt=monster-1-15 now=1789047682746 next=1789047682856 range-ok
+[swing] tgt=monster-1-15 now=1789047682752 next=1789047682856 range-ok
+[swing] tgt=monster-1-15 now=1789047682757 next=1789047682856 range-ok
+[swing] tgt=monster-1-15 now=1789047682784 next=1789047682856 range-ok
+[swing] tgt=monster-1-15 now=1789047682818 next=1789047682856 range-ok
+[swing] tgt=monster-1-15 now=1789047682849 next=1789047682856 range-ok
+[swing] tgt=monster-1-15 now=1789047682884 next=1789047682884 range-ok
+[swing] tgt=monster-1-9 now=1789047682925 next=1789047683234 range-ok
+[swing] tgt=monster-1-9 now=1789047682946 next=1789047683234 range-ok
+[swing] tgt=monster-1-9 now=1789047682978 next=1789047683234 range-ok
+[swing] tgt=monster-1-9 now=1789047683009 next=1789047683234 range-ok
+[swing] tgt=monster-1-9 now=1789047683026 next=1789047683234 range-ok
+[swing] tgt=monster-1-9 now=1789047683039 next=1789047683234 range-ok
+[swing] tgt=monster-1-9 now=1789047683070 next=1789047683234 range-ok
+[swing] tgt=monster-1-9 now=1789047683074 next=1789047683234 range-ok
+[swing] tgt=monster-1-9 now=1789047683102 next=1789047683234 range-ok
+[swing] tgt=monster-1-9 now=1789047683136 next=1789047683234 range-ok
+[swing] tgt=monster-1-9 now=1789047683168 next=1789047683234 range-ok
+[swing] tgt=monster-1-9 now=1789047683202 next=1789047683234 range-ok
+[swing] tgt=monster-1-9 now=1789047683235 next=1789047683234 range-ok
+[swing] tgt=monster-1-9 now=1789047683239 next=1789047683585 range-ok
+[swing] tgt=monster-1-9 now=1789047683269 next=1789047683585 range-ok
+[swing] tgt=monster-1-9 now=1789047683287 next=1789047683585 range-ok
+[swing] tgt=monster-1-9 now=1789047683306 next=1789047683585 range-ok
+[swing] tgt=monster-1-9 now=1789047683335 next=1789047683585 range-ok
+[swing] tgt=monster-1-9 now=1789047683369 next=1789047683585 range-ok
+[swing] tgt=monster-1-9 now=1789047683400 next=1789047683585 range-ok
+[swing] tgt=monster-1-9 now=1789047683404 next=1789047683585 range-ok
+[swing] tgt=monster-1-9 now=1789047683421 next=1789047683585 range-ok
+[swing] tgt=monster-1-9 now=1789047683452 next=1789047683585 range-ok
+[swing] tgt=monster-1-9 now=1789047683485 next=1789047683585 range-ok
+[swing] tgt=monster-1-9 now=1789047683519 next=1789047683585 range-ok
+[swing] tgt=monster-1-9 now=1789047683540 next=1789047683585 range-ok
+[swing] tgt=monster-1-9 now=1789047683554 next=1789047683585 range-ok
+[swing] tgt=monster-1-9 now=1789047683566 next=1789047683585 range-ok
+[swing] tgt=monster-1-9 now=1789047683581 next=1789047683585 range-ok
+[swing] tgt=monster-1-9 now=1789047683612 next=1789047683612 range-ok
+[swing] tgt=monster-1-9 now=1789047683637 next=1789047683962 range-ok
+[swing] tgt=monster-1-9 now=1789047683667 next=1789047683962 range-ok
+[swing] tgt=monster-1-9 now=1789047683702 next=1789047683962 range-ok
+[swing] tgt=monster-1-9 now=1789047683721 next=1789047683962 range-ok
+[swing] tgt=monster-1-9 now=1789047683737 next=1789047683962 range-ok
+[swing] tgt=monster-1-9 now=1789047683769 next=1789047683962 range-ok
+[swing] tgt=monster-1-9 now=1789047683802 next=1789047683962 range-ok
+[swing] tgt=monster-1-9 now=1789047683821 next=1789047683962 range-ok
+[swing] tgt=monster-1-9 now=1789047683841 next=1789047683962 range-ok
+[swing] tgt=monster-1-9 now=1789047683869 next=1789047683962 range-ok
+[swing] tgt=monster-1-9 now=1789047683885 next=1789047683962 range-ok
+[swing] tgt=monster-1-9 now=1789047683904 next=1789047683962 range-ok
+[swing] tgt=monster-1-9 now=1789047683937 next=1789047683962 range-ok
+[swing] tgt=monster-1-9 now=1789047683970 next=1789047683970 range-ok
+[swing] tgt=monster-1-9 now=1789047684002 next=1789047684320 range-ok
+[swing] tgt=monster-1-9 now=1789047684035 next=1789047684320 range-ok
+[swing] tgt=monster-1-9 now=1789047684052 next=1789047684320 range-ok
+[swing] tgt=monster-1-9 now=1789047684067 next=1789047684320 range-ok
+[swing] tgt=monster-1-9 now=1789047684088 next=1789047684320 range-ok
+[swing] tgt=monster-1-9 now=1789047684103 next=1789047684320 range-ok
+PASS journey: outgoing combat:hit reached the client
+PASS journey: enemy death reached the client
+PASS journey: named item entered inventory (pickup)
+PASS journey: ItemPickedUp or inventory growth
+PASS journey: picked item is named
+PASS journey: equip removed the item from the backpack
+PASS journey: equipped slot mirrors the worn item
+[swing] tgt=monster-1-9 now=1789047684333 next=1789047684333 range-ok
+[swing] tgt=monster-1-19 now=1789047684357 next=1789047684683 range-ok
+[swing] tgt=monster-1-19 now=1789047684383 next=1789047684683 range-ok
+PASS journey: incoming combat:hit reached the client
+PASS journey: monster:telegraph reached the client
+PASS journey: walking onto stairs-up returns to the surface (extract)
+PASS journey: ExtractionCompleted from surface message
+PASS journey: clean dual-side shutdown
+PASS reconnect: TASK-0163 capsule server bound
+PASS reconnect: connected
+PASS reconnect: ready before the drop
+PASS reconnect: unexpected drop enters Retrying
+PASS reconnect: ConnectionLost is visible (no silent local fallback)
+PASS reconnect: last_error explains the drop
+PASS reconnect: commands after the drop do not leave Retrying for a local sim
+PASS reconnect: position does not keep playing offline
+PASS reconnect: server restarted on the same port
+PASS reconnect: Retrying then Ready after server restart
+PASS reconnect: same guest identity re-logged in
+PASS reconnect: login snapshot is authoritative
+PASS replaced: cursor-capsule server bound
+PASS replaced: first login
+PASS replaced: first session ready
+PASS replaced: second login same guest
+PASS replaced: second session ready
+PASS replaced: first session is disconnected
+PASS replaced: ConnectionLost from player:session-replaced
+PASS replaced: session-replaced does not enter Retrying
+PASS replaced: stays terminal Disconnected (no retry)
+PASS render-list: cursor-capsule server bound
+PASS render-list: connect
+PASS render-list: ready
+[swing] tgt=monster-1-14 now=1789047687531 next=1789047687531 range-ok
+PASS render-list: decoded server contact reconciles prediction to one active strike
+[swing] tgt=monster-1-14 now=1789047687553 next=1789047687881 range-ok
+[swing] tgt=monster-1-14 now=1789047687585 next=1789047687881 range-ok
+[swing] tgt=monster-1-14 now=1789047687619 next=1789047687881 range-ok
+[swing] tgt=monster-1-14 now=1789047687623 next=1789047687881 range-ok
+[swing] tgt=monster-1-14 now=1789047687649 next=1789047687881 range-ok
+[swing] tgt=monster-1-14 now=1789047687671 next=1789047687881 range-ok
+[swing] tgt=monster-1-14 now=1789047687703 next=1789047687881 range-ok
+[swing] tgt=monster-1-14 now=1789047687735 next=1789047687881 range-ok
+[swing] tgt=monster-1-14 now=1789047687754 next=1789047687881 range-ok
+[swing] tgt=monster-1-14 now=1789047687773 next=1789047687881 range-ok
+[swing] tgt=monster-1-14 now=1789047687785 next=1789047687881 range-ok
+[swing] tgt=monster-1-14 now=1789047687802 next=1789047687881 range-ok
+[swing] tgt=monster-1-14 now=1789047687835 next=1789047687881 range-ok
+[swing] tgt=monster-1-14 now=1789047687869 next=1789047687881 range-ok
+[swing] tgt=monster-1-14 now=1789047687902 next=1789047687902 range-ok
+PASS render-list: decoded server contact reconciles prediction to one active strike
+[swing] tgt=monster-1-14 now=1789047687936 next=1789047688252 range-ok
+[swing] tgt=monster-1-14 now=1789047687941 next=1789047688252 range-ok
+[swing] tgt=monster-1-14 now=1789047687969 next=1789047688252 range-ok
+[swing] tgt=monster-1-14 now=1789047688002 next=1789047688252 range-ok
+[swing] tgt=monster-1-14 now=1789047688020 next=1789047688252 range-ok
+[swing] tgt=monster-1-14 now=1789047688040 next=1789047688252 range-ok
+[swing] tgt=monster-1-14 now=1789047688069 next=1789047688252 range-ok
+[swing] tgt=monster-1-14 now=1789047688100 next=1789047688252 range-ok
+[swing] tgt=monster-1-14 now=1789047688105 next=1789047688252 range-ok
+[swing] tgt=monster-1-14 now=1789047688121 next=1789047688252 range-ok
+[swing] tgt=monster-1-14 now=1789047688153 next=1789047688252 range-ok
+[swing] tgt=monster-1-14 now=1789047688184 next=1789047688252 range-ok
+[swing] tgt=monster-1-14 now=1789047688204 next=1789047688252 range-ok
+[swing] tgt=monster-1-14 now=1789047688235 next=1789047688252 range-ok
+[swing] tgt=monster-1-14 now=1789047688267 next=1789047688252 range-ok
+[swing] tgt=monster-1-14 now=1789047688271 next=1789047688617 range-ok
+PASS render-list: decoded server contact reconciles prediction to one active strike
+[swing] tgt=monster-1-14 now=1789047688289 next=1789047688617 range-ok
+[swing] tgt=monster-1-14 now=1789047688292 next=1789047688617 range-ok
+[swing] tgt=monster-1-14 now=1789047688323 next=1789047688617 range-ok
+[swing] tgt=monster-1-14 now=1789047688352 next=1789047688617 range-ok
+[swing] tgt=monster-1-14 now=1789047688385 next=1789047688617 range-ok
+[swing] tgt=monster-1-14 now=1789047688419 next=1789047688617 range-ok
+[swing] tgt=monster-1-14 now=1789047688421 next=1789047688617 range-ok
+[swing] tgt=monster-1-14 now=1789047688453 next=1789047688617 range-ok
+[swing] tgt=monster-1-14 now=1789047688485 next=1789047688617 range-ok
+[swing] tgt=monster-1-14 now=1789047688519 next=1789047688617 range-ok
+[swing] tgt=monster-1-14 now=1789047688538 next=1789047688617 range-ok
+[swing] tgt=monster-1-14 now=1789047688557 next=1789047688617 range-ok
+[swing] tgt=monster-1-14 now=1789047688585 next=1789047688617 range-ok
+[swing] tgt=monster-1-14 now=1789047688589 next=1789047688617 range-ok
+[swing] tgt=monster-1-14 now=1789047688619 next=1789047688619 range-ok
+PASS render-list: decoded server contact reconciles prediction to one active strike
+[swing] tgt=monster-1-14 now=1789047688643 next=1789047688969 range-ok
+[swing] tgt=monster-1-14 now=1789047688667 next=1789047688969 range-ok
+[swing] tgt=monster-1-14 now=1789047688699 next=1789047688969 range-ok
+[swing] tgt=monster-1-14 now=1789047688720 next=1789047688969 range-ok
+[swing] tgt=monster-1-14 now=1789047688752 next=1789047688969 range-ok
+[swing] tgt=monster-1-14 now=1789047688756 next=1789047688969 range-ok
+[swing] tgt=monster-1-14 now=1789047688785 next=1789047688969 range-ok
+[swing] tgt=monster-1-14 now=1789047688807 next=1789047688969 range-ok
+[swing] tgt=monster-1-14 now=1789047688824 next=1789047688969 range-ok
+[swing] tgt=monster-1-14 now=1789047688852 next=1789047688969 range-ok
+[swing] tgt=monster-1-14 now=1789047688886 next=1789047688969 range-ok
+[swing] tgt=monster-1-14 now=1789047688917 next=1789047688969 range-ok
+[swing] tgt=monster-1-14 now=1789047688921 next=1789047688969 range-ok
+[swing] tgt=monster-1-14 now=1789047688952 next=1789047688969 range-ok
+[swing] tgt=monster-1-14 now=1789047688985 next=1789047688985 range-ok
+PASS render-list: decoded server contact reconciles prediction to one active strike
+PASS render-list: decoded server contact reconciles prediction to one active strike
+PASS render-list: Monster op recorded from remote model
+PASS render-list: Swing op recorded from AttackStarted
+PASS render-list: actual server contact was reconciled
+PASS render-list: Drop op recorded from kill loot
+[swing] tgt=monster-1-18 now=1789047689027 next=1789047689335 range-ok
+[swing] tgt=monster-1-18 now=1789047689052 next=1789047689335 range-ok
+[swing] tgt=monster-1-18 now=1789047689074 next=1789047689335 range-ok
+[swing] tgt=monster-1-18 now=1789047689086 next=1789047689335 range-ok
+[swing] tgt=monster-1-18 now=1789047689091 next=1789047689335 range-ok
+[swing] tgt=monster-1-18 now=1789047689118 next=1789047689335 range-ok
+[swing] tgt=monster-1-18 now=1789047689149 next=1789047689335 range-ok
+[swing] tgt=monster-1-18 now=1789047689172 next=1789047689335 range-ok
+[swing] tgt=monster-1-18 now=1789047689193 next=1789047689335 range-ok
+[swing] tgt=monster-1-18 now=1789047689220 next=1789047689335 range-ok
+[swing] tgt=monster-1-18 now=1789047689252 next=1789047689335 range-ok
+[swing] tgt=monster-1-18 now=1789047689255 next=1789047689335 range-ok
+[swing] tgt=monster-1-18 now=1789047689286 next=1789047689335 range-ok
+[swing] tgt=monster-1-18 now=1789047689318 next=1789047689335 range-ok
+[swing] tgt=monster-1-18 now=1789047689338 next=1789047689338 range-ok
+PASS render-list: decoded Sweep contact preserves one active SweepArc and no Swing
+PASS render-list: real remote Sweep skillId reaches presentation
+[swing] tgt=monster-1-18 now=1789047689418 next=1789047689688 range-ok
+PASS crypt-remote: actual native server starts in test capsule
+PASS crypt-remote: normal RemoteProtocolSession handshake
+PASS crypt-remote: authored crypt roster and authoritative map arrive
+PASS crypt-remote: real roster provides an unobstructed SW approach
+crypt-remote trace: monster-1-7 21.000,19.000 -> 19.487,20.009 endpoints=2 southwest=1
+PASS crypt-remote: ordinary ticks move real wight authority through deltas
+PASS crypt-remote: 15ms polls advance display between unchanged authority endpoints
+PASS crypt-remote: WorldView retains exact scaled authority and production wight resolver
+PASS crypt-remote: real pursuit reaches incoming contact without inflated life
+PASS crypt-remote: arrival display settles at authority endpoint
+PASS crypt-remote: actual SW facing survives incoming contact and stop
+PASS monster-delta: loopback endpoint starts
+PASS monster-delta: actual remote handshake
+PASS monster-delta: received admitted
+PASS monster-delta: snapshot admits real family facts
+PASS monster-delta: received moving
+PASS monster-delta: raw endpoint immediate, display inside accepted segment
+PASS monster-delta: polling advances display without advancing authority
+PASS monster-delta: received old-delta
+PASS monster-delta: received old-snapshot
+PASS monster-delta: received equal-sequence
+PASS monster-delta: stale reconciliation cannot rewind/restart; no extrapolation
+PASS monster-delta: older snapshot and equal sequence retain authoritative SW facing
+PASS monster-delta: received wrong-scene
+PASS monster-delta: received unknown-scene
+PASS monster-delta: received unknown-actor
+PASS monster-delta: wrong/unknown room and unknown actor rejected
+PASS monster-delta: received stopped
+PASS monster-delta: zero stop facing retains prior authoritative direction
+PASS monster-delta: received death
+PASS monster-delta: death clears display interpolation
+PASS monster-delta: received retired
+PASS monster-delta: received late-room
+PASS monster-delta: scene retirement rejects late actor data
+PASS incoming-action: scripted loopback server bound
+PASS incoming-action: real WebSocket handshake
+PASS incoming-action: login acknowledged
+PASS incoming-action: authoritative behaviour snapshot decoded
+PASS incoming-action: native common rarity stays ordinary
+PASS incoming-action: generic melee preserves exact actor/action/damage/death order
+PASS incoming-action: known ordinary attacker keeps its body scale at contact
+PASS incoming-action: generic melee preserves authoritative health and damage
+PASS incoming-action: generic melee enters confirmed contact only for identified melee
+PASS incoming-action: explicit melee preserves exact actor/action/damage/death order
+PASS incoming-action: explicit melee preserves authoritative health and damage
+PASS incoming-action: explicit melee enters confirmed contact only for identified melee
+PASS incoming-action: sweep preserves exact actor/action/damage/death order
+PASS incoming-action: sweep preserves authoritative health and damage
+PASS incoming-action: sweep enters confirmed contact only for identified melee
+PASS incoming-action: thrust preserves exact actor/action/damage/death order
+PASS incoming-action: thrust preserves authoritative health and damage
+PASS incoming-action: thrust enters confirmed contact only for identified melee
+PASS incoming-action: generic ranged preserves exact actor/action/damage/death order
+PASS incoming-action: generic ranged preserves authoritative health and damage
+PASS incoming-action: generic ranged enters confirmed contact only for identified melee
+PASS incoming-action: ranged skill preserves exact actor/action/damage/death order
+PASS incoming-action: ranged skill preserves authoritative health and damage
+PASS incoming-action: ranged skill enters confirmed contact only for identified melee
+PASS incoming-action: boss ground slam preserves exact actor/action/damage/death order
+PASS incoming-action: boss ground slam preserves authoritative health and damage
+PASS incoming-action: boss ground slam enters confirmed contact only for identified melee
+PASS incoming-action: unknown behaviour preserves exact actor/action/damage/death order
+PASS incoming-action: unknown behaviour preserves authoritative health and damage
+PASS incoming-action: unknown behaviour enters confirmed contact only for identified melee
+PASS incoming-action: unknown skill preserves exact actor/action/damage/death order
+PASS incoming-action: unknown skill preserves authoritative health and damage
+PASS incoming-action: unknown skill enters confirmed contact only for identified melee
+PASS incoming-action: missing skill preserves exact actor/action/damage/death order
+PASS incoming-action: missing skill preserves authoritative health and damage
+PASS incoming-action: missing skill enters confirmed contact only for identified melee
+PASS incoming-action: non-string skill preserves exact actor/action/damage/death order
+PASS incoming-action: non-string skill preserves authoritative health and damage
+PASS incoming-action: non-string skill enters confirmed contact only for identified melee
+PASS incoming-action: missing attacker preserves exact actor/action/damage/death order
+PASS incoming-action: missing attacker preserves authoritative health and damage
+PASS incoming-action: missing attacker enters confirmed contact only for identified melee
+PASS incoming-action: empty attacker preserves exact actor/action/damage/death order
+PASS incoming-action: empty attacker preserves authoritative health and damage
+PASS incoming-action: empty attacker enters confirmed contact only for identified melee
+PASS incoming-action: player attacker preserves exact actor/action/damage/death order
+PASS incoming-action: player attacker preserves authoritative health and damage
+PASS incoming-action: player attacker enters confirmed contact only for identified melee
+PASS incoming-action: lethal melee preserves exact actor/action/damage/death order
+PASS incoming-action: lethal melee preserves authoritative health and damage
+PASS ptree-absent: scripted loopback server bound in capsule
+PASS ptree-absent: connect + upgrade + login sent
+PASS ptree-absent: admission acknowledged
+PASS ptree-absent: no payload -> mirror stays absent, never rendered as zero
+PASS ptree-absent: absent payload raises no diagnostic
+PASS ptree: scripted loopback server bound in capsule
+PASS ptree: connect + upgrade + login sent
+PASS ptree: valid absent login reaches Ready
+PASS ptree: fresh admission starts absent (valid absent behavior)
+PASS ptree: VALID zero tree makes the mirror present
+PASS ptree: zero tree mirrors verbatim zeros (valid zero behavior)
+PASS ptree: valid payloads raise no diagnostic
+PASS ptree: VALID nonzero update mirrors verbatim (valid nonzero behavior)
+PASS ptree: valid nonzero update raises no diagnostic
+PASS ptree: missing points: diagnostic surfaced
+PASS ptree: missing points: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: missing earned: diagnostic surfaced
+PASS ptree: missing earned: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: missing conduits: diagnostic surfaced
+PASS ptree: missing conduits: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed schemaVersion: diagnostic surfaced
+PASS ptree: wrong-typed schemaVersion: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed points container: diagnostic surfaced
+PASS ptree: wrong-typed points container: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed points.skill: diagnostic surfaced
+PASS ptree: wrong-typed points.skill: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed earned: diagnostic surfaced
+PASS ptree: wrong-typed earned: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed nodes: diagnostic surfaced
+PASS ptree: wrong-typed nodes: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed conduits on login: diagnostic surfaced
+PASS ptree: wrong-typed conduits on login: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: fractional points.skill: diagnostic surfaced
+PASS ptree: fractional points.skill: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: fractional earned: diagnostic surfaced
+PASS ptree: fractional earned: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: negative points.skill: diagnostic surfaced
+PASS ptree: negative points.skill: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: negative earned: diagnostic surfaced
+PASS ptree: negative earned: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: bare-Infinity points.skill: diagnostic surfaced
+PASS ptree: bare-Infinity points.skill: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: exponent-overflow earned (inf): diagnostic surfaced
+PASS ptree: exponent-overflow earned (inf): deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: int-cast overflow earned: diagnostic surfaced
+PASS ptree: int-cast overflow earned: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: future schemaVersion on login: diagnostic surfaced
+PASS ptree: future schemaVersion on login: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: non-object passiveTree on login: diagnostic surfaced
+PASS ptree: non-object passiveTree on login: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: oversized nodes array: diagnostic surfaced
+PASS ptree: oversized nodes array: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: oversized conduits array: diagnostic surfaced
+PASS ptree: oversized conduits array: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: repeated invalid payload surfaces again
+PASS ptree: diagnostic text is byte-stable across repeats
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: valid refresh applies after rejects (session healthy)
+PASS ptree: valid recovery raises no diagnostic
+PASS gate-b-driver: serpentine plan matches its frozen contract
+PASS gate-b-driver: lane plan sweeps within one tile of every walkable column
+PASS gate-b-driver: silent steps re-issue before any wall rotation
+PASS gate-b-driver: every lane leg spans the full floor height
+PASS gate-b-driver: plan is strictly boustrophedon over its lanes
+PASS gate-b: worker-capsule server bound (7160-7179)
+PASS gate-b: first connect upgrades
+PASS gate-b: non-quick guest login admits chronicles:state
+PASS gate-b: chronicles:house:found emits chronicles:state
+PASS gate-b: House roster id captured
+PASS gate-b: chronicles:scion:create returns createdScionId
+PASS gate-b: chronicles:scion:set-out admits via player:login
+PASS gate-b: admission names the first Scion
+PASS gate-b: set-out admits the Scion under the mortal oath (player.chronicles.mortal)
+PASS gate-b: earned identifiable item carries an exact uuid
+PASS gate-b: delve enters the instance scene
+PASS gate-b: ordinary combat reached the scion (incoming hit)
+PASS gate-b: ordinary movement/combat death commits the fall (chronicles:scion-fallen)
+PASS gate-b: player:chronicles:return readies succession
+PASS gate-b: successor created through chronicles:scion:create
+PASS gate-b: heir admitted through player:chronicles:select
+PASS gate-b: heir buys a sword from the House wagon
+PASS gate-b: heir equips the fresh sword
+[swing] tgt=monster-4-4 now=1789047716285 next=1789047716285 range-ok
+[swing] tgt=monster-4-4 now=1789047716318 next=1789047716635 range-ok
+[swing] tgt=monster-4-4 now=1789047716335 next=1789047716635 range-ok
+[swing] tgt=monster-4-4 now=1789047716351 next=1789047716635 range-ok
+[swing] tgt=monster-4-4 now=1789047716368 next=1789047716635 range-ok
+[swing] tgt=monster-4-4 now=1789047716384 next=1789047716635 range-ok
+[swing] tgt=monster-4-4 now=1789047716399 next=1789047716635 range-ok
+[swing] tgt=monster-4-4 now=1789047716415 next=1789047716635 range-ok
+[swing] tgt=monster-4-4 now=1789047716430 next=1789047716635 range-ok
+[swing] tgt=monster-4-4 now=1789047716434 next=1789047716635 range-ok
+[swing] tgt=monster-4-4 now=1789047716446 next=1789047716635 range-ok
+[swing] tgt=monster-4-4 now=1789047716469 next=1789047716635 range-ok
+[swing] tgt=monster-4-4 now=1789047716485 next=1789047716635 range-ok
+[swing] tgt=monster-4-4 now=1789047716501 next=1789047716635 range-ok
+[swing] tgt=monster-4-4 now=1789047716517 next=1789047716635 range-ok
+[swing] tgt=monster-4-4 now=1789047716535 next=1789047716635 range-ok
+[swing] tgt=monster-4-4 now=1789047716552 next=1789047716635 range-ok
+[swing] tgt=monster-4-4 now=1789047716568 next=1789047716635 range-ok
+[swing] tgt=monster-4-4 now=1789047716585 next=1789047716635 range-ok
+[swing] tgt=monster-4-4 now=1789047716590 next=1789047716635 range-ok
+[swing] tgt=monster-4-4 now=1789047716601 next=1789047716635 range-ok
+[swing] tgt=monster-4-4 now=1789047716617 next=1789047716635 range-ok
+[swing] tgt=monster-4-4 now=1789047716636 next=1789047716636 range-ok
+[swing] tgt=monster-4-4 now=1789047716651 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716669 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716687 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716703 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716719 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716736 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716752 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716756 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716768 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716785 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716802 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716819 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716837 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716852 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716868 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716886 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716901 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716919 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716923 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716935 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716952 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716968 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716983 next=1789047716986 range-ok
+[swing] tgt=monster-4-4 now=1789047716999 next=1789047716999 range-ok
+note: hunt kill #1 (Stone Lurker)
+[swing] tgt=monster-4-7 now=1789047721996 next=1789047721996 range-ok
+[swing] tgt=monster-4-7 now=1789047722012 next=1789047722346 range-ok
+[swing] tgt=monster-4-7 now=1789047722026 next=1789047722346 range-ok
+[swing] tgt=monster-4-7 now=1789047722042 next=1789047722346 range-ok
+[swing] tgt=monster-4-7 now=1789047722057 next=1789047722346 range-ok
+[swing] tgt=monster-4-7 now=1789047722085 next=1789047722346 range-ok
+[swing] tgt=monster-4-7 now=1789047722100 next=1789047722346 range-ok
+[swing] tgt=monster-4-7 now=1789047722116 next=1789047722346 range-ok
+[swing] tgt=monster-4-7 now=1789047722132 next=1789047722346 range-ok
+[swing] tgt=monster-4-7 now=1789047722134 next=1789047722346 range-ok
+[swing] tgt=monster-4-7 now=1789047722151 next=1789047722346 range-ok
+[swing] tgt=monster-4-7 now=1789047722166 next=1789047722346 range-ok
+[swing] tgt=monster-4-7 now=1789047722181 next=1789047722346 range-ok
+[swing] tgt=monster-4-7 now=1789047722197 next=1789047722346 range-ok
+[swing] tgt=monster-4-7 now=1789047722217 next=1789047722346 range-ok
+[swing] tgt=monster-4-7 now=1789047722233 next=1789047722346 range-ok
+[swing] tgt=monster-4-7 now=1789047722248 next=1789047722346 range-ok
+[swing] tgt=monster-4-7 now=1789047722267 next=1789047722346 range-ok
+[swing] tgt=monster-4-7 now=1789047722283 next=1789047722346 range-ok
+[swing] tgt=monster-4-7 now=1789047722301 next=1789047722346 range-ok
+[swing] tgt=monster-4-7 now=1789047722306 next=1789047722346 range-ok
+[swing] tgt=monster-4-7 now=1789047722315 next=1789047722346 range-ok
+[swing] tgt=monster-4-7 now=1789047722333 next=1789047722346 range-ok
+[swing] tgt=monster-4-7 now=1789047722349 next=1789047722349 range-ok
+[swing] tgt=monster-4-7 now=1789047722365 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722380 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722401 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722418 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722433 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722448 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722464 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722469 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722480 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722496 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722512 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722528 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722544 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722568 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722584 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722599 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722615 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722629 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722632 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722645 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722667 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722683 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722698 next=1789047722699 range-ok
+[swing] tgt=monster-4-7 now=1789047722713 next=1789047722713 range-ok
+note: hunt kill #2 (Stone Lurker)
+note: hunt heartbeat hp=86 at=(4,8) kills=2 elite_known=0 elite=(-1,-1) ground=2 scene=instance
+[swing] tgt=monster-4-6 now=1789047724428 next=1789047724428 range-ok
+[swing] tgt=monster-4-6 now=1789047724444 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724467 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724482 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724498 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724518 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724533 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724548 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724564 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724567 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724579 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724595 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724618 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724634 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724649 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724666 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724683 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724699 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724715 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724730 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724734 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724747 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724762 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724777 next=1789047724778 range-ok
+[swing] tgt=monster-4-6 now=1789047724794 next=1789047724794 range-ok
+note: hunt kill #3 (Flint Slinger)
+[swing] tgt=monster-4-9 now=1789047725718 next=1789047725718 range-ok
+[swing] tgt=monster-4-9 now=1789047725735 next=1789047726068 range-ok
+[swing] tgt=monster-4-9 now=1789047725752 next=1789047726068 range-ok
+[swing] tgt=monster-4-9 now=1789047725767 next=1789047726068 range-ok
+[swing] tgt=monster-4-9 now=1789047725786 next=1789047726068 range-ok
+[swing] tgt=monster-4-9 now=1789047725802 next=1789047726068 range-ok
+[swing] tgt=monster-4-9 now=1789047725818 next=1789047726068 range-ok
+[swing] tgt=monster-4-9 now=1789047725837 next=1789047726068 range-ok
+[swing] tgt=monster-4-9 now=1789047725853 next=1789047726068 range-ok
+[swing] tgt=monster-4-9 now=1789047725857 next=1789047726068 range-ok
+[swing] tgt=monster-4-9 now=1789047725868 next=1789047726068 range-ok
+[swing] tgt=monster-4-9 now=1789047725884 next=1789047726068 range-ok
+[swing] tgt=monster-4-9 now=1789047725900 next=1789047726068 range-ok
+[swing] tgt=monster-4-9 now=1789047725919 next=1789047726068 range-ok
+[swing] tgt=monster-4-9 now=1789047725935 next=1789047726068 range-ok
+[swing] tgt=monster-4-9 now=1789047725948 next=1789047726068 range-ok
+[swing] tgt=monster-4-9 now=1789047725970 next=1789047726068 range-ok
+[swing] tgt=monster-4-9 now=1789047725992 next=1789047726068 range-ok
+[swing] tgt=monster-4-9 now=1789047726008 next=1789047726068 range-ok
+[swing] tgt=monster-4-9 now=1789047726011 next=1789047726068 range-ok
+[swing] tgt=monster-4-9 now=1789047726023 next=1789047726068 range-ok
+[swing] tgt=monster-4-9 now=1789047726039 next=1789047726068 range-ok
+[swing] tgt=monster-4-9 now=1789047726054 next=1789047726068 range-ok
+[swing] tgt=monster-4-9 now=1789047726070 next=1789047726070 range-ok
+note: hunt kill #4 (Flint Slinger)
+[swing] tgt=monster-4-12 now=1789047728236 next=1789047728236 range-ok
+[swing] tgt=monster-4-12 now=1789047728249 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728267 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728270 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728283 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728299 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728318 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728334 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728351 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728367 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728382 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728401 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728418 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728433 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728436 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728451 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728466 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728481 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728501 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728516 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728535 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728552 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728567 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728583 next=1789047728586 range-ok
+[swing] tgt=monster-4-12 now=1789047728598 next=1789047728586 range-ok
+note: hunt kill #5 (Flint Slinger)
+[swing] tgt=monster-4-16 now=1789047730418 next=1789047730418 range-ok
+[swing] tgt=monster-4-16 now=1789047730435 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730451 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730468 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730484 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730501 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730518 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730534 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730549 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730564 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730567 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730580 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730596 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730618 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730636 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730651 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730670 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730684 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730699 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730718 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730721 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730734 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730751 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730768 next=1789047730768 range-ok
+[swing] tgt=monster-4-16 now=1789047730784 next=1789047731118 range-ok
+[swing] tgt=monster-4-16 now=1789047730801 next=1789047731118 range-ok
+[swing] tgt=monster-4-16 now=1789047730818 next=1789047731118 range-ok
+[swing] tgt=monster-4-16 now=1789047730833 next=1789047731118 range-ok
+[swing] tgt=monster-4-16 now=1789047730849 next=1789047731118 range-ok
+[swing] tgt=monster-4-16 now=1789047730868 next=1789047731118 range-ok
+[swing] tgt=monster-4-16 now=1789047730883 next=1789047731118 range-ok
+[swing] tgt=monster-4-16 now=1789047730886 next=1789047731118 range-ok
+[swing] tgt=monster-4-16 now=1789047730899 next=1789047731118 range-ok
+[swing] tgt=monster-4-16 now=1789047730918 next=1789047731118 range-ok
+[swing] tgt=monster-4-16 now=1789047730934 next=1789047731118 range-ok
+[swing] tgt=monster-4-16 now=1789047730951 next=1789047731118 range-ok
+[swing] tgt=monster-4-16 now=1789047730968 next=1789047731118 range-ok
+[swing] tgt=monster-4-16 now=1789047730984 next=1789047731118 range-ok
+[swing] tgt=monster-4-16 now=1789047731001 next=1789047731118 range-ok
+[swing] tgt=monster-4-16 now=1789047731016 next=1789047731118 range-ok
+[swing] tgt=monster-4-16 now=1789047731033 next=1789047731118 range-ok
+[swing] tgt=monster-4-16 now=1789047731050 next=1789047731118 range-ok
+[swing] tgt=monster-4-16 now=1789047731054 next=1789047731118 range-ok
+[swing] tgt=monster-4-16 now=1789047731065 next=1789047731118 range-ok
+[swing] tgt=monster-4-16 now=1789047731084 next=1789047731118 range-ok
+[swing] tgt=monster-4-16 now=1789047731102 next=1789047731118 range-ok
+[swing] tgt=monster-4-16 now=1789047731118 next=1789047731118 range-ok
+note: hunt kill #6 (Stone Lurker)
+note: hunt heartbeat hp=124 at=(8,13) kills=6 elite_known=0 elite=(-1,-1) ground=2 scene=instance
+note: hunt heartbeat hp=124 at=(16,14) kills=6 elite_known=0 elite=(-1,-1) ground=2 scene=instance
+[swing] tgt=monster-4-0 now=1789047745052 next=1789047745052 range-ok
+[swing] tgt=monster-4-0 now=1789047745069 next=1789047745402 range-ok
+[swing] tgt=monster-4-0 now=1789047745085 next=1789047745402 range-ok
+[swing] tgt=monster-4-0 now=1789047745102 next=1789047745402 range-ok
+[swing] tgt=monster-4-0 now=1789047745119 next=1789047745402 range-ok
+[swing] tgt=monster-4-0 now=1789047745134 next=1789047745402 range-ok
+[swing] tgt=monster-4-0 now=1789047745153 next=1789047745402 range-ok
+[swing] tgt=monster-4-0 now=1789047745156 next=1789047745402 range-ok
+[swing] tgt=monster-4-0 now=1789047745169 next=1789047745402 range-ok
+[swing] tgt=monster-4-0 now=1789047745185 next=1789047745402 range-ok
+[swing] tgt=monster-4-0 now=1789047745202 next=1789047745402 range-ok
+[swing] tgt=monster-4-0 now=1789047745219 next=1789047745402 range-ok
+[swing] tgt=monster-4-0 now=1789047745234 next=1789047745402 range-ok
+[swing] tgt=monster-4-0 now=1789047745251 next=1789047745402 range-ok
+[swing] tgt=monster-4-0 now=1789047745270 next=1789047745402 range-ok
+[swing] tgt=monster-4-0 now=1789047745287 next=1789047745402 range-ok
+[swing] tgt=monster-4-0 now=1789047745303 next=1789047745402 range-ok
+[swing] tgt=monster-4-0 now=1789047745317 next=1789047745402 range-ok
+[swing] tgt=monster-4-0 now=1789047745322 next=1789047745402 range-ok
+[swing] tgt=monster-4-0 now=1789047745334 next=1789047745402 range-ok
+[swing] tgt=monster-4-0 now=1789047745351 next=1789047745402 range-ok
+[swing] tgt=monster-4-0 now=1789047745369 next=1789047745402 range-ok
+[swing] tgt=monster-4-0 now=1789047745384 next=1789047745402 range-ok
+[swing] tgt=monster-4-0 now=1789047745402 next=1789047745402 range-ok
+note: hunt kill #7 (Flint Slinger)
+[swing] tgt=monster-4-1 now=1789047749215 next=1789047749215 range-ok
+[swing] tgt=monster-4-1 now=1789047749230 next=1789047749565 range-ok
+[swing] tgt=monster-4-1 now=1789047749249 next=1789047749565 range-ok
+[swing] tgt=monster-4-1 now=1789047749275 next=1789047749565 range-ok
+[swing] tgt=monster-4-1 now=1789047749291 next=1789047749565 range-ok
+[swing] tgt=monster-4-1 now=1789047749306 next=1789047749565 range-ok
+[swing] tgt=monster-4-1 now=1789047749321 next=1789047749565 range-ok
+[swing] tgt=monster-4-1 now=1789047749337 next=1789047749565 range-ok
+[swing] tgt=monster-4-1 now=1789047749351 next=1789047749565 range-ok
+[swing] tgt=monster-4-1 now=1789047749353 next=1789047749565 range-ok
+[swing] tgt=monster-4-1 now=1789047749369 next=1789047749565 range-ok
+[swing] tgt=monster-4-1 now=1789047749384 next=1789047749565 range-ok
+[swing] tgt=monster-4-1 now=1789047749399 next=1789047749565 range-ok
+[swing] tgt=monster-4-1 now=1789047749415 next=1789047749565 range-ok
+[swing] tgt=monster-4-1 now=1789047749431 next=1789047749565 range-ok
+[swing] tgt=monster-4-1 now=1789047749447 next=1789047749565 range-ok
+[swing] tgt=monster-4-1 now=1789047749467 next=1789047749565 range-ok
+[swing] tgt=monster-4-1 now=1789047749484 next=1789047749565 range-ok
+[swing] tgt=monster-4-1 now=1789047749501 next=1789047749565 range-ok
+[swing] tgt=monster-4-1 now=1789047749517 next=1789047749565 range-ok
+[swing] tgt=monster-4-1 now=1789047749521 next=1789047749565 range-ok
+[swing] tgt=monster-4-1 now=1789047749534 next=1789047749565 range-ok
+[swing] tgt=monster-4-1 now=1789047749551 next=1789047749565 range-ok
+[swing] tgt=monster-4-1 now=1789047749567 next=1789047749567 range-ok
+[swing] tgt=monster-4-1 now=1789047749585 next=1789047749917 range-ok
+[swing] tgt=monster-4-1 now=1789047749601 next=1789047749917 range-ok
+[swing] tgt=monster-4-1 now=1789047749628 next=1789047749917 range-ok
+[swing] tgt=monster-4-1 now=1789047749649 next=1789047749917 range-ok
+[swing] tgt=monster-4-1 now=1789047749665 next=1789047749917 range-ok
+[swing] tgt=monster-4-1 now=1789047749676 next=1789047749917 range-ok
+[swing] tgt=monster-4-1 now=1789047749684 next=1789047749917 range-ok
+[swing] tgt=monster-4-1 now=1789047749699 next=1789047749917 range-ok
+[swing] tgt=monster-4-1 now=1789047749718 next=1789047749917 range-ok
+[swing] tgt=monster-4-1 now=1789047749734 next=1789047749917 range-ok
+[swing] tgt=monster-4-1 now=1789047749750 next=1789047749917 range-ok
+[swing] tgt=monster-4-1 now=1789047749765 next=1789047749917 range-ok
+[swing] tgt=monster-4-1 now=1789047749780 next=1789047749917 range-ok
+[swing] tgt=monster-4-1 now=1789047749796 next=1789047749917 range-ok
+[swing] tgt=monster-4-1 now=1789047749812 next=1789047749917 range-ok
+[swing] tgt=monster-4-1 now=1789047749827 next=1789047749917 range-ok
+[swing] tgt=monster-4-1 now=1789047749843 next=1789047749917 range-ok
+[swing] tgt=monster-4-1 now=1789047749846 next=1789047749917 range-ok
+[swing] tgt=monster-4-1 now=1789047749858 next=1789047749917 range-ok
+[swing] tgt=monster-4-1 now=1789047749883 next=1789047749917 range-ok
+[swing] tgt=monster-4-1 now=1789047749901 next=1789047749917 range-ok
+[swing] tgt=monster-4-1 now=1789047749918 next=1789047749918 range-ok
+note: hunt kill #8 (Stone Lurker)
+note: hunt heartbeat hp=112 at=(22,15) kills=8 elite_known=0 elite=(-1,-1) ground=1 scene=instance
+[swing] tgt=monster-4-2 now=1789047753484 next=1789047753484 range-ok
+[swing] tgt=monster-4-2 now=1789047753501 next=1789047753834 range-ok
+[swing] tgt=monster-4-2 now=1789047753517 next=1789047753834 range-ok
+[swing] tgt=monster-4-2 now=1789047753534 next=1789047753834 range-ok
+[swing] tgt=monster-4-2 now=1789047753549 next=1789047753834 range-ok
+[swing] tgt=monster-4-2 now=1789047753564 next=1789047753834 range-ok
+[swing] tgt=monster-4-2 now=1789047753580 next=1789047753834 range-ok
+[swing] tgt=monster-4-2 now=1789047753601 next=1789047753834 range-ok
+[swing] tgt=monster-4-2 now=1789047753617 next=1789047753834 range-ok
+[swing] tgt=monster-4-2 now=1789047753621 next=1789047753834 range-ok
+[swing] tgt=monster-4-2 now=1789047753632 next=1789047753834 range-ok
+[swing] tgt=monster-4-2 now=1789047753651 next=1789047753834 range-ok
+[swing] tgt=monster-4-2 now=1789047753664 next=1789047753834 range-ok
+[swing] tgt=monster-4-2 now=1789047753685 next=1789047753834 range-ok
+[swing] tgt=monster-4-2 now=1789047753703 next=1789047753834 range-ok
+[swing] tgt=monster-4-2 now=1789047753717 next=1789047753834 range-ok
+[swing] tgt=monster-4-2 now=1789047753733 next=1789047753834 range-ok
+[swing] tgt=monster-4-2 now=1789047753751 next=1789047753834 range-ok
+[swing] tgt=monster-4-2 now=1789047753767 next=1789047753834 range-ok
+[swing] tgt=monster-4-2 now=1789047753784 next=1789047753834 range-ok
+[swing] tgt=monster-4-2 now=1789047753787 next=1789047753834 range-ok
+[swing] tgt=monster-4-2 now=1789047753800 next=1789047753834 range-ok
+[swing] tgt=monster-4-2 now=1789047753824 next=1789047753834 range-ok
+[swing] tgt=monster-4-2 now=1789047753840 next=1789047753840 range-ok
+[swing] tgt=monster-4-2 now=1789047753856 next=1789047754190 range-ok
+[swing] tgt=monster-4-2 now=1789047753883 next=1789047754190 range-ok
+[swing] tgt=monster-4-2 now=1789047753901 next=1789047754190 range-ok
+[swing] tgt=monster-4-2 now=1789047753917 next=1789047754190 range-ok
+[swing] tgt=monster-4-2 now=1789047753934 next=1789047754190 range-ok
+[swing] tgt=monster-4-2 now=1789047753944 next=1789047754190 range-ok
+[swing] tgt=monster-4-2 now=1789047753951 next=1789047754190 range-ok
+[swing] tgt=monster-4-2 now=1789047753967 next=1789047754190 range-ok
+[swing] tgt=monster-4-2 now=1789047753983 next=1789047754190 range-ok
+[swing] tgt=monster-4-2 now=1789047753998 next=1789047754190 range-ok
+[swing] tgt=monster-4-2 now=1789047754016 next=1789047754190 range-ok
+[swing] tgt=monster-4-2 now=1789047754032 next=1789047754190 range-ok
+[swing] tgt=monster-4-2 now=1789047754056 next=1789047754190 range-ok
+[swing] tgt=monster-4-2 now=1789047754072 next=1789047754190 range-ok
+[swing] tgt=monster-4-2 now=1789047754088 next=1789047754190 range-ok
+[swing] tgt=monster-4-2 now=1789047754104 next=1789047754190 range-ok
+[swing] tgt=monster-4-2 now=1789047754107 next=1789047754190 range-ok
+[swing] tgt=monster-4-2 now=1789047754117 next=1789047754190 range-ok
+[swing] tgt=monster-4-2 now=1789047754134 next=1789047754190 range-ok
+[swing] tgt=monster-4-2 now=1789047754151 next=1789047754190 range-ok
+[swing] tgt=monster-4-2 now=1789047754169 next=1789047754190 range-ok
+[swing] tgt=monster-4-2 now=1789047754184 next=1789047754190 range-ok
+[swing] tgt=monster-4-2 now=1789047754199 next=1789047754199 range-ok
+note: hunt kill #9 (Stone Lurker)
+[swing] tgt=monster-4-10 now=1789047759434 next=1789047759434 range-ok
+[swing] tgt=monster-4-10 now=1789047759451 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759467 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759484 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759501 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759517 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759534 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759551 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759566 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759569 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759584 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759601 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759618 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759634 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759651 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759667 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759684 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759701 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759717 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759734 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759738 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759751 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759768 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759784 next=1789047759784 range-ok
+[swing] tgt=monster-4-10 now=1789047759801 next=1789047760134 range-ok
+[swing] tgt=monster-4-10 now=1789047759818 next=1789047760134 range-ok
+[swing] tgt=monster-4-10 now=1789047759833 next=1789047760134 range-ok
+[swing] tgt=monster-4-10 now=1789047759851 next=1789047760134 range-ok
+[swing] tgt=monster-4-10 now=1789047759866 next=1789047760134 range-ok
+[swing] tgt=monster-4-10 now=1789047759882 next=1789047760134 range-ok
+[swing] tgt=monster-4-10 now=1789047759897 next=1789047760134 range-ok
+[swing] tgt=monster-4-10 now=1789047759900 next=1789047760134 range-ok
+[swing] tgt=monster-4-10 now=1789047759917 next=1789047760134 range-ok
+[swing] tgt=monster-4-10 now=1789047759935 next=1789047760134 range-ok
+[swing] tgt=monster-4-10 now=1789047759951 next=1789047760134 range-ok
+[swing] tgt=monster-4-10 now=1789047759967 next=1789047760134 range-ok
+[swing] tgt=monster-4-10 now=1789047759984 next=1789047760134 range-ok
+[swing] tgt=monster-4-10 now=1789047760001 next=1789047760134 range-ok
+[swing] tgt=monster-4-10 now=1789047760017 next=1789047760134 range-ok
+[swing] tgt=monster-4-10 now=1789047760034 next=1789047760134 range-ok
+[swing] tgt=monster-4-10 now=1789047760049 next=1789047760134 range-ok
+[swing] tgt=monster-4-10 now=1789047760067 next=1789047760134 range-ok
+[swing] tgt=monster-4-10 now=1789047760071 next=1789047760134 range-ok
+[swing] tgt=monster-4-10 now=1789047760084 next=1789047760134 range-ok
+[swing] tgt=monster-4-10 now=1789047760101 next=1789047760134 range-ok
+[swing] tgt=monster-4-10 now=1789047760117 next=1789047760134 range-ok
+[swing] tgt=monster-4-10 now=1789047760134 next=1789047760134 range-ok
+note: hunt kill #10 (Stone Lurker)
+[swing] tgt=monster-4-19 now=1789047760401 next=1789047760484 range-ok
+[swing] tgt=monster-4-19 now=1789047760567 next=1789047760484 range-ok
+[swing] tgt=monster-4-19 now=1789047760584 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760601 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760618 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760633 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760649 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760667 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760682 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760701 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760717 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760734 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760737 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760751 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760767 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760784 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760801 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760816 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760832 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760847 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760863 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760879 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760894 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760897 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760910 next=1789047760917 range-ok
+[swing] tgt=monster-4-19 now=1789047760934 next=1789047760934 range-ok
+[swing] tgt=monster-4-19 now=1789047760951 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047760967 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047760984 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047761001 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047761017 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047761034 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047761050 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047761054 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047761066 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047761084 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047761102 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047761118 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047761134 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047761151 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047761167 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047761184 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047761201 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047761217 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047761220 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047761234 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047761251 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047761267 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047761282 next=1789047761284 range-ok
+[swing] tgt=monster-4-19 now=1789047761301 next=1789047761301 range-ok
+[swing] tgt=monster-4-19 now=1789047761318 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761334 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761349 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761369 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761385 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761388 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761401 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761417 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761434 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761451 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761467 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761484 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761501 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761517 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761534 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761550 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761554 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761567 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761584 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761601 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761617 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761634 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761649 next=1789047761651 range-ok
+[swing] tgt=monster-4-19 now=1789047761665 next=1789047761665 range-ok
+[swing] tgt=monster-4-19 now=1789047761684 next=1789047762015 range-ok
+[swing] tgt=monster-4-19 now=1789047761701 next=1789047762015 range-ok
+[swing] tgt=monster-4-19 now=1789047761717 next=1789047762015 range-ok
+[swing] tgt=monster-4-19 now=1789047761721 next=1789047762015 range-ok
+[swing] tgt=monster-4-19 now=1789047761734 next=1789047762015 range-ok
+[swing] tgt=monster-4-19 now=1789047761751 next=1789047762015 range-ok
+[swing] tgt=monster-4-19 now=1789047761767 next=1789047762015 range-ok
+[swing] tgt=monster-4-19 now=1789047761784 next=1789047762015 range-ok
+[swing] tgt=monster-4-19 now=1789047761801 next=1789047762015 range-ok
+[swing] tgt=monster-4-19 now=1789047761817 next=1789047762015 range-ok
+[swing] tgt=monster-4-19 now=1789047761832 next=1789047762015 range-ok
+[swing] tgt=monster-4-19 now=1789047761848 next=1789047762015 range-ok
+[swing] tgt=monster-4-19 now=1789047761863 next=1789047762015 range-ok
+[swing] tgt=monster-4-19 now=1789047761884 next=1789047762015 range-ok
+[swing] tgt=monster-4-19 now=1789047761887 next=1789047762015 range-ok
+[swing] tgt=monster-4-19 now=1789047761901 next=1789047762015 range-ok
+[swing] tgt=monster-4-19 now=1789047761917 next=1789047762015 range-ok
+[swing] tgt=monster-4-19 now=1789047761934 next=1789047762015 range-ok
+[swing] tgt=monster-4-19 now=1789047761951 next=1789047762015 range-ok
+[swing] tgt=monster-4-19 now=1789047761966 next=1789047762015 range-ok
+[swing] tgt=monster-4-19 now=1789047761984 next=1789047762015 range-ok
+[swing] tgt=monster-4-19 now=1789047762000 next=1789047762015 range-ok
+[swing] tgt=monster-4-19 now=1789047762017 next=1789047762017 range-ok
+[swing] tgt=monster-4-19 now=1789047762034 next=1789047762367 range-ok
+[swing] tgt=monster-4-19 now=1789047762051 next=1789047762367 range-ok
+[swing] tgt=monster-4-19 now=1789047762054 next=1789047762367 range-ok
+[swing] tgt=monster-4-19 now=1789047762067 next=1789047762367 range-ok
+[swing] tgt=monster-4-19 now=1789047762084 next=1789047762367 range-ok
+[swing] tgt=monster-4-19 now=1789047762101 next=1789047762367 range-ok
+[swing] tgt=monster-4-19 now=1789047762117 next=1789047762367 range-ok
+[swing] tgt=monster-4-19 now=1789047762134 next=1789047762367 range-ok
+[swing] tgt=monster-4-19 now=1789047762151 next=1789047762367 range-ok
+[swing] tgt=monster-4-19 now=1789047762167 next=1789047762367 range-ok
+[swing] tgt=monster-4-19 now=1789047762182 next=1789047762367 range-ok
+[swing] tgt=monster-4-19 now=1789047762201 next=1789047762367 range-ok
+[swing] tgt=monster-4-19 now=1789047762217 next=1789047762367 range-ok
+[swing] tgt=monster-4-19 now=1789047762221 next=1789047762367 range-ok
+[swing] tgt=monster-4-19 now=1789047762232 next=1789047762367 range-ok
+[swing] tgt=monster-4-19 now=1789047762251 next=1789047762367 range-ok
+[swing] tgt=monster-4-19 now=1789047762268 next=1789047762367 range-ok
+[swing] tgt=monster-4-19 now=1789047762284 next=1789047762367 range-ok
+[swing] tgt=monster-4-19 now=1789047762301 next=1789047762367 range-ok
+[swing] tgt=monster-4-19 now=1789047762318 next=1789047762367 range-ok
+[swing] tgt=monster-4-19 now=1789047762334 next=1789047762367 range-ok
+[swing] tgt=monster-4-19 now=1789047762353 next=1789047762367 range-ok
+[swing] tgt=monster-4-19 now=1789047762369 next=1789047762369 range-ok
+[swing] tgt=monster-4-19 now=1789047762384 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762387 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762399 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762415 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762434 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762451 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762467 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762484 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762501 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762516 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762534 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762550 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762554 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762566 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762584 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762601 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762617 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762635 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762651 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762667 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762684 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762701 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762717 next=1789047762719 range-ok
+[swing] tgt=monster-4-19 now=1789047762721 next=1789047762721 range-ok
+[swing] tgt=monster-4-19 now=1789047762734 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047762751 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047762767 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047762782 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047762801 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047762817 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047762834 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047762849 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047762865 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047762884 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047762887 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047762899 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047762917 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047762934 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047762951 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047762967 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047762984 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047763001 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047763017 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047763034 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047763050 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047763054 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047763067 next=1789047763071 range-ok
+[swing] tgt=monster-4-19 now=1789047763084 next=1789047763084 range-ok
+[swing] tgt=monster-4-19 now=1789047763101 next=1789047763434 range-ok
+[swing] tgt=monster-4-19 now=1789047763118 next=1789047763434 range-ok
+[swing] tgt=monster-4-19 now=1789047763134 next=1789047763434 range-ok
+[swing] tgt=monster-4-19 now=1789047763151 next=1789047763434 range-ok
+[swing] tgt=monster-4-19 now=1789047763167 next=1789047763434 range-ok
+[swing] tgt=monster-4-19 now=1789047763182 next=1789047763434 range-ok
+[swing] tgt=monster-4-19 now=1789047763201 next=1789047763434 range-ok
+[swing] tgt=monster-4-19 now=1789047763217 next=1789047763434 range-ok
+[swing] tgt=monster-4-19 now=1789047763221 next=1789047763434 range-ok
+note: hunt heartbeat hp=131 at=(28,19) kills=10 elite_known=1 elite=(25,18) ground=1 scene=instance
+[swing] tgt=monster-4-19 now=1789047763234 next=1789047763434 range-ok
+[swing] tgt=monster-4-19 now=1789047763251 next=1789047763434 range-ok
+[swing] tgt=monster-4-19 now=1789047763267 next=1789047763434 range-ok
+[swing] tgt=monster-4-19 now=1789047763284 next=1789047763434 range-ok
+[swing] tgt=monster-4-19 now=1789047763299 next=1789047763434 range-ok
+[swing] tgt=monster-4-19 now=1789047763317 next=1789047763434 range-ok
+[swing] tgt=monster-4-19 now=1789047763334 next=1789047763434 range-ok
+[swing] tgt=monster-4-19 now=1789047763349 next=1789047763434 range-ok
+[swing] tgt=monster-4-19 now=1789047763365 next=1789047763434 range-ok
+[swing] tgt=monster-4-19 now=1789047763381 next=1789047763434 range-ok
+[swing] tgt=monster-4-19 now=1789047763384 next=1789047763434 range-ok
+[swing] tgt=monster-4-19 now=1789047763397 next=1789047763434 range-ok
+[swing] tgt=monster-4-19 now=1789047763413 next=1789047763434 range-ok
+[swing] tgt=monster-4-19 now=1789047763434 next=1789047763434 range-ok
+[swing] tgt=monster-4-19 now=1789047763451 next=1789047763784 range-ok
+[swing] tgt=monster-4-19 now=1789047763467 next=1789047763784 range-ok
+[swing] tgt=monster-4-19 now=1789047763484 next=1789047763784 range-ok
+[swing] tgt=monster-4-19 now=1789047763501 next=1789047763784 range-ok
+[swing] tgt=monster-4-19 now=1789047763517 next=1789047763784 range-ok
+[swing] tgt=monster-4-19 now=1789047763534 next=1789047763784 range-ok
+[swing] tgt=monster-4-19 now=1789047763535 next=1789047763784 range-ok
+[swing] tgt=monster-4-19 now=1789047763551 next=1789047763784 range-ok
+[swing] tgt=monster-4-19 now=1789047763567 next=1789047763784 range-ok
+[swing] tgt=monster-4-19 now=1789047763584 next=1789047763784 range-ok
+[swing] tgt=monster-4-19 now=1789047763601 next=1789047763784 range-ok
+[swing] tgt=monster-4-19 now=1789047763618 next=1789047763784 range-ok
+[swing] tgt=monster-4-19 now=1789047763634 next=1789047763784 range-ok
+[swing] tgt=monster-4-19 now=1789047763649 next=1789047763784 range-ok
+[swing] tgt=monster-4-19 now=1789047763664 next=1789047763784 range-ok
+[swing] tgt=monster-4-19 now=1789047763684 next=1789047763784 range-ok
+[swing] tgt=monster-4-19 now=1789047763701 next=1789047763784 range-ok
+[swing] tgt=monster-4-19 now=1789047763704 next=1789047763784 range-ok
+[swing] tgt=monster-4-19 now=1789047763717 next=1789047763784 range-ok
+[swing] tgt=monster-4-19 now=1789047763734 next=1789047763784 range-ok
+[swing] tgt=monster-4-19 now=1789047763751 next=1789047763784 range-ok
+[swing] tgt=monster-4-19 now=1789047763767 next=1789047763784 range-ok
+[swing] tgt=monster-4-19 now=1789047763784 next=1789047763784 range-ok
+note: hunt kill #11 (Warden of the Deep)
+PASS gate-b: slain elite surfaces the circulating heirloom
+PASS gate-b: exact relic uuid recovered underfoot
+PASS gate-b: awaitChronicles restore reads the crypt
+PASS gate-b: crypt relic status is recovered
+PASS gate-b: reconnect upgrades same server
+PASS gate-b: reconnect restores the chronicle session
+PASS gate-b: reconnect payload carries chronicle
+PASS gate-b: identical House/Scion/relic record after reconnect
+PASS gate-b: House name survives reconnect
+PASS gate-b: heir's sworn oath recorded after reconnect
+PASS gate-b: living roster holds only the heir
+PASS gate-b: fallen Scion left the living roster
+PASS gate-b: same House present after reconnect
+PASS gate-b: crypt relic still recovered after reconnect
+PASS gate-b: active House continuity
+PASS gate-b: resumed set-out re-admits the heir
+PASS gate-b: exact heirloom still carried after reconnect
+PASS gate-b: mortal oath survives the reconnect
+PASS gate-b: journey server stopped cleanly
+session tests passed
+PASS fall event pose: final position and committed facing override stale prior geometry
+PASS fall event pose: known snapshot still supplies identity family and elite
+PASS fall event pose: dust and loot anchor share the immutable death position
+PASS fall event pose: presentation does not mutate the retained actor snapshot
+PASS fall event pose: duplicate metadata cannot relocate restart or duplicate a death
+PASS fall event pose: pose-only unknown actor still creates no body or dust
+PASS strike: monster slash faces the player as the living raster does
+PASS strike: overlapping monster uses its own facing fallback
+PASS strike: player slash preserves player aim rather than aiming at a monster
+PASS strike: a dodge cannot rotate the committed warning at contact
+PASS fall: snapshots ID, art family, elite, position and actual player-facing angle
+PASS fall: known deaths retain dust feedback even without authored family death art
+PASS fall: stale strikes, warnings, spawn and target tint no longer pose the dead monster
+PASS fall: presentation neither kills a live actor nor invents loot or rewards
+PASS fall: retained snapshot survives actor removal and later player/theme changes
+PASS fall: semantic recorder emits a labelled Death, never an extra live Monster
+PASS fall: duplicate death cannot restart the retained pose
+PASS fall: duplicate death neither restarts nor duplicates dust
+PASS fall: named eight-tick motion is independent of the eight-second hold
+PASS fall: settled pose stays fully opaque after motion ends
+PASS fall: fading begins only in the final twenty ticks
+PASS fall: fade changes opacity without replaying motion
+PASS fall: last visible tick is retained
+PASS fall: body expires at the named TTL
+PASS fall: more than32 deaths discard oldest bodies deterministically
+PASS fall: combat feedback and retained bodies share the128-effect cap
+PASS fall: monster family matches the living raster selection
+PASS fall: monster family matches the living raster selection
+PASS fall: monster family matches the living raster selection
+PASS fall: monster family matches the living raster selection
+PASS fall: ranged role takes precedence over theme
+PASS fall: overlapping actor falls back to its own facing
+PASS fall: unknown actor never borrows last death position for a fabricated corpse
+PASS fall: Scion death cannot masquerade as a raider body
+PASS fall: an unchanged scene does not clear a body
+PASS fall: snapshot route changes clear bodies even without a transition event
+PASS fall: extraction, connection and Scion-loss transitions clear retained bodies
+PASS fall: extraction, connection and Scion-loss transitions clear retained bodies
+PASS fall: extraction, connection and Scion-loss transitions clear retained bodies
+PASS fall: extraction, connection and Scion-loss transitions clear retained bodies
+PASS fall: extraction, connection and Scion-loss transitions clear retained bodies
+PASS fall: extraction, connection and Scion-loss transitions clear retained bodies
+PASS strike: input creates one speculative preparation
+PASS strike: repeated input cannot restart a live strike
+PASS strike: early, late, or expired preparation reconciles to one contact
+PASS strike: presentation alone cannot manufacture hit feedback
+PASS strike: authoritative damage supplies contact feedback once
+PASS strike: input during contact cannot revert to preparation
+PASS strike: input creates one speculative preparation
+PASS strike: repeated input cannot restart a live strike
+PASS strike: early, late, or expired preparation reconciles to one contact
+PASS strike: presentation alone cannot manufacture hit feedback
+PASS strike: authoritative damage supplies contact feedback once
+PASS strike: input during contact cannot revert to preparation
+PASS strike: input creates one speculative preparation
+PASS strike: repeated input cannot restart a live strike
+PASS strike: early, late, or expired preparation reconciles to one contact
+PASS strike: presentation alone cannot manufacture hit feedback
+PASS strike: authoritative damage supplies contact feedback once
+PASS strike: input during contact cannot revert to preparation
+PASS strike: input creates one speculative preparation
+PASS strike: early, late, or expired preparation reconciles to one contact
+PASS strike: presentation alone cannot manufacture hit feedback
+PASS strike: authoritative damage supplies contact feedback once
+PASS strike: input during contact cannot revert to preparation
+PASS strike: an enemy arc never becomes the player strike
+PASS strike: unconfirmed preparation expires without hit feedback
+PASS phase-a: table pins the 50ms presentation tick
+PASS phase-a: critical number outlives the ordinary 12-tick number
+PASS phase-a: beat lifetimes are distinct by construction
+PASS phase-a: loss pulse outlives the 3-tick damage pulse
+PASS phase-a: critical flag and style copy onto the damage number
+PASS phase-a: critical number ttl comes from the table and differs
+PASS phase-a: critical flash is longer than the ordinary flash
+PASS phase-a: render list labels critical hits with style
+PASS phase-a: ScionLost produces a loss beat
+PASS phase-a: loss beat lifetime comes from the table
+PASS phase-a: loss pulse comes from the table
+PASS phase-a: loss beat logs a readable line
+PASS phase-a: BuffExpired(war-cry) produces the fade beat with its ttl
+PASS phase-a: only war-cry expiry renders the fade beat
+PASS phase-a: local seam starts
+PASS phase-a: post-entry WarCry activates before checking expiry
+PASS phase-a: local seam maps BuffExpired through the presentation seam
+PASS phase-a: spawn detection is byte-deterministic across runs
+PASS phase-a: one materialization beat per unseen foe
+PASS phase-a: materialization ttl comes from the table
+PASS phase-a: re-sighting never re-triggers the beat
+PASS phase-a: player facing right no longer flips the monster west
+PASS phase-a: player facing left does not flip the monster east either
+PASS monster display: rendering can trail an unchanged authority endpoint
+PASS monster display: authority facing survives into contact presentation
+PASS monster display: hit anchors and the model retain authority coordinates
+PASS monster display: snapshots without movement metadata render authority
+PASS monster display: malformed display coordinates cannot contaminate world state
+PASS phase-a: local seam starts for the negative control
+PASS phase-a: applying every drained beat leaves the model untouched
+PASS facing: up-left resolves to (-1,-1)
+PASS facing: down-right resolves to (1,1)
+PASS facing: up-right resolves to (1,-1)
+PASS facing: plain left keeps its single axis
+PASS facing: unknown name falls back to down
+PASS message: server text becomes the HUD toast
+PASS message: toast outlives a key-echo hint
+PASS message: empty text never blanks a toast
+PASS 0108: JS payload shape is fromX/fromY/toX/toY/travelMs/kind=monster
+PASS 0108: missing travelMs is not a projectile payload
+PASS 0108: slam-shaped telegraph is not a projectile warning
+PASS 0108: world:projectile keys become a Telegraph event
+PASS 0108: travelMs uses the 50ms tick, not a catalog guess
+PASS 0108: ranged windup records a Telegraph op
+PASS 0108: Telegraph label stays the existing op, action projectile
+PASS 0108: ranged hit lands as attributed Damage/Impact
+PASS 0108: every ranged hit is preceded by its Telegraph op
+PASS 0108: incoming hit is attributed to the ranged attacker
+PASS 0108: a hit without a preceding warning cannot mint a Telegraph
+PASS 0108: negative — damage-only path never records the ranged warning
+PASS 0108: negative — slam telegraph never becomes a projectile warning
+PASS npc: roster entry survives the sync
+PASS npc: name survives the sync
+PASS npc: tile position converts to world units
+PASS npc: server verb list survives verbatim
+PASS npc: render list carries a labeled Npc op
+presentation events tests: PASS
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS discriminator: ActorDied "monster" maps to the kill cue
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: scion death ingests silently
+PASS discriminator: ScionLost still ingests
+PASS discriminator: one Scion death schedules exactly the Scion-loss cue
+PASS silence: no unknown event schedules a cue
+PASS silence: drained schedule is empty
+PASS silence: recording sink received nothing
+PASS ordering: every known cue is voiced once
+PASS ordering: voiced cues ascend by scheduled tick
+PASS ordering: ties resolve by mixer arrival sequence
+PASS bus: default is full volume, unmuted
+PASS bus: volume setter stores permille
+PASS bus: effective gain scales authored gain exactly
+PASS bus: muted bus is silenced while the other still voices
+PASS bus: zero volume silences without mute
+PASS bus: volume clamps above full
+PASS bus: volume clamps below zero
+PASS cap: voice cap bounds the drained schedule
+PASS cap: steal-oldest evicts the earliest same-priority voice
+PASS cap: higher-priority newcomer steals the oldest lower-priority voice
+PASS cap: a lower-priority newcomer never steals a higher-priority voice
+PASS cap: music bus cap is enforced independently of the sfx bus
+PASS byte-identical: ordinary hit ingests
+PASS byte-identical: critical hit ingests
+PASS byte-identical: enemy defeat ingests
+PASS byte-identical: Scion loss ingests
+PASS byte-identical: war-cry expiry ingests
+PASS byte-identical: ordinary hit ingests
+PASS byte-identical: critical hit ingests
+PASS byte-identical: enemy defeat ingests
+PASS byte-identical: Scion loss ingests
+PASS byte-identical: war-cry expiry ingests
+PASS serialization: two independent runs are byte-identical
+PASS serialization: schedule matches the pinned canonical form
+PASS serialization: sink recorded exactly the voiced schedule
+--- begin canonical schedule ---
+cue[000003] tick=5 bus=sfx prio=world id=kill wave=sawtooth 196->49Hz 240ms gain=560 effective=560
+cue[000004] tick=5 bus=sfx prio=player id=scion-lost wave=sine 165->41Hz 900ms gain=700 effective=700
+cue[000005] tick=7 bus=sfx prio=player id=warcry-expire wave=sine 392->262Hz 300ms gain=420 effective=420
+cue[000001] tick=10 bus=sfx prio=player id=hit wave=sine 220->110Hz 90ms gain=480 effective=480
+cue[000002] tick=10 bus=sfx prio=player id=crit wave=square 440->110Hz 150ms gain=640 effective=640
+cue[000006] tick=12 bus=music prio=ui id=menu-loop wave=sine 262->262Hz 1000ms gain=300 effective=300
+--- end canonical schedule ---
+all audio mixer checks passed
+capture root: isolating scenario evidence under C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\.ci-artifacts\terrain-wall-wave\captures
+== scenario move-and-camera ==
+    ok: move-and-camera: scenery present in render list
+    ok: move-and-camera: Floor op recorded
+    ok: move-and-camera: floor is textured (plates or vector kit)
+    ok: move-and-camera: terrain tiles present in render list
+    ok: move-and-camera: life and resource orbs recorded
+    ok: move-and-camera: quickbar slots recorded
+    ok: move-and-camera: minimap panel recorded
+    ok: move-and-camera: every scenery entity shifts by one uniform delta
+    ok: move-and-camera: uniform delta equals camera shift * zoom
+    ok: move-and-camera: overlapping terrain tiles across camera moves
+    ok: move-and-camera: every overlapping terrain tile shifts by one uniform delta
+    ok: move-and-camera: terrain delta equals camera shift * zoom
+    ok: move-and-camera: every scenery entity shifts by one uniform delta
+    ok: move-and-camera: uniform delta equals camera shift * zoom
+    ok: move-and-camera: overlapping terrain tiles across camera moves
+    ok: move-and-camera: every overlapping terrain tile shifts by one uniform delta
+    ok: move-and-camera: terrain delta equals camera shift * zoom
+    ok: move-and-camera: every scenery entity shifts by one uniform delta
+    ok: move-and-camera: uniform delta equals camera shift * zoom
+    ok: move-and-camera: overlapping terrain tiles across camera moves
+    ok: move-and-camera: every overlapping terrain tile shifts by one uniform delta
+    ok: move-and-camera: terrain delta equals camera shift * zoom
+    ok: move-and-camera: every scenery entity shifts by one uniform delta
+    ok: move-and-camera: uniform delta equals camera shift * zoom
+    ok: move-and-camera: overlapping terrain tiles across camera moves
+    ok: move-and-camera: every overlapping terrain tile shifts by one uniform delta
+    ok: move-and-camera: terrain delta equals camera shift * zoom
+    ok: move-and-camera: owner HUD capture written
+    ok: move-and-camera: live HUD names Kit lock and Same delta
+    ok: move-and-camera: live HUD rejects sliding kit
+    ok: move-and-camera: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: move-and-camera: Kit lock stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario first-fight ==
+    ok: first-fight: loaded billboards do not paint a skeleton art chip
+    ok: first-fight: art status matches what actually loaded
+    ok: first-fight: missing art still warns on the owner HUD
+    ok: first-fight: an objective strip is on the HUD
+    ok: first-fight: the extraction pad is marked stairs-up
+    ok: first-fight: the Scion silhouette is recorded
+    ok: first-fight: owner HUD capture written
+    ok: first-fight: live HUD names Jointed warden and Snout claws
+    ok: first-fight: live HUD rejects crate foe
+    ok: first-fight: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: first-fight: Jointed warden stays off WASD, the objective, Tin village, and Life
+    ok: first-fight: vector fallback reports itself honestly
+    ok: first-fight: vector terrain keeps the floor tiled
+    ok: first-fight: vector motif tiles are drawn
+    ok: first-fight: vector scenery silhouettes are drawn
+    ok: first-fight: vector Scion silhouette is drawn
+    ok: first-fight: a crate-shaped foe cannot certify the fight
+    ok: first-fight: town wardens are not hip-to-foot crates
+    ok: first-fight: real pursuit reaches clear melee contact
+    ok: first-fight: a swing is drawn
+    ok: first-fight: a floating damage number is spawned
+    ok: first-fight: a death ring is drawn
+    ok: first-fight: the drop becomes visible
+    ok: first-fight: the dead monster is removed from the render list
+   PASS (0 failures)
+== scenario combat-audio ==
+    ok: combat-audio: real pursuit reaches clear melee contact
+    ok: combat-audio: ordinary fight voices a hit cue
+    ok: combat-audio: ordinary fight voices a death cue
+    ok: combat-audio: replaying the same event cannot double-play
+    ok: combat-audio: two hits for one event fail review
+    ok: combat-audio: a single hit for one event certifies mapping
+    ok: combat-audio: dense cosmetics cannot starve the loss warning
+    ok: combat-audio: a starved warning fails review
+    ok: combat-audio: a held warning certifies the voice budget
+    ok: combat-audio: twelve cosmetics exceed the SFX voice cap
+    ok: combat-audio: rapid reentry does not stack ambience
+    ok: combat-audio: duplicate ambience submit is a no-op
+    ok: combat-audio: voice-budget capture written
+    ok: combat-audio: owner strip paints Warning held
+    ok: combat-audio: Voices 8 strip is traced
+    ok: combat-audio: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: combat-audio: Voices 8 stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario hud-scale-floor ==
+    ok: hud-scale-floor: scale 0 is rejected instead of shrinking type
+    ok: hud-scale-floor: small glyphs stay at or above the floor
+    ok: hud-scale-floor: body glyphs stay at or above the floor
+    ok: hud-scale-floor: scion actor exists
+    ok: hud-scale-floor: low life has a non-color chevron
+    ok: hud-scale-floor: hover tooltip fits over a living foe
+    ok: hud-scale-floor: tooltip stays inside the 960 frame
+    ok: hud-scale-floor: foe tooltip has a non-color mark
+    ok: hud-scale-floor: tooltip title uses ink-on-panel contrast
+    ok: hud-scale-floor: shrinking type is not the contrast fix
+    ok: hud-scale-floor: a 640x480 window still respects the type floor
+    ok: hud-scale-floor: live HUD capture written
+    ok: hud-scale-floor: live HUD names Type floor and Ink contrast
+    ok: hud-scale-floor: live HUD rejects shrink type
+    ok: hud-scale-floor: Type floor strip is traced
+    ok: hud-scale-floor: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: hud-scale-floor: Type floor stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario hud-chrome ==
+    ok: hud-chrome: production bounds report opened
+    ok: hud-chrome: text measurement DC created
+    ok: hud-chrome-3440x1440-unmuted: production capture written
+    ok: hud-chrome-3440x1440-unmuted: every requested HUD region was placed
+    ok: hud-chrome-3440x1440-unmuted: minimap painted
+    ok: hud-chrome-3440x1440-unmuted: route-card painted
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip painted
+    ok: hud-chrome-3440x1440-unmuted: orb-life painted
+    ok: hud-chrome-3440x1440-unmuted: orb-resource painted
+    ok: hud-chrome-3440x1440-unmuted: identity painted
+    ok: hud-chrome-3440x1440-unmuted: objective painted
+    ok: hud-chrome-3440x1440-unmuted: controls painted
+    ok: hud-chrome-3440x1440-unmuted: audio-mixer painted
+    ok: hud-chrome-3440x1440-unmuted: mute chip follows actual mute state
+    ok: hud-chrome-3440x1440-unmuted: minimap inside viewport
+    ok: hud-chrome-3440x1440-unmuted: route-card inside viewport
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip inside viewport
+    ok: hud-chrome-3440x1440-unmuted: orb-life inside viewport
+    ok: hud-chrome-3440x1440-unmuted: orb-resource inside viewport
+    ok: hud-chrome-3440x1440-unmuted: identity inside viewport
+    ok: hud-chrome-3440x1440-unmuted: objective inside viewport
+    ok: hud-chrome-3440x1440-unmuted: controls inside viewport
+    ok: hud-chrome-3440x1440-unmuted: audio-mixer inside viewport
+    ok: hud-chrome-3440x1440-unmuted: minimap clears route-card
+    ok: hud-chrome-3440x1440-unmuted: minimap clears quickbar-strip
+    ok: hud-chrome-3440x1440-unmuted: minimap clears orb-life
+    ok: hud-chrome-3440x1440-unmuted: minimap clears orb-resource
+    ok: hud-chrome-3440x1440-unmuted: minimap clears identity
+    ok: hud-chrome-3440x1440-unmuted: minimap clears objective
+    ok: hud-chrome-3440x1440-unmuted: minimap clears controls
+    ok: hud-chrome-3440x1440-unmuted: minimap clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: route-card clears quickbar-strip
+    ok: hud-chrome-3440x1440-unmuted: route-card clears orb-life
+    ok: hud-chrome-3440x1440-unmuted: route-card clears orb-resource
+    ok: hud-chrome-3440x1440-unmuted: route-card clears identity
+    ok: hud-chrome-3440x1440-unmuted: route-card clears objective
+    ok: hud-chrome-3440x1440-unmuted: route-card clears controls
+    ok: hud-chrome-3440x1440-unmuted: route-card clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip clears orb-life
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip clears orb-resource
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip clears identity
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip clears objective
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip clears controls
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: orb-life clears orb-resource
+    ok: hud-chrome-3440x1440-unmuted: orb-life clears identity
+    ok: hud-chrome-3440x1440-unmuted: orb-life clears objective
+    ok: hud-chrome-3440x1440-unmuted: orb-life clears controls
+    ok: hud-chrome-3440x1440-unmuted: orb-life clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: orb-resource clears identity
+    ok: hud-chrome-3440x1440-unmuted: orb-resource clears objective
+    ok: hud-chrome-3440x1440-unmuted: orb-resource clears controls
+    ok: hud-chrome-3440x1440-unmuted: orb-resource clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: identity clears objective
+    ok: hud-chrome-3440x1440-unmuted: identity clears controls
+    ok: hud-chrome-3440x1440-unmuted: identity clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: objective clears controls
+    ok: hud-chrome-3440x1440-unmuted: objective clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: controls clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: mixer trace matches measured production text
+    ok: hud-chrome-3440x1440-unmuted: every route and return row fits without shrinking
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: full HUD typography uses the authored Segoe sizes
+    ok: hud-chrome-3440x1440-unmuted: action labels fit the unchanged slots
+    ok: hud-chrome-3440x1440-unmuted: original owner actions remain in the production HUD
+    ok: hud-chrome-3440x1440-muted: production capture written
+    ok: hud-chrome-3440x1440-muted: every requested HUD region was placed
+    ok: hud-chrome-3440x1440-muted: minimap painted
+    ok: hud-chrome-3440x1440-muted: route-card painted
+    ok: hud-chrome-3440x1440-muted: quickbar-strip painted
+    ok: hud-chrome-3440x1440-muted: orb-life painted
+    ok: hud-chrome-3440x1440-muted: orb-resource painted
+    ok: hud-chrome-3440x1440-muted: identity painted
+    ok: hud-chrome-3440x1440-muted: objective painted
+    ok: hud-chrome-3440x1440-muted: controls painted
+    ok: hud-chrome-3440x1440-muted: audio-mixer painted
+    ok: hud-chrome-3440x1440-muted: mute chip follows actual mute state
+    ok: hud-chrome-3440x1440-muted: minimap inside viewport
+    ok: hud-chrome-3440x1440-muted: route-card inside viewport
+    ok: hud-chrome-3440x1440-muted: quickbar-strip inside viewport
+    ok: hud-chrome-3440x1440-muted: orb-life inside viewport
+    ok: hud-chrome-3440x1440-muted: orb-resource inside viewport
+    ok: hud-chrome-3440x1440-muted: identity inside viewport
+    ok: hud-chrome-3440x1440-muted: objective inside viewport
+    ok: hud-chrome-3440x1440-muted: controls inside viewport
+    ok: hud-chrome-3440x1440-muted: audio-mixer inside viewport
+    ok: hud-chrome-3440x1440-muted: audio-muted inside viewport
+    ok: hud-chrome-3440x1440-muted: minimap clears route-card
+    ok: hud-chrome-3440x1440-muted: minimap clears quickbar-strip
+    ok: hud-chrome-3440x1440-muted: minimap clears orb-life
+    ok: hud-chrome-3440x1440-muted: minimap clears orb-resource
+    ok: hud-chrome-3440x1440-muted: minimap clears identity
+    ok: hud-chrome-3440x1440-muted: minimap clears objective
+    ok: hud-chrome-3440x1440-muted: minimap clears controls
+    ok: hud-chrome-3440x1440-muted: minimap clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: minimap clears audio-muted
+    ok: hud-chrome-3440x1440-muted: route-card clears quickbar-strip
+    ok: hud-chrome-3440x1440-muted: route-card clears orb-life
+    ok: hud-chrome-3440x1440-muted: route-card clears orb-resource
+    ok: hud-chrome-3440x1440-muted: route-card clears identity
+    ok: hud-chrome-3440x1440-muted: route-card clears objective
+    ok: hud-chrome-3440x1440-muted: route-card clears controls
+    ok: hud-chrome-3440x1440-muted: route-card clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: route-card clears audio-muted
+    ok: hud-chrome-3440x1440-muted: quickbar-strip clears orb-life
+    ok: hud-chrome-3440x1440-muted: quickbar-strip clears orb-resource
+    ok: hud-chrome-3440x1440-muted: quickbar-strip clears identity
+    ok: hud-chrome-3440x1440-muted: quickbar-strip clears objective
+    ok: hud-chrome-3440x1440-muted: quickbar-strip clears controls
+    ok: hud-chrome-3440x1440-muted: quickbar-strip clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: quickbar-strip clears audio-muted
+    ok: hud-chrome-3440x1440-muted: orb-life clears orb-resource
+    ok: hud-chrome-3440x1440-muted: orb-life clears identity
+    ok: hud-chrome-3440x1440-muted: orb-life clears objective
+    ok: hud-chrome-3440x1440-muted: orb-life clears controls
+    ok: hud-chrome-3440x1440-muted: orb-life clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: orb-life clears audio-muted
+    ok: hud-chrome-3440x1440-muted: orb-resource clears identity
+    ok: hud-chrome-3440x1440-muted: orb-resource clears objective
+    ok: hud-chrome-3440x1440-muted: orb-resource clears controls
+    ok: hud-chrome-3440x1440-muted: orb-resource clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: orb-resource clears audio-muted
+    ok: hud-chrome-3440x1440-muted: identity clears objective
+    ok: hud-chrome-3440x1440-muted: identity clears controls
+    ok: hud-chrome-3440x1440-muted: identity clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: identity clears audio-muted
+    ok: hud-chrome-3440x1440-muted: objective clears controls
+    ok: hud-chrome-3440x1440-muted: objective clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: objective clears audio-muted
+    ok: hud-chrome-3440x1440-muted: controls clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: controls clears audio-muted
+    ok: hud-chrome-3440x1440-muted: audio-mixer clears audio-muted
+    ok: hud-chrome-3440x1440-muted: mixer trace matches measured production text
+    ok: hud-chrome-3440x1440-muted: every route and return row fits without shrinking
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: full HUD typography uses the authored Segoe sizes
+    ok: hud-chrome-3440x1440-muted: action labels fit the unchanged slots
+    ok: hud-chrome-3440x1440-muted: original owner actions remain in the production HUD
+    ok: hud-chrome-1366x768-unmuted: production capture written
+    ok: hud-chrome-1366x768-unmuted: every requested HUD region was placed
+    ok: hud-chrome-1366x768-unmuted: minimap painted
+    ok: hud-chrome-1366x768-unmuted: route-card painted
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip painted
+    ok: hud-chrome-1366x768-unmuted: orb-life painted
+    ok: hud-chrome-1366x768-unmuted: orb-resource painted
+    ok: hud-chrome-1366x768-unmuted: identity painted
+    ok: hud-chrome-1366x768-unmuted: objective painted
+    ok: hud-chrome-1366x768-unmuted: controls painted
+    ok: hud-chrome-1366x768-unmuted: audio-mixer painted
+    ok: hud-chrome-1366x768-unmuted: mute chip follows actual mute state
+    ok: hud-chrome-1366x768-unmuted: minimap inside viewport
+    ok: hud-chrome-1366x768-unmuted: route-card inside viewport
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip inside viewport
+    ok: hud-chrome-1366x768-unmuted: orb-life inside viewport
+    ok: hud-chrome-1366x768-unmuted: orb-resource inside viewport
+    ok: hud-chrome-1366x768-unmuted: identity inside viewport
+    ok: hud-chrome-1366x768-unmuted: objective inside viewport
+    ok: hud-chrome-1366x768-unmuted: controls inside viewport
+    ok: hud-chrome-1366x768-unmuted: audio-mixer inside viewport
+    ok: hud-chrome-1366x768-unmuted: minimap clears route-card
+    ok: hud-chrome-1366x768-unmuted: minimap clears quickbar-strip
+    ok: hud-chrome-1366x768-unmuted: minimap clears orb-life
+    ok: hud-chrome-1366x768-unmuted: minimap clears orb-resource
+    ok: hud-chrome-1366x768-unmuted: minimap clears identity
+    ok: hud-chrome-1366x768-unmuted: minimap clears objective
+    ok: hud-chrome-1366x768-unmuted: minimap clears controls
+    ok: hud-chrome-1366x768-unmuted: minimap clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: route-card clears quickbar-strip
+    ok: hud-chrome-1366x768-unmuted: route-card clears orb-life
+    ok: hud-chrome-1366x768-unmuted: route-card clears orb-resource
+    ok: hud-chrome-1366x768-unmuted: route-card clears identity
+    ok: hud-chrome-1366x768-unmuted: route-card clears objective
+    ok: hud-chrome-1366x768-unmuted: route-card clears controls
+    ok: hud-chrome-1366x768-unmuted: route-card clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip clears orb-life
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip clears orb-resource
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip clears identity
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip clears objective
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip clears controls
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: orb-life clears orb-resource
+    ok: hud-chrome-1366x768-unmuted: orb-life clears identity
+    ok: hud-chrome-1366x768-unmuted: orb-life clears objective
+    ok: hud-chrome-1366x768-unmuted: orb-life clears controls
+    ok: hud-chrome-1366x768-unmuted: orb-life clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: orb-resource clears identity
+    ok: hud-chrome-1366x768-unmuted: orb-resource clears objective
+    ok: hud-chrome-1366x768-unmuted: orb-resource clears controls
+    ok: hud-chrome-1366x768-unmuted: orb-resource clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: identity clears objective
+    ok: hud-chrome-1366x768-unmuted: identity clears controls
+    ok: hud-chrome-1366x768-unmuted: identity clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: objective clears controls
+    ok: hud-chrome-1366x768-unmuted: objective clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: controls clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: mixer trace matches measured production text
+    ok: hud-chrome-1366x768-unmuted: every route and return row fits without shrinking
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: full HUD typography uses the authored Segoe sizes
+    ok: hud-chrome-1366x768-unmuted: action labels fit the unchanged slots
+    ok: hud-chrome-1366x768-unmuted: original owner actions remain in the production HUD
+    ok: hud-chrome-1366x768-muted: production capture written
+    ok: hud-chrome-1366x768-muted: every requested HUD region was placed
+    ok: hud-chrome-1366x768-muted: minimap painted
+    ok: hud-chrome-1366x768-muted: route-card painted
+    ok: hud-chrome-1366x768-muted: quickbar-strip painted
+    ok: hud-chrome-1366x768-muted: orb-life painted
+    ok: hud-chrome-1366x768-muted: orb-resource painted
+    ok: hud-chrome-1366x768-muted: identity painted
+    ok: hud-chrome-1366x768-muted: objective painted
+    ok: hud-chrome-1366x768-muted: controls painted
+    ok: hud-chrome-1366x768-muted: audio-mixer painted
+    ok: hud-chrome-1366x768-muted: mute chip follows actual mute state
+    ok: hud-chrome-1366x768-muted: minimap inside viewport
+    ok: hud-chrome-1366x768-muted: route-card inside viewport
+    ok: hud-chrome-1366x768-muted: quickbar-strip inside viewport
+    ok: hud-chrome-1366x768-muted: orb-life inside viewport
+    ok: hud-chrome-1366x768-muted: orb-resource inside viewport
+    ok: hud-chrome-1366x768-muted: identity inside viewport
+    ok: hud-chrome-1366x768-muted: objective inside viewport
+    ok: hud-chrome-1366x768-muted: controls inside viewport
+    ok: hud-chrome-1366x768-muted: audio-mixer inside viewport
+    ok: hud-chrome-1366x768-muted: audio-muted inside viewport
+    ok: hud-chrome-1366x768-muted: minimap clears route-card
+    ok: hud-chrome-1366x768-muted: minimap clears quickbar-strip
+    ok: hud-chrome-1366x768-muted: minimap clears orb-life
+    ok: hud-chrome-1366x768-muted: minimap clears orb-resource
+    ok: hud-chrome-1366x768-muted: minimap clears identity
+    ok: hud-chrome-1366x768-muted: minimap clears objective
+    ok: hud-chrome-1366x768-muted: minimap clears controls
+    ok: hud-chrome-1366x768-muted: minimap clears audio-mixer
+    ok: hud-chrome-1366x768-muted: minimap clears audio-muted
+    ok: hud-chrome-1366x768-muted: route-card clears quickbar-strip
+    ok: hud-chrome-1366x768-muted: route-card clears orb-life
+    ok: hud-chrome-1366x768-muted: route-card clears orb-resource
+    ok: hud-chrome-1366x768-muted: route-card clears identity
+    ok: hud-chrome-1366x768-muted: route-card clears objective
+    ok: hud-chrome-1366x768-muted: route-card clears controls
+    ok: hud-chrome-1366x768-muted: route-card clears audio-mixer
+    ok: hud-chrome-1366x768-muted: route-card clears audio-muted
+    ok: hud-chrome-1366x768-muted: quickbar-strip clears orb-life
+    ok: hud-chrome-1366x768-muted: quickbar-strip clears orb-resource
+    ok: hud-chrome-1366x768-muted: quickbar-strip clears identity
+    ok: hud-chrome-1366x768-muted: quickbar-strip clears objective
+    ok: hud-chrome-1366x768-muted: quickbar-strip clears controls
+    ok: hud-chrome-1366x768-muted: quickbar-strip clears audio-mixer
+    ok: hud-chrome-1366x768-muted: quickbar-strip clears audio-muted
+    ok: hud-chrome-1366x768-muted: orb-life clears orb-resource
+    ok: hud-chrome-1366x768-muted: orb-life clears identity
+    ok: hud-chrome-1366x768-muted: orb-life clears objective
+    ok: hud-chrome-1366x768-muted: orb-life clears controls
+    ok: hud-chrome-1366x768-muted: orb-life clears audio-mixer
+    ok: hud-chrome-1366x768-muted: orb-life clears audio-muted
+    ok: hud-chrome-1366x768-muted: orb-resource clears identity
+    ok: hud-chrome-1366x768-muted: orb-resource clears objective
+    ok: hud-chrome-1366x768-muted: orb-resource clears controls
+    ok: hud-chrome-1366x768-muted: orb-resource clears audio-mixer
+    ok: hud-chrome-1366x768-muted: orb-resource clears audio-muted
+    ok: hud-chrome-1366x768-muted: identity clears objective
+    ok: hud-chrome-1366x768-muted: identity clears controls
+    ok: hud-chrome-1366x768-muted: identity clears audio-mixer
+    ok: hud-chrome-1366x768-muted: identity clears audio-muted
+    ok: hud-chrome-1366x768-muted: objective clears controls
+    ok: hud-chrome-1366x768-muted: objective clears audio-mixer
+    ok: hud-chrome-1366x768-muted: objective clears audio-muted
+    ok: hud-chrome-1366x768-muted: controls clears audio-mixer
+    ok: hud-chrome-1366x768-muted: controls clears audio-muted
+    ok: hud-chrome-1366x768-muted: audio-mixer clears audio-muted
+    ok: hud-chrome-1366x768-muted: mixer trace matches measured production text
+    ok: hud-chrome-1366x768-muted: every route and return row fits without shrinking
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: full HUD typography uses the authored Segoe sizes
+    ok: hud-chrome-1366x768-muted: action labels fit the unchanged slots
+    ok: hud-chrome-1366x768-muted: original owner actions remain in the production HUD
+    ok: hud-chrome-960x600-unmuted: production capture written
+    ok: hud-chrome-960x600-unmuted: every requested HUD region was placed
+    ok: hud-chrome-960x600-unmuted: minimap painted
+    ok: hud-chrome-960x600-unmuted: route-card painted
+    ok: hud-chrome-960x600-unmuted: quickbar-strip painted
+    ok: hud-chrome-960x600-unmuted: orb-life painted
+    ok: hud-chrome-960x600-unmuted: orb-resource painted
+    ok: hud-chrome-960x600-unmuted: identity painted
+    ok: hud-chrome-960x600-unmuted: objective painted
+    ok: hud-chrome-960x600-unmuted: controls painted
+    ok: hud-chrome-960x600-unmuted: audio-mixer painted
+    ok: hud-chrome-960x600-unmuted: mute chip follows actual mute state
+    ok: hud-chrome-960x600-unmuted: minimap inside viewport
+    ok: hud-chrome-960x600-unmuted: route-card inside viewport
+    ok: hud-chrome-960x600-unmuted: quickbar-strip inside viewport
+    ok: hud-chrome-960x600-unmuted: orb-life inside viewport
+    ok: hud-chrome-960x600-unmuted: orb-resource inside viewport
+    ok: hud-chrome-960x600-unmuted: identity inside viewport
+    ok: hud-chrome-960x600-unmuted: objective inside viewport
+    ok: hud-chrome-960x600-unmuted: controls inside viewport
+    ok: hud-chrome-960x600-unmuted: audio-mixer inside viewport
+    ok: hud-chrome-960x600-unmuted: minimap clears route-card
+    ok: hud-chrome-960x600-unmuted: minimap clears quickbar-strip
+    ok: hud-chrome-960x600-unmuted: minimap clears orb-life
+    ok: hud-chrome-960x600-unmuted: minimap clears orb-resource
+    ok: hud-chrome-960x600-unmuted: minimap clears identity
+    ok: hud-chrome-960x600-unmuted: minimap clears objective
+    ok: hud-chrome-960x600-unmuted: minimap clears controls
+    ok: hud-chrome-960x600-unmuted: minimap clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: route-card clears quickbar-strip
+    ok: hud-chrome-960x600-unmuted: route-card clears orb-life
+    ok: hud-chrome-960x600-unmuted: route-card clears orb-resource
+    ok: hud-chrome-960x600-unmuted: route-card clears identity
+    ok: hud-chrome-960x600-unmuted: route-card clears objective
+    ok: hud-chrome-960x600-unmuted: route-card clears controls
+    ok: hud-chrome-960x600-unmuted: route-card clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: quickbar-strip clears orb-life
+    ok: hud-chrome-960x600-unmuted: quickbar-strip clears orb-resource
+    ok: hud-chrome-960x600-unmuted: quickbar-strip clears identity
+    ok: hud-chrome-960x600-unmuted: quickbar-strip clears objective
+    ok: hud-chrome-960x600-unmuted: quickbar-strip clears controls
+    ok: hud-chrome-960x600-unmuted: quickbar-strip clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: orb-life clears orb-resource
+    ok: hud-chrome-960x600-unmuted: orb-life clears identity
+    ok: hud-chrome-960x600-unmuted: orb-life clears objective
+    ok: hud-chrome-960x600-unmuted: orb-life clears controls
+    ok: hud-chrome-960x600-unmuted: orb-life clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: orb-resource clears identity
+    ok: hud-chrome-960x600-unmuted: orb-resource clears objective
+    ok: hud-chrome-960x600-unmuted: orb-resource clears controls
+    ok: hud-chrome-960x600-unmuted: orb-resource clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: identity clears objective
+    ok: hud-chrome-960x600-unmuted: identity clears controls
+    ok: hud-chrome-960x600-unmuted: identity clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: objective clears controls
+    ok: hud-chrome-960x600-unmuted: objective clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: controls clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: mixer trace matches measured production text
+    ok: hud-chrome-960x600-unmuted: every route and return row fits without shrinking
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: full HUD typography uses the authored Segoe sizes
+    ok: hud-chrome-960x600-unmuted: action labels fit the unchanged slots
+    ok: hud-chrome-960x600-unmuted: original owner actions remain in the production HUD
+    ok: hud-chrome-960x600-muted: production capture written
+    ok: hud-chrome-960x600-muted: every requested HUD region was placed
+    ok: hud-chrome-960x600-muted: minimap painted
+    ok: hud-chrome-960x600-muted: route-card painted
+    ok: hud-chrome-960x600-muted: quickbar-strip painted
+    ok: hud-chrome-960x600-muted: orb-life painted
+    ok: hud-chrome-960x600-muted: orb-resource painted
+    ok: hud-chrome-960x600-muted: identity painted
+    ok: hud-chrome-960x600-muted: objective painted
+    ok: hud-chrome-960x600-muted: controls painted
+    ok: hud-chrome-960x600-muted: audio-mixer painted
+    ok: hud-chrome-960x600-muted: mute chip follows actual mute state
+    ok: hud-chrome-960x600-muted: minimap inside viewport
+    ok: hud-chrome-960x600-muted: route-card inside viewport
+    ok: hud-chrome-960x600-muted: quickbar-strip inside viewport
+    ok: hud-chrome-960x600-muted: orb-life inside viewport
+    ok: hud-chrome-960x600-muted: orb-resource inside viewport
+    ok: hud-chrome-960x600-muted: identity inside viewport
+    ok: hud-chrome-960x600-muted: objective inside viewport
+    ok: hud-chrome-960x600-muted: controls inside viewport
+    ok: hud-chrome-960x600-muted: audio-mixer inside viewport
+    ok: hud-chrome-960x600-muted: audio-muted inside viewport
+    ok: hud-chrome-960x600-muted: minimap clears route-card
+    ok: hud-chrome-960x600-muted: minimap clears quickbar-strip
+    ok: hud-chrome-960x600-muted: minimap clears orb-life
+    ok: hud-chrome-960x600-muted: minimap clears orb-resource
+    ok: hud-chrome-960x600-muted: minimap clears identity
+    ok: hud-chrome-960x600-muted: minimap clears objective
+    ok: hud-chrome-960x600-muted: minimap clears controls
+    ok: hud-chrome-960x600-muted: minimap clears audio-mixer
+    ok: hud-chrome-960x600-muted: minimap clears audio-muted
+    ok: hud-chrome-960x600-muted: route-card clears quickbar-strip
+    ok: hud-chrome-960x600-muted: route-card clears orb-life
+    ok: hud-chrome-960x600-muted: route-card clears orb-resource
+    ok: hud-chrome-960x600-muted: route-card clears identity
+    ok: hud-chrome-960x600-muted: route-card clears objective
+    ok: hud-chrome-960x600-muted: route-card clears controls
+    ok: hud-chrome-960x600-muted: route-card clears audio-mixer
+    ok: hud-chrome-960x600-muted: route-card clears audio-muted
+    ok: hud-chrome-960x600-muted: quickbar-strip clears orb-life
+    ok: hud-chrome-960x600-muted: quickbar-strip clears orb-resource
+    ok: hud-chrome-960x600-muted: quickbar-strip clears identity
+    ok: hud-chrome-960x600-muted: quickbar-strip clears objective
+    ok: hud-chrome-960x600-muted: quickbar-strip clears controls
+    ok: hud-chrome-960x600-muted: quickbar-strip clears audio-mixer
+    ok: hud-chrome-960x600-muted: quickbar-strip clears audio-muted
+    ok: hud-chrome-960x600-muted: orb-life clears orb-resource
+    ok: hud-chrome-960x600-muted: orb-life clears identity
+    ok: hud-chrome-960x600-muted: orb-life clears objective
+    ok: hud-chrome-960x600-muted: orb-life clears controls
+    ok: hud-chrome-960x600-muted: orb-life clears audio-mixer
+    ok: hud-chrome-960x600-muted: orb-life clears audio-muted
+    ok: hud-chrome-960x600-muted: orb-resource clears identity
+    ok: hud-chrome-960x600-muted: orb-resource clears objective
+    ok: hud-chrome-960x600-muted: orb-resource clears controls
+    ok: hud-chrome-960x600-muted: orb-resource clears audio-mixer
+    ok: hud-chrome-960x600-muted: orb-resource clears audio-muted
+    ok: hud-chrome-960x600-muted: identity clears objective
+    ok: hud-chrome-960x600-muted: identity clears controls
+    ok: hud-chrome-960x600-muted: identity clears audio-mixer
+    ok: hud-chrome-960x600-muted: identity clears audio-muted
+    ok: hud-chrome-960x600-muted: objective clears controls
+    ok: hud-chrome-960x600-muted: objective clears audio-mixer
+    ok: hud-chrome-960x600-muted: objective clears audio-muted
+    ok: hud-chrome-960x600-muted: controls clears audio-mixer
+    ok: hud-chrome-960x600-muted: controls clears audio-muted
+    ok: hud-chrome-960x600-muted: audio-mixer clears audio-muted
+    ok: hud-chrome-960x600-muted: mixer trace matches measured production text
+    ok: hud-chrome-960x600-muted: every route and return row fits without shrinking
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: full HUD typography uses the authored Segoe sizes
+    ok: hud-chrome-960x600-muted: action labels fit the unchanged slots
+    ok: hud-chrome-960x600-muted: original owner actions remain in the production HUD
+   PASS (0 failures)
+== scenario xp-meter ==
+    ok: xp-meter: local HUD still publishes the meter
+    ok: xp-meter: a fresh scion starts at the floor, not a fake fill
+    ok: xp-meter: kill XP fills the current level span
+    ok: xp-meter: a 0% strip cannot count as a filled meter
+    ok: xp-meter: xp-bar is on the HUD
+    ok: xp-meter: xp-bar is on the HUD
+    ok: xp-meter: offscreen presents succeeded
+    ok: xp-meter: an empty pit cannot pass as ledger gold
+    ok: xp-meter: filled meter paints gold, not a black hairline
+    xp-meter: empty_gold=0 filled_gold=570 fraction=0.493
+    ok: xp-meter: filled HUD capture written
+    ok: xp-meter: live HUD names Kill fill and Gold pit
+    ok: xp-meter: live HUD rejects VG-ID count
+   PASS (0 failures)
+== scenario raster-world ==
+    ok: raster-world: directional sprite decodes: hero_se
+    ok: raster-world: directional sprite decodes: hero_sw
+    ok: raster-world: directional sprite decodes: hero_ne
+    ok: raster-world: directional sprite decodes: hero_nw
+    ok: raster-world: directional sprite decodes: raider_se
+    ok: raster-world: directional sprite decodes: raider_sw
+    ok: raster-world: directional sprite decodes: raider_ne
+    ok: raster-world: directional sprite decodes: raider_nw
+    ok: raster-world: directional sprite decodes: beast_se
+    ok: raster-world: directional sprite decodes: beast_sw
+    ok: raster-world: directional sprite decodes: beast_ne
+    ok: raster-world: directional sprite decodes: beast_nw
+    ok: raster-world: directional sprite decodes: wight_se
+    ok: raster-world: directional sprite decodes: wight_sw
+    ok: raster-world: directional sprite decodes: wight_ne
+    ok: raster-world: directional sprite decodes: wight_nw
+    ok: raster-world: directional sprite decodes: archer_se
+    ok: raster-world: directional sprite decodes: archer_sw
+    ok: raster-world: directional sprite decodes: archer_ne
+    ok: raster-world: directional sprite decodes: archer_nw
+    ok: raster-world: directional sprite decodes: artisan_se
+    ok: raster-world: directional sprite decodes: artisan_sw
+    ok: raster-world: directional sprite decodes: artisan_ne
+    ok: raster-world: directional sprite decodes: artisan_nw
+    ok: raster-world: scenery decodes: tree
+    ok: raster-world: scenery decodes: hut
+    ok: raster-world: scenery decodes: column
+    ok: raster-world: scenery decodes: shrine
+    ok: raster-world: scenery decodes: gate
+    ok: raster-world: scenery decodes: brazier
+    ok: raster-world: scenery decodes: exit_stairs
+    ok: raster-world: scenery decodes: effect_hit_spark
+    ok: raster-world: scenery decodes: terrain_packed_earth
+    ok: raster-world: scenery decodes: terrain_dark
+    ok: raster-world: scenery decodes: terrain_moss
+    ok: raster-world: scenery decodes: terrain_stone
+    ok: raster-world: walk frame decodes: hero_walk0_se
+    ok: raster-world: walk frame decodes: hero_walk1_se
+    ok: raster-world: walk frame decodes: hero_walk2_se
+    ok: raster-world: walk frame decodes: hero_walk3_se
+    ok: raster-world: walk frame decodes: hero_walk0_sw
+    ok: raster-world: walk frame decodes: hero_walk1_sw
+    ok: raster-world: walk frame decodes: hero_walk2_sw
+    ok: raster-world: walk frame decodes: hero_walk3_sw
+    ok: raster-world: walk frame decodes: hero_walk4_sw
+    ok: raster-world: walk frame decodes: hero_walk5_sw
+    ok: raster-world: walk frame decodes: hero_walk6_sw
+    ok: raster-world: walk frame decodes: hero_walk7_sw
+    ok: raster-world: walk frame decodes: hero_walk0_ne
+    ok: raster-world: walk frame decodes: hero_walk1_ne
+    ok: raster-world: walk frame decodes: hero_walk2_ne
+    ok: raster-world: walk frame decodes: hero_walk3_ne
+    ok: raster-world: walk frame decodes: hero_walk4_ne
+    ok: raster-world: walk frame decodes: hero_walk5_ne
+    ok: raster-world: walk frame decodes: hero_walk6_ne
+    ok: raster-world: walk frame decodes: hero_walk7_ne
+    ok: raster-world: walk frame decodes: hero_walk0_nw
+    ok: raster-world: walk frame decodes: hero_walk1_nw
+    ok: raster-world: walk frame decodes: hero_walk2_nw
+    ok: raster-world: walk frame decodes: hero_walk3_nw
+    ok: raster-world: walk frame decodes: hero_walk4_nw
+    ok: raster-world: walk frame decodes: hero_walk5_nw
+    ok: raster-world: walk frame decodes: hero_walk6_nw
+    ok: raster-world: walk frame decodes: hero_walk7_nw
+    ok: raster-world: animation paint surface allocated
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: an unanimated wight attack holds its feet despite movement smoothing
+    ok: raster-world: an unanimated wight attack holds its feet despite movement smoothing
+    ok: raster-world: an unanimated wight attack holds its feet despite movement smoothing
+    ok: raster-world: an unanimated wight attack holds its feet despite movement smoothing
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: each completed directional strike returns to idle
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: each completed directional strike returns to idle
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: each completed directional strike returns to idle
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world:
