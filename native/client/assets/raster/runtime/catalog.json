@@ -22,7 +22,9 @@
     "hero-strike-nw",
     "hero-strike-sw",
     "terrain-quiet",
-    "raider-walk-sw"
+    "raider-walk-sw",
+    "hero-strike-ne",
+    "raider-strike-sw"
   ],
   "assets": [
     {
@@ -8408,6 +8410,834 @@
       "palette_scope": "manifest_cycle",
       "sha256": "0dc4123f232d579ff3b69b12129ae45a87a02505c03f9fd0422bd15f812dcee6",
       "provenance": "raider-walk-sw.provenance.json"
+    },
+    {
+      "name": "hero_strike0_ne",
+      "file": "hero_strike0_ne.png",
+      "source": "../../client/assets/raster/runtime/hero_ne.png",
+      "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        0,
+        0,
+        80,
+        96
+      ],
+      "cell_size": 1,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "preserve",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        80,
+        96
+      ],
+      "trim_box": [
+        0,
+        0,
+        80,
+        96
+      ],
+      "before_resize": [
+        80,
+        96
+      ],
+      "placed_size": [
+        80,
+        96
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        0,
+        0,
+        80,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        40,
+        96
+      ],
+      "palette_scope": "manifest_reference",
+      "sha256": "aafeeed5b41a4ee6cad27d6331b0dec4e121ba711c86380ca2a83228a322c0c5",
+      "provenance": "hero-strike-ne.provenance.json"
+    },
+    {
+      "name": "hero_strike1_ne",
+      "file": "hero_strike1_ne.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-ne-candidate/windup.png",
+      "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        0,
+        0,
+        80,
+        96
+      ],
+      "cell_size": 1,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "preserve",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 20,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        80,
+        96
+      ],
+      "trim_box": [
+        0,
+        0,
+        80,
+        96
+      ],
+      "before_resize": [
+        80,
+        96
+      ],
+      "placed_size": [
+        80,
+        96
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        0,
+        0,
+        80,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        40,
+        96
+      ],
+      "palette_scope": "manifest_reference",
+      "sha256": "7f182d74df624737065313e957efd6acce861b59f84074828d8f92699aa42032",
+      "provenance": "hero-strike-ne.provenance.json"
+    },
+    {
+      "name": "hero_strike2_ne",
+      "file": "hero_strike2_ne.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-ne-candidate/commit.png",
+      "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        0,
+        0,
+        80,
+        96
+      ],
+      "cell_size": 1,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "preserve",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 20,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        80,
+        96
+      ],
+      "trim_box": [
+        0,
+        0,
+        80,
+        96
+      ],
+      "before_resize": [
+        80,
+        96
+      ],
+      "placed_size": [
+        80,
+        96
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        0,
+        0,
+        80,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        40,
+        96
+      ],
+      "palette_scope": "manifest_reference",
+      "sha256": "20685cbe6f4f88c17e75f697319b8dc8edb03bb153b4449b4b9a3af708e8f624",
+      "provenance": "hero-strike-ne.provenance.json"
+    },
+    {
+      "name": "hero_strike3_ne",
+      "file": "hero_strike3_ne.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-ne-contact-v6-candidate/contact-cell11.png",
+      "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        0,
+        0,
+        80,
+        96
+      ],
+      "cell_size": 1,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "preserve",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 22,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        80,
+        96
+      ],
+      "trim_box": [
+        0,
+        0,
+        80,
+        96
+      ],
+      "before_resize": [
+        80,
+        96
+      ],
+      "placed_size": [
+        80,
+        96
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        0,
+        0,
+        80,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        40,
+        96
+      ],
+      "palette_scope": "manifest_reference",
+      "sha256": "d9e08519bc17c7d4541ff0c0114f9eceaa7b41e83ca553de176b68c632493fdd",
+      "provenance": "hero-strike-ne.provenance.json"
+    },
+    {
+      "name": "hero_strike4_ne",
+      "file": "hero_strike4_ne.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-ne-followthrough-v3-candidate/followthrough.png",
+      "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        0,
+        0,
+        80,
+        96
+      ],
+      "cell_size": 1,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "preserve",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 24,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        80,
+        96
+      ],
+      "trim_box": [
+        0,
+        0,
+        80,
+        96
+      ],
+      "before_resize": [
+        80,
+        96
+      ],
+      "placed_size": [
+        80,
+        96
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        0,
+        0,
+        80,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        40,
+        96
+      ],
+      "palette_scope": "manifest_reference",
+      "sha256": "0daf9dc80cca61740db98bee1230bd8deee9335fef32d5216cbcbbd12b60916b",
+      "provenance": "hero-strike-ne.provenance.json"
+    },
+    {
+      "name": "hero_strike5_ne",
+      "file": "hero_strike5_ne.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-ne-candidate/recovery.png",
+      "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        0,
+        0,
+        80,
+        96
+      ],
+      "cell_size": 1,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "preserve",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 21,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        80,
+        96
+      ],
+      "trim_box": [
+        0,
+        0,
+        80,
+        96
+      ],
+      "before_resize": [
+        80,
+        96
+      ],
+      "placed_size": [
+        80,
+        96
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        0,
+        0,
+        80,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        40,
+        96
+      ],
+      "palette_scope": "manifest_reference",
+      "sha256": "009659373b6b696d9d5a9f2190fcd35c9cc8b2bb84ba2e9d40c90294f4542555",
+      "provenance": "hero-strike-ne.provenance.json"
+    },
+    {
+      "name": "raider_strike0_sw",
+      "file": "raider_strike0_sw.png",
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 31,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        22,
+        21,
+        68,
+        79
+      ],
+      "before_resize": [
+        46,
+        58
+      ],
+      "placed_size": [
+        46,
+        58
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        15,
+        37,
+        61,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        280,
+        480
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "b06f852840b585931a94c5185a59582c717ce5be534bf767c2c23add97203c36",
+      "provenance": "raider-strike-sw.provenance.json"
+    },
+    {
+      "name": "raider_strike1_sw",
+      "file": "raider_strike1_sw.png",
+      "source": "../../client/assets/raster/source/raider-strike-sw-v2.png",
+      "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        512,
+        0,
+        1024,
+        512
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        8,
+        21,
+        65,
+        79
+      ],
+      "before_resize": [
+        57,
+        58
+      ],
+      "placed_size": [
+        57,
+        58
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        3,
+        37,
+        60,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        268,
+        480
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "d4b8f4d21021b1b8281f87688db1005b456d5c106a4a87d917c22978fc1e4db2",
+      "provenance": "raider-strike-sw.provenance.json"
+    },
+    {
+      "name": "raider_strike2_sw",
+      "file": "raider_strike2_sw.png",
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        1024,
+        0,
+        1536,
+        512
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 30,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        19,
+        5,
+        62,
+        79
+      ],
+      "before_resize": [
+        43,
+        74
+      ],
+      "placed_size": [
+        43,
+        74
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        16,
+        21,
+        59,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        256,
+        480
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "ae5d698092f3b60a3826a70fa6f59455e355440f62b66ed4e278ec91933e6994",
+      "provenance": "raider-strike-sw.provenance.json"
+    },
+    {
+      "name": "raider_strike3_sw",
+      "file": "raider_strike3_sw.png",
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        0,
+        512,
+        512,
+        1024
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        13,
+        20,
+        73,
+        74
+      ],
+      "before_resize": [
+        60,
+        54
+      ],
+      "placed_size": [
+        60,
+        54
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        6,
+        40,
+        66,
+        94
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        280,
+        458
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "0939205de852b36c2c4e66071e48e0fa8263a63066322201f443ddb1ecf3ab24",
+      "provenance": "raider-strike-sw.provenance.json"
+    },
+    {
+      "name": "raider_strike4_sw",
+      "file": "raider_strike4_sw.png",
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        512,
+        512,
+        1024,
+        1024
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        11,
+        20,
+        73,
+        75
+      ],
+      "before_resize": [
+        62,
+        55
+      ],
+      "placed_size": [
+        62,
+        55
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        6,
+        40,
+        68,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        268,
+        458
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "5dcc2c33e499ccbeb0392016457e7acf4e316ed5df17c2822279902bd5176e19",
+      "provenance": "raider-strike-sw.provenance.json"
+    },
+    {
+      "name": "raider_strike5_sw",
+      "file": "raider_strike5_sw.png",
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        1024,
+        512,
+        1536,
+        1024
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        16,
+        19,
+        65,
+        76
+      ],
+      "before_resize": [
+        49,
+        57
+      ],
+      "placed_size": [
+        49,
+        57
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        13,
+        39,
+        62,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        256,
+        458
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "81ae09e3e673ed9ae8bf0b022f564897f7a39af298833450b56bd6ce95436ee6",
+      "provenance": "raider-strike-sw.provenance.json"
     }
   ],
   "known_limitations": [
@@ -8451,7 +9281,20 @@
     "Frames preserve the reviewed axe-v3 pixels, including the small original frame7 head offset and close adjacent0/1 and4/5 phases. Minor blade contour/angle variation from idle remains.",
     "Generated source has an opaque checker pattern. Actual Pixel Respecter cleanup includes only recorded border fill and visually inspected hair-loop and axe/knee gaps.",
     "One common source origin197,480, column stride406,row stride435 and cell6; no per-frame fitting or centering.",
-    "Axe is embedded in the anatomical-right/screen-left hand in all8 SW frames. Use ordinary whole monster rendering, without hero weapon overlay."
+    "Axe is embedded in the anatomical-right/screen-left hand in all8 SW frames. Use ordinary whole monster rendering, without hero weapon overlay.",
+    "Root viewed fixed-origin native/3x palette comparison, native equipped NE grids and actual equipped NE hit. Production contact is reviewed for provisional integration; this is not final visual polish.",
+    "Each selected input is an immutable native 80x96 reconstruction. Actual Pixel Respecter cell1 reconstruction and palette snap preserve every alpha value, pixel position and common pivot[40,96]; no individual pose fitting or rescaling.",
+    "CIELAB nearest-color matching pins RGB to the accepted NE idle palette. Followthrough remains wider, the return to recovery is fast, and anatomical/material differences remain despite successful production contact integration.",
+    "Ready uses the actual accepted runtime hero_ne.png and remains pixel-identical; the obsolete candidate idle is excluded.",
+    "The selected windup, commit and recovery native inputs retain their earlier batch palette. The original batch report is historical provenance; exact active reproduction starts from these preserved native PNGs and does not rerun superseded candidate poses.",
+    "Bow/staff checks verify attachment and sampling only; they do not establish a bow draw/release or staff casting animation.",
+    "Root viewed native SW action, corrected warning poses and actual elite SW sweep contact: warning0/1/2 precedes life loss, first confirmed hit3 applies damage8 and impact, followed by followthrough4/recovery5/idle. This is provisional production integration, not final visual polish.",
+    "Selected original v1 poses0,2,3,4,5 plus corrected v2 anticipation1. Color repair restored charcoal cloth; original olive-tinted phase1 remains preserved and rejected.",
+    "One shared cell6 reconstruction with source origin280,480, column500,row490,canvas80x96,pivot40,96; no per-pose fitting or centering.",
+    "Anticipation is an outward preparatory lift. Contact3 is synchronized to the confirmed production hit; low follow-through4 and recovery retain abrupt pose and silhouette changes that still need visual refinement.",
+    "Source opaque checker removed through actual Pixel Respecter. Exact neutral-only local windows preserve pale colored skin; earlier broader color cleanup is preserved as rejected evidence.",
+    "Axe is baked into the same anatomical-right/screen-left hand in all6 SW frames. Ordinary whole monster rendering; no separate hero equipment overlay.",
+    "Only Raider SW has this six-phase action. Other raider action directions are not supplied or inferred from these frames; the former scripted SW locomotion review remains separate from this real elite combat event proof."
   ],
   "missing_direction_assets": [],
   "walk_sequence": {
@@ -8581,6 +9424,22 @@
         96
       ],
       "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+    },
+    "ne": {
+      "frames": [
+        "hero_strike0_ne",
+        "hero_strike1_ne",
+        "hero_strike2_ne",
+        "hero_strike3_ne",
+        "hero_strike4_ne",
+        "hero_strike5_ne"
+      ],
+      "frame_count": 6,
+      "canvas": [
+        80,
+        96
+      ],
+      "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
     }
   },
   "monster_walk_sequences": {
@@ -8597,6 +9456,26 @@
           "raider_walk7_sw"
         ],
         "frame_count": 8,
+        "canvas": [
+          80,
+          96
+        ],
+        "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+      }
+    }
+  },
+  "monster_strike_sequences": {
+    "raider": {
+      "sw": {
+        "frames": [
+          "raider_strike0_sw",
+          "raider_strike1_sw",
+          "raider_strike2_sw",
+          "raider_strike3_sw",
+          "raider_strike4_sw",
+          "raider_strike5_sw"
+        ],
+        "frame_count": 6,
         "canvas": [
           80,
           96

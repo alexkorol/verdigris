@@ -1,0 +1,153 @@
+{
+  "status": "Review-only integration patch ready; static equipment review complete and fixture checks passed.",
+  "patch": "ne-equipment-integration.patch",
+  "patch_sha256": "28bee286cd988379aca8f41089cbe1f7dabeae2952d82728e81f11b1f9c0d2c8",
+  "production_files_in_patch": [
+    "native/client/raster_equipment.hpp",
+    "native/tools/raster/test_equipment.cpp"
+  ],
+  "direct_production_edits_by_this_agent": false,
+  "old_content_checks": {
+    "existing54_metadata_rows_unchanged": true,
+    "existing36_directional_hash_rows_unchanged": true,
+    "old_SE_fingerprint_function_unchanged": true
+  },
+  "new_fingerprints": [
+    {
+      "name": "hero_strike0_ne",
+      "source": "native\\tools\\raster\\hero-strike-ne-palette-candidate\\hero_strike0_ne.png",
+      "sha256": "aafeeed5b41a4ee6cad27d6331b0dec4e121ba711c86380ca2a83228a322c0c5",
+      "box": [
+        26,
+        59,
+        33,
+        67
+      ],
+      "argb_fnv1a64": "56f1722d81fd2924",
+      "grip_argb": "ff793420"
+    },
+    {
+      "name": "hero_strike1_ne",
+      "source": "native\\tools\\raster\\hero-strike-ne-palette-candidate\\hero_strike1_ne.png",
+      "sha256": "7f182d74df624737065313e957efd6acce861b59f84074828d8f92699aa42032",
+      "box": [
+        26,
+        38,
+        33,
+        46
+      ],
+      "argb_fnv1a64": "86afc1d3585acf1a",
+      "grip_argb": "ffcfad87"
+    },
+    {
+      "name": "hero_strike2_ne",
+      "source": "native\\tools\\raster\\hero-strike-ne-palette-candidate\\hero_strike2_ne.png",
+      "sha256": "20685cbe6f4f88c17e75f697319b8dc8edb03bb153b4449b4b9a3af708e8f624",
+      "box": [
+        27,
+        17,
+        35,
+        26
+      ],
+      "argb_fnv1a64": "8d2f67d735c5c239",
+      "grip_argb": "fff2a56d"
+    },
+    {
+      "name": "hero_strike3_ne",
+      "source": "native\\tools\\raster\\hero-strike-ne-palette-candidate\\hero_strike3_ne.png",
+      "sha256": "d9e08519bc17c7d4541ff0c0114f9eceaa7b41e83ca553de176b68c632493fdd",
+      "box": [
+        42,
+        19,
+        50,
+        27
+      ],
+      "argb_fnv1a64": "ce49b2c5ea6b3288",
+      "grip_argb": "ffb95e24"
+    },
+    {
+      "name": "hero_strike4_ne",
+      "source": "native\\tools\\raster\\hero-strike-ne-palette-candidate\\hero_strike4_ne.png",
+      "sha256": "0daf9dc80cca61740db98bee1230bd8deee9335fef32d5216cbcbbd12b60916b",
+      "box": [
+        39,
+        19,
+        46,
+        27
+      ],
+      "argb_fnv1a64": "ec6f72ca66aba384",
+      "grip_argb": "fff9e7b0"
+    },
+    {
+      "name": "hero_strike5_ne",
+      "source": "native\\tools\\raster\\hero-strike-ne-palette-candidate\\hero_strike5_ne.png",
+      "sha256": "009659373b6b696d9d5a9f2190fcd35c9cc8b2bb84ba2e9d40c90294f4542555",
+      "box": [
+        22,
+        60,
+        30,
+        68
+      ],
+      "argb_fnv1a64": "5c8a21d5c7c42bbd",
+      "grip_argb": "ff642314"
+    }
+  ],
+  "patch_check": {
+    "command": "git apply --check .ci-artifacts/raster-equipment/ne-action-review/ne-equipment-integration.patch",
+    "result": "pass before application",
+    "tool_chunk": "1e7c1a"
+  },
+  "validation": {
+    "command": ".ci-artifacts/raster-equipment/ne-action-review/run-integration-review.ps1",
+    "session_id": 42853,
+    "launch_tool_chunk": "1e7c1a",
+    "completion_tool_chunk": "40995a",
+    "exit_code": 0,
+    "NE_90_placement_log": "test_ne_all_weapons-probe.log",
+    "NE_90_placement_summary": "PASS 90 placements x100 repeats: loads+0 builds+0 GDI146->146 cache69 bitmaps/5680904 bytes",
+    "full_60_pose_fixture_log": "integration-fixture/test_equipment-probe.log",
+    "full_60_pose_summary": [
+      "PASS: all six V3 hand-region fingerprints and measured palm texels match the reviewed sockets.",
+      "PASS: 42 reviewed directional hand neighborhoods and palm texels match their measured sockets.",
+      "Stable repeat: 120 strike placements x 100 plus idle; image-load delta 0, bitmap-build delta 0, GDI handles 287 -> 287; cache 140 bitmaps / 25912924 bytes.",
+      "PASS: 60 poses x 5 weapons at three scales; grip error <=0.5 px, exact actor occlusion, unchanged zero-angle pixels, direct PARGB nearest samples, normalized angle identity, 360-angle bounded eviction, stable full-strike repeat cache/GDI handles and invalid-parameter rejection."
+    ],
+    "fixture_differences": "Proposed production patches plus include and input/output path substitutions only; all old runtime images copied unchanged and normalized NE6 copied into fixture assets. Production test body is otherwise unchanged.",
+    "full_fixture_scales": [
+      96,
+      173,
+      288
+    ],
+    "extra_NE_scales": [
+      96,
+      192,
+      288
+    ]
+  },
+  "viewed_composites": [
+    "weapon_axe-all6-1x.png",
+    "weapon_axe-all6-2x.png",
+    "weapon_axe-all6-3x.png",
+    "weapon_sword-all6-1x.png",
+    "weapon_sword-all6-2x.png",
+    "weapon_sword-all6-3x.png",
+    "weapon_staff-all6-1x.png",
+    "weapon_staff-all6-2x.png",
+    "weapon_staff-all6-3x.png",
+    "weapon_bow-all6-1x.png",
+    "weapon_bow-all6-2x.png",
+    "weapon_bow-all6-3x.png",
+    "weapon_club-all6-1x.png",
+    "weapon_club-all6-2x.png",
+    "weapon_club-all6-3x.png"
+  ],
+  "visual_verdict": {
+    "axe": "Grips, far-body occlusion and overhead NE blade path are usable for production trial at all3 scales.",
+    "sword_and_club": "Shared overhead arc is readable; no separate weapon-specific body action was generated.",
+    "staff_and_bow": "Attachment passes but retains vertical carry orientation. Overhead arm pose does not establish staff-strike or bow-firing animation.",
+    "residuals": "Normalized colors are more consistent. Follow-through remains broader/darker and moves42px down into low recovery; root will assess real native motion and contact timing."
+  },
+  "browser_policy_record": "browser-policy-rejection.txt",
+  "blocked_playback_retried": false,
+  "smooth_video_playback_claimed": false
+}

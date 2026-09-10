@@ -3,6 +3,10 @@
 
 All geometry is integer-valued. Raster scaling uses nearest-neighbor only;
 transparent colors remain unpremultiplied RGBA in the exported PNGs.
+
+Optional manifest palette_reference: {"source": "accepted.png", "max_colors": 32}
+uses the visible RGB colors of that relative PNG as the final fixed palette.
+It replaces other palette/max-color operations; reference colors are never reduced.
 """
 from __future__ import annotations
 
@@ -225,6 +229,48 @@ def reduce_cycle_colors(images: list[Image.Image], maximum: int) -> tuple[list[I
                     "scope": "all reconstructed frames in this manifest"}
 
 
+def load_palette_reference(value: dict, manifest_path: Path) -> tuple[np.ndarray, dict]:
+    """Read only visible colors from an accepted native PNG, without reduction."""
+    if not isinstance(value, dict) or not isinstance(value.get("source"), str) or not value["source"]:
+        raise ValueError("palette_reference requires a source PNG path")
+    maximum = value.get("max_colors", 32)
+    if type(maximum) is not int or not 1 <= maximum <= 256:
+        raise ValueError("palette_reference max_colors must be an integer from 1 to 256")
+    path = (manifest_path.parent / value["source"]).resolve()
+    try:
+        with Image.open(path) as reference:
+            if reference.format != "PNG" or getattr(reference, "n_frames", 1) != 1:
+                raise ValueError("palette_reference must be a single-frame PNG")
+            pixels = np.asarray(ImageOps.exif_transpose(reference).convert("RGBA"))
+    except OSError as exc:
+        raise ValueError(f"Cannot read palette_reference PNG: {path}") from exc
+    palette = np.unique(pixels[:, :, :3][pixels[:, :, 3] > 0], axis=0)
+    if not len(palette):
+        raise ValueError("palette_reference has no visible colors")
+    if len(palette) > maximum:
+        raise ValueError(f"palette_reference has {len(palette)} visible colors, exceeding max_colors {maximum}")
+    return palette, {"source": value["source"], "sha256": digest(path),
+                     "size": [pixels.shape[1], pixels.shape[0]], "max_colors": maximum,
+                     "visible_colors": len(palette), "palette_rgb": palette.tolist(),
+                     "api": "pixel_perfecter.palettes.snap_to_palette", "matching": "CIELAB",
+                     "scope": "all reconstructed frames in this manifest",
+                     "alpha_policy": "unchanged alpha; zero-alpha RGB normalized to zero"}
+
+
+def snap_cycle_to_reference(images: list[Image.Image], palette: np.ndarray) -> list[Image.Image]:
+    """Apply the actual project API to RGB only; retain each normalized canvas."""
+    from pixel_perfecter.palettes import snap_to_palette
+    result = []
+    for image in images:
+        source = np.asarray(image.convert("RGBA"))
+        snapped = snap_to_palette(source, palette)
+        if snapped.shape != source.shape or not np.array_equal(snapped[:, :, 3], source[:, :, 3]):
+            raise ValueError("Pixel Respecter palette snapping changed geometry or alpha")
+        snapped[snapped[:, :, 3] == 0, :3] = 0
+        result.append(Image.fromarray(snapped))
+    return result
+
+
 def run(manifest_path: Path, project: Path, output_override: Path | None = None,
         preview_path: Path | None = None, preview_scale: int = 1) -> dict:
     manifest_path = manifest_path.resolve()
@@ -237,6 +283,11 @@ def run(manifest_path: Path, project: Path, output_override: Path | None = None,
     output = (output_override or manifest_path.parent / manifest["output_dir"]).resolve()
     workspace = load_engine(project)
     shared_maximum = manifest.get("shared_palette_max_colors")
+    reference_palette, reference_record = None, None
+    if "palette_reference" in manifest:
+        if shared_maximum is not None:
+            raise ValueError("palette_reference cannot be combined with shared_palette_max_colors")
+        reference_palette, reference_record = load_palette_reference(manifest["palette_reference"], manifest_path)
     assets, records, sources, names = [], [], [], set()
     # Reconstruct and validate everything before writing any runtime asset.
     for sheet in manifest["sheets"]:
@@ -255,6 +306,8 @@ def run(manifest_path: Path, project: Path, output_override: Path | None = None,
                 raise ValueError(f"Asset names must be unique safe filename stems: {name}")
             names.add(name)
             options = {**manifest.get("defaults", {}), **sheet.get("defaults", {}), **asset}
+            if reference_record is not None and (options.get("palette", "none") != "none" or options.get("max_colors", 0)):
+                raise ValueError("palette_reference replaces palette/max_colors; set its own max_colors limit")
             box = cell_box(sheet, asset, source.size)
             crop = np.asarray(source.crop(box)).copy()
             cell_size = options.get("cell_size", 0)
@@ -312,6 +365,14 @@ def run(manifest_path: Path, project: Path, output_override: Path | None = None,
             record["max_colors"] = shared_maximum
             record["palette_scope"] = "manifest_cycle"
             record["visible_colors"] = len(np.unique(pixels[:, :, :3][pixels[:, :, 3] > 0], axis=0))
+    if reference_record is not None:
+        images = snap_cycle_to_reference([art for _, art in assets], reference_palette)
+        assets = [(name, art) for (name, _), art in zip(assets, images)]
+        for (_, art), record in zip(assets, records):
+            pixels = np.asarray(art)
+            record["max_colors"] = reference_record["max_colors"]
+            record["palette_scope"] = "manifest_reference"
+            record["visible_colors"] = len(np.unique(pixels[:, :, :3][pixels[:, :, 3] > 0], axis=0))
     output.mkdir(parents=True, exist_ok=True)
     for (name, art), record in zip(assets, records):
         target = output / f"{name}.png"
@@ -323,6 +384,8 @@ def run(manifest_path: Path, project: Path, output_override: Path | None = None,
               "sources": sources, "assets": records}
     if shared_palette is not None:
         report["shared_palette"] = shared_palette
+    if reference_record is not None:
+        report["palette_reference"] = reference_record
     if "native_scale_group" in manifest:
         report["native_scale_group"] = manifest["native_scale_group"]
         report["scale_review"] = manifest.get("scale_review", "Pending native head/torso comparison")

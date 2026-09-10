@@ -1,0 +1,402 @@
+{
+  "acceptance": "candidate_only_pending_root_review",
+  "view_layout": "Top row before; bottom row snapped. All native 80x96 canvases at identical origin; 3x nearest-neighbor is inspection only.",
+  "review_gif_layout": "Left before, right snapped; 100ms action holds are slow review timing, not a production timing claim.",
+  "reference": {
+    "source": "../../client/assets/raster/runtime/hero_ne.png",
+    "sha256": "aafeeed5b41a4ee6cad27d6331b0dec4e121ba711c86380ca2a83228a322c0c5",
+    "size": [
+      80,
+      96
+    ],
+    "max_colors": 32,
+    "visible_colors": 32,
+    "palette_rgb": [
+      [
+        21,
+        12,
+        6
+      ],
+      [
+        33,
+        35,
+        49
+      ],
+      [
+        40,
+        46,
+        66
+      ],
+      [
+        44,
+        21,
+        21
+      ],
+      [
+        52,
+        37,
+        27
+      ],
+      [
+        55,
+        55,
+        73
+      ],
+      [
+        73,
+        35,
+        22
+      ],
+      [
+        88,
+        61,
+        47
+      ],
+      [
+        91,
+        56,
+        23
+      ],
+      [
+        100,
+        35,
+        20
+      ],
+      [
+        117,
+        95,
+        78
+      ],
+      [
+        120,
+        120,
+        124
+      ],
+      [
+        121,
+        52,
+        32
+      ],
+      [
+        127,
+        78,
+        52
+      ],
+      [
+        136,
+        76,
+        30
+      ],
+      [
+        139,
+        115,
+        93
+      ],
+      [
+        153,
+        59,
+        31
+      ],
+      [
+        155,
+        82,
+        38
+      ],
+      [
+        169,
+        136,
+        104
+      ],
+      [
+        170,
+        102,
+        65
+      ],
+      [
+        185,
+        94,
+        36
+      ],
+      [
+        186,
+        155,
+        125
+      ],
+      [
+        187,
+        107,
+        57
+      ],
+      [
+        198,
+        115,
+        74
+      ],
+      [
+        207,
+        173,
+        135
+      ],
+      [
+        208,
+        114,
+        42
+      ],
+      [
+        222,
+        135,
+        46
+      ],
+      [
+        224,
+        188,
+        154
+      ],
+      [
+        230,
+        145,
+        89
+      ],
+      [
+        242,
+        165,
+        109
+      ],
+      [
+        249,
+        231,
+        176
+      ],
+      [
+        253,
+        241,
+        198
+      ]
+    ],
+    "api": "pixel_perfecter.palettes.snap_to_palette",
+    "matching": "CIELAB",
+    "scope": "all reconstructed frames in this manifest",
+    "alpha_policy": "unchanged alpha; zero-alpha RGB normalized to zero"
+  },
+  "ready_rgba_identical": true,
+  "all_alpha_and_geometry_identical": true,
+  "frames": [
+    {
+      "phase": "ready",
+      "file": "hero_strike0_ne.png",
+      "source": "../../client/assets/raster/runtime/hero_ne.png",
+      "source_sha256": "aafeeed5b41a4ee6cad27d6331b0dec4e121ba711c86380ca2a83228a322c0c5",
+      "sha256": "aafeeed5b41a4ee6cad27d6331b0dec4e121ba711c86380ca2a83228a322c0c5",
+      "visible_pixels": 929,
+      "changed_visible_pixels": 0,
+      "mean_absolute_rgb_channel_change": 0.0,
+      "visible_colors_before": 32,
+      "visible_colors_after": 32,
+      "colors_outside_reference_before": 0,
+      "colors_outside_reference_after": 0,
+      "alpha_identical": true,
+      "source_bounds": [
+        27,
+        31,
+        53,
+        96
+      ],
+      "candidate_bounds": [
+        27,
+        31,
+        53,
+        96
+      ],
+      "anchor": [
+        40,
+        96
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "partial_alpha_pixels": 0
+    },
+    {
+      "phase": "windup",
+      "file": "hero_strike1_ne.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-ne-candidate/windup.png",
+      "source_sha256": "a44cc816d6fdfa8faac813eadf352b2d51d89669b5698b6b3d422159856cd3ba",
+      "sha256": "7f182d74df624737065313e957efd6acce861b59f84074828d8f92699aa42032",
+      "visible_pixels": 1103,
+      "changed_visible_pixels": 1102,
+      "mean_absolute_rgb_channel_change": 12.314294348745845,
+      "visible_colors_before": 27,
+      "visible_colors_after": 20,
+      "colors_outside_reference_before": 26,
+      "colors_outside_reference_after": 0,
+      "alpha_identical": true,
+      "source_bounds": [
+        24,
+        29,
+        54,
+        96
+      ],
+      "candidate_bounds": [
+        24,
+        29,
+        54,
+        96
+      ],
+      "anchor": [
+        40,
+        96
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "partial_alpha_pixels": 0
+    },
+    {
+      "phase": "commit",
+      "file": "hero_strike2_ne.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-ne-candidate/commit.png",
+      "source_sha256": "e3a1b3c14472ea809af3dd592bdf582242252a56bbb77aed49d55c867cec17c3",
+      "sha256": "20685cbe6f4f88c17e75f697319b8dc8edb03bb153b4449b4b9a3af708e8f624",
+      "visible_pixels": 1219,
+      "changed_visible_pixels": 1216,
+      "mean_absolute_rgb_channel_change": 11.316652994257588,
+      "visible_colors_before": 25,
+      "visible_colors_after": 20,
+      "colors_outside_reference_before": 24,
+      "colors_outside_reference_after": 0,
+      "alpha_identical": true,
+      "source_bounds": [
+        25,
+        18,
+        53,
+        96
+      ],
+      "candidate_bounds": [
+        25,
+        18,
+        53,
+        96
+      ],
+      "anchor": [
+        40,
+        96
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "partial_alpha_pixels": 0
+    },
+    {
+      "phase": "contact",
+      "file": "hero_strike3_ne.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-ne-contact-v6-candidate/contact-cell11.png",
+      "source_sha256": "a01d04feff3a6340d808c04b23ad8e289ef86f531b36052364e581ddb6d213e6",
+      "sha256": "d9e08519bc17c7d4541ff0c0114f9eceaa7b41e83ca553de176b68c632493fdd",
+      "visible_pixels": 1220,
+      "changed_visible_pixels": 1220,
+      "mean_absolute_rgb_channel_change": 10.528688524590164,
+      "visible_colors_before": 32,
+      "visible_colors_after": 22,
+      "colors_outside_reference_before": 32,
+      "colors_outside_reference_after": 0,
+      "alpha_identical": true,
+      "source_bounds": [
+        27,
+        20,
+        54,
+        96
+      ],
+      "candidate_bounds": [
+        27,
+        20,
+        54,
+        96
+      ],
+      "anchor": [
+        40,
+        96
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "partial_alpha_pixels": 0
+    },
+    {
+      "phase": "followthrough",
+      "file": "hero_strike4_ne.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-ne-followthrough-v3-candidate/followthrough.png",
+      "source_sha256": "3b878d039cbbfb65afbab630cd5c9bfdeba597a273f691014216a9c30edf0806",
+      "sha256": "0daf9dc80cca61740db98bee1230bd8deee9335fef32d5216cbcbbd12b60916b",
+      "visible_pixels": 1341,
+      "changed_visible_pixels": 1341,
+      "mean_absolute_rgb_channel_change": 9.77728063634104,
+      "visible_colors_before": 32,
+      "visible_colors_after": 24,
+      "colors_outside_reference_before": 32,
+      "colors_outside_reference_after": 0,
+      "alpha_identical": true,
+      "source_bounds": [
+        24,
+        20,
+        54,
+        96
+      ],
+      "candidate_bounds": [
+        24,
+        20,
+        54,
+        96
+      ],
+      "anchor": [
+        40,
+        96
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "partial_alpha_pixels": 0
+    },
+    {
+      "phase": "recovery",
+      "file": "hero_strike5_ne.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-ne-candidate/recovery.png",
+      "source_sha256": "3439b11bb1e655f977724588ad26e980d83b5a88575b4dd163858284ab75c8ca",
+      "sha256": "009659373b6b696d9d5a9f2190fcd35c9cc8b2bb84ba2e9d40c90294f4542555",
+      "visible_pixels": 1183,
+      "changed_visible_pixels": 1176,
+      "mean_absolute_rgb_channel_change": 11.50662158354466,
+      "visible_colors_before": 30,
+      "visible_colors_after": 21,
+      "colors_outside_reference_before": 29,
+      "colors_outside_reference_after": 0,
+      "alpha_identical": true,
+      "source_bounds": [
+        24,
+        28,
+        53,
+        96
+      ],
+      "candidate_bounds": [
+        24,
+        28,
+        53,
+        96
+      ],
+      "anchor": [
+        40,
+        96
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "partial_alpha_pixels": 0
+    }
+  ],
+  "material_review_limit": "Exact palette membership does not prove the same material receives the same reference color. Anatomy, body size and pose timing are unchanged."
+}

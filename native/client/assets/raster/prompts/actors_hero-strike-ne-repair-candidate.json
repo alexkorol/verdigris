@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "shared_palette_max_colors": 32,
+  "output_dir": "../source/actors_hero-strike-ne-candidate",
+  "defaults": {"cell_size": 12, "alpha_mode": "crisp", "max_colors": 32, "canvas": [80, 96], "preserve_scale": true, "require_transparency": true, "acceptance": "candidate only; NE action not runtime accepted"},
+  "known_limitations": ["Single generated sources have different margins; fixed cell12 reconstructs body scale without resizing. Measured feet pivots register independent frames."],
+  "sheets": [
+    {"source": "../runtime/hero_ne.png", "grid": [1, 1], "assets": [{"name": "idle", "cell": [0, 0], "cell_size": 1, "anchor_source": [40, 96]}]},
+    {"source": "../source/actors_hero-strike-ne-windup-v2.png", "grid": [1, 1], "border_background": {"color": [220, 220, 220], "tolerance": 80}, "assets": [{"name": "windup", "cell": [0, 0], "anchor_source": [600, 1220]}]},
+    {"source": "../source/actors_hero-strike-ne-contact-v3.png", "grid": [1, 1], "border_background": {"color": [220, 220, 220], "tolerance": 80}, "assets": [{"name": "commit", "cell": [0, 0], "anchor_source": [600, 1261]}]},
+    {"source": "../source/actors_hero-strike-ne-contact-v5.png", "grid": [1, 1], "border_background": {"color": [155, 155, 155], "tolerance": 110}, "assets": [{"name": "contact", "cell": [0, 0], "anchor_source": [600, 1222]}]},
+    {"source": "../source/actors_hero-strike-ne-followthrough-v1.png", "grid": [1, 1], "border_background": {"color": [220, 220, 220], "tolerance": 110, "interior_windows": [[499, 695, 543, 750], [505, 750, 543, 802]]}, "assets": [{"name": "followthrough", "cell": [0, 0], "anchor_source": [600, 1224]}]},
+    {"source": "../source/actors_hero-strike-ne-recovery-v1.png", "grid": [1, 1], "border_background": {"color": [155, 155, 155], "tolerance": 110, "interior_windows": [[477, 702, 515, 760], [466, 760, 505, 835]]}, "assets": [{"name": "recovery", "cell": [0, 0], "anchor_source": [600, 1236]}]}
+  ]
+}

@@ -112,6 +112,84 @@ class RasterImportTests(unittest.TestCase):
                              result[1].getpixel((3 - i % 4, 2 - i // 4)))
         self.assertEqual(record["api"], "pixel_perfecter.palettes.reduce_colors")
 
+    def test_reference_palette_uses_visible_colors_and_preserves_native_anchor_alpha(self):
+        from pixel_perfecter.palettes import snap_to_palette
+        with tempfile.TemporaryDirectory(dir=Path(__file__).parent) as directory:
+            root = Path(directory)
+            (root / "refs").mkdir()
+            reference = Image.new("RGBA", (3, 1))
+            reference.putdata([(120, 50, 20, 255), (35, 42, 70, 96), (255, 0, 255, 0)])
+            reference.save(root / "refs/accepted.png")
+            source = Image.new("RGBA", (6, 8), (255, 0, 255, 0))
+            source.putpixel((1, 2), (129, 55, 18, 255))
+            source.putpixel((4, 6), (34, 39, 68, 64))
+            source.save(root / "source.png")
+            manifest = {"version": 1, "output_dir": "before", "defaults": {
+                "cell_size": 1, "alpha_mode": "preserve", "canvas": [6, 8],
+                "trim": False, "preserve_scale": True, "anchor_source": [3, 8]},
+                "sheets": [{"source": "source.png", "grid": [1, 1],
+                            "assets": [{"name": "pose", "cell": [0, 0]}]}]}
+            path = root / "test.json"
+            path.write_text(json.dumps(manifest), encoding="utf-8")
+            before = import_assets.run(path, import_assets.DEFAULT_PROJECT)
+            original = np.asarray(Image.open(root / "before/pose.png").convert("RGBA"))
+            self.assertNotIn("palette_reference", before)
+            manifest.update(output_dir="after", palette_reference={"source": "refs/accepted.png", "max_colors": 2})
+            path.write_text(json.dumps(manifest), encoding="utf-8")
+            after = import_assets.run(path, import_assets.DEFAULT_PROJECT)
+            result = np.asarray(Image.open(root / "after/pose.png").convert("RGBA"))
+            palette = np.array([[35, 42, 70], [120, 50, 20]], dtype=np.uint8)
+            expected = snap_to_palette(original, palette)
+            expected[expected[:, :, 3] == 0, :3] = 0
+            np.testing.assert_array_equal(result, expected)
+            np.testing.assert_array_equal(result[:, :, 3], np.asarray(source)[:, :, 3])
+            self.assertEqual(after["assets"][0]["anchor_px"], [3, 8])
+            for key in ("content_bounds", "trim_box", "canvas", "placed_size", "before_resize"):
+                self.assertEqual(before["assets"][0][key], after["assets"][0][key])
+            self.assertEqual(after["palette_reference"]["palette_rgb"], palette.tolist())
+            self.assertEqual(after["palette_reference"]["sha256"], import_assets.digest(root / "refs/accepted.png"))
+            self.assertEqual(after["palette_reference"]["api"], "pixel_perfecter.palettes.snap_to_palette")
+
+    def test_invalid_reference_never_writes_output(self):
+        with tempfile.TemporaryDirectory(dir=Path(__file__).parent) as directory:
+            root = Path(directory)
+            Image.new("RGBA", (2, 2)).save(root / "empty.png")
+            Image.new("RGB", (2, 2)).save(root / "wrong.jpg")
+            colors = Image.new("RGB", (2, 1))
+            colors.putdata([(1, 2, 3), (5, 6, 7)])
+            colors.save(root / "colors.png")
+            for reference, error in [
+                (None, "source PNG path"), ({"source": "missing.png"}, "Cannot read"),
+                ({"source": "empty.png"}, "no visible colors"),
+                ({"source": "wrong.jpg"}, "single-frame PNG"),
+                ({"source": "colors.png", "max_colors": 1}, "exceeding"),
+                ({"source": "colors.png", "max_colors": True}, "integer"),
+                ({"source": "colors.png", "max_colors": 257}, "integer"),
+            ]:
+                with self.subTest(reference=reference):
+                    path = root / "test.json"
+                    path.write_text(json.dumps({"version": 1, "output_dir": "out",
+                        "palette_reference": reference, "sheets": []}), encoding="utf-8")
+                    with self.assertRaisesRegex(ValueError, error):
+                        import_assets.run(path, import_assets.DEFAULT_PROJECT)
+                    self.assertFalse((root / "out").exists())
+
+    def test_reference_rejects_competing_color_operations(self):
+        with tempfile.TemporaryDirectory(dir=Path(__file__).parent) as directory:
+            root = Path(directory)
+            Image.new("RGBA", (2, 2), (120, 50, 20, 255)).save(root / "source.png")
+            base = {"version": 1, "output_dir": "out", "palette_reference": {"source": "source.png"},
+                    "sheets": [{"source": "source.png", "grid": [1, 1],
+                                "assets": [{"name": "pose", "cell": [0, 0]}]}]}
+            for extra in ({"shared_palette_max_colors": 32}, {"defaults": {"palette": "db32"}},
+                          {"defaults": {"max_colors": 16}}):
+                with self.subTest(extra=extra):
+                    path = root / "test.json"
+                    path.write_text(json.dumps({**base, **extra}), encoding="utf-8")
+                    with self.assertRaisesRegex(ValueError, "palette_reference"):
+                        import_assets.run(path, import_assets.DEFAULT_PROJECT)
+                    self.assertFalse((root / "out").exists())
+
 
 if __name__ == "__main__":
     unittest.main()

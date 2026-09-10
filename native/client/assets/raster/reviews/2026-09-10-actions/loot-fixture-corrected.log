@@ -1,0 +1,19 @@
+== scenario raster-loot ==
+    ok: raster-loot: local session has an authoritative player
+    ok: raster-loot: supplied display names choose pike and bowl without a bow substring collision
+    ok: raster-loot: capture root accepted
+    ok: raster-loot: named drop families captured through production drawing
+    ok: raster-loot: physical silhouette matches Bronze Pike
+    ok: raster-loot: physical silhouette matches Bronze Axe
+    ok: raster-loot: physical silhouette matches Bronze Dagger
+    ok: raster-loot: physical silhouette matches Reed Bow
+    ok: raster-loot: physical silhouette matches Ash Staff
+    ok: raster-loot: physical silhouette matches Wooden Club
+    ok: raster-loot: physical silhouette matches Fur Boots
+    ok: raster-loot: physical silhouette matches Bronze Armor
+    ok: raster-loot: physical silhouette matches Carving Knife
+    ok: raster-loot: physical silhouette matches Life Draught
+    ok: raster-loot: physical silhouette matches Blood Omen
+    ok: raster-loot: physical silhouette matches Offering Bowl
+    ok: raster-loot: drawing preserves supplied drops and creates no authoritative rewards
+   PASS (0 failures)

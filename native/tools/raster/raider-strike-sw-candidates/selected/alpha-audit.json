@@ -1,0 +1,18 @@
+{
+  "scoped_cleanup": [
+    {
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "local_removed_pixels": 931,
+      "chromatic_pixels_removed": 0,
+      "max_removed_channel_spread": 18
+    },
+    {
+      "source": "../../client/assets/raster/source/raider-strike-sw-v2.png",
+      "local_removed_pixels": 71,
+      "chromatic_pixels_removed": 0,
+      "max_removed_channel_spread": 6
+    }
+  ],
+  "foreground_check": "No pixels with RGB channel spread above20 were removed by scoped enclosed-gap cleanup. Native forearms/hands reviewed against source.",
+  "rejected_previous_cleanup": "rejected-color-fill preserved the earlier cleanup that included80 chromatic source pixels; current cleanup excludes those pixels."
+}

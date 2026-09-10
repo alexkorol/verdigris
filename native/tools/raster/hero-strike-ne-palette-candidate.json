@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "output_dir": "hero-strike-ne-palette-candidate",
+  "palette_reference": {
+    "source": "../../client/assets/raster/runtime/hero_ne.png",
+    "max_colors": 32
+  },
+  "defaults": {
+    "cell_size": 1,
+    "alpha_mode": "preserve",
+    "canvas": [
+      80,
+      96
+    ],
+    "trim": false,
+    "preserve_scale": true,
+    "require_transparency": true,
+    "anchor_source": [
+      40,
+      96
+    ],
+    "acceptance": "palette_reference_candidate_pending_native_and_production_review"
+  },
+  "known_limitations": [
+    "Candidate only: no active runtime or catalog mutation.",
+    "Each input is an existing native 80x96 reconstruction; cell1, original alpha and common pivot[40,96] preserve every source pixel position.",
+    "CIELAB nearest-color matching pins RGB to the accepted NE idle palette; it cannot repair anatomical, material, registration or timing drift.",
+    "Ready is the actual runtime hero_ne.png; candidate idle.png is deliberately excluded."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/runtime/hero_ne.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_strike0_ne",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/actors_hero-strike-ne-candidate/windup.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_strike1_ne",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/actors_hero-strike-ne-candidate/commit.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_strike2_ne",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/actors_hero-strike-ne-contact-v6-candidate/contact-cell11.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_strike3_ne",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/actors_hero-strike-ne-followthrough-v3-candidate/followthrough.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_strike4_ne",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/actors_hero-strike-ne-candidate/recovery.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_strike5_ne",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  ]
+}

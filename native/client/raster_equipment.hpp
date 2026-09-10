@@ -122,6 +122,16 @@ inline constexpr PoseMetadata kPoses[] = {
     {"hero_strike3_sw", {80, 96}, {21.5, 71.5}, {19, 69, 25, 74}, true, false, false, -110},
     {"hero_strike4_sw", {80, 96}, {35.5, 62.5}, {33, 60, 39, 65}, true, false, false, -140},
     {"hero_strike5_sw", {80, 96}, {53.5, 60.5}, {51, 59, 56, 63}, true, true, false, -15},
+    // NE uses the physical-left far hand: ready, windup, overhead commit,
+    // upper-right contact, downward follow-through, low recovery. Measured
+    // after original-palette normalization; geometry and pivots are fixed.
+    // Body replay preserves far-side occlusion. Staff/bow keep carry angles.
+    {"hero_strike0_ne", {80, 96}, {29.5, 62.5}, {28, 61, 31, 65}, false, true, false, 0},
+    {"hero_strike1_ne", {80, 96}, {29.5, 41.5}, {28, 40, 31, 44}, false, true, false, -15},
+    {"hero_strike2_ne", {80, 96}, {30.5, 21.5}, {29, 19, 33, 24}, false, true, false, -45},
+    {"hero_strike3_ne", {80, 96}, {46.5, 22.5}, {44, 21, 48, 25}, false, true, false, 65},
+    {"hero_strike4_ne", {80, 96}, {42.5, 22.5}, {41, 21, 44, 25}, false, true, false, 100},
+    {"hero_strike5_ne", {80, 96}, {25.5, 64.5}, {24, 62, 28, 66}, false, true, false, -15},
 };
 
 // Axe and bow artwork faces left; mirror the image AND its source grip for a

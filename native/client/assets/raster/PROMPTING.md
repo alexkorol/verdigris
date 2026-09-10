@@ -163,3 +163,30 @@ conversion and assembly; the image tool supplies the image.
 Review palette stability during playback, position jumps and limb continuity.
 Those checks follow the reader critiques; the critiques are not measurements
 of our output. Keep successful poses and repair the observed failed transition.
+
+## Applied follow-up: selected frames and fixed palettes
+
+The September 10 NE repair uses Flixly's explicit reference jobs: the accepted
+preceding contact pose supplies the transition, and the accepted idle supplies
+identity. Preserve the successful windup/contact frames; repair only the failed
+phase. This produced a usable same-arm follow-through, but its body remained
+broader and its colors drifted. Reference reuse is an input method, not proof of
+animation consistency.
+
+Once native frames are reconstructed, `palette_reference` in the importer can
+pin them to an accepted native PNG through the real Pixel Respecter
+`palettes.snap_to_palette` API. This is a local deterministic cleanup step, not
+a published Image 2.5 prompting trick. It preserves alpha, positions and the
+shared pivot; it cannot repair anatomy, timing, material assignment or a bad
+pose. Keep before/after native-size comparisons and the reference hash. The NE
+ready frame remains exactly the existing idle instead of a newly generated copy.
+
+The raider study retained five poses from its first same-character SW sheet and
+replaced only the anticipation pose with unwanted olive clothing. Neutral-only
+matte windows were checked against the source so pale skin was not mistaken for
+background. Retain a failed cleanup when it explains the corrected recipe.
+
+Finally inspect the poses inside the game. The first raider warning capture hid
+both actors behind an opaque telegraph despite valid sprite traces. The warning
+now preserves the interior pixels, and confirmed contact selects frame three on
+the damage event. Atlas checks and an assembled GIF alone would miss that defect.

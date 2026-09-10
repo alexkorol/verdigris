@@ -243,7 +243,7 @@ void check_strike_socket_pixels() {
 void check_directional_socket_pixels() {
   // Reviewed source neighborhoods around the anatomical-left hand. Protect
   // against replacing a same-size motion PNG without remeasuring its grip.
-  struct Sample { const char* name; RECT box; std::uint64_t hash; };
+  struct Sample { const char* name; RECT box; std::uint64_t hash; std::uint32_t grip_argb = 0; };
   const Sample samples[]{
     {"hero_walk0_sw",{41,63,49,71},0x2dd015b76b412939ull},
     {"hero_walk1_sw",{42,62,51,71},0xdab004ca355358d4ull},
@@ -283,6 +283,13 @@ void check_directional_socket_pixels() {
     {"hero_strike3_sw",{17,67,27,76},0xdb2cf7dab2459227ull},
     {"hero_strike4_sw",{31,58,41,67},0x3d57b906e5927875ull},
     {"hero_strike5_sw",{49,57,58,65},0x8588167ff8c29e6aull},
+    // NE normalized candidates: exact reviewed grip colors include hand shadows.
+    {"hero_strike0_ne",{26,59,33,67},0x56f1722d81fd2924ull,0xff793420u},
+    {"hero_strike1_ne",{26,38,33,46},0x86afc1d3585acf1aull,0xffcfad87u},
+    {"hero_strike2_ne",{27,17,35,26},0x8d2f67d735c5c239ull,0xfff2a56du},
+    {"hero_strike3_ne",{42,19,50,27},0xce49b2c5ea6b3288ull,0xffb95e24u},
+    {"hero_strike4_ne",{39,19,46,27},0xec6f72ca66aba384ull,0xfff9e7b0u},
+    {"hero_strike5_ne",{22,60,30,68},0x5c8a21d5c7c42bbdull,0xff642314u},
   };
   std::ofstream csv(L".ci-artifacts/raster-equipment/walk-sockets.csv");
   std::ofstream strikes(L".ci-artifacts/raster-equipment/directional-strike-sockets.csv");
@@ -307,9 +314,15 @@ void check_directional_socket_pixels() {
     Gdiplus::Color grip;
     assert(asset->image->GetPixel(static_cast<int>(pose->hand.x),
                                   static_cast<int>(pose->hand.y),&grip) == Gdiplus::Ok);
-    // NE7's partly hidden hand uses the darker (191,134,86) skin ramp.
-    assert(grip.GetAlpha() == 255 && grip.GetRed() >= 180 &&
-           grip.GetRed() > grip.GetGreen() && grip.GetGreen() > grip.GetBlue());
+    // New NE strike grips may be dark hand-shadow texels; require their exact
+    // reviewed ARGB instead of moving a valid socket onto a brighter pixel.
+    if (sample.grip_argb != 0) {
+      assert(grip.GetValue() == sample.grip_argb);
+    } else {
+      // NE7's partly hidden hand uses the darker (191,134,86) skin ramp.
+      assert(grip.GetAlpha() == 255 && grip.GetRed() >= 180 &&
+             grip.GetRed() > grip.GetGreen() && grip.GetGreen() > grip.GetBlue());
+    }
     auto& report=std::string_view(pose->name).starts_with("hero_walk") ? csv : strikes;
     report << pose->name << ',' << pose->hand.x << ',' << pose->hand.y << ','
         << pose->fingers.left << ',' << pose->fingers.top << ','

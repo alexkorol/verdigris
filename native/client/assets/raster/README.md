@@ -8,7 +8,7 @@ visible content height; animation uses the shared full-canvas pivot and scale.
 `source/` retains generated candidates, including rejected ones. `prompts/`
 records the actual image requests, reference paths and observed failures.
 `runtime/catalog.json` resolves import order and records the active source,
-conversion settings, hashes and limitations for each of 127 PNGs. The importer
+conversion settings, hashes and limitations for each of 139 PNGs. The importer
 uses the owner's actual Pixel Respecter project at
 `Z:/Code/Python/pixel-perfecter`; it is not a substitute pixelation filter.
 
@@ -17,7 +17,29 @@ and critical feedback, and [PROMPTING.md](PROMPTING.md) for the resulting local
 workflow. Model variant names are recorded only where the source actually
 identifies them; our image tool has no model selector.
 
-## Current milestone: ground, motion registration and HUD, September 10, 2026
+## Current milestone: reference-led attacks and readable warnings, September 10, 2026
+
+Twenty-four manifests resolve 148 import records to 139 active PNGs from 49 sources.
+All four hero strike directions have six poses; raider SW also has six. NE uses
+the accepted idle palette and measured equipment grips. Existing drop art now
+matches twelve item families, and compatible storehut variation reuses current
+landmarks. Warning boundaries preserve visible actors; real elite attacks paint
+contact on the confirmed damage event and then recover.
+
+Supported build/all 68 scenarios, native suites, browser 32/32, importer 10/10 and
+equipment 60×5×3 plus sampling pass. Fullscreen static/moving averages are
+22.550/23.993 ms, moving peak 33.926 ms; unchanged 40 ms average gates. Root viewed
+actual contact, warning, item and scenery captures, native equipment grids and
+the supported live window. [Evidence and remaining limits](reviews/2026-09-10-actions/README.md).
+
+NE follow-through width/reset and clip identity remain imperfect. Bow/staff
+attachment is not weapon-specific animation. Raider art covers SW; elite event
+proof does not claim ordinary native melee has attacker-owned animation.
+Native pursuit, other monster motion, pixel effects/deaths and terrain repeat
+remain unfinished. Exact active inputs and historical-source limits are recorded
+in the two strike dependency manifests. This is provisional integration.
+
+## Previous milestone: ground, motion registration and HUD, September 10, 2026
 
 - Twenty-two manifests resolve 136 import records to 127 active PNGs from 41
   source files. The added quiet earth and eight SW raider poses use the actual
@@ -35,8 +57,8 @@ identifies them; our image tool has no model selector.
   the XP caption clears character/gear panes at 960x600. Fullscreen and smaller
   production captures, including both panes with audio muted, were reviewed.
 - Native suites and all 66 final scenarios pass. Twenty 3440x1440 paints average
-  23.258ms stationary; twenty measured moving paints average 24.715ms with a
-  36.620ms peak. Both retain the 40ms average gate. Browser playtest is 32/32,
+  23.258 ms stationary; twenty measured moving paints average 24.715 ms with a
+  36.620 ms peak. Both retain the 40 ms average gate. Browser playtest is 32/32,
   importer 7/7, and equipment/ground/HUD probes pass.
 - The raider review moves a monster through the production presentation path
   with scripted, collision-checked positions and verifies all eight phases and
@@ -74,8 +96,8 @@ identifies them; our image tool has no model selector.
   detailed orb art with textured liquid at 21 fill levels, preserving glass,
   stone hands and empty states. Its layer cache is capped at 64 layers/16MiB.
 - Native suites and all 64 final scenarios pass. The unchanged fullscreen
-  gate measures 18.7ms over twenty 3440x1440 frames; the dense 128-effect frame
-  measures 9.4ms. Browser final rerun passes 32/32. Seven importer tests and
+  gate measures 18.7 ms over twenty 3440x1440 frames; the dense 128-effect frame
+  measures 9.4 ms. Browser final rerun passes 32/32. Seven importer tests and
   the orb, equipment and color checks pass.
 - [Retained live captures, actual motion traces, clips and verification](reviews/2026-09-10/README.md).
 

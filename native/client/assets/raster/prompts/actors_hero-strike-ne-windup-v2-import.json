@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "output_dir": "../source",
+  "defaults": {
+    "cell_size": 12,
+    "alpha_mode": "crisp",
+    "max_colors": 32,
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "candidate-only native comparison; NE not runtime enabled"
+  },
+  "known_limitations": [
+    "Two fixed PixelRespecter pitches compare source scale to accepted idle; no individual fit or post-resize. Neither candidate is runtime accepted."
+  ],
+  "sheets": [
+    {
+      "source": "../runtime/hero_ne.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "actors_hero-strike-ne-idle-comparison",
+          "cell": [
+            0,
+            0
+          ],
+          "cell_size": 1,
+          "anchor_source": [
+            40,
+            96
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../source/actors_hero-strike-ne-windup-v2.png",
+      "grid": [
+        1,
+        1
+      ],
+      "border_background": {
+        "color": [
+          220,
+          220,
+          220
+        ],
+        "tolerance": 80
+      },
+      "assets": [
+        {
+          "name": "actors_hero-strike-ne-windup-v2-cell12",
+          "cell": [
+            0,
+            0
+          ],
+          "cell_size": 12,
+          "anchor_source": [
+            600,
+            1220
+          ]
+        },
+        {
+          "name": "actors_hero-strike-ne-windup-v2-cell13",
+          "cell": [
+            0,
+            0
+          ],
+          "cell_size": 13,
+          "anchor_source": [
+            600,
+            1220
+          ]
+        }
+      ]
+    }
+  ]
+}

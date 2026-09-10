@@ -59,7 +59,7 @@ integrated. Exact prompts and published-recipe adaptations accompany the art.
 Root and workers inspected native sprites, equipment composites, production
 contact/motion captures and the final live 3440x1440 window.
 
-Final native build/all 64 scenarios pass (18.7ms fullscreen, 9.4ms dense), native
+Final native build/all 64 scenarios pass (18.7 ms fullscreen, 9.4 ms dense), native
 suites pass, browser final 32/32 passes, importer 7/7 and 54-pose equipment checks
 pass. The initial SW walk capture failure was corrected by a clear corridor
 and full 15 ms painting without changing collision. One initial browser final-
@@ -80,9 +80,9 @@ landmarks, using a bounded ground cache. Common HUD chrome, measured label
 placement, equipment row spacing and XP placement pass production captures at
 3440x1440, 1366x768 and 960x600, including both panes with muted audio.
 
-Final supported build/all 66 scenarios pass: 23.258ms stationary and 24.715ms
-moving average (36.620ms peak), twenty 3440x1440 frames per condition with the
-unchanged 40ms average gates. Native suites, browser 32/32, importer 7/7 and
+Final supported build/all 66 scenarios pass: 23.258 ms stationary and 24.715 ms
+moving average (36.620 ms peak), twenty 3440x1440 frames per condition with the
+unchanged 40 ms average gates. Native suites, browser 32/32, importer 7/7 and
 equipment/ground/HUD checks pass. Root inspected the final live window and
 small dual-pane capture, then closed the local game cleanly. Evidence and
 initial failures are retained in
@@ -96,3 +96,27 @@ reference recipe and both local failure stages are recorded in PROMPTING.md.
 The visual goal remains active: NE actions, native enemy locomotion, cross-clip
 identity, other monster directions, terrain repetition and further composition
 are unfinished. No push or merge.
+
+## 2026-09-10 — Reference-led attacks and readable warnings
+
+The catalog has 139 active pixel assets: NE hero strikes and SW raider strikes
+add six poses each. Actual Pixel Respecter palette snapping pins NE colors to
+the accepted idle, whose ready pose stays pixel-identical. Measured equipment
+sockets pass 60 poses×5 weapons×3 scales. Twelve dropped-item families now select
+appropriate existing art; compatible storehut art replaces an existing village
+dwelling and Mara's existing town stall without changing objects or collision.
+
+Real elite Sweep events now drive preparation during the warning, phase 3 on
+the first confirmed damage frame, and follow-through/recovery afterward. Root
+caught and removed an opaque warning fill that hid both actors. Supported final
+build/all 68 native scenarios, native suites, browser 32/32, importer 10/10 and
+equipment/sampling pass. Fullscreen static average 22.550 ms; moving average
+23.993 ms and peak 33.926 ms across 20 frames, unchanged 40 ms gates. Root viewed the
+live 3440×1440 window and closed it with exit 0/no orphan.
+
+[Captures, final logs, failures and precise review scope](../../../native/client/assets/raster/reviews/2026-09-10-actions/README.md)
+are retained. NE body width/reset, bow/staff-specific actions, other monster
+directions and locomotion, pixel effects/deaths and terrain repetition remain.
+The elite contact proof does not establish ordinary native melee animation,
+whose existing damage event lacks attacker identity. This milestone preserves
+the active visual objective. Committed locally; no push or merge.

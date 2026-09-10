@@ -1,0 +1,109 @@
+{
+  "canvas": [
+    80,
+    96
+  ],
+  "anchor": [
+    40,
+    96
+  ],
+  "cell_size": 6,
+  "shared_colors": 32,
+  "idle_bbox": [
+    17,
+    39,
+    62,
+    96
+  ],
+  "unique_frames": 6,
+  "preview_durations_ms": [
+    100,
+    120,
+    90,
+    50,
+    100,
+    140
+  ],
+  "preview_contact_phase": 3,
+  "production_timing": "Not assigned; integration owner must synchronize contact with actual confirmed hit event.",
+  "frames": [
+    {
+      "name": "raider_strike0_sw",
+      "phase": "ready",
+      "bounds": [
+        15,
+        37,
+        61,
+        95
+      ],
+      "changed_pixels_to_next": 1454,
+      "partial_alpha": 0,
+      "bright_neutral_pixels_below_y65": []
+    },
+    {
+      "name": "raider_strike1_sw",
+      "phase": "anticipation",
+      "bounds": [
+        3,
+        37,
+        60,
+        95
+      ],
+      "changed_pixels_to_next": 1294,
+      "partial_alpha": 0,
+      "bright_neutral_pixels_below_y65": []
+    },
+    {
+      "name": "raider_strike2_sw",
+      "phase": "windup",
+      "bounds": [
+        16,
+        21,
+        59,
+        95
+      ],
+      "changed_pixels_to_next": 1730,
+      "partial_alpha": 0,
+      "bright_neutral_pixels_below_y65": []
+    },
+    {
+      "name": "raider_strike3_sw",
+      "phase": "contact",
+      "bounds": [
+        6,
+        40,
+        66,
+        94
+      ],
+      "changed_pixels_to_next": 1246,
+      "partial_alpha": 0,
+      "bright_neutral_pixels_below_y65": []
+    },
+    {
+      "name": "raider_strike4_sw",
+      "phase": "follow-through",
+      "bounds": [
+        6,
+        40,
+        68,
+        95
+      ],
+      "changed_pixels_to_next": 1463,
+      "partial_alpha": 0,
+      "bright_neutral_pixels_below_y65": []
+    },
+    {
+      "name": "raider_strike5_sw",
+      "phase": "recovery",
+      "bounds": [
+        13,
+        39,
+        62,
+        96
+      ],
+      "changed_pixels_to_next": 1202,
+      "partial_alpha": 0,
+      "bright_neutral_pixels_below_y65": []
+    }
+  ]
+}

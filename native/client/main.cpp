@@ -50,7 +50,9 @@ namespace phase_a = verdigris::client::phase_a;
 #include "vector_art.hpp"
 #include "raster_art.hpp"
 #include "raster_ground.hpp"
+#include "raster_scenery.hpp"
 #include "raster_equipment.hpp"
+#include "raster_loot.hpp"
 #include "framekit_renderer.hpp"
 #include "geometric_skill_tree.hpp"
 #include "inventory_grid.hpp"
@@ -2568,7 +2570,8 @@ void draw_scenery_fallback(HDC dc, const ScreenPoint& base, const SceneryItem& i
 
 void draw_scenery_item(const BillboardAssets& assets, HDC dc, const Camera& camera,
                        const RECT& bounds, const SceneryItem& item,
-                       render::List& rl, bool town, double sway_clock) {
+                       render::List& rl, bool town, double sway_clock,
+                       std::string_view route_id) {
   (void)assets;
   const ScreenPoint base =
       project(camera, bounds, item.position.x, item.position.y);
@@ -2599,7 +2602,9 @@ void draw_scenery_item(const BillboardAssets& assets, HDC dc, const Camera& came
       100.0;
   const char* raster_name = item.kind == SceneryKind::Tree ? "tree"
       : item.kind == SceneryKind::Ruin ? "column"
-      : item.kind == SceneryKind::Dwelling ? "hut"
+      : item.kind == SceneryKind::Dwelling
+          ? raster_scenery::dwelling_asset(route_id, item.position.x,
+                                           item.position.y, kTileUnits)
       : item.kind == SceneryKind::Shrine ? "shrine" : "gate";
   if (raster_art::draw_sprite_by_visible_height(dc, raster_name, base.x, base.y, h)) {
     rl.push_back({render::Op::Hud, static_cast<double>(base.x),
@@ -3103,16 +3108,15 @@ void draw_thrust_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
     const ScreenPoint point = project(camera, bounds, wx, wy);
     points[i + 1] = {point.x, point.y};
   }
-  const COLORREF fill = telegraph_color(visibility * 0.38, RGB(214, 52, 52));
   const COLORREF edge = telegraph_color(visibility, RGB(238, 72, 64));
-  HBRUSH brush = CreateSolidBrush(fill);
+  // Preserve the actors and terrain inside the warning boundary.
+  HBRUSH brush = static_cast<HBRUSH>(GetStockObject(HOLLOW_BRUSH));
   HPEN pen = CreatePen(PS_SOLID, 2, edge);
   HGDIOBJ old_brush = SelectObject(dc, brush);
   HGDIOBJ old_pen = SelectObject(dc, pen);
   Polygon(dc, points, kSegments + 2);
   SelectObject(dc, old_brush);
   SelectObject(dc, old_pen);
-  DeleteObject(brush);
   DeleteObject(pen);
   // A centerline and a short origin ring make the warning readable when the
   // wedge is projected nearly edge-on at the current camera pitch.
@@ -3151,11 +3155,9 @@ void draw_sweep_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
   if (clamped <= 0.0) return;
   rl.push_back({render::Op::Telegraph, static_cast<double>(base.x),
                 static_cast<double>(base.y), clamped, 0, "sweep"});
-  const COLORREF fill =
-      telegraph_color(std::max(0.88, visibility), RGB(214, 52, 52));
   const COLORREF edge = telegraph_color(std::max(0.82, visibility), RGB(238, 72, 64));
   const int draw_r = static_cast<int>(clamped);
-  fill_ellipse(dc, base.x, base.y, draw_r, draw_r, fill);
+  // The footprint remains readable without hiding anticipation poses.
   ring_ellipse(dc, base.x, base.y, draw_r, draw_r, edge, 3);
   if (draw_r > 12)
     ring_ellipse(dc, base.x, base.y, draw_r - 10, draw_r - 10,
@@ -9170,7 +9172,7 @@ constexpr RasterDirectionalClip kHeroWalkClips[] = {
     {"ne", 8, 1, -1}, {"nw", 8, -1, -1}};
 
 constexpr RasterDirectionalClip kHeroStrikeClips[] = {
-    {"se", 6, 1, 1}, {"sw", 6, -1, 1}, {"nw", 6, -1, -1}};
+    {"se", 6, 1, 1}, {"sw", 6, -1, 1}, {"nw", 6, -1, -1}, {"ne", 6, 1, -1}};
 
 int raster_walk_frames(const char* family, const std::string& direction) {
   if (std::strcmp(family, "raider") == 0 && direction == "sw") return 8;
@@ -9181,6 +9183,7 @@ int raster_walk_frames(const char* family, const std::string& direction) {
 }
 
 int raster_strike_frames(const char* family, const std::string& direction) {
+  if (std::strcmp(family, "raider") == 0 && direction == "sw") return 6;
   if (std::strcmp(family, "hero") != 0) return 0;
   for (const auto& clip : kHeroStrikeClips)
     if (direction == clip.direction) return clip.frames;
@@ -9440,7 +9443,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                           state.scenery[entry.index], rl,
                           world.theme == "town" || world.theme == "tin" ||
                               world.route_id.find(":1:") != std::string::npos,
-                          state.breathe_phase * 2.0 * kPi);
+                          state.breathe_phase * 2.0 * kPi, world.route_id);
         break;
       case DepthDraw::What::Player: {
         ScreenPoint base =
@@ -9527,7 +9530,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         const double to_player_len = std::max(
             1.0, std::sqrt(to_player_x * to_player_x + to_player_y * to_player_y));
         const int mirror_x = to_player_x < 0.0 ? -1 : 1;
-        double monster_attack_phase = 0.0;
+        double monster_attack_phase = -1.0;
         {
           const auto telegraph = state.telegraphs.find(monster.id);
           if (telegraph != state.telegraphs.end()) {
@@ -9536,28 +9539,32 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                  state.tick_accum_ms / 50.0) /
                     std::max(1, telegraph->second.windup_ticks),
                 0.0, 1.0);
+            // The warning owns preparation; only confirmation may show contact.
+            monster_attack_phase = std::min(windup * 0.5, 0.499999);
             const double lean = windup * kTileUnits * 0.14;
             base.x -= static_cast<int>(to_player_x / to_player_len * lean *
                                        base.scale);
             base.y -= static_cast<int>(to_player_y / to_player_len * lean *
                                        base.scale);
           }
-          const auto strike = state.monster_strikes.find(monster.id);
-          if (strike != state.monster_strikes.end() &&
-              world.tick >= strike->second) {
-            const double phase = std::clamp(
-                (static_cast<double>(world.tick - strike->second) +
-                 state.tick_accum_ms / 50.0) /
-                    4.0,
-                0.0, 1.0);
-            if (phase < 1.0) {
-              monster_attack_phase = phase;
-              const double push = std::sin(phase * kPi) * kTileUnits * 0.4;
-              base.x += static_cast<int>(to_player_x / to_player_len * push *
-                                         base.scale);
-              base.y += static_cast<int>(to_player_y / to_player_len * push *
-                                         base.scale);
+          if (const auto* strike = verdigris::client::actor_strike(state.effects, monster.id)) {
+            monster_attack_phase = verdigris::client::strike_phase(
+                *strike, state.tick_accum_ms / 50.0);
+          } else if (monster_attack_phase < 0.0) {
+            // Some remote incoming-hit events identify the attacker without
+            // an AttackStarted event. Such a hit also begins at contact.
+            const auto hit = state.monster_strikes.find(monster.id);
+            if (hit != state.monster_strikes.end() && world.tick >= hit->second) {
+              const double recovery =
+                  (static_cast<double>(world.tick - hit->second) +
+                   state.tick_accum_ms / 50.0) / 4.0;
+              if (recovery < 1.0) monster_attack_phase = 0.5 + recovery * 0.5;
             }
+          }
+          if (monster_attack_phase >= 0.5 && monster_attack_phase < 1.0) {
+            const double push = std::sin(monster_attack_phase * kPi) * kTileUnits * 0.4;
+            base.x += static_cast<int>(to_player_x / to_player_len * push * base.scale);
+            base.y += static_cast<int>(to_player_y / to_player_len * push * base.scale);
           }
         }
         rl.push_back({render::Op::Monster, static_cast<double>(base.x),
@@ -9580,7 +9587,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
               state.breathe_phase +
                   static_cast<double>(monster.position.x % 97) / 97.0,
               1.0);
-          pose.attack = monster_attack_phase;
+          pose.attack = std::max(0.0, monster_attack_phase);
           pose.mirror = mirror_x < 0;
           const vector_art::Style style =
               vector_art::monster_style(world.theme, monster.elite);
@@ -9787,11 +9794,14 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                                : is_shield ? RGB(168, 128, 84)
                                : is_vessel ? RGB(120, 190, 214)
                                            : RGB(230, 181, 74);
-        const char* item_sprite = is_trophy ? "item_bird"
-            : is_coins ? "item_bundle" : is_weapon ? "weapon_sword"
-            : is_shield ? "item_shield" : is_vessel ? "item_vessel" : "item_bundle";
-        if (!raster_art::draw_sprite(dc, item_sprite, base.x, base.y,
-                                     std::max(12, static_cast<int>(kTileUnits * 0.6 * base.scale)))) {
+        const char* item_sprite = raster_loot::sprite(
+            entry_loot.first, loot_label(state, entry_loot.first));
+        if (raster_art::draw_sprite(dc, item_sprite, base.x, base.y,
+                                    std::max(12, static_cast<int>(kTileUnits * 0.6 * base.scale)))) {
+          rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                        static_cast<double>(base.y), 0.0, 0,
+                        "raster:loot:" + entry_loot.first + ":" + item_sprite});
+        } else {
         HBRUSH brush = CreateSolidBrush(color);
         HPEN pen = CreatePen(PS_SOLID, 2, RGB(18, 16, 14));
         HGDIOBJ old_brush = SelectObject(dc, brush);
@@ -19031,6 +19041,125 @@ int scenario_raster_world() {
   return scenario_failures;
 }
 
+int scenario_raider_strike() {
+  ClientState state;
+  scenario_begin(state);
+  RECT bounds{0, 0, 1366, 768};
+  ingest_events(state, bounds);
+  auto* player = state.simulation->actor(state.simulation->scion().actor_id);
+  scenario_check(player != nullptr, "raider-strike: real player exists");
+  if (!player) return scenario_failures;
+  player->position = {2400, 2400};
+  const int offset = verdigris::world_scale::kMeleeRange / 3;
+  const auto foe_id = state.simulation->spawn_monster({2400 + offset, 2400 - offset}, 1, true);
+  ingest_events(state, bounds);
+  state.effects.clear();
+  scenario_follow_camera(state);
+  const std::string dir = art_wave_capture_dir();
+  scenario_check(!dir.empty(), "raider-strike: capture root accepted");
+  if (dir.empty()) return scenario_failures;
+  auto capture = [&](const std::string& name) {
+    scenario_check(reference_present(state, 1366, 768, dir + "\\raider-strike-" + name + ".png"),
+                   "raider-strike: event-driven production frame captured");
+  };
+  auto has_pose = [&](const std::string& pose) {
+    const auto label = "raster:monster-pose:" + foe_id + ":" + pose;
+    return render_list_has(state, render::Op::Hud, label.c_str());
+  };
+  capture("idle");
+  scenario_check(has_pose("raider_sw"), "raider-strike: idle does not select strike frame zero");
+  const int life_before = state.simulation->actor(state.simulation->scion().actor_id)->stats.life;
+  bool warning = false, contact = false;
+  for (int step = 0; step < 16 && !contact; ++step) {
+    // Age old effects before ingesting this tick's events so this capture
+    // includes the very first confirmed contact paint, not a later sample.
+    for (auto& fx : state.effects) ++fx.age;
+    state.simulation->dispatch(verdigris::Command::action_use(verdigris::ActionType::Wait));
+    ingest_events(state, bounds);
+    scenario_follow_camera(state);
+    if (state.telegraphs.count(foe_id)) {
+      warning = true;
+      capture("warning-" + std::to_string(step));
+      scenario_check((has_pose("raider_strike0_sw") || has_pose("raider_strike1_sw") ||
+                       has_pose("raider_strike2_sw")) &&
+                         state.simulation->actor(state.simulation->scion().actor_id)->stats.life == life_before,
+                     "raider-strike: real warning shows only preparation before damage");
+    }
+    if (verdigris::client::actor_strike(state.effects, foe_id)) {
+      contact = true;
+      capture("contact");
+      scenario_check(has_pose("raider_strike3_sw") && !state.telegraphs.count(foe_id) &&
+                         state.simulation->actor(state.simulation->scion().actor_id)->stats.life < life_before &&
+                         render::any(state.render_list, render::Op::Impact),
+                     "raider-strike: first confirmed enemy damage paints contact frame three and impact");
+    }
+  }
+  scenario_check(warning && contact, "raider-strike: real elite action reaches warning and confirmed hit");
+  if (contact) {
+    bool followthrough = false, recovery = false;
+    // Review the remaining presentation clock without dispatching a second attack.
+    for (int step = 1; step <= 4; ++step) {
+      for (auto& fx : state.effects) ++fx.age;
+      capture("recovery-" + std::to_string(step));
+      followthrough |= has_pose("raider_strike4_sw");
+      recovery |= has_pose("raider_strike5_sw");
+    }
+    scenario_check(followthrough && recovery && has_pose("raider_sw"),
+                   "raider-strike: confirmed action passes followthrough and recovery then returns to idle");
+  }
+  return scenario_failures;
+}
+
+int scenario_raster_loot() {
+  ClientState state;
+  scenario_begin(state);
+  ingest_events(state, RECT{0, 0, 1366, 768});
+  sync_world(state);
+  // Static asset review inside a valid local session. Descriptive IDs exercise
+  // the existing local no-name fallback; remote display-name selection is
+  // checked separately below. This neither spawns rewards nor tests pickup.
+  auto* player = state.simulation->actor(state.simulation->scion().actor_id);
+  scenario_check(player != nullptr, "raster-loot: local session has an authoritative player");
+  if (!player) return scenario_failures;
+  player->position = {2400, 2400};
+  state.camera.x = 2400;
+  state.camera.y = 2400;
+  state.effects.clear();
+  state.loot_positions.clear();
+  state.world.loot_names.clear();
+  state.loot_labels = true;
+  struct Sample { const char* label; const char* expected; };
+  const Sample samples[] = {
+      {"Bronze Pike", "item_pike"}, {"Bronze Axe", "weapon_axe"},
+      {"Bronze Dagger", "item_dagger"}, {"Reed Bow", "weapon_bow"},
+      {"Ash Staff", "weapon_staff"}, {"Wooden Club", "weapon_club"},
+      {"Fur Boots", "item_boots"}, {"Bronze Armor", "item_armor"},
+      {"Carving Knife", "item_knife"}, {"Life Draught", "item_draught"},
+      {"Blood Omen", "item_blood"}, {"Offering Bowl", "item_bowl"}};
+  for (int i = 0; i < 12; ++i) {
+    const std::string id = samples[i].label;
+    state.loot_positions[id] = {2400 + (i % 4 * 220 - 330),
+                                2400 + (i / 4 * 150 - 150)};
+  }
+  scenario_check(std::string(raster_loot::sprite("opaque-item-id", "Bronze Pike")) == "item_pike" &&
+                     std::string(raster_loot::sprite("opaque-item-id", "Offering Bowl")) == "item_bowl",
+                 "raster-loot: supplied display names choose pike and bowl without a bow substring collision");
+  const std::string dir = art_wave_capture_dir();
+  scenario_check(!dir.empty(), "raster-loot: capture root accepted");
+  if (dir.empty()) return scenario_failures;
+  scenario_check(reference_present(state, 1366, 768, dir + "\\raster-loot-1366x768.png"),
+                 "raster-loot: named drop families captured through production drawing");
+  for (int i = 0; i < 12; ++i) {
+    const std::string tag = std::string("raster:loot:") + samples[i].label + ":" + samples[i].expected;
+    scenario_check(render_list_has(state, render::Op::Hud, tag.c_str()),
+                   (std::string("raster-loot: physical silhouette matches ") + samples[i].label).c_str());
+  }
+  scenario_check(state.loot_positions.size() == 12 &&
+                     state.simulation->ground_items().empty() && state.simulation->ground_trophies().empty(),
+                 "raster-loot: drawing preserves supplied drops and creates no authoritative rewards");
+  return scenario_failures;
+}
+
 void capture_raster_walk(const RasterDirectionalClip& clip, const std::string& dir) {
   ClientState state;
   scenario_begin(state);
@@ -19585,6 +19714,8 @@ int run_scenarios(const std::string& which) {
       {"hud-chrome", scenario_hud_chrome},
       {"xp-meter", scenario_xp_meter},
       {"raster-world", scenario_raster_world},
+      {"raster-loot", scenario_raster_loot},
+      {"raider-strike", scenario_raider_strike},
       {"raster-motion", scenario_raster_motion},
       {"raider-motion", scenario_raider_motion},
       {"loot-to-bank", scenario_loot_to_bank},

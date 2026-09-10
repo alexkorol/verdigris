@@ -1,0 +1,37 @@
+{
+  "frames": [
+    {
+      "name": "raider_strike0_sw",
+      "byte_identical": true,
+      "sha256": "b06f852840b585931a94c5185a59582c717ce5be534bf767c2c23add97203c36"
+    },
+    {
+      "name": "raider_strike1_sw",
+      "byte_identical": true,
+      "sha256": "d4b8f4d21021b1b8281f87688db1005b456d5c106a4a87d917c22978fc1e4db2"
+    },
+    {
+      "name": "raider_strike2_sw",
+      "byte_identical": true,
+      "sha256": "ae5d698092f3b60a3826a70fa6f59455e355440f62b66ed4e278ec91933e6994"
+    },
+    {
+      "name": "raider_strike3_sw",
+      "byte_identical": true,
+      "sha256": "0939205de852b36c2c4e66071e48e0fa8263a63066322201f443ddb1ecf3ab24"
+    },
+    {
+      "name": "raider_strike4_sw",
+      "byte_identical": true,
+      "sha256": "5dcc2c33e499ccbeb0392016457e7acf4e316ed5df17c2822279902bd5176e19"
+    },
+    {
+      "name": "raider_strike5_sw",
+      "byte_identical": true,
+      "sha256": "81ae09e3e673ed9ae8bf0b022f564897f7a39af298833450b56bd6ce95436ee6"
+    }
+  ],
+  "idle_unchanged": true,
+  "acceptance": "root_native_review_accepted_pending_production_event_timing_review",
+  "root_owns": "production event timing and gameplay acceptance"
+}

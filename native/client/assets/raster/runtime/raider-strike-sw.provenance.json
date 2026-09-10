@@ -1,0 +1,2219 @@
+{
+  "version": 1,
+  "manifest_sha256": "01d338b2722c31759a89b71203ec474d80f38ed600adb9d8a2fb6d3022884578",
+  "importer_sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+  "engine": {
+    "project": "Pixel Respecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "root": "Z:/Code/Python/pixel-perfecter",
+    "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+    "git_dirty": true,
+    "source_sha256": {
+      "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+      "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+      "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+      "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+      "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+      "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+      "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+      "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+      "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+      "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+      "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+      "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+      "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+    },
+    "dependencies": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    }
+  },
+  "known_limitations": [
+    "Root viewed native SW action, corrected warning poses and actual elite SW sweep contact: warning0/1/2 precedes life loss, first confirmed hit3 applies damage8 and impact, followed by followthrough4/recovery5/idle. This is provisional production integration, not final visual polish.",
+    "Selected original v1 poses0,2,3,4,5 plus corrected v2 anticipation1. Color repair restored charcoal cloth; original olive-tinted phase1 remains preserved and rejected.",
+    "One shared cell6 reconstruction with source origin280,480, column500,row490,canvas80x96,pivot40,96; no per-pose fitting or centering.",
+    "Anticipation is an outward preparatory lift. Contact3 is synchronized to the confirmed production hit; low follow-through4 and recovery retain abrupt pose and silhouette changes that still need visual refinement.",
+    "Source opaque checker removed through actual Pixel Respecter. Exact neutral-only local windows preserve pale colored skin; earlier broader color cleanup is preserved as rejected evidence.",
+    "Axe is baked into the same anatomical-right/screen-left hand in all6 SW frames. Ordinary whole monster rendering; no separate hero equipment overlay.",
+    "Only Raider SW has this six-phase action. Other raider action directions are not supplied or inferred from these frames; the former scripted SW locomotion review remains separate from this real elite combat event proof."
+  ],
+  "sources": [
+    {
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "sha256": "fb668850b3b283e2539a00a5328a51ce2290c786f371f8a5d522eab7139455cc",
+      "size": [
+        1536,
+        1024
+      ],
+      "background_removal": {
+        "api": "pixel_perfecter.colors.make_border_connected_transparent",
+        "color": [
+          210,
+          210,
+          210
+        ],
+        "tolerance": 95,
+        "interior_windows": [
+          {
+            "source_box": [
+              284,
+              126,
+              287,
+              127
+            ],
+            "new_transparent_pixels": 3
+          },
+          {
+            "source_box": [
+              283,
+              127,
+              287,
+              129
+            ],
+            "new_transparent_pixels": 8
+          },
+          {
+            "source_box": [
+              281,
+              129,
+              282,
+              130
+            ],
+            "new_transparent_pixels": 1
+          },
+          {
+            "source_box": [
+              280,
+              130,
+              282,
+              132
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              296,
+              174,
+              300,
+              175
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              296,
+              175,
+              299,
+              176
+            ],
+            "new_transparent_pixels": 3
+          },
+          {
+            "source_box": [
+              296,
+              176,
+              300,
+              177
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              295,
+              177,
+              300,
+              178
+            ],
+            "new_transparent_pixels": 5
+          },
+          {
+            "source_box": [
+              299,
+              178,
+              303,
+              181
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              300,
+              181,
+              303,
+              182
+            ],
+            "new_transparent_pixels": 3
+          },
+          {
+            "source_box": [
+              262,
+              641,
+              265,
+              643
+            ],
+            "new_transparent_pixels": 6
+          },
+          {
+            "source_box": [
+              279,
+              676,
+              281,
+              679
+            ],
+            "new_transparent_pixels": 6
+          },
+          {
+            "source_box": [
+              279,
+              679,
+              282,
+              680
+            ],
+            "new_transparent_pixels": 3
+          },
+          {
+            "source_box": [
+              280,
+              680,
+              285,
+              681
+            ],
+            "new_transparent_pixels": 5
+          },
+          {
+            "source_box": [
+              280,
+              681,
+              284,
+              682
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              280,
+              682,
+              285,
+              683
+            ],
+            "new_transparent_pixels": 5
+          },
+          {
+            "source_box": [
+              773,
+              634,
+              774,
+              635
+            ],
+            "new_transparent_pixels": 1
+          },
+          {
+            "source_box": [
+              773,
+              635,
+              776,
+              637
+            ],
+            "new_transparent_pixels": 6
+          },
+          {
+            "source_box": [
+              771,
+              637,
+              775,
+              638
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              770,
+              638,
+              775,
+              639
+            ],
+            "new_transparent_pixels": 5
+          },
+          {
+            "source_box": [
+              791,
+              680,
+              794,
+              683
+            ],
+            "new_transparent_pixels": 9
+          },
+          {
+            "source_box": [
+              1297,
+              672,
+              1299,
+              674
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              1297,
+              674,
+              1300,
+              675
+            ],
+            "new_transparent_pixels": 3
+          },
+          {
+            "source_box": [
+              1302,
+              675,
+              1304,
+              676
+            ],
+            "new_transparent_pixels": 2
+          },
+          {
+            "source_box": [
+              1300,
+              676,
+              1304,
+              679
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              1300,
+              679,
+              1308,
+              680
+            ],
+            "new_transparent_pixels": 8
+          },
+          {
+            "source_box": [
+              1304,
+              680,
+              1308,
+              683
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              1251,
+              770,
+              1255,
+              772
+            ],
+            "new_transparent_pixels": 8
+          },
+          {
+            "source_box": [
+              1251,
+              772,
+              1256,
+              774
+            ],
+            "new_transparent_pixels": 10
+          },
+          {
+            "source_box": [
+              1251,
+              774,
+              1255,
+              775
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              1247,
+              775,
+              1255,
+              781
+            ],
+            "new_transparent_pixels": 48
+          },
+          {
+            "source_box": [
+              1244,
+              781,
+              1255,
+              782
+            ],
+            "new_transparent_pixels": 11
+          },
+          {
+            "source_box": [
+              1243,
+              782,
+              1255,
+              783
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              1243,
+              783,
+              1256,
+              787
+            ],
+            "new_transparent_pixels": 52
+          },
+          {
+            "source_box": [
+              1243,
+              787,
+              1254,
+              789
+            ],
+            "new_transparent_pixels": 22
+          },
+          {
+            "source_box": [
+              1243,
+              789,
+              1255,
+              790
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              1243,
+              790,
+              1251,
+              791
+            ],
+            "new_transparent_pixels": 8
+          },
+          {
+            "source_box": [
+              1241,
+              791,
+              1251,
+              794
+            ],
+            "new_transparent_pixels": 30
+          },
+          {
+            "source_box": [
+              1239,
+              794,
+              1247,
+              798
+            ],
+            "new_transparent_pixels": 32
+          },
+          {
+            "source_box": [
+              1249,
+              794,
+              1250,
+              795
+            ],
+            "new_transparent_pixels": 1
+          },
+          {
+            "source_box": [
+              1239,
+              798,
+              1244,
+              799
+            ],
+            "new_transparent_pixels": 5
+          },
+          {
+            "source_box": [
+              1246,
+              798,
+              1247,
+              799
+            ],
+            "new_transparent_pixels": 1
+          },
+          {
+            "source_box": [
+              1239,
+              799,
+              1243,
+              800
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              1238,
+              800,
+              1243,
+              802
+            ],
+            "new_transparent_pixels": 10
+          },
+          {
+            "source_box": [
+              1235,
+              802,
+              1239,
+              806
+            ],
+            "new_transparent_pixels": 16
+          },
+          {
+            "source_box": [
+              1233,
+              806,
+              1237,
+              807
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              1231,
+              807,
+              1235,
+              809
+            ],
+            "new_transparent_pixels": 8
+          },
+          {
+            "source_box": [
+              1230,
+              809,
+              1235,
+              810
+            ],
+            "new_transparent_pixels": 5
+          },
+          {
+            "source_box": [
+              1227,
+              810,
+              1233,
+              811
+            ],
+            "new_transparent_pixels": 6
+          },
+          {
+            "source_box": [
+              1227,
+              811,
+              1232,
+              813
+            ],
+            "new_transparent_pixels": 10
+          },
+          {
+            "source_box": [
+              1224,
+              813,
+              1232,
+              814
+            ],
+            "new_transparent_pixels": 8
+          },
+          {
+            "source_box": [
+              1223,
+              814,
+              1232,
+              815
+            ],
+            "new_transparent_pixels": 9
+          },
+          {
+            "source_box": [
+              1223,
+              815,
+              1234,
+              816
+            ],
+            "new_transparent_pixels": 11
+          },
+          {
+            "source_box": [
+              1226,
+              816,
+              1234,
+              817
+            ],
+            "new_transparent_pixels": 8
+          },
+          {
+            "source_box": [
+              1227,
+              817,
+              1234,
+              818
+            ],
+            "new_transparent_pixels": 7
+          },
+          {
+            "source_box": [
+              1227,
+              818,
+              1230,
+              822
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              1341,
+              771,
+              1345,
+              772
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              1346,
+              771,
+              1347,
+              772
+            ],
+            "new_transparent_pixels": 1
+          },
+          {
+            "source_box": [
+              1341,
+              772,
+              1348,
+              775
+            ],
+            "new_transparent_pixels": 21
+          },
+          {
+            "source_box": [
+              1346,
+              775,
+              1352,
+              777
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              1347,
+              777,
+              1352,
+              778
+            ],
+            "new_transparent_pixels": 5
+          },
+          {
+            "source_box": [
+              1348,
+              778,
+              1352,
+              779
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              1348,
+              779,
+              1356,
+              788
+            ],
+            "new_transparent_pixels": 72
+          },
+          {
+            "source_box": [
+              1341,
+              784,
+              1342,
+              786
+            ],
+            "new_transparent_pixels": 2
+          },
+          {
+            "source_box": [
+              1343,
+              785,
+              1344,
+              786
+            ],
+            "new_transparent_pixels": 1
+          },
+          {
+            "source_box": [
+              1341,
+              786,
+              1344,
+              787
+            ],
+            "new_transparent_pixels": 3
+          },
+          {
+            "source_box": [
+              1345,
+              788,
+              1356,
+              790
+            ],
+            "new_transparent_pixels": 22
+          },
+          {
+            "source_box": [
+              1347,
+              790,
+              1358,
+              791
+            ],
+            "new_transparent_pixels": 11
+          },
+          {
+            "source_box": [
+              1348,
+              791,
+              1360,
+              794
+            ],
+            "new_transparent_pixels": 36
+          },
+          {
+            "source_box": [
+              1348,
+              794,
+              1361,
+              795
+            ],
+            "new_transparent_pixels": 13
+          },
+          {
+            "source_box": [
+              1352,
+              795,
+              1364,
+              796
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              1352,
+              796,
+              1363,
+              798
+            ],
+            "new_transparent_pixels": 22
+          },
+          {
+            "source_box": [
+              1352,
+              798,
+              1367,
+              801
+            ],
+            "new_transparent_pixels": 45
+          },
+          {
+            "source_box": [
+              1352,
+              801,
+              1368,
+              802
+            ],
+            "new_transparent_pixels": 16
+          },
+          {
+            "source_box": [
+              1355,
+              802,
+              1368,
+              803
+            ],
+            "new_transparent_pixels": 13
+          },
+          {
+            "source_box": [
+              1356,
+              803,
+              1368,
+              808
+            ],
+            "new_transparent_pixels": 60
+          },
+          {
+            "source_box": [
+              1359,
+              808,
+              1368,
+              809
+            ],
+            "new_transparent_pixels": 9
+          },
+          {
+            "source_box": [
+              1360,
+              809,
+              1368,
+              810
+            ],
+            "new_transparent_pixels": 8
+          },
+          {
+            "source_box": [
+              1360,
+              810,
+              1367,
+              811
+            ],
+            "new_transparent_pixels": 7
+          },
+          {
+            "source_box": [
+              1360,
+              811,
+              1364,
+              814
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              1363,
+              814,
+              1364,
+              815
+            ],
+            "new_transparent_pixels": 1
+          },
+          {
+            "source_box": [
+              1364,
+              815,
+              1365,
+              818
+            ],
+            "new_transparent_pixels": 3
+          }
+        ],
+        "transparent_pixels_after": 1300545
+      }
+    },
+    {
+      "source": "../../client/assets/raster/source/raider-strike-sw-v2.png",
+      "sha256": "b7773572b750c069d5c609f3b69987c1923d6d4ba5fc5c2f377943f4c3afe9a2",
+      "size": [
+        1536,
+        1024
+      ],
+      "background_removal": {
+        "api": "pixel_perfecter.colors.make_border_connected_transparent",
+        "color": [
+          210,
+          210,
+          210
+        ],
+        "tolerance": 95,
+        "interior_windows": [
+          {
+            "source_box": [
+              761,
+              132,
+              767,
+              133
+            ],
+            "new_transparent_pixels": 6
+          },
+          {
+            "source_box": [
+              760,
+              133,
+              768,
+              135
+            ],
+            "new_transparent_pixels": 16
+          },
+          {
+            "source_box": [
+              760,
+              135,
+              764,
+              136
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              762,
+              136,
+              763,
+              137
+            ],
+            "new_transparent_pixels": 1
+          },
+          {
+            "source_box": [
+              776,
+              178,
+              780,
+              182
+            ],
+            "new_transparent_pixels": 16
+          },
+          {
+            "source_box": [
+              776,
+              182,
+              783,
+              186
+            ],
+            "new_transparent_pixels": 28
+          }
+        ],
+        "transparent_pixels_after": 1298824
+      }
+    },
+    {
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "sha256": "fb668850b3b283e2539a00a5328a51ce2290c786f371f8a5d522eab7139455cc",
+      "size": [
+        1536,
+        1024
+      ],
+      "background_removal": {
+        "api": "pixel_perfecter.colors.make_border_connected_transparent",
+        "color": [
+          210,
+          210,
+          210
+        ],
+        "tolerance": 95,
+        "interior_windows": [
+          {
+            "source_box": [
+              284,
+              126,
+              287,
+              127
+            ],
+            "new_transparent_pixels": 3
+          },
+          {
+            "source_box": [
+              283,
+              127,
+              287,
+              129
+            ],
+            "new_transparent_pixels": 8
+          },
+          {
+            "source_box": [
+              281,
+              129,
+              282,
+              130
+            ],
+            "new_transparent_pixels": 1
+          },
+          {
+            "source_box": [
+              280,
+              130,
+              282,
+              132
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              296,
+              174,
+              300,
+              175
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              296,
+              175,
+              299,
+              176
+            ],
+            "new_transparent_pixels": 3
+          },
+          {
+            "source_box": [
+              296,
+              176,
+              300,
+              177
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              295,
+              177,
+              300,
+              178
+            ],
+            "new_transparent_pixels": 5
+          },
+          {
+            "source_box": [
+              299,
+              178,
+              303,
+              181
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              300,
+              181,
+              303,
+              182
+            ],
+            "new_transparent_pixels": 3
+          },
+          {
+            "source_box": [
+              262,
+              641,
+              265,
+              643
+            ],
+            "new_transparent_pixels": 6
+          },
+          {
+            "source_box": [
+              279,
+              676,
+              281,
+              679
+            ],
+            "new_transparent_pixels": 6
+          },
+          {
+            "source_box": [
+              279,
+              679,
+              282,
+              680
+            ],
+            "new_transparent_pixels": 3
+          },
+          {
+            "source_box": [
+              280,
+              680,
+              285,
+              681
+            ],
+            "new_transparent_pixels": 5
+          },
+          {
+            "source_box": [
+              280,
+              681,
+              284,
+              682
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              280,
+              682,
+              285,
+              683
+            ],
+            "new_transparent_pixels": 5
+          },
+          {
+            "source_box": [
+              773,
+              634,
+              774,
+              635
+            ],
+            "new_transparent_pixels": 1
+          },
+          {
+            "source_box": [
+              773,
+              635,
+              776,
+              637
+            ],
+            "new_transparent_pixels": 6
+          },
+          {
+            "source_box": [
+              771,
+              637,
+              775,
+              638
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              770,
+              638,
+              775,
+              639
+            ],
+            "new_transparent_pixels": 5
+          },
+          {
+            "source_box": [
+              791,
+              680,
+              794,
+              683
+            ],
+            "new_transparent_pixels": 9
+          },
+          {
+            "source_box": [
+              1297,
+              672,
+              1299,
+              674
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              1297,
+              674,
+              1300,
+              675
+            ],
+            "new_transparent_pixels": 3
+          },
+          {
+            "source_box": [
+              1302,
+              675,
+              1304,
+              676
+            ],
+            "new_transparent_pixels": 2
+          },
+          {
+            "source_box": [
+              1300,
+              676,
+              1304,
+              679
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              1300,
+              679,
+              1308,
+              680
+            ],
+            "new_transparent_pixels": 8
+          },
+          {
+            "source_box": [
+              1304,
+              680,
+              1308,
+              683
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              1251,
+              770,
+              1255,
+              772
+            ],
+            "new_transparent_pixels": 8
+          },
+          {
+            "source_box": [
+              1251,
+              772,
+              1256,
+              774
+            ],
+            "new_transparent_pixels": 10
+          },
+          {
+            "source_box": [
+              1251,
+              774,
+              1255,
+              775
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              1247,
+              775,
+              1255,
+              781
+            ],
+            "new_transparent_pixels": 48
+          },
+          {
+            "source_box": [
+              1244,
+              781,
+              1255,
+              782
+            ],
+            "new_transparent_pixels": 11
+          },
+          {
+            "source_box": [
+              1243,
+              782,
+              1255,
+              783
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              1243,
+              783,
+              1256,
+              787
+            ],
+            "new_transparent_pixels": 52
+          },
+          {
+            "source_box": [
+              1243,
+              787,
+              1254,
+              789
+            ],
+            "new_transparent_pixels": 22
+          },
+          {
+            "source_box": [
+              1243,
+              789,
+              1255,
+              790
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              1243,
+              790,
+              1251,
+              791
+            ],
+            "new_transparent_pixels": 8
+          },
+          {
+            "source_box": [
+              1241,
+              791,
+              1251,
+              794
+            ],
+            "new_transparent_pixels": 30
+          },
+          {
+            "source_box": [
+              1239,
+              794,
+              1247,
+              798
+            ],
+            "new_transparent_pixels": 32
+          },
+          {
+            "source_box": [
+              1249,
+              794,
+              1250,
+              795
+            ],
+            "new_transparent_pixels": 1
+          },
+          {
+            "source_box": [
+              1239,
+              798,
+              1244,
+              799
+            ],
+            "new_transparent_pixels": 5
+          },
+          {
+            "source_box": [
+              1246,
+              798,
+              1247,
+              799
+            ],
+            "new_transparent_pixels": 1
+          },
+          {
+            "source_box": [
+              1239,
+              799,
+              1243,
+              800
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              1238,
+              800,
+              1243,
+              802
+            ],
+            "new_transparent_pixels": 10
+          },
+          {
+            "source_box": [
+              1235,
+              802,
+              1239,
+              806
+            ],
+            "new_transparent_pixels": 16
+          },
+          {
+            "source_box": [
+              1233,
+              806,
+              1237,
+              807
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              1231,
+              807,
+              1235,
+              809
+            ],
+            "new_transparent_pixels": 8
+          },
+          {
+            "source_box": [
+              1230,
+              809,
+              1235,
+              810
+            ],
+            "new_transparent_pixels": 5
+          },
+          {
+            "source_box": [
+              1227,
+              810,
+              1233,
+              811
+            ],
+            "new_transparent_pixels": 6
+          },
+          {
+            "source_box": [
+              1227,
+              811,
+              1232,
+              813
+            ],
+            "new_transparent_pixels": 10
+          },
+          {
+            "source_box": [
+              1224,
+              813,
+              1232,
+              814
+            ],
+            "new_transparent_pixels": 8
+          },
+          {
+            "source_box": [
+              1223,
+              814,
+              1232,
+              815
+            ],
+            "new_transparent_pixels": 9
+          },
+          {
+            "source_box": [
+              1223,
+              815,
+              1234,
+              816
+            ],
+            "new_transparent_pixels": 11
+          },
+          {
+            "source_box": [
+              1226,
+              816,
+              1234,
+              817
+            ],
+            "new_transparent_pixels": 8
+          },
+          {
+            "source_box": [
+              1227,
+              817,
+              1234,
+              818
+            ],
+            "new_transparent_pixels": 7
+          },
+          {
+            "source_box": [
+              1227,
+              818,
+              1230,
+              822
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              1341,
+              771,
+              1345,
+              772
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              1346,
+              771,
+              1347,
+              772
+            ],
+            "new_transparent_pixels": 1
+          },
+          {
+            "source_box": [
+              1341,
+              772,
+              1348,
+              775
+            ],
+            "new_transparent_pixels": 21
+          },
+          {
+            "source_box": [
+              1346,
+              775,
+              1352,
+              777
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              1347,
+              777,
+              1352,
+              778
+            ],
+            "new_transparent_pixels": 5
+          },
+          {
+            "source_box": [
+              1348,
+              778,
+              1352,
+              779
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              1348,
+              779,
+              1356,
+              788
+            ],
+            "new_transparent_pixels": 72
+          },
+          {
+            "source_box": [
+              1341,
+              784,
+              1342,
+              786
+            ],
+            "new_transparent_pixels": 2
+          },
+          {
+            "source_box": [
+              1343,
+              785,
+              1344,
+              786
+            ],
+            "new_transparent_pixels": 1
+          },
+          {
+            "source_box": [
+              1341,
+              786,
+              1344,
+              787
+            ],
+            "new_transparent_pixels": 3
+          },
+          {
+            "source_box": [
+              1345,
+              788,
+              1356,
+              790
+            ],
+            "new_transparent_pixels": 22
+          },
+          {
+            "source_box": [
+              1347,
+              790,
+              1358,
+              791
+            ],
+            "new_transparent_pixels": 11
+          },
+          {
+            "source_box": [
+              1348,
+              791,
+              1360,
+              794
+            ],
+            "new_transparent_pixels": 36
+          },
+          {
+            "source_box": [
+              1348,
+              794,
+              1361,
+              795
+            ],
+            "new_transparent_pixels": 13
+          },
+          {
+            "source_box": [
+              1352,
+              795,
+              1364,
+              796
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              1352,
+              796,
+              1363,
+              798
+            ],
+            "new_transparent_pixels": 22
+          },
+          {
+            "source_box": [
+              1352,
+              798,
+              1367,
+              801
+            ],
+            "new_transparent_pixels": 45
+          },
+          {
+            "source_box": [
+              1352,
+              801,
+              1368,
+              802
+            ],
+            "new_transparent_pixels": 16
+          },
+          {
+            "source_box": [
+              1355,
+              802,
+              1368,
+              803
+            ],
+            "new_transparent_pixels": 13
+          },
+          {
+            "source_box": [
+              1356,
+              803,
+              1368,
+              808
+            ],
+            "new_transparent_pixels": 60
+          },
+          {
+            "source_box": [
+              1359,
+              808,
+              1368,
+              809
+            ],
+            "new_transparent_pixels": 9
+          },
+          {
+            "source_box": [
+              1360,
+              809,
+              1368,
+              810
+            ],
+            "new_transparent_pixels": 8
+          },
+          {
+            "source_box": [
+              1360,
+              810,
+              1367,
+              811
+            ],
+            "new_transparent_pixels": 7
+          },
+          {
+            "source_box": [
+              1360,
+              811,
+              1364,
+              814
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              1363,
+              814,
+              1364,
+              815
+            ],
+            "new_transparent_pixels": 1
+          },
+          {
+            "source_box": [
+              1364,
+              815,
+              1365,
+              818
+            ],
+            "new_transparent_pixels": 3
+          }
+        ],
+        "transparent_pixels_after": 1300545
+      }
+    }
+  ],
+  "assets": [
+    {
+      "name": "raider_strike0_sw",
+      "file": "raider_strike0_sw.png",
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 31,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        22,
+        21,
+        68,
+        79
+      ],
+      "before_resize": [
+        46,
+        58
+      ],
+      "placed_size": [
+        46,
+        58
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        15,
+        37,
+        61,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        280,
+        480
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "b06f852840b585931a94c5185a59582c717ce5be534bf767c2c23add97203c36"
+    },
+    {
+      "name": "raider_strike1_sw",
+      "file": "raider_strike1_sw.png",
+      "source": "../../client/assets/raster/source/raider-strike-sw-v2.png",
+      "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        512,
+        0,
+        1024,
+        512
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        8,
+        21,
+        65,
+        79
+      ],
+      "before_resize": [
+        57,
+        58
+      ],
+      "placed_size": [
+        57,
+        58
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        3,
+        37,
+        60,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        268,
+        480
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "d4b8f4d21021b1b8281f87688db1005b456d5c106a4a87d917c22978fc1e4db2"
+    },
+    {
+      "name": "raider_strike2_sw",
+      "file": "raider_strike2_sw.png",
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        1024,
+        0,
+        1536,
+        512
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 30,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        19,
+        5,
+        62,
+        79
+      ],
+      "before_resize": [
+        43,
+        74
+      ],
+      "placed_size": [
+        43,
+        74
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        16,
+        21,
+        59,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        256,
+        480
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "ae5d698092f3b60a3826a70fa6f59455e355440f62b66ed4e278ec91933e6994"
+    },
+    {
+      "name": "raider_strike3_sw",
+      "file": "raider_strike3_sw.png",
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        0,
+        512,
+        512,
+        1024
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        13,
+        20,
+        73,
+        74
+      ],
+      "before_resize": [
+        60,
+        54
+      ],
+      "placed_size": [
+        60,
+        54
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        6,
+        40,
+        66,
+        94
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        280,
+        458
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "0939205de852b36c2c4e66071e48e0fa8263a63066322201f443ddb1ecf3ab24"
+    },
+    {
+      "name": "raider_strike4_sw",
+      "file": "raider_strike4_sw.png",
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        512,
+        512,
+        1024,
+        1024
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        11,
+        20,
+        73,
+        75
+      ],
+      "before_resize": [
+        62,
+        55
+      ],
+      "placed_size": [
+        62,
+        55
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        6,
+        40,
+        68,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        268,
+        458
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "5dcc2c33e499ccbeb0392016457e7acf4e316ed5df17c2822279902bd5176e19"
+    },
+    {
+      "name": "raider_strike5_sw",
+      "file": "raider_strike5_sw.png",
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        1024,
+        512,
+        1536,
+        1024
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        16,
+        19,
+        65,
+        76
+      ],
+      "before_resize": [
+        49,
+        57
+      ],
+      "placed_size": [
+        49,
+        57
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        13,
+        39,
+        62,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        256,
+        458
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "81ae09e3e673ed9ae8bf0b022f564897f7a39af298833450b56bd6ce95436ee6"
+    }
+  ],
+  "shared_palette": {
+    "api": "pixel_perfecter.palettes.reduce_colors",
+    "max_colors": 32,
+    "visible_colors_before": 851,
+    "visible_colors_after": 32,
+    "palette_rgb": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        21,
+        35,
+        41
+      ],
+      [
+        39,
+        22,
+        5
+      ],
+      [
+        67,
+        63,
+        42
+      ],
+      [
+        78,
+        12,
+        2
+      ],
+      [
+        78,
+        81,
+        91
+      ],
+      [
+        91,
+        34,
+        29
+      ],
+      [
+        110,
+        112,
+        117
+      ],
+      [
+        114,
+        59,
+        8
+      ],
+      [
+        118,
+        107,
+        80
+      ],
+      [
+        129,
+        76,
+        64
+      ],
+      [
+        148,
+        23,
+        4
+      ],
+      [
+        150,
+        139,
+        129
+      ],
+      [
+        153,
+        60,
+        31
+      ],
+      [
+        153,
+        118,
+        65
+      ],
+      [
+        178,
+        96,
+        17
+      ],
+      [
+        191,
+        97,
+        62
+      ],
+      [
+        204,
+        130,
+        89
+      ],
+      [
+        205,
+        70,
+        27
+      ],
+      [
+        213,
+        180,
+        117
+      ],
+      [
+        222,
+        102,
+        4
+      ],
+      [
+        225,
+        229,
+        229
+      ],
+      [
+        232,
+        150,
+        33
+      ],
+      [
+        233,
+        108,
+        48
+      ],
+      [
+        239,
+        215,
+        153
+      ],
+      [
+        246,
+        151,
+        82
+      ],
+      [
+        249,
+        187,
+        49
+      ],
+      [
+        251,
+        180,
+        108
+      ],
+      [
+        252,
+        237,
+        184
+      ],
+      [
+        253,
+        129,
+        1
+      ],
+      [
+        255,
+        217,
+        113
+      ],
+      [
+        255,
+        255,
+        255
+      ]
+    ],
+    "dithering": "none",
+    "scope": "all reconstructed frames in this manifest"
+  },
+  "production_review": {
+    "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+    "evidence": "native/client/assets/raster/reviews/2026-09-10-actions/retained-evidence.json",
+    "scope": "Root-reported supported production captures and gates; successful integration for this iteration, not final visual polish."
+  }
+}

@@ -1,0 +1,13 @@
+Using this single raider reference, create a six-frame pixel-art axe attack sheet arranged in three columns and two rows, in chronological reading order.
+
+Preserve the reference's character identity, grounded adult proportions, bone mask, tied dark hair, charcoal shoulder wraps and torn trousers, ochre sash, leather bracers, brown boots, natural palette and crisp pixel scale. Keep the same broad curved bronze axe and wooden handle, held by the same anatomical RIGHT hand (on screen-left in this SW view). The opposite hand remains free throughout.
+
+Show one coherent downward axe chop toward lower-left. Keep the raider facing lower-left with the same elevated camera in all six cells:
+1. Ready: balanced stance, axe held low as in the reference.
+2. Anticipation: load the rear leg and draw the axe hand back; torso coils slightly, knees flex.
+3. Committed windup: raise that same right-hand axe above and behind the right shoulder, elbow bent, ready to accelerate downward; the free left hand guards the body.
+4. Contact: drive the same axe forward and downward toward lower-left, with a clear extended arm, visible blade and forward weight transfer.
+5. Follow-through: continue the same arc lower and slightly beyond contact; torso and knees absorb the swing, axe stays in the right hand.
+6. Recovery: bend that right elbow, bring the axe back toward the low ready position and restore balance, allowing a return to frame 1.
+
+Animate actual limb, torso and weight changes. Keep apparent body size, camera and ground registration consistent. Exactly one complete raider and its attached axe per cell, with generous weapon clearance and no cropping or overlap. Use deliberate sharp pixel clusters and a restrained palette. No labels, frame numbers, grid lines, motion trails, impact effects, scenery or other characters. Return actual transparent RGBA, with no painted transparency pattern. Frame timing, slicing and file assembly will be handled separately.

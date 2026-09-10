@@ -1,0 +1,20 @@
+{
+  "status": "root_native_review_accepted_pending_production_event_timing_review",
+  "reviewedOn": "2026-09-10",
+  "selectedSources": "Original v1 phases0,2,3,4,5 and corrected v2 anticipation1",
+  "rootReview": "Root viewed chronological contact4x and idle-strike-idle1x. Same physical axe hand persists; raised windup and low contact read clearly; accepted for integration.",
+  "laneReview": "Source, six native frames, chronological3x2 contact4x, dark/light idle-cycle strips and a browser preview at1x/4x were inspected. Raised windup was stepped and reviewed in the browser. Playback is a candidate preview, not a production-game capture.",
+  "weapon": "Axe stays in the anatomical-right/screen-left hand in every pose; opposite hand free. Handle remains attached, with full weapon clearance and no dropped axe or observed hand swap.",
+  "phases": ["0 ready: low axe and balanced stance", "1 anticipation: outward preparatory lift and loaded stance; corrected charcoal clothing", "2 committed windup: axe raised above the same right shoulder", "3 contact: arm and axe extended low toward lower-left", "4 follow-through: low continuation, changed balance and free-arm position", "5 recovery: axe and body return toward ready"],
+  "limits": ["Anticipation lifts outward rather than the exact requested rear draw.", "Contact and follow-through are adjacent low axe poses; timing must preserve a fast strike and readable recovery.", "Source retains small outline/material and blade-contour variations from idle. Ready body height58px is close to idle57px.", "No independent per-pose fitting or centering; common source registration preserves original foot/body offsets.", "Actual production hit-event synchronization, gameplay gates and frame budget remain root-owned."],
+  "canvas": [80,96],
+  "anchor": [40,96],
+  "sharedPaletteColors": 32,
+  "alpha": "Binary alpha, with inspected enclosed gaps removed. Final local cleanup removes only neutral source pixels; no chromatic skin removal. Earlier damaging cleanup is preserved as rejected evidence.",
+  "previewDurationsMs": [100,120,90,50,100,140],
+  "contactPhase": 3,
+  "timing": "Preview total600ms. Root must align contact with the confirmed strike event rather than delaying damage for these showcase holds.",
+  "runtimePromotion": "runtime-promotion.json verifies all6 PNGs byte-identical to the selected candidate and idle unchanged.",
+  "rendering": "Ordinary whole monster sprite with baked axe; no hero equipment overlay.",
+  "runtimeAcceptedInGame": false
+}

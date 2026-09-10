@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "output_dir": "../source/actors_hero-strike-ne-followthrough-v3-candidate",
+  "defaults": {"cell_size": 11, "alpha_mode": "crisp", "max_colors": 32, "canvas": [80, 96], "preserve_scale": true, "require_transparency": true, "acceptance": "candidate for root and equipment review; not runtime accepted"},
+  "known_limitations": ["Generated single-frame framing and pixel pitch are measured independently. Manual source pitch11, no per-pose resizing, output80x96 and pivot40,96."],
+  "sheets": [
+    {"source": "../source/actors_hero-strike-ne-followthrough-v3-reference-contact.png", "grid": [1, 1], "assets": [{"name": "contact", "cell": [0, 0], "cell_size": 1, "anchor_source": [40, 96]}]},
+    {"source": "../source/actors_hero-strike-ne-followthrough-v3.png", "grid": [1, 1], "border_background": {"color": [229, 229, 229], "tolerance": 71, "interior_windows": [[658, 818, 690, 850], [663, 850, 693, 880]]}, "assets": [{"name": "followthrough", "cell": [0, 0], "anchor_source": [600, 1254]}]},
+    {"source": "../source/actors_hero-strike-ne-followthrough-v3-reference-recovery.png", "grid": [1, 1], "assets": [{"name": "existing-recovery", "cell": [0, 0], "cell_size": 1, "anchor_source": [40, 96]}]}
+  ]
+}

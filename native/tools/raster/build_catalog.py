@@ -8,7 +8,7 @@ from PIL import Image
 import numpy as np
 
 ROOT = Path(__file__).resolve().parent
-ORDER = ("inventory", "terrain", "props", "gate", "actors", "bestiary", "weapons", "hero-single", "bestiary-singles", "hero-walk", "hero-directions", "environment-singles", "large-props", "hero-strike-se", "hit-spark", "hero-walk-sw", "hero-walk-nw", "hero-walk-ne", "hero-strike-nw", "hero-strike-sw", "terrain-quiet", "raider-walk-sw")
+ORDER = ("inventory", "terrain", "props", "gate", "actors", "bestiary", "weapons", "hero-single", "bestiary-singles", "hero-walk", "hero-directions", "environment-singles", "large-props", "hero-strike-se", "hit-spark", "hero-walk-sw", "hero-walk-nw", "hero-walk-ne", "hero-strike-nw", "hero-strike-sw", "terrain-quiet", "raider-walk-sw", "hero-strike-ne", "raider-strike-sw")
 
 
 def collect_cycles(entries, action, family="hero"):
@@ -68,6 +68,7 @@ def main():
               "walk_sequences": cycles,
               "strike_sequences": collect_cycles(entries, "strike"),
               "monster_walk_sequences": {"raider": collect_cycles(entries, "walk", "raider")},
+              "monster_strike_sequences": {"raider": collect_cycles(entries, "strike", "raider")},
               "missing_walk_directions": [direction for direction in ("se", "sw", "nw", "ne") if direction not in cycles]}
     (runtime / "catalog.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(f"Verified {len(entries)} active RGBA sprites, native dimensions, binary alpha, <=32 colors, and provenance hashes.")

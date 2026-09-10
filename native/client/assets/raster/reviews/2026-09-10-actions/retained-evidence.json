@@ -1,0 +1,226 @@
+[
+  {
+    "source": ".ci-artifacts/raster-actions-supported-final-scenarios.log",
+    "retained": "native-final-build-all.log",
+    "sha256": "e7287003470eec52b5a6a3d62c4e4b2da0a361d89eeb8adfbabc5ffc90174cac",
+    "source_sha256": "33b9ed34dc094676f307b65a38878341c3072fe44c1f9067412b86a73e6a4e88",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-actions-supported-build-tests.log",
+    "retained": "native-suites.log",
+    "sha256": "75751b577df2c2144c9aace46635470e0169f1d2f18434c8a9c50a11d9ac6fdd",
+    "source_sha256": "e6ab9a790a0f7bb169ad6d02b833c4bf39721958fce9bb269c45623e22def665",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-actions-browser-playtest.log",
+    "retained": "browser-32-of-32.log",
+    "sha256": "df563e32ab061255289735bf433c79889d24440340152bcdd24aee2887f16d5e",
+    "source_sha256": "98332e1bff6913d1b62e2e34da69c0e82fa582181a441f3bf2393bf10733e8d0",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-actions-equipment-final.log",
+    "retained": "equipment.log",
+    "sha256": "fb2a1f742e89b6eed1410b4b94e31459301f7e9d8e61993d212563fb6ae49d6b",
+    "source_sha256": "3f76552cd2dfb77b2ad7aa63be578a4685d31bf52cd3f6da977513743f94d2a7",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-actions-importer-final.log",
+    "retained": "importer-10-of-10.log",
+    "sha256": "84eb29a13141de74ce3175bf8c8ce356cfe2031291bd1d9b7af49fe367900682",
+    "source_sha256": "38b8151d43c4d9dd85524c56605dc7f2b4893940044cabe5f2600e389c7ec3bf",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-actions-warning-opaque-rejected.png",
+    "retained": "warning-opaque-rejected.png",
+    "sha256": "226ad37c1383594ac0cf146fe9189deb736e5e014329310c16b42a849e4ad27d",
+    "source_sha256": "226ad37c1383594ac0cf146fe9189deb736e5e014329310c16b42a849e4ad27d",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-actions-loot-corrected.log",
+    "retained": "loot-fixture-corrected.log",
+    "sha256": "df10fdeb468da3c6efee68f9c9669a47425b96fa34b84880ad810daf0e83a094",
+    "source_sha256": "8ee76217da9872ecfdedfc97bc60011e2add4c008939b1c5775af409fa4e5885",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-equipment/ne-action-review/integration-review.json",
+    "retained": "ne-equipment-review.json",
+    "sha256": "dd166a3dea4fcce9fc8dc67c276c0f7b7c2ab4262a43b8c8236df35f87101f9c",
+    "source_sha256": "3d6ba28e27744b9b7a968ae888e272763f04d5ffcd2000c400aabd0308c2b8ff",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-equipment/ne-action-review/browser-policy-rejection.txt",
+    "retained": "browser-policy-rejection.txt",
+    "sha256": "29012176bd7693b8e246849c7cce09232a438ab737d5861fb85e13f3c94dcc19",
+    "source_sha256": "29012176bd7693b8e246849c7cce09232a438ab737d5861fb85e13f3c94dcc19",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-equipment/ne-action-review/INTEGRATION.md",
+    "retained": "ne-equipment-limitations.md",
+    "sha256": "bfddcd8c16ee67857d0d4d70cca40cc25debcbff821ac8bff1869c5334e2b181",
+    "source_sha256": "bfddcd8c16ee67857d0d4d70cca40cc25debcbff821ac8bff1869c5334e2b181",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": "native/tools/raster/hero-strike-ne-palette-candidate/before-after-sequence-1x.png",
+    "retained": "ne-palette-before-after-1x.png",
+    "sha256": "77b21d057c9364c3d37dc45cebfd1d72466a7f8f45807938e9c9a18ee5ad5694",
+    "source_sha256": "77b21d057c9364c3d37dc45cebfd1d72466a7f8f45807938e9c9a18ee5ad5694",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": "native/tools/raster/hero-strike-ne-palette-candidate/before-after-sequence-3x.png",
+    "retained": "ne-palette-before-after-3x.png",
+    "sha256": "eb8891dfa7fa98d09f8edc51e1f47f3898a44ef3d7b9174f0147b4ee12775f7b",
+    "source_sha256": "eb8891dfa7fa98d09f8edc51e1f47f3898a44ef3d7b9174f0147b4ee12775f7b",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": "native/tools/raster/hero-strike-ne-palette-candidate/palette-review.json",
+    "retained": "ne-palette-review.json",
+    "sha256": "8a93bcb86b57dd685fe725a07e4c11ccc742f59da59856e7b080aec514b3eb6e",
+    "source_sha256": "8a93bcb86b57dd685fe725a07e4c11ccc742f59da59856e7b080aec514b3eb6e",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/scenery-variants-current/review.json",
+    "retained": "scenery-selection-review.json",
+    "sha256": "95de5ee3ca827a0b74dc4ce2492526feb9dae13676e854bdaa30695ebcd1c1dc",
+    "source_sha256": "a6c7a4b52e851a5b472eacb2b1f906eae6fba19e1a08ed19f7626e9905708b68",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-equipment/strike-ne-0-composites-native.png",
+    "retained": "ne-equipment-poses-0-3-native.png",
+    "sha256": "12b9093f3022ab87ff38f455b490afa09154dce90a75d4115c3933d9cdb363a5",
+    "source_sha256": "12b9093f3022ab87ff38f455b490afa09154dce90a75d4115c3933d9cdb363a5",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-equipment/strike-ne-1-composites-native.png",
+    "retained": "ne-equipment-poses-4-5-native.png",
+    "sha256": "b53e2756184f61ee45c8504c82bb4893f6b64a940638376c9dd8a0c1091d25e6",
+    "source_sha256": "b53e2756184f61ee45c8504c82bb4893f6b64a940638376c9dd8a0c1091d25e6",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-actions-final/frame-budget-report.txt",
+    "retained": "frame-budget-report.txt",
+    "sha256": "2853f36f6efd98bab8093787f7ed5d07ba28018e6723a25a89944ef310cda474",
+    "source_sha256": "2853f36f6efd98bab8093787f7ed5d07ba28018e6723a25a89944ef310cda474",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-actions-final/raster-loot-1366x768.png",
+    "retained": "raster-loot-1366x768.png",
+    "sha256": "011df59940c8e0e17689f7b9f8f3f23ea4d2eeb90b6d74566447c29d771d8c80",
+    "source_sha256": "011df59940c8e0e17689f7b9f8f3f23ea4d2eeb90b6d74566447c29d771d8c80",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-actions-final/raider-strike-idle.png",
+    "retained": "raider-strike-idle.png",
+    "sha256": "4d58e475728fa96bf5d60a9b4ec3056f6f5fcd5e1900aae83634bdbe04949a62",
+    "source_sha256": "4d58e475728fa96bf5d60a9b4ec3056f6f5fcd5e1900aae83634bdbe04949a62",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-actions-final/raider-strike-warning-0.png",
+    "retained": "raider-strike-warning-0.png",
+    "sha256": "039260b05813d831c0e0f8988516641e339984dfc5d7b2235827f4c2bd3c564e",
+    "source_sha256": "039260b05813d831c0e0f8988516641e339984dfc5d7b2235827f4c2bd3c564e",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-actions-final/raider-strike-warning-1.png",
+    "retained": "raider-strike-warning-1.png",
+    "sha256": "ec44435e82bfcb4c15e82c2c314b4d380acc67187c754b13466e739637ddf2f7",
+    "source_sha256": "ec44435e82bfcb4c15e82c2c314b4d380acc67187c754b13466e739637ddf2f7",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-actions-final/raider-strike-warning-2.png",
+    "retained": "raider-strike-warning-2.png",
+    "sha256": "8b597dcebb9905186f197353c7f275bbf0cbeb8199ce8249566d05227b237dda",
+    "source_sha256": "8b597dcebb9905186f197353c7f275bbf0cbeb8199ce8249566d05227b237dda",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-actions-final/raider-strike-contact.png",
+    "retained": "raider-strike-contact.png",
+    "sha256": "d2a1af1e8ccdad7809ea2ffd4306cf18e9473d31aa5806603d0ca095a51a72cc",
+    "source_sha256": "d2a1af1e8ccdad7809ea2ffd4306cf18e9473d31aa5806603d0ca095a51a72cc",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-actions-final/raider-strike-recovery-1.png",
+    "retained": "raider-strike-recovery-1.png",
+    "sha256": "c3c766ba189c82af14e48b039e5fe65371875bf7491770ca21ac5fba8be1271a",
+    "source_sha256": "c3c766ba189c82af14e48b039e5fe65371875bf7491770ca21ac5fba8be1271a",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-actions-final/raider-strike-recovery-2.png",
+    "retained": "raider-strike-recovery-2.png",
+    "sha256": "fcc0427ab34094c8e1d6b75e712e5a8ddee882f0e41a4d3bfc1d09bb612fafc5",
+    "source_sha256": "fcc0427ab34094c8e1d6b75e712e5a8ddee882f0e41a4d3bfc1d09bb612fafc5",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-actions-final/raider-strike-recovery-3.png",
+    "retained": "raider-strike-recovery-3.png",
+    "sha256": "d29317156792f67911906748aba9affeced3fa0463c1d1a4f55560fa12959ac3",
+    "source_sha256": "d29317156792f67911906748aba9affeced3fa0463c1d1a4f55560fa12959ac3",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-actions-final/raider-strike-recovery-4.png",
+    "retained": "raider-strike-recovery-4.png",
+    "sha256": "1438fba40c6736a90c338324ed6ac9e3d44e0f46b6495b59855b77bd45994247",
+    "source_sha256": "1438fba40c6736a90c338324ed6ac9e3d44e0f46b6495b59855b77bd45994247",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-actions-final/strike-equipped-ne-contact.png",
+    "retained": "strike-equipped-ne-contact.png",
+    "sha256": "a28e8bf7bd8a94a5181ef8da5b352a0dbddddc960173b6f95c683a4980b7702a",
+    "source_sha256": "a28e8bf7bd8a94a5181ef8da5b352a0dbddddc960173b6f95c683a4980b7702a",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-actions-final/raster-world-1366x768.png",
+    "retained": "raster-world-1366x768.png",
+    "sha256": "8a8ab8958d4c8b042c1838205cf48d7d26ffc17d9ab349154d4a49d6850f93a1",
+    "source_sha256": "8a8ab8958d4c8b042c1838205cf48d7d26ffc17d9ab349154d4a49d6850f93a1",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-actions-final/live-3440x1440.png",
+    "retained": "live-3440x1440.png",
+    "sha256": "4617c10f413d51c27628a077c1ecca1d9d7a4e0b19c26f0d4b123f6012b3bede",
+    "source_sha256": "4617c10f413d51c27628a077c1ecca1d9d7a4e0b19c26f0d4b123f6012b3bede",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-actions-current/01-route-entrance-1366x768.png",
+    "retained": "village-storehut-1366x768.png",
+    "sha256": "8a8ab8958d4c8b042c1838205cf48d7d26ffc17d9ab349154d4a49d6850f93a1",
+    "source_sha256": "8a8ab8958d4c8b042c1838205cf48d7d26ffc17d9ab349154d4a49d6850f93a1",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-actions-live.log",
+    "retained": "live-launch-close.log",
+    "sha256": "a93e5538e38c563a5e889fa8c9420dcef769fd2d78eb5f8ded0378a7180bd1b7",
+    "source_sha256": "af13cbfc393d26fb42f0a7d3b2e88d5e13119de16b6b552ebcb96100849ecc3c",
+    "hash_policy": "retained text UTF8 LF, binaries raw; source_sha256 is original bytes"
+  }
+]

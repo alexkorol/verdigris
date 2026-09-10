@@ -1,5 +1,29 @@
 # Native reconstitution handoff
 
+## 2026-09-10 — Reference-led attacks and readable warnings
+
+The catalog has 139 active pixel assets: NE hero strikes and SW raider strikes
+add six poses each. Actual Pixel Respecter palette snapping pins NE colors to
+the accepted idle, whose ready pose stays pixel-identical. Measured equipment
+sockets pass 60 poses×5 weapons×3 scales. Twelve dropped-item families now select
+appropriate existing art; compatible storehut art replaces an existing village
+dwelling and Mara's existing town stall without changing objects or collision.
+
+Real elite Sweep events now drive preparation during the warning, phase 3 on
+the first confirmed damage frame, and follow-through/recovery afterward. Root
+caught and removed an opaque warning fill that hid both actors. Supported final
+build/all 68 native scenarios, native suites, browser 32/32, importer 10/10 and
+equipment/sampling pass. Fullscreen static average 22.550 ms; moving average
+23.993 ms and peak 33.926 ms across 20 frames, unchanged 40 ms gates. Root viewed the
+live 3440×1440 window and closed it with exit 0/no orphan.
+
+[Captures, final logs, failures and precise review scope](../../native/client/assets/raster/reviews/2026-09-10-actions/README.md)
+are retained. NE body width/reset, bow/staff-specific actions, other monster
+directions and locomotion, pixel effects/deaths and terrain repetition remain.
+The elite contact proof does not establish ordinary native melee animation,
+whose existing damage event lacks attacker identity. This milestone preserves
+the active visual objective. Committed locally; no push or merge.
+
 ## 2026-09-10 — Quiet ground, registered walking and responsive HUD
 
 The catalog now has 127 active pixel assets, including quieter earth and an
@@ -10,8 +34,8 @@ Route/audio/quickbar chrome shares the existing skin, labels use measured
 placement, and equipment stats/XP clear both panes at 960x600.
 
 Final supported native build/all 66 scenarios pass: twenty fullscreen static
-frames average 23.258ms, and twenty moving frames average 24.715ms with a
-36.620ms peak. The 40ms average gates are unchanged. Native suites, browser
+frames average 23.258 ms, and twenty moving frames average 24.715 ms with a
+36.620 ms peak. The 40 ms average gates are unchanged. Native suites, browser
 32/32, importer 7/7 and equipment/ground/HUD probes pass. Root viewed the live
 3440x1440 window and final small dual-pane capture, then closed the local client
 with exit 0 and no orphan process. [Evidence, clips, traces and original failures](../../native/client/assets/raster/reviews/2026-09-10-ground-hud/README.md)
@@ -40,10 +64,10 @@ Published Image 2.5 workflows are applied with exact prompts and explicit local
 adaptations. Original D2 reference pixels stay in the external study cache.
 
 Final native build/all 64 scenarios pass: 18.7 ms fullscreen over 20 frames and
-9.4ms dense 128 effects, unchanged 40 ms limits. Native suites, browser final 32/32,
+9.4 ms dense 128 effects, unchanged 40 ms limits. Native suites, browser final 32/32,
 importer 7/7 and equipment 54 poses x 5 weapons x 3 scales pass. The SW motion fixture
 now validates a clear corridor and paints all 15 ms presentation steps; it no
-longer mistakes a blocked route/60ms sampling gap for a missing sprite phase.
+longer mistakes a blocked route/60 ms sampling gap for a missing sprite phase.
 One initial browser final-death timeout did not recur in focused/full reruns;
 bounded failure evidence was added without changing server behavior or gates.
 [Viewed live capture, clips, traces, failures and final logs](../../native/client/assets/raster/reviews/2026-09-10/README.md)
@@ -1871,7 +1895,7 @@ owner-stamped. Dual program heads: this branch vs
   recorded at coordinator commit `9e5d9fd8`: a fresh worktree installed
   dependencies with normal install scripts, then passed browser unit `122/779`
   and `PLAYTEST_PORT=6538 npm run playtest` at `31/31` (`loadMode:false`,
-  p99/max event-loop lag `32.178/109.642ms`). This strengthens the evidence
+  p99/max event-loop lag `32.178/109.642 ms`). This strengthens the evidence
   package and is retained as coordinator provenance for the accepted
   correction.
 - The WIZARD seam rerun is recorded at coordinator commit `6cb7b366`:

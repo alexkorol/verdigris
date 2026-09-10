@@ -1,0 +1,10 @@
+Tool: mcp__cua_repl.js
+Title: Create isolated NE review tab
+Attempted action:
+let reviewTab = await cua.createBrowserTab('1','file:///C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/.ci-artifacts/raster-equipment/ne-action-review/review.html',{sessionName:'🪓 NE action review'});
+
+Exact tool response:
+Browser Use rejected this action due to browser security policy. Reason: The browser URL policy blocks this action. Browser use cannot visit the requested page because its URL is blocked by the Browser use URL policy. The agent must not attempt to achieve the same outcome via workaround, indirect execution, raw CDP or browser commands, alternate browser surfaces, or policy circumvention. Proceed only with a materially safer alternative that does not require this blocked browser action; if none exists, stop and request user input.
+
+Scope and follow-up:
+This was a Browser Use URL-policy rejection, not a shell auto-approval rejection. The rejected operation attempted to open the local file URL in the extension-backed Brave browser. No retry, localhost proxy, alternate browser surface, raw CDP, or other workaround was attempted. Review continued through supported local image-file inspection and deterministic production-renderer PNG/GIF artifacts. Encoded GIF frame timing was verified, but this did not establish that smooth playback was visually observed. Root owns supported native production capture for the final game review.
