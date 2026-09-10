@@ -1,5 +1,16 @@
 # Native reconstitution handoff
 
+## 2026-09-09 — Prompt fidelity, reference roles and reader feedback
+
+Direct browser review of Kiki's original combat prompt/sheet and a reader's
+GIF attempt adds user response beyond the creator's own examples. Palette
+and registration critiques are recorded as review criteria, without claiming
+they measured that output. `PROMPTING.md` now preserves the relevant published
+recipe's level of detail and Flixly's previous-frame/opening-frame reference
+roles; the universal preference for short prompts is removed. Source-only
+generation was paused during this audit. This documentation checkpoint does
+not include or validate the pending native motion and asset changes.
+
 ## 2026-09-09 — Original Image 2.5 user feedback and reusable recipes
 
 `native/client/assets/raster/RESEARCH.md` rechecks primary creator posts and

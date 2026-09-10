@@ -95,6 +95,28 @@ weapon-consistent isometric animation set.
 [second character](https://x.com/Mayz1169/status/2097900600105308347),
 [critical reply](https://x.com/JustLingonberry/status/2097717870251884833).
 
+### Readers of Kiki's prompt: posted attempts and concrete reservations
+
+The coordinator directly reopened the full combat prompt and inspected the
+original 4x4 sheet in the browser. The visible sequence contains preparation,
+a sword swing with water effects, and recovery; this visual inspection does
+not establish native pixel dimensions, alpha, or game-ready timing.
+
+AOSY replies with an animated chibi character and says they tried it. The
+original reply and its displayed animation frame were inspected. This is a
+second user's reported attempt, but they do not publish the exact submitted
+prompt, model settings, rejected attempts, or individual frames. Do not count
+it as a controlled reproduction or a validated adult isometric cycle.
+[AOSY's attempt](https://x.com/aosy_ai/status/2097592739638735206).
+
+Gregor's reply asks whether the palette stays consistent during playback and
+distinguishes a sheet screenshot from an engine test. This is a useful review
+criterion, not a measured finding that Kiki's particular output changed colors.
+[Original critique](https://x.com/bygregorr/status/2097597642561708345).
+Naves asks about position jumps based on earlier sprite attempts; their
+question does not explicitly establish an Image 2.5 failure.
+[Registration question](https://x.com/MauriNaves/status/2097655875745821139).
+
 ### SOTN mod: assets actually integrated into a game
 
 September 9, author explicitly credits Astra and GPT Image 2.5 for a posted
@@ -109,9 +131,10 @@ of integration, not a validated recipe for our animation cadence.
 
 September 8, explicitly GPT-Image-2.5 Sunburst. The creator supplies a starting
 clay-fox image, three generated states and a short assembled video. Frame two
-references the opening image; frame three references both the previous frame
-and the opening image. Each edit changes one small action while retaining the
-camera, light, body and supporting paws. The published action instruction is:
+references the opening image; frame three supplies the previous frame first
+and the opening image as the additional reference. Each edit changes one small
+action while retaining the camera, light, body and supporting paws. The
+published action instruction is:
 
 > Lift the front paw nearest the camera off the tabletop.
 
@@ -273,7 +296,9 @@ reproductions are separate kinds of evidence.
 1. Use an actual accepted reference; preserve its design in edits. For a style
    change, simplify once, inspect it, then use the simplified image as the
    continuing reference. Keep natural material colors and adult proportions.
-2. Begin with a published short prompt before adding a long constraint list.
+2. Preserve the structure of the relevant published recipe. The short combat
+   study and Kiki's longer planned-action prompt serve different purposes;
+   these examples do not establish that shorter prompts always work better.
    Try one character and one motion in a sheet when appropriate. If the grid
    or anatomy fails, use Noel's separate-image workflow.
 3. Distinguish recognizable identity from correct motion. Review left/right

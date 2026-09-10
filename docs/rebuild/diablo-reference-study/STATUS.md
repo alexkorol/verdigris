@@ -36,3 +36,12 @@ No verified seamless-terrain or
 complete adult isometric-walk recipe was found. The browser harness rerun is
 32/32; current native motion edits and six new strike poses remain pending
 production integration and are not covered by the prior native pass.
+
+The next research audit directly reopened Kiki's complete original prompt,
+viewed the combat sheet, and checked a reader's posted GIF attempt and the
+palette/engine critique. The guide now preserves the chosen recipe's level of
+detail rather than preferring short prompts universally. Flixly's actual
+reference arrangement is explicit: previous frame first as edit target,
+opening frame additionally as identity anchor. New generation was paused
+while these source-backed corrections were applied; existing implementation
+and candidate WIP remain preserved and unaccepted where noted.

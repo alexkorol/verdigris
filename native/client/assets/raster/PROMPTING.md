@@ -34,6 +34,12 @@ or available excerpt, and the changes made for our asset. A new prompt should
 answer a demonstrated gap in that recipe; do not replace it with an invented
 general-purpose brief merely because one is easy to write.
 
+Match the recipe to the task, including its level of detail. The published
+one-line combat study explores poses; Kiki's longer prompt specifies a planned
+action. There is no evidence here for a universal short-prompt advantage.
+Read the linked original before adapting it. Preserve its motion instructions;
+separate its image request from file assembly and checks performed by Codex.
+
 | Need | Starting evidence | Preserve when adapting |
 |---|---|---|
 | Small idle motion | Kiki's reference-led idle sheet | Fixed feet, camera, scale and baseline; modest breathing/blink; shared margins |
@@ -61,10 +67,11 @@ not a published claim that Image 2.5 follows D2 motion references reliably.
    hashes. Normalization must preserve common scale and a stable feet pivot.
 4. Inspect the native output and an integer enlargement. Accept this isolated
    image as the identity anchor only when silhouette and material reads survive.
-5. For an individual-frame workflow, generate each next pose from that anchor. Supply the preceding accepted
-   frame as a second reference when it clarifies the transition; explicitly
-   distinguish identity reference from pose reference. Retain the anchor to
-   prevent accumulated drift.
+5. For an individual-frame workflow, retain the accepted identity anchor in
+   every edit. When using Flixly's demonstrated reference arrangement, supply
+   the preceding accepted frame first as the edit target and the opening image
+   second as the identity reference. Name both roles in the prompt. This is a
+   documented arrangement, not evidence that reference order alone fixes gait.
    A single-character motion sheet is also a valid experiment: begin with
    the published reference-led prompt in `RESEARCH.md`, preserve its simple
    structure, and change the subject/action only. Do not expand it into a
@@ -93,24 +100,27 @@ not a published claim that Image 2.5 follows D2 motion references reliably.
 Start with this compact adaptation of Noel's separate-image method and the
 Flixly one-action edit. Expand it only to address a visible failure:
 
-> Using reference 1 as the character identity and reference 2 as the preceding
-> pose, create the next pixel-art walking frame facing lower-right. The right
-> foot moves forward and plants; the left foot trails. Preserve the character,
+> Edit reference 1, the preceding accepted frame. Reference 2 is the original
+> character and style anchor. Advance the lower-right-facing walk: the right
+> foot moves forward and plants; the left foot trails. Retain the character,
 > camera, scale and palette. Keep the whole silhouette on a transparent
 > background. Return one frame.
 
 This is our adapted prompt, not a quotation from a creator or a proven gait.
-Anatomical left/right must be checked in the resulting image. For a single
-reference, omit reference 2 rather than implying an image was provided.
+Anatomical left/right must be checked in the resulting image. A walking
+transition also needs a plausible weight shift and coordinated arms; Flixly's
+nearly stationary fox example does not validate freezing a human torso through
+a stride. For a single reference, omit reference 2 rather than implying an
+image was provided.
 
 Use case: stylized-concept (new reference-led generation) or identity-preserve
 (edit of an accepted actor).
 
 Asset: one isolated [actor/prop], [one pose], [one screen direction].
-Reference 1: accepted identity anchor; preserve anatomy, clothing, palette,
-camera elevation, apparent scale, and light direction.
-Reference 2, if supplied: previous accepted animation frame; change only
-[named limb and weight transition].
+Reference 1: previous accepted frame to edit; advance [named movement and
+weight transition]. If this is the first pose, use the identity anchor here.
+Reference 2, if supplied: original accepted identity anchor; preserve anatomy,
+clothing, palette, camera elevation, apparent scale, and light direction.
 Pixel construction: [64]-pixel crown-to-sole logical body, deliberate square
 clusters, [24–32] color palette, large readable shadow masses, crisp edges.
 Materials: [specific natural materials and colors].
@@ -124,3 +134,16 @@ Do not paste every failure into every prompt. Keep constraints short and
 target the current failure; repeated negative descriptions can contaminate
 the requested appearance. Save the actual prompt, references, output path,
 observed checks, acceptance state, and conversion provenance for each attempt.
+
+## Adapting the published combat workflow
+
+Use [Kiki's complete original prompt](https://x.com/Mayz1169/status/2097540160611287452)
+for a planned action. Preserve its action beats, body mechanics, fixed camera,
+registration and weapon clearance. Author frame holds against the game's
+cadence. Adapt the character to our accepted adult reference and specify the
+actual action/equipment. Codex handles slicing, alpha checks, Pixel Respecter
+conversion and assembly; the image tool supplies the image.
+
+Review palette stability during playback, position jumps and limb continuity.
+Those checks follow the reader critiques; the critiques are not measurements
+of our output. Keep successful poses and repair the observed failed transition.
