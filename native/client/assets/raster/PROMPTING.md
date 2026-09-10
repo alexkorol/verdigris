@@ -46,6 +46,13 @@ action. There is no evidence here for a universal short-prompt advantage.
 Read the linked original before adapting it. Preserve its motion instructions;
 separate its image request from file assembly and checks performed by Codex.
 
+For each reference, specify both what to preserve and what to replace.
+Higgsfield's original guide prompt retains geometry/contact while discarding
+the guide's background, surface shading and cast shadow. Apply that explicit
+separation when an accepted pose guide has a different outfit or material:
+pose comes from the guide, identity comes from the character anchor. This is
+an adaptation of its published turntable workflow, not a humanoid benchmark.
+
 | Need | Starting evidence | Preserve when adapting |
 |---|---|---|
 | Small idle motion | Kiki's reference-led idle sheet | Fixed feet, camera, scale and baseline; modest breathing/blink; shared margins |
@@ -57,6 +64,12 @@ separate its image request from file assembly and checks performed by Codex.
 | Material-rich UI | 12ui's comparison prompts | Assign each reference an explicit job: requirements, composition or contrast |
 | Revising scenery | HaremVictoria's game-room editing report | Reuse an accepted image; inspect walls and ground for excess microtexture. The report supplies a failure example, not a verified corrective prompt |
 | Cutscene planning | Fun_Walk_4965's pose sheet and H3 workflow | Separate still-image generation from motion synthesis; do not import numbered storyboard panels as runtime sprites |
+
+For terrain seams, consult the existing tiling implementation linked under
+`RESEARCH.md` before designing a new postprocessing system. It uses other
+models and deterministic repairs; it is not evidence that Image 2.5 obeys a
+seamless prompt. Keep Pixel Respecter reconstruction, check literal repeats
+and adjacent materials visually, and do not accept an edge score alone.
 
 For a reused recipe, first make a small reviewable example. Keep source quality,
 usable animation, and runtime readiness as separate decisions. Our repeated

@@ -1,5 +1,23 @@
 # Native reconstitution handoff
 
+## 2026-09-10 — Firsthand Image 2.5 source audit
+
+Reopened creator prompts and critical replies for combat sheets, walking,
+separate-frame edits and game integration. Research now clarifies that PURESO
+shows stills rather than walking playback and Noel reports unwanted design
+changes rather than necessarily broken anatomy. The prompt workflow retains
+Higgsfield's concrete preserve/replace instructions for each reference.
+An existing public terrain-seam implementation is linked and explicitly
+identified as GPT Image 2/Gemini tooling, not an Image 2.5 result. It has not
+been run or adopted here. No verified 2.5-only seamless-terrain recipe emerged.
+
+This is a research/documentation change; production code and all 174 runtime
+PNGs are unchanged. The quieter stone experiment remains a candidate after
+root viewed its native actor comparison and 3x3 repeat: square repetition and
+inconsistent joints remain visible. Wall generation is held at the geometry
+proposal. Native/gameplay gates were not rerun for documentation changes.
+The broader pixel-world goal remains active.
+
 ## 2026-09-10 — Normal native server pursuit and published-reference motion workflow
 
 The earlier pursuit work covered the small local `Simulation`; normal native

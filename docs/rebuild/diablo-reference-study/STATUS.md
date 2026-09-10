@@ -13,6 +13,14 @@
 
 This is an owner-directed study and implementation milestone, not a claim on an existing orchestration task. No architect-owned specifications or product documents are edited.
 
+Latest source audit, September 10: firsthand combat criticism, walking prompt
+screenshots, separate-image fallback and explicit reference preserve/replace
+instructions rechecked. Existing terrain-seam source is recorded as other-model
+engineering, not an Image 2.5 success. RESEARCH/PROMPTING corrections are
+documentation only. Production code and 174 active PNGs remain unchanged;
+quiet stone is held outside production after root review of visible repeats.
+The owner-directed pixel-world continuation remains IN_PROGRESS.
+
 The owner extended the work to pixel-art world assets, actual Pixel Respecter
 conversion, reference-led image generation, and research into firsthand Image
 2.5 game/animation workflows. That continuation is active. The first raster

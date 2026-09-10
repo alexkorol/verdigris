@@ -65,8 +65,9 @@ commercial provider link is present; independence is unverified.
 ### のえる / Noel: individual frames after a failed grid
 
 September 8, explicitly Image 2.5 editing a reference originally made with
-Nano Banana Pro. The creator reports deformation in a 3x3 attempt, then two
-sets of nine individual variations, later assembled. The original post shows
+Nano Banana Pro. The creator reports unwanted stylization/design changes in
+a 3x3 attempt, then two sets of nine individual variations, later assembled.
+The Japanese term does not necessarily mean broken anatomy. The original post shows
 a nearly stationary pixel portrait/bouquet GIF and the instruction screenshot.
 This is not a demonstrated walking cycle. Its request emphasizes
 separate outputs based on the original pixel image, with consistent size and
@@ -296,7 +297,10 @@ claims; their backend variants were not independently established.
   requests simplified 128px pixel art and sixteen poses in a 4x4 sheet. The
   creator praises clothing continuity and both legs participating. Similar
   stride silhouettes remain in the displayed sheet; alternating support,
-  alpha, timing and loop closure were not validated. This is an actual walking
+  alpha, timing and loop closure were not validated. The reopened original
+  contains two still screenshots, not walking playback. Its suggestion about
+  paid access comes from a Plus upsell banner, not a paid/free comparison.
+  This is an actual walking
   prompt, unlike adapting a combat prompt and calling that published gait
   evidence. [Original post and prompt screenshot](https://x.com/pureso_studio/status/2097520619193868590).
 - **Higgsfield, September 8:** the vendor's Image 2.5 spring-turntable example
@@ -304,6 +308,10 @@ claims; their backend variants were not independently established.
   "the supplied guide already contains the correct rotation for this frame,
   so copy its pose exactly." Surface and lighting instructions are separate;
   handedness, silhouette, contact point, camera, scale and margins are retained.
+  The complete prompt also explicitly discards the guide's background, material
+  shading and long hard shadow. State both what each reference must preserve
+  and what its rendering must replace; assigning an image a vague role is less
+  specific than this published instruction.
   The guide determines the rotation, so the demonstration does not establish
   simulated spring physics or humanoid gait. Our local adaptation assigned
   accepted hero walk frames to pose and the raider idle to identity. Five
@@ -370,6 +378,29 @@ reproductions are separate kinds of evidence.
 - Animation clips using Image 2.5 together with H3 or Seedance demonstrate a
   combined workflow. Credit Image 2.5 for its still images and edits; do not
   attribute the video model's motion synthesis to the image model.
+
+### Existing tiling implementation worth reusing: different models
+
+The public [ianlintner game-asset repository](https://github.com/ianlintner/ai-pixel-art-image-generation)
+contains source and example PNG/TSX/TMJ exports. It explicitly names
+`gpt-image-2` and Gemini 2.5 Flash Image, not OpenAI Image 2.5. The worker and
+root inspected its source; neither ran it or validated the example artwork.
+
+Its [tileset generator](https://github.com/ianlintner/ai-pixel-art-image-generation/blob/main/scripts/generate_tileset.py)
+generates terrain concepts separately with shared style/palette constraints.
+The [seam-processing implementation](https://github.com/ianlintner/ai-pixel-art-image-generation/blob/main/scripts/lib/seamless.py)
+tries a center crop, half-image offset with seam blending, and opposite-edge
+matching with inward feathering and palette quantization. It measures edge
+differences to select a result. This is existing engineering to investigate
+before inventing another tiling pipeline; it is not a prompt-only success.
+The metric checks opposite edges of one tile, not compatibility between
+different materials, quiet detail density or hidden repetition. Review those
+properties separately. The owner's actual Pixel Respecter reconstruction
+remains the required pixel-grid stage in our pipeline.
+
+The Happycapy/Min Zhou game lead remained a discovery-only mirror with no
+verified original prompt in this audit. It is not added as an independent
+successful recipe. No verified Image 2.5-specific terrain-seam recipe was found.
 
 ## Applied rules and next experiments
 

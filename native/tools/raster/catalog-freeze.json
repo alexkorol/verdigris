@@ -1681,8 +1681,8 @@
     "native/client/assets/raster/runtime/raider-walk-se.provenance.json": "d29352f42d4924f6544405e416852e0209db6bef5e87b47cdbb0c0f71e2eda7c",
     "native/tools/raster/monster-motion-wave-dependencies.json": "d05eac2ff5a3c49d22d1770a2874fa1184ee68528eea215b5c0827c4c80cf67a",
     "native/tools/raster/monster-motion-wave-paths.json": "02a80bbcd4e5c865297df7cb57a091d60e72afbddbb0a5cfec29c28c7ffe5c97",
-    "native/client/assets/raster/RESEARCH.md": "b6e4c6a1ae95091c2877b21f58bcae94a5d3ce038de2cf770158e539d9e1137a",
-    "native/client/assets/raster/PROMPTING.md": "89101863b938c27500ed57fa709612f94d880725fd4e8a438dcce88448ca91fe",
+    "native/client/assets/raster/RESEARCH.md": "2c684186021d1d2ee4bc41147553d40afcfb7c0c4ff7f17af1ec569eefe02220",
+    "native/client/assets/raster/PROMPTING.md": "6042118fe07d5cec47b0f5dfb40eac2d264dfbb6aaae209ae37012d912c5f508",
     "native/client/assets/raster/README.md": "217427ca8a1c004e8269636868243a8f2d99e64c491c5965d21b4e7c4109204a",
     "native/client/client_model.hpp": "c0ee84c37ce1f8d0887f91169ada272891c4fc8ef6b1facb4c6436debbc66c32",
     "native/client/presentation_state.hpp": "ef4b889d328afa506ca63404c9d3bf823f0026185edf296f79c0f487f9f9ef2b",
@@ -4424,5 +4424,15 @@
       "wight_walk6_sw",
       "wight_walk7_sw"
     ]
+  },
+  "research_documentation_followup": {
+    "date": "2026-09-10",
+    "base_commit": "e0e1beaa9245cfcb632c8c285d2e9f940fe33dfa",
+    "scope": "Source audit and prompting corrections only; no new production asset or gameplay acceptance.",
+    "previous_document_sha256_canonical_lf": {
+      "native/client/assets/raster/RESEARCH.md": "b6e4c6a1ae95091c2877b21f58bcae94a5d3ce038de2cf770158e539d9e1137a",
+      "native/client/assets/raster/PROMPTING.md": "89101863b938c27500ed57fa709612f94d880725fd4e8a438dcce88448ca91fe"
+    },
+    "verification": "174 active PNG hashes and all 16 reviewed production source hashes unchanged; documentation diff reviewed. Prior gameplay results remain historical."
   }
 }
