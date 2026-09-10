@@ -264,6 +264,43 @@ verdigris::Vec2 event_anchor(const WorldView& world, const PresentationFx& fx,
   return at;
 }
 
+const EffectFx* actor_strike(const std::vector<EffectFx>& effects,
+                             const std::string& actor_id) {
+  if (actor_id.empty()) return nullptr;
+  for (const auto& effect : effects)
+    if (effect.actor_id == actor_id && effect.age < effect.ttl &&
+        (effect.kind == EffectFx::Kind::Swing || effect.kind == EffectFx::Kind::SweepArc))
+      return &effect;
+  return nullptr;
+}
+
+double strike_phase(const EffectFx& strike, double fractional_tick) {
+  return std::clamp((strike.age + fractional_tick) / std::max(1, strike.ttl), 0.0, 1.0);
+}
+
+void present_strike(std::vector<EffectFx>& effects, const std::string& actor_id,
+                    verdigris::Vec2 position, double angle, bool sweep,
+                    bool speculative) {
+  if (actor_id.empty()) return;
+  // Repeated input cannot reset a live preparation or confirmed recovery.
+  if (speculative && actor_strike(effects, actor_id)) return;
+  effects.erase(std::remove_if(effects.begin(), effects.end(), [&](const EffectFx& effect) {
+    return effect.actor_id == actor_id &&
+           (effect.kind == EffectFx::Kind::Swing || effect.kind == EffectFx::Kind::SweepArc);
+  }), effects.end());
+  EffectFx strike;
+  strike.kind = sweep ? EffectFx::Kind::SweepArc : EffectFx::Kind::Swing;
+  strike.wx = position.x;
+  strike.wy = position.y;
+  strike.angle = angle;
+  strike.ttl = sweep ? 8 : 6;
+  strike.age = speculative ? 0 : strike.ttl / 2;
+  strike.actor_id = actor_id;
+  strike.speculative = speculative;
+  if (effects.size() >= 128) effects.erase(effects.begin());
+  effects.push_back(std::move(strike));
+}
+
 void apply_presentation_event(PresentationFx& fx, const WorldView& world,
                               const PresentationEvent& event, std::uint64_t now_tick) {
   const bool to_player = event.text == "incoming" || event.type == PresentationEventType::ScionDied;
@@ -273,13 +310,14 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
   switch (event.type) {
     case PresentationEventType::AttackStarted: {
       fx.telegraphs.erase(event.actor_id);
-      // Orient the confirmed swing along the player's authoritative facing
-      // instead of a hardcoded eastward arc.
+      const WorldActor* actor = event.actor_id == world.player.id ? &world.player
+          : find_monster(world, event.actor_id);
+      if (!actor) break;
       const double swing_angle =
-          std::atan2(static_cast<double>(world.player.facing.y),
-                     static_cast<double>(world.player.facing.x));
-      fx.effects.push_back({EffectFx::Kind::Swing, static_cast<double>(world.player.position.x),
-                            static_cast<double>(world.player.position.y), swing_angle, 0, 6});
+          std::atan2(static_cast<double>(actor->facing.y),
+                     static_cast<double>(actor->facing.x));
+      present_strike(fx.effects, event.actor_id, actor->position, swing_angle,
+                     event.text == "sweep", false);
       break;
     }
     case PresentationEventType::DamageApplied: {

@@ -1082,9 +1082,12 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       } else {
         foe.life = (std::max)(0, foe.life - amount);
       }
+      // skillId names the confirmed action; attackStyle is a damage channel,
+      // and last_facing_ is only a direction. Neither can preserve Sweep.
+      const auto* skill = json_string(envelope.data.get("skillId"));
       pending_events_.push_back({PresentationEventType::AttackStarted,
                                  attacker ? *attacker : model_.player.uuid, "",
-                                 last_facing_, amount});
+                                 skill ? *skill : "primary-attack", amount});
       PresentationEvent outgoing;
       outgoing.type = PresentationEventType::DamageApplied;
       outgoing.actor_id = target ? *target : "";

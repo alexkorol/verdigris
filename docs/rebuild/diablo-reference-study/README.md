@@ -37,11 +37,14 @@ alone does not identify the same file to this parser. Hashes and selected
 facts are retained with this development record; no Diablo artwork, audio,
 fonts, complete tables, or engine code are imported into Verdigris.
 
-D2R was launched, but Windows Computer Use capture failed twice with
+The initial Windows Computer Use capture failed with
 `SetIsBorderRequired failed: No such interface supported (0x80004002)`.
-Consequently there are **no firsthand D2R gameplay timing, audio, or screenshot
-measurements** in this milestone. Data observations below are not disguised
-as play observations.
+On September 9, foreground window-bounded capture through PIL ImageGrab
+worked, while Computer Use supplied window-targeted mouse and key input.
+The game was then played in a 1920x1080 window with a new offline Barbarian,
+`verdigris`. This supersedes the initial capture blocker. Exact animation
+timing and audio mixing remain unmeasured; the sparse observation/input loop
+is not a human-speed pacing benchmark.
 
 The [live Verdigris baseline](evidence/verdigris-baseline.png) was captured with
 the repository's supported capture tool at 3440×1440 and visually inspected.
@@ -185,13 +188,13 @@ whiffs are not necessary ingredients of weighty combat.
 
 ## Next implementation experiments, in order
 
-1. **One visible contact per resolved attack.** Local damage currently resolves
-   in the same tick as AttackStarted, while the new swing is still labeled
-   Windup for its first 28%. The remote path also predicts an arc, then can
-   create another when combat:hit confirms contact. Correlate/reconcile the
-   visible action before tuning decorative effects. Require recorded frames
-   to show contact, damage, sound and hit reaction agreeing; trace labels alone
-   do not establish this.
+1. **One visible contact per resolved attack — implemented September 9.**
+   The client now owns strikes by actor, keeps repeated input from restarting
+   preparation, and reconciles authoritative contact into one Active strike.
+   Player pose and lunge select the same owned strike. Actual local damage
+   frames and decoded remote contact are covered by the new checks. This is
+   presentation reconciliation, not request-ID matching or a new gameplay
+   windup. The latter would need separate authoritative action scheduling.
 2. **A focused HUD comparison.** Hold camera, resolution and encounter constant;
    compare threat identity, resource loss/recovery, inventory comparison, and
    loot readability against the extracted layout intent. Use original bronze,
@@ -205,5 +208,36 @@ whiffs are not necessary ingredients of weighty combat.
    should be heard before it is seen. D2R audio mixing and actual controller
    feel remain unmeasured in this study.
 
-This work is a reusable reference and one verified pacing correction. It is
+This work is a reusable reference and verified cadence/contact corrections. It is
 not a full reverse engineering of D2R or a completed visual overhaul.
+
+## September 9: direct play observations and their application
+
+The session covered offline character creation, Rogue Encampment traversal,
+the waypoint panel, the Blood Moor, axe attacks against a zombie, death,
+respawn and corpse equipment recovery, a belt healing potion, gold pickup,
+and opening/closing inventory. One gold was visible in the inventory after
+pickup. The character died during slow snapshot-driven combat; that death
+does not establish the encounter's difficulty for a human player. Other
+input was detected during the later exploration, so not every subsequent
+enemy death can be attributed to the agent's commands.
+
+Evidence remains in the private local cache:
+`C:/Users/Alex/Documents/ChatGPT/diablo-reference-cache/play-session-20260909/`.
+Useful frames are `blood-moor-entry.png`, `waypoint.png`, `zombie-combat.png`,
+`first-kill.png`, and `inventory-gold.png`. These are game captures, not mockups.
+Their sizes and SHA256 hashes are recorded in `play-evidence.json`.
+
+| Observed behavior or composition | Verdigris implication | Status |
+| --- | --- | --- |
+| The selected zombie has a compact top-center name/health display; its life changes through the axe exchange. | Keep target identity legible and make the visible strike agree with authoritative contact. | Strike sequencing fixed; target-HUD comparison remains. |
+| Life stays at a stable bottom-left location through exploration, fighting and inventory; a belt potion restores it. | Separate prompt resource loss from displayed recovery without moving the vital HUD. | Data and play evidence agree; no new healing rule imported. |
+| Opening inventory shifts the actor into the remaining world area; the bottom belt and resource vessels remain visible. | Test pane-open combat visibility and camera composition, not only whether a panel renders. | Captured reference; pane behavior still needs a controlled comparison. |
+| The camp uses warm forge/fire/waypoint landmarks against rain and subdued ground; the moor has longer stretches of open ground and scattered water/vegetation. | Build navigable landmarks, material variation and changes in density. A uniform brown floor and evenly prominent props miss this structure. | Native live capture still shows the major art gap. |
+| Corpse recovery restores the equipment; gold exists as a small physical drop and is verified in the inventory afterward. | Make loss, recovery, pickup and retained value visible. | Reference only: preserve Verdigris's mortal Scion/House extraction rules. |
+
+The actionable contact defect was found in Verdigris source: damage already
+resolved while the client still drew preparation, and remote confirmation
+could add another swing. D2 play motivates coherent contact feedback; it does
+not supply the replacement timing constants. Before/after comparisons must
+continue to distinguish verified behavior, measured values, and proposals.

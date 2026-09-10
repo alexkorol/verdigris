@@ -47,7 +47,19 @@ struct EffectFx {
   // TASK-0122 Phase A: critical/style parity data copied from the event.
   bool critical = false;
   std::string style;
+  // Strike ownership prevents another actor's arc from posing the player.
+  std::string actor_id;
+  bool speculative = false;
 };
+
+const EffectFx* actor_strike(const std::vector<EffectFx>& effects,
+                             const std::string& actor_id);
+double strike_phase(const EffectFx& strike, double fractional_tick = 0.0);
+// Input can prepare a strike; an authoritative event replaces that preparation
+// with contact. This is visual reconciliation, not request acknowledgement.
+void present_strike(std::vector<EffectFx>& effects, const std::string& actor_id,
+                    verdigris::Vec2 position, double angle, bool sweep,
+                    bool speculative);
 
 struct ActiveTelegraph {
   std::string actor_id;

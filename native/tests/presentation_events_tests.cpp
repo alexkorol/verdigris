@@ -412,7 +412,51 @@ void npcs_ride_the_model_into_world_and_render_list() {
   check(saw_npc, "npc: render list carries a labeled Npc op");
 }
 
+void strike_contact_reconciles_preparation() {
+  using namespace verdigris::client;
+  auto world = world_with_player_and_foe("right");
+  for (int age : {0, 2, 5, 6}) {
+    PresentationFx fx;
+    present_strike(fx.effects, world.player.id, world.player.position, 0, false, true);
+    check(fx.effects.size() == 1 && fx.effects.front().speculative,
+          "strike: input creates one speculative preparation");
+    fx.effects.front().age = age;
+    if (age < 6) {
+      present_strike(fx.effects, world.player.id, world.player.position, 1, true, true);
+      check(fx.effects.size() == 1 && fx.effects.front().age == age,
+            "strike: repeated input cannot restart a live strike");
+    }
+    apply_presentation_event(fx, world,
+        {PresentationEventType::AttackStarted, world.player.id, "", "melee", 0}, 1);
+    const auto* strike = actor_strike(fx.effects, world.player.id);
+    check(fx.effects.size() == 1 && strike && !strike->speculative && strike_phase(*strike) == 0.5,
+          "strike: early, late, or expired preparation reconciles to one contact");
+    check(count_kind(fx, EffectFx::Kind::Impact) == 0 &&
+          count_kind(fx, EffectFx::Kind::DamageNumber) == 0,
+          "strike: presentation alone cannot manufacture hit feedback");
+    apply_presentation_event(fx, world,
+        {PresentationEventType::DamageApplied, world.monsters.front().id, "", "outgoing", 7}, 1);
+    check(count_kind(fx, EffectFx::Kind::Impact) == 1 &&
+          count_kind(fx, EffectFx::Kind::DamageNumber) == 1,
+          "strike: authoritative damage supplies contact feedback once");
+    present_strike(fx.effects, world.player.id, world.player.position, 1, false, true);
+    check(!actor_strike(fx.effects, world.player.id)->speculative,
+          "strike: input during contact cannot revert to preparation");
+  }
+  PresentationFx enemy;
+  apply_presentation_event(enemy, world,
+      {PresentationEventType::AttackStarted, world.monsters.front().id, "", "melee", 0}, 1);
+  check(!actor_strike(enemy.effects, world.player.id) &&
+        actor_strike(enemy.effects, world.monsters.front().id),
+        "strike: an enemy arc never becomes the player strike");
+  PresentationFx whiff;
+  present_strike(whiff.effects, world.player.id, world.player.position, 0, false, true);
+  for (int tick = 0; tick < 8; ++tick) age_presentation_fx(whiff);
+  check(whiff.effects.empty(), "strike: unconfirmed preparation expires without hit feedback");
+}
+
 int main() {
+  strike_contact_reconciles_preparation();
   constants_are_named_and_distinct();
   critical_damage_is_distinct();
   scion_lost_beat_contract();

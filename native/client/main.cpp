@@ -2028,15 +2028,11 @@ void dispatch_skill(ClientState& state, const SkillInfo& skill) {
     // enforced server-side either way.
     if (player.alive && state.world.tick != state.last_predicted_swing_tick) {
       state.last_predicted_swing_tick = state.world.tick;
-      EffectFx arc;
-      arc.kind = skill.action == verdigris::ActionType::Sweep ? EffectFx::Kind::SweepArc
-                                                              : EffectFx::Kind::Swing;
-      arc.wx = static_cast<double>(player.position.x);
-      arc.wy = static_cast<double>(player.position.y);
-      arc.angle = std::atan2(static_cast<double>(player.facing.y),
-                             static_cast<double>(player.facing.x));
-      arc.ttl = 6;
-      add_effect(state, arc);
+      verdigris::client::present_strike(
+          state.effects, player.id, player.position,
+          std::atan2(static_cast<double>(player.facing.y),
+                     static_cast<double>(player.facing.x)),
+          skill.action == verdigris::ActionType::Sweep, true);
     }
   }
 }
@@ -3512,10 +3508,12 @@ void ingest_events(ClientState& state, const RECT& bounds) {
         // A strike (including one which is ultimately absorbed by a gate in
         // the core) ends the presentation warning for this actor.
         state.telegraphs.erase(event.actor_id);
-        add_effect(state, {event.text == "sweep" ? EffectFx::Kind::SweepArc
-                                                         : EffectFx::Kind::Swing,
-                                 ex, ey, aim_angle(state, bounds, ex, ey), 0,
-                                 event.text == "sweep" ? 8 : 6});
+        if (subject)
+          verdigris::client::present_strike(
+              state.effects, event.actor_id, subject->position,
+              std::atan2(static_cast<double>(subject->facing.y),
+                         static_cast<double>(subject->facing.x)),
+              event.text == "sweep", false);
         break;
       case verdigris::EventType::BuffApplied:
         if (event.text == "war-cry")
@@ -9080,18 +9078,13 @@ const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
 
 vector_art::Pose::AttackStage player_attack_stage(const ClientState& state) {
   bool dash_dust = false;
-  const EffectFx* swing = nullptr;
+  const EffectFx* swing = verdigris::client::actor_strike(state.effects, state.world.player.id);
   for (const auto& fx : state.effects) {
     if (fx.kind == EffectFx::Kind::Dust && fx.angle <= 0.25) dash_dust = true;
-    if (fx.kind == EffectFx::Kind::Swing || fx.kind == EffectFx::Kind::SweepArc)
-      swing = &fx;
   }
-  if (swing && dash_dust) return vector_art::Pose::AttackStage::Cancel;
+  if (swing && swing->speculative && dash_dust) return vector_art::Pose::AttackStage::Cancel;
   if (swing) {
-    const double phase = std::clamp(
-        (static_cast<double>(swing->age) + state.tick_accum_ms / 50.0) /
-            std::max(1, swing->ttl),
-        0.0, 1.0);
+    const double phase = verdigris::client::strike_phase(*swing, state.tick_accum_ms / 50.0);
     if (phase < 0.28) return vector_art::Pose::AttackStage::Windup;
     if (phase < 0.72) return vector_art::Pose::AttackStage::Active;
     return vector_art::Pose::AttackStage::Recovery;
@@ -9292,19 +9285,13 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         // as motion rather than three poses. The same phase drives the
         // rig's arm swing.
         double attack_phase = 0.0;
-        for (const auto& fx : state.effects) {
-          if (fx.kind != EffectFx::Kind::Swing &&
-              fx.kind != EffectFx::Kind::SweepArc)
-            continue;
-          const double phase = std::clamp(
-              (static_cast<double>(fx.age) + state.tick_accum_ms / 50.0) /
-                  std::max(1, fx.ttl),
-              0.0, 1.0);
+        if (const auto* strike = verdigris::client::actor_strike(state.effects, player.id)) {
+          const auto& fx = *strike;
+          const double phase = verdigris::client::strike_phase(fx, state.tick_accum_ms / 50.0);
           attack_phase = phase;
           const double push = std::sin(phase * kPi) * kTileUnits * 0.28;
           base.x += static_cast<int>(std::cos(fx.angle) * push * base.scale);
           base.y += static_cast<int>(std::sin(fx.angle) * push * base.scale);
-          break;
         }
         {
           const auto& motion = state.motions["player"];
@@ -13883,6 +13870,8 @@ int scenario_attack_poses() {
   swing.wy = static_cast<double>(origin.y);
   swing.ttl = 6;
   swing.age = 0;
+  swing.actor_id = state.world.player.id;
+  swing.speculative = true;
   add_effect(state, swing);
   scenario_present(state);
   scenario_check(has_pose("attack-pose:windup"),
@@ -13953,6 +13942,7 @@ int scenario_attack_poses() {
     live.wy = static_cast<double>(state.world.player.position.y);
     live.ttl = 6;
     live.age = 3;
+    live.actor_id = state.world.player.id;
     add_effect(state, live);
   }
   state.pose_review_strip = true;
@@ -16604,6 +16594,61 @@ int scenario_remap_binds() {
   return scenario_failures;
 }
 
+int scenario_strike_contact() {
+  ClientState state;
+  scenario_begin(state);
+  auto* player = state.simulation->actor(state.simulation->scion().actor_id);
+  const verdigris::Actor* foe = nullptr;
+  for (const auto& actor : state.simulation->actors())
+    if (actor.kind == verdigris::ActorKind::Monster && actor.alive) { foe = &actor; break; }
+  scenario_check(player && foe, "strike-contact: real actor fixture exists");
+  if (!player || !foe) return scenario_failures;
+  player->position = {foe->position.x - verdigris::world_scale::kMeleeRange / 2, foe->position.y};
+  player->facing = {1, 0};
+  RECT bounds{0, 0, 960, 600};
+  ingest_events(state, bounds);
+  state.effects.clear();
+  scenario_follow_camera(state);
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) { scenario_check(false, "strike-contact: contained capture root required"); return scenario_failures; }
+  auto capture = [&](const char* name) {
+    scenario_check(reference_present(state, 960, 600, dir + "\\strike-" + name + ".png"),
+                   "strike-contact: production frame captured");
+  };
+  capture("before");
+  // Exercise the same preparation helper used by remote dispatch_skill.
+  // Contact below is a real local Simulation event, not a fabricated hit.
+  verdigris::client::present_strike(state.effects, player->id, player->position, 0, false, true);
+  capture("input");
+  scenario_check(player_attack_stage(state) == vector_art::Pose::AttackStage::Windup,
+                 "strike-contact: preparation renders windup before contact");
+  const int before_life = foe->stats.life;
+  state.simulation->dispatch(verdigris::Command::action_use(verdigris::ActionType::Melee));
+  ingest_events(state, bounds);
+  capture("contact");
+  scenario_check(foe->stats.life < before_life, "strike-contact: simulation actually resolved damage");
+  scenario_check(player_attack_stage(state) == vector_art::Pose::AttackStage::Active,
+                 "strike-contact: first damage frame presents active contact");
+  int arcs = 0;
+  for (const auto& fx : state.effects)
+    if (fx.actor_id == player->id && (fx.kind == EffectFx::Kind::Swing || fx.kind == EffectFx::Kind::SweepArc)) ++arcs;
+  scenario_check(arcs == 1, "strike-contact: confirmation leaves exactly one player arc");
+  scenario_check(render::any(state.render_list, render::Op::Impact),
+                 "strike-contact: actual impact is visible on contact frame");
+  for (auto& fx : state.effects) fx.age += 2;
+  capture("recovery");
+  scenario_check(player_attack_stage(state) == vector_art::Pose::AttackStage::Recovery,
+                 "strike-contact: the same strike settles into recovery");
+  state.effects.clear();
+  player->cooldown_ticks = 0;
+  sync_world(state);
+  verdigris::client::present_strike(state.effects, foe->id, foe->position, 0, false, false);
+  scenario_present(state);
+  scenario_check(player_attack_stage(state) == vector_art::Pose::AttackStage::Idle,
+                 "strike-contact: enemy-only arc cannot pose player");
+  return scenario_failures;
+}
+
 int scenario_attack_beat() {
   ClientState state;
   scenario_begin(state);
@@ -18620,6 +18665,7 @@ int run_scenarios(const std::string& which) {
       {"pane-focus", scenario_pane_focus},
       {"remap-binds", scenario_remap_binds},
       {"attack-beat", scenario_attack_beat},
+      {"strike-contact", scenario_strike_contact},
       {"dressing-pass", scenario_dressing_pass},
       {"loot-filter", scenario_loot_filter},
       {"build-fixtures", scenario_build_fixtures},

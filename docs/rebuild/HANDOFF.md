@@ -1,5 +1,22 @@
 # Native reconstitution handoff
 
+## 2026-09-09 — D2R play reference and coherent native strike contact
+
+- Resolved the D2R screenshot blocker, created offline Barbarian `verdigris`,
+  and played camp/Blood Moor combat, death/corpse recovery, healing and gold
+  pickup. Reference frames and observation-to-implementation mapping are
+  recorded in [the Diablo study](diablo-reference-study/README.md).
+- Native presentation now owns swings by actor, reconciles speculation into
+  Active contact, and uses one strike for player pose and lunge. Repeated input
+  cannot restart preparation; enemy swings cannot pose the player. Core damage,
+  cadence and wire format are unchanged.
+- Native suites, real-network session checks and all 62 scenarios pass;
+  frame budget 27.3 ms at 3440x1440. Browser goal harness passes 32/32.
+  Viewed production before/input/contact/recovery frames and a live native
+  capture. Broad material, silhouette and actor-overlap defects remain.
+- Continues on `codex/diablo-reference-study-20260908` in the isolated Codex
+  worktree. No push or merge. See the study REPORT for evidence and limits.
+
 ## 2026-09-08 — Owner-directed Diablo reference study and cadence correction
 
 - [Reference kit](diablo-reference-study/README.md): inspected the owner's

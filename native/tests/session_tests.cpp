@@ -95,7 +95,7 @@ void local_session_ready_and_deterministic() {
         "local: shutdown reaches disconnected state");
 }
 
-void hunt_step(verdigris::client::IClientSession& session) {
+void hunt_step(verdigris::client::IClientSession& session, const char* action = "melee") {
   // The swing range gate (JS parity) means the driver must close distance:
   // walk toward the nearest live monster in the authoritative model, then
   // strike once adjacent-ish.
@@ -127,7 +127,7 @@ void hunt_step(verdigris::client::IClientSession& session) {
       session.submit(verdigris::client::ClientCommand::move(0, step_y));
     }
   }
-  session.submit(verdigris::client::ClientCommand::use_action("melee"));
+  session.submit(verdigris::client::ClientCommand::use_action(action));
 }
 std::uint16_t start_server(verdigris::networking::WebSocketServer*& out) {
   // This suite's assigned loopback capsule is 7160-7179 (TASK-0163
@@ -577,14 +577,32 @@ void remote_render_list_ops() {
   verdigris::client::PresentationFx fx;
   verdigris::client::WorldView world;
   bool saw_monster = false, saw_swing = false, saw_drop = false;
-  for (int step = 0; step < 240 && !(saw_monster && saw_swing && saw_drop); ++step) {
+  bool saw_reconciled_contact = false;
+  for (int step = 0; step < 240 && !(saw_monster && saw_swing && saw_drop && saw_reconciled_contact); ++step) {
+    verdigris::client::sync_world_from_model(world, session.model());
+    verdigris::client::present_strike(fx.effects, world.player.id,
+                                     world.player.position, 0.0, false, true);
     hunt_step(session);
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
     session.poll();
     verdigris::client::sync_world_from_model(world, session.model());
     ++world.tick;
-    for (const auto& event : session.drain_events())
+    for (const auto& event : session.drain_events()) {
       verdigris::client::apply_presentation_event(fx, world, event, world.tick);
+      if (event.type == verdigris::client::PresentationEventType::AttackStarted &&
+          event.actor_id == world.player.id) {
+        const auto* strike = verdigris::client::actor_strike(fx.effects, world.player.id);
+        int player_arcs = 0;
+        for (const auto& effect : fx.effects)
+          if (effect.actor_id == world.player.id &&
+              (effect.kind == verdigris::client::EffectFx::Kind::Swing ||
+               effect.kind == verdigris::client::EffectFx::Kind::SweepArc)) ++player_arcs;
+        check(player_arcs == 1 && strike && !strike->speculative &&
+                  verdigris::client::strike_phase(*strike) == 0.5,
+              "render-list: decoded server contact reconciles prediction to one active strike");
+        saw_reconciled_contact = true;
+      }
+    }
     verdigris::client::age_presentation_fx(fx);
     verdigris::client::sync_world_from_model(world, session.model());
     render::List list;
@@ -597,7 +615,40 @@ void remote_render_list_ops() {
   }
   check(saw_monster, "render-list: Monster op recorded from remote model");
   check(saw_swing, "render-list: Swing op recorded from AttackStarted");
+  check(saw_reconciled_contact, "render-list: actual server contact was reconciled");
   check(saw_drop, "render-list: Drop op recorded from kill loot");
+  // A real Sweep request must survive the server payload and decoder, not
+  // merely pass a hand-built PresentationEvent to the FX helper.
+  fx.effects.clear();
+  bool saw_sweep_contact = false;
+  for (int step = 0; step < 240 && !saw_sweep_contact; ++step) {
+    verdigris::client::sync_world_from_model(world, session.model());
+    verdigris::client::present_strike(fx.effects, world.player.id,
+                                     world.player.position, 0.0, true, true);
+    hunt_step(session, "sweep");
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    session.poll();
+    verdigris::client::sync_world_from_model(world, session.model());
+    ++world.tick;
+    for (const auto& event : session.drain_events()) {
+      verdigris::client::apply_presentation_event(fx, world, event, world.tick);
+      if (event.type != verdigris::client::PresentationEventType::AttackStarted ||
+          event.actor_id != world.player.id || event.text != "sweep") continue;
+      const auto* strike = verdigris::client::actor_strike(fx.effects, world.player.id);
+      int sweeps = 0, swings = 0;
+      for (const auto& effect : fx.effects) {
+        if (effect.actor_id != world.player.id) continue;
+        if (effect.kind == verdigris::client::EffectFx::Kind::SweepArc) ++sweeps;
+        if (effect.kind == verdigris::client::EffectFx::Kind::Swing) ++swings;
+      }
+      check(strike && !strike->speculative && sweeps == 1 && swings == 0 &&
+                verdigris::client::strike_phase(*strike) == 0.5,
+            "render-list: decoded Sweep contact preserves one active SweepArc and no Swing");
+      saw_sweep_contact = true;
+    }
+    verdigris::client::age_presentation_fx(fx);
+  }
+  check(saw_sweep_contact, "render-list: real remote Sweep skillId reaches presentation");
   session.shutdown();
   server->stop();
   delete server;
