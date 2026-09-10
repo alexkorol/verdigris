@@ -1814,6 +1814,7 @@ void WorldSimulation::reset_to_town() {
 }
 
 void WorldSimulation::return_to_town() {
+  last_pursuit_tick_ms_ = -1;
   scene_type_ = "town";
   scene_id_ = "town:verdigris";
   scene_name_ = "Verdigris";
@@ -1866,6 +1867,7 @@ std::string WorldSimulation::zone_display_name(const std::string& template_id,
 }
 
 void WorldSimulation::generate_instance() {
+  last_pursuit_tick_ms_ = -1;
   const std::string& layout = metadata_.layout;
   const std::string effective = layout.empty() ? "warren" : layout;
 
@@ -1957,6 +1959,10 @@ void WorldSimulation::generate_instance() {
                                      : RosterRow{"Stone Lurker", "Flint Slinger", "Warden Caller"};
     monster.x = x;
     monster.y = y;
+    monster.continuous_position = {static_cast<double>(x), static_cast<double>(y)};
+    monster.has_continuous_position = true;
+    monster.movement_from = monster.continuous_position;
+    monster.pursuit_home = monster.continuous_position;
     // map.js: level = max(1, floor(1 + index*0.14)) + (depth-1)*2 + theme
     // bonus. Deeper floors are the authoritative difficulty wall.
     monster.level = level + (metadata_.depth - 1) * 2 + placed / 7;
@@ -2090,6 +2096,172 @@ bool grid_line_clear(const TileGrid& grid, Vec2 from, Vec2 to) {
   }
 }
 }  // namespace
+
+namespace {
+double world_tile_distance(WorldPosition a, WorldPosition b) {
+  return std::max(std::abs(a.x - b.x), std::abs(a.y - b.y));
+}
+
+bool world_grid_step_clear(const TileGrid& grid, Vec2 from, Vec2 to) {
+  if (!grid.walkable_at(to.x, to.y)) return false;
+  // Match the player's existing diagonal rule: one open orthogonal tile
+  // permits a corner; two closed orthogonal tiles block it.
+  return from.x == to.x || from.y == to.y || grid.walkable_at(from.x, to.y) ||
+         grid.walkable_at(to.x, from.y);
+}
+}  // namespace
+
+bool WorldSimulation::monster_segment_clear(std::size_t mover, WorldPosition from,
+                                            WorldPosition to) const {
+  const double dx = to.x - from.x, dy = to.y - from.y;
+  const double length_squared = dx * dx + dy * dy;
+  const int samples = std::max(1, static_cast<int>(std::ceil(std::sqrt(length_squared) * 8)));
+  Vec2 previous = tile_movement::occupied_tile(from);
+  if (!grid_.walkable_at(previous.x, previous.y)) return false;
+  for (int step = 1; step <= samples; ++step) {
+    const double t = static_cast<double>(step) / samples;
+    const Vec2 tile = tile_movement::occupied_tile({from.x + dx * t, from.y + dy * t});
+    if (!world_grid_step_clear(grid_, previous, tile)) return false;
+    previous = tile;
+  }
+  // A whole tile separates authored spawn centres. Preserve that minimum
+  // continuously, including along the swept segment, so packs cannot merge.
+  for (std::size_t index = 0; index < monsters_.size(); ++index) {
+    if (index == mover || !monsters_[index].alive) continue;
+    const WorldPosition other = monsters_[index].world_position();
+    const double t = length_squared > 0 ? std::clamp(
+        ((other.x - from.x) * dx + (other.y - from.y) * dy) / length_squared, 0.0, 1.0) : 0.0;
+    const double gap_x = from.x + dx * t - other.x;
+    const double gap_y = from.y + dy * t - other.y;
+    if (gap_x * gap_x + gap_y * gap_y < 1.0 - 1e-9) return false;
+  }
+  return true;
+}
+
+std::optional<WorldPosition> WorldSimulation::monster_waypoint(std::size_t mover) const {
+  const WorldPosition from = monsters_[mover].world_position();
+  if (monster_segment_clear(mover, from, position_)) return position_;
+  const Vec2 start = tile_movement::occupied_tile(from);
+  const Vec2 goal = tile_movement::occupied_tile(position_);
+  if (!grid_.walkable_at(start.x, start.y) || !grid_.walkable_at(goal.x, goal.y)) return std::nullopt;
+  const auto cell = [&](Vec2 tile) { return tile.y * grid_.width + tile.x; };
+  const int cells = grid_.width * grid_.height;
+  std::vector<bool> occupied(static_cast<std::size_t>(cells), false);
+  for (std::size_t index = 0; index < monsters_.size(); ++index) {
+    if (index == mover || !monsters_[index].alive) continue;
+    const Vec2 tile = tile_movement::occupied_tile(monsters_[index].world_position());
+    if (grid_.in_bounds(tile.x, tile.y)) occupied[cell(tile)] = true;
+  }
+  constexpr Vec2 neighbours[]{{-1, 0}, {0, -1}, {1, 0}, {0, 1},
+                              {-1, -1}, {1, -1}, {1, 1}, {-1, 1}};
+  // Reverse breadth-first search is bounded by the current instance grid
+  // (40x40). Fixed neighbour and actor order make tied routes deterministic.
+  std::vector<int> distance(static_cast<std::size_t>(cells), -1);
+  std::vector<Vec2> queue{goal};
+  distance[cell(goal)] = 0;
+  for (std::size_t head = 0; head < queue.size() && distance[cell(start)] < 0; ++head) {
+    const Vec2 at = queue[head];
+    for (const Vec2 offset : neighbours) {
+      const Vec2 next{at.x + offset.x, at.y + offset.y};
+      if (!world_grid_step_clear(grid_, at, next) || occupied[cell(next)] || distance[cell(next)] >= 0) continue;
+      distance[cell(next)] = distance[cell(at)] + 1;
+      queue.push_back(next);
+    }
+  }
+  if (distance[cell(start)] <= 0) return std::nullopt;
+  for (const Vec2 offset : neighbours) {
+    const Vec2 next{start.x + offset.x, start.y + offset.y};
+    if (!world_grid_step_clear(grid_, start, next) || occupied[cell(next)] ||
+        distance[cell(next)] != distance[cell(start)] - 1) continue;
+    const WorldPosition waypoint{static_cast<double>(next.x), static_cast<double>(next.y)};
+    if (monster_segment_clear(mover, from, waypoint)) return waypoint;
+  }
+  // A rounded occupied tile can change before its centre is reached. Finish
+  // that centre alignment before turning around a wall or another body.
+  const WorldPosition centre{static_cast<double>(start.x), static_cast<double>(start.y)};
+  if (world_tile_distance(from, centre) > 1e-6 && monster_segment_clear(mover, from, centre)) return centre;
+  return std::nullopt;
+}
+
+void WorldSimulation::advance_monster_movement(std::int64_t now_ms, bool player_alive) {
+  now_ms = std::max<std::int64_t>(0, now_ms);
+  if (!in_instance() || !player_alive) {
+    last_pursuit_tick_ms_ = -1;
+    for (auto& monster : monsters_) {
+      monster.pursuit_active = false;
+      if (monster.movement_duration_ms == 0) continue;
+      ++monster.movement_sequence;
+      monster.movement_from = monster.world_position();
+      monster.movement_started_at_ms = now_ms;
+      monster.movement_duration_ms = 0;
+    }
+    return;
+  }
+  if (last_pursuit_tick_ms_ < 0) { last_pursuit_tick_ms_ = now_ms; return; }
+  if (now_ms <= last_pursuit_tick_ms_) return;
+  // Discard stale backlog after a suspended server; never launch a long
+  // burst through a room. Normal partial samples retain their remainder.
+  if (now_ms - last_pursuit_tick_ms_ > world_pursuit::kMaxCatchupMs)
+    last_pursuit_tick_ms_ = now_ms - world_pursuit::kMaxCatchupMs;
+  const std::int64_t begin = last_pursuit_tick_ms_;
+  const int steps = static_cast<int>((now_ms - begin) / world_pursuit::kStepMs);
+  if (steps == 0) return;
+  std::vector<WorldPosition> before;
+  before.reserve(monsters_.size());
+  for (const auto& monster : monsters_) before.push_back(monster.world_position());
+  for (int step = 0; step < steps; ++step) {
+    last_pursuit_tick_ms_ += world_pursuit::kStepMs;
+    const auto tick = static_cast<std::uint64_t>(last_pursuit_tick_ms_);
+    const Vec2 player_tile = tile_movement::occupied_tile(position_);
+    for (std::size_t index = 0; index < monsters_.size(); ++index) {
+      auto& monster = monsters_[index];
+      if (!monster.alive || monster.boss || monster.behaviour_type != "melee") continue;
+      if (monster.telegraph_until_ms != 0 || tick < monster.next_attack_ms) continue;
+      const WorldPosition from = monster.world_position();
+      const double distance = world_tile_distance(from, position_);
+      if (distance > world_pursuit::kRetainTiles ||
+          world_tile_distance(monster.pursuit_home, position_) > world_pursuit::kHomeLeashTiles) {
+        monster.pursuit_active = false;
+        continue;
+      }
+      const bool visible = grid_line_clear(grid_, {monster.x, monster.y}, player_tile);
+      if (!monster.pursuit_active && distance <= world_pursuit::kAcquireTiles && visible)
+        monster.pursuit_active = true;
+      if (!monster.pursuit_active) continue;
+      const int contact = active_target_ == monster.uuid ? 2 : 1;
+      if (visible && std::abs(monster.x - player_tile.x) <= contact &&
+          std::abs(monster.y - player_tile.y) <= contact) continue;
+      const auto waypoint = monster_waypoint(index);
+      if (!waypoint) continue;
+      const double dx = waypoint->x - from.x, dy = waypoint->y - from.y;
+      const double length = std::hypot(dx, dy);
+      if (length <= 1e-6) continue;
+      double amount = tile_movement::kMoveDistance * enemy_stats(monster.level).move_speed /
+                      world_scale::kPlayerMoveSpeed;
+      amount = std::min(amount, length);
+      if (waypoint->x == position_.x && waypoint->y == position_.y)
+        amount = std::min(amount, std::max(0.0, distance - contact) * length / distance);
+      const WorldPosition to{tile_movement::round_position(from.x + dx / length * amount),
+                             tile_movement::round_position(from.y + dy / length * amount)};
+      if (world_tile_distance(monster.pursuit_home, to) > world_pursuit::kHomeLeashTiles ||
+          world_tile_distance(from, to) <= 1e-6 || !monster_segment_clear(index, from, to)) continue;
+      monster.continuous_position = to;
+      monster.has_continuous_position = true;
+      const Vec2 tile = tile_movement::occupied_tile(to);
+      monster.x = tile.x; monster.y = tile.y;
+      monster.movement_facing = {dx < 0 ? -1 : dx > 0 ? 1 : 0, dy < 0 ? -1 : dy > 0 ? 1 : 0};
+    }
+  }
+  for (std::size_t index = 0; index < monsters_.size(); ++index) {
+    auto& monster = monsters_[index];
+    const bool moved = world_tile_distance(before[index], monster.world_position()) > 1e-6;
+    if (!moved && monster.movement_duration_ms == 0) continue;
+    ++monster.movement_sequence;
+    monster.movement_from = before[index];
+    monster.movement_started_at_ms = moved ? begin : last_pursuit_tick_ms_;
+    monster.movement_duration_ms = moved ? static_cast<int>(last_pursuit_tick_ms_ - begin) : 0;
+  }
+}
 
 std::vector<WorldCombatEvent> WorldSimulation::start_player_attack(int player_level,
                                                                     int player_attack,

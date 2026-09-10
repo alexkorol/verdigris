@@ -1,0 +1,5 @@
+Edit Image 1. It is the strict pose, leg-contact, camera, scale and placement guide: copy its pose exactly. Keep the anatomical-right leg planted down toward screen-left and the other leg lifted and trailing toward screen-right. Preserve the body, clothing, hand positions, complete silhouette, and 56-logical-pixel crown-to-sole scale.
+
+Image 2 is the original raider identity reference. Correct ONLY the axe and bone mask in Image 1 to match Image 2. The axe must use Image 2's straight brown wooden haft and compact bronze wedge-shaped chopping head with its narrow rectangular profile. Keep it firmly held in the same anatomical-right/screen-left hand at the same grip; remove the long crescent/sickle blade shape. Match Image 2's small compact bone mask, dark separated eye openings and short lower edge, without the enlarged elongated white face shape.
+
+Retain the successful leg pose and its weight distribution exactly. Preserve the dark blue-charcoal clothes, ochre sash, brown boots, adult proportions and crisp limited-color pixel construction. Return one complete isolated frame with generous margins and genuine transparent alpha. No labels or scenery.

@@ -1,0 +1,54 @@
+test_equipment.cpp
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusHeaders.h(701): warning C4458: declaration of 'nativeCap' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusHeaders.h(716): note: see declaration of 'Gdiplus::CustomLineCap::nativeCap'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusImageAttributes.h(368): warning C4458: declaration of 'nativeImageAttr' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusImageAttributes.h(382): note: see declaration of 'Gdiplus::ImageAttributes::nativeImageAttr'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusMatrix.h(301): warning C4458: declaration of 'nativeMatrix' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusMatrix.h(315): note: see declaration of 'Gdiplus::Matrix::nativeMatrix'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusBrush.h(95): warning C4458: declaration of 'nativeBrush' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusBrush.h(108): note: see declaration of 'Gdiplus::Brush::nativeBrush'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPen.h(467): warning C4458: declaration of 'nativePen' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPen.h(481): note: see declaration of 'Gdiplus::Pen::nativePen'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(891): warning C4458: declaration of 'nativePath' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(905): note: see declaration of 'Gdiplus::GraphicsPath::nativePath'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(1078): warning C4458: declaration of 'nativeIterator' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(1092): note: see declaration of 'Gdiplus::GraphicsPathIterator::nativeIterator'
+PASS: all six V3 hand-region fingerprints and measured palm texels match the reviewed sockets.
+PASS: 42 reviewed directional hand neighborhoods and palm texels match their measured sockets.
+Stable repeat: 120 strike placements x 100 plus idle; image-load delta 0, bitmap-build delta 0, GDI handles 287 -> 287; cache 140 bitmaps / 25912924 bytes.
+PASS: 60 poses x 5 weapons at three scales; grip error <=0.5 px, exact actor occlusion, unchanged zero-angle pixels, direct PARGB nearest samples, normalized angle identity, 360-angle bounded eviction, stable full-strike repeat cache/GDI handles and invalid-parameter rejection.
+test_equipment_sampling.cpp
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusHeaders.h(701): warning C4458: declaration of 'nativeCap' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusHeaders.h(716): note: see declaration of 'Gdiplus::CustomLineCap::nativeCap'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusImageAttributes.h(368): warning C4458: declaration of 'nativeImageAttr' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusImageAttributes.h(382): note: see declaration of 'Gdiplus::ImageAttributes::nativeImageAttr'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusMatrix.h(301): warning C4458: declaration of 'nativeMatrix' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusMatrix.h(315): note: see declaration of 'Gdiplus::Matrix::nativeMatrix'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusBrush.h(95): warning C4458: declaration of 'nativeBrush' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusBrush.h(108): note: see declaration of 'Gdiplus::Brush::nativeBrush'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPen.h(467): warning C4458: declaration of 'nativePen' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPen.h(481): note: see declaration of 'Gdiplus::Pen::nativePen'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(891): warning C4458: declaration of 'nativePath' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(905): note: see declaration of 'Gdiplus::GraphicsPath::nativePath'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(1078): warning C4458: declaration of 'nativeIterator' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(1092): note: see declaration of 'Gdiplus::GraphicsPathIterator::nativeIterator'
+h96 w80 measured=(49,65,52,69) ceil edges=(49,65,52,69) half edges=(49,65,52,69)
+h97 w81 measured=(50,66,53,70) ceil edges=(50,66,53,70) half edges=(50,66,53,70)
+h111 w93 measured=(57,75,60,80) ceil edges=(57,76,61,80) half edges=(57,75,60,80)
+h173 w144 measured=(88,117,94,124) ceil edges=(89,118,94,125) half edges=(88,117,94,124)
+h192 w160 measured=(98,130,104,138) ceil edges=(98,130,104,138) half edges=(98,130,104,138)
+h205 w171 measured=(105,139,111,147) ceil edges=(105,139,112,148) half edges=(105,139,111,147)
+h287 w239 measured=(146,194,155,206) ceil edges=(147,195,156,207) half edges=(146,194,155,206)
+h288 w240 measured=(147,195,156,207) ceil edges=(147,195,156,207) half edges=(147,195,156,207)
+PASS: measured GDI+ nearest-neighbor source coordinates match helper finger clipping at all eight tested sizes.
+Wrote strike-action-review-3x.gif from production-rendered frames.
+Wrote strike-nw-action-review-3x.gif from production-rendered frames.
+Wrote strike-sw-action-review-3x.gif from production-rendered frames.
+Wrote strike-ne-action-review-3x.gif from production-rendered frames.
+Wrote walk-sw-action-review-1x.gif from production-rendered frames.
+Wrote walk-sw-action-review-3x.gif from production-rendered frames.
+Wrote walk-nw-action-review-1x.gif from production-rendered frames.
+Wrote walk-nw-action-review-3x.gif from production-rendered frames.
+Wrote walk-ne-action-review-1x.gif from production-rendered frames.
+Wrote walk-ne-action-review-3x.gif from production-rendered frames.
+Equipment checks passed. Contact sheets, strike animation and sampling fixtures: C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\.ci-artifacts\raster-equipment

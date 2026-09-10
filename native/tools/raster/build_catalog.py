@@ -8,7 +8,7 @@ from PIL import Image
 import numpy as np
 
 ROOT = Path(__file__).resolve().parent
-ORDER = ("inventory", "terrain", "props", "gate", "actors", "bestiary", "weapons", "hero-single", "bestiary-singles", "hero-walk", "hero-directions", "environment-singles", "large-props", "hero-strike-se", "hit-spark", "hero-walk-sw", "hero-walk-nw", "hero-walk-ne", "hero-strike-nw", "hero-strike-sw", "terrain-quiet", "raider-walk-sw", "hero-strike-ne", "raider-strike-sw", "ground-dust", "slash-trail", "raider-death-sw", "raider-walk-ne", "raider-walk-nw")
+ORDER = ("inventory", "terrain", "props", "gate", "actors", "bestiary", "weapons", "hero-single", "bestiary-singles", "hero-walk", "hero-directions", "environment-singles", "large-props", "hero-strike-se", "hit-spark", "hero-walk-sw", "hero-walk-nw", "hero-walk-ne", "hero-strike-nw", "hero-strike-sw", "terrain-quiet", "raider-walk-sw", "hero-strike-ne", "raider-strike-sw", "ground-dust", "slash-trail", "raider-death-sw", "raider-walk-ne", "raider-walk-nw", "raider-walk-se", "wight-walk-sw")
 
 
 def collect_cycles(entries, action, family="hero"):
@@ -74,7 +74,8 @@ def main():
                                 "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"},
               "walk_sequences": cycles,
               "strike_sequences": collect_cycles(entries, "strike"),
-              "monster_walk_sequences": {"raider": collect_cycles(entries, "walk", "raider")},
+              "monster_walk_sequences": {"raider": collect_cycles(entries, "walk", "raider"),
+                                         "wight": collect_cycles(entries, "walk", "wight")},
               "monster_strike_sequences": {"raider": collect_cycles(entries, "strike", "raider")},
               "monster_death_sequences": {"raider": deaths},
               "missing_walk_directions": [direction for direction in ("se", "sw", "nw", "ne") if direction not in cycles]}

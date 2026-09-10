@@ -114,6 +114,11 @@ class ProtocolSession {
   JsonValue snapshot() const;
   JsonValue scene_payload() const;
   JsonValue movement_step_payload() const;
+  JsonValue monster_payload(const WorldMonster& monster) const;
+  void emit_monster_state(std::int64_t now_ms,
+                          const std::function<void(const Envelope&)>& emit);
+  std::string published_monster_scene_;
+  std::unordered_map<std::string, std::string> published_monsters_;
   void emit_login(const std::function<void(const Envelope&)>& emit) const;
   void emit_transition(const std::function<void(const Envelope&)>& emit, const char* event) const;
   void emit_movement(const std::function<void(const Envelope&)>& emit) const;

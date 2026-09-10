@@ -427,6 +427,7 @@ bool RemoteProtocolSession::connect_transport(std::string* error) {
 }
 
 void RemoteProtocolSession::close_transport() {
+  clear_monster_display();
   running_.store(false);
   if (socket_ != -1) {
     send_frame(0x8, "");
@@ -722,6 +723,7 @@ void RemoteProtocolSession::poll() {
     }
   }
   pump_retry();
+  sample_monster_display();
 }
 
 std::vector<PresentationEvent> RemoteProtocolSession::drain_events() {
@@ -813,8 +815,98 @@ void RemoteProtocolSession::reader_loop() {
   }
 }
 
+void RemoteProtocolSession::clear_monster_display() {
+  monster_movement_.clear();
+  for (auto& monster : model_.monsters) monster.has_display_position = false;
+}
+
+bool RemoteProtocolSession::apply_monster_movement(ClientMonster& monster,
+                                                   const JsonValue& source) {
+  const auto* step = source.get("movementStep");
+  const auto prior = monster_movement_.find(monster.id);
+  const double sequence = step ? json_number(step->get("sequence"), -1.0) : -1.0;
+  const bool valid = std::isfinite(sequence) && sequence >= 0.0 &&
+      sequence <= 9007199254740991.0 && std::floor(sequence) == sequence;
+  const double facing_x = step ? json_number(step->get("facingX"), 0.0) : 0.0;
+  const double facing_y = step ? json_number(step->get("facingY"), 0.0) : 0.0;
+  const bool valid_facing = std::isfinite(facing_x) && std::isfinite(facing_y) &&
+      std::abs(facing_x) <= 1.0 && std::abs(facing_y) <= 1.0 &&
+      std::floor(facing_x) == facing_x && std::floor(facing_y) == facing_y &&
+      (facing_x != 0.0 || facing_y != 0.0);
+  const auto copy_facing = [&](const MonsterMovement& motion) {
+    monster.has_facing = motion.has_facing;
+    monster.facing_x = motion.facing_x; monster.facing_y = motion.facing_y;
+  };
+  if (prior != monster_movement_.end() &&
+      (!valid || sequence <= static_cast<double>(prior->second.sequence))) {
+    // dev:state remains a lifecycle/stat reconciliation. A same/older
+    // sequence cannot restart interpolation or rewind the motion endpoint.
+    monster.x = prior->second.to_x;
+    monster.y = prior->second.to_y;
+    if (valid && sequence == static_cast<double>(prior->second.sequence) && valid_facing) {
+      prior->second.has_facing = true;
+      prior->second.facing_x = static_cast<int>(facing_x);
+      prior->second.facing_y = static_cast<int>(facing_y);
+    }
+    copy_facing(prior->second);
+    return valid && sequence == static_cast<double>(prior->second.sequence);
+  }
+  if (!valid || !monster.alive || !std::isfinite(monster.x) ||
+      !std::isfinite(monster.y)) return false;
+  if (prior == monster_movement_.end() && monster_movement_.size() >= 256) return false;
+  MonsterMovement motion;
+  if (prior != monster_movement_.end()) {
+    motion.has_facing = prior->second.has_facing;
+    motion.facing_x = prior->second.facing_x; motion.facing_y = prior->second.facing_y;
+  }
+  if (valid_facing) {
+    motion.has_facing = true;
+    motion.facing_x = static_cast<int>(facing_x);
+    motion.facing_y = static_cast<int>(facing_y);
+  }
+  motion.sequence = static_cast<std::uint64_t>(sequence);
+  motion.to_x = monster.x;
+  motion.to_y = monster.y;
+  motion.from_x = json_number(step->get("fromX"), monster.x);
+  motion.from_y = json_number(step->get("fromY"), monster.y);
+  const double duration = json_number(step->get("duration"), 0.0);
+  if (!std::isfinite(motion.from_x) || !std::isfinite(motion.from_y) ||
+      !std::isfinite(duration)) return false;
+  motion.duration_ms = static_cast<int>(std::clamp(duration, 0.0, 250.0));
+  // A teleport or newly admitted actor has no inferred travel path.
+  if (sequence == 0.0 || std::hypot(motion.to_x - motion.from_x,
+                                   motion.to_y - motion.from_y) > 4.0)
+    motion.duration_ms = 0;
+  motion.received_at = std::chrono::steady_clock::now();
+  monster_movement_[monster.id] = motion;
+  copy_facing(motion);
+  return true;
+}
+
+void RemoteProtocolSession::sample_monster_display() {
+  const auto now = std::chrono::steady_clock::now();
+  for (auto it = monster_movement_.begin(); it != monster_movement_.end();) {
+    ClientMonster* monster = find_monster(model_, it->first);
+    if (!monster || !monster->alive) {
+      if (monster) monster->has_display_position = false;
+      it = monster_movement_.erase(it);
+      continue;
+    }
+    const auto& motion = it->second;
+    const double elapsed = std::chrono::duration<double, std::milli>(
+        now - motion.received_at).count();
+    const double phase = motion.duration_ms > 0
+        ? std::clamp(elapsed / motion.duration_ms, 0.0, 1.0) : 1.0;
+    monster->display_x = motion.from_x + (motion.to_x - motion.from_x) * phase;
+    monster->display_y = motion.from_y + (motion.to_y - motion.from_y) * phase;
+    monster->has_display_position = true;
+    ++it;
+  }
+}
+
 void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
   if (envelope.event == "player:login") {
+    clear_monster_display();
     if (const auto* player = envelope.data.get("player")) {
       apply_player_fields(model_.player, *player);
       if (const auto* username = json_string(player->get("username")))
@@ -1013,9 +1105,39 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       apply_player_fields(model_.player, *player_state);
     }
     if (!model_.scene.id.empty()) model_.player.scene_id = model_.scene.id;
+    clear_monster_display();
     model_.monsters.clear();
     model_.npcs.clear();
     model_.ground.clear();
+    return;
+  }
+  if (envelope.event == "monster:state") {
+    const auto* actors = envelope.data.array();
+    const auto* scene = envelope.meta ? json_string(envelope.meta->get("sceneId")) : nullptr;
+    const std::string& current_scene = model_.player.scene_id;
+    // Scene-scoped deltas never admit unknown actors or populate a room.
+    // The ordinary full snapshot remains authoritative for membership.
+    if (!actors || actors->size() > 256 || !scene || current_scene.empty() ||
+        *scene != current_scene) return;
+    for (const auto& entry : *actors) {
+      const auto* id = json_string(entry.get("uuid"));
+      if (!id) continue;
+      ClientMonster* existing = find_monster(model_, *id);
+      if (!existing || !existing->alive) continue;
+      const auto* x = entry.get("x");
+      const auto* y = entry.get("y");
+      if (!x || !x->number() || !y || !y->number() ||
+          !std::isfinite(*x->number()) || !std::isfinite(*y->number())) continue;
+      ClientMonster update = *existing;
+      update.x = *x->number(); update.y = *y->number();
+      if (!apply_monster_movement(update, entry)) continue;
+      if (const auto* hp = entry.get("hp")) {
+        update.life = static_cast<int>(json_number(hp->get("current"), update.life));
+        update.life_max = static_cast<int>(json_number(hp->get("max"), update.life_max));
+        update.alive = update.life > 0;
+      }
+      *existing = std::move(update);
+    }
     return;
   }
   if (envelope.event == "monster:telegraph") {
@@ -1051,7 +1173,9 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       }
     }
     if (hits_player) {
-      if (attacker) upsert_monster(model_, *attacker, "", true);
+      // A confirmed hit does not change the authored actor's rarity/scale.
+      if (attacker && !find_monster(model_, *attacker))
+        upsert_monster(model_, *attacker, "", true);
       model_.last_incoming_hit = amount;
       const auto* skill = json_string(envelope.data.get("skillId"));
       if (attacker && !attacker->empty() && *attacker != model_.player.uuid && skill) {
@@ -1193,9 +1317,10 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
           monster.life_max = static_cast<int>(json_number(hp->get("max"), monster.life_max));
         }
         if (const auto* rarity = json_string(entry.get("rarity"))) {
-          monster.elite = (*rarity != "normal" && !rarity->empty());
+          monster.elite = (*rarity != "normal" && *rarity != "common" && !rarity->empty());
         }
         monster.alive = monster.life > 0;
+        apply_monster_movement(monster, entry);
         model_.monsters.push_back(std::move(monster));
       }
     }

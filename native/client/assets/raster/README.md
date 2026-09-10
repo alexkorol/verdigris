@@ -8,7 +8,7 @@ visible content height; animation uses the shared full-canvas pivot and scale.
 `source/` retains generated candidates, including rejected ones. `prompts/`
 records the actual image requests, reference paths and observed failures.
 `runtime/catalog.json` resolves import order and records the active source,
-conversion settings, hashes and limitations for each of 162 PNGs. The importer
+conversion settings, hashes and limitations for each of 174 PNGs. The importer
 uses the owner's actual Pixel Respecter project at
 `Z:/Code/Python/pixel-perfecter`; it is not a substitute pixelation filter.
 
@@ -17,14 +17,47 @@ and critical feedback, and [PROMPTING.md](PROMPTING.md) for the resulting local
 workflow. Model variant names are recorded only where the source actually
 identifies them; our image tool has no model selector.
 
-## Current milestone: real pursuit and directional walking
+## Current milestone: native server pursuit and reference-guided monster walks
+
+The normal native server's `WorldSimulation` now moves ordinary melee enemies.
+The earlier pursuit milestone below covered the smaller local `Simulation`.
+Continuous positions advance only on the server's ordinary 150 ms tick, using
+50 ms substeps, bounded catchup, visibility, a home leash, tile collision and
+body separation. Existing contact ranges, damage and attack clocks remain.
+Warnings and recovery stop travel. The remote client receives changed actor
+positions directly and interpolates display coordinates without moving the
+authority endpoint; facing survives contact and stop. Common enemies retain
+their normal size when delivering a hit.
+
+Four SE raider and eight SW wight walk frames bring the catalog to 174 PNGs,
+31 manifests and 60 sources. All 162 previous PNGs remain byte-identical.
+The SE trial adapts Higgsfield's explicit pose-guide roles using accepted hero
+frames and the raider identity; the wight adapts PURESO's walking-sheet workflow.
+Exact source prompts, failures, alpha repairs and reference roles are retained.
+
+Supported native build, all suites and all 72 client scenarios pass; browser
+32/32, importer 10/10 and equipment/sampling checks pass. Static/moving
+3440x1440 averages are 22.510/24.684 ms, with 33.976 ms moving peak under the
+unchanged 40 ms average limits. Root viewed all four actual SE pursuit phases,
+seven wight phases during real crypt pursuit, contact and scene replacement.
+The eighth wight phase passes the production raster frame check; this short
+live chase did not paint it. Normal launch, House/Scion creation, expedition
+entry and F3 were verified in the live window, followed by clean exit.
+
+This is provisional integration. Body/mask/axe drift and partly obscured wight
+hip continuity remain. Manual combat completion was not demonstrated. Noisy
+dungeon/crypt ground, flat wall placeholders, other monster directions and
+weapon-specific actions remain open.
+[Evidence and exact acceptance limits](reviews/2026-09-10-monster-motion/README.md).
+
+## Previous milestone: local pursuit and directional walking
 
 Six NE and eight NW raider walk frames join the existing SW eight-frame walk.
 All 148 previous runtime PNGs remain unchanged; 29 manifests resolve 55 sources
 to 162 active sprites. SE walking remains rejected because its repeated
 leading leg did not form a complete gait.
 
-Native enemies now pursue around shared scenery collision. Input commands
+Local testbed enemies pursue around shared scenery collision. Input commands
 resolve once per 50 ms tick, and actor motion follows actual travel. Immutable
 event poses preserve strike direction and death/drop positions across later
 movement. Local sessions preserve coordinates, actor identity and floor

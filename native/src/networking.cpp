@@ -579,7 +579,14 @@ bool parse_json(const std::string& text, JsonValue& out, std::string* error) { r
 bool parse_envelope(const std::string& text, Envelope& out, std::string* error) {
   JsonValue root; if (!parse_json(text, root, error) || !root.is_object()) { if (error && error->empty()) *error="envelope must be an object"; return false; }
   const auto* event=root.get("event"); if (!event || !event->string() || event->string()->empty()) { if (error) *error="envelope event must be a non-empty string"; return false; }
-  const auto* data=root.get("data"); if (!data || !data->is_object()) { if (error) *error="envelope data must be an object"; return false; }
+  const auto* data=root.get("data");
+  // monster:state is the existing JS actor-delta array. Requests retain
+  // their object-only contract; accepting this event does not broaden it.
+  if (!data || (!data->is_object() &&
+      !(*event->string() == "monster:state" && data->is_array()))) {
+    if (error) *error="envelope data must be an object (monster:state may be an array)";
+    return false;
+  }
   out.event=*event->string(); out.data=*data; out.meta.reset(); if (const auto* meta=root.get("meta")) out.meta=*meta; return true;
 }
 std::string emit_envelope(const Envelope& envelope) {
@@ -669,7 +676,11 @@ void ProtocolSession::tick(std::int64_t now) {
     --actor->war_cry_ticks_remaining;
     if (actor->war_cry_ticks_remaining == 0) actor->war_cry_attack_bonus = 0;
   }
-  if (world_->in_instance()) process_combat(now, direct_emit_);
+  if (world_->in_instance()) {
+    const auto* player = simulation_->actor(simulation_->scion().actor_id);
+    world_->advance_monster_movement(now, player && player->stats.life > 0);
+    process_combat(now, direct_emit_);
+  }
 }
 
 void ProtocolSession::reset_world_for_new_socket() {
@@ -952,6 +963,56 @@ long long xp_for_level(int level);
 int level_from_xp(long long exp);
 }  // namespace
 
+JsonValue ProtocolSession::monster_payload(const WorldMonster& candidate) const {
+    JsonValue::Object monster; put(monster,"uuid",candidate.uuid); put(monster,"id",candidate.id); put(monster,"name",candidate.name);
+    const auto precise = candidate.world_position();
+    put(monster,"sceneId",world_->scene_id());
+    put(monster,"x",precise.x); put(monster,"y",precise.y); put(monster,"level",candidate.level); put(monster,"rarity",candidate.rarity);
+    JsonValue::Array tags; for (const auto& tag:candidate.tags) tags.emplace_back(tag); put(monster,"tags",std::move(tags));
+    put(monster,"coins",candidate.coins);
+    JsonValue::Object behaviour; put(behaviour,"type",candidate.behaviour_type); put(monster,"behaviour",std::move(behaviour));
+    JsonValue::Object mhp; put(mhp,"current",candidate.life); put(mhp,"max",candidate.life_max); put(monster,"hp",std::move(mhp));
+    JsonValue::Array modifiers; for (const auto& modifier:candidate.modifiers) { JsonValue::Object value; put(value,"id",modifier); put(value,"label",modifier=="empowered"?"Empowered":modifier); modifiers.emplace_back(std::move(value)); } put(monster,"modifiers",std::move(modifiers));
+    JsonValue::Object effects; if (candidate.empowered) { JsonValue::Object effect; put(effect,"label","Empowered"); put(effect,"id","aura:damage"); put(effects,"aura",std::move(effect)); } put(monster,"state",JsonValue::Object{{"effects",std::move(effects)}});
+    JsonValue::Object step;
+    put(step, "sequence", static_cast<double>(candidate.movement_sequence));
+    put(step, "startedAt", static_cast<double>(candidate.movement_started_at_ms));
+    put(step, "duration", candidate.movement_duration_ms);
+    put(step, "fromX", candidate.movement_from.x);
+    put(step, "fromY", candidate.movement_from.y);
+    put(step, "facingX", candidate.movement_facing.x);
+    put(step, "facingY", candidate.movement_facing.y);
+    put(monster, "movementStep", std::move(step));
+    return JsonValue(std::move(monster));
+}
+
+void ProtocolSession::emit_monster_state(
+    std::int64_t now, const std::function<void(const Envelope&)>& emit) {
+  // Each connected session publishes the shared world's changes to its own
+  // client. This also avoids the legacy global broadcast leaking solo rooms.
+  if (published_monster_scene_ != world_->scene_id()) {
+    published_monster_scene_ = world_->scene_id();
+    published_monsters_.clear();
+  }
+  JsonValue::Array changed;
+  std::unordered_map<std::string, std::string> current;
+  for (const auto& monster : world_->monsters()) {
+    if (current.size() >= 256) break;
+    JsonValue actor = monster_payload(monster);
+    const std::string encoded = actor.stringify();
+    const auto prior = published_monsters_.find(monster.uuid);
+    if (prior == published_monsters_.end() || prior->second != encoded)
+      changed.push_back(std::move(actor));
+    current.emplace(monster.uuid, encoded);
+  }
+  published_monsters_.swap(current);
+  if (changed.empty()) return;
+  Envelope envelope{"monster:state", JsonValue(std::move(changed))};
+  envelope.meta = JsonValue::Object{{"sceneId", world_->scene_id()},
+                                  {"sentAt", static_cast<double>(now)}};
+  emit(envelope);
+}
+
 JsonValue ProtocolSession::snapshot() const {
   JsonValue::Object state; const auto& scion=simulation_->scion(); const auto* actor=simulation_->actor(scion.actor_id); const auto position=world_->position();
   put(state,"uuid",identity_); put(state,"x",position.x); put(state,"y",position.y); put(state,"sceneId",world_->scene_id()); put(state,"sceneType",world_->scene_type()); put(state,"sceneName",world_->scene_name());
@@ -1009,17 +1070,10 @@ JsonValue ProtocolSession::snapshot() const {
   }
   JsonValue::Object lifecycle_details; put(lifecycle_details,"deaths",lifecycle_deaths_); put(lifecycle_details,"respawn",JsonValue::Object{{"at",static_cast<double>(respawn_at_ms_)}}); put(state,"lifecycleDetails",std::move(lifecycle_details));
   JsonValue::Object hp; put(hp,"current",actor?actor->stats.life:0); put(hp,"max",actor?actor->stats.life_max:0); put(state,"hp",std::move(hp));
-  JsonValue::Array monsters; for (const auto& candidate:world_->monsters()) if (candidate.alive) {
-    JsonValue::Object monster; put(monster,"uuid",candidate.uuid); put(monster,"id",candidate.id); put(monster,"name",candidate.name);
-    put(monster,"x",candidate.x); put(monster,"y",candidate.y); put(monster,"level",candidate.level); put(monster,"rarity",candidate.rarity);
-    JsonValue::Array tags; for (const auto& tag:candidate.tags) tags.emplace_back(tag); put(monster,"tags",std::move(tags));
-    put(monster,"coins",candidate.coins);
-    JsonValue::Object behaviour; put(behaviour,"type",candidate.behaviour_type); put(monster,"behaviour",std::move(behaviour));
-    JsonValue::Object mhp; put(mhp,"current",candidate.life); put(mhp,"max",candidate.life_max); put(monster,"hp",std::move(mhp));
-    JsonValue::Array modifiers; for (const auto& modifier:candidate.modifiers) { JsonValue::Object value; put(value,"id",modifier); put(value,"label",modifier=="empowered"?"Empowered":modifier); modifiers.emplace_back(std::move(value)); } put(monster,"modifiers",std::move(modifiers));
-    JsonValue::Object effects; if (candidate.empowered) { JsonValue::Object effect; put(effect,"label","Empowered"); put(effect,"id","aura:damage"); put(effects,"aura",std::move(effect)); } put(monster,"state",JsonValue::Object{{"effects",std::move(effects)}});
-    monsters.emplace_back(std::move(monster));
-  } put(state,"monsters",std::move(monsters));
+  JsonValue::Array monsters;
+  for (const auto& candidate : world_->monsters())
+    if (candidate.alive) monsters.emplace_back(monster_payload(candidate));
+  put(state, "monsters", std::move(monsters));
   if (world_->in_instance()) { const auto& meta=world_->metadata(); JsonValue::Object metadata; put(metadata,"seed",static_cast<double>(meta.seed)); put(metadata,"theme",meta.theme); if(meta.layout.empty()) put(metadata,"layout",nullptr); else put(metadata,"layout",meta.layout); put(metadata,"depth",meta.depth);
     JsonValue::Object up; put(up,"x",meta.stairs_up.x); put(up,"y",meta.stairs_up.y); put(metadata,"stairsUp",std::move(up));
     JsonValue::Object down; put(down,"x",meta.stairs_down.x); put(down,"y",meta.stairs_down.y); put(metadata,"stairsDown",std::move(down));
@@ -2210,6 +2264,8 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
       + actor->war_cry_attack_bonus);
   const bool engaged_here = world_->engaged_by().empty() || world_->engaged_by() == identity_;
   const auto events = world_->advance_combat(actor->stats.level, engaged_here ? player_power : 0, actor->stats.life, actor->stats.life_max, now);
+  // Publish exact authority positions before contact/death facts use them.
+  emit_monster_state(now, emit);
   // N5 respawn ward: monsters cannot damage a freshly-respawned scion until
   // the scion acts. Absorb monster damage here (the player still lands hits);
   // the skill handler ends the ward.

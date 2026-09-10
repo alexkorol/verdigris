@@ -38,6 +38,14 @@ struct ClientMonster {
   int life_max = 1;
   bool elite = false;
   bool alive = true;
+  // Optional remote display sample in protocol tile units. x/y remain the
+  // authoritative endpoint used by gameplay, events and telemetry.
+  bool has_display_position = false;
+  double display_x = 0.0;
+  double display_y = 0.0;
+  bool has_facing = false;
+  int facing_x = 0;
+  int facing_y = 0;
 };
 
 struct ClientItemSlot {

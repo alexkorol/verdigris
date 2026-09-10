@@ -832,7 +832,30 @@ struct WorldMonster {
   // and m.tags).
   std::vector<std::string> tags;
   int coins = 0;
+  // Continuous authority for live movement. x/y remain the rounded occupied
+  // tile used by the existing collision/combat contract, never a render step.
+  WorldPosition continuous_position{};
+  bool has_continuous_position = false;
+  WorldPosition movement_from{};
+  std::uint64_t movement_sequence = 0;
+  std::int64_t movement_started_at_ms = 0;
+  int movement_duration_ms = 0;
+  Vec2 movement_facing{};
+  WorldPosition pursuit_home{};
+  bool pursuit_active = false;
+  WorldPosition world_position() const {
+    return has_continuous_position ? continuous_position
+                                  : WorldPosition{static_cast<double>(x), static_cast<double>(y)};
+  }
 };
+
+namespace world_pursuit {
+inline constexpr int kStepMs = kSimulationTickMs;
+inline constexpr int kMaxCatchupMs = 150;  // one ordinary native server tick
+inline constexpr double kAcquireTiles = 4.0;
+inline constexpr double kRetainTiles = 6.0;
+inline constexpr double kHomeLeashTiles = 8.0;
+}  // namespace world_pursuit
 
 struct WorldCombatEvent {
   std::string type; // hit, death, telegraph, drop
@@ -956,6 +979,9 @@ class WorldSimulation {
   std::vector<WorldCombatEvent> advance_combat(int player_level, int player_attack,
                                                int& player_life, int player_life_max,
                                                std::int64_t now_ms);
+  // Only the ordinary server clock advances pursuit. Input/combat polling
+  // must not spend movement time; repeated or older clock samples are inert.
+  void advance_monster_movement(std::int64_t now_ms, bool player_alive = true);
   void set_level(int level);
   void heal_player(int& player_life, int player_life_max);
   // Display name for a template/layout pair (falls back to template-only,
@@ -992,6 +1018,8 @@ class WorldSimulation {
  private:
   bool can_move_to(double target_x, double target_y) const;
   bool is_blocked(const WorldPosition& origin, const WorldPosition& delta) const;
+  bool monster_segment_clear(std::size_t mover, WorldPosition from, WorldPosition to) const;
+  std::optional<WorldPosition> monster_waypoint(std::size_t mover) const;
   void register_step(const std::string& direction, int duration_ms, bool blocked,
                      std::int64_t now_ms);
   void generate_instance();
@@ -1034,6 +1062,7 @@ public:
 private:
   std::uint64_t next_player_attack_ms_ = 0;
   std::uint64_t next_boss_telegraph_ms_ = 0;
+  std::int64_t last_pursuit_tick_ms_ = -1;
   bool boss_warning_seen_ = false;
   int player_level_ = 1;
   MovementStepInfo last_step_;

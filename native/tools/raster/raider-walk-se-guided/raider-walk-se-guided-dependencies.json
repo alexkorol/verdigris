@@ -1,0 +1,184 @@
+{
+  "status": "frozen; root approved production import and runtime review, final gameplay acceptance pending",
+  "manifest": {
+    "path": "native/tools/raster/raider-walk-se-guided/raider-walk-se-guided-candidate.json",
+    "sha256": "f611c7171f207b5433caaf82318454ac55daa7a946533b058904be71fae8fbcb",
+    "role": ""
+  },
+  "selected_sources": [
+    {
+      "path": "native/client/assets/raster/source/raider-walk-se-guided-contact-left-v1.png",
+      "sha256": "58752f4a8da3cf97d8f9081a5d4b649c66169efe777e5f35e97ddad50c121df9",
+      "role": ""
+    },
+    {
+      "path": "native/client/assets/raster/source/raider-walk-se-guided-passing-left-v1.png",
+      "sha256": "4fe170930ccd806de3e922a6e6ebbb60a19bcddda8572693e8464836b56a721e",
+      "role": ""
+    },
+    {
+      "path": "native/client/assets/raster/source/raider-walk-se-guided-contact-right-v2.png",
+      "sha256": "6b0d61fa4e335b2830e3e04e3885d2f80b1b8d6b834f2ff7df3039d9830405ac",
+      "role": ""
+    },
+    {
+      "path": "native/client/assets/raster/source/raider-walk-se-guided-passing-right-v1.png",
+      "sha256": "53b2b4f9dd756324533b33d8604ad30ab894fe5a5e8925f47358b77b1525f5e7",
+      "role": ""
+    }
+  ],
+  "selected_pngs": [
+    {
+      "path": "native/tools/raster/raider-walk-se-guided/selected/raider_walk0_se.png",
+      "sha256": "984ab024c806c18948710c60800483232132a534b67c8da30a0897f69042f269",
+      "role": ""
+    },
+    {
+      "path": "native/tools/raster/raider-walk-se-guided/selected/raider_walk1_se.png",
+      "sha256": "1f2a54a48a4e27be80d52ae5ef8fa0d36e6a4640392ed278263370d870a939ba",
+      "role": ""
+    },
+    {
+      "path": "native/tools/raster/raider-walk-se-guided/selected/raider_walk2_se.png",
+      "sha256": "a1e4e582c6d10d7bcae6c9bf4dc30b8c2b87cfdec28df683905da44b552999a8",
+      "role": ""
+    },
+    {
+      "path": "native/tools/raster/raider-walk-se-guided/selected/raider_walk3_se.png",
+      "sha256": "6455e5d13ab8e601a504f5617e419e336c26a84443f8f1f0ab3acf730b108892",
+      "role": ""
+    }
+  ],
+  "palette_reference": {
+    "path": "native/client/assets/raster/runtime/raider_se.png",
+    "sha256": "bd0db16b309b39705764b05fff310401e61d932caae010117f0efcc2acf421d0",
+    "role": "unchanged accepted32-color palette"
+  },
+  "importer": {
+    "path": "native/tools/raster/import_assets.py",
+    "sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+    "role": "existing shared actual Pixel Respecter importer; unchanged by this lane"
+  },
+  "conversion_report": {
+    "path": "native/tools/raster/raider-walk-se-guided/selected/raider-walk-se-guided-candidate.provenance.json",
+    "sha256": "f2854d4e599f51c45466b62df461d1943853c13c5aa26888100830be76138e50",
+    "role": "complete actual external engine hashes/dependencies/geometry"
+  },
+  "engine": {
+    "project": "Pixel Respecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "root": "Z:/Code/Python/pixel-perfecter",
+    "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+    "git_dirty": true,
+    "source_sha256": {
+      "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+      "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+      "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+      "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+      "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+      "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+      "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+      "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+      "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+      "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+      "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+      "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+      "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+    },
+    "dependencies": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    }
+  },
+  "generation_provenance": {
+    "path": "native/client/assets/raster/prompts/raider-walk-se-guided-provenance.json",
+    "sha256": "15731805aaca9f9154bf34b1636935e6ddde6490568536769ef9a5c6bf6d6d52",
+    "role": ""
+  },
+  "source_guides": [
+    {
+      "path": "native/client/assets/raster/runtime/hero_walk0_se.png",
+      "sha256": "cac714cf1f0c5e00aac781930c309b58fe752c4fdf77dad268513c106ebf3541",
+      "role": "accepted geometry guide"
+    },
+    {
+      "path": "native/client/assets/raster/runtime/hero_walk1_se.png",
+      "sha256": "5ebe4b3b765e2f80ae219e52ddff0f6bd0ae00d70f52b02c5676b5ee619cbb61",
+      "role": "accepted geometry guide"
+    },
+    {
+      "path": "native/client/assets/raster/runtime/hero_walk2_se.png",
+      "sha256": "608aedb034d9ffaa1ae7b784456d4c0c61f67d9469a41921bb9f07c7ab3394b7",
+      "role": "accepted geometry guide"
+    },
+    {
+      "path": "native/client/assets/raster/runtime/hero_walk3_se.png",
+      "sha256": "008280726e2af3a42f230895c96a98108b133a566c8b693b0b2e49bb970b0e55",
+      "role": "accepted geometry guide"
+    }
+  ],
+  "retained_generation_chain_references": [
+    {
+      "path": "native/tools/raster/raider-walk-se-guided/contact-right-v1/raider_walk2_se.png",
+      "sha256": "647875d7938400c68a16d1f99f6b637656e4aa269011b9d40758ec16b22cf807",
+      "role": "rejected-identity but successful pose guide used for correction"
+    },
+    {
+      "path": "native/tools/raster/raider-walk-se-guided/contact-right-v2/raider_walk2_se.png",
+      "sha256": "a1e4e582c6d10d7bcae6c9bf4dc30b8c2b87cfdec28df683905da44b552999a8",
+      "role": "approved contact used as consistency reference; equal to final frame2"
+    }
+  ],
+  "native_geometry": {
+    "canvas": [
+      80,
+      96
+    ],
+    "pivot": [
+      40,
+      96
+    ],
+    "body_heights": [
+      55,
+      56,
+      54,
+      55
+    ],
+    "idle_height": 56,
+    "source_pitches": [
+      12,
+      12,
+      11,
+      12
+    ],
+    "native_scale_group": "raider-se-guided-native-2026-09-10",
+    "post_reconstruction_resize": false,
+    "palette_reference_limit": 32,
+    "alpha": "binary0/255",
+    "frame2_parity_with_approved_contact": true
+  },
+  "command": "Z:/Code/Python/pixel-perfecter/.venv/Scripts/python.exe native/tools/raster/import_assets.py native/tools/raster/raider-walk-se-guided/raider-walk-se-guided-candidate.json",
+  "cleanup_records": [
+    "contact-right-v2/cleanup-audit.json",
+    "passing-cleanup-windows.json",
+    "passing-cleanup-windows-source-audit.png"
+  ],
+  "review_records": [
+    "selected/idle-cycle-idle-1x.png",
+    "selected/idle-cycle-idle-3x.png",
+    "selected/cycle-1x.gif",
+    "selected/cycle-3x.gif",
+    "selected/idle-cycle-idle-1x.gif",
+    "selected/idle-cycle-idle-3x.gif",
+    "selected/measurements.json"
+  ],
+  "limitations": [
+    "Narrower bodies than idle; bone-mask shape and head angle shift slightly between poses.",
+    "Compact right-hand bronze axes differ in darkness/size from idle.",
+    "Four-phase640ms authored loop; production timing and live enemy motion still need root review.",
+    "True generated alpha in initial contact and left contact only. Corrected contact and passing sources are RGB with painted patterns; exact owner-API cleanup is recorded.",
+    "Native54\u201356px body heights and source grid pitches are explicit; no hidden individual fit or resampling."
+  ]
+}

@@ -29,6 +29,8 @@ control method, not a universal limitation of Image 2.5.
 | Gray-matte cleanup on a failed follow-through source | Pale wrap, fist and forearm pixels were also removed | Compare reconstructed anatomy with the original source; reject cleanup that erases foreground colors and request actual alpha instead of accepting a clean-looking silhouette |
 | Reference-led NE/NW raider walks | Fourteen reconstructed frames show leg progression in the production renderer, with narrower bodies and smaller axes | Accept motion and identity separately; retain the shared pivot and document the remaining cross-clip differences |
 | SE raider sheet plus two targeted repairs | All three attempts kept the same anatomical leg forward, even with an ordered motion reference in the final repair | Stop promoting repeated contacts as a walk; preserve the failed experiment and leave that direction unavailable until an actual opposite support pose exists |
+| SE raider with a separate accepted hero pose guide for each frame | Four distinct contact/passing configurations; one focused repair restored the compact axe, with smaller body/mask differences remaining | Assign pose and identity references explicit roles; review both properties independently and preserve an accepted correction |
+| SW wight sheet reconstructed against its idle palette | Broad gray cleanup erased pale hand pixels; narrower source-preserving cleanup restored them | Audit foreground anatomy against the source, including enclosed gaps; alpha correction and motion acceptance are separate decisions |
 
 ## Workflow
 
@@ -48,6 +50,8 @@ separate its image request from file assembly and checks performed by Codex.
 |---|---|---|
 | Small idle motion | Kiki's reference-led idle sheet | Fixed feet, camera, scale and baseline; modest breathing/blink; shared margins |
 | First combat pose study | Practical_Low29's short 4x4 prompt | One reference character and simple motion request; independently audit anticipation, hand identity and recovery |
+| Walking study | PURESO's actual walking request | Reuse the character reference; inspect alternating supports and loop closure independently of clothing continuity |
+| Repeated wrong pose despite reference edits | Higgsfield's per-frame geometry guide | Give an already-correct pose its own reference role, separate from character identity; the published turntable is not a validated humanoid gait |
 | A planned combat cycle | Kiki's combat prompt and second character result | Explicit preparation/contact/recovery beats, full weapon clearance and variable frame holds; preserve our adult proportions |
 | A failed sheet or one bad phase | Noel's separate images; Flixly's focused next-frame edit | Accepted identity anchor plus a clearly assigned transition reference; one physical change |
 | Material-rich UI | 12ui's comparison prompts | Assign each reference an explicit job: requirements, composition or contrast |

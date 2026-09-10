@@ -1,9 +1,26 @@
 # Image 2.5: creator evidence for game assets and animation
 
-Reviewed September 9, 2026. These are early creator experiments and public
+Reviewed September 9–10, 2026. These are early creator experiments and public
 critiques, not a benchmark proving game-ready animation. Primary X posts were
 opened in the browser by the research worker because the web text fetch
 returned 403. No promotional provider's affiliation was assumed.
+
+## Start with these actual workflows
+
+| Task | Original to reuse | Evidence boundary |
+|---|---|---|
+| Walking poses from one character | [PURESO's prompt screenshot](https://x.com/pureso_studio/status/2097520619193868590) | Published reference and walking sheet; no validated playback or alpha audit |
+| Planned idle or attack | [Kiki's idle prompt](https://x.com/Mayz1169/status/2097535082248671625) and [combat prompt](https://x.com/Mayz1169/status/2097540160611287452) | Actual detailed inputs and output examples; retain action beats and registration, omit chibi conversion |
+| A sheet that changes the design | [Noel's separate-frame fallback](https://x.com/elle_elle_e/status/2097439673308389840) | Original rejected grids and later portrait animation; not a walking test |
+| Controlled next-frame editing | [Flixly's three-frame experiment](https://www.flixly.ai/blog/stop-motion-chatgpt-images-2-5) | Opening identity plus previous-frame reference; company demo at two frames per second |
+| A repeatedly wrong pose | [Higgsfield's complete guide prompt](https://x.com/higgsfield/status/2097514684811554911) | Each frame already has a correct geometry guide; vendor demo, not generated physics |
+
+These sources do not establish a universal successful prompt. The most useful
+negative evidence is the [combat-sheet discussion](https://www.reddit.com/r/aigamedev/comments/1wbmvnm/gpt_image_25_nailed_a_16_frame_combat_sprite_sheet/):
+the creator publishes the input, while readers identify swapped limbs and
+missing action beats. An attractive sheet is only the start of acceptance.
+The detailed entries below distinguish creator claims, inspected media and
+our adaptations. Aggregator reconstructions are never labelled original inputs.
 
 ## Model identification
 
@@ -267,6 +284,55 @@ Their dates predate this Image 2.5 release, so they were excluded from
 model-specific evidence. Prompt aggregators were used to locate original
 posts, not counted as independent successful tests. The follow-up still found
 no verified Image 2.5 terrain-seam recipe or complete adult isometric gait.
+
+## September 10 follow-up: actual walking and explicit pose guides
+
+The research workers opened these original X posts in the browser and read
+their prompt screenshots or expanded text. Model names below are creator
+claims; their backend variants were not independently established.
+
+- **PURESO, September 8:** reports using free ChatGPT Images 2.5 for combat
+  and then walking sheets of the same character. The walking instruction
+  requests simplified 128px pixel art and sixteen poses in a 4x4 sheet. The
+  creator praises clothing continuity and both legs participating. Similar
+  stride silhouettes remain in the displayed sheet; alternating support,
+  alpha, timing and loop closure were not validated. This is an actual walking
+  prompt, unlike adapting a combat prompt and calling that published gait
+  evidence. [Original post and prompt screenshot](https://x.com/pureso_studio/status/2097520619193868590).
+- **Higgsfield, September 8:** the vendor's Image 2.5 spring-turntable example
+  supplies a geometry/pose/composition guide for each frame. Exact excerpt:
+  "the supplied guide already contains the correct rotation for this frame,
+  so copy its pose exactly." Surface and lighting instructions are separate;
+  handedness, silhouette, contact point, camera, scale and margins are retained.
+  The guide determines the rotation, so the demonstration does not establish
+  simulated spring physics or humanoid gait. Our local adaptation assigned
+  accepted hero walk frames to pose and the raider idle to identity. Five
+  built-in calls produced four selected contact/passing configurations, including
+  an axe repair; both support sides survived Pixel Respecter reconstruction.
+  Narrower bodies, mask changes and smaller axes remain. These are our measured
+  candidate results, not a claim about the vendor's humanoid-animation quality.
+  Production acceptance is recorded separately with the game captures.
+  [Original demonstration](https://x.com/higgsfield/status/2097514650518831462),
+  [complete original prompt](https://x.com/higgsfield/status/2097514684811554911).
+- **YuK1, September 8:** explicitly credits Image 2.5 and Astra Pro for a
+  fighting-animation experiment and says the first-pass result still needs
+  substantial work. No reproducible prompt or settings are published. This is
+  firsthand negative feedback, not a repair recipe.
+  [Original experiment](https://x.com/YuK1_Game/status/2097446904942780699).
+- **Zho, September 8:** reports losing the intended task after ten consecutive
+  Image 2.5 generations while praising style transfer. The complete prompt
+  sequence is absent; ten is one observed run, not a model context limit.
+  [Original test](https://x.com/ZHO_ZHO_ZHO/status/2097573152675316038).
+
+The workers also traced Noel's [two rejected 3x3 outputs](https://x.com/elle_elle_e/status/2097440118718316964),
+which accompany the original separate-image fallback above. The root reopened
+Practical_Low29's original post and criticism directly in the browser.
+
+The circulating [278-prompt collection's author](https://www.reddit.com/r/PromptEngineering/comments/1wcbfjw/i_recovered_the_prompts_behind_openais_own_gpt/)
+explicitly describes reconstructing prompts from OpenAI's example images.
+Those are not the original prompts behind those outputs. Keep reconstructed
+recipes separate from creator-published inputs. This follow-up still found no
+verified Image 2.5 terrain-seam recipe.
 
 ## Reusable published prompt excerpts
 

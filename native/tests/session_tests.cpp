@@ -2745,6 +2745,205 @@ bool pt_pump_until(verdigris::client::RemoteProtocolSession& session,
   }
 }
 
+void remote_authored_crypt_pursuit_reaches_world_view() {
+  using namespace verdigris::client;
+  using JV = verdigris::networking::JsonValue;
+  verdigris::networking::WebSocketServer* server = nullptr;
+  const auto port = start_server(server);
+  check(port != 0, "crypt-remote: actual native server starts in test capsule");
+  if (!server) return;
+  RemoteProtocolSession session("127.0.0.1", port, "crypt-motion-authority-79", true);
+  std::string error;
+  const bool ready = session.start(&error) && wait_for_state(session, ConnectionState::Ready, 3000);
+  check(ready, "crypt-remote: normal RemoteProtocolSession handshake");
+  if (!ready) { session.shutdown(); server->stop(); delete server; return; }
+  session.send_raw("instance:enterSolo", JV::Object{{"template", "crypt"}, {"layout", "warren"}});
+  const bool admitted = wait_until(session, 3000, [&] {
+    return session.model().theme == "crypt" && session.model().scene.type == "instance" &&
+        !session.model().monsters.empty() && !session.model().map_walkable.empty() &&
+        session.model().map_scene_id == session.model().scene.id;
+  });
+  check(admitted, "crypt-remote: authored crypt roster and authoritative map arrive");
+  std::string id;
+  int px = 0, py = 0;
+  const auto& model = session.model();
+  auto open = [&](int x, int y) {
+    return x >= 0 && y >= 0 && x < model.map_width && y < model.map_height &&
+        model.map_walkable[std::size_t(y) * model.map_width + x] != 0;
+  };
+  for (const auto& monster : model.monsters) {
+    if (!monster.alive || monster.elite || monster.behaviour != "melee") continue;
+    const int mx = int(std::round(monster.x)), my = int(std::round(monster.y));
+    bool clear = true;
+    for (int oy = 0; oy <= 2; ++oy)
+      for (int ox = -3; ox <= 0; ++ox) clear = clear && open(mx + ox, my + oy);
+    if (model.scene.has_stairs_up && mx - 3 == model.scene.stairs_up_x && my + 2 == model.scene.stairs_up_y)
+      clear = false;
+    for (const auto& other : model.monsters)
+      if (other.id != monster.id && other.alive &&
+          std::hypot(other.x - (mx - 1.5), other.y - (my + 1.0)) < 3.0) clear = false;
+    if (clear) { id = monster.id; px = mx - 3; py = my + 2; break; }
+  }
+  check(!id.empty(), "crypt-remote: real roster provides an unobstructed SW approach");
+  if (!id.empty()) {
+    session.send_raw("dev:teleport", JV::Object{{"x", px}, {"y", py}});
+    // Keep the admitted baseline before the first movement packet can arrive.
+    session.drain_events();
+    bool movement = false, interpolated = false, damage = false, exact = true, family = true;
+    bool saw_first = false;
+    ClientMonster previous;
+    for (const auto& monster : session.model().monsters) if (monster.id == id) {
+      previous = monster; saw_first = true;
+    }
+    const double start_x = previous.x, start_y = previous.y;
+    int endpoint_updates = 0;
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(8);
+    auto after_hit = deadline;
+    while (std::chrono::steady_clock::now() < deadline &&
+           (!damage || std::chrono::steady_clock::now() < after_hit)) {
+      session.poll();
+      for (const auto& event : session.drain_events())
+        if (event.type == PresentationEventType::DamageApplied && event.actor_id == id &&
+            event.text == "incoming" && event.value > 0) { if (!damage) after_hit = std::chrono::steady_clock::now() + std::chrono::milliseconds(350); damage = true; }
+      WorldView world;
+      sync_world_from_model(world, session.model());
+      for (const auto& monster : session.model().monsters) if (monster.id == id) {
+        for (const auto& rendered : world.monsters) if (rendered.id == id) {
+          exact = exact && rendered.position.x == int(std::lround(protocol_to_world(monster.x))) &&
+              rendered.position.y == int(std::lround(protocol_to_world(monster.y)));
+          family = family && std::string(monster_art_family(rendered, world)) == "wight";
+        }
+        if (saw_first) {
+          if (monster.x != previous.x || monster.y != previous.y) {
+            ++endpoint_updates;
+            movement = movement || (monster.x < previous.x && monster.y > previous.y);
+          } else if (monster.has_display_position && previous.has_display_position &&
+                     monster.display_x < previous.display_x && monster.display_y > previous.display_y)
+            interpolated = true;
+        }
+        previous = monster; saw_first = true;
+      }
+      std::this_thread::sleep_for(std::chrono::milliseconds(15));
+    }
+    std::printf("crypt-remote trace: %s %.3f,%.3f -> %.3f,%.3f endpoints=%d southwest=%d\n",
+                id.c_str(), start_x, start_y, previous.x, previous.y, endpoint_updates, movement);
+    check(movement && endpoint_updates >= 2, "crypt-remote: ordinary ticks move real wight authority through deltas");
+    check(interpolated, "crypt-remote: 15ms polls advance display between unchanged authority endpoints");
+    check(exact && family, "crypt-remote: WorldView retains exact scaled authority and production wight resolver");
+    check(damage && session.model().player.life > 0,
+          "crypt-remote: real pursuit reaches incoming contact without inflated life");
+    check(previous.has_display_position && std::abs(previous.display_x - previous.x) < 1e-8 &&
+          std::abs(previous.display_y - previous.y) < 1e-8,
+          "crypt-remote: arrival display settles at authority endpoint");
+    check(previous.has_facing && previous.facing_x == -1 && previous.facing_y == 1,
+          "crypt-remote: actual SW facing survives incoming contact and stop");
+  }
+  session.shutdown(); server->stop(); delete server;
+}
+
+void remote_monster_delta_preserves_authority_and_interpolates() {
+  using namespace verdigris::client;
+  using JV = verdigris::networking::JsonValue;
+  using verdigris::networking::Envelope;
+  ScriptedEnvelopeServer server;
+  server.script.push_back(R"({"event":"player:login","data":{"player":{"uuid":"motion-guest","sceneId":"crypt:test","x":7,"y":13},"scene":{"id":"crypt:test","type":"instance","name":"Weir Crypt"}}})");
+  auto actor = [](const char* id, int sequence, double x, double y, int life = 30) {
+    return JV::Object{{"uuid", id}, {"id", "crypt-lurker"}, {"name", "Barrow Wight"},
+        {"x", x}, {"y", y}, {"behaviour", JV::Object{{"type", "melee"}}},
+        {"hp", JV::Object{{"current", life}, {"max", 30}}},
+        {"movementStep", JV::Object{{"sequence", sequence}, {"duration", sequence ? 150 : 0},
+                                   {"fromX", x + (sequence ? 0.3 : 0.0)},
+                                   {"fromY", y - (sequence ? 0.3 : 0.0)},
+                                   {"facingX", sequence ? -1 : 1},
+                                   {"facingY", sequence ? 1 : 0}}}};
+  };
+  auto add = [&](Envelope envelope, const char* label) {
+    server.script.push_back(verdigris::networking::emit_envelope(envelope));
+    server.script.push_back(verdigris::networking::emit_envelope(
+        Envelope{"game:send:message", JV::Object{{"text", label}}}));
+  };
+  auto delta = [&](const char* id, int sequence, double x, double y, const char* scene) {
+    Envelope result{"monster:state", JV::Array{JV(actor(id, sequence, x, y))}};
+    if (scene) result.meta = JV::Object{{"sceneId", scene}, {"sentAt", 1000 + sequence * 150}};
+    return result;
+  };
+  add(Envelope{"dev:state", JV::Object{{"state", JV::Object{{"theme", "crypt"},
+      {"monsters", JV::Array{JV(actor("wight", 0, 10.0, 10.0))}}}}}}, "admitted");
+  add(delta("wight", 1, 9.7, 10.3, "crypt:test"), "moving");
+  add(delta("wight", 0, 10.0, 10.0, "crypt:test"), "old-delta");
+  add(Envelope{"dev:state", JV::Object{{"state", JV::Object{
+      {"monsters", JV::Array{JV(actor("wight", 0, 10.0, 10.0))}}}}}}, "old-snapshot");
+  add(delta("wight", 1, 9.7, 10.3, "crypt:test"), "equal-sequence");
+  add(delta("wight", 2, 9.4, 10.6, "another-room"), "wrong-scene");
+  add(delta("wight", 2, 9.4, 10.6, nullptr), "unknown-scene");
+  add(delta("unknown", 2, 9.4, 10.6, "crypt:test"), "unknown-actor");
+  auto stopped_actor = actor("wight", 2, 9.7, 10.3);
+  stopped_actor["movementStep"] = JV::Object{{"sequence", 2}, {"duration", 0},
+      {"fromX", 9.7}, {"fromY", 10.3}, {"facingX", 0}, {"facingY", 0}};
+  Envelope stop{"monster:state", JV::Array{JV(std::move(stopped_actor))}};
+  stop.meta = JV::Object{{"sceneId", "crypt:test"}};
+  add(stop, "stopped");
+  add(Envelope{"combat:hit", JV::Object{{"attackerId", "motion-guest"},
+      {"targetId", "wight"}, {"targetType", "monster"}, {"amount", 30},
+      {"health", JV::Object{{"current", 0}, {"max", 30}}}, {"died", true},
+      {"skillId", "melee"}}}, "death");
+  add(Envelope{"party:scene:transition", JV::Object{
+      {"scene", JV::Object{{"id", "town"}, {"type", "town"}}},
+      {"playerState", JV::Object{{"uuid", "motion-guest"}, {"sceneId", "town"}}}}}, "retired");
+  add(delta("wight", 3, 9.1, 10.9, "crypt:test"), "late-room");
+  std::string error;
+  check(server.start(&error), "monster-delta: loopback endpoint starts");
+  if (server.port() == 0) return;
+  RemoteProtocolSession session("127.0.0.1", server.port(), "motion-guest", true);
+  check(session.start(&error) && wait_for_state(session, ConnectionState::Ready, 3000),
+        "monster-delta: actual remote handshake");
+  auto deliver = [&](const char* label) {
+    server.grant_next_frame(); server.grant_next_frame();
+    const bool received = wait_until(session, 2000, [&] { return session.model().last_message == label; });
+    check(received, (std::string("monster-delta: received ") + label).c_str());
+  };
+  deliver("admitted");
+  check(session.model().monsters.size() == 1 && session.model().theme == "crypt",
+        "monster-delta: snapshot admits real family facts");
+  deliver("moving");
+  if (!session.model().monsters.empty()) {
+    const auto first = session.model().monsters.front();
+    check(first.x == 9.7 && first.y == 10.3 && first.has_display_position &&
+          first.display_x > first.x && first.display_x < 10.0 &&
+          first.display_y > 10.0 && first.display_y < first.y,
+          "monster-delta: raw endpoint immediate, display inside accepted segment");
+    std::this_thread::sleep_for(std::chrono::milliseconds(30)); session.poll();
+    const auto later = session.model().monsters.front();
+    check(later.x == first.x && later.y == first.y && later.display_x < first.display_x &&
+          later.display_y > first.display_y,
+          "monster-delta: polling advances display without advancing authority");
+  }
+  deliver("old-delta"); deliver("old-snapshot"); deliver("equal-sequence");
+  std::this_thread::sleep_for(std::chrono::milliseconds(160)); session.poll();
+  if (!session.model().monsters.empty()) {
+    const auto& stopped = session.model().monsters.front();
+    check(stopped.x == 9.7 && stopped.y == 10.3 &&
+          std::abs(stopped.display_x - 9.7) < 1e-9 && std::abs(stopped.display_y - 10.3) < 1e-9,
+          "monster-delta: stale reconciliation cannot rewind/restart; no extrapolation");
+    check(stopped.has_facing && stopped.facing_x == -1 && stopped.facing_y == 1,
+          "monster-delta: older snapshot and equal sequence retain authoritative SW facing");
+  }
+  deliver("wrong-scene"); deliver("unknown-scene"); deliver("unknown-actor");
+  check(session.model().monsters.size() == 1 && session.model().monsters.front().x == 9.7,
+        "monster-delta: wrong/unknown room and unknown actor rejected");
+  deliver("stopped");
+  check(!session.model().monsters.empty() && session.model().monsters.front().has_facing &&
+        session.model().monsters.front().facing_x == -1 && session.model().monsters.front().facing_y == 1,
+        "monster-delta: zero stop facing retains prior authoritative direction");
+  deliver("death");
+  check(!session.model().monsters.empty() && !session.model().monsters.front().alive &&
+        !session.model().monsters.front().has_display_position,
+        "monster-delta: death clears display interpolation");
+  deliver("retired"); deliver("late-room");
+  check(session.model().monsters.empty(), "monster-delta: scene retirement rejects late actor data");
+  session.shutdown(); server.stop();
+}
+
 void remote_incoming_melee_actions_follow_wire_evidence() {
   using namespace verdigris::client;
   struct Case {
@@ -2775,7 +2974,7 @@ void remote_incoming_melee_actions_follow_wire_evidence() {
   server.script.push_back(pt_login_frame(""));
   server.script.push_back(
       R"({"event":"dev:state","data":{"state":{"monsters":[)"
-      R"({"uuid":"melee-foe","behaviour":{"type":"melee"},"x":10,"y":12,"hp":{"current":40,"max":40}},)"
+      R"({"uuid":"melee-foe","rarity":"common","behaviour":{"type":"melee"},"x":10,"y":12,"hp":{"current":40,"max":40}},)"
       R"({"uuid":"ranged-foe","behaviour":{"type":"ranged"},"x":12,"y":12,"hp":{"current":40,"max":40}}]}}})");
   int amount = 10;
   for (const auto& test : cases) {
@@ -2805,6 +3004,12 @@ void remote_incoming_melee_actions_follow_wire_evidence() {
   });
   check(snapshot, "incoming-action: authoritative behaviour snapshot decoded");
   if (!snapshot) return;
+  const auto known_melee_is_common = [&] {
+    for (const auto& actor : session.model().monsters)
+      if (actor.id == "melee-foe") return !actor.elite;
+    return false;
+  };
+  check(known_melee_is_common(), "incoming-action: native common rarity stays ordinary");
   session.drain_events();
   amount = 10;
   for (const auto& test : cases) {
@@ -2834,6 +3039,8 @@ void remote_incoming_melee_actions_follow_wire_evidence() {
     }
     const std::string label = std::string("incoming-action: ") + test.label;
     check(ordered, (label + " preserves exact actor/action/damage/death order").c_str());
+    if (std::string(test.label) == "generic melee")
+      check(known_melee_is_common(), "incoming-action: known ordinary attacker keeps its body scale at contact");
     check(session.model().last_incoming_hit == amount && session.model().player.life ==
               (test.died ? 0 : 100 - amount) && session.model().player.life_max == 100,
           (label + " preserves authoritative health and damage").c_str());
@@ -3139,6 +3346,8 @@ int main() {
   remote_mid_session_disconnect();
   remote_session_replaced();
   remote_render_list_ops();
+  remote_authored_crypt_pursuit_reaches_world_view();
+  remote_monster_delta_preserves_authority_and_interpolates();
   remote_incoming_melee_actions_follow_wire_evidence();
   remote_passive_tree_absence_stays_absent();
   remote_passive_tree_payload_hardening();

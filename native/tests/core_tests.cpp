@@ -2204,6 +2204,245 @@ void test_n2_world_simulation_rules() {
         "N2 stair return restores the pre-entry position");
 }
 
+double world_distance(WorldPosition a, WorldPosition b) {
+  return std::hypot(a.x - b.x, a.y - b.y);
+}
+
+WorldSimulation crypt_pursuit_fixture(Vec2 player_tile) {
+  WorldSimulation world(42, "world-pursuit");
+  world.enter_solo_instance("crypt", "gauntlet");
+  check(world.monsters().size() == 20 && world.monsters()[14].x == 22 &&
+        world.monsters()[14].y == 31 && world.monsters()[14].life == 40,
+        "pursuit fixture uses the real deterministic crypt roster and original life");
+  check(world.grid().walkable_at(player_tile.x, player_tile.y), "pursuit player destination is walkable");
+  world.teleport(player_tile.x, player_tile.y, 0);
+  world.advance_monster_movement(0);
+  return world;
+}
+
+void check_world_pack_clear(const WorldSimulation& world) {
+  for (std::size_t index = 0; index < world.monsters().size(); ++index) {
+    const auto& monster = world.monsters()[index];
+    if (!monster.alive) continue;
+    const Vec2 tile = tile_movement::occupied_tile(monster.world_position());
+    check(tile.x == monster.x && tile.y == monster.y && world.grid().walkable_at(tile.x, tile.y),
+          "continuous monster position retains a walkable rounded collision tile");
+    for (std::size_t other = index + 1; other < world.monsters().size(); ++other)
+      if (world.monsters()[other].alive)
+        check(world_distance(monster.world_position(), world.monsters()[other].world_position()) >= 1.0 - 1e-6,
+              "living pack bodies never overlap during pursuit");
+  }
+}
+
+void test_world_pursuit_clock_is_authoritative_and_bounded() {
+  auto fine = crypt_pursuit_fixture({23, 28});
+  auto ordinary = fine;
+  auto irregular = fine;
+  int life = 100;
+  const auto original = fine.monsters();
+  for (int poll = 0; poll < 1000; ++poll) fine.advance_combat(1, 0, life, 100, poll * 50);
+  check(life == 100 && fine.monsters()[14].movement_sequence == 0,
+        "combat polling alone cannot tick real server pursuit");
+  for (int now = 50; now <= 300; now += 50) fine.advance_monster_movement(now);
+  ordinary.advance_monster_movement(150);
+  ordinary.advance_monster_movement(300);
+  for (const int now : {17, 63, 100, 149, 199, 240, 299, 300}) irregular.advance_monster_movement(now);
+  for (std::size_t index = 0; index < original.size(); ++index) {
+    check(world_distance(fine.monsters()[index].world_position(), ordinary.monsters()[index].world_position()) == 0 &&
+          world_distance(fine.monsters()[index].world_position(), irregular.monsters()[index].world_position()) == 0,
+          "50ms,150ms and partial clock partitions produce identical authoritative endpoints");
+  }
+  const auto moved = ordinary.monsters()[14];
+  check(moved.movement_sequence > 0 && std::abs(moved.world_position().x - moved.x) > 0.01,
+        "server pursuit publishes continuous sub-tile positions rather than tile teleports");
+  for (int poll = 0; poll < 1000; ++poll) {
+    ordinary.advance_monster_movement(300);
+    ordinary.advance_monster_movement(200);
+  }
+  check(world_distance(ordinary.monsters()[14].world_position(), moved.world_position()) == 0 &&
+        ordinary.monsters()[14].movement_sequence == moved.movement_sequence &&
+        ordinary.monsters()[14].movement_started_at_ms == moved.movement_started_at_ms,
+        "duplicate and older shared-session ticks neither travel nor restart a segment");
+  auto delayed = crypt_pursuit_fixture({23, 28});
+  delayed.advance_monster_movement(10000);
+  auto one_tick = crypt_pursuit_fixture({23, 28});
+  one_tick.advance_monster_movement(150);
+  check(world_distance(delayed.monsters()[14].world_position(), one_tick.monsters()[14].world_position()) == 0 &&
+        delayed.monsters()[14].movement_duration_ms == 150,
+        "a suspended server discards backlog beyond one ordinary150ms tick");
+  WorldSimulation fresh(42, "world-pursuit");
+  fresh.enter_solo_instance("crypt", "gauntlet");
+  fresh.teleport(23, 28, 0);
+  fresh.advance_monster_movement(900000);
+  check(fresh.monsters()[14].movement_sequence == 0,
+        "first movement sample establishes its time baseline without elapsed travel");
+}
+
+void test_world_pursuit_contact_recovery_and_retirement() {
+  auto world = crypt_pursuit_fixture({23, 28});
+  const auto original = world.monsters();
+  int life = 100;
+  for (int now = 150; now <= 300; now += 150) {
+    world.advance_monster_movement(now);
+    check(world.advance_combat(1, 0, life, 100, now).empty(), "approach and first windup cause no early damage");
+  }
+  const auto contact = world.monsters()[14];
+  check(contact.next_attack_ms > 300 && world_distance(contact.world_position(), original[14].world_position()) > 1.5,
+        "actual crypt wight travels into contact and schedules its original opening windup");
+  for (int now = 450; now <= 1350; now += 150) {
+    world.advance_monster_movement(now);
+    check(world.advance_combat(1, 0, life, 100, now).empty(), "contact windup retains its authored deadline");
+    check(world_distance(world.monsters()[14].world_position(), contact.world_position()) == 0,
+          "a committed contact warning keeps feet stationary");
+  }
+  const auto stopped = world.monsters()[14];
+  check(stopped.movement_duration_ms == 0 && stopped.movement_sequence == contact.movement_sequence + 1 &&
+        world_distance(stopped.movement_from, stopped.world_position()) == 0,
+        "arrival publishes exactly one stopped segment anchored at the endpoint");
+  world.advance_monster_movement(1500);
+  const auto events = world.advance_combat(1, 0, life, 100, 1500);
+  check(events.size() == 1 && events.front().attacker_id == contact.uuid &&
+        events.front().target_id == "world-pursuit" && events.front().amount == 2 + contact.level &&
+        life == 100 - events.front().amount,
+        "real pursuit reaches an ordinary attributed hit with unchanged damage and normal player life");
+  world.teleport(25, 28, 1501);
+  for (int now = 1650; now <= 2550; now += 150) {
+    world.advance_monster_movement(now);
+    world.advance_combat(1, 0, life, 100, now);
+    check(world_distance(world.monsters()[14].world_position(), contact.world_position()) == 0,
+          "ordinary attack recovery remains planted when its target moves away");
+  }
+  world.advance_monster_movement(2700);
+  check(world_distance(world.monsters()[14].world_position(), contact.world_position()) > 0,
+        "pursuit resumes after the original ordinary recovery expires");
+  const auto before_death = world.monsters()[14].world_position();
+  world.advance_monster_movement(2850, false);
+  world.advance_monster_movement(5000, false);
+  check(world_distance(world.monsters()[14].world_position(), before_death) == 0 &&
+        world.monsters()[14].movement_duration_ms == 0,
+        "player death cancels pursuit without spending stale elapsed time");
+  world.return_to_surface();
+  check(!world.in_instance() && world.monsters().empty(), "instance exit retires pursuing actors");
+  world.enter_solo_instance("crypt", "warren");
+  world.advance_monster_movement(9000);
+  for (const auto& monster : world.monsters())
+    check(monster.movement_sequence == 0 && !monster.pursuit_active,
+          "new scene actors start stationary with a fresh movement clock");
+
+  auto lethal = crypt_pursuit_fixture({23, 28});
+  int normal_life = 100;
+  lethal.advance_monster_movement(150);
+  lethal.advance_monster_movement(300);
+  lethal.start_player_attack(1, 20, 300, "down");
+  lethal.advance_combat(1, 20, normal_life, 100, 300);
+  lethal.advance_monster_movement(450);
+  lethal.advance_monster_movement(600);
+  const auto lethal_events = lethal.advance_combat(1, 20, normal_life, 100, 650);
+  check(!lethal.monsters()[14].alive && normal_life > 0 &&
+        std::any_of(lethal_events.begin(), lethal_events.end(), [](const WorldCombatEvent& event) { return event.type == "death"; }),
+        "ordinary player attacks kill the pursuing wight at its original40life");
+  const auto dead_position = lethal.monsters()[14].world_position();
+  lethal.teleport(25, 28, 650);
+  for (int now = 750; now <= 2250; now += 150) lethal.advance_monster_movement(now);
+  check(world_distance(lethal.monsters()[14].world_position(), dead_position) == 0,
+        "dead enemies never resume pursuit after their former recovery");
+}
+
+void test_world_pursuit_nearby_bounds_and_wall_route() {
+  WorldSimulation entry(42, "world-pursuit");
+  entry.enter_solo_instance("crypt", "gauntlet");
+  const auto spawned = entry.monsters();
+  entry.advance_monster_movement(0);
+  int life = 100;
+  for (int now = 150; now <= 6000; now += 150) {
+    entry.advance_monster_movement(now);
+    entry.advance_combat(1, 0, life, 100, now);
+  }
+  for (std::size_t index = 0; index < spawned.size(); ++index)
+    check(world_distance(entry.monsters()[index].world_position(), spawned[index].world_position()) == 0,
+          "ordinary entry clearing cannot wake the distant floor");
+  check(life == 100, "entry remains safe at normal player life");
+
+  auto corner = crypt_pursuit_fixture({1, 11});
+  check(corner.monsters()[1].x == 1 && corner.monsters()[1].y == 14 &&
+        !corner.grid().walkable_at(2, 14), "wall route fixture uses the real gauntlet rib and its end gap");
+  corner.advance_monster_movement(150);
+  check(corner.monsters()[1].pursuit_active, "nearby visible wight acquires before the player rounds the wall");
+  corner.teleport(4, 16, 151);
+  bool reached = false, used_gap = false;
+  auto previous = corner.monsters()[1].world_position();
+  for (int now = 200; now <= 3000; now += 50) {
+    corner.advance_monster_movement(now);
+    const auto& monster = corner.monsters()[1];
+    const auto at = monster.world_position();
+    check(world_distance(previous, at) < 0.365,
+          "a wall detour advances in bounded continuous steps");
+    for (int sample = 0; sample <= 16; ++sample) {
+      const double t = sample / 16.0;
+      const auto tile = tile_movement::occupied_tile({previous.x + (at.x - previous.x) * t,
+                                                     previous.y + (at.y - previous.y) * t});
+      check(corner.grid().walkable_at(tile.x, tile.y), "wall detour never tunnels through an occupied wall tile");
+      used_gap = used_gap || (tile.x == 1 && tile.y == 14);
+    }
+    check_world_pack_clear(corner);
+    previous = at;
+    if (std::abs(monster.x - 4) <= 1 && std::abs(monster.y - 16) <= 1) { reached = true; break; }
+  }
+  check(reached && used_gap, "pursuit routes through an actual wall end gap to regain melee contact");
+  corner.teleport(20, 20, 3001);
+  const auto before_far = corner.monsters()[1].world_position();
+  corner.advance_monster_movement(3150);
+  check(!corner.monsters()[1].pursuit_active && world_distance(corner.monsters()[1].world_position(), before_far) == 0,
+        "a target beyond retention range stops pursuit instead of waking the floor");
+
+  auto unseen = crypt_pursuit_fixture({4, 15});
+  const auto unseen_start = unseen.monsters()[1].world_position();
+  for (int now = 150; now <= 1200; now += 150) unseen.advance_monster_movement(now);
+  check(!unseen.monsters()[1].pursuit_active &&
+        world_distance(unseen.monsters()[1].world_position(), unseen_start) == 0,
+        "a nearby target across an opaque rib cannot acquire through a wall");
+
+  auto leashed = crypt_pursuit_fixture({18, 2});
+  check(leashed.monsters()[8].x == 15 && leashed.monsters()[8].y == 2,
+        "home leash fixture uses an actual isolated crypt birth position");
+  for (int now = 150; now <= 600; now += 150) leashed.advance_monster_movement(now);
+  leashed.teleport(21, 2, 601);
+  for (int now = 750; now <= 1200; now += 150) leashed.advance_monster_movement(now);
+  const auto leash_edge = leashed.monsters()[8];
+  check(leash_edge.pursuit_active && leash_edge.world_position().x > 19,
+        "a target can lead an acquired wight beyond initial acquisition distance");
+  leashed.teleport(24, 2, 1201);
+  leashed.advance_monster_movement(1350);
+  check(!leashed.monsters()[8].pursuit_active &&
+        world_distance(leashed.monsters()[8].world_position(), leash_edge.world_position()) == 0,
+        "birth leash stops pursuit even while the player remains within retention distance");
+
+  auto warning = crypt_pursuit_fixture({19, 18});
+  int warning_life = 100;
+  const auto boss_origin = warning.monsters()[19].world_position();
+  const auto warning_events = warning.advance_combat(1, 1, warning_life, 100, 0);
+  check(std::any_of(warning_events.begin(), warning_events.end(), [](const WorldCombatEvent& event) {
+          return event.type == "telegraph";
+        }), "real boss warning is active in the movement footlock fixture");
+  warning.teleport(19, 19, 1);
+  for (int now = 150; now <= 1200; now += 150) {
+    warning.advance_monster_movement(now);
+    warning.advance_combat(1, 1, warning_life, 100, now);
+    check(world_distance(warning.monsters()[19].world_position(), boss_origin) == 0,
+          "announced boss ground contact never slides toward a dodging player");
+  }
+
+  auto pack = crypt_pursuit_fixture({25, 32});
+  const auto before_pack = pack.monsters();
+  for (int now = 50; now <= 2000; now += 50) { pack.advance_monster_movement(now); check_world_pack_clear(pack); }
+  check(pack.monsters()[6].movement_sequence > 0 && pack.monsters()[14].movement_sequence > 0,
+        "two real nearby pack members converge through authoritative movement");
+  for (std::size_t index = 0; index < before_pack.size(); ++index)
+    if (before_pack[index].boss || before_pack[index].behaviour_type != "melee")
+      check(world_distance(pack.monsters()[index].world_position(), before_pack[index].world_position()) == 0,
+            "boss, ranged and support actors preserve their existing stationary behaviour");
+}
+
 void test_world_attack_cadence_survives_retrigger_and_reengagement() {
   const std::string player_id = "guest-attack-cadence";
   WorldSimulation world(42, player_id);
@@ -2623,6 +2862,9 @@ int main() {
   test_n2_movement_constants_mirror_browser();
   test_n2_world_simulation_rules();
   test_world_attack_cadence_survives_retrigger_and_reengagement();
+  test_world_pursuit_clock_is_authoritative_and_bounded();
+  test_world_pursuit_contact_recovery_and_retirement();
+  test_world_pursuit_nearby_bounds_and_wall_route();
   test_n2_diagonal_blocking_rule();
   test_relic_resurface_round_trip();
   test_relic_loss_again_returns_once();

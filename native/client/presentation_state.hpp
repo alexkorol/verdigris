@@ -104,6 +104,13 @@ struct WorldActor {
   // VG-UI-005: map/route overlay. False means the snapshot did not
   // publish this actor; zoom cannot mint a blip for it.
   bool on_snapshot = true;
+  // Remote interpolation changes only where the actor is drawn. Position
+  // above remains the latest authoritative location for events and queries.
+  verdigris::Vec2 display_position{};
+  bool has_display_position = false;
+  const verdigris::Vec2& displayed_position() const {
+    return has_display_position ? display_position : position;
+  }
 };
 
 struct WorldCarriedItem {

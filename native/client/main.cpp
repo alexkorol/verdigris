@@ -5116,8 +5116,9 @@ void paint_hover_tooltip(ClientState& state, HDC dc, const RECT& bounds,
 
   for (const auto& monster : world.monsters) {
     if (!monster.alive) continue;
+    const auto& displayed = monster.displayed_position();
     const ScreenPoint base =
-        project(state.camera, bounds, monster.position.x, monster.position.y);
+        project(state.camera, bounds, displayed.x, displayed.y);
     const int body_y = base.y - static_cast<int>(kTileUnits * 0.7 * base.scale);
     std::vector<std::string> facts;
     facts.push_back("Life " + std::to_string(monster.life) + " / " +
@@ -9498,11 +9499,18 @@ constexpr RasterDirectionalClip kHeroStrikeClips[] = {
     {"se", 6, 1, 1}, {"sw", 6, -1, 1}, {"nw", 6, -1, -1}, {"ne", 6, 1, -1}};
 
 constexpr RasterDirectionalClip kRaiderWalkClips[] = {
-    {"sw", 8, -1, 1}, {"ne", 6, 1, -1}, {"nw", 8, -1, -1}};
+    {"se", 4, 1, 1}, {"sw", 8, -1, 1}, {"ne", 6, 1, -1}, {"nw", 8, -1, -1}};
+
+constexpr RasterDirectionalClip kWightWalkClips[] = {{"sw", 8, -1, 1}};
 
 int raster_walk_frames(const char* family, const std::string& direction) {
   if (std::strcmp(family, "raider") == 0) {
     for (const auto& clip : kRaiderWalkClips)
+      if (direction == clip.direction) return clip.frames;
+    return 0;
+  }
+  if (std::strcmp(family, "wight") == 0) {
+    for (const auto& clip : kWightWalkClips)
       if (direction == clip.direction) return clip.frames;
     return 0;
   }
@@ -9530,8 +9538,9 @@ void advance_actor_motion(ClientState& state, double dt_ms) {
       const double moved = std::sqrt(dx * dx + dy * dy);
       motion.walk_phase =
           std::fmod(motion.walk_phase + moved / (kTileUnits * 0.9), 1.0);
-      // Authoritative positions advance at 50 ms, while presentation often
-      // paints every 15 ms. Smoothing each unchanged presentation sample
+      // Local authority advances at 50 ms; remote monster endpoints arrive
+      // at 150 ms and supply interpolated display positions. Presentation
+      // often paints every 15 ms. Smoothing each unchanged sample
       // toward zero delayed the first walk pose despite actual travel. Begin
       // on confirmed movement immediately; smooth only the stopping tail.
       if (moved > 0.5) {
@@ -9546,7 +9555,7 @@ void advance_actor_motion(ClientState& state, double dt_ms) {
   };
   advance("player", state.world.player.position);
   for (const auto& monster : state.world.monsters)
-    advance(monster.id, monster.position);
+    advance(monster.id, monster.displayed_position());
   if (state.motions.size() > 256) state.motions.clear();
 }
 
@@ -9566,7 +9575,7 @@ bool draw_raster_actor(HDC dc, const char* family, const ScreenPoint& base,
   else if (attack_phase > 0.18 && attack_phase < 0.82 &&
       (std::strcmp(family, "hero") == 0 || std::strcmp(family, "raider") == 0))
     pose = "_attack";
-  else if (moving > 0.20) {
+  else if (moving > 0.20 && (attack_phase < 0.0 || attack_phase >= 1.0)) {
     const int frames = raster_walk_frames(family, direction);
     if (frames > 0) {
       const double phase = walk_phase - std::floor(walk_phase);
@@ -9735,10 +9744,11 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                                               static_cast<double>(player.position.x)),
                      1, DepthDraw::What::Player, 0});
   for (std::size_t i = 0; i < world.monsters.size(); ++i) {
+    const auto& displayed = world.monsters[i].displayed_position();
     if (world.monsters[i].alive)
       order.push_back({camera2d::draw_order_key(
-                           static_cast<double>(world.monsters[i].position.y),
-                           static_cast<double>(world.monsters[i].position.x)),
+                           static_cast<double>(displayed.y),
+                           static_cast<double>(displayed.x)),
                        2, DepthDraw::What::Monster, i});
   }
   for (std::size_t i = 0; i < world.npcs.size(); ++i) {
@@ -9858,8 +9868,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       }
       case DepthDraw::What::Monster: {
         const auto& monster = world.monsters[entry.index];
+        const auto& displayed = monster.displayed_position();
         ScreenPoint base =
-            project(state.camera, bounds, monster.position.x, monster.position.y);
+            project(state.camera, bounds, displayed.x, displayed.y);
         // Committed actions retain the warning/contact direction even when
         // the player dodges around them. Travel has its own direction below.
         const double to_player_x =
@@ -12842,6 +12853,314 @@ int scenario_combat_juice() {
     scenario_check(saw_player_dmg, "combat-juice: player damage number is player-tagged");
   }
   return 0;
+}
+
+// Real native crypt pursuit, transport and production-pixel review.
+bool wight_motion_assets_complete() {
+  if (raster_walk_frames("wight", "sw") != 8 || !raster_art::available("wight_sw")) return false;
+  for (int phase = 0; phase < 8; ++phase) {
+    const std::string name = "wight_walk" + std::to_string(phase) + "_sw";
+    if (!raster_art::available(name.c_str())) return false;
+    const auto dimensions = raster_art::dimensions(name.c_str());
+    if (dimensions.width != 80 || dimensions.height != 96) return false;
+  }
+  return true;
+}
+
+// Exercise the actual renderer's silent-idle fallback with one missing frame,
+// using copies in an isolated review directory. Never remove/rename source art.
+bool wight_motion_rejects_missing_frame(const std::string& capture_dir) {
+  const std::wstring original_root = raster_art::asset_root();
+  const auto nonce = std::chrono::steady_clock::now().time_since_epoch().count();
+  const auto scratch = std::filesystem::path(capture_dir) /
+      ("wight-missing-phase7-" + std::to_string(GetCurrentProcessId()) + "-" + std::to_string(nonce));
+  std::error_code error;
+  std::filesystem::create_directories(scratch, error);
+  if (error) return false;
+  const std::filesystem::path source(original_root);
+  for (int phase = -1; phase < 7; ++phase) {
+    const std::string name = phase < 0 ? "wight_sw.png"
+        : "wight_walk" + std::to_string(phase) + "_sw.png";
+    std::filesystem::copy_file(source / name, scratch / name,
+                              std::filesystem::copy_options::none, error);
+    if (error) return false;
+  }
+  struct RestoreRasterRoot {
+    std::wstring root;
+    ~RestoreRasterRoot() { raster_art::set_asset_root(root); }
+  } restore{original_root};
+  raster_art::set_asset_root(scratch.wstring());
+  const bool manifest_rejects = !wight_motion_assets_complete();
+  HDC display = GetDC(nullptr);
+  HDC dc = CreateCompatibleDC(display);
+  HBITMAP bitmap = CreateCompatibleBitmap(display, 256, 256);
+  ReleaseDC(nullptr, display);
+  if (!dc || !bitmap) {
+    if (bitmap) DeleteObject(bitmap);
+    if (dc) DeleteDC(dc);
+    return false;
+  }
+  const HGDIOBJ prior = SelectObject(dc, bitmap);
+  ScreenPoint base{};
+  base.x = 128; base.y = 240; base.scale = 1.0;
+  std::string actual;
+  const bool drew = draw_raster_actor(dc, "wight", base, 192, -1, 1,
+                                      -1.0, 1.0, 7.5 / 8.0, &actual);
+  SelectObject(dc, prior);
+  DeleteObject(bitmap);
+  DeleteDC(dc);
+  // The fallback may successfully draw pixels, but it must not pass the phase
+  // requirement. This is the same exact-name requirement as the live review.
+  const bool missing_phase_rejected = actual != "wight_walk7_sw";
+  std::ofstream proof(scratch / "negative-control.txt");
+  proof << "requested=wight_walk7_sw\nactual=" << actual
+        << "\ndraw_succeeded=" << drew << "\nclip_complete=" << !manifest_rejects
+        << "\nphase_accepted=" << !missing_phase_rejected << '\n';
+  return manifest_rejects && drew && actual == "wight_sw" && missing_phase_rejected;
+}
+
+int scenario_remote_wight_motion() {
+  using verdigris::client::ClientModel;
+  using verdigris::client::ClientMonster;
+  using verdigris::client::ConnectionState;
+  using verdigris::client::RemoteProtocolSession;
+  using verdigris::networking::JsonValue;
+  const std::string dir = art_wave_capture_dir();
+  scenario_check(!dir.empty(), "remote-wight-motion: review capture directory accepted");
+  scenario_check(wight_motion_assets_complete(),
+                 "remote-wight-motion: every actual SW8 frame exists at the common native canvas");
+  if (dir.empty() || !wight_motion_assets_complete()) return scenario_failures;
+  scenario_check(wight_motion_rejects_missing_frame(dir),
+                 "remote-wight-motion: real missing-phase idle fallback fails strict clip acceptance");
+  scenario_check(wight_motion_assets_complete(),
+                 "remote-wight-motion: complete production asset root restored after negative control");
+
+  std::unique_ptr<verdigris::networking::WebSocketServer> server;
+  for (std::uint16_t port = 6580; port <= 6599; ++port) {
+    auto candidate = std::make_unique<verdigris::networking::WebSocketServer>(port);
+    std::string error;
+    if (candidate->start(&error)) { server = std::move(candidate); break; }
+  }
+  scenario_check(server != nullptr, "remote-wight-motion: actual capsule WebSocketServer starts");
+  if (!server) return scenario_failures;
+  // Declared after server, so the session closes before the server on every
+  // early return. Both destructors stop/join their own transport threads.
+  ClientState state;
+  state.session = std::make_unique<RemoteProtocolSession>(
+      "127.0.0.1", server->port(), "native-wight-motion-review", true);
+  auto* remote = static_cast<RemoteProtocolSession*>(state.session.get());
+  std::string error;
+  scenario_check(remote->start(&error), "remote-wight-motion: real remote session starts");
+  if (remote->connection_state() == ConnectionState::Rejected) return scenario_failures;
+  const RECT bounds{0, 0, 960, 600};
+  auto frame_at = std::chrono::steady_clock::now();
+  // Same ordering as timer_step: ordinary poll, owed50ms presentation ticks,
+  // model sync, displayed-position motion and paint. Never request extra state.
+  const auto frame = [&](bool paint = true) {
+    std::this_thread::sleep_until(frame_at + std::chrono::milliseconds(15));
+    const auto now = std::chrono::steady_clock::now();
+    const double elapsed = std::clamp(
+        std::chrono::duration<double, std::milli>(now - frame_at).count(), 0.0, 250.0);
+    frame_at = now;
+    remote->poll();
+    state.tick_accum_ms += elapsed;
+    while (state.tick_accum_ms >= 50.0) {
+      state.tick_accum_ms -= 50.0;
+      fixed_game_tick(state, bounds);
+    }
+    sync_world(state);
+    advance_actor_motion(state, elapsed);
+    if (paint) scenario_present(state);
+  };
+  for (int i = 0; i < 400 && remote->connection_state() != ConnectionState::Ready; ++i) frame(false);
+  scenario_check(remote->connection_state() == ConnectionState::Ready,
+                 "remote-wight-motion: real handshake admitted");
+  if (remote->connection_state() != ConnectionState::Ready) return scenario_failures;
+  // Accepted existing fixture entry surface: Sunken Colonnade crypt/gauntlet.
+  // This bypasses route admission only; population, geometry and stats are real.
+  scenario_check(remote->send_raw("instance:enterSolo",
+                     JsonValue::Object{{"template", "crypt"}, {"layout", "gauntlet"}}),
+                 "remote-wight-motion: enter the actual crypt template");
+  const auto map_ready = [&] {
+    const auto& model = remote->model();
+    return model.scene.type == "instance" && model.theme == "crypt" &&
+        model.map_scene_id == model.player.scene_id && model.map_width > 0 &&
+        model.map_height > 0 && model.map_walkable.size() ==
+            static_cast<std::size_t>(model.map_width) * model.map_height && !model.monsters.empty();
+  };
+  for (int i = 0; i < 400 && !map_ready(); ++i) frame(false);
+  scenario_check(map_ready(), "remote-wight-motion: normal snapshot supplies crypt members and real map");
+  if (!map_ready()) return scenario_failures;
+
+  struct Chase { std::string id; int player_x = 0, player_y = 0; double isolation = -1; } chase;
+  const ClientModel admission = remote->model();
+  const auto walkable = [&](int x, int y) {
+    return x >= 0 && y >= 0 && x < admission.map_width && y < admission.map_height &&
+        admission.map_walkable[static_cast<std::size_t>(y) * admission.map_width + x] != 0;
+  };
+  for (const auto& monster : admission.monsters) {
+    if (!monster.alive || monster.elite || monster.behaviour != "melee") continue;
+    for (const auto offset : {verdigris::Vec2{-3, 2}, {-2, 3}, {-2, 2}, {-3, 1}, {-1, 3}}) {
+      const int px = static_cast<int>(std::lround(monster.x)) + offset.x;
+      const int py = static_cast<int>(std::lround(monster.y)) + offset.y;
+      const double distance = std::hypot(px - monster.x, py - monster.y);
+      if (distance <= 2.5 || distance > verdigris::world_pursuit::kAcquireTiles) continue;
+      if (admission.scene.has_stairs_up &&
+          std::hypot(px - admission.scene.stairs_up_x, py - admission.scene.stairs_up_y) < 2.0) continue;
+      bool corridor = true;
+      for (int i = 0; i <= 40 && corridor; ++i) {
+        const int x = static_cast<int>(std::lround(monster.x + (px - monster.x) * i / 40.0));
+        const int y = static_cast<int>(std::lround(monster.y + (py - monster.y) * i / 40.0));
+        corridor = walkable(x, y) && walkable(x - 1, y) && walkable(x + 1, y) &&
+                   walkable(x, y - 1) && walkable(x, y + 1);
+      }
+      if (!corridor) continue;
+      double isolation = 1000.0;
+      for (const auto& other : admission.monsters) if (other.alive && other.id != monster.id)
+        isolation = std::min(isolation, std::max(std::abs(px - other.x), std::abs(py - other.y)));
+      if (isolation > chase.isolation) chase = {monster.id, px, py, isolation};
+    }
+  }
+  scenario_check(!chase.id.empty() && chase.isolation > verdigris::world_pursuit::kAcquireTiles,
+                 "remote-wight-motion: actual roster has an isolated clear southwest approach");
+  if (chase.id.empty() || chase.isolation <= verdigris::world_pursuit::kAcquireTiles)
+    return scenario_failures;
+  const auto find_target = [&]() -> const ClientMonster* {
+    for (const auto& actor : remote->model().monsters) if (actor.id == chase.id) return &actor;
+    return nullptr;
+  };
+  const auto find_world_target = [&]() -> const WorldActor* {
+    for (const auto& actor : state.world.monsters) if (actor.id == chase.id) return &actor;
+    return nullptr;
+  };
+  // Keep the admitted, pre-teleport endpoint as the interpolation envelope.
+  // The setup acknowledgement can arrive after pursuit has already advanced,
+  // with the displayed sample still behind that newer authoritative endpoint.
+  const ClientMonster start = *std::find_if(admission.monsters.begin(), admission.monsters.end(),
+      [&](const ClientMonster& actor) { return actor.id == chase.id; });
+  scenario_check(remote->send_raw("dev:teleport",
+                     JsonValue::Object{{"x", chase.player_x}, {"y", chase.player_y}}),
+                 "remote-wight-motion: one initial player-only setup command sent");
+  for (int i = 0; i < 200 &&
+       (std::abs(remote->model().player.x - chase.player_x) > .01 ||
+        std::abs(remote->model().player.y - chase.player_y) > .01); ++i) frame(false);
+  scenario_check(std::abs(remote->model().player.x - chase.player_x) < .01 &&
+                     std::abs(remote->model().player.y - chase.player_y) < .01,
+                 "remote-wight-motion: server confirms the requested player setup");
+  if (!find_target()) return scenario_failures;
+  sync_world(state);
+  generate_scenery(state);
+  state.camera.x = state.world.player.position.x + kTileUnits;
+  state.camera.y = state.world.player.position.y - kTileUnits;
+  load_billboards(state.billboards);
+  if (state.audio_sink) state.audio_sink->set_muted(true);
+  const int initial_life = remote->model().player.life;
+  const ClientMonster initial_sample = *find_target();
+  double previous_x = initial_sample.x, previous_y = initial_sample.y;
+  double previous_display_x = initial_sample.has_display_position ? initial_sample.display_x : initial_sample.x;
+  double previous_display_y = initial_sample.has_display_position ? initial_sample.display_y : initial_sample.y;
+  const auto begun = std::chrono::steady_clock::now();
+  auto last_authority_change = begun;
+  int authority_changes = 0, interior_samples = 0, interpolated_advances = 0;
+  bool raw_monotonic = true, display_monotonic = true, display_bounded = true;
+  bool family_wight = true, adapter_honest = true, arrived_idle = false, chosen_damage = false;
+  std::unordered_set<std::string> captured;
+  const std::string pose_prefix = "raster:monster-pose:" + chase.id + ":";
+  std::ofstream trace(dir + "\\remote-wight-motion.csv");
+  trace << "time_ms,actor,raw_x,raw_y,display_x,display_y,authority_changed,moving,phase,pose,life,target_hit\n";
+  std::string last_pose;
+  for (int i = 0; i < 600; ++i) {
+    frame();
+    const auto* current = find_target();
+    if (!current || !current->alive || !remote->model().player.alive) break;
+    const auto now = std::chrono::steady_clock::now();
+    const double elapsed = std::chrono::duration<double, std::milli>(now - begun).count();
+    const bool authority_changed = std::hypot(current->x - previous_x, current->y - previous_y) > 1e-6;
+    if (authority_changed) { ++authority_changes; last_authority_change = now; }
+    raw_monotonic &= current->x <= previous_x + 1e-6 && current->y >= previous_y - 1e-6;
+    const double dx = current->has_display_position ? current->display_x : current->x;
+    const double dy = current->has_display_position ? current->display_y : current->y;
+    display_monotonic &= dx <= previous_display_x + 1e-6 && dy >= previous_display_y - 1e-6;
+    display_bounded &= current->has_display_position && dx >= current->x - 1e-6 &&
+        dx <= start.x + 1e-6 && dy <= current->y + 1e-6 && dy >= start.y - 1e-6;
+    if (std::hypot(dx - current->x, dy - current->y) > .001) ++interior_samples;
+    if (!authority_changed && std::hypot(dx - previous_display_x, dy - previous_display_y) > .001)
+      ++interpolated_advances;
+    const auto* world_actor = find_world_target();
+    family_wight &= world_actor && std::string(verdigris::client::monster_art_family(*world_actor, state.world)) == "wight";
+    if (world_actor) adapter_honest &= world_actor->position.x ==
+        static_cast<int>(std::lround(verdigris::client::protocol_to_world(current->x))) &&
+        world_actor->displayed_position().x ==
+        static_cast<int>(std::lround(verdigris::client::protocol_to_world(dx)));
+    last_pose.clear();
+    for (const auto& item : state.render_list)
+      if (item.label.rfind(pose_prefix, 0) == 0) last_pose = item.label.substr(pose_prefix.size());
+    for (int phase = 0; phase < 8; ++phase) {
+      const std::string required = "wight_walk" + std::to_string(phase) + "_sw";
+      if (last_pose == required && !captured.count(required)) {
+        const bool saved = reference_present(state, 960, 600,
+            dir + "\\remote-" + required + ".png");
+        scenario_check(saved, "remote-wight-motion: actual authored phase captured through production paint");
+        if (saved) captured.insert(required);
+      }
+    }
+    const auto motion = state.motions.find(chase.id);
+    const double moving = motion == state.motions.end() ? -1.0 : motion->second.moving;
+    const double phase = motion == state.motions.end() ? -1.0 : motion->second.walk_phase;
+    chosen_damage |= state.monster_strikes.count(chase.id) > 0 &&
+                     remote->model().player.life < initial_life && remote->model().last_incoming_hit > 0;
+    const double stable_ms = std::chrono::duration<double, std::milli>(now - last_authority_change).count();
+    arrived_idle |= authority_changes >= 1 && stable_ms >= 450.0 && moving >= 0.0 && moving < .20 &&
+                    last_pose == "wight_sw" && std::hypot(dx - current->x, dy - current->y) < .001;
+    trace << elapsed << ',' << chase.id << ',' << current->x << ',' << current->y << ','
+          << dx << ',' << dy << ',' << authority_changed << ',' << moving << ',' << phase << ','
+          << last_pose << ',' << remote->model().player.life << ',' << chosen_damage << '\n';
+    previous_x = current->x; previous_y = current->y;
+    previous_display_x = dx; previous_display_y = dy;
+    if (captured.size() >= 2 && chosen_damage && arrived_idle) break;
+  }
+  const double reviewed_ms = std::chrono::duration<double, std::milli>(
+      std::chrono::steady_clock::now() - begun).count();
+  scenario_check(authority_changes >= 1 &&
+                     authority_changes <= static_cast<int>(std::ceil(reviewed_ms / 150.0)) + 2,
+                 "remote-wight-motion: authority advances on ordinary server cadence, not every15ms poll");
+  scenario_check(raw_monotonic && display_monotonic && display_bounded &&
+                     interior_samples >= 3 && interpolated_advances >= 3,
+                 "remote-wight-motion: raw SW travel and bounded display interpolation advance between packets");
+  scenario_check(family_wight && adapter_honest && !state.simulation,
+                 "remote-wight-motion: real crypt wight uses raw authority plus display-only adapter");
+  // Actual acquisition/contact distance can make a short chase finish before
+  // all eight poses are painted. Do not extend or script travel to force them.
+  // The separate raster_world case owns exhaustive authored-frame coverage.
+  std::printf("    remote-wight-motion: observed/captured %zu of8 SW phases during actual pursuit\n",
+              captured.size());
+  for (int phase = 0; phase < 8; ++phase) {
+    const std::string name = "wight_walk" + std::to_string(phase) + "_sw";
+    if (!captured.count(name))
+      std::printf("    remote-wight-motion: not observed live: %s (raster_world must cover it)\n", name.c_str());
+  }
+  scenario_check(captured.size() >= 2,
+                 "remote-wight-motion: actual server travel paints distinct authored SW phases");
+  scenario_check(chosen_damage && arrived_idle,
+                 "remote-wight-motion: chosen server pursuer damages player and settles at contact");
+  scenario_check(reference_present(state, 960, 600, dir + "\\remote-wight-arrived.png"),
+                 "remote-wight-motion: contact/settled production frame captured");
+
+  const std::string prior_scene = remote->model().player.scene_id;
+  scenario_check(remote->send_raw("instance:enterSolo",
+                     JsonValue::Object{{"template", "crypt"}, {"layout", "warren"}}),
+                 "remote-wight-motion: real scene transition begins the clear-state check");
+  for (int i = 0; i < 300 && (remote->model().player.scene_id == prior_scene || !map_ready()); ++i) frame();
+  bool old_pose_drawn = false;
+  for (const auto& item : state.render_list) old_pose_drawn |= item.label.rfind(pose_prefix, 0) == 0;
+  scenario_check(remote->model().player.scene_id != prior_scene && map_ready() &&
+                     !find_target() && !find_world_target() && !old_pose_drawn,
+                 "remote-wight-motion: old membership and interpolated actor cannot leak into the new scene");
+  scenario_check(reference_present(state, 960, 600, dir + "\\remote-wight-new-scene.png"),
+                 "remote-wight-motion: replacement scene captured through production paint");
+  remote->shutdown();
+  server->stop();
+  return scenario_failures;
 }
 
 int scenario_remote_render_list() {
@@ -19405,6 +19724,43 @@ int scenario_raster_world() {
       hashes.push_back(hash);
     }
   }
+  // A valid idle fallback can hide an absent monster animation. Check the
+  // selected asset and actual pixels for every registered family/direction.
+  for (const char* family : {"raider", "wight"}) {
+    for (const char* direction : {"se", "sw", "ne", "nw"}) {
+      const int frames = raster_walk_frames(family, direction);
+      const double dx = direction[1] == 'w' ? -1.0 : 1.0;
+      const double dy = direction[0] == 'n' ? -1.0 : 1.0;
+      std::vector<std::uint64_t> hashes;
+      for (int frame = 0; frame < frames; ++frame) {
+        std::memset(bits, 0, width * height * 4);
+        std::string actual_pose;
+        const std::string expected = std::string(family) + "_walk" +
+                                     std::to_string(frame) + "_" + direction;
+        scenario_check(draw_raster_actor(dc, family, {width / 2, height - 8, 1.0},
+                            128, dx, dy, -1.0, 1.0, double(frame) / frames,
+                            &actual_pose) && actual_pose == expected,
+                       "raster-world: monster walk renders without silent idle substitution");
+        GdiFlush();
+        std::uint64_t hash = 14695981039346656037ULL;
+        const auto* pixels = static_cast<const std::uint8_t*>(bits);
+        for (int i = 0; i < width * height * 4; ++i)
+          hash = (hash ^ pixels[i]) * 1099511628211ULL;
+        scenario_check(std::find(hashes.begin(), hashes.end(), hash) == hashes.end(),
+                       "raster-world: authored monster phases have different rendered pixels");
+        hashes.push_back(hash);
+      }
+    }
+  }
+  // Even a family without authored strikes must stop its gait during the
+  // warning/contact/recovery. The smoothed movement tail can still be nonzero.
+  for (double phase : {0.0, 0.15, 0.5, 0.9}) {
+    std::string actual_pose;
+    scenario_check(draw_raster_actor(dc, "wight", {width / 2, height - 8, 1.0},
+                        128, -1.0, 1.0, phase, 1.0, 0.5, &actual_pose) &&
+                       actual_pose == "wight_sw",
+                   "raster-world: an unanimated wight attack holds its feet despite movement smoothing");
+  }
   for (const auto& clip : kHeroStrikeClips) {
     std::vector<std::uint64_t> strike_hashes;
     for (int frame = 0; frame < clip.frames; ++frame) {
@@ -20915,6 +21271,7 @@ int run_scenarios(const std::string& which) {
       {"telegraph-dodge", scenario_telegraph_dodge},
       {"combat-juice", scenario_combat_juice},
       {"remote-render-list", scenario_remote_render_list},
+      {"remote-wight-motion", scenario_remote_wight_motion},
       {"zoom-invariance", scenario_zoom_invariance},
       {"chronicles-gate-b", scenario_chronicles_gate_b},
       {"first-session-clarity", scenario_first_session_clarity},

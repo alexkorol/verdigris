@@ -1,5 +1,40 @@
 # Native reconstitution handoff
 
+## 2026-09-10 — Normal native server pursuit and published-reference motion workflow
+
+The earlier pursuit work covered the small local `Simulation`; normal native
+`WorldSimulation` enemies were stationary. Ordinary melee now follows a
+monotonic server movement clock with 50 ms substeps and a 150 ms catchup cap,
+visibility acquisition, bounded leash, deterministic grid navigation and body
+separation. Warning/recovery feet stay locked; damage/range/attack timing is
+unchanged. Changed `monster:state` endpoints arrive ahead of contact events;
+the remote client interpolates display only, rejects stale movement and retains
+authoritative facing. Common-rarity parsing and incoming-hit upsert no longer
+temporarily enlarge ordinary enemies.
+
+Published Image 2.5 source research now includes PURESO's actual walking prompt,
+Higgsfield's per-frame geometry guides, original failures and a distinction
+between creator inputs and aggregator reconstructions. Applying separate pose
+and identity guides produced SE4 raider walking. Cleaned SW8 wight walking
+preserves pale hand pixels that broad background removal erased. Actual Pixel
+Respecter imports total 174 PNGs/31 manifests/60 sources/183 import records;
+all 162 prior PNGs remain unchanged.
+
+Supported native build/all suites/all72 client scenarios pass. Browser32/32,
+importer10/10 and equipment/sampling pass. Static/moving fullscreen averages
+22.510/24.684 ms and moving peak33.976 ms pass unchanged40 ms average gates.
+Root viewed production SE4, seven live-server SW wight phases, attributed
+contact, stop and scene replacement. Missing phase4 is covered statically in
+raster-world; no extended/scripted chase was used to force its capture.
+The normal live UI completed House/Scion creation and expedition entry, with
+F3 at18.3 ms paint and a clean exit. A short D tap showed no visible displacement;
+no manual fight or completed interactive loop is claimed.
+
+Remaining: actor identity/gait polish, unanimated directions/actions, broad
+remote terrain noise, flat wall placeholders and interactive-session feel.
+No push or goal completion is claimed.
+[Retained review](../../native/client/assets/raster/reviews/2026-09-10-monster-motion/README.md).
+
 ## 2026-09-10 — Real pursuit, directional walks and visible entrances
 
 Native enemies now pursue through bounded circle navigation shared with player

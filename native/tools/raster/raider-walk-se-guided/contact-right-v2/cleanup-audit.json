@@ -1,0 +1,31 @@
+{
+  "windows": [
+    {
+      "window": [
+        474,
+        654,
+        531,
+        780
+      ],
+      "new_transparent_pixels": 3342,
+      "removed_pixels_chroma_over20": 0
+    },
+    {
+      "window": [
+        467,
+        700,
+        474,
+        780
+      ],
+      "new_transparent_pixels": 163,
+      "removed_pixels_chroma_over20": 0
+    }
+  ],
+  "rejected_window": [
+    467,
+    654,
+    531,
+    780
+  ],
+  "rejection": "Included7 brown bracer-edge pixels at x467..472,y691..692; split windows preserve them."
+}

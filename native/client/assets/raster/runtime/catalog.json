@@ -29,7 +29,9 @@
     "slash-trail",
     "raider-death-sw",
     "raider-walk-ne",
-    "raider-walk-nw"
+    "raider-walk-nw",
+    "raider-walk-se",
+    "wight-walk-sw"
   ],
   "assets": [
     {
@@ -10825,6 +10827,838 @@
       "palette_scope": "manifest_reference",
       "sha256": "6ec9c432a3129ca3638cb70d9eb0d47c83472c6d5fb4e6ff82ce0626f71dfe0d",
       "provenance": "raider-walk-nw.provenance.json"
+    },
+    {
+      "name": "raider_walk0_se",
+      "file": "raider_walk0_se.png",
+      "source": "../../client/assets/raster/source/raider-walk-se-guided-contact-left-v1.png",
+      "acceptance": "root_production_monster_motion_reviewed_provisional_2026-09-10",
+      "source_box": [
+        300,
+        430,
+        850,
+        1220
+      ],
+      "cell_size": 12,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 23,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        45,
+        65
+      ],
+      "trim_box": [
+        7,
+        6,
+        38,
+        61
+      ],
+      "before_resize": [
+        31,
+        55
+      ],
+      "placed_size": [
+        31,
+        55
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        24,
+        41,
+        55,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        280,
+        730
+      ],
+      "native_scale_group": "raider-se-guided-native-2026-09-10",
+      "palette_scope": "manifest_reference",
+      "sha256": "984ab024c806c18948710c60800483232132a534b67c8da30a0897f69042f269",
+      "provenance": "raider-walk-se.provenance.json"
+    },
+    {
+      "name": "raider_walk1_se",
+      "file": "raider_walk1_se.png",
+      "source": "../../client/assets/raster/source/raider-walk-se-guided-passing-left-v1.png",
+      "acceptance": "root_production_monster_motion_reviewed_provisional_2026-09-10",
+      "source_box": [
+        320,
+        450,
+        850,
+        1230
+      ],
+      "cell_size": 12,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 24,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        44,
+        65
+      ],
+      "trim_box": [
+        8,
+        5,
+        37,
+        61
+      ],
+      "before_resize": [
+        29,
+        56
+      ],
+      "placed_size": [
+        29,
+        56
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        26,
+        39,
+        55,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        260,
+        740
+      ],
+      "native_scale_group": "raider-se-guided-native-2026-09-10",
+      "palette_scope": "manifest_reference",
+      "sha256": "1f2a54a48a4e27be80d52ae5ef8fa0d36e6a4640392ed278263370d870a939ba",
+      "provenance": "raider-walk-se.provenance.json"
+    },
+    {
+      "name": "raider_walk2_se",
+      "file": "raider_walk2_se.png",
+      "source": "../../client/assets/raster/source/raider-walk-se-guided-contact-right-v2.png",
+      "acceptance": "root_production_monster_motion_reviewed_provisional_2026-09-10",
+      "source_box": [
+        300,
+        380,
+        850,
+        1095
+      ],
+      "cell_size": 11,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 24,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        50,
+        65
+      ],
+      "trim_box": [
+        8,
+        5,
+        43,
+        59
+      ],
+      "before_resize": [
+        35,
+        54
+      ],
+      "placed_size": [
+        35,
+        54
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        23,
+        42,
+        58,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        277,
+        654
+      ],
+      "native_scale_group": "raider-se-guided-native-2026-09-10",
+      "palette_scope": "manifest_reference",
+      "sha256": "a1e4e582c6d10d7bcae6c9bf4dc30b8c2b87cfdec28df683905da44b552999a8",
+      "provenance": "raider-walk-se.provenance.json"
+    },
+    {
+      "name": "raider_walk3_se",
+      "file": "raider_walk3_se.png",
+      "source": "../../client/assets/raster/source/raider-walk-se-guided-passing-right-v1.png",
+      "acceptance": "root_production_monster_motion_reviewed_provisional_2026-09-10",
+      "source_box": [
+        320,
+        470,
+        850,
+        1240
+      ],
+      "cell_size": 12,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 26,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        44,
+        64
+      ],
+      "trim_box": [
+        6,
+        5,
+        36,
+        60
+      ],
+      "before_resize": [
+        30,
+        55
+      ],
+      "placed_size": [
+        30,
+        55
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        24,
+        40,
+        54,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        260,
+        730
+      ],
+      "native_scale_group": "raider-se-guided-native-2026-09-10",
+      "palette_scope": "manifest_reference",
+      "sha256": "6455e5d13ab8e601a504f5617e419e336c26a84443f8f1f0ab3acf730b108892",
+      "provenance": "raider-walk-se.provenance.json"
+    },
+    {
+      "name": "wight_walk0_sw",
+      "file": "wight_walk0_sw.png",
+      "source": "../../client/assets/raster/source/wight-walk-sw-v1.png",
+      "acceptance": "root_production_monster_motion_reviewed_provisional_2026-09-10",
+      "source_box": [
+        0,
+        0,
+        405,
+        500
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 28,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        67,
+        83
+      ],
+      "trim_box": [
+        21,
+        17,
+        51,
+        80
+      ],
+      "before_resize": [
+        30,
+        63
+      ],
+      "placed_size": [
+        30,
+        63
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        26,
+        32,
+        56,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        210,
+        486
+      ],
+      "palette_scope": "manifest_reference",
+      "sha256": "e629505dd6ded21886aac68d5050e278e30758963fabaa76c2daedd9022d2c74",
+      "provenance": "wight-walk-sw.provenance.json"
+    },
+    {
+      "name": "wight_walk1_sw",
+      "file": "wight_walk1_sw.png",
+      "source": "../../client/assets/raster/source/wight-walk-sw-v1.png",
+      "acceptance": "root_production_monster_motion_reviewed_provisional_2026-09-10",
+      "source_box": [
+        405,
+        0,
+        810,
+        500
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 28,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        67,
+        83
+      ],
+      "trim_box": [
+        21,
+        17,
+        52,
+        79
+      ],
+      "before_resize": [
+        31,
+        62
+      ],
+      "placed_size": [
+        31,
+        62
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        26,
+        32,
+        57,
+        94
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        210,
+        486
+      ],
+      "palette_scope": "manifest_reference",
+      "sha256": "27af4bf637fa8b1d4627e3d5c3509748a3090713d9e8c83c0434043c89a4257e",
+      "provenance": "wight-walk-sw.provenance.json"
+    },
+    {
+      "name": "wight_walk2_sw",
+      "file": "wight_walk2_sw.png",
+      "source": "../../client/assets/raster/source/wight-walk-sw-v1.png",
+      "acceptance": "root_production_monster_motion_reviewed_provisional_2026-09-10",
+      "source_box": [
+        810,
+        0,
+        1215,
+        500
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 28,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        67,
+        83
+      ],
+      "trim_box": [
+        24,
+        17,
+        50,
+        79
+      ],
+      "before_resize": [
+        26,
+        62
+      ],
+      "placed_size": [
+        26,
+        62
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        29,
+        32,
+        55,
+        94
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        210,
+        486
+      ],
+      "palette_scope": "manifest_reference",
+      "sha256": "80045fe9fcc4cca57ad204d2a88e66914ffe243628357c6c481c14401b636475",
+      "provenance": "wight-walk-sw.provenance.json"
+    },
+    {
+      "name": "wight_walk3_sw",
+      "file": "wight_walk3_sw.png",
+      "source": "../../client/assets/raster/source/wight-walk-sw-v1.png",
+      "acceptance": "root_production_monster_motion_reviewed_provisional_2026-09-10",
+      "source_box": [
+        1215,
+        0,
+        1619,
+        500
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 27,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        67,
+        83
+      ],
+      "trim_box": [
+        16,
+        17,
+        55,
+        79
+      ],
+      "before_resize": [
+        39,
+        62
+      ],
+      "placed_size": [
+        39,
+        62
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        21,
+        32,
+        60,
+        94
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        210,
+        486
+      ],
+      "palette_scope": "manifest_reference",
+      "sha256": "22c7bd06c790fa99eccac701cd44bb9341d34f525abea45732d1c432e5035d4e",
+      "provenance": "wight-walk-sw.provenance.json"
+    },
+    {
+      "name": "wight_walk4_sw",
+      "file": "wight_walk4_sw.png",
+      "source": "../../client/assets/raster/source/wight-walk-sw-v1.png",
+      "acceptance": "root_production_monster_motion_reviewed_provisional_2026-09-10",
+      "source_box": [
+        0,
+        500,
+        405,
+        971
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 28,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        67,
+        78
+      ],
+      "trim_box": [
+        17,
+        11,
+        53,
+        70
+      ],
+      "before_resize": [
+        36,
+        59
+      ],
+      "placed_size": [
+        36,
+        59
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        22,
+        34,
+        58,
+        93
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        210,
+        436
+      ],
+      "palette_scope": "manifest_reference",
+      "sha256": "b18f2542c7fcf744265123cdd629bc99681503fb5401c6b9986fb4f035db80d5",
+      "provenance": "wight-walk-sw.provenance.json"
+    },
+    {
+      "name": "wight_walk5_sw",
+      "file": "wight_walk5_sw.png",
+      "source": "../../client/assets/raster/source/wight-walk-sw-v1.png",
+      "acceptance": "root_production_monster_motion_reviewed_provisional_2026-09-10",
+      "source_box": [
+        405,
+        500,
+        810,
+        971
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        67,
+        78
+      ],
+      "trim_box": [
+        20,
+        11,
+        57,
+        71
+      ],
+      "before_resize": [
+        37,
+        60
+      ],
+      "placed_size": [
+        37,
+        60
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        25,
+        34,
+        62,
+        94
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        210,
+        436
+      ],
+      "palette_scope": "manifest_reference",
+      "sha256": "ce2dc2315ece93a284ee5946715a30493e2de5200616e0fa0246978d9925083d",
+      "provenance": "wight-walk-sw.provenance.json"
+    },
+    {
+      "name": "wight_walk6_sw",
+      "file": "wight_walk6_sw.png",
+      "source": "../../client/assets/raster/source/wight-walk-sw-v1.png",
+      "acceptance": "root_production_monster_motion_reviewed_provisional_2026-09-10",
+      "source_box": [
+        810,
+        500,
+        1215,
+        971
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 28,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        67,
+        78
+      ],
+      "trim_box": [
+        24,
+        10,
+        48,
+        71
+      ],
+      "before_resize": [
+        24,
+        61
+      ],
+      "placed_size": [
+        24,
+        61
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        29,
+        33,
+        53,
+        94
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        210,
+        436
+      ],
+      "palette_scope": "manifest_reference",
+      "sha256": "998568b7326ccbd99e4d8f2b71c316e7ada1dc7ee4721da6fa2dce6af416d6a5",
+      "provenance": "wight-walk-sw.provenance.json"
+    },
+    {
+      "name": "wight_walk7_sw",
+      "file": "wight_walk7_sw.png",
+      "source": "../../client/assets/raster/source/wight-walk-sw-v1.png",
+      "acceptance": "root_production_monster_motion_reviewed_provisional_2026-09-10",
+      "source_box": [
+        1215,
+        500,
+        1619,
+        971
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 28,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        67,
+        78
+      ],
+      "trim_box": [
+        18,
+        11,
+        48,
+        72
+      ],
+      "before_resize": [
+        30,
+        61
+      ],
+      "placed_size": [
+        30,
+        61
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        23,
+        34,
+        53,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        210,
+        436
+      ],
+      "palette_scope": "manifest_reference",
+      "sha256": "18606fe5684cb36f6e0bb05ca62e7fa9b577f1c65811592d76a3de6c7c7274a9",
+      "provenance": "wight-walk-sw.provenance.json"
     }
   ],
   "known_limitations": [
@@ -10900,7 +11734,16 @@
     "The carried axe is smaller/narrower than the accepted idle blade. Crown height and silhouette differ during the walk; no claim of fully matched anatomy or polished gait.",
     "Eight row-major source poses retain one cell6 scale, source origin190,468 and strides406,475. All frames80x96/pivot40,96; no individual fitting or rescaling.",
     "The generated source has an opaque backdrop. Actual importer border cleanup and12 recorded source-reviewed interior windows remove background, followed by palette snapping to the accepted32-color raider_nw PNG.",
-    "Axe remains embedded in anatomical-right/screen-right hand. External ordered motion imagery is an authoring reference only and is not copied into game source assets or runtime."
+    "Axe remains embedded in anatomical-right/screen-right hand. External ordered motion imagery is an authoring reference only and is not copied into game source assets or runtime.",
+    "Root reviewed all four actual SE pursuit frames in native 1x production crops, the native 1x/3x idle transitions and the normal 3440 live launch/House and Scion/road entry/F3 flow. Exact pixels are provisionally accepted for game integration with the documented silhouette, mask and small-axe caveats.",
+    "The walk has a narrower silhouette, mask/head variation and a smaller embedded axe than the accepted idle. These identity differences remain explicit provisional-integration caveats.",
+    "The separately generated source images use measured Pixel Respecter pitches12,12,11,12. A reviewed native_scale_group retains the contact2 reconstruction exactly; all canvases80x96/pivot40,96, visible heights55/56/54/55, and no post-reconstruction resizing.",
+    "The axe remains embedded in the anatomical-right hand. Four contact/support phases do not establish smooth playback or a complete manual combat session.",
+    "Root reviewed seven actual Wight SW production phases plus contact and the new scene; phase4 was separately covered by raster-world. Native 1x/3x idle transitions and normal 3440 live entry/F3 were also reviewed. Exact cleaned v1 pixels are provisionally accepted for game integration with narrower-torso and obscured-hip caveats.",
+    "The walk has a narrower torso than idle, and the robe obscures hip continuity. Anatomical support continuity remains difficult to establish; screen-space leading-foot position alone does not establish a repeated physical leg.",
+    "All eight phases come from the original v1 source. No v3 pose is spliced into the cycle. One cell6 reconstruction, 80x96 canvas and [40,96] pivot preserve shared placement without per-frame resizing.",
+    "Blue-biased border-distance cleanup preserves the pale phase1 hand erased by the rejected gray-distance recipe. The accepted recipe removes 20 reviewed neutral background components through 538 exact row-run windows; source RGB pixels remain unchanged.",
+    "Only SW has an authored Wight walk cycle. Root reports supported native suites/all 72 scenarios, browser 32/32, importer 10/10 and equipment checks passing. No completed manual combat or smooth-video claim is made."
   ],
   "missing_direction_assets": [],
   "walk_sequence": {
@@ -11050,6 +11893,20 @@
   },
   "monster_walk_sequences": {
     "raider": {
+      "se": {
+        "frames": [
+          "raider_walk0_se",
+          "raider_walk1_se",
+          "raider_walk2_se",
+          "raider_walk3_se"
+        ],
+        "frame_count": 4,
+        "canvas": [
+          80,
+          96
+        ],
+        "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+      },
       "sw": {
         "frames": [
           "raider_walk0_sw",
@@ -11096,6 +11953,26 @@
           "raider_walk5_ne"
         ],
         "frame_count": 6,
+        "canvas": [
+          80,
+          96
+        ],
+        "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+      }
+    },
+    "wight": {
+      "sw": {
+        "frames": [
+          "wight_walk0_sw",
+          "wight_walk1_sw",
+          "wight_walk2_sw",
+          "wight_walk3_sw",
+          "wight_walk4_sw",
+          "wight_walk5_sw",
+          "wight_walk6_sw",
+          "wight_walk7_sw"
+        ],
+        "frame_count": 8,
         "canvas": [
           80,
           96

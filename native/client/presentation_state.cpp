@@ -256,11 +256,17 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     monster.id = source.id;
     monster.position = {static_cast<int>(std::lround(protocol_to_world(source.x))),
                         static_cast<int>(std::lround(protocol_to_world(source.y)))};
-    // TASK-0122 Phase A: the wire snapshot carries no monster facing field,
-    // so the proved client-only fabrication (inverting the player's facing)
-    // is removed. Monsters keep the neutral default until the wire ships an
-    // authoritative facing; the presentation never invents one from the
-    // player's aim.
+    monster.has_display_position = source.has_display_position &&
+        std::isfinite(source.display_x) && std::isfinite(source.display_y);
+    if (monster.has_display_position)
+      monster.display_position = {
+          static_cast<int>(std::lround(protocol_to_world(source.display_x))),
+          static_cast<int>(std::lround(protocol_to_world(source.display_y)))};
+    // Native movement metadata supplies facing through contact and stop.
+    // Older snapshots retain the neutral default, independent of player aim.
+    if (source.has_facing && std::abs(source.facing_x) <= 1 &&
+        std::abs(source.facing_y) <= 1 && (source.facing_x || source.facing_y))
+      monster.facing = {source.facing_x, source.facing_y};
     monster.name = source.name;
     monster.kind = source.kind;
     monster.behaviour = source.behaviour;
@@ -669,7 +675,8 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
     rl.push_back({render::Op::Player, static_cast<double>(base.x), static_cast<double>(base.y)});
   }
   for (const auto& monster : world.monsters) {
-    const auto base = at(monster.position.x, monster.position.y);
+    const auto& displayed = monster.displayed_position();
+    const auto base = at(displayed.x, displayed.y);
     rl.push_back({render::Op::Monster, static_cast<double>(base.x),
                   static_cast<double>(base.y), 0.0, monster.life,
                   monster.elite ? "elite" : "monster"});

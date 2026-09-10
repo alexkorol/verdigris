@@ -1,0 +1,110 @@
+{
+  "method": "Mechanical row-major assembly of eight existing accepted PNGs. One uniform4x nearest-neighbor enlargement; no pose changes.",
+  "role": "Lower-body gait geometry/order only, not appearance or equipment.",
+  "frames": [
+    {
+      "frame": 0,
+      "path": "native/client/assets/raster/runtime/hero_walk0_sw.png",
+      "sha256": "fc98f21c0b05ce3f8f6dbf57bce248d1e1c76b6ffc15b799e00600e28a3bddee",
+      "native_canvas": [
+        80,
+        96
+      ],
+      "native_pivot": [
+        40,
+        96
+      ]
+    },
+    {
+      "frame": 1,
+      "path": "native/client/assets/raster/runtime/hero_walk1_sw.png",
+      "sha256": "4097dde5cf1fbde8d31a6402ac5ff4d8e5f7e8bd69d5bbae836ff9d4abe67499",
+      "native_canvas": [
+        80,
+        96
+      ],
+      "native_pivot": [
+        40,
+        96
+      ]
+    },
+    {
+      "frame": 2,
+      "path": "native/client/assets/raster/runtime/hero_walk2_sw.png",
+      "sha256": "124d7222fe94f4f352b1bdfe1c796928319a7b734ddbecaca6321ef5515dba67",
+      "native_canvas": [
+        80,
+        96
+      ],
+      "native_pivot": [
+        40,
+        96
+      ]
+    },
+    {
+      "frame": 3,
+      "path": "native/client/assets/raster/runtime/hero_walk3_sw.png",
+      "sha256": "8985a80b875a9a1b99b98d742be7ef3bf26b38fdb1b2dbf61b80eda0183683f3",
+      "native_canvas": [
+        80,
+        96
+      ],
+      "native_pivot": [
+        40,
+        96
+      ]
+    },
+    {
+      "frame": 4,
+      "path": "native/client/assets/raster/runtime/hero_walk4_sw.png",
+      "sha256": "4d5d8f023e4b300cadc543b7f343b303311a371e37b3b6f1f36db3c0a8b49fa3",
+      "native_canvas": [
+        80,
+        96
+      ],
+      "native_pivot": [
+        40,
+        96
+      ]
+    },
+    {
+      "frame": 5,
+      "path": "native/client/assets/raster/runtime/hero_walk5_sw.png",
+      "sha256": "500618b960abc738dacb79215ea19cf1273a11dc3f1e54d9f755f3c1a0768275",
+      "native_canvas": [
+        80,
+        96
+      ],
+      "native_pivot": [
+        40,
+        96
+      ]
+    },
+    {
+      "frame": 6,
+      "path": "native/client/assets/raster/runtime/hero_walk6_sw.png",
+      "sha256": "f4b3a68a15bebc08f924a9ce5c8a908d53e013f6bbf4c904425927c3968834ef",
+      "native_canvas": [
+        80,
+        96
+      ],
+      "native_pivot": [
+        40,
+        96
+      ]
+    },
+    {
+      "frame": 7,
+      "path": "native/client/assets/raster/runtime/hero_walk7_sw.png",
+      "sha256": "380988958b83f7439e2edc18df87c04c8132106fce1325f5bd23d0cb47960412",
+      "native_canvas": [
+        80,
+        96
+      ],
+      "native_pivot": [
+        40,
+        96
+      ]
+    }
+  ]
+}

@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <cmath>
 #include <algorithm>
+#include <limits>
 #include <string>
 #include <utility>
 
@@ -223,6 +224,54 @@ void monster_facing_is_no_longer_fabricated() {
   sync_world_from_model(flipped, model);
   check(flipped.monsters.front().facing.x == 1 && flipped.monsters.front().facing.y == 0,
         "phase-a: player facing left does not flip the monster east either");
+}
+
+void monster_display_motion_keeps_event_authority() {
+  verdigris::client::ClientModel model;
+  verdigris::client::ClientMonster foe;
+  foe.id = "display-foe";
+  foe.x = 4.0;
+  foe.y = 3.0;
+  foe.life = foe.life_max = 3;
+  foe.has_display_position = true;
+  foe.display_x = 3.5;
+  foe.display_y = 2.5;
+  foe.has_facing = true;
+  foe.facing_x = -1;
+  foe.facing_y = 1;
+  model.monsters.push_back(foe);
+  WorldView world;
+  sync_world_from_model(world, model);
+  const auto units = [](double value) {
+    return static_cast<int>(std::lround(verdigris::client::protocol_to_world(value)));
+  };
+  const auto& actor = world.monsters.front();
+  check(actor.position.x == units(4.0) && actor.position.y == units(3.0) &&
+            actor.displayed_position().x == units(3.5) &&
+            actor.displayed_position().y == units(2.5),
+        "monster display: rendering can trail an unchanged authority endpoint");
+  check(actor.facing.x == -1 && actor.facing.y == 1,
+        "monster display: authority facing survives into contact presentation");
+  PresentationFx fx;
+  PresentationEvent hit{PresentationEventType::DamageApplied, foe.id, "",
+                        "outgoing", 1, false, {}};
+  apply_presentation_event(fx, world, hit, 0);
+  const auto* number = first_kind(fx, EffectFx::Kind::DamageNumber);
+  check(number && number->wx == actor.position.x &&
+            number->wy == actor.position.y &&
+            model.monsters.front().x == 4.0 && model.monsters.front().y == 3.0,
+        "monster display: hit anchors and the model retain authority coordinates");
+  model.monsters.front().has_display_position = false;
+  sync_world_from_model(world, model);
+  check(world.monsters.front().displayed_position().x == units(4.0),
+        "monster display: snapshots without movement metadata render authority");
+  model.monsters.front().has_display_position = true;
+  model.monsters.front().display_x = std::numeric_limits<double>::quiet_NaN();
+  sync_world_from_model(world, model);
+  check(!world.monsters.front().has_display_position &&
+            world.monsters.front().displayed_position().x == units(4.0) &&
+            world.monsters.front().displayed_position().y == units(3.0),
+        "monster display: malformed display coordinates cannot contaminate world state");
 }
 
 void seam_events_cannot_mutate_simulation() {
@@ -734,6 +783,7 @@ int main() {
   local_seam_maps_lifecycle_events();
   spawn_detection_is_deterministic_and_once();
   monster_facing_is_no_longer_fabricated();
+  monster_display_motion_keeps_event_authority();
   seam_events_cannot_mutate_simulation();
   diagonal_facing_resolves_component_wise();
   server_messages_surface_as_toasts();

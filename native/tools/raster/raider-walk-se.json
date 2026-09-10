@@ -1,0 +1,220 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "palette_reference": {
+    "source": "../../client/assets/raster/runtime/raider_se.png",
+    "max_colors": 32
+  },
+  "defaults": {
+    "alpha_mode": "crisp",
+    "alpha_floor": 128,
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "root_production_monster_motion_reviewed_provisional_2026-09-10"
+  },
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/raider-walk-se-guided-contact-left-v1.png",
+      "defaults": {
+        "cell_size": 12
+      },
+      "assets": [
+        {
+          "name": "raider_walk0_se",
+          "source_box": [
+            300,
+            430,
+            850,
+            1220
+          ],
+          "anchor_source": [
+            280,
+            730
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/raider-walk-se-guided-passing-left-v1.png",
+      "defaults": {
+        "cell_size": 12
+      },
+      "assets": [
+        {
+          "name": "raider_walk1_se",
+          "source_box": [
+            320,
+            450,
+            850,
+            1230
+          ],
+          "anchor_source": [
+            260,
+            740
+          ]
+        }
+      ],
+      "border_background": {
+        "color": [
+          225,
+          225,
+          225
+        ],
+        "tolerance": 100,
+        "interior_windows": [
+          [
+            505,
+            751,
+            525,
+            771
+          ],
+          [
+            485,
+            781,
+            525,
+            861
+          ],
+          [
+            666,
+            813,
+            674,
+            822
+          ],
+          [
+            674,
+            832,
+            684,
+            841
+          ]
+        ]
+      }
+    },
+    {
+      "source": "../../client/assets/raster/source/raider-walk-se-guided-contact-right-v2.png",
+      "border_background": {
+        "color": [
+          170,
+          170,
+          170
+        ],
+        "tolerance": 115,
+        "interior_windows": [
+          [
+            474,
+            654,
+            531,
+            780
+          ],
+          [
+            467,
+            700,
+            474,
+            780
+          ]
+        ]
+      },
+      "assets": [
+        {
+          "name": "raider_walk2_se",
+          "source_box": [
+            300,
+            380,
+            850,
+            1095
+          ],
+          "anchor_source": [
+            277,
+            654
+          ]
+        }
+      ],
+      "defaults": {
+        "cell_size": 11
+      }
+    },
+    {
+      "source": "../../client/assets/raster/source/raider-walk-se-guided-passing-right-v1.png",
+      "defaults": {
+        "cell_size": 12
+      },
+      "assets": [
+        {
+          "name": "raider_walk3_se",
+          "source_box": [
+            320,
+            470,
+            850,
+            1240
+          ],
+          "anchor_source": [
+            260,
+            730
+          ]
+        }
+      ],
+      "border_background": {
+        "color": [
+          225,
+          225,
+          225
+        ],
+        "tolerance": 100,
+        "interior_windows": [
+          [
+            504,
+            650,
+            508,
+            659
+          ],
+          [
+            471,
+            792,
+            499,
+            876
+          ],
+          [
+            658,
+            810,
+            667,
+            828
+          ],
+          [
+            668,
+            829,
+            677,
+            841
+          ]
+        ]
+      }
+    }
+  ],
+  "registration": {
+    "canvas": [
+      80,
+      96
+    ],
+    "pivot": [
+      40,
+      96
+    ],
+    "source_pitch_note": "Individually generated source exports have different enlarged cluster sizes. The three new guides use manual12 reconstruction; approved contact retains manual11 exactly. No reconstructed sprite is resized or fitted independently. Each source records a measured crop and source floor/body-axis origin."
+  },
+  "native_scale_group": "raider-se-guided-native-2026-09-10",
+  "report_name": "raider-walk-se.provenance.json",
+  "candidate_manifest": "native/tools/raster/raider-walk-se-guided/raider-walk-se-guided-candidate.json",
+  "known_limitations": [
+    "Root reviewed all four actual SE pursuit frames in native 1x production crops, the native 1x/3x idle transitions and the normal 3440 live launch/House and Scion/road entry/F3 flow. Exact pixels are provisionally accepted for game integration with the documented silhouette, mask and small-axe caveats.",
+    "The walk has a narrower silhouette, mask/head variation and a smaller embedded axe than the accepted idle. These identity differences remain explicit provisional-integration caveats.",
+    "The separately generated source images use measured Pixel Respecter pitches12,12,11,12. A reviewed native_scale_group retains the contact2 reconstruction exactly; all canvases80x96/pivot40,96, visible heights55/56/54/55, and no post-reconstruction resizing.",
+    "The axe remains embedded in the anatomical-right hand. Four contact/support phases do not establish smooth playback or a complete manual combat session."
+  ],
+  "promotion_review": {
+    "acceptance": "root_production_monster_motion_reviewed_provisional_2026-09-10",
+    "scope": "Root accepted the exact four guided SE frames after production pursuit review. All four actual phase crops were viewed at native 1x; normal 3440 live entry and F3 were also reviewed. Supported native suites/all 72 scenarios, browser 32/32, importer 10/10 and equipment checks were reported passing by root. This is provisional game integration, with no completed manual combat or smooth-video claim.",
+    "pixel_policy": "Actual Pixel Respecter import must reproduce all four selected candidate PNG bytes exactly."
+  }
+}
