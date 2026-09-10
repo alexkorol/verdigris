@@ -1,0 +1,97 @@
+{
+  "status": "adopted_as_identity_improvement_pending_production_motion_and_socket_review",
+  "source": "actors_hero-strike-se-identity-v3.png",
+  "frames": [
+    {
+      "name": "hero_strike0_se",
+      "body_height": 63,
+      "head_width": 11,
+      "canvas": [
+        80,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "sha256": "bbc4bc8b68b26c4dc0c8ed944115357e5f1018e888197ad4b89064bfec4e8c70",
+      "matches_viewed_candidate": true
+    },
+    {
+      "name": "hero_strike1_se",
+      "body_height": 63,
+      "head_width": 10,
+      "canvas": [
+        80,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "sha256": "c804fc706f055d73d3a26daf53270c3d811a24a459d23f6c7a964cccae0762be",
+      "matches_viewed_candidate": true
+    },
+    {
+      "name": "hero_strike2_se",
+      "body_height": 62,
+      "head_width": 10,
+      "canvas": [
+        80,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "sha256": "115abef9c1c8f2fc012b8f24df6c574637d881a9bfee9ca5ef0ea0cea9c6bb87",
+      "matches_viewed_candidate": true
+    },
+    {
+      "name": "hero_strike3_se",
+      "body_height": 62,
+      "head_width": 10,
+      "canvas": [
+        80,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "sha256": "03bb669ac1420e9ae261e43f362948a2a77f40140f8d4be6498d45c8fc4c9281",
+      "matches_viewed_candidate": true
+    },
+    {
+      "name": "hero_strike4_se",
+      "body_height": 62,
+      "head_width": 11,
+      "canvas": [
+        80,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "sha256": "c6f25820601df412c7af1d528f8208b35ee4c19ecb97144dfa28bdc275f01860",
+      "matches_viewed_candidate": true
+    },
+    {
+      "name": "hero_strike5_se",
+      "body_height": 63,
+      "head_width": 10,
+      "canvas": [
+        80,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "sha256": "f23c06227ad6c45c109112c688ce38c078722dec2ac83a187d112ebb35f0dc39",
+      "matches_viewed_candidate": true
+    }
+  ],
+  "shared_visible_colors": 32
+}

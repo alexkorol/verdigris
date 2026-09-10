@@ -1,0 +1,657 @@
+{
+  "version": 1,
+  "manifest_sha256": "b93800542b563bee81dad76efc8ed7d581e0f50fa8f921ee3a4d58f7f523853e",
+  "importer_sha256": "d59ef9d71a73740f15c8ef5ce5fad588273e2fb4856684985203b7501dfee7c2",
+  "engine": {
+    "project": "Pixel Respecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "root": "Z:/Code/Python/pixel-perfecter",
+    "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+    "git_dirty": true,
+    "source_sha256": {
+      "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+      "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+      "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+      "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+      "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+      "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+      "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+      "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+      "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+      "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+      "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+      "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+      "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+    },
+    "dependencies": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    }
+  },
+  "known_limitations": [
+    "Root inspected native,4x sequence and idle comparison: upper-left/back facing and physical-left strike remain consistent through distinct extension,contact and recoil. Production timing/equipped motion acceptance remains pending.",
+    "Torso is broader and redder than accepted idle; visible crown-to-sole height is57\u201359px versus idle63px. These remain identity/transition caveats for production trial.",
+    "Source RGB painted pattern was removed with the recorded border-connected cleanup. Source-owner native/3x review found no visible trapped pattern pockets; the light contact-frame pixel was confirmed as a bronze highlight.",
+    "Source grid packing varies; measured planted-boot registration removes translations using one shared reconstruction pitch and a common support-sole target. No pose is independently resized."
+  ],
+  "sources": [
+    {
+      "source": "../../client/assets/raster/source/actors_hero-strike-nw-v1.png",
+      "sha256": "963f33bc6228c95fe615e007df2dcf53e2552689088a26da844f8f308c252868",
+      "size": [
+        1536,
+        1024
+      ],
+      "background_removal": {
+        "api": "pixel_perfecter.colors.make_border_connected_transparent",
+        "color": [
+          220,
+          220,
+          220
+        ],
+        "tolerance": 80,
+        "interior_windows": [],
+        "transparent_pixels_after": 1369223
+      }
+    }
+  ],
+  "assets": [
+    {
+      "name": "hero_strike0_nw",
+      "file": "hero_strike0_nw.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-nw-v1.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        34,
+        17,
+        67,
+        76
+      ],
+      "before_resize": [
+        33,
+        59
+      ],
+      "placed_size": [
+        33,
+        59
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        23,
+        36,
+        56,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        304,
+        464
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "35060abfbe91012b0dfa6bd32fd0856e71e299df057d072e2135722cc07744af"
+    },
+    {
+      "name": "hero_strike1_nw",
+      "file": "hero_strike1_nw.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-nw-v1.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        512,
+        0,
+        1024,
+        512
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 25,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        21,
+        19,
+        63,
+        77
+      ],
+      "before_resize": [
+        42,
+        58
+      ],
+      "placed_size": [
+        42,
+        58
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        19,
+        38,
+        61,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        255,
+        464
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "309fd5d835b6f52b6e8155a75c37abc655da2c615c5edf2980eddc23e34556c5"
+    },
+    {
+      "name": "hero_strike2_nw",
+      "file": "hero_strike2_nw.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-nw-v1.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        1024,
+        0,
+        1536,
+        512
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 28,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        12,
+        18,
+        61,
+        76
+      ],
+      "before_resize": [
+        49,
+        58
+      ],
+      "placed_size": [
+        49,
+        58
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        13,
+        37,
+        62,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        234,
+        463
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "9c885ec165495fb79b1083605642c16f6fe5028d6647775bf4619e1227c069ac"
+    },
+    {
+      "name": "hero_strike3_nw",
+      "file": "hero_strike3_nw.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-nw-v1.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        0,
+        512,
+        512,
+        1024
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 26,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        21,
+        12,
+        71,
+        70
+      ],
+      "before_resize": [
+        50,
+        58
+      ],
+      "placed_size": [
+        50,
+        58
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        11,
+        37,
+        61,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        302,
+        424
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "c6dc0ab10924a23aaf9cfc97bea114937471a0ad041b3f151367182b5a37d4bb"
+    },
+    {
+      "name": "hero_strike4_nw",
+      "file": "hero_strike4_nw.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-nw-v1.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        512,
+        512,
+        1024,
+        1024
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 22,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        27,
+        13,
+        65,
+        70
+      ],
+      "before_resize": [
+        38,
+        57
+      ],
+      "placed_size": [
+        38,
+        57
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        22,
+        38,
+        60,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        272,
+        428
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "e3615ebcf62b72deab5a792cf9ea9664fdd600f176028bc19c66d4d5fe0f9f2e"
+    },
+    {
+      "name": "hero_strike5_nw",
+      "file": "hero_strike5_nw.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-nw-v1.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        1024,
+        512,
+        1536,
+        1024
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 24,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        24,
+        12,
+        56,
+        71
+      ],
+      "before_resize": [
+        32,
+        59
+      ],
+      "placed_size": [
+        32,
+        59
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        24,
+        36,
+        56,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        240,
+        432
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "410dc0a9ba01eb2bdd6459dff7680985be0baeb3dc39ac316209c1ae3852b545"
+    }
+  ],
+  "shared_palette": {
+    "api": "pixel_perfecter.palettes.reduce_colors",
+    "max_colors": 32,
+    "visible_colors_before": 632,
+    "visible_colors_after": 32,
+    "palette_rgb": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        19,
+        25,
+        33
+      ],
+      [
+        31,
+        48,
+        71
+      ],
+      [
+        49,
+        71,
+        106
+      ],
+      [
+        62,
+        26,
+        17
+      ],
+      [
+        66,
+        101,
+        140
+      ],
+      [
+        80,
+        83,
+        81
+      ],
+      [
+        84,
+        65,
+        43
+      ],
+      [
+        98,
+        27,
+        18
+      ],
+      [
+        106,
+        99,
+        102
+      ],
+      [
+        123,
+        49,
+        29
+      ],
+      [
+        124,
+        91,
+        55
+      ],
+      [
+        133,
+        134,
+        143
+      ],
+      [
+        135,
+        83,
+        23
+      ],
+      [
+        151,
+        116,
+        91
+      ],
+      [
+        160,
+        91,
+        54
+      ],
+      [
+        165,
+        57,
+        33
+      ],
+      [
+        165,
+        97,
+        18
+      ],
+      [
+        178,
+        171,
+        164
+      ],
+      [
+        183,
+        122,
+        32
+      ],
+      [
+        184,
+        152,
+        117
+      ],
+      [
+        191,
+        106,
+        63
+      ],
+      [
+        200,
+        141,
+        77
+      ],
+      [
+        214,
+        174,
+        132
+      ],
+      [
+        222,
+        141,
+        33
+      ],
+      [
+        228,
+        193,
+        160
+      ],
+      [
+        233,
+        155,
+        106
+      ],
+      [
+        236,
+        127,
+        69
+      ],
+      [
+        243,
+        173,
+        58
+      ],
+      [
+        251,
+        209,
+        87
+      ],
+      [
+        253,
+        253,
+        255
+      ],
+      [
+        255,
+        227,
+        121
+      ]
+    ],
+    "dithering": "none",
+    "scope": "all reconstructed frames in this manifest"
+  },
+  "integration_review": {
+    "date": "2026-09-10",
+    "reviewer": "root",
+    "scope": "Runtime integration and production captures reviewed for this iteration; not final visual polish.",
+    "native_build_and_core_suites": "passed",
+    "production_scenarios": {
+      "passed": 64,
+      "fullscreen_average_ms": 18.7,
+      "dense_average_ms": 9.4
+    },
+    "browser_checks": {
+      "passed": 32,
+      "total": 32
+    },
+    "capture_review": "Live3440x1440 window viewed and closed; actual SW/NW/NE walking frames and all three equipped strike contact captures viewed.",
+    "limitations_policy": "Existing identity,palette,registration and source-generation observations remain unchanged."
+  }
+}

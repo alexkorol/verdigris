@@ -93,6 +93,25 @@ class RasterImportTests(unittest.TestCase):
         np.testing.assert_array_equal(result[:, :, :3], source[:, :, :3])
         self.assertEqual(record["interior_windows"][0]["new_transparent_pixels"], 4)
 
+    def test_shared_cycle_palette_preserves_alpha_and_maps_common_colors_consistently(self):
+        colors = [(20, 15, 10, 255), (170, 82, 35, 255), (179, 91, 40, 255),
+                  (190, 122, 76, 255), (70, 60, 54, 255), (34, 42, 79, 255)]
+        frames = [Image.new("RGBA", (4, 3)) for _ in range(2)]
+        for i, color in enumerate(colors):
+            frames[0].putpixel((i % 4, i // 4), color)
+            frames[1].putpixel((3 - i % 4, 2 - i // 4), color)
+        result, record = import_assets.reduce_cycle_colors(frames, 4)
+        all_colors = set()
+        for original, art in zip(frames, result):
+            self.assertEqual(art.size, original.size)
+            np.testing.assert_array_equal(np.asarray(art)[:, :, 3], np.asarray(original)[:, :, 3])
+            all_colors.update(tuple(pixel[:3]) for pixel in np.asarray(art).reshape(-1, 4) if pixel[3])
+        self.assertLessEqual(len(all_colors), 4)
+        for i in range(len(colors)):
+            self.assertEqual(result[0].getpixel((i % 4, i // 4)),
+                             result[1].getpixel((3 - i % 4, 2 - i // 4)))
+        self.assertEqual(record["api"], "pixel_perfecter.palettes.reduce_colors")
+
 
 if __name__ == "__main__":
     unittest.main()

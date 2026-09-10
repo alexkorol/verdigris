@@ -1,0 +1,1 @@
+PASS: four actual fill states, retained authored neutral glass/statue pixels, >200 interior colors, monotonic life/resource liquid,1000 hits with zero rebuilds/handle growth; bounded cache 30 layers / 16768800 bytes.

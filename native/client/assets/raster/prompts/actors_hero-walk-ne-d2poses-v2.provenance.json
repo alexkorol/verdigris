@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "generationTool": "built-in image_gen",
+  "selectedModel": "Not exposed by tool",
+  "modelIdentityReturned": false,
+  "source": "native/client/assets/raster/source/actors_hero-walk-ne-d2poses-v2.png",
+  "sourceSha256": "0b0fe580d5f04e3068ead8c62f277774d67a94321b0efa17dc6eb308ef598948",
+  "prompt": "native/client/assets/raster/prompts/actors_hero-walk-ne-d2poses-v2.txt",
+  "promptSha256": "3dcd98a974ef7fc6e6cf9207ac8ba9e495d73c0c26ba38c71dd3188eabef69d8",
+  "generatedOriginal": "C:/Users/Alex/.codex/generated_images/01a0896f-29de-7452-bb4b-6fb64351c1eb/exec-3439ca7a-06c0-4a15-a734-cb5bcb396d71.png",
+  "recipe": {
+    "directProjectExample": "native/client/assets/raster/prompts/actors_hero-walk-sw-d2poses-v2.txt",
+    "directProjectExampleOutputInspected": "native/client/assets/raster/source/actors_hero-walk-sw-d2poses-v2.png",
+    "adaptation": "Reused the observed SWv2 edit-target structure, changing facing to upper-right/back NE and adding preservation of the observed missing F2-to-F3-to-F4 leg opening. Ordered motion sheet supplied first as actual edit target; hero supplied second as appearance only.",
+    "externalContext": [
+      {
+        "url": "https://12ui.com/gpt-image-2.5-vs-2",
+        "relevance": "Published examples assign separate jobs to references. This is UI evidence documented in RESEARCH.md, not a published D2 gait-transfer success."
+      },
+      {
+        "url": "https://www.flixly.ai/blog/stop-motion-chatgpt-images-2-5",
+        "relevance": "Published workflow uses previous frame as edit target plus original appearance reference. Its clay-fox example does not establish sprite gait reliability."
+      }
+    ],
+    "claimBoundary": "The D2 pose-target/hero-appearance recipe and NE result are local project adaptations and observations. No external creator is claimed to have demonstrated this exact workflow or complete adult isometric walk."
+  },
+  "references": [
+    {
+      "order": 1,
+      "path": "C:/Users/Alex/Documents/ChatGPT/diablo-reference-cache/motion-study-20260909/body-corrected-cof/ne-ordered-4x2-3x.png",
+      "sha256": "fc80e25429ea6089589751fd959ae18c1472aae505b17de031808d9ff70c547e",
+      "role": "EDIT TARGET: preserve all8 chronological poses, foot contacts, arm/leg positions, camera and layout; replace only figure appearance; remove labels/background.",
+      "rawReferenceCopiedIntoRepository": false
+    },
+    {
+      "order": 2,
+      "path": "native/client/assets/raster/runtime/hero_ne.png",
+      "sha256": "aafeeed5b41a4ee6cad27d6331b0dec4e121ba711c86380ca2a83228a322c0c5",
+      "role": "APPEARANCE AND PIXEL STYLE ONLY: adult hero, hair, brown tunic, full dark trousers, pale wrist wraps, boots, physical-right bronze guard, physical-left sash, empty hands. Do not copy idle pose."
+    }
+  ],
+  "observedOutput": {
+    "dimensions": [
+      1575,
+      999
+    ],
+    "mode": "RGB",
+    "alpha": "Fully opaque checker background; no alpha channel. Transparency request was not satisfied.",
+    "order": "row-major4columns×2rows,frames0..7",
+    "provisionalCropBoundaries": {
+      "x": [
+        0,
+        394,
+        788,
+        1181,
+        1575
+      ],
+      "y": [
+        0,
+        500,
+        999
+      ],
+      "verified": false
+    },
+    "identityReview": "All8 actual back NE, right bronze guard on screen-right, left hip sash, adult brown tunic, full dark trousers, empty hands. No raw reference costume or labels retained.",
+    "phaseReview": "Observed F2-to-F3-to-F4 failure improved: F3 now opens the legs between narrow F2 and wide F4/F5. F6 narrows and F7 closes. Adjacent F0/F1 and F4/F5 remain close; ordered reference also has close adjacent poses. Full phase and loop continuity still require independent comparison and playback.",
+    "conversionStatus": "Sent to pixel_pipeline as candidate for shared-scale/shared-palette PixelRespecter conversion. No runtime acceptance.",
+    "independentMotionReview": "Requested; pending."
+  },
+  "observedLimitations": [
+    "Requested transparent output became opaque RGB with drawn checker pattern.",
+    "Output dimensions and cell placements differ from the reference/request; importer must measure real bounds and retain common registration.",
+    "Recognizable clothing and broad phase structure do not establish correct anatomical supporting-leg continuity.",
+    "Close adjacent poses need timing/playback review rather than being accepted merely because there are8 cells.",
+    "The built-in tool returned no model selector or model identifier; no specific model/variant is asserted.",
+    "Source generation and static review do not replace actual PixelRespecter reconstruction and a viewed production-game capture."
+  ],
+  "generationState": "This bounded single call is complete. No further generation per coordinator instruction.",
+  "ownership": "Only NE source, exact prompt and provenance/inspection files. No raw reference art copied to repository; no runtime/header/main/importer edits or commits."
+}

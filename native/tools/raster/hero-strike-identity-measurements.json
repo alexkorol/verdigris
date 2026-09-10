@@ -1,0 +1,389 @@
+{
+  "measurement_note": "Top6 occupied-row head widths match the prior diagnostic. Near-black contour uses max(R,G,B)<=20 on4-connected outer silhouette; it is a style diagnostic, not an acceptance test. Common80x96canvas and ground y95 are retained. V4 grid10 is native reconstruction; height63 uses whole-sprite nearest normalization to idle height solely for this isolated comparison.",
+  "frames": [
+    {
+      "name": "idle",
+      "path": "native\\client\\assets\\raster\\runtime\\hero_se.png",
+      "sha256": "56a882d079b83d942c42340ac9155b25ddbd923d436173019e8f2bd4ed5d28f7",
+      "visible_bounds": [
+        26,
+        33,
+        53,
+        96
+      ],
+      "body_height": 63,
+      "head_top6_union_width": 10,
+      "head_top6_max_row_width": 10,
+      "opaque_pixels": 889,
+      "outline_pixels": 236,
+      "near_black_outline_pixels": 0,
+      "near_black_outline_fraction": 0.0,
+      "head_top10_near_black_border_pixels": 0,
+      "alpha_values": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "current 0",
+      "path": "native\\client\\assets\\raster\\runtime\\hero_strike0_se.png",
+      "sha256": "8c33e773b521054edf4711b153f60a2a4ab6764c32ca4f2fea82f61f6b654bbf",
+      "visible_bounds": [
+        23,
+        33,
+        55,
+        96
+      ],
+      "body_height": 63,
+      "head_top6_union_width": 13,
+      "head_top6_max_row_width": 13,
+      "opaque_pixels": 982,
+      "outline_pixels": 194,
+      "near_black_outline_pixels": 159,
+      "near_black_outline_fraction": 0.8196,
+      "head_top10_near_black_border_pixels": 23,
+      "alpha_values": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "current 1",
+      "path": "native\\client\\assets\\raster\\runtime\\hero_strike1_se.png",
+      "sha256": "c74cbb0744636b81f6bf32da59fbe24325b6659992d3531261e0430608f39368",
+      "visible_bounds": [
+        22,
+        33,
+        58,
+        96
+      ],
+      "body_height": 63,
+      "head_top6_union_width": 13,
+      "head_top6_max_row_width": 13,
+      "opaque_pixels": 1046,
+      "outline_pixels": 215,
+      "near_black_outline_pixels": 166,
+      "near_black_outline_fraction": 0.7721,
+      "head_top10_near_black_border_pixels": 24,
+      "alpha_values": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "current 2",
+      "path": "native\\client\\assets\\raster\\runtime\\hero_strike2_se.png",
+      "sha256": "0000df2d277e4dcf4f6b32c2f7643dac1492b966a9a33c694c8431779f9cd1ca",
+      "visible_bounds": [
+        23,
+        34,
+        63,
+        96
+      ],
+      "body_height": 62,
+      "head_top6_union_width": 12,
+      "head_top6_max_row_width": 12,
+      "opaque_pixels": 1033,
+      "outline_pixels": 213,
+      "near_black_outline_pixels": 176,
+      "near_black_outline_fraction": 0.8263,
+      "head_top10_near_black_border_pixels": 23,
+      "alpha_values": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "current 3",
+      "path": "native\\client\\assets\\raster\\runtime\\hero_strike3_se.png",
+      "sha256": "9ec0d17110481b2e3285e74054b9a62ac1867aa358a870fbf8783d2ff07b9ce1",
+      "visible_bounds": [
+        23,
+        34,
+        72,
+        96
+      ],
+      "body_height": 62,
+      "head_top6_union_width": 12,
+      "head_top6_max_row_width": 12,
+      "opaque_pixels": 1071,
+      "outline_pixels": 227,
+      "near_black_outline_pixels": 199,
+      "near_black_outline_fraction": 0.8767,
+      "head_top10_near_black_border_pixels": 26,
+      "alpha_values": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "current 4",
+      "path": "native\\client\\assets\\raster\\runtime\\hero_strike4_se.png",
+      "sha256": "06ad67f1967782cade955dd43c5ad46ad76f8da5e20e737030d1f943ece43727",
+      "visible_bounds": [
+        21,
+        34,
+        58,
+        96
+      ],
+      "body_height": 62,
+      "head_top6_union_width": 14,
+      "head_top6_max_row_width": 14,
+      "opaque_pixels": 1071,
+      "outline_pixels": 203,
+      "near_black_outline_pixels": 178,
+      "near_black_outline_fraction": 0.8768,
+      "head_top10_near_black_border_pixels": 24,
+      "alpha_values": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "current 5",
+      "path": "native\\client\\assets\\raster\\runtime\\hero_strike5_se.png",
+      "sha256": "387f350c0b8d617c27c44fc9b844053e1bd18920509ee26db797c68e18f8d099",
+      "visible_bounds": [
+        23,
+        33,
+        55,
+        96
+      ],
+      "body_height": 63,
+      "head_top6_union_width": 13,
+      "head_top6_max_row_width": 13,
+      "opaque_pixels": 982,
+      "outline_pixels": 196,
+      "near_black_outline_pixels": 163,
+      "near_black_outline_fraction": 0.8316,
+      "head_top10_near_black_border_pixels": 22,
+      "alpha_values": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "v3 0",
+      "path": ".ci-artifacts\\hero-strike-identity\\v3\\hero-strike-identity-v3-0.png",
+      "sha256": "bbc4bc8b68b26c4dc0c8ed944115357e5f1018e888197ad4b89064bfec4e8c70",
+      "visible_bounds": [
+        23,
+        33,
+        56,
+        96
+      ],
+      "body_height": 63,
+      "head_top6_union_width": 11,
+      "head_top6_max_row_width": 11,
+      "opaque_pixels": 994,
+      "outline_pixels": 190,
+      "near_black_outline_pixels": 120,
+      "near_black_outline_fraction": 0.6316,
+      "head_top10_near_black_border_pixels": 7,
+      "alpha_values": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "v3 1",
+      "path": ".ci-artifacts\\hero-strike-identity\\v3\\hero-strike-identity-v3-1.png",
+      "sha256": "c804fc706f055d73d3a26daf53270c3d811a24a459d23f6c7a964cccae0762be",
+      "visible_bounds": [
+        22,
+        33,
+        58,
+        96
+      ],
+      "body_height": 63,
+      "head_top6_union_width": 10,
+      "head_top6_max_row_width": 10,
+      "opaque_pixels": 1049,
+      "outline_pixels": 214,
+      "near_black_outline_pixels": 166,
+      "near_black_outline_fraction": 0.7757,
+      "head_top10_near_black_border_pixels": 17,
+      "alpha_values": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "v3 2",
+      "path": ".ci-artifacts\\hero-strike-identity\\v3\\hero-strike-identity-v3-2.png",
+      "sha256": "115abef9c1c8f2fc012b8f24df6c574637d881a9bfee9ca5ef0ea0cea9c6bb87",
+      "visible_bounds": [
+        22,
+        34,
+        62,
+        96
+      ],
+      "body_height": 62,
+      "head_top6_union_width": 10,
+      "head_top6_max_row_width": 10,
+      "opaque_pixels": 1030,
+      "outline_pixels": 212,
+      "near_black_outline_pixels": 85,
+      "near_black_outline_fraction": 0.4009,
+      "head_top10_near_black_border_pixels": 6,
+      "alpha_values": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "v3 3",
+      "path": ".ci-artifacts\\hero-strike-identity\\v3\\hero-strike-identity-v3-3.png",
+      "sha256": "03bb669ac1420e9ae261e43f362948a2a77f40140f8d4be6498d45c8fc4c9281",
+      "visible_bounds": [
+        23,
+        34,
+        71,
+        96
+      ],
+      "body_height": 62,
+      "head_top6_union_width": 10,
+      "head_top6_max_row_width": 10,
+      "opaque_pixels": 1076,
+      "outline_pixels": 222,
+      "near_black_outline_pixels": 108,
+      "near_black_outline_fraction": 0.4865,
+      "head_top10_near_black_border_pixels": 5,
+      "alpha_values": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "v3 4",
+      "path": ".ci-artifacts\\hero-strike-identity\\v3\\hero-strike-identity-v3-4.png",
+      "sha256": "c6f25820601df412c7af1d528f8208b35ee4c19ecb97144dfa28bdc275f01860",
+      "visible_bounds": [
+        21,
+        34,
+        58,
+        96
+      ],
+      "body_height": 62,
+      "head_top6_union_width": 11,
+      "head_top6_max_row_width": 11,
+      "opaque_pixels": 1036,
+      "outline_pixels": 205,
+      "near_black_outline_pixels": 123,
+      "near_black_outline_fraction": 0.6,
+      "head_top10_near_black_border_pixels": 10,
+      "alpha_values": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "v3 5",
+      "path": ".ci-artifacts\\hero-strike-identity\\v3\\hero-strike-identity-v3-5.png",
+      "sha256": "f23c06227ad6c45c109112c688ce38c078722dec2ac83a187d112ebb35f0dc39",
+      "visible_bounds": [
+        22,
+        33,
+        56,
+        96
+      ],
+      "body_height": 63,
+      "head_top6_union_width": 10,
+      "head_top6_max_row_width": 10,
+      "opaque_pixels": 1020,
+      "outline_pixels": 192,
+      "near_black_outline_pixels": 113,
+      "near_black_outline_fraction": 0.5885,
+      "head_top10_near_black_border_pixels": 9,
+      "alpha_values": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "v4 grid10",
+      "path": ".ci-artifacts\\hero-strike-identity\\v4\\hero-strike-identity-v4-ready0-grid10.png",
+      "sha256": "98544bdd5731a15643ca0518610f215a6128e91e5a7496cea7cd9e5c47988e41",
+      "visible_bounds": [
+        23,
+        35,
+        56,
+        96
+      ],
+      "body_height": 61,
+      "head_top6_union_width": 12,
+      "head_top6_max_row_width": 12,
+      "opaque_pixels": 934,
+      "outline_pixels": 200,
+      "near_black_outline_pixels": 0,
+      "near_black_outline_fraction": 0.0,
+      "head_top10_near_black_border_pixels": 0,
+      "alpha_values": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "v4 height63",
+      "path": ".ci-artifacts\\hero-strike-identity\\v4\\hero-strike-identity-v4-ready0-height63.png",
+      "sha256": "bac771629366a7a4b0b33c9b56dec7f404e15a0d03d41800aea8075ec245d25b",
+      "visible_bounds": [
+        22,
+        33,
+        56,
+        96
+      ],
+      "body_height": 63,
+      "head_top6_union_width": 13,
+      "head_top6_max_row_width": 13,
+      "opaque_pixels": 1009,
+      "outline_pixels": 208,
+      "near_black_outline_pixels": 0,
+      "near_black_outline_fraction": 0.0,
+      "head_top10_near_black_border_pixels": 0,
+      "alpha_values": [
+        0,
+        255
+      ]
+    }
+  ],
+  "v3_pose_drift": [
+    {
+      "current": "current 0",
+      "candidate": "v3 0",
+      "body_alpha_iou_below_y45": 0.946,
+      "changed_body_alpha_pixels": 47
+    },
+    {
+      "current": "current 1",
+      "candidate": "v3 1",
+      "body_alpha_iou_below_y45": 0.9491,
+      "changed_body_alpha_pixels": 47
+    },
+    {
+      "current": "current 2",
+      "candidate": "v3 2",
+      "body_alpha_iou_below_y45": 0.9522,
+      "changed_body_alpha_pixels": 44
+    },
+    {
+      "current": "current 3",
+      "candidate": "v3 3",
+      "body_alpha_iou_below_y45": 0.9565,
+      "changed_body_alpha_pixels": 42
+    },
+    {
+      "current": "current 4",
+      "candidate": "v3 4",
+      "body_alpha_iou_below_y45": 0.971,
+      "changed_body_alpha_pixels": 27
+    },
+    {
+      "current": "current 5",
+      "candidate": "v3 5",
+      "body_alpha_iou_below_y45": 0.8975,
+      "changed_body_alpha_pixels": 93
+    }
+  ],
+  "status": "visually_reviewed_native_and4x;v3_head_improves_but_style_jump_remains;v4_head_fails;no_runtime_promotion"
+}

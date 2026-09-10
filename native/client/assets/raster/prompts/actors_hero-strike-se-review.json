@@ -1,0 +1,271 @@
+{
+  "task": "SE hero left-hand melee strike cycle",
+  "tool": "image_gen.imagegen",
+  "model_selection": "No model or variant selector exposed; no variant claimed.",
+  "reference": "../runtime/hero_se.png",
+  "reference_role": "Accepted character identity, camera, pixel style and palette; inspected before generation.",
+  "published_method": "Compact reference-led single-character combat sheet, adapted from Practical_Low29's documented prompt in RESEARCH.md; one focused follow-up edit for visible handedness failure.",
+  "attempts": [
+    {
+      "id": "v1",
+      "prompt": "actors_hero-strike-se-v1.txt",
+      "source": "../source/actors_hero-strike-se-v1.png",
+      "size": [
+        1145,
+        1374
+      ],
+      "mode": "RGBA",
+      "alpha_min": 0,
+      "alpha_max": 255,
+      "fully_transparent_pixels": 1200908,
+      "source_review": "Recognizable same adult hero: full dark trousers, brown tunic, dark sash at physical left hip, bronze physical right shoulder, dark wrist wraps. First four poses and recovery form a compact left-hand punch. Fifth pose switches to the armored/right arm and is rejected.",
+      "accepted_source_frames": [
+        0,
+        1,
+        2,
+        3,
+        5
+      ],
+      "rejected_source_frames": {
+        "4": "Follow-through strikes with anatomical right arm instead of continuing the left-hand action."
+      }
+    },
+    {
+      "id": "v2",
+      "prompt": "actors_hero-strike-se-v2.txt",
+      "source": "../source/actors_hero-strike-se-v2.png",
+      "size": [
+        1145,
+        1374
+      ],
+      "mode": "RGB",
+      "source_review": "Targeted follow-through correction preserves bronze right shoulder back and returns unarmored left fist on screen-right. It lost true transparency and painted a checkerboard. Only corrected frame4 is a conditional source candidate, requiring reviewed background cleanup; other frames remain from truealpha v1.",
+      "accepted_source_frames": [
+        4
+      ],
+      "rejected_source_frames": {
+        "0": "Use v1 truealpha source; no reason to replace unchanged pose.",
+        "1": "Use v1 truealpha source.",
+        "2": "Use v1 truealpha source.",
+        "3": "Use v1 truealpha source.",
+        "5": "Use v1 truealpha source."
+      }
+    },
+    {
+      "id": "identity-v3",
+      "prompt": "actors_hero-strike-se-identity-v3.txt",
+      "source": "../source/actors_hero-strike-se-identity-v3.png",
+      "size": [
+        1145,
+        1374
+      ],
+      "mode": "RGB",
+      "references": [
+        {
+          "path": "../runtime/hero_se.png",
+          "role": "Authoritative head/hair proportions, identity and restrained pixel edge style; inspected."
+        },
+        {
+          "path": "../source/actors_hero-strike-se-v2.png",
+          "role": "Authoritative six approved limb poses, source placement, camera and layout; inspected."
+        }
+      ],
+      "observed_failure_trigger": "Viewed full idle\u2192strike\u2192idle comparison. Strike head/hair was13px wide in top6 occupied rows vs10px accepted idle, with heavy black outlines. Bodyheight/pivot otherwise match.",
+      "published_method": {
+        "url": "https://www.flixly.ai/blog/stop-motion-chatgpt-images-2-5",
+        "adaptation": "Original reference plus a second reference with one narrowly scoped edit; here repair observed head/edge identity drift while preserving established poses."
+      },
+      "source_review": "Six left-hand poses, bronze shoulder and approximate sheet placement remain. Head reduction appears modest and heavy contours remain. Actual alpha failed: output is RGB baked checker. Do not accept based on prompt.",
+      "acceptance": "pending candidate conversion and whole-cycle comparison; previous runtime candidates retained"
+    },
+    {
+      "id": "identity-v4-ready0",
+      "prompt": "actors_hero-strike-se-identity-v4-ready0.txt",
+      "source": "../source/actors_hero-strike-se-identity-v4-ready0.png",
+      "size": [
+        1145,
+        1374
+      ],
+      "mode": "RGBA",
+      "alpha_min": 0,
+      "alpha_max": 255,
+      "opaque_body_bounds": [
+        427,
+        476,
+        763,
+        1086
+      ],
+      "references": [
+        {
+          "path": "../runtime/hero_se.png",
+          "role": "Authoritative head/hair and pixel edge identity."
+        },
+        {
+          "path": "../runtime/hero_strike0_se.png",
+          "role": "Raised-fist ready pose, matching80x96nativecanvas."
+        }
+      ],
+      "published_method": {
+        "url": "https://x.com/elle_elle_e/status/2097439673308389840",
+        "adaptation": "One isolated reference edit after sheet identity edit appeared insufficient; prove ready0 before repeating over remaining frames."
+      },
+      "source_review": "Single raised-fist pose, same shoulder/sash and apparent limb posture, true alpha. Edges look less harsh but head remains proportionally broad (~610px body). Not promoted; awaits native-scale comparison before further generation.",
+      "acceptance": "pending native-scale identity comparison; previous runtime retained"
+    }
+  ],
+  "selected_frame_order": [
+    {
+      "frame": 0,
+      "source": "v1",
+      "phase": "ready"
+    },
+    {
+      "frame": 1,
+      "source": "v1",
+      "phase": "preparation with left fist drawn back"
+    },
+    {
+      "frame": 2,
+      "source": "v1",
+      "phase": "driving forward into extension"
+    },
+    {
+      "frame": 3,
+      "source": "v1",
+      "phase": "extended contact and weight transfer"
+    },
+    {
+      "frame": 4,
+      "source": "v2",
+      "phase": "follow-through and beginning retraction"
+    },
+    {
+      "frame": 5,
+      "source": "v1",
+      "phase": "recovery toward ready"
+    }
+  ],
+  "conversion_handoff": {
+    "owner": "pixel_pipeline",
+    "intended_names": "hero_strike0_se through hero_strike5_se",
+    "intended_canvas": [
+      80,
+      96
+    ],
+    "approximate_source_body_height": 439,
+    "proposed_shared_cell_size": 7,
+    "safe_crop_rectangles": [
+      [
+        0,
+        0,
+        400,
+        687
+      ],
+      [
+        400,
+        0,
+        775,
+        687
+      ],
+      [
+        775,
+        0,
+        1145,
+        687
+      ],
+      [
+        0,
+        687,
+        440,
+        1374
+      ],
+      [
+        440,
+        687,
+        780,
+        1374
+      ],
+      [
+        780,
+        687,
+        1145,
+        1374
+      ]
+    ],
+    "proposed_source_ground_origins": [
+      [
+        200,
+        627
+      ],
+      [
+        590,
+        627
+      ],
+      [
+        960,
+        627
+      ],
+      [
+        200,
+        1230
+      ],
+      [
+        590,
+        1230
+      ],
+      [
+        960,
+        1230
+      ]
+    ],
+    "note": "Origins/cell size are handoff estimates, not verified importer settings. Pipeline must measure common scale and preserve contact/lunge displacement; no per-pose auto-fitting."
+  },
+  "limitations": [
+    "Source-level inspection only; runtime conversion, six-frame playback and production-game acceptance still required.",
+    "Frames2 and3 both extend the left fist; weight transfer differentiates drive/contact more than hand travel.",
+    "Body faces lower-right while extended fist points mostly screen-right. Equipment grip orientation must follow the arm; upright translation alone is insufficient.",
+    "Ready pose has raised fists rather than the reference's relaxed hands, so entry/exit blending with idle needs production review.",
+    "Source colors/pixel size are synthetic and require actual Pixel Respecter reconstruction."
+  ],
+  "acceptance": "v3_adopted_as_root_viewed_identity_improvement_pending_production_motion_and_socket_review",
+  "integration_timing": {
+    "inspected_code": "native/client/presentation_state.cpp: present_strike and strike_phase",
+    "evidence": "Confirmed strike starts age=ttl/2; regular ttl6ticks and sweep ttl8ticks. Damage confirmation therefore resolves phase0.5.",
+    "proposed_mapping": "min(5, floor(clamp(phase,0,1)*6))",
+    "contact_frame": 3,
+    "note": "Mapping proposal only; do not restart confirmed damage at preparation. Production integration/test belongs to parent."
+  },
+  "runtime_review": {
+    "artifacts": [
+      "native/tools/raster/strike-se-candidates/hero-strike-se-strip-1x.png",
+      "native/tools/raster/strike-se-candidates/hero-strike-se-strip-4x.png",
+      "native/tools/raster/strike-se-candidates/hero-strike-se-contact-4x.png"
+    ],
+    "observed": "Viewed the native 80x96 cells and integer enlargement. The selected sequence preserves adult body/clothes/right shoulder armor; left fist prepares, extends farther in contact3, retracts in4 and returns toward ready in5. Clean corrected4 has no visible checker contamination or handedness swap. Common64-ish-pixel body and ground origin retain small stance shifts.",
+    "decision": "Accepted for integration on source/converted-pose evidence; live production motion remains unaccepted.",
+    "actual_import_settings": "Shared cell7,80x96canvas, common authored row origins, one32-color palette; see importer provenance for exact measured anchors and hashes.",
+    "timing": "Pipeline GIF is90ms/frame for slow pose review. It was not used to claim game-speed animation acceptance. Main production regular strike effect is6ticks at50ms/tick; contact must remain phase0.5/frame3."
+  },
+  "pause_record": {
+    "reason": "Parent instruction to preserve current results and pause generation while auditing published creator prompts and feedback.",
+    "state": "No further imagegen calls; existing runtime retained.",
+    "candidate_status": [
+      {
+        "id": "identity-v3",
+        "status": "Unaccepted RGB checker sheet; source inspection suggests modest head reduction and persistent heavy edges; candidate conversion not yet returned."
+      },
+      {
+        "id": "identity-v4-ready0",
+        "status": "Unaccepted truealpha isolated fallback; source inspection shows broad head remains; candidate conversion not yet returned."
+      }
+    ]
+  },
+  "current_identity_comparison": {
+    "report": "../../../../tools/raster/hero-strike-identity-review.md",
+    "v3": "Root viewed and adopted all six V3 poses; exact runtime hashes match viewed candidates;10\u201311px heads and common scale/pivot verified. Darker contours/redder palette remain known roughness.",
+    "v4": "Rejected for identity repair: edges improve, but head remains13px at63px body.",
+    "runtime_writes": true,
+    "new_imagegen_calls": 0,
+    "adoption_report": "../../../../tools/raster/hero-strike-identity-adoption.json"
+  }
+}

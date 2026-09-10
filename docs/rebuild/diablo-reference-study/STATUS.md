@@ -50,3 +50,25 @@ The firsthand feedback audit also records a game-room developer's improved
 edit stability and persistent surface microtexture, with the original comment
 and evidence limits. The guide now explicitly checks quiet walls/ground at
 gameplay scale. This research checkpoint makes no new gameplay acceptance claim.
+
+September 10 implementation checkpoint: 118 registered pixel assets now include
+four hero walk directions (SE 4, SW 8, NW 8, NE 8), three six-pose strike directions,
+and a compact contact spark. Measured equipment, actual-target silhouette tints,
+damage-label placement, tree dressing and textured raster orb composition are
+integrated. Exact prompts and published-recipe adaptations accompany the art.
+Root and workers inspected native sprites, equipment composites, production
+contact/motion captures and the final live 3440x1440 window.
+
+Final native build/all 64 scenarios pass (18.7ms fullscreen, 9.4ms dense), native
+suites pass, browser final 32/32 passes, importer 7/7 and 54-pose equipment checks
+pass. The initial SW walk capture failure was corrected by a clear corridor
+and full 15 ms painting without changing collision. One initial browser final-
+death timeout did not recur in the focused or final full run; bounded failure
+diagnostics were added, and the intermittent failure remains unexplained.
+Retained evidence: `native/client/assets/raster/reviews/2026-09-10/README.md`.
+
+The visual goal remains active. NW foot registration, clip identity/palette
+changes, NE attacks, enemy weapon continuity/motion, quieter ground, paths and
+HUD coherence are unfinished. Current NE/raider candidates remain unaccepted
+outside runtime. Original D2 walking and A1/A2 attack references remain external
+and private; no original D2 pixels are added to runtime or this commit.

@@ -1,0 +1,47 @@
+{
+  "task": "SW six-frame left-hand melee retry",
+  "tool": "image_gen.imagegen",
+  "imagegen_calls": 1,
+  "model_selection": "No model/variant selector exposed; none claimed.",
+  "source": "../source/actors_hero-strike-sw-v2.png",
+  "source_sha256": "0d03170686c984557043df20d56d9330d27f003897c38d341ae2ff0e3c0051cd",
+  "size": [
+    1536,
+    1024
+  ],
+  "mode": "RGB",
+  "prompt": "actors_hero-strike-sw-v2.txt",
+  "recipe": {
+    "author": "Kiki / Mayz1169",
+    "url": "https://x.com/Mayz1169/status/2097540160611287452",
+    "original_access": "Full original prompt read in browser before SWv1; reused for this focused retry.",
+    "retained": "Single character reference, coherent preparation/contact/recovery, real body mechanics, fixed camera/scale/registration, margins, actualalpha request.",
+    "adaptation": "Six frames in3x2, accepted adult character, lower-left left-hand melee, equipment/VFX/timing assembled separately."
+  },
+  "references": [
+    {
+      "path": "../runtime/hero_sw.png",
+      "sha256": "815aa38865fa79bdf9e9ee3bcf335a8cd3b8833d02ddeb50c237bb8703e064dd",
+      "role": "Sole inspected reference; authoritative identity, adult scale, lower-left direction and pixel style."
+    }
+  ],
+  "why_se_reference_removed": "SWv1 visibly copied rightward poses from the SE sheet despite the restricted reference role, then flipped direction at contact. Removing that reference addresses observed contamination without expanding constraints.",
+  "review": {
+    "improvement": "All six figures now face lower-left/downward consistently. First three poses show ready, left hand cocking back, and that left hand crossing toward lower-left; source proportions are closer to the SW idle than v1.",
+    "failure": "Contact index3 and follow-through index4 extend the armored physical RIGHT arm toward lower-left; the unarmored left arm is suddenly back in guard. This switches the striking limb after left-hand commitment index2. It is not the requested single left-hand action.",
+    "partial_source_candidates": [
+      0,
+      1,
+      2,
+      5
+    ],
+    "rejected_source_frames": {
+      "3": "Armored right arm replaces left arm as striking limb at contact.",
+      "4": "Continues wrong/right striking arm from3."
+    },
+    "alpha": "RGB painted checker rather than actual transparency.",
+    "scale": "Source-level review only; shared-scale Pixel Respecter/native comparison not yet performed.",
+    "decision": "Do not import a complete six-frame SW cycle. Preserve improved direction and candidate phases for a targeted hand-continuity repair.",
+    "additional_calls": 0
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "shared_palette_max_colors": 32,
+  "defaults": {
+    "cell_size": 6,
+    "alpha_mode": "crisp",
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10"
+  },
+  "known_limitations": [
+    "Equal cell-local pivot retained, including apparent second-row vertical packing drift. No per-frame alignment.",
+    "Border-connected background removal only; any enclosed pockets remain review defects and must be inspected before promotion.",
+    "Root and pipeline inspected alternating thigh/support progression; production movement, body bob and equipment sockets remain review gates. Candidate PNGs are preserved separately.",
+    "Viewed production frame019: feet visibly sit above the ground ellipse; NW walk foot registration needs refinement despite successful runtime integration."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/actors_hero-walk-nw-d2poses-v1.png",
+      "border_background": {
+        "color": [
+          230,
+          230,
+          230
+        ],
+        "tolerance": 85
+      },
+      "assets": [
+        {
+          "name": "hero_walk0_nw",
+          "source_box": [
+            0,
+            0,
+            384,
+            512
+          ],
+          "anchor_source": [
+            192,
+            486
+          ]
+        },
+        {
+          "name": "hero_walk1_nw",
+          "source_box": [
+            384,
+            0,
+            768,
+            512
+          ],
+          "anchor_source": [
+            192,
+            486
+          ]
+        },
+        {
+          "name": "hero_walk2_nw",
+          "source_box": [
+            768,
+            0,
+            1152,
+            512
+          ],
+          "anchor_source": [
+            192,
+            486
+          ]
+        },
+        {
+          "name": "hero_walk3_nw",
+          "source_box": [
+            1152,
+            0,
+            1536,
+            512
+          ],
+          "anchor_source": [
+            192,
+            486
+          ]
+        },
+        {
+          "name": "hero_walk4_nw",
+          "source_box": [
+            0,
+            512,
+            384,
+            1024
+          ],
+          "anchor_source": [
+            192,
+            486
+          ]
+        },
+        {
+          "name": "hero_walk5_nw",
+          "source_box": [
+            384,
+            512,
+            768,
+            1024
+          ],
+          "anchor_source": [
+            192,
+            486
+          ]
+        },
+        {
+          "name": "hero_walk6_nw",
+          "source_box": [
+            768,
+            512,
+            1152,
+            1024
+          ],
+          "anchor_source": [
+            192,
+            486
+          ]
+        },
+        {
+          "name": "hero_walk7_nw",
+          "source_box": [
+            1152,
+            512,
+            1536,
+            1024
+          ],
+          "anchor_source": [
+            192,
+            486
+          ]
+        }
+      ]
+    }
+  ],
+  "integration_review": {
+    "date": "2026-09-10",
+    "reviewer": "root",
+    "scope": "Runtime integration and production captures reviewed for this iteration; not final visual polish.",
+    "native_build_and_core_suites": "passed",
+    "production_scenarios": {
+      "passed": 64,
+      "fullscreen_average_ms": 18.7,
+      "dense_average_ms": 9.4
+    },
+    "browser_checks": {
+      "passed": 32,
+      "total": 32
+    },
+    "capture_review": "Live3440x1440 window viewed and closed; actual SW/NW/NE walking frames and all three equipped strike contact captures viewed.",
+    "limitations_policy": "Existing identity,palette,registration and source-generation observations remain unchanged."
+  }
+}

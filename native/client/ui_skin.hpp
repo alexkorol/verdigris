@@ -19,6 +19,11 @@
 #include <string>
 
 #include <map>
+#include <cstdint>
+#include <cstring>
+#include <memory>
+#include <tuple>
+#include <vector>
 
 #include <objidl.h>
 namespace Gdiplus {
@@ -419,6 +424,207 @@ inline void xp_meter(HDC dc, const RECT& rect, double fraction) {
   g.TranslateTransform(static_cast<float>(rect.left),
                        static_cast<float>(rect.top));
   paint_meter(g, w, h);
+}
+
+namespace raster_orb_detail {
+
+struct Sample { double r=0,g=0,b=0,a=0; };
+struct Plate {
+  int w=0,h=0;
+  std::vector<std::uint32_t> pixels; // Decoded PARGB, no retained file lock.
+  bool load(const std::wstring& path) {
+    Gdiplus::Bitmap image(path.c_str());
+    if (image.GetLastStatus()!=Gdiplus::Ok || image.GetWidth()>2048 || image.GetHeight()>2048)
+      return false;
+    w=static_cast<int>(image.GetWidth());h=static_cast<int>(image.GetHeight());
+    if(w<=0 || h<=0)return false;
+    Gdiplus::BitmapData data{};const Gdiplus::Rect area(0,0,w,h);
+    if(image.LockBits(&area,Gdiplus::ImageLockModeRead,PixelFormat32bppPARGB,&data)!=Gdiplus::Ok)
+      return false;
+    pixels.resize(static_cast<std::size_t>(w)*h);
+    for(int y=0;y<h;++y)std::memcpy(pixels.data()+y*w,
+        static_cast<const BYTE*>(data.Scan0)+y*data.Stride,static_cast<std::size_t>(w)*4);
+    image.UnlockBits(&data);return true;
+  }
+  Sample at(double x,double y)const {
+    x=std::clamp(x,0.0,double(w-1));y=std::clamp(y,0.0,double(h-1));
+    const int x0=static_cast<int>(x),y0=static_cast<int>(y);
+    const double tx=x-x0,ty=y-y0;
+    Sample value;
+    for(int j=0;j<2;++j)for(int i=0;i<2;++i){
+      const auto p=pixels[std::min(y0+j,h-1)*w+std::min(x0+i,w-1)];
+      const double weight=(i?tx:1-tx)*(j?ty:1-ty);
+      value.r+=((p>>16)&255)*weight;value.g+=((p>>8)&255)*weight;
+      value.b+=(p&255)*weight;value.a+=(p>>24)*weight;
+    }
+    if(value.a>0){value.r*=255/value.a;value.g*=255/value.a;value.b*=255/value.a;}
+    return value;
+  }
+};
+
+struct Layer : CachedLayer {
+  void* pixels=nullptr;
+  std::uint64_t used=0;
+  ~Layer(){if(dc&&old_bitmap&&old_bitmap!=HGDI_ERROR)SelectObject(dc,old_bitmap);if(bitmap)DeleteObject(bitmap);if(dc)DeleteDC(dc);}
+  std::size_t bytes()const{return static_cast<std::size_t>(w)*h*4;}
+  bool create(int width,int height){
+    BITMAPINFO info{};info.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
+    info.bmiHeader.biWidth=width;info.bmiHeader.biHeight=-height;
+    info.bmiHeader.biPlanes=1;info.bmiHeader.biBitCount=32;info.bmiHeader.biCompression=BI_RGB;
+    dc=CreateCompatibleDC(nullptr);if(!dc)return false;
+    bitmap=CreateDIBSection(dc,&info,DIB_RGB_COLORS,&pixels,nullptr,0);if(!bitmap||!pixels)return false;
+    old_bitmap=SelectObject(dc,bitmap);w=width;h=height;
+    return old_bitmap && old_bitmap!=HGDI_ERROR;
+  }
+};
+inline constexpr std::size_t kMaxLayers=64,kMaxBytes=16u*1024u*1024u;
+using Key=std::tuple<bool,int,int,bool>; // Side, radius, 0..20 fill, pulse.
+struct Cache {
+  Plate art,empty,mask;
+  bool attempted=false,ready=false;
+  std::map<Key,std::unique_ptr<Layer>> layers;
+  std::size_t bytes=0;
+  std::uint64_t clock=0,builds=0,hits=0;
+};
+inline Cache& cache(){static Cache value;return value;}
+
+inline bool load_plates(){
+  auto& c=cache();if(c.attempted)return c.ready;c.attempted=true;ensure_started();
+  wchar_t path[32768]{};
+  std::vector<std::wstring> starts;
+  if(GetCurrentDirectoryW(32768,path))starts.emplace_back(path);
+  if(GetModuleFileNameW(nullptr,path,32768)){
+    std::wstring exe(path);const auto slash=exe.find_last_of(L"\\/");
+    if(slash!=std::wstring::npos)starts.push_back(exe.substr(0,slash));
+  }
+  for(auto root:starts)for(int depth=0;depth<7&&!root.empty();++depth){
+    const std::wstring base=root+L"\\src\\assets\\orbs\\wizard\\";
+    if(GetFileAttributesW((base+L"art.png").c_str())!=INVALID_FILE_ATTRIBUTES){
+      c.ready=c.art.load(base+L"art.png")&&c.empty.load(base+L"empty_aligned.jpg")&&
+              c.mask.load(base+L"mask_fullres.png");
+      // Fixed authored geometry; a different plate requires an explicit review.
+      c.ready=c.ready&&c.art.w==1672&&c.art.h==941&&c.mask.w==1672&&c.mask.h==941;
+      return c.ready;
+    }
+    const auto slash=root.find_last_of(L"\\/");
+    if(slash==std::wstring::npos)break;root.resize(slash);
+  }
+  return false;
+}
+
+inline double smooth(double low,double high,double value){
+  const double t=std::clamp((value-low)/(high-low),0.0,1.0);return t*t*(3-2*t);
+}
+inline Sample mix(const Sample& a,const Sample& b,double t){
+  return {a.r+(b.r-a.r)*t,a.g+(b.g-a.g)*t,a.b+(b.b-a.b)*t,a.a+(b.a-a.a)*t};
+}
+inline RECT art_rect(bool life){return life?RECT{20,130,830,800}:RECT{842,130,1652,800};}
+inline RECT globe_rect(bool life){return life?RECT{290,204,792,708}:RECT{876,206,1380,710};}
+
+inline const Layer* layer(bool life,int radius,int bucket,bool pulse){
+  auto& c=cache();const Key key{life,radius,bucket,pulse};
+  const auto found=c.layers.find(key);
+  if(found!=c.layers.end()){++c.hits;found->second->used=++c.clock;return found->second.get();}
+  if(!load_plates())return nullptr;
+  const RECT art=art_rect(life),globe=globe_rect(life);
+  const int h=radius*5/2,w=(art.right-art.left)*h/(art.bottom-art.top);
+  const std::size_t bytes=static_cast<std::size_t>(w)*h*4;
+  while(!c.layers.empty()&&(c.layers.size()>=kMaxLayers||bytes>kMaxBytes-c.bytes)){
+    const auto oldest=std::min_element(c.layers.begin(),c.layers.end(),[](const auto& a,const auto& b){return a.second->used<b.second->used;});
+    c.bytes-=oldest->second->bytes();c.layers.erase(oldest);
+  }
+  auto result=std::make_unique<Layer>();if(!result->create(w,h))return nullptr;
+  auto* dest=static_cast<std::uint32_t*>(result->pixels);
+  const double gw=globe.right-globe.left,gh=globe.bottom-globe.top;
+  const double center_x=(globe.left+globe.right)*.5,center_y=(globe.top+globe.bottom)*.5;
+  const double ratio=bucket/20.0,level=globe.top+gh*(1-ratio);
+  const double edge=(art.bottom-art.top)/double(h);
+  for(int y=0;y<h;++y)for(int x=0;x<w;++x){
+    const double sx=art.left+(x+.5)*(art.right-art.left)/w-.5;
+    const double sy=art.top+(y+.5)*(art.bottom-art.top)/h-.5;
+    const Sample original=c.art.at(sx,sy);
+    Sample color=original;
+    const double coverage=c.mask.at(sx,sy).r/255.0;
+    if(coverage>0){
+      const double u=(sx-center_x)/(gw*.5),v=(sy-center_y)/(gh*.5);
+      const double rr=std::sqrt(u*u+v*v);
+      const Sample glass=c.empty.at((sx+.5)*c.empty.w/c.art.w-.5,(sy+.5)*c.empty.h/c.art.h-.5);
+      Sample interior=glass;
+      const double wet=bucket==0?0:smooth(level-edge*.5,level+edge*.5,sy)*(1-smooth(.92,.975,rr));
+      if(wet>0){
+        // Reuse the authored lower-hemisphere liquid texture. Project its rows
+        // into the current fill, keeping the glass/rim and foreground separate.
+        const double t=std::clamp((sy-level)/std::max(1.0,globe.bottom-level),0.0,1.0);
+        const double texture_v=2*(.44+.49*t)-1;
+        const double chord=std::sqrt(std::max(.02,1-v*v));
+        const double source_chord=std::sqrt(std::max(.02,1-texture_v*texture_v));
+        const double tx=center_x+std::clamp(u/chord,-1.0,1.0)*source_chord*gw*.41;
+        const double ty=center_y+texture_v*gh*.5;
+        Sample liquid=c.art.at(tx,ty);
+        const double depth=(1.12-.24*rr*rr)*(.88+.12*(1-t));
+        liquid.r=liquid.r*depth+glass.r*.15;liquid.g=liquid.g*depth+glass.g*.15;
+        liquid.b=liquid.b*depth+glass.b*.15;
+        // Retain the actual empty glass reflections over the liquid.
+        const double reflection=.50*(1-smooth(.20,.80,v));
+        liquid.r+=glass.r*glass.r/255*reflection;
+        liquid.g+=glass.g*glass.g/255*reflection;
+        liquid.b+=glass.b*glass.b/255*reflection;
+        if(bucket<20){
+          const double meniscus=std::exp(-std::abs(sy-level)/(edge*.65))*60;
+          liquid.r+=meniscus*(life?1.0:.45);liquid.g+=meniscus*(life?.30:.75);
+          liquid.b+=meniscus*(life?.22:1.0);
+        }
+        interior=mix(glass,liquid,wet);
+      }
+      // The supplied analytic mask includes statue fingers and the bright rim.
+      // Preserve their neutral highlights from the actual art, not a flat disc.
+      const double hi=std::max({original.r,original.g,original.b});
+      const double lo=std::min({original.r,original.g,original.b});
+      const double saturation=(hi-lo)/std::max(hi,1.0);
+      const double foreground=(1-smooth(.12,.38,saturation))*smooth(45,105,hi);
+      interior=mix(interior,original,foreground);
+      if(pulse&&life){const double rim=(1-smooth(.98,1.01,rr))*smooth(.91,.96,rr)*30;
+        interior.r+=rim;interior.g+=rim*.22;interior.b+=rim*.14;}
+      color=mix(original,interior,coverage);
+      color.a=std::max(original.a,coverage*255);
+    }
+    const auto a=static_cast<std::uint32_t>(std::lround(std::clamp(color.a,0.0,255.0)));
+    const auto channel=[&](double value){return static_cast<std::uint32_t>(std::lround(std::clamp(value,0.0,255.0)*a/255));};
+    dest[y*w+x]=(a<<24)|(channel(color.r)<<16)|(channel(color.g)<<8)|channel(color.b);
+  }
+  result->used=++c.clock;const auto* image=result.get();c.layers.emplace(key,std::move(result));
+  c.bytes+=bytes;++c.builds;return image;
+}
+} // namespace raster_orb_detail
+
+// Authored raster glass/statue presentation, using the existing WIZARD plates.
+// Geometry matches draw_wizard_orb's HUD contract. 21 fill levels, bounded
+// 64-layer/16MiB LRU; warm draws are one AlphaBlend plus the readable value.
+inline bool raster_orb(HDC dc,bool life,int cx,int cy,int radius,double ratio,
+                       const std::string& caption,bool pulse){
+  if(!dc||radius<1||radius>256||!std::isfinite(ratio))return false;
+  const int bucket=static_cast<int>(std::lround(std::clamp(ratio,0.0,1.0)*20));
+  const auto* image=raster_orb_detail::layer(life,radius,bucket,pulse);
+  if(!image)return false;
+  const int left=cx-image->w/2,top=cy+radius-image->h;
+  blend_layer(dc,*image,left,top);
+  const RECT art=raster_orb_detail::art_rect(life),globe=raster_orb_detail::globe_rect(life);
+  const double sx=image->w/double(art.right-art.left),sy=image->h/double(art.bottom-art.top);
+  const int gx=left+static_cast<int>((globe.left-art.left)*sx);
+  const int gy=top+static_cast<int>((globe.top-art.top)*sy);
+  const int gw=static_cast<int>((globe.right-globe.left)*sx),gh=static_cast<int>((globe.bottom-globe.top)*sy);
+  const int saved=SaveDC(dc);if(!saved)return false;
+  // Keep the value's type size stable as digits change at the compact HUD scale.
+  const bool compact_value=gw<96;
+  SetBkMode(dc,TRANSPARENT);SelectObject(dc,compact_value?font_small():font_body_bold());SIZE extent{};
+  GetTextExtentPoint32A(dc,caption.c_str(),static_cast<int>(caption.size()),&extent);
+  if(!compact_value&&extent.cx>gw-6){SelectObject(dc,font_small());GetTextExtentPoint32A(dc,caption.c_str(),static_cast<int>(caption.size()),&extent);}
+  const int tx=gx+gw/2-extent.cx/2,ty=gy+gh/2-extent.cy/2;
+  SetTextColor(dc,RGB(8,8,10));
+  for(const POINT offset:{POINT{-1,-1},POINT{1,-1},POINT{-1,1},POINT{1,1}})
+    TextOutA(dc,tx+offset.x,ty+offset.y,caption.c_str(),static_cast<int>(caption.size()));
+  SetTextColor(dc,kInk);TextOutA(dc,tx,ty,caption.c_str(),static_cast<int>(caption.size()));
+  RestoreDC(dc,saved);return true;
 }
 
 // Vital orb: dark glass sphere, gradient liquid clipped to the level,

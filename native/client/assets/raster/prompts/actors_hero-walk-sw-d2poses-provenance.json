@@ -1,0 +1,100 @@
+{
+  "task": "SW eight-frame walking reference-role experiment",
+  "date": "2026-09-09",
+  "workflow": "Built-in image_gen reference-led generation; no exposed model selector.",
+  "starting_recipe": {
+    "url": "https://www.reddit.com/r/aigamedev/comments/1wbmvnm/gpt_image_25_nailed_a_16_frame_combat_sprite_sheet/",
+    "published_prompt": "Make a simplified 128px pixel art combat motion sprite sheet of this character, transparent background if you can, arrange it 4x4.",
+    "adaptations": [
+      "Walking instead of combat; eight4x2frames instead of sixteen4x4",
+      "Accepted adult hero identity and64logicalpixelbody",
+      "Second explicitly assigned ordered pose reference; this D2 reference experiment is our adaptation, not a verified published recipe"
+    ]
+  },
+  "references": [
+    {
+      "index": 1,
+      "path": "native/client/assets/raster/runtime/hero_sw.png",
+      "role": "Character identity, clothing, natural palette and pixel style only",
+      "sha256": "815aa38865fa79bdf9e9ee3bcf335a8cd3b8833d02ddeb50c237bb8703e064dd",
+      "inspected": true
+    },
+    {
+      "index": 2,
+      "path": "C:/Users/Alex/Documents/ChatGPT/diablo-reference-cache/motion-study-20260909/body-corrected-cof/sw-ordered-4x2-3x.png",
+      "role": "Eight chronological walking body poses only, corresponding row-major cells; not costume, face, labels or background",
+      "sha256": "228263b32535940dd7abffb382b6108ed02eb600c2e0f1e754ab51987512c567",
+      "inspected": true,
+      "external_reference_not_copied_to_repository": true
+    }
+  ],
+  "attempts": [
+    {
+      "version": 1,
+      "prompt": "actors_hero-walk-sw-d2poses-v1.txt",
+      "source": "native/client/assets/raster/source/actors_hero-walk-sw-d2poses-v1.png",
+      "generated_original": "C:/Users/Alex/.codex/generated_images/01a0896d-2712-78b1-8ee3-5e362a202349/exec-37a1e397-977c-4a6a-a87a-ac67b38a4122.png",
+      "sha256": "cfd098c2f27dd3e6ad7f13caae723c116bbcd5473f7c6379e5c5d381765c1385",
+      "width": 1575,
+      "height": 999,
+      "mode": "RGB",
+      "alpha": "Missing; painted gray-white checkerboard",
+      "layout": "4 columns by2rows; chronological row-major0..7",
+      "visual_review": {
+        "identity": "Brown tunic, full dark trousers, pale wraps, bronze guard screen-left/anatomicalright and blue sash screen-right/anatomicalleft maintained; body leans more frontal than motion reference.",
+        "phases": [
+          "0: low screen-left boot with other boot behind",
+          "1: same contact identity, rear boot bends more",
+          "2: foreground knee raised, screen-right support",
+          "3: returns same contact identity as0",
+          "4: torso and arm swing changes but lowest screen-left boot remains; opposite contact unproven",
+          "5: again screen-left low boot",
+          "6: bent foreground knee with screen-right support",
+          "7: close to3; same repeated low boot"
+        ],
+        "acceptance": "REJECTED as a complete walk cycle; phase0/4leg exchange not clear, alpha fails. Useful candidate retained."
+      },
+      "conversion": "Not imported as accepted runtime. Raw source sent pixel_pipeline for independent review."
+    },
+    {
+      "version": 2,
+      "prompt": "actors_hero-walk-sw-d2poses-v2.txt",
+      "source": "native/client/assets/raster/source/actors_hero-walk-sw-d2poses-v2.png",
+      "generated_original": "C:/Users/Alex/.codex/generated_images/01a0896d-2712-78b1-8ee3-5e362a202349/exec-840de1b3-e632-4cc9-8fbd-9a79d47dfc6b.png",
+      "sha256": "f4478408bab206b533cc466e0670c7eaea8a6d3785538259258009ad89628220",
+      "width": 1575,
+      "height": 999,
+      "mode": "RGB",
+      "alpha": "Missing; painted gray-white checkerboard",
+      "reference_order": [
+        {
+          "index": 1,
+          "from_reference_index": 2,
+          "role": "EDIT TARGET: existing eight ordered bodies; preserve their body poses and placement, replace appearance"
+        },
+        {
+          "index": 2,
+          "from_reference_index": 1,
+          "role": "Appearance/style reference ONLY; do not transfer standing pose"
+        }
+      ],
+      "change": "Parent-directed compact role reversal. Did not use rejected generated candidate as a reference.",
+      "visual_review": {
+        "identity": "Original hero hair, brown tunic, dark trousers, wraps, bronze guard screen-left and blue sash screen-right retained; full adult silhouette, lower-left-facing.",
+        "phases": [
+          "0:narrow crossed stance with low screen-left boot",
+          "1:narrow advancing phase",
+          "2:raised screen-left knee, otherfoot support",
+          "3:legs open",
+          "4:wide forward/trailing split",
+          "5:wide stride narrows",
+          "6:feet converge in passing phase",
+          "7:narrow stance before closure"
+        ],
+        "result": "Ordered silhouettes resemble corresponding source motion poses substantially better than v1. Anatomical leg identity remains to be checked in fixed-pivot playback. Lowest boot remaining screen-left alone is not failure proof, because the reference moves lower-left at both contacts.",
+        "acceptance": "CANDIDATE ONLY; alpha fails. Independent Pixel Respecter reconstruction and played-cycle review pending. No runtime enablement."
+      },
+      "conversion": "Sent to pixel_pipeline for candidate-only reconstruction using common scale and pivot. No source resize, alpha repair or runtime writes performed by actor_assets."
+    }
+  ]
+}

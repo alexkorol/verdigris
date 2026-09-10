@@ -25,11 +25,10 @@ namespace vector_art {
 inline constexpr double kPi = 3.14159265358979323846;
 
 // ── small GDI helpers ───────────────────────────────────────────────────
-// Scenario captures paint into a 32bpp DIB; GdipCreateBitmapFromHBITMAP then
-// swap_bgra_rb treats those bytes as BGRA. Raw GDI COLORREFs land as RGB in
-// that DIB, so bronze cloth becomes blue in the PNG while GDI+ HUD orbs
-// (PARGB cache → AlphaBlend) stay correct. The live backbuffer is a
-// device bitmap without bits, so the swap must not run there.
+// GDI accepts the same COLORREF on DIBs and display-compatible bitmaps. Their
+// 32bpp pixel storage is BGR(A), and GDI+ HBITMAP/PNG conversion preserves those
+// channels. Keep dc_color as a call-site seam, without the obsolete exporter
+// workaround that turned warm effects cyan on DIB capture surfaces.
 
 inline bool dc_is_32bpp_dib(HDC dc) {
   HBITMAP bitmap = static_cast<HBITMAP>(GetCurrentObject(dc, OBJ_BITMAP));
@@ -40,10 +39,7 @@ inline bool dc_is_32bpp_dib(HDC dc) {
   return bm.bmBitsPixel == 32 && bm.bmBits != nullptr;
 }
 
-inline COLORREF dc_color(HDC dc, COLORREF c) {
-  if (!dc_is_32bpp_dib(dc)) return c;
-  return RGB(GetBValue(c), GetGValue(c), GetRValue(c));
-}
+inline COLORREF dc_color(HDC, COLORREF c) { return c; }
 
 inline void fill_poly(HDC dc, const POINT* points, int count, COLORREF fill,
                       COLORREF outline) {

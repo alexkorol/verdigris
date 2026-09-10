@@ -1,0 +1,792 @@
+{
+  "version": 1,
+  "manifest_sha256": "3b67f855bcc5cab32e1d0b9bbdc181c14fe9328606a71f9d4ea80896b79cc15f",
+  "importer_sha256": "d59ef9d71a73740f15c8ef5ce5fad588273e2fb4856684985203b7501dfee7c2",
+  "engine": {
+    "project": "Pixel Respecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "root": "Z:/Code/Python/pixel-perfecter",
+    "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+    "git_dirty": true,
+    "source_sha256": {
+      "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+      "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+      "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+      "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+      "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+      "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+      "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+      "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+      "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+      "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+      "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+      "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+      "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+    },
+    "dependencies": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    }
+  },
+  "known_limitations": [
+    "SW uses one measured450px row-origin stride; source crop boundary510 avoids neighboring feet. All poses retain sharedscale and original offsets within each row.",
+    "Border-connected background removal only; any enclosed pockets remain review defects and must be inspected before promotion.",
+    "Root and pipeline inspected alternating thigh/support progression; production movement, body bob and equipment sockets remain review gates. Candidate PNGs are preserved separately."
+  ],
+  "sources": [
+    {
+      "source": "../../client/assets/raster/source/actors_hero-walk-sw-d2poses-v2.png",
+      "sha256": "f4478408bab206b533cc466e0670c7eaea8a6d3785538259258009ad89628220",
+      "size": [
+        1575,
+        999
+      ],
+      "background_removal": {
+        "api": "pixel_perfecter.colors.make_border_connected_transparent",
+        "color": [
+          210,
+          210,
+          210
+        ],
+        "tolerance": 95,
+        "interior_windows": [],
+        "transparent_pixels_after": 1377396
+      }
+    }
+  ],
+  "assets": [
+    {
+      "name": "hero_walk0_sw",
+      "file": "hero_walk0_sw.png",
+      "source": "../../client/assets/raster/source/actors_hero-walk-sw-d2poses-v2.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        0,
+        0,
+        394,
+        510
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 26,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        78,
+        102
+      ],
+      "trim_box": [
+        28,
+        36,
+        50,
+        100
+      ],
+      "before_resize": [
+        22,
+        64
+      ],
+      "placed_size": [
+        22,
+        64
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        29,
+        32,
+        51,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        197,
+        500
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "fc98f21c0b05ce3f8f6dbf57bce248d1e1c76b6ffc15b799e00600e28a3bddee"
+    },
+    {
+      "name": "hero_walk1_sw",
+      "file": "hero_walk1_sw.png",
+      "source": "../../client/assets/raster/source/actors_hero-walk-sw-d2poses-v2.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        394,
+        0,
+        788,
+        510
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 27,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        78,
+        102
+      ],
+      "trim_box": [
+        30,
+        35,
+        52,
+        99
+      ],
+      "before_resize": [
+        22,
+        64
+      ],
+      "placed_size": [
+        22,
+        64
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        31,
+        31,
+        53,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        197,
+        500
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "4097dde5cf1fbde8d31a6402ac5ff4d8e5f7e8bd69d5bbae836ff9d4abe67499"
+    },
+    {
+      "name": "hero_walk2_sw",
+      "file": "hero_walk2_sw.png",
+      "source": "../../client/assets/raster/source/actors_hero-walk-sw-d2poses-v2.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        788,
+        0,
+        1181,
+        510
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        78,
+        102
+      ],
+      "trim_box": [
+        29,
+        35,
+        53,
+        99
+      ],
+      "before_resize": [
+        24,
+        64
+      ],
+      "placed_size": [
+        24,
+        64
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        30,
+        31,
+        54,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        197,
+        500
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "124d7222fe94f4f352b1bdfe1c796928319a7b734ddbecaca6321ef5515dba67"
+    },
+    {
+      "name": "hero_walk3_sw",
+      "file": "hero_walk3_sw.png",
+      "source": "../../client/assets/raster/source/actors_hero-walk-sw-d2poses-v2.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        1181,
+        0,
+        1575,
+        510
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 28,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        78,
+        102
+      ],
+      "trim_box": [
+        23,
+        35,
+        56,
+        96
+      ],
+      "before_resize": [
+        33,
+        61
+      ],
+      "placed_size": [
+        33,
+        61
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        24,
+        31,
+        57,
+        92
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        197,
+        500
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "8985a80b875a9a1b99b98d742be7ef3bf26b38fdb1b2dbf61b80eda0183683f3"
+    },
+    {
+      "name": "hero_walk4_sw",
+      "file": "hero_walk4_sw.png",
+      "source": "../../client/assets/raster/source/actors_hero-walk-sw-d2poses-v2.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        0,
+        510,
+        394,
+        999
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 28,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        78,
+        97
+      ],
+      "trim_box": [
+        20,
+        24,
+        56,
+        84
+      ],
+      "before_resize": [
+        36,
+        60
+      ],
+      "placed_size": [
+        36,
+        60
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        21,
+        32,
+        57,
+        92
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        197,
+        440
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "4d5d8f023e4b300cadc543b7f343b303311a371e37b3b6f1f36db3c0a8b49fa3"
+    },
+    {
+      "name": "hero_walk5_sw",
+      "file": "hero_walk5_sw.png",
+      "source": "../../client/assets/raster/source/actors_hero-walk-sw-d2poses-v2.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        394,
+        510,
+        788,
+        999
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 30,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        78,
+        97
+      ],
+      "trim_box": [
+        24,
+        24,
+        56,
+        84
+      ],
+      "before_resize": [
+        32,
+        60
+      ],
+      "placed_size": [
+        32,
+        60
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        25,
+        32,
+        57,
+        92
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        197,
+        440
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "500618b960abc738dacb79215ea19cf1273a11dc3f1e54d9f755f3c1a0768275"
+    },
+    {
+      "name": "hero_walk6_sw",
+      "file": "hero_walk6_sw.png",
+      "source": "../../client/assets/raster/source/actors_hero-walk-sw-d2poses-v2.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        788,
+        510,
+        1181,
+        999
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 26,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        78,
+        97
+      ],
+      "trim_box": [
+        29,
+        23,
+        51,
+        84
+      ],
+      "before_resize": [
+        22,
+        61
+      ],
+      "placed_size": [
+        22,
+        61
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        30,
+        31,
+        52,
+        92
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        197,
+        440
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "f4b3a68a15bebc08f924a9ce5c8a908d53e013f6bbf4c904425927c3968834ef"
+    },
+    {
+      "name": "hero_walk7_sw",
+      "file": "hero_walk7_sw.png",
+      "source": "../../client/assets/raster/source/actors_hero-walk-sw-d2poses-v2.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        1181,
+        510,
+        1575,
+        999
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 30,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        78,
+        97
+      ],
+      "trim_box": [
+        30,
+        24,
+        51,
+        86
+      ],
+      "before_resize": [
+        21,
+        62
+      ],
+      "placed_size": [
+        21,
+        62
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        31,
+        32,
+        52,
+        94
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        197,
+        440
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "380988958b83f7439e2edc18df87c04c8132106fce1325f5bd23d0cb47960412"
+    }
+  ],
+  "shared_palette": {
+    "api": "pixel_perfecter.palettes.reduce_colors",
+    "max_colors": 32,
+    "visible_colors_before": 1065,
+    "visible_colors_after": 32,
+    "palette_rgb": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        14,
+        23,
+        37
+      ],
+      [
+        34,
+        41,
+        74
+      ],
+      [
+        52,
+        68,
+        113
+      ],
+      [
+        53,
+        103,
+        137
+      ],
+      [
+        55,
+        26,
+        14
+      ],
+      [
+        65,
+        55,
+        43
+      ],
+      [
+        75,
+        77,
+        76
+      ],
+      [
+        79,
+        129,
+        172
+      ],
+      [
+        87,
+        94,
+        122
+      ],
+      [
+        113,
+        40,
+        31
+      ],
+      [
+        116,
+        77,
+        53
+      ],
+      [
+        123,
+        100,
+        90
+      ],
+      [
+        127,
+        131,
+        131
+      ],
+      [
+        155,
+        156,
+        154
+      ],
+      [
+        157,
+        109,
+        61
+      ],
+      [
+        159,
+        131,
+        104
+      ],
+      [
+        169,
+        67,
+        42
+      ],
+      [
+        194,
+        139,
+        96
+      ],
+      [
+        198,
+        199,
+        202
+      ],
+      [
+        205,
+        120,
+        60
+      ],
+      [
+        206,
+        155,
+        127
+      ],
+      [
+        215,
+        189,
+        159
+      ],
+      [
+        229,
+        215,
+        192
+      ],
+      [
+        230,
+        138,
+        90
+      ],
+      [
+        233,
+        232,
+        224
+      ],
+      [
+        242,
+        171,
+        124
+      ],
+      [
+        245,
+        174,
+        80
+      ],
+      [
+        252,
+        198,
+        104
+      ],
+      [
+        255,
+        207,
+        140
+      ],
+      [
+        255,
+        241,
+        193
+      ],
+      [
+        255,
+        255,
+        255
+      ]
+    ],
+    "dithering": "none",
+    "scope": "all reconstructed frames in this manifest"
+  },
+  "integration_review": {
+    "date": "2026-09-10",
+    "reviewer": "root",
+    "scope": "Runtime integration and production captures reviewed for this iteration; not final visual polish.",
+    "native_build_and_core_suites": "passed",
+    "production_scenarios": {
+      "passed": 64,
+      "fullscreen_average_ms": 18.7,
+      "dense_average_ms": 9.4
+    },
+    "browser_checks": {
+      "passed": 32,
+      "total": 32
+    },
+    "capture_review": "Live3440x1440 window viewed and closed; actual SW/NW/NE walking frames and all three equipped strike contact captures viewed.",
+    "limitations_policy": "Existing identity,palette,registration and source-generation observations remain unchanged."
+  }
+}

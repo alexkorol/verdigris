@@ -275,6 +275,10 @@ export default async function sessionArc({ connect, assert, recordMetrics }) {
     await second.devTeleport(Math.round(executioner.x) + 1, Math.round(executioner.y));
     let deathSetup = null;
     let lastDeathSetupAt = Date.now();
+    const deathWaitStartedAt = Date.now();
+    const deathObservations = [];
+    let firstDeathObservation = null;
+    let deathStateTimeouts = 0;
     const memorial = await second.waitFor(async () => {
       if (second.scionFalls[0]) return second.scionFalls[0];
       let current;
@@ -284,11 +288,36 @@ export default async function sessionArc({ connect, assert, recordMetrics }) {
         // A single diagnostic frame can be starved while the server's combat
         // loop is resolving the lethal hit. Keep the finite death window
         // alive for the next probe; propagate all other failures.
-        if (/dev:state timed out/.test(error?.message || '')) return false;
+        if (/dev:state timed out/.test(error?.message || '')) {
+          deathStateTimeouts += 1;
+          return false;
+        }
         throw error;
       }
       const live = current.monsters.find(monster => monster.uuid === executioner.uuid)
         || nearestTrash(current);
+      // Retain only existing observations: no extra state requests, retries,
+      // setup mutations, or deadline changes are needed for failure evidence.
+      const observation = {
+        elapsedMs: Date.now() - deathWaitStartedAt,
+        sceneId: current.sceneId,
+        position: { x: current.x, y: current.y },
+        hp: { ...current.hp },
+        lifecycle: current.lifecycle,
+        armed: second.messages.some(message => /Final death armed/i.test(message)),
+        target: live ? {
+          uuid: live.uuid,
+          name: live.name,
+          x: live.x,
+          y: live.y,
+          type: live.behaviour?.type,
+          mode: live.state?.mode,
+          hp: { ...live.hp },
+        } : null,
+      };
+      if (!firstDeathObservation) firstDeathObservation = observation;
+      deathObservations.push(observation);
+      if (deathObservations.length > 16) deathObservations.shift();
       if (live && current.lifecycle === 'alive'
         && (current.x !== Math.round(live.x) + 1 || current.y !== Math.round(live.y)
           || Date.now() - lastDeathSetupAt >= 1000)) {
@@ -313,6 +342,17 @@ export default async function sessionArc({ connect, assert, recordMetrics }) {
       timeoutMs: loadMode ? 20000 : 15000,
       intervalMs: 250,
       label: 'session-arc final death',
+    }).catch((error) => {
+      process.stderr.write(`  SESSION_ARC_DEATH_DIAG ${JSON.stringify({
+        initialTargetId: executioner.uuid,
+        stateTimeouts: deathStateTimeouts,
+        first: firstDeathObservation,
+        recent: deathObservations,
+        recentHits: second.hitEvents.slice(-6),
+        recentMessages: second.messages.slice(-6).map(message => message.slice(0, 240)),
+        fallEvents: second.scionFalls.length,
+      })}\n`);
+      throw error;
     });
     assert(memorial.fallen.name === fallenName, 'the developed scion enters the crypt by name');
     assert(memorial.relicCount >= 1, 'the developed vessel becomes an heirloom candidate');

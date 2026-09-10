@@ -1,0 +1,369 @@
+{
+  "action": "strike",
+  "direction": "nw",
+  "frame_count": 6,
+  "duration_ms": 70,
+  "canvas": [
+    80,
+    96
+  ],
+  "unique_frame_hashes": 6,
+  "visible_cycle_colors": 32,
+  "shared_palette": {
+    "api": "pixel_perfecter.palettes.reduce_colors",
+    "max_colors": 32,
+    "visible_colors_before": 632,
+    "visible_colors_after": 32,
+    "palette_rgb": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        19,
+        25,
+        33
+      ],
+      [
+        31,
+        48,
+        71
+      ],
+      [
+        49,
+        71,
+        106
+      ],
+      [
+        62,
+        26,
+        17
+      ],
+      [
+        66,
+        101,
+        140
+      ],
+      [
+        80,
+        83,
+        81
+      ],
+      [
+        84,
+        65,
+        43
+      ],
+      [
+        98,
+        27,
+        18
+      ],
+      [
+        106,
+        99,
+        102
+      ],
+      [
+        123,
+        49,
+        29
+      ],
+      [
+        124,
+        91,
+        55
+      ],
+      [
+        133,
+        134,
+        143
+      ],
+      [
+        135,
+        83,
+        23
+      ],
+      [
+        151,
+        116,
+        91
+      ],
+      [
+        160,
+        91,
+        54
+      ],
+      [
+        165,
+        57,
+        33
+      ],
+      [
+        165,
+        97,
+        18
+      ],
+      [
+        178,
+        171,
+        164
+      ],
+      [
+        183,
+        122,
+        32
+      ],
+      [
+        184,
+        152,
+        117
+      ],
+      [
+        191,
+        106,
+        63
+      ],
+      [
+        200,
+        141,
+        77
+      ],
+      [
+        214,
+        174,
+        132
+      ],
+      [
+        222,
+        141,
+        33
+      ],
+      [
+        228,
+        193,
+        160
+      ],
+      [
+        233,
+        155,
+        106
+      ],
+      [
+        236,
+        127,
+        69
+      ],
+      [
+        243,
+        173,
+        58
+      ],
+      [
+        251,
+        209,
+        87
+      ],
+      [
+        253,
+        253,
+        255
+      ],
+      [
+        255,
+        227,
+        121
+      ]
+    ],
+    "dithering": "none",
+    "scope": "all reconstructed frames in this manifest"
+  },
+  "native_scale_group": null,
+  "scale_review": null,
+  "geometry": "Complete native canvases at a fixed pivot. No per-frame fitting or realignment.",
+  "acceptance": [
+    "unaccepted_native_candidate_pending_root_review"
+  ],
+  "hand_sockets": "Measured separately by the equipment review lane on these runtime pixels.",
+  "frames": [
+    {
+      "name": "hero_strike0_nw",
+      "visible_bounds": [
+        23,
+        36,
+        56,
+        95
+      ],
+      "alpha_opaque_pixels": 891,
+      "changed_pixels_to_next": 870,
+      "sha256": "35060abfbe91012b0dfa6bd32fd0856e71e299df057d072e2135722cc07744af",
+      "source_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "cell_size": 6,
+      "anchor_px": [
+        40,
+        96
+      ],
+      "anchor_source": [
+        304,
+        464
+      ]
+    },
+    {
+      "name": "hero_strike1_nw",
+      "visible_bounds": [
+        19,
+        38,
+        61,
+        96
+      ],
+      "alpha_opaque_pixels": 977,
+      "changed_pixels_to_next": 831,
+      "sha256": "309fd5d835b6f52b6e8155a75c37abc655da2c615c5edf2980eddc23e34556c5",
+      "source_box": [
+        512,
+        0,
+        1024,
+        512
+      ],
+      "cell_size": 6,
+      "anchor_px": [
+        40,
+        96
+      ],
+      "anchor_source": [
+        255,
+        464
+      ]
+    },
+    {
+      "name": "hero_strike2_nw",
+      "visible_bounds": [
+        13,
+        37,
+        62,
+        95
+      ],
+      "alpha_opaque_pixels": 970,
+      "changed_pixels_to_next": 649,
+      "sha256": "9c885ec165495fb79b1083605642c16f6fe5028d6647775bf4619e1227c069ac",
+      "source_box": [
+        1024,
+        0,
+        1536,
+        512
+      ],
+      "cell_size": 6,
+      "anchor_px": [
+        40,
+        96
+      ],
+      "anchor_source": [
+        234,
+        463
+      ]
+    },
+    {
+      "name": "hero_strike3_nw",
+      "visible_bounds": [
+        11,
+        37,
+        61,
+        95
+      ],
+      "alpha_opaque_pixels": 986,
+      "changed_pixels_to_next": 891,
+      "sha256": "c6dc0ab10924a23aaf9cfc97bea114937471a0ad041b3f151367182b5a37d4bb",
+      "source_box": [
+        0,
+        512,
+        512,
+        1024
+      ],
+      "cell_size": 6,
+      "anchor_px": [
+        40,
+        96
+      ],
+      "anchor_source": [
+        302,
+        424
+      ]
+    },
+    {
+      "name": "hero_strike4_nw",
+      "visible_bounds": [
+        22,
+        38,
+        60,
+        95
+      ],
+      "alpha_opaque_pixels": 912,
+      "changed_pixels_to_next": 739,
+      "sha256": "e3615ebcf62b72deab5a792cf9ea9664fdd600f176028bc19c66d4d5fe0f9f2e",
+      "source_box": [
+        512,
+        512,
+        1024,
+        1024
+      ],
+      "cell_size": 6,
+      "anchor_px": [
+        40,
+        96
+      ],
+      "anchor_source": [
+        272,
+        428
+      ]
+    },
+    {
+      "name": "hero_strike5_nw",
+      "visible_bounds": [
+        24,
+        36,
+        56,
+        95
+      ],
+      "alpha_opaque_pixels": 879,
+      "changed_pixels_to_next": 472,
+      "sha256": "410dc0a9ba01eb2bdd6459dff7680985be0baeb3dc39ac316209c1ae3852b545",
+      "source_box": [
+        1024,
+        512,
+        1536,
+        1024
+      ],
+      "cell_size": 6,
+      "anchor_px": [
+        40,
+        96
+      ],
+      "anchor_source": [
+        240,
+        432
+      ]
+    }
+  ],
+  "visual_review": {
+    "status": "candidate_pending_root_and_production_review",
+    "inspected": [
+      "hero-strike-nw-strip-1x.png",
+      "hero-strike-nw-contact-3x.png",
+      "hero-strike-nw-identity-4x.png"
+    ],
+    "direction": "All six retain upper-left/back. Back of head and tunic remain visible, right bronze shoulder remains screen-right.",
+    "hand": "Physical-left/screen-left closed fist performs the strike. No hand swap or baked weapon observed. Equipment sockets require separate native measurement.",
+    "motion": "Ready, raised windup, extension, deeper contact, retraction and recovery read in sequence. Pose 2 to 3 has a small extra body/arm extension; pose 4 clearly bends the striking elbow.",
+    "registration": "The planted screen-left support-boot sole was measured in each source cell; one common source offset [60,18] at cell6 maps the support sole near [30,93]. This translates uneven sheet packing without fitting or rescaling individual poses.",
+    "identity": "Braced stance has57-59px visible crown-to-sole versus idle63. Broader torso and redder tunic remain a visible identity/style caveat. The native silhouette stays adult.",
+    "alpha": "Binary alpha and clear outer silhouette; no visible enclosed light pattern pockets at1x or3x. The contact-frame white pixel at [42,49] maps to the bronze shoulder highlight, verified in a magnified source crop, and is retained. Other isolated light-neutral pixels fall on arm/wrap edges.",
+    "timing": "70ms per frame is diagnostic only. Read-only inspection covered ordered strips, not production playback; final timing and idle transitions remain root review.",
+    "alpha_detail_preview": "hero-strike-nw-alpha-detail.png; red rectangle locates the retained bronze highlight in the unchanged source."
+  }
+}

@@ -1,7 +1,7 @@
 #pragma once
 
 // Runtime PNG art for the Win32 presentation shell. Images are decoded once;
-// each requested size/facing is rasterized once with GDI+ nearest-neighbor
+// each requested size/facing/angle is rasterized once with nearest-neighbor
 // sampling into a premultiplied DIB. Steady-state draws are BitBlt/AlphaBlend,
 // with no image decoding, GDI+ Graphics creation, or heap allocation.
 //
@@ -18,6 +18,7 @@
 #include <cstdint>
 #include <cstring>
 #include <initializer_list>
+#include <limits>
 #include <map>
 #include <memory>
 #include <string>
@@ -118,7 +119,49 @@ struct Surface {
   }
 };
 
-using ScaleKey = std::tuple<std::uint32_t, int, int, bool>;
+// Rotation and ordinary scaling share the same handle/byte/LRU limits.
+using ScaleKey = std::tuple<std::uint32_t, int, int, bool, int, bool>;
+
+inline int normalized_angle(int degrees) {
+  const int result = degrees % 360;
+  return result < 0 ? result + 360 : result;
+}
+
+struct RotationGeometry {
+  int width = 0, height = 0;
+  int left = 0, top = 0;
+  double cosine = 1.0, sine = 0.0;
+};
+
+// Rotate the full scaled canvas about its origin. The caller transforms any
+// source anchor by the same matrix, so grip coordinates do not multiply cache
+// entries. Screen Y increases downward: positive angles turn clockwise.
+inline RotationGeometry rotation_geometry(int width, int height, int degrees) {
+  RotationGeometry result;
+  if (width <= 0 || height <= 0 || width > kMaxDimension || height > kMaxDimension)
+    return result;
+  const int angle = normalized_angle(degrees);
+  if (angle % 90 == 0) {
+    constexpr double cs[]{1.0, 0.0, -1.0, 0.0};
+    constexpr double sn[]{0.0, 1.0, 0.0, -1.0};
+    result.cosine = cs[angle / 90];
+    result.sine = sn[angle / 90];
+  } else {
+    const double radians = angle * 3.14159265358979323846 / 180.0;
+    result.cosine = std::cos(radians);
+    result.sine = std::sin(radians);
+  }
+  const double c = result.cosine, s = result.sine;
+  const double xs[]{0.0, c * width, -s * height, c * width - s * height};
+  const double ys[]{0.0, s * width, c * height, s * width + c * height};
+  result.left = static_cast<int>(std::floor(*std::min_element(xs, xs + 4)));
+  result.top = static_cast<int>(std::floor(*std::min_element(ys, ys + 4)));
+  result.width = static_cast<int>(std::ceil(*std::max_element(xs, xs + 4))) - result.left;
+  result.height = static_cast<int>(std::ceil(*std::max_element(ys, ys + 4))) - result.top;
+  if (result.width > kMaxDimension || result.height > kMaxDimension)
+    result.width = result.height = 0;
+  return result;
+}
 
 struct Cache {
   ULONG_PTR token = 0;
@@ -307,19 +350,23 @@ inline Asset* asset(const char* name) {
   return &result;
 }
 
-inline Surface* scaled(Asset& source, int width, int height, bool flip) {
+inline Surface* scaled(Asset& source, int width, int height, bool flip,
+                       int clockwise_degrees = 0, bool flash = false) {
   if (width <= 0 || height <= 0 || width > kMaxDimension ||
       height > kMaxDimension)
     return nullptr;
   Cache& c = cache();
-  const ScaleKey key{source.id, width, height, flip};
+  const int angle = normalized_angle(clockwise_degrees);
+  const ScaleKey key{source.id, width, height, flip, angle, flash};
   const auto found = c.scales.find(key);
   if (found != c.scales.end()) {
     found->second->used = ++c.clock;
     ++c.stats.cache_hits;
     return found->second.get();
   }
-  const std::size_t bytes = static_cast<std::size_t>(width) * height * 4u;
+  const auto geometry = rotation_geometry(width, height, angle);
+  if (geometry.width <= 0 || geometry.height <= 0) return nullptr;
+  const std::size_t bytes = static_cast<std::size_t>(geometry.width) * geometry.height * 4u;
   // Bound both bitmap handles and pixel storage across repeated zoom/resize.
   while (!c.scales.empty() &&
          (c.scales.size() >= kMaxScaledBitmaps ||
@@ -332,8 +379,34 @@ inline Surface* scaled(Asset& source, int width, int height, bool flip) {
     c.scales.erase(oldest);
   }
   auto result = std::make_unique<Surface>();
-  if (!result->create(width, height)) return nullptr;
-  {
+  if (!result->create(geometry.width, geometry.height)) return nullptr;
+  if (angle != 0) {
+    // Inverse-map destination pixel centers directly to decoded PARGB texels.
+    // There is one nearest-neighbor sample, no intermediate scaled image,
+    // filtering, alpha interpolation, or per-frame Graphics allocation.
+    Gdiplus::BitmapData pixels{};
+    const Gdiplus::Rect rect(0, 0, source.size.width, source.size.height);
+    if (source.image->LockBits(&rect, Gdiplus::ImageLockModeRead,
+                               PixelFormat32bppPARGB, &pixels) != Gdiplus::Ok)
+      return nullptr;
+    auto* output = static_cast<std::uint32_t*>(result->pixels);
+    for (int y = 0; y < geometry.height; ++y) {
+      const double dy = y + 0.5 + geometry.top;
+      for (int x = 0; x < geometry.width; ++x) {
+        const double dx = x + 0.5 + geometry.left;
+        const double u = geometry.cosine * dx + geometry.sine * dy;
+        const double v = -geometry.sine * dx + geometry.cosine * dy;
+        if (u < 0.0 || v < 0.0 || u >= width || v >= height) continue;
+        int sx = static_cast<int>(std::floor(u * source.size.width / width));
+        const int sy = static_cast<int>(std::floor(v * source.size.height / height));
+        if (flip) sx = source.size.width - 1 - sx;
+        const auto* row = reinterpret_cast<const std::uint32_t*>(
+            static_cast<const BYTE*>(pixels.Scan0) + sy * pixels.Stride);
+        output[y * geometry.width + x] = row[sx];
+      }
+    }
+    source.image->UnlockBits(&pixels);
+  } else {
     Gdiplus::Bitmap canvas(width, height, width * 4, PixelFormat32bppPARGB,
                            static_cast<BYTE*>(result->pixels));
     Gdiplus::Graphics graphics(&canvas);
@@ -352,6 +425,19 @@ inline Surface* scaled(Asset& source, int width, int height, bool flip) {
                             Gdiplus::UnitPixel, &attributes) != Gdiplus::Ok)
       return nullptr;
     graphics.Flush(Gdiplus::FlushIntentionSync);
+  }
+  if (flash) {
+    // One fixed warm-ivory silhouette (#fff0c2), with the original nearest
+    // alpha samples and holes. Preserve PARGB: tint channels are multiplied
+    // by alpha once. The variant owns a distinct entry in the same LRU cache;
+    // it never changes ordinary art or creates an unbounded tint palette.
+    auto* pixels = static_cast<std::uint32_t*>(result->pixels);
+    for (int i = 0; i < result->width * result->height; ++i) {
+      const std::uint32_t alpha = pixels[i] >> 24;
+      pixels[i] = (alpha << 24) | (alpha << 16) |
+          (((240u * alpha + 127u) / 255u) << 8) |
+          ((194u * alpha + 127u) / 255u);
+    }
   }
   result->used = ++c.clock;
   Surface* surface = result.get();
@@ -497,6 +583,115 @@ inline bool draw_sprite(HDC dc, const char* name, int center_x, int feet_y,
   auto* surface = detail::scaled(*source, width, height, flip);
   return surface && detail::composite(dc, *surface, bounds.left, bounds.top,
                                       source->opaque, alpha);
+}
+
+// Fixed ivory actor-hit silhouette. Same full-canvas bottom-center pivot,
+// source alpha, flip and nearest sampling as draw_sprite; only RGB changes.
+// Opacity fades the overlay, and transparent holes keep the scene below clear.
+inline bool draw_sprite_flash(HDC dc, const char* name, int center_x, int feet_y,
+                              int height, bool flip = false,
+                              float opacity = 1.0f) {
+  if (!dc || height <= 0 || height > detail::kMaxDimension ||
+      !std::isfinite(opacity))
+    return false;
+  auto* source = detail::asset(name);
+  if (!source) return false;
+  const BYTE alpha = static_cast<BYTE>(
+      std::lround(std::clamp(opacity, 0.0f, 1.0f) * 255.0f));
+  if (alpha == 0) return true;
+  const int width = std::max(1, static_cast<int>(std::lround(
+      static_cast<double>(height) * source->size.width / source->size.height)));
+  const long long left = static_cast<long long>(center_x) - width / 2;
+  const long long top = static_cast<long long>(feet_y) - height;
+  if (left < std::numeric_limits<LONG>::min() || top < std::numeric_limits<LONG>::min() ||
+      left + width > std::numeric_limits<LONG>::max())
+    return false;
+  const RECT bounds{static_cast<LONG>(left), static_cast<LONG>(top),
+                    static_cast<LONG>(left) + width, feet_y};
+  if (!RectVisible(dc, &bounds)) return true;
+  auto* surface = detail::scaled(*source, width, height, flip, 0, true);
+  return surface && detail::composite(dc, *surface, bounds.left, bounds.top,
+                                      source->opaque, alpha);
+}
+
+struct SpriteTransform {
+  Dimensions canvas;  // Entire rotated destination bitmap, including alpha.
+  double anchor_x = 0.0;
+  double anchor_y = 0.0;
+  [[nodiscard]] bool valid() const { return canvas.valid(); }
+};
+
+// Source anchors use pixel-edge coordinates (n + .5 is a pixel center).
+// Mirror first, then rotate clockwise about that anchor. The rotation does not
+// change scale: height still specifies the UNROTATED full source-canvas height.
+// Integer angles normalize modulo 360 and share the ordinary bounded cache.
+inline SpriteTransform sprite_transform(const char* name, int height,
+                                         double source_anchor_x,
+                                         double source_anchor_y,
+                                         int clockwise_degrees = 0,
+                                         bool flip = false) {
+  SpriteTransform result;
+  if (height <= 0 || height > detail::kMaxDimension ||
+      !std::isfinite(source_anchor_x) || !std::isfinite(source_anchor_y))
+    return result;
+  const auto* source = detail::asset(name);
+  if (!source || source_anchor_x < 0.0 || source_anchor_y < 0.0 ||
+      source_anchor_x > source->size.width || source_anchor_y > source->size.height)
+    return result;
+  const int width = std::max(1, static_cast<int>(std::lround(
+      static_cast<double>(height) * source->size.width / source->size.height)));
+  const auto g = detail::rotation_geometry(width, height, clockwise_degrees);
+  if (g.width <= 0 || g.height <= 0) return result;
+  const double x = (flip ? source->size.width - source_anchor_x : source_anchor_x) *
+                   width / source->size.width;
+  const double y = source_anchor_y * height / source->size.height;
+  result.canvas = {g.width, g.height};
+  result.anchor_x = g.cosine * x - g.sine * y - g.left;
+  result.anchor_y = g.sine * x + g.cosine * y - g.top;
+  return result;
+}
+
+// Align a transformed source anchor to the requested screen position with at
+// most half a screen pixel of rounding on each axis. Reject nonfinite/overflow
+// coordinates before integer conversion or GDI calls.
+inline bool anchored_bounds(const SpriteTransform& transform, double screen_x,
+                             double screen_y, RECT& bounds) {
+  if (!transform.valid() || !std::isfinite(screen_x) || !std::isfinite(screen_y) ||
+      !std::isfinite(transform.anchor_x) || !std::isfinite(transform.anchor_y))
+    return false;
+  const double left = std::round(screen_x - transform.anchor_x);
+  const double top = std::round(screen_y - transform.anchor_y);
+  constexpr auto low = std::numeric_limits<LONG>::min();
+  constexpr auto high = std::numeric_limits<LONG>::max();
+  if (left < low || top < low || left > high - transform.canvas.width ||
+      top > high - transform.canvas.height)
+    return false;
+  bounds = {static_cast<LONG>(left), static_cast<LONG>(top),
+            static_cast<LONG>(left) + transform.canvas.width,
+            static_cast<LONG>(top) + transform.canvas.height};
+  return true;
+}
+
+inline bool draw_sprite_at_anchor(HDC dc, const char* name, double screen_x,
+                                  double screen_y, int height,
+                                  double source_anchor_x, double source_anchor_y,
+                                  int clockwise_degrees = 0, bool flip = false,
+                                  float opacity = 1.0f) {
+  if (!dc || !std::isfinite(opacity)) return false;
+  const auto transform = sprite_transform(name, height, source_anchor_x,
+                                           source_anchor_y, clockwise_degrees, flip);
+  RECT bounds{};
+  if (!anchored_bounds(transform, screen_x, screen_y, bounds)) return false;
+  const BYTE alpha = static_cast<BYTE>(
+      std::lround(std::clamp(opacity, 0.0f, 1.0f) * 255.0f));
+  if (alpha == 0 || !RectVisible(dc, &bounds)) return true;
+  auto* source = detail::asset(name);
+  const int width = std::max(1, static_cast<int>(std::lround(
+      static_cast<double>(height) * source->size.width / source->size.height)));
+  auto* surface = detail::scaled(*source, width, height, flip, clockwise_degrees);
+  // A rotated opaque rectangle has transparent corners; it requires blending.
+  return surface && detail::composite(dc, *surface, bounds.left, bounds.top,
+      source->opaque && detail::normalized_angle(clockwise_degrees) % 90 == 0, alpha);
 }
 
 // Static-prop sizing: use the visible alpha height to derive one uniform scale,

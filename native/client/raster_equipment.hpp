@@ -6,9 +6,9 @@
 
 // Attach separate equipment to a measured hand in the actual rendered pose.
 // Coordinates use source-canvas edges: (50.5, 66.5) is the center of pixel
-// (50, 66). Actor and weapon share one native-pixel scale. No source is cropped,
-// warped, or rotated, and this helper adds no image storage to raster_art's
-// bounded cache. Call after drawing the opaque actor with draw_sprite.
+// (50, 66). Actor and weapon share one native-pixel scale. Authored melee angles
+// rotate the weapon about its grip, using raster_art's existing bounded cache.
+// Actor pixels are never warped. Call after drawing the opaque actor.
 namespace raster_equipment {
 
 struct PixelPoint {
@@ -24,6 +24,8 @@ struct PoseMetadata {
   bool faces_left;
   bool behind_actor;
   bool transitional;
+  int melee_clockwise_degrees = 0;
+  bool melee_behind_actor = false;
 };
 
 struct WeaponMetadata {
@@ -31,6 +33,7 @@ struct WeaponMetadata {
   raster_art::Dimensions canvas;
   PixelPoint grip;
   bool flip_when_facing_right;
+  bool authored_melee = false;
 };
 
 namespace detail {
@@ -47,6 +50,38 @@ inline constexpr PoseMetadata kPoses[] = {
     {"hero_sw", {80, 96}, {52.5, 64.5}, {51, 63, 54, 67}, true, true, false},
     {"hero_ne", {80, 96}, {29.5, 62.5}, {28, 61, 31, 65}, false, true, false},
     {"hero_nw", {80, 96}, {29.5, 67.5}, {28, 65, 31, 69}, true, false, false},
+    // SW/NW eight-frame walks: measured after Pixel Respecter reconstruction.
+    // The SW left palm is the screen-right far hand; its carried weapon passes
+    // behind opaque torso pixels. NW's screen-left palm is the near hand, so
+    // only the measured fingers replay over the held weapon. Preserve each
+    // frame's source position rather than borrowing the differently posed idle.
+    {"hero_walk0_sw", {80, 96}, {45.5, 66.5}, {43, 65, 47, 69}, true, true, false},
+    {"hero_walk1_sw", {80, 96}, {46.5, 66.5}, {44, 64, 49, 69}, true, true, false},
+    {"hero_walk2_sw", {80, 96}, {47.5, 65.5}, {45, 63, 50, 68}, true, true, false},
+    {"hero_walk3_sw", {80, 96}, {51.5, 65.5}, {49, 63, 54, 67}, true, true, false},
+    {"hero_walk4_sw", {80, 96}, {47.5, 66.5}, {45, 64, 50, 68}, true, true, false},
+    {"hero_walk5_sw", {80, 96}, {48.5, 66.5}, {46, 64, 50, 68}, true, true, false},
+    {"hero_walk6_sw", {80, 96}, {44.5, 66.5}, {42, 64, 47, 69}, true, true, false},
+    {"hero_walk7_sw", {80, 96}, {43.5, 65.5}, {41, 63, 46, 68}, true, true, false},
+    {"hero_walk0_nw", {80, 96}, {26.5, 60.5}, {25, 59, 28, 62}, true, false, false},
+    {"hero_walk1_nw", {80, 96}, {25.5, 60.5}, {23, 58, 26, 62}, true, false, false},
+    {"hero_walk2_nw", {80, 96}, {24.5, 62.5}, {23, 61, 27, 64}, true, false, false},
+    {"hero_walk3_nw", {80, 96}, {23.5, 60.5}, {22, 59, 25, 62}, true, false, false},
+    {"hero_walk4_nw", {80, 96}, {25.5, 58.5}, {24, 57, 27, 60}, true, false, false},
+    {"hero_walk5_nw", {80, 96}, {28.5, 59.5}, {27, 57, 29, 61}, true, false, false},
+    {"hero_walk6_nw", {80, 96}, {25.5, 58.5}, {24, 57, 27, 60}, true, false, false},
+    {"hero_walk7_nw", {80, 96}, {25.5, 58.5}, {25, 57, 27, 60}, true, false, false},
+    // NE uses the screen-left far hand. Frames 6/7 expose only its narrow
+    // skin edge below the bracer: anchor to that observed edge and let the
+    // opaque body hide the rest of the grip, without inventing a visible fist.
+    {"hero_walk0_ne", {80, 96}, {33.5, 60.5}, {32, 59, 34, 62}, false, true, false},
+    {"hero_walk1_ne", {80, 96}, {31.5, 61.5}, {31, 59, 34, 63}, false, true, false},
+    {"hero_walk2_ne", {80, 96}, {30.5, 61.5}, {29, 58, 33, 63}, false, true, false},
+    {"hero_walk3_ne", {80, 96}, {31.5, 60.5}, {30, 59, 34, 63}, false, true, false},
+    {"hero_walk4_ne", {80, 96}, {31.5, 61.5}, {31, 60, 33, 63}, false, true, false},
+    {"hero_walk5_ne", {80, 96}, {30.5, 61.5}, {30, 59, 34, 63}, false, true, false},
+    {"hero_walk6_ne", {80, 96}, {33.5, 60.5}, {32, 59, 34, 62}, false, true, false},
+    {"hero_walk7_ne", {80, 96}, {34.5, 60.5}, {33, 59, 35, 62}, false, true, false},
     // Legacy attack art is transitional: these are measured anatomical-left
     // fists, but its body scale/style and striking arm differ across directions.
     // Attachment continuity does not make these weapon-specific attack poses.
@@ -54,17 +89,48 @@ inline constexpr PoseMetadata kPoses[] = {
     {"hero_attack_sw", {80, 96}, {58.5, 61.5}, {57, 60, 60, 64}, true, true, true},
     {"hero_attack_ne", {80, 96}, {20.5, 70.5}, {19, 69, 22, 72}, false, true, true},
     {"hero_attack_nw", {80, 96}, {20.5, 51.5}, {19, 50, 23, 54}, true, false, true},
+    // V3 SE strike body frames, physical-left hand. Palm centers are unchanged
+    // after remeasurement; replay bounds include the new thumb/knuckle edges,
+    // especially recovery5's upper row at y49. Angles describe an
+    // authored blade/haft arc, not the forearm direction: gather, backswing,
+    // approach, rightward contact, follow-through, raised recovery. The first
+    // two melee silhouettes pass behind the head/body; the extension is near.
+    // Bow and staff retain carry orientation; these are not bespoke attacks.
+    {"hero_strike0_se", {80, 96}, {47.5, 52.5}, {45, 50, 50, 54}, false, false, false, -35, true},
+    {"hero_strike1_se", {80, 96}, {49.5, 56.5}, {47, 55, 52, 59}, false, false, false, -65, true},
+    {"hero_strike2_se", {80, 96}, {59.5, 49.5}, {57, 47, 62, 52}, false, false, false, 35},
+    {"hero_strike3_se", {80, 96}, {68.5, 49.5}, {66, 47, 71, 52}, false, false, false, 90},
+    {"hero_strike4_se", {80, 96}, {54.5, 54.5}, {52, 52, 57, 58}, false, false, false, 130},
+    {"hero_strike5_se", {80, 96}, {45.5, 51.5}, {43, 49, 47, 54}, false, false, false, 15},
+    // NW physical-left fist: gather, backswing across the far side, approach,
+    // upper-left contact, follow-through, recovery. The frame1 blade passes
+    // behind the actor; extension and recovery retain the near-hand fingers.
+    {"hero_strike0_nw", {80, 96}, {26.5, 51.5}, {25, 50, 28, 53}, true, false, false, -5},
+    {"hero_strike1_nw", {80, 96}, {22.5, 46.5}, {20, 45, 24, 49}, true, false, false, 45, true},
+    {"hero_strike2_nw", {80, 96}, {15.5, 43.5}, {13, 42, 17, 46}, true, false, false, -25},
+    {"hero_strike3_nw", {80, 96}, {13.5, 39.5}, {12, 37, 16, 42}, true, false, false, -55},
+    {"hero_strike4_nw", {80, 96}, {25.5, 49.5}, {23, 48, 27, 52}, true, false, false, -95},
+    {"hero_strike5_nw", {80, 96}, {26.5, 50.5}, {25, 49, 28, 54}, true, false, false, -15},
+    // SW's bare left fist starts on the far side, crosses the body during
+    // the downswing, then returns. The contact blade points lower-left; the
+    // three crossing/extended poses retain only fingers over the weapon.
+    {"hero_strike0_sw", {80, 96}, {57.5, 61.5}, {55, 60, 59, 64}, true, true, false},
+    {"hero_strike1_sw", {80, 96}, {64.5, 48.5}, {62, 47, 67, 51}, true, true, false, 55},
+    {"hero_strike2_sw", {80, 96}, {29.5, 71.5}, {27, 69, 33, 73}, true, false, false, -45},
+    {"hero_strike3_sw", {80, 96}, {21.5, 71.5}, {19, 69, 25, 74}, true, false, false, -110},
+    {"hero_strike4_sw", {80, 96}, {35.5, 62.5}, {33, 60, 39, 65}, true, false, false, -140},
+    {"hero_strike5_sw", {80, 96}, {53.5, 60.5}, {51, 59, 56, 63}, true, true, false, -15},
 };
 
 // Axe and bow artwork faces left; mirror the image AND its source grip for a
 // right-facing actor. The staff has no distinct wrapped grip: its measured
 // mid-shaft contact leaves its bottom near the idle actor's ground line.
 inline constexpr WeaponMetadata kWeapons[] = {
-    {"weapon_axe", {32, 64}, {22.5, 57.5}, true},
-    {"weapon_sword", {32, 64}, {15.5, 55.5}, false},
+    {"weapon_axe", {32, 64}, {22.5, 57.5}, true, true},
+    {"weapon_sword", {32, 64}, {15.5, 55.5}, false, true},
     {"weapon_staff", {32, 64}, {15.5, 35.5}, false},
     {"weapon_bow", {32, 64}, {11.5, 38.5}, true},
-    {"weapon_club", {32, 64}, {15.5, 54.5}, false},
+    {"weapon_club", {32, 64}, {15.5, 54.5}, false, true},
 };
 
 inline int scaled_width(int height, const raster_art::Dimensions& size) {
@@ -101,6 +167,9 @@ struct Placement {
   int weapon_center_x = 0;
   int weapon_feet_y = 0;
   int weapon_height = 0;
+  raster_art::SpriteTransform weapon_transform;
+  int clockwise_degrees = 0;
+  bool behind_actor = false;
   bool flip = false;
   [[nodiscard]] bool valid() const { return pose && weapon && weapon_height > 0; }
 };
@@ -128,34 +197,41 @@ inline Placement compute(const char* resolved_actor_name, const char* weapon_nam
   const double scale = static_cast<double>(actor_height) / actor_size.height;
   const int weapon_height = std::max(
       1, static_cast<int>(std::lround(weapon_size.height * scale)));
-  const int weapon_width = detail::scaled_width(weapon_height, weapon_size);
-  const int actor_left = center_x - actor_width / 2;
-  const int actor_top = feet_y - actor_height;
+  const long long left = static_cast<long long>(center_x) - actor_width / 2;
+  const long long top = static_cast<long long>(feet_y) - actor_height;
+  if (left < std::numeric_limits<int>::min() || top < std::numeric_limits<int>::min() ||
+      left + actor_width > std::numeric_limits<int>::max())
+    return result;
+  const int actor_left = static_cast<int>(left);
+  const int actor_top = static_cast<int>(top);
   const PixelPoint hand{
       actor_left + pose->hand.x * actor_width / actor_size.width,
       actor_top + pose->hand.y * actor_height / actor_size.height};
   const bool flip = weapon->flip_when_facing_right != pose->faces_left;
-  const double grip_x = flip ? weapon_size.width - weapon->grip.x : weapon->grip.x;
-  const int weapon_left = static_cast<int>(std::lround(
-      hand.x - grip_x * weapon_width / weapon_size.width));
-  const int weapon_top = static_cast<int>(std::lround(
-      hand.y - weapon->grip.y * weapon_height / weapon_size.height));
+  const int angle = weapon->authored_melee ? pose->melee_clockwise_degrees : 0;
+  const auto transform = raster_art::sprite_transform(
+      weapon_name, weapon_height, weapon->grip.x, weapon->grip.y, angle, flip);
+  RECT weapon_bounds{};
+  if (!raster_art::anchored_bounds(transform, hand.x, hand.y, weapon_bounds))
+    return result;
 
   result.pose = pose;
   result.weapon = weapon;
   result.actor_bounds = {actor_left, actor_top, actor_left + actor_width, feet_y};
-  result.weapon_bounds = {weapon_left, weapon_top, weapon_left + weapon_width,
-                          weapon_top + weapon_height};
+  result.weapon_bounds = weapon_bounds;
   result.hand_screen = hand;
   result.actor_center_x = center_x;
   result.actor_feet_y = feet_y;
   result.actor_height = actor_height;
-  result.weapon_center_x = weapon_left + weapon_width / 2;
-  result.weapon_feet_y = weapon_top + weapon_height;
+  result.weapon_center_x = weapon_bounds.left + transform.canvas.width / 2;
+  result.weapon_feet_y = weapon_bounds.bottom;
   result.weapon_height = weapon_height;
   result.flip = flip;
+  result.weapon_transform = transform;
+  result.clockwise_degrees = angle;
+  result.behind_actor = pose->behind_actor || (angle != 0 && pose->melee_behind_actor);
 
-  if (pose->behind_actor) {
+  if (result.behind_actor) {
     // Replaying the existing actor through this rectangle restores its body
     // occlusion over a far-hand weapon. Transparent actor pixels retain weapon.
     IntersectRect(&result.occlusion_bounds, &result.actor_bounds,
@@ -183,9 +259,10 @@ inline Placement compute(const char* resolved_actor_name, const char* weapon_nam
 // the same cached sprite and only a saved clip region; it creates no bitmaps.
 inline bool draw_front(HDC dc, const Placement& placement) {
   if (!dc || !placement.valid()) return false;
-  if (!raster_art::draw_sprite(dc, placement.weapon->name,
-                               placement.weapon_center_x, placement.weapon_feet_y,
-                               placement.weapon_height, placement.flip))
+  if (!raster_art::draw_sprite_at_anchor(dc, placement.weapon->name,
+          placement.hand_screen.x, placement.hand_screen.y, placement.weapon_height,
+          placement.weapon->grip.x, placement.weapon->grip.y,
+          placement.clockwise_degrees, placement.flip))
     return false;
   if (IsRectEmpty(&placement.occlusion_bounds)) return true;
   const int saved = SaveDC(dc);

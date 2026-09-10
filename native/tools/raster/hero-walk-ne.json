@@ -1,0 +1,157 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "shared_palette_max_colors": 32,
+  "defaults": {
+    "cell_size": 5,
+    "alpha_mode": "crisp",
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10"
+  },
+  "known_limitations": [
+    "One measured460px source row-origin stride preserves common head/torso level; equal physical scale uses sourcecell5. Original pose offsets remain within each row.",
+    "Candidate phase/pivot and enclosed-background artifacts require review before promotion.",
+    "Revised2-to3 transition opens into wide stride, then closes through6/7; inspected for production trial. Adjacent0/1 and4/5 remain close in the generated output; equipped movement and body bob remain live review gates."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/actors_hero-walk-ne-d2poses-v2.png",
+      "border_background": {
+        "color": [
+          180,
+          180,
+          180
+        ],
+        "tolerance": 100
+      },
+      "assets": [
+        {
+          "name": "hero_walk0_ne",
+          "source_box": [
+            0,
+            0,
+            394,
+            510
+          ],
+          "anchor_source": [
+            197,
+            515
+          ]
+        },
+        {
+          "name": "hero_walk1_ne",
+          "source_box": [
+            394,
+            0,
+            788,
+            510
+          ],
+          "anchor_source": [
+            197,
+            515
+          ]
+        },
+        {
+          "name": "hero_walk2_ne",
+          "source_box": [
+            788,
+            0,
+            1181,
+            510
+          ],
+          "anchor_source": [
+            196,
+            515
+          ]
+        },
+        {
+          "name": "hero_walk3_ne",
+          "source_box": [
+            1181,
+            0,
+            1575,
+            510
+          ],
+          "anchor_source": [
+            197,
+            515
+          ]
+        },
+        {
+          "name": "hero_walk4_ne",
+          "source_box": [
+            0,
+            510,
+            394,
+            999
+          ],
+          "anchor_source": [
+            197,
+            465
+          ]
+        },
+        {
+          "name": "hero_walk5_ne",
+          "source_box": [
+            394,
+            510,
+            788,
+            999
+          ],
+          "anchor_source": [
+            197,
+            465
+          ]
+        },
+        {
+          "name": "hero_walk6_ne",
+          "source_box": [
+            788,
+            510,
+            1181,
+            999
+          ],
+          "anchor_source": [
+            196,
+            465
+          ]
+        },
+        {
+          "name": "hero_walk7_ne",
+          "source_box": [
+            1181,
+            510,
+            1575,
+            999
+          ],
+          "anchor_source": [
+            197,
+            465
+          ]
+        }
+      ]
+    }
+  ],
+  "integration_review": {
+    "date": "2026-09-10",
+    "reviewer": "root",
+    "scope": "Runtime integration and production captures reviewed for this iteration; not final visual polish.",
+    "native_build_and_core_suites": "passed",
+    "production_scenarios": {
+      "passed": 64,
+      "fullscreen_average_ms": 18.7,
+      "dense_average_ms": 9.4
+    },
+    "browser_checks": {
+      "passed": 32,
+      "total": 32
+    },
+    "capture_review": "Live3440x1440 window viewed and closed; actual SW/NW/NE walking frames and all three equipped strike contact captures viewed.",
+    "limitations_policy": "Existing identity,palette,registration and source-generation observations remain unchanged."
+  }
+}

@@ -34,8 +34,9 @@ CLI (`python -m pixel_perfecter.cli`) invokes the core directly and uses binary
 majority alpha. This importer uses the desktop workspace API to retain cell
 coverage and alpha-weighted RGB at translucent edges, avoiding dark halos.
 For a fixed grid, the core selects a modal color per cell; it can internally
-quantize label colors for complex inputs. No additional palette is imposed by
-the importer. `cell_size: 0` invokes the project's grid detector; an explicit
+quantize label colors for complex inputs. Requested per-asset or shared-cycle
+palette reduction uses Pixel Respecter's own palette API. `cell_size: 0`
+invokes the project's grid detector; an explicit
 cell size invokes its deterministic rigid reconstruction on each sheet cell.
 
 Use the existing environment (Python 3.12, NumPy, OpenCV, Pillow):
@@ -150,6 +151,29 @@ four-direction hero strip, and a 3x3 repeated earth preview with opposing-edge
 statistics against ordinary native neighbors. The preview does not apply hidden
 blending or seam corrections. Source prompts and rejected generated candidates
 remain under the asset sources owned by their generation tasks.
+
+For a motion manifest, `shared_palette_max_colors: 32` skips per-frame
+max-color reduction and calls the actual project's `palettes.reduce_colors`
+once across all reconstructed frames. Alpha and geometry stay intact. The
+cycle's full RGB palette, color counts and API are recorded in provenance.
+This option is used only after joint color inspection warrants it; it does not
+change earlier imports or repair source lighting changes.
+
+`preview_cycle.py sw --count 8 --duration 80` writes fixed-origin native/4x
+strips, a four-column contact sheet, a timed GIF and frame-bound/hash metrics.
+Use `--input-dir`, `--report` and `--output-dir` to inspect candidates without
+putting them into the active library. Hand sockets are measured separately on
+the actual runtime pixels by the equipment lane. The catalog lists accepted
+cycle frame counts and explicitly reports missing walk directions.
+
+When isolated generated sources have different resolutions, their numerical
+source cell sizes can differ while their reconstructed head/torso sizes match.
+Such mixed sets require an explicit `native_scale_group` and `scale_review`;
+the group is a review declaration, not an automatic size correction. Preserve
+authored pivots and compare stable head/torso landmarks. Never individually fit
+each pose's visible bounds. The six SE strike poses are imported by
+`hero-strike-se.json`; their 90ms GIF is a slow review preview, not production
+attack timing.
 
 Focused checks (including the actual external reconstruction engine):
 

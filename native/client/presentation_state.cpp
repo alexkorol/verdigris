@@ -330,6 +330,9 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       flash.damage_to_player = to_player;
       flash.critical = event.critical;
       flash.style = event.style;
+      // Incoming events name the attacking monster; their tint belongs to
+      // the player. Outgoing events name the resolved hit target.
+      flash.actor_id = to_player ? world.player.id : event.actor_id;
       fx.effects.push_back(flash);
       EffectFx number;
       number.kind = EffectFx::Kind::DamageNumber;

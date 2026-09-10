@@ -1,0 +1,1779 @@
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+core.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\src\core.cpp(1944): warning C4100: 'player_level': unreferenced formal parameter
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+seasonal.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+networking.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\src\networking.cpp(2929): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+core_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+networking_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+camera2d_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+local_session.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+remote_session.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\remote_session.cpp(364): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+presentation_state.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+session_tests.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\tests\session_tests.cpp(859): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+presentation_events_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+cue_spec.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+event_cues.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+audio_mixer.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+audio_mixer_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+server_main.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\src\server_main.cpp(16): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\src\server_main.cpp(22): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+main.cpp
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusHeaders.h(701): warning C4458: declaration of 'nativeCap' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusHeaders.h(716): note: see declaration of 'Gdiplus::CustomLineCap::nativeCap'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusImageAttributes.h(368): warning C4458: declaration of 'nativeImageAttr' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusImageAttributes.h(382): note: see declaration of 'Gdiplus::ImageAttributes::nativeImageAttr'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusMatrix.h(301): warning C4458: declaration of 'nativeMatrix' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusMatrix.h(315): note: see declaration of 'Gdiplus::Matrix::nativeMatrix'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusBrush.h(95): warning C4458: declaration of 'nativeBrush' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusBrush.h(108): note: see declaration of 'Gdiplus::Brush::nativeBrush'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPen.h(467): warning C4458: declaration of 'nativePen' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPen.h(481): note: see declaration of 'Gdiplus::Pen::nativePen'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(891): warning C4458: declaration of 'nativePath' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(905): note: see declaration of 'Gdiplus::GraphicsPath::nativePath'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(1078): warning C4458: declaration of 'nativeIterator' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(1092): note: see declaration of 'Gdiplus::GraphicsPathIterator::nativeIterator'
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(3492): warning C4100: 'bounds': unreferenced formal parameter
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(5297): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(11376): warning C4456: declaration of 'expect_x' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(11370): note: see declaration of 'expect_x'
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(11377): warning C4456: declaration of 'expect_y' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(11371): note: see declaration of 'expect_y'
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(11712): warning C4456: declaration of 'route' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(11671): note: see declaration of 'route'
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(13800): warning C4456: declaration of 'trace_find' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(13316): note: see declaration of 'trace_find'
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(14490): warning C4456: declaration of 'strip' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(14452): note: see declaration of 'strip'
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(19632): warning C4456: declaration of 'here' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(19584): note: see declaration of 'here'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+remote_play.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+native legacy denylist: PASS
+[swing] tgt=monster-1-0 now=1000 next=1000 range-ok
+[swing] tgt=monster-1-0 now=1001 next=1350 range-ok
+[swing] tgt=monster-1-0 now=1349 next=1350 range-ok
+[swing] tgt=monster-1-0 now=1350 next=1350 range-ok
+[swing] tgt=monster-1-1 now=1351 next=1700 range-ok
+[swing] tgt=monster-1-1 now=1699 next=1700 range-ok
+[swing] tgt=monster-1-1 now=1700 next=1700 range-ok
+[swing] tgt=monster-1-1 now=1702 next=2050 range-ok
+[swing] tgt=monster-1-1 now=2049 next=2050 range-ok
+[swing] tgt=monster-1-1 now=2050 next=2050 range-ok
+[swing] tgt=monster-1-1 now=3000 next=3000 range-ok
+[swing] tgt=monster-1-1 now=3000 next=3350 range-ok
+verdigris core tests: PASS
+[swing] tgt=monster-1-19 now=1789025793863 next=0 range-ok
+[swing] tgt=monster-1-0 now=1789025793905 next=1789025793905 range-ok
+[swing] tgt=monster-1-0 now=1789025794255 next=1789025794255 range-ok
+[swing] tgt=monster-1-0 now=1789025794605 next=1789025794605 range-ok
+verdigris networking tests: PASS
+camera2d tests: PASS
+PASS local: start succeeds
+PASS local: state is ready without a handshake
+PASS local: scion uuid published
+PASS local: house name published
+PASS local: movement commands reach the simulation through the seam
+PASS local: SessionReady presentation event emitted
+PASS local: shutdown reaches disconnected state
+PASS remote-negative: dead endpoint fails start()
+PASS remote-negative: state is rejected, not a silent local fallback
+PASS remote-negative: hard error message supplied
+PASS remote: test server bound inside the TASK-0163 capsule
+PASS remote: connect + upgrade + login sent
+PASS remote: player:login acknowledged -> ready
+PASS remote: authoritative identity mirrored into the client model
+PASS remote: scene snapshot mirrored
+PASS remote: SessionReady presentation event emitted
+PASS remote: session survives a submitted command
+PASS remote: clean shutdown reaches disconnected
+PASS remote: server stopped cleanly
+PASS journey: test server bound inside the TASK-0163 capsule 7160-7179
+PASS journey: connect + upgrade + login sent
+PASS journey: handshake ready
+PASS journey: zone enter mirrors instance scene
+PASS journey: transition publishes exit stairs
+PASS journey: movement echo updates x
+PASS journey: aim updates facing
+[swing] tgt=monster-1-2 now=1789025798743 next=1789025798743 range-ok
+[swing] tgt=monster-1-2 now=1789025798774 next=1789025799093 range-ok
+[swing] tgt=monster-1-2 now=1789025798795 next=1789025799093 range-ok
+[swing] tgt=monster-1-2 now=1789025798825 next=1789025799093 range-ok
+[swing] tgt=monster-1-2 now=1789025798858 next=1789025799093 range-ok
+[swing] tgt=monster-1-2 now=1789025798891 next=1789025799093 range-ok
+[swing] tgt=monster-1-2 now=1789025798891 next=1789025799093 range-ok
+[swing] tgt=monster-1-2 now=1789025798925 next=1789025799093 range-ok
+[swing] tgt=monster-1-2 now=1789025798945 next=1789025799093 range-ok
+[swing] tgt=monster-1-2 now=1789025798974 next=1789025799093 range-ok
+[swing] tgt=monster-1-2 now=1789025798987 next=1789025799093 range-ok
+[swing] tgt=monster-1-2 now=1789025798998 next=1789025799093 range-ok
+[swing] tgt=monster-1-2 now=1789025799025 next=1789025799093 range-ok
+[swing] tgt=monster-1-2 now=1789025799058 next=1789025799093 range-ok
+[swing] tgt=monster-1-2 now=1789025799058 next=1789025799093 range-ok
+[swing] tgt=monster-1-2 now=1789025799091 next=1789025799093 range-ok
+[swing] tgt=monster-1-2 now=1789025799125 next=1789025799125 range-ok
+[swing] tgt=monster-1-2 now=1789025799158 next=1789025799475 range-ok
+[swing] tgt=monster-1-2 now=1789025799190 next=1789025799475 range-ok
+[swing] tgt=monster-1-2 now=1789025799210 next=1789025799475 range-ok
+[swing] tgt=monster-1-2 now=1789025799210 next=1789025799475 range-ok
+[swing] tgt=monster-1-2 now=1789025799241 next=1789025799475 range-ok
+[swing] tgt=monster-1-2 now=1789025799254 next=1789025799475 range-ok
+[swing] tgt=monster-1-2 now=1789025799277 next=1789025799475 range-ok
+[swing] tgt=monster-1-2 now=1789025799305 next=1789025799475 range-ok
+[swing] tgt=monster-1-2 now=1789025799327 next=1789025799475 range-ok
+[swing] tgt=monster-1-2 now=1789025799358 next=1789025799475 range-ok
+[swing] tgt=monster-1-2 now=1789025799360 next=1789025799475 range-ok
+[swing] tgt=monster-1-2 now=1789025799391 next=1789025799475 range-ok
+[swing] tgt=monster-1-2 now=1789025799424 next=1789025799475 range-ok
+[swing] tgt=monster-1-2 now=1789025799445 next=1789025799475 range-ok
+[swing] tgt=monster-1-2 now=1789025799475 next=1789025799475 range-ok
+[swing] tgt=monster-1-2 now=1789025799508 next=1789025799825 range-ok
+[swing] tgt=monster-1-2 now=1789025799520 next=1789025799825 range-ok
+[swing] tgt=monster-1-2 now=1789025799524 next=1789025799825 range-ok
+[swing] tgt=monster-1-2 now=1789025799543 next=1789025799825 range-ok
+[swing] tgt=monster-1-2 now=1789025799573 next=1789025799825 range-ok
+[swing] tgt=monster-1-2 now=1789025799608 next=1789025799825 range-ok
+[swing] tgt=monster-1-2 now=1789025799641 next=1789025799825 range-ok
+[swing] tgt=monster-1-2 now=1789025799674 next=1789025799825 range-ok
+[swing] tgt=monster-1-2 now=1789025799675 next=1789025799825 range-ok
+[swing] tgt=monster-1-2 now=1789025799706 next=1789025799825 range-ok
+[swing] tgt=monster-1-2 now=1789025799727 next=1789025799825 range-ok
+[swing] tgt=monster-1-2 now=1789025799758 next=1789025799825 range-ok
+[swing] tgt=monster-1-2 now=1789025799792 next=1789025799825 range-ok
+[swing] tgt=monster-1-2 now=1789025799804 next=1789025799825 range-ok
+[swing] tgt=monster-1-2 now=1789025799826 next=1789025799825 range-ok
+[swing] tgt=monster-1-2 now=1789025799829 next=1789025800176 range-ok
+[swing] tgt=monster-1-2 now=1789025799858 next=1789025800176 range-ok
+[swing] tgt=monster-1-2 now=1789025799892 next=1789025800176 range-ok
+[swing] tgt=monster-1-2 now=1789025799925 next=1789025800176 range-ok
+[swing] tgt=monster-1-2 now=1789025799957 next=1789025800176 range-ok
+[swing] tgt=monster-1-2 now=1789025799991 next=1789025800176 range-ok
+[swing] tgt=monster-1-2 now=1789025799991 next=1789025800176 range-ok
+[swing] tgt=monster-1-2 now=1789025800023 next=1789025800176 range-ok
+[swing] tgt=monster-1-2 now=1789025800043 next=1789025800176 range-ok
+[swing] tgt=monster-1-2 now=1789025800055 next=1789025800176 range-ok
+[swing] tgt=monster-1-2 now=1789025800079 next=1789025800176 range-ok
+[swing] tgt=monster-1-2 now=1789025800109 next=1789025800176 range-ok
+[swing] tgt=monster-1-2 now=1789025800142 next=1789025800176 range-ok
+[swing] tgt=monster-1-2 now=1789025800142 next=1789025800176 range-ok
+[swing] tgt=monster-1-2 now=1789025800176 next=1789025800176 range-ok
+[swing] tgt=monster-1-10 now=1789025800209 next=1789025800526 range-ok
+[swing] tgt=monster-1-10 now=1789025800239 next=1789025800526 range-ok
+[swing] tgt=monster-1-10 now=1789025800260 next=1789025800526 range-ok
+[swing] tgt=monster-1-10 now=1789025800292 next=1789025800526 range-ok
+[swing] tgt=monster-1-10 now=1789025800308 next=1789025800526 range-ok
+[swing] tgt=monster-1-10 now=1789025800325 next=1789025800526 range-ok
+[swing] tgt=monster-1-10 now=1789025800338 next=1789025800526 range-ok
+[swing] tgt=monster-1-10 now=1789025800364 next=1789025800526 range-ok
+[swing] tgt=monster-1-10 now=1789025800391 next=1789025800526 range-ok
+[swing] tgt=monster-1-10 now=1789025800425 next=1789025800526 range-ok
+[swing] tgt=monster-1-10 now=1789025800456 next=1789025800526 range-ok
+[swing] tgt=monster-1-10 now=1789025800474 next=1789025800526 range-ok
+[swing] tgt=monster-1-10 now=1789025800492 next=1789025800526 range-ok
+[swing] tgt=monster-1-10 now=1789025800525 next=1789025800526 range-ok
+[swing] tgt=monster-1-10 now=1789025800546 next=1789025800546 range-ok
+[swing] tgt=monster-1-10 now=1789025800575 next=1789025800896 range-ok
+[swing] tgt=monster-1-10 now=1789025800609 next=1789025800896 range-ok
+[swing] tgt=monster-1-10 now=1789025800622 next=1789025800896 range-ok
+[swing] tgt=monster-1-10 now=1789025800626 next=1789025800896 range-ok
+[swing] tgt=monster-1-10 now=1789025800645 next=1789025800896 range-ok
+[swing] tgt=monster-1-10 now=1789025800673 next=1789025800896 range-ok
+[swing] tgt=monster-1-10 now=1789025800704 next=1789025800896 range-ok
+[swing] tgt=monster-1-10 now=1789025800736 next=1789025800896 range-ok
+[swing] tgt=monster-1-10 now=1789025800767 next=1789025800896 range-ok
+[swing] tgt=monster-1-10 now=1789025800777 next=1789025800896 range-ok
+[swing] tgt=monster-1-10 now=1789025800792 next=1789025800896 range-ok
+[swing] tgt=monster-1-10 now=1789025800824 next=1789025800896 range-ok
+[swing] tgt=monster-1-10 now=1789025800851 next=1789025800896 range-ok
+[swing] tgt=monster-1-10 now=1789025800875 next=1789025800896 range-ok
+[swing] tgt=monster-1-10 now=1789025800890 next=1789025800896 range-ok
+[swing] tgt=monster-1-10 now=1789025800913 next=1789025800913 range-ok
+[swing] tgt=monster-1-10 now=1789025800942 next=1789025801263 range-ok
+[swing] tgt=monster-1-10 now=1789025800943 next=1789025801263 range-ok
+[swing] tgt=monster-1-10 now=1789025800992 next=1789025801263 range-ok
+[swing] tgt=monster-1-10 now=1789025801023 next=1789025801263 range-ok
+[swing] tgt=monster-1-10 now=1789025801044 next=1789025801263 range-ok
+[swing] tgt=monster-1-10 now=1789025801076 next=1789025801263 range-ok
+[swing] tgt=monster-1-10 now=1789025801094 next=1789025801263 range-ok
+[swing] tgt=monster-1-10 now=1789025801110 next=1789025801263 range-ok
+[swing] tgt=monster-1-10 now=1789025801133 next=1789025801263 range-ok
+[swing] tgt=monster-1-10 now=1789025801147 next=1789025801263 range-ok
+[swing] tgt=monster-1-10 now=1789025801163 next=1789025801263 range-ok
+[swing] tgt=monster-1-10 now=1789025801194 next=1789025801263 range-ok
+[swing] tgt=monster-1-10 now=1789025801226 next=1789025801263 range-ok
+[swing] tgt=monster-1-10 now=1789025801244 next=1789025801263 range-ok
+[swing] tgt=monster-1-10 now=1789025801258 next=1789025801263 range-ok
+[swing] tgt=monster-1-10 now=1789025801293 next=1789025801293 range-ok
+[swing] tgt=monster-1-10 now=1789025801324 next=1789025801643 range-ok
+[swing] tgt=monster-1-10 now=1789025801344 next=1789025801643 range-ok
+[swing] tgt=monster-1-10 now=1789025801375 next=1789025801643 range-ok
+[swing] tgt=monster-1-10 now=1789025801410 next=1789025801643 range-ok
+[swing] tgt=monster-1-10 now=1789025801410 next=1789025801643 range-ok
+[swing] tgt=monster-1-10 now=1789025801423 next=1789025801643 range-ok
+[swing] tgt=monster-1-10 now=1789025801443 next=1789025801643 range-ok
+[swing] tgt=monster-1-10 now=1789025801476 next=1789025801643 range-ok
+[swing] tgt=monster-1-10 now=1789025801508 next=1789025801643 range-ok
+[swing] tgt=monster-1-10 now=1789025801529 next=1789025801643 range-ok
+[swing] tgt=monster-1-10 now=1789025801556 next=1789025801643 range-ok
+[swing] tgt=monster-1-10 now=1789025801574 next=1789025801643 range-ok
+[swing] tgt=monster-1-10 now=1789025801590 next=1789025801643 range-ok
+[swing] tgt=monster-1-10 now=1789025801611 next=1789025801643 range-ok
+[swing] tgt=monster-1-10 now=1789025801643 next=1789025801643 range-ok
+[swing] tgt=monster-1-10 now=1789025801675 next=1789025801993 range-ok
+[swing] tgt=monster-1-10 now=1789025801689 next=1789025801993 range-ok
+[swing] tgt=monster-1-10 now=1789025801713 next=1789025801993 range-ok
+[swing] tgt=monster-1-10 now=1789025801741 next=1789025801993 range-ok
+[swing] tgt=monster-1-10 now=1789025801741 next=1789025801993 range-ok
+[swing] tgt=monster-1-10 now=1789025801775 next=1789025801993 range-ok
+[swing] tgt=monster-1-10 now=1789025801797 next=1789025801993 range-ok
+[swing] tgt=monster-1-10 now=1789025801827 next=1789025801993 range-ok
+[swing] tgt=monster-1-10 now=1789025801860 next=1789025801993 range-ok
+[swing] tgt=monster-1-10 now=1789025801891 next=1789025801993 range-ok
+[swing] tgt=monster-1-10 now=1789025801893 next=1789025801993 range-ok
+[swing] tgt=monster-1-10 now=1789025801925 next=1789025801993 range-ok
+[swing] tgt=monster-1-10 now=1789025801945 next=1789025801993 range-ok
+[swing] tgt=monster-1-10 now=1789025801961 next=1789025801993 range-ok
+[swing] tgt=monster-1-10 now=1789025801980 next=1789025801993 range-ok
+[swing] tgt=monster-1-10 now=1789025802008 next=1789025802008 range-ok
+[swing] tgt=monster-1-8 now=1789025802043 next=1789025802358 range-ok
+[swing] tgt=monster-1-8 now=1789025802057 next=1789025802358 range-ok
+[swing] tgt=monster-1-8 now=1789025802077 next=1789025802358 range-ok
+[swing] tgt=monster-1-8 now=1789025802109 next=1789025802358 range-ok
+[swing] tgt=monster-1-8 now=1789025802141 next=1789025802358 range-ok
+[swing] tgt=monster-1-8 now=1789025802175 next=1789025802358 range-ok
+[swing] tgt=monster-1-8 now=1789025802195 next=1789025802358 range-ok
+[swing] tgt=monster-1-8 now=1789025802211 next=1789025802358 range-ok
+[swing] tgt=monster-1-8 now=1789025802227 next=1789025802358 range-ok
+[swing] tgt=monster-1-8 now=1789025802241 next=1789025802358 range-ok
+[swing] tgt=monster-1-8 now=1789025802263 next=1789025802358 range-ok
+[swing] tgt=monster-1-8 now=1789025802292 next=1789025802358 range-ok
+[swing] tgt=monster-1-8 now=1789025802324 next=1789025802358 range-ok
+[swing] tgt=monster-1-8 now=1789025802359 next=1789025802359 range-ok
+[swing] tgt=monster-1-8 now=1789025802361 next=1789025802709 range-ok
+[swing] tgt=monster-1-8 now=1789025802379 next=1789025802709 range-ok
+[swing] tgt=monster-1-8 now=1789025802408 next=1789025802709 range-ok
+[swing] tgt=monster-1-8 now=1789025802440 next=1789025802709 range-ok
+[swing] tgt=monster-1-8 now=1789025802463 next=1789025802709 range-ok
+[swing] tgt=monster-1-8 now=1789025802492 next=1789025802709 range-ok
+[swing] tgt=monster-1-8 now=1789025802507 next=1789025802709 range-ok
+[swing] tgt=monster-1-8 now=1789025802512 next=1789025802709 range-ok
+[swing] tgt=monster-1-8 now=1789025802531 next=1789025802709 range-ok
+[swing] tgt=monster-1-8 now=1789025802558 next=1789025802709 range-ok
+[swing] tgt=monster-1-8 now=1789025802578 next=1789025802709 range-ok
+[swing] tgt=monster-1-8 now=1789025802608 next=1789025802709 range-ok
+[swing] tgt=monster-1-8 now=1789025802639 next=1789025802709 range-ok
+[swing] tgt=monster-1-8 now=1789025802673 next=1789025802709 range-ok
+[swing] tgt=monster-1-8 now=1789025802673 next=1789025802709 range-ok
+[swing] tgt=monster-1-8 now=1789025802706 next=1789025802709 range-ok
+[swing] tgt=monster-1-8 now=1789025802737 next=1789025802737 range-ok
+[swing] tgt=monster-1-8 now=1789025802758 next=1789025803087 range-ok
+[swing] tgt=monster-1-8 now=1789025802773 next=1789025803087 range-ok
+[swing] tgt=monster-1-8 now=1789025802788 next=1789025803087 range-ok
+[swing] tgt=monster-1-8 now=1789025802823 next=1789025803087 range-ok
+[swing] tgt=monster-1-8 now=1789025802823 next=1789025803087 range-ok
+[swing] tgt=monster-1-8 now=1789025802855 next=1789025803087 range-ok
+[swing] tgt=monster-1-8 now=1789025802878 next=1789025803087 range-ok
+[swing] tgt=monster-1-8 now=1789025802908 next=1789025803087 range-ok
+[swing] tgt=monster-1-8 now=1789025802929 next=1789025803087 range-ok
+[swing] tgt=monster-1-8 now=1789025802959 next=1789025803087 range-ok
+[swing] tgt=monster-1-8 now=1789025802978 next=1789025803087 range-ok
+[swing] tgt=monster-1-8 now=1789025802979 next=1789025803087 range-ok
+[swing] tgt=monster-1-8 now=1789025803008 next=1789025803087 range-ok
+[swing] tgt=monster-1-8 now=1789025803041 next=1789025803087 range-ok
+[swing] tgt=monster-1-8 now=1789025803055 next=1789025803087 range-ok
+[swing] tgt=monster-1-8 now=1789025803079 next=1789025803087 range-ok
+[swing] tgt=monster-1-8 now=1789025803106 next=1789025803106 range-ok
+[swing] tgt=monster-1-8 now=1789025803137 next=1789025803456 range-ok
+[swing] tgt=monster-1-8 now=1789025803138 next=1789025803456 range-ok
+[swing] tgt=monster-1-8 now=1789025803159 next=1789025803456 range-ok
+[swing] tgt=monster-1-8 now=1789025803179 next=1789025803456 range-ok
+[swing] tgt=monster-1-8 now=1789025803208 next=1789025803456 range-ok
+[swing] tgt=monster-1-8 now=1789025803241 next=1789025803456 range-ok
+[swing] tgt=monster-1-8 now=1789025803275 next=1789025803456 range-ok
+[swing] tgt=monster-1-8 now=1789025803291 next=1789025803456 range-ok
+[swing] tgt=monster-1-8 now=1789025803306 next=1789025803456 range-ok
+[swing] tgt=monster-1-8 now=1789025803322 next=1789025803456 range-ok
+[swing] tgt=monster-1-8 now=1789025803340 next=1789025803456 range-ok
+[swing] tgt=monster-1-8 now=1789025803364 next=1789025803456 range-ok
+[swing] tgt=monster-1-8 now=1789025803391 next=1789025803456 range-ok
+[swing] tgt=monster-1-8 now=1789025803417 next=1789025803456 range-ok
+[swing] tgt=monster-1-8 now=1789025803447 next=1789025803456 range-ok
+[swing] tgt=monster-1-8 now=1789025803447 next=1789025803456 range-ok
+[swing] tgt=monster-1-8 now=1789025803475 next=1789025803475 range-ok
+[swing] tgt=monster-1-8 now=1789025803508 next=1789025803825 range-ok
+[swing] tgt=monster-1-8 now=1789025803542 next=1789025803825 range-ok
+[swing] tgt=monster-1-8 now=1789025803576 next=1789025803825 range-ok
+[swing] tgt=monster-1-8 now=1789025803589 next=1789025803825 range-ok
+[swing] tgt=monster-1-8 now=1789025803607 next=1789025803825 range-ok
+[swing] tgt=monster-1-8 now=1789025803612 next=1789025803825 range-ok
+[swing] tgt=monster-1-8 now=1789025803642 next=1789025803825 range-ok
+[swing] tgt=monster-1-8 now=1789025803674 next=1789025803825 range-ok
+[swing] tgt=monster-1-8 now=1789025803695 next=1789025803825 range-ok
+[swing] tgt=monster-1-8 now=1789025803725 next=1789025803825 range-ok
+[swing] tgt=monster-1-8 now=1789025803760 next=1789025803825 range-ok
+[swing] tgt=monster-1-8 now=1789025803760 next=1789025803825 range-ok
+[swing] tgt=monster-1-8 now=1789025803792 next=1789025803825 range-ok
+[swing] tgt=monster-1-8 now=1789025803826 next=1789025803826 range-ok
+[swing] tgt=monster-1-5 now=1789025803873 next=1789025804176 range-ok
+[swing] tgt=monster-1-5 now=1789025803896 next=1789025804176 range-ok
+[swing] tgt=monster-1-5 now=1789025803924 next=1789025804176 range-ok
+[swing] tgt=monster-1-5 now=1789025803924 next=1789025804176 range-ok
+[swing] tgt=monster-1-5 now=1789025803956 next=1789025804176 range-ok
+[swing] tgt=monster-1-5 now=1789025803977 next=1789025804176 range-ok
+[swing] tgt=monster-1-5 now=1789025804008 next=1789025804176 range-ok
+[swing] tgt=monster-1-5 now=1789025804041 next=1789025804176 range-ok
+[swing] tgt=monster-1-5 now=1789025804062 next=1789025804176 range-ok
+[swing] tgt=monster-1-5 now=1789025804076 next=1789025804176 range-ok
+[swing] tgt=monster-1-5 now=1789025804091 next=1789025804176 range-ok
+[swing] tgt=monster-1-5 now=1789025804125 next=1789025804176 range-ok
+[swing] tgt=monster-1-5 now=1789025804138 next=1789025804176 range-ok
+[swing] tgt=monster-1-5 now=1789025804162 next=1789025804176 range-ok
+[swing] tgt=monster-1-5 now=1789025804192 next=1789025804191 range-ok
+[swing] tgt=monster-1-5 now=1789025804222 next=1789025804542 range-ok
+[swing] tgt=monster-1-5 now=1789025804237 next=1789025804542 range-ok
+[swing] tgt=monster-1-5 now=1789025804244 next=1789025804542 range-ok
+[swing] tgt=monster-1-5 now=1789025804277 next=1789025804542 range-ok
+[swing] tgt=monster-1-5 now=1789025804309 next=1789025804542 range-ok
+[swing] tgt=monster-1-5 now=1789025804341 next=1789025804542 range-ok
+[swing] tgt=monster-1-5 now=1789025804376 next=1789025804542 range-ok
+[swing] tgt=monster-1-5 now=1789025804388 next=1789025804542 range-ok
+[swing] tgt=monster-1-5 now=1789025804391 next=1789025804542 range-ok
+[swing] tgt=monster-1-5 now=1789025804410 next=1789025804542 range-ok
+[swing] tgt=monster-1-5 now=1789025804441 next=1789025804542 range-ok
+[swing] tgt=monster-1-5 now=1789025804464 next=1789025804542 range-ok
+[swing] tgt=monster-1-5 now=1789025804494 next=1789025804542 range-ok
+[swing] tgt=monster-1-5 now=1789025804525 next=1789025804542 range-ok
+[swing] tgt=monster-1-5 now=1789025804558 next=1789025804542 range-ok
+[swing] tgt=monster-1-5 now=1789025804558 next=1789025804908 range-ok
+[swing] tgt=monster-1-5 now=1789025804584 next=1789025804908 range-ok
+[swing] tgt=monster-1-5 now=1789025804614 next=1789025804908 range-ok
+[swing] tgt=monster-1-5 now=1789025804639 next=1789025804908 range-ok
+[swing] tgt=monster-1-5 now=1789025804652 next=1789025804908 range-ok
+[swing] tgt=monster-1-5 now=1789025804664 next=1789025804908 range-ok
+[swing] tgt=monster-1-5 now=1789025804691 next=1789025804908 range-ok
+[swing] tgt=monster-1-5 now=1789025804723 next=1789025804908 range-ok
+[swing] tgt=monster-1-5 now=1789025804723 next=1789025804908 range-ok
+[swing] tgt=monster-1-5 now=1789025804759 next=1789025804908 range-ok
+[swing] tgt=monster-1-5 now=1789025804791 next=1789025804908 range-ok
+[swing] tgt=monster-1-5 now=1789025804823 next=1789025804908 range-ok
+[swing] tgt=monster-1-5 now=1789025804858 next=1789025804908 range-ok
+[swing] tgt=monster-1-5 now=1789025804874 next=1789025804908 range-ok
+[swing] tgt=monster-1-5 now=1789025804892 next=1789025804908 range-ok
+[swing] tgt=monster-1-5 now=1789025804904 next=1789025804908 range-ok
+[swing] tgt=monster-1-5 now=1789025804929 next=1789025804929 range-ok
+[swing] tgt=monster-1-5 now=1789025804958 next=1789025805279 range-ok
+[swing] tgt=monster-1-5 now=1789025804982 next=1789025805279 range-ok
+[swing] tgt=monster-1-5 now=1789025805010 next=1789025805279 range-ok
+[swing] tgt=monster-1-5 now=1789025805030 next=1789025805279 range-ok
+[swing] tgt=monster-1-5 now=1789025805041 next=1789025805279 range-ok
+[swing] tgt=monster-1-5 now=1789025805063 next=1789025805279 range-ok
+[swing] tgt=monster-1-5 now=1789025805093 next=1789025805279 range-ok
+[swing] tgt=monster-1-5 now=1789025805125 next=1789025805279 range-ok
+[swing] tgt=monster-1-5 now=1789025805157 next=1789025805279 range-ok
+[swing] tgt=monster-1-5 now=1789025805173 next=1789025805279 range-ok
+[swing] tgt=monster-1-5 now=1789025805182 next=1789025805279 range-ok
+[swing] tgt=monster-1-5 now=1789025805195 next=1789025805279 range-ok
+[swing] tgt=monster-1-5 now=1789025805209 next=1789025805279 range-ok
+[swing] tgt=monster-1-5 now=1789025805241 next=1789025805279 range-ok
+[swing] tgt=monster-1-5 now=1789025805272 next=1789025805279 range-ok
+[swing] tgt=monster-1-5 now=1789025805294 next=1789025805294 range-ok
+[swing] tgt=monster-1-16 now=1789025805327 next=1789025805644 range-ok
+[swing] tgt=monster-1-16 now=1789025805358 next=1789025805644 range-ok
+[swing] tgt=monster-1-16 now=1789025805359 next=1789025805644 range-ok
+[swing] tgt=monster-1-16 now=1789025805389 next=1789025805644 range-ok
+[swing] tgt=monster-1-16 now=1789025805413 next=1789025805644 range-ok
+[swing] tgt=monster-1-16 now=1789025805426 next=1789025805644 range-ok
+[swing] tgt=monster-1-16 now=1789025805445 next=1789025805644 range-ok
+[swing] tgt=monster-1-16 now=1789025805475 next=1789025805644 range-ok
+[swing] tgt=monster-1-16 now=1789025805497 next=1789025805644 range-ok
+[swing] tgt=monster-1-16 now=1789025805510 next=1789025805644 range-ok
+[swing] tgt=monster-1-16 now=1789025805527 next=1789025805644 range-ok
+[swing] tgt=monster-1-16 now=1789025805558 next=1789025805644 range-ok
+[swing] tgt=monster-1-16 now=1789025805591 next=1789025805644 range-ok
+[swing] tgt=monster-1-16 now=1789025805624 next=1789025805644 range-ok
+[swing] tgt=monster-1-16 now=1789025805656 next=1789025805656 range-ok
+[swing] tgt=monster-1-16 now=1789025805674 next=1789025806006 range-ok
+[swing] tgt=monster-1-16 now=1789025805690 next=1789025806006 range-ok
+[swing] tgt=monster-1-16 now=1789025805704 next=1789025806006 range-ok
+[swing] tgt=monster-1-16 now=1789025805715 next=1789025806006 range-ok
+[swing] tgt=monster-1-16 now=1789025805744 next=1789025806006 range-ok
+[swing] tgt=monster-1-16 now=1789025805764 next=1789025806006 range-ok
+[swing] tgt=monster-1-16 now=1789025805791 next=1789025806006 range-ok
+[swing] tgt=monster-1-16 now=1789025805824 next=1789025806006 range-ok
+[swing] tgt=monster-1-16 now=1789025805839 next=1789025806006 range-ok
+[swing] tgt=monster-1-16 now=1789025805858 next=1789025806006 range-ok
+[swing] tgt=monster-1-16 now=1789025805881 next=1789025806006 range-ok
+[swing] tgt=monster-1-16 now=1789025805908 next=1789025806006 range-ok
+[swing] tgt=monster-1-16 now=1789025805942 next=1789025806006 range-ok
+[swing] tgt=monster-1-16 now=1789025805955 next=1789025806006 range-ok
+[swing] tgt=monster-1-16 now=1789025805979 next=1789025806006 range-ok
+[swing] tgt=monster-1-16 now=1789025805991 next=1789025806006 range-ok
+[swing] tgt=monster-1-16 now=1789025806010 next=1789025806010 range-ok
+[swing] tgt=monster-1-16 now=1789025806042 next=1789025806360 range-ok
+[swing] tgt=monster-1-16 now=1789025806070 next=1789025806360 range-ok
+[swing] tgt=monster-1-16 now=1789025806091 next=1789025806360 range-ok
+[swing] tgt=monster-1-16 now=1789025806127 next=1789025806360 range-ok
+[swing] tgt=monster-1-16 now=1789025806142 next=1789025806360 range-ok
+[swing] tgt=monster-1-16 now=1789025806158 next=1789025806360 range-ok
+[swing] tgt=monster-1-16 now=1789025806178 next=1789025806360 range-ok
+[swing] tgt=monster-1-16 now=1789025806208 next=1789025806360 range-ok
+[swing] tgt=monster-1-16 now=1789025806220 next=1789025806360 range-ok
+[swing] tgt=monster-1-16 now=1789025806239 next=1789025806360 range-ok
+[swing] tgt=monster-1-16 now=1789025806273 next=1789025806360 range-ok
+[swing] tgt=monster-1-16 now=1789025806293 next=1789025806360 range-ok
+[swing] tgt=monster-1-16 now=1789025806293 next=1789025806360 range-ok
+[swing] tgt=monster-1-16 now=1789025806324 next=1789025806360 range-ok
+[swing] tgt=monster-1-16 now=1789025806357 next=1789025806360 range-ok
+[swing] tgt=monster-1-16 now=1789025806391 next=1789025806391 range-ok
+[swing] tgt=monster-1-16 now=1789025806426 next=1789025806741 range-ok
+[swing] tgt=monster-1-16 now=1789025806456 next=1789025806741 range-ok
+[swing] tgt=monster-1-16 now=1789025806456 next=1789025806741 range-ok
+[swing] tgt=monster-1-16 now=1789025806491 next=1789025806741 range-ok
+[swing] tgt=monster-1-16 now=1789025806504 next=1789025806741 range-ok
+[swing] tgt=monster-1-16 now=1789025806529 next=1789025806741 range-ok
+[swing] tgt=monster-1-16 now=1789025806558 next=1789025806741 range-ok
+[swing] tgt=monster-1-16 now=1789025806592 next=1789025806741 range-ok
+[swing] tgt=monster-1-16 now=1789025806609 next=1789025806741 range-ok
+[swing] tgt=monster-1-16 now=1789025806626 next=1789025806741 range-ok
+[swing] tgt=monster-1-16 now=1789025806658 next=1789025806741 range-ok
+[swing] tgt=monster-1-16 now=1789025806691 next=1789025806741 range-ok
+[swing] tgt=monster-1-16 now=1789025806711 next=1789025806741 range-ok
+[swing] tgt=monster-1-16 now=1789025806741 next=1789025806741 range-ok
+[swing] tgt=monster-1-16 now=1789025806753 next=1789025807091 range-ok
+[swing] tgt=monster-1-16 now=1789025806759 next=1789025807091 range-ok
+[swing] tgt=monster-1-16 now=1789025806780 next=1789025807091 range-ok
+[swing] tgt=monster-1-16 now=1789025806808 next=1789025807091 range-ok
+[swing] tgt=monster-1-16 now=1789025806842 next=1789025807091 range-ok
+[swing] tgt=monster-1-16 now=1789025806873 next=1789025807091 range-ok
+[swing] tgt=monster-1-16 now=1789025806906 next=1789025807091 range-ok
+[swing] tgt=monster-1-16 now=1789025806924 next=1789025807091 range-ok
+[swing] tgt=monster-1-16 now=1789025806927 next=1789025807091 range-ok
+[swing] tgt=monster-1-16 now=1789025806958 next=1789025807091 range-ok
+[swing] tgt=monster-1-16 now=1789025806993 next=1789025807091 range-ok
+[swing] tgt=monster-1-16 now=1789025807005 next=1789025807091 range-ok
+[swing] tgt=monster-1-16 now=1789025807031 next=1789025807091 range-ok
+[swing] tgt=monster-1-16 now=1789025807058 next=1789025807091 range-ok
+[swing] tgt=monster-1-16 now=1789025807089 next=1789025807091 range-ok
+[swing] tgt=monster-1-16 now=1789025807089 next=1789025807091 range-ok
+[swing] tgt=monster-1-16 now=1789025807123 next=1789025807123 range-ok
+[swing] tgt=monster-1-18 now=1789025807161 next=1789025807473 range-ok
+[swing] tgt=monster-1-18 now=1789025807191 next=1789025807473 range-ok
+[swing] tgt=monster-1-18 now=1789025807225 next=1789025807473 range-ok
+[swing] tgt=monster-1-18 now=1789025807243 next=1789025807473 range-ok
+[swing] tgt=monster-1-18 now=1789025807259 next=1789025807473 range-ok
+[swing] tgt=monster-1-18 now=1789025807273 next=1789025807473 range-ok
+[swing] tgt=monster-1-18 now=1789025807293 next=1789025807473 range-ok
+[swing] tgt=monster-1-18 now=1789025807321 next=1789025807473 range-ok
+[swing] tgt=monster-1-18 now=1789025807353 next=1789025807473 range-ok
+[swing] tgt=monster-1-18 now=1789025807377 next=1789025807473 range-ok
+[swing] tgt=monster-1-18 now=1789025807408 next=1789025807473 range-ok
+[swing] tgt=monster-1-18 now=1789025807408 next=1789025807473 range-ok
+[swing] tgt=monster-1-18 now=1789025807435 next=1789025807473 range-ok
+[swing] tgt=monster-1-18 now=1789025807458 next=1789025807473 range-ok
+[swing] tgt=monster-1-18 now=1789025807493 next=1789025807493 range-ok
+[swing] tgt=monster-1-18 now=1789025807528 next=1789025807843 range-ok
+[swing] tgt=monster-1-18 now=1789025807542 next=1789025807843 range-ok
+[swing] tgt=monster-1-18 now=1789025807561 next=1789025807843 range-ok
+[swing] tgt=monster-1-18 now=1789025807574 next=1789025807843 range-ok
+[swing] tgt=monster-1-18 now=1789025807592 next=1789025807843 range-ok
+[swing] tgt=monster-1-18 now=1789025807625 next=1789025807843 range-ok
+[swing] tgt=monster-1-18 now=1789025807658 next=1789025807843 range-ok
+[swing] tgt=monster-1-18 now=1789025807689 next=1789025807843 range-ok
+[swing] tgt=monster-1-18 now=1789025807712 next=1789025807843 range-ok
+[swing] tgt=monster-1-18 now=1789025807724 next=1789025807843 range-ok
+[swing] tgt=monster-1-18 now=1789025807741 next=1789025807843 range-ok
+[swing] tgt=monster-1-18 now=1789025807775 next=1789025807843 range-ok
+[swing] tgt=monster-1-18 now=1789025807808 next=1789025807843 range-ok
+[swing] tgt=monster-1-18 now=1789025807821 next=1789025807843 range-ok
+[swing] tgt=monster-1-18 now=1789025807847 next=1789025807847 range-ok
+[swing] tgt=monster-1-18 now=1789025807873 next=1789025808197 range-ok
+[swing] tgt=monster-1-18 now=1789025807891 next=1789025808197 range-ok
+[swing] tgt=monster-1-18 now=1789025807893 next=1789025808197 range-ok
+[swing] tgt=monster-1-18 now=1789025807925 next=1789025808197 range-ok
+[swing] tgt=monster-1-18 now=1789025807956 next=1789025808197 range-ok
+[swing] tgt=monster-1-18 now=1789025807978 next=1789025808197 range-ok
+[swing] tgt=monster-1-18 now=1789025808008 next=1789025808197 range-ok
+[swing] tgt=monster-1-18 now=1789025808041 next=1789025808197 range-ok
+[swing] tgt=monster-1-18 now=1789025808043 next=1789025808197 range-ok
+[swing] tgt=monster-1-18 now=1789025808075 next=1789025808197 range-ok
+[swing] tgt=monster-1-18 now=1789025808088 next=1789025808197 range-ok
+[swing] tgt=monster-1-18 now=1789025808108 next=1789025808197 range-ok
+[swing] tgt=monster-1-18 now=1789025808141 next=1789025808197 range-ok
+[swing] tgt=monster-1-18 now=1789025808177 next=1789025808197 range-ok
+[swing] tgt=monster-1-18 now=1789025808193 next=1789025808197 range-ok
+[swing] tgt=monster-1-18 now=1789025808208 next=1789025808208 range-ok
+[swing] tgt=monster-1-18 now=1789025808228 next=1789025808558 range-ok
+[swing] tgt=monster-1-18 now=1789025808258 next=1789025808558 range-ok
+[swing] tgt=monster-1-18 now=1789025808290 next=1789025808558 range-ok
+[swing] tgt=monster-1-18 now=1789025808321 next=1789025808558 range-ok
+[swing] tgt=monster-1-18 now=1789025808343 next=1789025808558 range-ok
+[swing] tgt=monster-1-18 now=1789025808343 next=1789025808558 range-ok
+[swing] tgt=monster-1-18 now=1789025808355 next=1789025808558 range-ok
+[swing] tgt=monster-1-18 now=1789025808380 next=1789025808558 range-ok
+[swing] tgt=monster-1-18 now=1789025808406 next=1789025808558 range-ok
+[swing] tgt=monster-1-18 now=1789025808434 next=1789025808558 range-ok
+[swing] tgt=monster-1-18 now=1789025808459 next=1789025808558 range-ok
+[swing] tgt=monster-1-18 now=1789025808491 next=1789025808558 range-ok
+[swing] tgt=monster-1-18 now=1789025808506 next=1789025808558 range-ok
+[swing] tgt=monster-1-18 now=1789025808526 next=1789025808558 range-ok
+[swing] tgt=monster-1-18 now=1789025808558 next=1789025808558 range-ok
+[swing] tgt=monster-1-6 now=1789025808600 next=1789025808908 range-ok
+[swing] tgt=monster-1-6 now=1789025808625 next=1789025808908 range-ok
+[swing] tgt=monster-1-6 now=1789025808639 next=1789025808908 range-ok
+[swing] tgt=monster-1-6 now=1789025808657 next=1789025808908 range-ok
+[swing] tgt=monster-1-6 now=1789025808662 next=1789025808908 range-ok
+[swing] tgt=monster-1-6 now=1789025808691 next=1789025808908 range-ok
+[swing] tgt=monster-1-6 now=1789025808711 next=1789025808908 range-ok
+[swing] tgt=monster-1-6 now=1789025808741 next=1789025808908 range-ok
+[swing] tgt=monster-1-6 now=1789025808774 next=1789025808908 range-ok
+[swing] tgt=monster-1-6 now=1789025808806 next=1789025808908 range-ok
+[swing] tgt=monster-1-6 now=1789025808822 next=1789025808908 range-ok
+[swing] tgt=monster-1-6 now=1789025808841 next=1789025808908 range-ok
+[swing] tgt=monster-1-6 now=1789025808875 next=1789025808908 range-ok
+[swing] tgt=monster-1-6 now=1789025808908 next=1789025808908 range-ok
+[swing] tgt=monster-1-6 now=1789025808921 next=1789025809258 range-ok
+[swing] tgt=monster-1-6 now=1789025808947 next=1789025809258 range-ok
+[swing] tgt=monster-1-6 now=1789025808974 next=1789025809258 range-ok
+[swing] tgt=monster-1-6 now=1789025808974 next=1789025809258 range-ok
+[swing] tgt=monster-1-6 now=1789025809008 next=1789025809258 range-ok
+[swing] tgt=monster-1-6 now=1789025809041 next=1789025809258 range-ok
+[swing] tgt=monster-1-6 now=1789025809074 next=1789025809258 range-ok
+[swing] tgt=monster-1-6 now=1789025809108 next=1789025809258 range-ok
+[swing] tgt=monster-1-6 now=1789025809126 next=1789025809258 range-ok
+[swing] tgt=monster-1-6 now=1789025809141 next=1789025809258 range-ok
+[swing] tgt=monster-1-6 now=1789025809176 next=1789025809258 range-ok
+[swing] tgt=monster-1-6 now=1789025809190 next=1789025809258 range-ok
+[swing] tgt=monster-1-6 now=1789025809211 next=1789025809258 range-ok
+[swing] tgt=monster-1-6 now=1789025809235 next=1789025809258 range-ok
+[swing] tgt=monster-1-6 now=1789025809261 next=1789025809261 range-ok
+[swing] tgt=monster-1-6 now=1789025809277 next=1789025809611 range-ok
+[swing] tgt=monster-1-6 now=1789025809292 next=1789025809611 range-ok
+[swing] tgt=monster-1-6 now=1789025809323 next=1789025809611 range-ok
+[swing] tgt=monster-1-6 now=1789025809355 next=1789025809611 range-ok
+[swing] tgt=monster-1-6 now=1789025809387 next=1789025809611 range-ok
+[swing] tgt=monster-1-6 now=1789025809408 next=1789025809611 range-ok
+[swing] tgt=monster-1-6 now=1789025809427 next=1789025809611 range-ok
+[swing] tgt=monster-1-6 now=1789025809441 next=1789025809611 range-ok
+[swing] tgt=monster-1-6 now=1789025809454 next=1789025809611 range-ok
+[swing] tgt=monster-1-6 now=1789025809479 next=1789025809611 range-ok
+[swing] tgt=monster-1-6 now=1789025809510 next=1789025809611 range-ok
+[swing] tgt=monster-1-6 now=1789025809541 next=1789025809611 range-ok
+[swing] tgt=monster-1-6 now=1789025809574 next=1789025809611 range-ok
+[swing] tgt=monster-1-6 now=1789025809591 next=1789025809611 range-ok
+[swing] tgt=monster-1-6 now=1789025809594 next=1789025809611 range-ok
+[swing] tgt=monster-1-6 now=1789025809625 next=1789025809625 range-ok
+[swing] tgt=monster-1-6 now=1789025809658 next=1789025809975 range-ok
+[swing] tgt=monster-1-6 now=1789025809691 next=1789025809975 range-ok
+[swing] tgt=monster-1-6 now=1789025809704 next=1789025809975 range-ok
+[swing] tgt=monster-1-6 now=1789025809728 next=1789025809975 range-ok
+[swing] tgt=monster-1-6 now=1789025809743 next=1789025809975 range-ok
+[swing] tgt=monster-1-6 now=1789025809759 next=1789025809975 range-ok
+[swing] tgt=monster-1-6 now=1789025809789 next=1789025809975 range-ok
+[swing] tgt=monster-1-6 now=1789025809810 next=1789025809975 range-ok
+[swing] tgt=monster-1-6 now=1789025809841 next=1789025809975 range-ok
+[swing] tgt=monster-1-6 now=1789025809875 next=1789025809975 range-ok
+[swing] tgt=monster-1-6 now=1789025809901 next=1789025809975 range-ok
+[swing] tgt=monster-1-6 now=1789025809902 next=1789025809975 range-ok
+[swing] tgt=monster-1-6 now=1789025809924 next=1789025809975 range-ok
+[swing] tgt=monster-1-6 now=1789025809959 next=1789025809975 range-ok
+[swing] tgt=monster-1-6 now=1789025809971 next=1789025809975 range-ok
+[swing] tgt=monster-1-6 now=1789025809989 next=1789025809989 range-ok
+[swing] tgt=monster-1-15 now=1789025810028 next=1789025810339 range-ok
+[swing] tgt=monster-1-15 now=1789025810057 next=1789025810339 range-ok
+[swing] tgt=monster-1-15 now=1789025810058 next=1789025810339 range-ok
+[swing] tgt=monster-1-15 now=1789025810091 next=1789025810339 range-ok
+[swing] tgt=monster-1-15 now=1789025810125 next=1789025810339 range-ok
+[swing] tgt=monster-1-15 now=1789025810158 next=1789025810339 range-ok
+[swing] tgt=monster-1-15 now=1789025810186 next=1789025810339 range-ok
+[swing] tgt=monster-1-15 now=1789025810208 next=1789025810339 range-ok
+[swing] tgt=monster-1-15 now=1789025810208 next=1789025810339 range-ok
+[swing] tgt=monster-1-15 now=1789025810241 next=1789025810339 range-ok
+[swing] tgt=monster-1-15 now=1789025810254 next=1789025810339 range-ok
+[swing] tgt=monster-1-15 now=1789025810265 next=1789025810339 range-ok
+[swing] tgt=monster-1-15 now=1789025810291 next=1789025810339 range-ok
+[swing] tgt=monster-1-15 now=1789025810323 next=1789025810339 range-ok
+[swing] tgt=monster-1-15 now=1789025810344 next=1789025810344 range-ok
+[swing] tgt=monster-1-15 now=1789025810360 next=1789025810694 range-ok
+[swing] tgt=monster-1-15 now=1789025810374 next=1789025810694 range-ok
+[swing] tgt=monster-1-15 now=1789025810408 next=1789025810694 range-ok
+[swing] tgt=monster-1-15 now=1789025810439 next=1789025810694 range-ok
+[swing] tgt=monster-1-15 now=1789025810474 next=1789025810694 range-ok
+[swing] tgt=monster-1-15 now=1789025810508 next=1789025810694 range-ok
+[swing] tgt=monster-1-15 now=1789025810521 next=1789025810694 range-ok
+[swing] tgt=monster-1-15 now=1789025810523 next=1789025810694 range-ok
+[swing] tgt=monster-1-15 now=1789025810546 next=1789025810694 range-ok
+[swing] tgt=monster-1-15 now=1789025810575 next=1789025810694 range-ok
+[swing] tgt=monster-1-15 now=1789025810608 next=1789025810694 range-ok
+[swing] tgt=monster-1-15 now=1789025810641 next=1789025810694 range-ok
+[swing] tgt=monster-1-15 now=1789025810674 next=1789025810694 range-ok
+[swing] tgt=monster-1-15 now=1789025810674 next=1789025810694 range-ok
+[swing] tgt=monster-1-15 now=1789025810698 next=1789025810698 range-ok
+[swing] tgt=monster-1-15 now=1789025810728 next=1789025811048 range-ok
+[swing] tgt=monster-1-15 now=1789025810753 next=1789025811048 range-ok
+[swing] tgt=monster-1-15 now=1789025810775 next=1789025811048 range-ok
+[swing] tgt=monster-1-15 now=1789025810788 next=1789025811048 range-ok
+[swing] tgt=monster-1-15 now=1789025810811 next=1789025811048 range-ok
+[swing] tgt=monster-1-15 now=1789025810840 next=1789025811048 range-ok
+[swing] tgt=monster-1-15 now=1789025810840 next=1789025811048 range-ok
+[swing] tgt=monster-1-15 now=1789025810871 next=1789025811048 range-ok
+[swing] tgt=monster-1-15 now=1789025810902 next=1789025811048 range-ok
+[swing] tgt=monster-1-15 now=1789025810933 next=1789025811048 range-ok
+[swing] tgt=monster-1-15 now=1789025810957 next=1789025811048 range-ok
+[swing] tgt=monster-1-15 now=1789025810990 next=1789025811048 range-ok
+[swing] tgt=monster-1-15 now=1789025810991 next=1789025811048 range-ok
+[swing] tgt=monster-1-15 now=1789025811024 next=1789025811048 range-ok
+[swing] tgt=monster-1-15 now=1789025811057 next=1789025811048 range-ok
+[swing] tgt=monster-1-15 now=1789025811071 next=1789025811407 range-ok
+[swing] tgt=monster-1-15 now=1789025811093 next=1789025811407 range-ok
+[swing] tgt=monster-1-15 now=1789025811118 next=1789025811407 range-ok
+[swing] tgt=monster-1-15 now=1789025811141 next=1789025811407 range-ok
+[swing] tgt=monster-1-15 now=1789025811156 next=1789025811407 range-ok
+[swing] tgt=monster-1-15 now=1789025811169 next=1789025811407 range-ok
+[swing] tgt=monster-1-15 now=1789025811191 next=1789025811407 range-ok
+[swing] tgt=monster-1-15 now=1789025811217 next=1789025811407 range-ok
+[swing] tgt=monster-1-15 now=1789025811241 next=1789025811407 range-ok
+[swing] tgt=monster-1-15 now=1789025811273 next=1789025811407 range-ok
+[swing] tgt=monster-1-15 now=1789025811306 next=1789025811407 range-ok
+[swing] tgt=monster-1-15 now=1789025811321 next=1789025811407 range-ok
+[swing] tgt=monster-1-15 now=1789025811340 next=1789025811407 range-ok
+[swing] tgt=monster-1-15 now=1789025811353 next=1789025811407 range-ok
+[swing] tgt=monster-1-15 now=1789025811374 next=1789025811407 range-ok
+[swing] tgt=monster-1-15 now=1789025811407 next=1789025811407 range-ok
+[swing] tgt=monster-1-9 now=1789025811446 next=1789025811757 range-ok
+[swing] tgt=monster-1-9 now=1789025811472 next=1789025811757 range-ok
+[swing] tgt=monster-1-9 now=1789025811473 next=1789025811757 range-ok
+[swing] tgt=monster-1-9 now=1789025811503 next=1789025811757 range-ok
+[swing] tgt=monster-1-9 now=1789025811524 next=1789025811757 range-ok
+[swing] tgt=monster-1-9 now=1789025811552 next=1789025811757 range-ok
+[swing] tgt=monster-1-9 now=1789025811573 next=1789025811757 range-ok
+[swing] tgt=monster-1-9 now=1789025811595 next=1789025811757 range-ok
+[swing] tgt=monster-1-9 now=1789025811612 next=1789025811757 range-ok
+[swing] tgt=monster-1-9 now=1789025811624 next=1789025811757 range-ok
+[swing] tgt=monster-1-9 now=1789025811629 next=1789025811757 range-ok
+[swing] tgt=monster-1-9 now=1789025811657 next=1789025811757 range-ok
+[swing] tgt=monster-1-9 now=1789025811688 next=1789025811757 range-ok
+[swing] tgt=monster-1-9 now=1789025811724 next=1789025811757 range-ok
+[swing] tgt=monster-1-9 now=1789025811756 next=1789025811757 range-ok
+[swing] tgt=monster-1-9 now=1789025811790 next=1789025811757 range-ok
+[swing] tgt=monster-1-9 now=1789025811790 next=1789025812140 range-ok
+[swing] tgt=monster-1-9 now=1789025811823 next=1789025812140 range-ok
+[swing] tgt=monster-1-9 now=1789025811857 next=1789025812140 range-ok
+[swing] tgt=monster-1-9 now=1789025811870 next=1789025812140 range-ok
+[swing] tgt=monster-1-9 now=1789025811894 next=1789025812140 range-ok
+[swing] tgt=monster-1-9 now=1789025811924 next=1789025812140 range-ok
+[swing] tgt=monster-1-9 now=1789025811958 next=1789025812140 range-ok
+[swing] tgt=monster-1-9 now=1789025811958 next=1789025812140 range-ok
+[swing] tgt=monster-1-9 now=1789025811979 next=1789025812140 range-ok
+[swing] tgt=monster-1-9 now=1789025812007 next=1789025812140 range-ok
+[swing] tgt=monster-1-9 now=1789025812039 next=1789025812140 range-ok
+[swing] tgt=monster-1-9 now=1789025812073 next=1789025812140 range-ok
+[swing] tgt=monster-1-9 now=1789025812109 next=1789025812140 range-ok
+[swing] tgt=monster-1-9 now=1789025812109 next=1789025812140 range-ok
+[swing] tgt=monster-1-9 now=1789025812124 next=1789025812140 range-ok
+PASS journey: outgoing combat:hit reached the client
+PASS journey: enemy death reached the client
+PASS journey: named item entered inventory (pickup)
+PASS journey: ItemPickedUp or inventory growth
+PASS journey: picked item is named
+PASS journey: equip removed the item from the backpack
+PASS journey: equipped slot mirrors the worn item
+[swing] tgt=monster-1-9 now=1789025812325 next=1789025812325 range-ok
+[swing] tgt=monster-1-19 now=1789025812357 next=1789025812675 range-ok
+[swing] tgt=monster-1-19 now=1789025812387 next=1789025812675 range-ok
+PASS journey: incoming combat:hit reached the client
+PASS journey: monster:telegraph reached the client
+[swing] tgt=monster-1-19 now=1789025812439 next=1789025812675 range-ok
+PASS journey: walking onto stairs-up returns to the surface (extract)
+PASS journey: ExtractionCompleted from surface message
+PASS journey: clean dual-side shutdown
+PASS reconnect: TASK-0163 capsule server bound
+PASS reconnect: connected
+PASS reconnect: ready before the drop
+PASS reconnect: unexpected drop enters Retrying
+PASS reconnect: ConnectionLost is visible (no silent local fallback)
+PASS reconnect: last_error explains the drop
+PASS reconnect: commands after the drop do not leave Retrying for a local sim
+PASS reconnect: position does not keep playing offline
+PASS reconnect: server restarted on the same port
+PASS reconnect: Retrying then Ready after server restart
+PASS reconnect: same guest identity re-logged in
+PASS reconnect: login snapshot is authoritative
+PASS replaced: cursor-capsule server bound
+PASS replaced: first login
+PASS replaced: first session ready
+PASS replaced: second login same guest
+PASS replaced: second session ready
+PASS replaced: first session is disconnected
+PASS replaced: ConnectionLost from player:session-replaced
+PASS replaced: session-replaced does not enter Retrying
+PASS replaced: stays terminal Disconnected (no retry)
+PASS render-list: cursor-capsule server bound
+PASS render-list: connect
+PASS render-list: ready
+[swing] tgt=monster-1-14 now=1789025815449 next=1789025815449 range-ok
+PASS render-list: decoded server contact reconciles prediction to one active strike
+[swing] tgt=monster-1-14 now=1789025815473 next=1789025815799 range-ok
+[swing] tgt=monster-1-14 now=1789025815507 next=1789025815799 range-ok
+[swing] tgt=monster-1-14 now=1789025815528 next=1789025815799 range-ok
+[swing] tgt=monster-1-14 now=1789025815559 next=1789025815799 range-ok
+[swing] tgt=monster-1-14 now=1789025815560 next=1789025815799 range-ok
+[swing] tgt=monster-1-14 now=1789025815592 next=1789025815799 range-ok
+[swing] tgt=monster-1-14 now=1789025815625 next=1789025815799 range-ok
+[swing] tgt=monster-1-14 now=1789025815659 next=1789025815799 range-ok
+[swing] tgt=monster-1-14 now=1789025815689 next=1789025815799 range-ok
+[swing] tgt=monster-1-14 now=1789025815702 next=1789025815799 range-ok
+[swing] tgt=monster-1-14 now=1789025815724 next=1789025815799 range-ok
+[swing] tgt=monster-1-14 now=1789025815728 next=1789025815799 range-ok
+[swing] tgt=monster-1-14 now=1789025815759 next=1789025815799 range-ok
+[swing] tgt=monster-1-14 now=1789025815791 next=1789025815799 range-ok
+[swing] tgt=monster-1-14 now=1789025815825 next=1789025815825 range-ok
+PASS render-list: decoded server contact reconciles prediction to one active strike
+[swing] tgt=monster-1-14 now=1789025815858 next=1789025816175 range-ok
+[swing] tgt=monster-1-14 now=1789025815875 next=1789025816175 range-ok
+[swing] tgt=monster-1-14 now=1789025815891 next=1789025816175 range-ok
+[swing] tgt=monster-1-14 now=1789025815924 next=1789025816175 range-ok
+[swing] tgt=monster-1-14 now=1789025815958 next=1789025816175 range-ok
+[swing] tgt=monster-1-14 now=1789025815971 next=1789025816175 range-ok
+[swing] tgt=monster-1-14 now=1789025815993 next=1789025816175 range-ok
+[swing] tgt=monster-1-14 now=1789025816024 next=1789025816175 range-ok
+[swing] tgt=monster-1-14 now=1789025816027 next=1789025816175 range-ok
+[swing] tgt=monster-1-14 now=1789025816058 next=1789025816175 range-ok
+[swing] tgt=monster-1-14 now=1789025816091 next=1789025816175 range-ok
+[swing] tgt=monster-1-14 now=1789025816124 next=1789025816175 range-ok
+[swing] tgt=monster-1-14 now=1789025816158 next=1789025816175 range-ok
+[swing] tgt=monster-1-14 now=1789025816191 next=1789025816175 range-ok
+[swing] tgt=monster-1-14 now=1789025816191 next=1789025816541 range-ok
+[swing] tgt=monster-1-14 now=1789025816225 next=1789025816541 range-ok
+PASS render-list: decoded server contact reconciles prediction to one active strike
+[swing] tgt=monster-1-14 now=1789025816240 next=1789025816541 range-ok
+[swing] tgt=monster-1-14 now=1789025816262 next=1789025816541 range-ok
+[swing] tgt=monster-1-14 now=1789025816290 next=1789025816541 range-ok
+[swing] tgt=monster-1-14 now=1789025816323 next=1789025816541 range-ok
+[swing] tgt=monster-1-14 now=1789025816355 next=1789025816541 range-ok
+[swing] tgt=monster-1-14 now=1789025816355 next=1789025816541 range-ok
+[swing] tgt=monster-1-14 now=1789025816376 next=1789025816541 range-ok
+[swing] tgt=monster-1-14 now=1789025816408 next=1789025816541 range-ok
+[swing] tgt=monster-1-14 now=1789025816441 next=1789025816541 range-ok
+[swing] tgt=monster-1-14 now=1789025816475 next=1789025816541 range-ok
+[swing] tgt=monster-1-14 now=1789025816488 next=1789025816541 range-ok
+[swing] tgt=monster-1-14 now=1789025816507 next=1789025816541 range-ok
+[swing] tgt=monster-1-14 now=1789025816511 next=1789025816541 range-ok
+[swing] tgt=monster-1-14 now=1789025816539 next=1789025816541 range-ok
+[swing] tgt=monster-1-14 now=1789025816560 next=1789025816560 range-ok
+PASS render-list: decoded server contact reconciles prediction to one active strike
+[swing] tgt=monster-1-14 now=1789025816592 next=1789025816910 range-ok
+[swing] tgt=monster-1-14 now=1789025816623 next=1789025816910 range-ok
+[swing] tgt=monster-1-14 now=1789025816655 next=1789025816910 range-ok
+[swing] tgt=monster-1-14 now=1789025816670 next=1789025816910 range-ok
+[swing] tgt=monster-1-14 now=1789025816689 next=1789025816910 range-ok
+[swing] tgt=monster-1-14 now=1789025816714 next=1789025816910 range-ok
+[swing] tgt=monster-1-14 now=1789025816742 next=1789025816910 range-ok
+[swing] tgt=monster-1-14 now=1789025816756 next=1789025816910 range-ok
+[swing] tgt=monster-1-14 now=1789025816780 next=1789025816910 range-ok
+[swing] tgt=monster-1-14 now=1789025816813 next=1789025816910 range-ok
+[swing] tgt=monster-1-14 now=1789025816822 next=1789025816910 range-ok
+[swing] tgt=monster-1-14 now=1789025816841 next=1789025816910 range-ok
+[swing] tgt=monster-1-14 now=1789025816872 next=1789025816910 range-ok
+[swing] tgt=monster-1-14 now=1789025816893 next=1789025816910 range-ok
+[swing] tgt=monster-1-14 now=1789025816924 next=1789025816924 range-ok
+PASS render-list: decoded server contact reconciles prediction to one active strike
+PASS render-list: decoded server contact reconciles prediction to one active strike
+PASS render-list: Monster op recorded from remote model
+PASS render-list: Swing op recorded from AttackStarted
+PASS render-list: actual server contact was reconciled
+PASS render-list: Drop op recorded from kill loot
+[swing] tgt=monster-1-18 now=1789025816960 next=1789025817274 range-ok
+[swing] tgt=monster-1-18 now=1789025816975 next=1789025817274 range-ok
+[swing] tgt=monster-1-18 now=1789025816994 next=1789025817274 range-ok
+[swing] tgt=monster-1-18 now=1789025817008 next=1789025817274 range-ok
+[swing] tgt=monster-1-18 now=1789025817031 next=1789025817274 range-ok
+[swing] tgt=monster-1-18 now=1789025817058 next=1789025817274 range-ok
+[swing] tgt=monster-1-18 now=1789025817089 next=1789025817274 range-ok
+[swing] tgt=monster-1-18 now=1789025817123 next=1789025817274 range-ok
+[swing] tgt=monster-1-18 now=1789025817141 next=1789025817274 range-ok
+[swing] tgt=monster-1-18 now=1789025817143 next=1789025817274 range-ok
+[swing] tgt=monster-1-18 now=1789025817174 next=1789025817274 range-ok
+[swing] tgt=monster-1-18 now=1789025817208 next=1789025817274 range-ok
+[swing] tgt=monster-1-18 now=1789025817243 next=1789025817274 range-ok
+[swing] tgt=monster-1-18 now=1789025817267 next=1789025817274 range-ok
+[swing] tgt=monster-1-18 now=1789025817281 next=1789025817281 range-ok
+PASS render-list: decoded Sweep contact preserves one active SweepArc and no Swing
+PASS render-list: real remote Sweep skillId reaches presentation
+[swing] tgt=monster-1-18 now=1789025817306 next=1789025817631 range-ok
+PASS ptree-absent: scripted loopback server bound in capsule
+PASS ptree-absent: connect + upgrade + login sent
+PASS ptree-absent: admission acknowledged
+PASS ptree-absent: no payload -> mirror stays absent, never rendered as zero
+PASS ptree-absent: absent payload raises no diagnostic
+PASS ptree: scripted loopback server bound in capsule
+PASS ptree: connect + upgrade + login sent
+PASS ptree: valid absent login reaches Ready
+PASS ptree: fresh admission starts absent (valid absent behavior)
+PASS ptree: VALID zero tree makes the mirror present
+PASS ptree: zero tree mirrors verbatim zeros (valid zero behavior)
+PASS ptree: valid payloads raise no diagnostic
+PASS ptree: VALID nonzero update mirrors verbatim (valid nonzero behavior)
+PASS ptree: valid nonzero update raises no diagnostic
+PASS ptree: missing points: diagnostic surfaced
+PASS ptree: missing points: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: missing earned: diagnostic surfaced
+PASS ptree: missing earned: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: missing conduits: diagnostic surfaced
+PASS ptree: missing conduits: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed schemaVersion: diagnostic surfaced
+PASS ptree: wrong-typed schemaVersion: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed points container: diagnostic surfaced
+PASS ptree: wrong-typed points container: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed points.skill: diagnostic surfaced
+PASS ptree: wrong-typed points.skill: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed earned: diagnostic surfaced
+PASS ptree: wrong-typed earned: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed nodes: diagnostic surfaced
+PASS ptree: wrong-typed nodes: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed conduits on login: diagnostic surfaced
+PASS ptree: wrong-typed conduits on login: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: fractional points.skill: diagnostic surfaced
+PASS ptree: fractional points.skill: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: fractional earned: diagnostic surfaced
+PASS ptree: fractional earned: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: negative points.skill: diagnostic surfaced
+PASS ptree: negative points.skill: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: negative earned: diagnostic surfaced
+PASS ptree: negative earned: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: bare-Infinity points.skill: diagnostic surfaced
+PASS ptree: bare-Infinity points.skill: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: exponent-overflow earned (inf): diagnostic surfaced
+PASS ptree: exponent-overflow earned (inf): deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: int-cast overflow earned: diagnostic surfaced
+PASS ptree: int-cast overflow earned: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: future schemaVersion on login: diagnostic surfaced
+PASS ptree: future schemaVersion on login: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: non-object passiveTree on login: diagnostic surfaced
+PASS ptree: non-object passiveTree on login: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: oversized nodes array: diagnostic surfaced
+PASS ptree: oversized nodes array: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: oversized conduits array: diagnostic surfaced
+PASS ptree: oversized conduits array: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: repeated invalid payload surfaces again
+PASS ptree: diagnostic text is byte-stable across repeats
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: valid refresh applies after rejects (session healthy)
+PASS ptree: valid recovery raises no diagnostic
+PASS gate-b-driver: serpentine plan matches its frozen contract
+PASS gate-b-driver: lane plan sweeps within one tile of every walkable column
+PASS gate-b-driver: silent steps re-issue before any wall rotation
+PASS gate-b-driver: every lane leg spans the full floor height
+PASS gate-b-driver: plan is strictly boustrophedon over its lanes
+PASS gate-b: worker-capsule server bound (7160-7179)
+PASS gate-b: first connect upgrades
+PASS gate-b: non-quick guest login admits chronicles:state
+PASS gate-b: chronicles:house:found emits chronicles:state
+PASS gate-b: House roster id captured
+PASS gate-b: chronicles:scion:create returns createdScionId
+PASS gate-b: chronicles:scion:set-out admits via player:login
+PASS gate-b: admission names the first Scion
+PASS gate-b: set-out admits the Scion under the mortal oath (player.chronicles.mortal)
+PASS gate-b: earned identifiable item carries an exact uuid
+PASS gate-b: delve enters the instance scene
+PASS gate-b: ordinary combat reached the scion (incoming hit)
+PASS gate-b: ordinary movement/combat death commits the fall (chronicles:scion-fallen)
+PASS gate-b: player:chronicles:return readies succession
+PASS gate-b: successor created through chronicles:scion:create
+PASS gate-b: heir admitted through player:chronicles:select
+PASS gate-b: heir buys a sword from the House wagon
+PASS gate-b: heir equips the fresh sword
+note: hunt heartbeat hp=95 at=(4,14) kills=0 elite_known=0 elite=(-1,-1) ground=2 scene=instance
+[swing] tgt=monster-4-7 now=1789025862989 next=1789025862989 range-ok
+[swing] tgt=monster-4-7 now=1789025863007 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863007 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863026 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863042 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863058 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863075 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863090 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863106 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863123 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863140 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863155 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863173 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863173 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863191 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863207 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863224 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863240 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863257 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863274 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863290 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863309 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863324 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863324 next=1789025863339 range-ok
+[swing] tgt=monster-4-7 now=1789025863340 next=1789025863340 range-ok
+[swing] tgt=monster-4-7 now=1789025863355 next=1789025863690 range-ok
+[swing] tgt=monster-4-7 now=1789025863371 next=1789025863690 range-ok
+[swing] tgt=monster-4-7 now=1789025863386 next=1789025863690 range-ok
+[swing] tgt=monster-4-7 now=1789025863401 next=1789025863690 range-ok
+[swing] tgt=monster-4-7 now=1789025863416 next=1789025863690 range-ok
+[swing] tgt=monster-4-7 now=1789025863440 next=1789025863690 range-ok
+[swing] tgt=monster-4-7 now=1789025863457 next=1789025863690 range-ok
+[swing] tgt=monster-4-7 now=1789025863474 next=1789025863690 range-ok
+[swing] tgt=monster-4-7 now=1789025863474 next=1789025863690 range-ok
+[swing] tgt=monster-4-7 now=1789025863490 next=1789025863690 range-ok
+[swing] tgt=monster-4-7 now=1789025863507 next=1789025863690 range-ok
+[swing] tgt=monster-4-7 now=1789025863524 next=1789025863690 range-ok
+[swing] tgt=monster-4-7 now=1789025863540 next=1789025863690 range-ok
+[swing] tgt=monster-4-7 now=1789025863557 next=1789025863690 range-ok
+[swing] tgt=monster-4-7 now=1789025863575 next=1789025863690 range-ok
+[swing] tgt=monster-4-7 now=1789025863590 next=1789025863690 range-ok
+[swing] tgt=monster-4-7 now=1789025863607 next=1789025863690 range-ok
+[swing] tgt=monster-4-7 now=1789025863624 next=1789025863690 range-ok
+[swing] tgt=monster-4-7 now=1789025863639 next=1789025863690 range-ok
+[swing] tgt=monster-4-7 now=1789025863639 next=1789025863690 range-ok
+[swing] tgt=monster-4-7 now=1789025863657 next=1789025863690 range-ok
+[swing] tgt=monster-4-7 now=1789025863674 next=1789025863690 range-ok
+[swing] tgt=monster-4-7 now=1789025863690 next=1789025863690 range-ok
+note: hunt kill #1 (Stone Lurker)
+[swing] tgt=monster-4-4 now=1789025863822 next=1789025864040 range-ok
+[swing] tgt=monster-4-4 now=1789025863840 next=1789025864040 range-ok
+[swing] tgt=monster-4-4 now=1789025863858 next=1789025864040 range-ok
+[swing] tgt=monster-4-4 now=1789025863874 next=1789025864040 range-ok
+[swing] tgt=monster-4-4 now=1789025863890 next=1789025864040 range-ok
+[swing] tgt=monster-4-4 now=1789025863907 next=1789025864040 range-ok
+[swing] tgt=monster-4-4 now=1789025863924 next=1789025864040 range-ok
+[swing] tgt=monster-4-4 now=1789025863940 next=1789025864040 range-ok
+[swing] tgt=monster-4-4 now=1789025863943 next=1789025864040 range-ok
+[swing] tgt=monster-4-4 now=1789025863958 next=1789025864040 range-ok
+[swing] tgt=monster-4-4 now=1789025863974 next=1789025864040 range-ok
+[swing] tgt=monster-4-4 now=1789025863990 next=1789025864040 range-ok
+[swing] tgt=monster-4-4 now=1789025864008 next=1789025864040 range-ok
+[swing] tgt=monster-4-4 now=1789025864025 next=1789025864040 range-ok
+[swing] tgt=monster-4-4 now=1789025864040 next=1789025864040 range-ok
+[swing] tgt=monster-4-4 now=1789025864057 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864075 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864090 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864105 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864105 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864124 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864141 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864157 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864173 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864189 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864207 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864225 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864242 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864257 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864257 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864271 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864291 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864307 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864324 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864340 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864358 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864374 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864389 next=1789025864390 range-ok
+[swing] tgt=monster-4-4 now=1789025864404 next=1789025864404 range-ok
+[swing] tgt=monster-4-4 now=1789025864423 next=1789025864754 range-ok
+[swing] tgt=monster-4-4 now=1789025864424 next=1789025864754 range-ok
+[swing] tgt=monster-4-4 now=1789025864440 next=1789025864754 range-ok
+[swing] tgt=monster-4-4 now=1789025864455 next=1789025864754 range-ok
+[swing] tgt=monster-4-4 now=1789025864474 next=1789025864754 range-ok
+[swing] tgt=monster-4-4 now=1789025864490 next=1789025864754 range-ok
+[swing] tgt=monster-4-4 now=1789025864508 next=1789025864754 range-ok
+[swing] tgt=monster-4-4 now=1789025864523 next=1789025864754 range-ok
+[swing] tgt=monster-4-4 now=1789025864541 next=1789025864754 range-ok
+[swing] tgt=monster-4-4 now=1789025864556 next=1789025864754 range-ok
+[swing] tgt=monster-4-4 now=1789025864574 next=1789025864754 range-ok
+[swing] tgt=monster-4-4 now=1789025864575 next=1789025864754 range-ok
+[swing] tgt=monster-4-4 now=1789025864590 next=1789025864754 range-ok
+[swing] tgt=monster-4-4 now=1789025864605 next=1789025864754 range-ok
+[swing] tgt=monster-4-4 now=1789025864624 next=1789025864754 range-ok
+[swing] tgt=monster-4-4 now=1789025864641 next=1789025864754 range-ok
+[swing] tgt=monster-4-4 now=1789025864657 next=1789025864754 range-ok
+[swing] tgt=monster-4-4 now=1789025864690 next=1789025864754 range-ok
+[swing] tgt=monster-4-4 now=1789025864706 next=1789025864754 range-ok
+[swing] tgt=monster-4-4 now=1789025864724 next=1789025864754 range-ok
+[swing] tgt=monster-4-4 now=1789025864740 next=1789025864754 range-ok
+[swing] tgt=monster-4-4 now=1789025864740 next=1789025864754 range-ok
+[swing] tgt=monster-4-4 now=1789025864757 next=1789025864757 range-ok
+note: hunt kill #2 (Stone Lurker)
+[swing] tgt=monster-4-6 now=1789025866491 next=1789025866491 range-ok
+[swing] tgt=monster-4-6 now=1789025866507 next=1789025866841 range-ok
+[swing] tgt=monster-4-6 now=1789025866525 next=1789025866841 range-ok
+[swing] tgt=monster-4-6 now=1789025866540 next=1789025866841 range-ok
+[swing] tgt=monster-4-6 now=1789025866557 next=1789025866841 range-ok
+[swing] tgt=monster-4-6 now=1789025866574 next=1789025866841 range-ok
+[swing] tgt=monster-4-6 now=1789025866590 next=1789025866841 range-ok
+[swing] tgt=monster-4-6 now=1789025866608 next=1789025866841 range-ok
+[swing] tgt=monster-4-6 now=1789025866624 next=1789025866841 range-ok
+[swing] tgt=monster-4-6 now=1789025866624 next=1789025866841 range-ok
+[swing] tgt=monster-4-6 now=1789025866640 next=1789025866841 range-ok
+[swing] tgt=monster-4-6 now=1789025866657 next=1789025866841 range-ok
+[swing] tgt=monster-4-6 now=1789025866673 next=1789025866841 range-ok
+[swing] tgt=monster-4-6 now=1789025866690 next=1789025866841 range-ok
+[swing] tgt=monster-4-6 now=1789025866707 next=1789025866841 range-ok
+[swing] tgt=monster-4-6 now=1789025866731 next=1789025866841 range-ok
+[swing] tgt=monster-4-6 now=1789025866757 next=1789025866841 range-ok
+[swing] tgt=monster-4-6 now=1789025866774 next=1789025866841 range-ok
+[swing] tgt=monster-4-6 now=1789025866775 next=1789025866841 range-ok
+[swing] tgt=monster-4-6 now=1789025866791 next=1789025866841 range-ok
+[swing] tgt=monster-4-6 now=1789025866807 next=1789025866841 range-ok
+[swing] tgt=monster-4-6 now=1789025866824 next=1789025866841 range-ok
+[swing] tgt=monster-4-6 now=1789025866840 next=1789025866841 range-ok
+[swing] tgt=monster-4-6 now=1789025866857 next=1789025866857 range-ok
+note: hunt kill #3 (Flint Slinger)
+[swing] tgt=monster-4-9 now=1789025867740 next=1789025867740 range-ok
+[swing] tgt=monster-4-9 now=1789025867757 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025867774 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025867790 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025867807 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025867824 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025867840 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025867857 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025867872 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025867872 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025867887 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025867903 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025867918 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025867933 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025867949 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025867964 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025867978 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025867991 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025868009 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025868024 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025868025 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025868040 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025868057 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025868074 next=1789025868090 range-ok
+[swing] tgt=monster-4-9 now=1789025868090 next=1789025868090 range-ok
+note: hunt kill #4 (Flint Slinger)
+[swing] tgt=monster-4-12 now=1789025870339 next=1789025870339 range-ok
+[swing] tgt=monster-4-12 now=1789025870357 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870373 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870374 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870390 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870407 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870423 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870441 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870458 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870474 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870489 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870505 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870524 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870525 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870540 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870556 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870571 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870590 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870607 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870624 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870641 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870657 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870673 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870677 next=1789025870689 range-ok
+[swing] tgt=monster-4-12 now=1789025870690 next=1789025870690 range-ok
+note: hunt kill #5 (Flint Slinger)
+note: hunt heartbeat hp=124 at=(8,38) kills=5 elite_known=0 elite=(-1,-1) ground=2 scene=instance
+[swing] tgt=monster-4-16 now=1789025873558 next=1789025873558 range-ok
+[swing] tgt=monster-4-16 now=1789025873573 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873590 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873606 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873624 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873639 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873655 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873672 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873674 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873690 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873708 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873723 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873738 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873753 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873774 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873794 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873808 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873823 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873839 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873839 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873854 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873870 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873891 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873906 next=1789025873908 range-ok
+[swing] tgt=monster-4-16 now=1789025873926 next=1789025873926 range-ok
+[swing] tgt=monster-4-16 now=1789025873942 next=1789025874276 range-ok
+[swing] tgt=monster-4-16 now=1789025873957 next=1789025874276 range-ok
+[swing] tgt=monster-4-16 now=1789025873976 next=1789025874276 range-ok
+[swing] tgt=monster-4-16 now=1789025873991 next=1789025874276 range-ok
+[swing] tgt=monster-4-16 now=1789025873991 next=1789025874276 range-ok
+[swing] tgt=monster-4-16 now=1789025874007 next=1789025874276 range-ok
+[swing] tgt=monster-4-16 now=1789025874022 next=1789025874276 range-ok
+[swing] tgt=monster-4-16 now=1789025874037 next=1789025874276 range-ok
+[swing] tgt=monster-4-16 now=1789025874054 next=1789025874276 range-ok
+[swing] tgt=monster-4-16 now=1789025874074 next=1789025874276 range-ok
+[swing] tgt=monster-4-16 now=1789025874090 next=1789025874276 range-ok
+[swing] tgt=monster-4-16 now=1789025874108 next=1789025874276 range-ok
+[swing] tgt=monster-4-16 now=1789025874123 next=1789025874276 range-ok
+[swing] tgt=monster-4-16 now=1789025874141 next=1789025874276 range-ok
+[swing] tgt=monster-4-16 now=1789025874157 next=1789025874276 range-ok
+[swing] tgt=monster-4-16 now=1789025874157 next=1789025874276 range-ok
+[swing] tgt=monster-4-16 now=1789025874173 next=1789025874276 range-ok
+[swing] tgt=monster-4-16 now=1789025874191 next=1789025874276 range-ok
+[swing] tgt=monster-4-16 now=1789025874207 next=1789025874276 range-ok
+[swing] tgt=monster-4-16 now=1789025874226 next=1789025874276 range-ok
+[swing] tgt=monster-4-16 now=1789025874240 next=1789025874276 range-ok
+[swing] tgt=monster-4-16 now=1789025874255 next=1789025874276 range-ok
+[swing] tgt=monster-4-16 now=1789025874276 next=1789025874276 range-ok
+note: hunt kill #6 (Stone Lurker)
+note: hunt heartbeat hp=118 at=(14,21) kills=6 elite_known=0 elite=(-1,-1) ground=2 scene=instance
+[swing] tgt=monster-4-0 now=1789025888923 next=1789025888923 range-ok
+[swing] tgt=monster-4-0 now=1789025888940 next=1789025889273 range-ok
+[swing] tgt=monster-4-0 now=1789025888957 next=1789025889273 range-ok
+[swing] tgt=monster-4-0 now=1789025888974 next=1789025889273 range-ok
+[swing] tgt=monster-4-0 now=1789025888991 next=1789025889273 range-ok
+[swing] tgt=monster-4-0 now=1789025889008 next=1789025889273 range-ok
+[swing] tgt=monster-4-0 now=1789025889023 next=1789025889273 range-ok
+[swing] tgt=monster-4-0 now=1789025889038 next=1789025889273 range-ok
+[swing] tgt=monster-4-0 now=1789025889038 next=1789025889273 range-ok
+[swing] tgt=monster-4-0 now=1789025889057 next=1789025889273 range-ok
+[swing] tgt=monster-4-0 now=1789025889074 next=1789025889273 range-ok
+[swing] tgt=monster-4-0 now=1789025889090 next=1789025889273 range-ok
+[swing] tgt=monster-4-0 now=1789025889104 next=1789025889273 range-ok
+[swing] tgt=monster-4-0 now=1789025889123 next=1789025889273 range-ok
+[swing] tgt=monster-4-0 now=1789025889138 next=1789025889273 range-ok
+[swing] tgt=monster-4-0 now=1789025889155 next=1789025889273 range-ok
+[swing] tgt=monster-4-0 now=1789025889171 next=1789025889273 range-ok
+[swing] tgt=monster-4-0 now=1789025889190 next=1789025889273 range-ok
+[swing] tgt=monster-4-0 now=1789025889190 next=1789025889273 range-ok
+[swing] tgt=monster-4-0 now=1789025889207 next=1789025889273 range-ok
+[swing] tgt=monster-4-0 now=1789025889223 next=1789025889273 range-ok
+[swing] tgt=monster-4-0 now=1789025889238 next=1789025889273 range-ok
+[swing] tgt=monster-4-0 now=1789025889254 next=1789025889273 range-ok
+[swing] tgt=monster-4-0 now=1789025889273 next=1789025889273 range-ok
+note: hunt kill #7 (Flint Slinger)
+note: hunt heartbeat hp=114 at=(20,14) kills=7 elite_known=0 elite=(-1,-1) ground=1 scene=instance
+[swing] tgt=monster-4-10 now=1789025901991 next=1789025901991 range-ok
+[swing] tgt=monster-4-10 now=1789025902007 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902008 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902024 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902040 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902057 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902073 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902090 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902109 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902124 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902138 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902158 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902158 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902173 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902190 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902207 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902225 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902239 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902256 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902274 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902288 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902303 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902319 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902320 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902336 next=1789025902341 range-ok
+[swing] tgt=monster-4-10 now=1789025902357 next=1789025902357 range-ok
+[swing] tgt=monster-4-10 now=1789025902374 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902390 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902407 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902424 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902440 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902459 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902474 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902474 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902491 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902509 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902525 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902541 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902558 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902574 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902591 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902607 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902623 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902625 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902640 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902656 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902673 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902690 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902706 next=1789025902707 range-ok
+[swing] tgt=monster-4-10 now=1789025902723 next=1789025902723 range-ok
+note: hunt kill #8 (Stone Lurker)
+[swing] tgt=monster-4-19 now=1789025902776 next=1789025903073 range-ok
+note: hunt approach dist=3 escape=0 at=(26,21) elite=(25,18)
+[swing] tgt=monster-4-19 now=1789025902940 next=1789025903073 range-ok
+[swing] tgt=monster-4-19 now=1789025903093 next=1789025903073 range-ok
+[swing] tgt=monster-4-2 now=1789025903123 next=1789025903443 range-ok
+[swing] tgt=monster-4-2 now=1789025903141 next=1789025903443 range-ok
+[swing] tgt=monster-4-2 now=1789025903156 next=1789025903443 range-ok
+[swing] tgt=monster-4-2 now=1789025903174 next=1789025903443 range-ok
+[swing] tgt=monster-4-2 now=1789025903192 next=1789025903443 range-ok
+[swing] tgt=monster-4-2 now=1789025903207 next=1789025903443 range-ok
+[swing] tgt=monster-4-2 now=1789025903223 next=1789025903443 range-ok
+[swing] tgt=monster-4-2 now=1789025903240 next=1789025903443 range-ok
+[swing] tgt=monster-4-2 now=1789025903256 next=1789025903443 range-ok
+[swing] tgt=monster-4-2 now=1789025903256 next=1789025903443 range-ok
+[swing] tgt=monster-4-2 now=1789025903275 next=1789025903443 range-ok
+[swing] tgt=monster-4-2 now=1789025903291 next=1789025903443 range-ok
+[swing] tgt=monster-4-2 now=1789025903307 next=1789025903443 range-ok
+[swing] tgt=monster-4-2 now=1789025903323 next=1789025903443 range-ok
+[swing] tgt=monster-4-2 now=1789025903341 next=1789025903443 range-ok
+[swing] tgt=monster-4-2 now=1789025903357 next=1789025903443 range-ok
+[swing] tgt=monster-4-2 now=1789025903373 next=1789025903443 range-ok
+[swing] tgt=monster-4-2 now=1789025903392 next=1789025903443 range-ok
+[swing] tgt=monster-4-2 now=1789025903407 next=1789025903443 range-ok
+[swing] tgt=monster-4-2 now=1789025903408 next=1789025903443 range-ok
+[swing] tgt=monster-4-2 now=1789025903423 next=1789025903443 range-ok
+[swing] tgt=monster-4-2 now=1789025903440 next=1789025903443 range-ok
+[swing] tgt=monster-4-2 now=1789025903458 next=1789025903458 range-ok
+[swing] tgt=monster-4-2 now=1789025903475 next=1789025903808 range-ok
+[swing] tgt=monster-4-2 now=1789025903490 next=1789025903808 range-ok
+[swing] tgt=monster-4-2 now=1789025903507 next=1789025903808 range-ok
+[swing] tgt=monster-4-2 now=1789025903525 next=1789025903808 range-ok
+[swing] tgt=monster-4-2 now=1789025903540 next=1789025903808 range-ok
+[swing] tgt=monster-4-2 now=1789025903557 next=1789025903808 range-ok
+[swing] tgt=monster-4-2 now=1789025903572 next=1789025903808 range-ok
+[swing] tgt=monster-4-2 now=1789025903573 next=1789025903808 range-ok
+[swing] tgt=monster-4-2 now=1789025903588 next=1789025903808 range-ok
+[swing] tgt=monster-4-2 now=1789025903607 next=1789025903808 range-ok
+note: hunt heartbeat hp=109 at=(26,21) kills=8 elite_known=1 elite=(25,18) ground=1 scene=instance
+[swing] tgt=monster-4-2 now=1789025903624 next=1789025903808 range-ok
+[swing] tgt=monster-4-2 now=1789025903639 next=1789025903808 range-ok
+[swing] tgt=monster-4-2 now=1789025903658 next=1789025903808 range-ok
+[swing] tgt=monster-4-2 now=1789025903674 next=1789025903808 range-ok
+[swing] tgt=monster-4-2 now=1789025903691 next=1789025903808 range-ok
+[swing] tgt=monster-4-2 now=1789025903709 next=1789025903808 range-ok
+[swing] tgt=monster-4-2 now=1789025903724 next=1789025903808 range-ok
+[swing] tgt=monster-4-2 now=1789025903725 next=1789025903808 range-ok
+[swing] tgt=monster-4-2 now=1789025903742 next=1789025903808 range-ok
+[swing] tgt=monster-4-2 now=1789025903757 next=1789025903808 range-ok
+[swing] tgt=monster-4-2 now=1789025903775 next=1789025903808 range-ok
+[swing] tgt=monster-4-2 now=1789025903790 next=1789025903808 range-ok
+[swing] tgt=monster-4-2 now=1789025903807 next=1789025903808 range-ok
+[swing] tgt=monster-4-2 now=1789025903824 next=1789025903824 range-ok
+[swing] tgt=monster-4-2 now=1789025903841 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025903857 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025903873 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025903888 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025903888 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025903907 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025903923 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025903940 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025903957 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025903974 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025903990 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025904006 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025904024 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025904041 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025904041 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025904056 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025904074 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025904091 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025904107 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025904123 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025904136 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025904157 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025904173 next=1789025904174 range-ok
+[swing] tgt=monster-4-2 now=1789025904191 next=1789025904174 range-ok
+[swing] tgt=monster-4-19 now=1789025904194 next=1789025904541 range-ok
+note: hunt kill #9 (Stone Lurker)
+[swing] tgt=monster-4-19 now=1789025904342 next=1789025904541 range-ok
+[swing] tgt=monster-4-19 now=1789025904356 next=1789025904541 range-ok
+[swing] tgt=monster-4-19 now=1789025904508 next=1789025904541 range-ok
+[swing] tgt=monster-4-19 now=1789025904659 next=1789025904541 range-ok
+[swing] tgt=monster-4-19 now=1789025904707 next=1789025905009 range-ok
+[swing] tgt=monster-4-19 now=1789025904723 next=1789025905009 range-ok
+[swing] tgt=monster-4-19 now=1789025904740 next=1789025905009 range-ok
+[swing] tgt=monster-4-19 now=1789025904756 next=1789025905009 range-ok
+[swing] tgt=monster-4-19 now=1789025904774 next=1789025905009 range-ok
+[swing] tgt=monster-4-19 now=1789025904791 next=1789025905009 range-ok
+[swing] tgt=monster-4-19 now=1789025904807 next=1789025905009 range-ok
+[swing] tgt=monster-4-19 now=1789025904823 next=1789025905009 range-ok
+[swing] tgt=monster-4-19 now=1789025904823 next=1789025905009 range-ok
+[swing] tgt=monster-4-19 now=1789025904839 next=1789025905009 range-ok
+[swing] tgt=monster-4-19 now=1789025904857 next=1789025905009 range-ok
+[swing] tgt=monster-4-19 now=1789025904875 next=1789025905009 range-ok
+[swing] tgt=monster-4-19 now=1789025904890 next=1789025905009 range-ok
+[swing] tgt=monster-4-19 now=1789025904908 next=1789025905009 range-ok
+[swing] tgt=monster-4-19 now=1789025904923 next=1789025905009 range-ok
+[swing] tgt=monster-4-19 now=1789025904940 next=1789025905009 range-ok
+[swing] tgt=monster-4-19 now=1789025904957 next=1789025905009 range-ok
+[swing] tgt=monster-4-19 now=1789025904974 next=1789025905009 range-ok
+[swing] tgt=monster-4-19 now=1789025904975 next=1789025905009 range-ok
+[swing] tgt=monster-4-19 now=1789025904990 next=1789025905009 range-ok
+[swing] tgt=monster-4-19 now=1789025905007 next=1789025905009 range-ok
+[swing] tgt=monster-4-19 now=1789025905022 next=1789025905022 range-ok
+[swing] tgt=monster-4-19 now=1789025905041 next=1789025905372 range-ok
+[swing] tgt=monster-4-19 now=1789025905057 next=1789025905372 range-ok
+[swing] tgt=monster-4-19 now=1789025905074 next=1789025905372 range-ok
+[swing] tgt=monster-4-19 now=1789025905092 next=1789025905372 range-ok
+[swing] tgt=monster-4-19 now=1789025905107 next=1789025905372 range-ok
+[swing] tgt=monster-4-19 now=1789025905122 next=1789025905372 range-ok
+[swing] tgt=monster-4-19 now=1789025905135 next=1789025905372 range-ok
+[swing] tgt=monster-4-19 now=1789025905135 next=1789025905372 range-ok
+[swing] tgt=monster-4-19 now=1789025905157 next=1789025905372 range-ok
+[swing] tgt=monster-4-19 now=1789025905173 next=1789025905372 range-ok
+[swing] tgt=monster-4-19 now=1789025905191 next=1789025905372 range-ok
+[swing] tgt=monster-4-19 now=1789025905207 next=1789025905372 range-ok
+[swing] tgt=monster-4-19 now=1789025905224 next=1789025905372 range-ok
+[swing] tgt=monster-4-19 now=1789025905242 next=1789025905372 range-ok
+[swing] tgt=monster-4-19 now=1789025905257 next=1789025905372 range-ok
+[swing] tgt=monster-4-19 now=1789025905275 next=1789025905372 range-ok
+[swing] tgt=monster-4-19 now=1789025905290 next=1789025905372 range-ok
+[swing] tgt=monster-4-19 now=1789025905290 next=1789025905372 range-ok
+[swing] tgt=monster-4-19 now=1789025905308 next=1789025905372 range-ok
+[swing] tgt=monster-4-19 now=1789025905324 next=1789025905372 range-ok
+[swing] tgt=monster-4-19 now=1789025905339 next=1789025905372 range-ok
+[swing] tgt=monster-4-19 now=1789025905356 next=1789025905372 range-ok
+[swing] tgt=monster-4-19 now=1789025905374 next=1789025905374 range-ok
+[swing] tgt=monster-4-19 now=1789025905390 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905406 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905423 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905441 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905441 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905457 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905471 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905490 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905507 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905523 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905540 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905555 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905571 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905587 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905602 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905602 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905624 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905640 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905658 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905673 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905690 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905706 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905723 next=1789025905724 range-ok
+[swing] tgt=monster-4-19 now=1789025905740 next=1789025905740 range-ok
+[swing] tgt=monster-4-19 now=1789025905757 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025905757 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025905776 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025905790 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025905808 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025905824 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025905840 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025905857 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025905873 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025905891 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025905906 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025905923 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025905923 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025905940 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025905957 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025905973 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025906006 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025906024 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025906040 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025906057 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025906074 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025906074 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025906090 next=1789025906090 range-ok
+[swing] tgt=monster-4-19 now=1789025906107 next=1789025906440 range-ok
+[swing] tgt=monster-4-19 now=1789025906123 next=1789025906440 range-ok
+[swing] tgt=monster-4-19 now=1789025906140 next=1789025906440 range-ok
+[swing] tgt=monster-4-19 now=1789025906157 next=1789025906440 range-ok
+[swing] tgt=monster-4-19 now=1789025906173 next=1789025906440 range-ok
+[swing] tgt=monster-4-19 now=1789025906191 next=1789025906440 range-ok
+[swing] tgt=monster-4-19 now=1789025906206 next=1789025906440 range-ok
+[swing] tgt=monster-4-19 now=1789025906224 next=1789025906440 range-ok
+[swing] tgt=monster-4-19 now=1789025906224 next=1789025906440 range-ok
+[swing] tgt=monster-4-19 now=1789025906242 next=1789025906440 range-ok
+[swing] tgt=monster-4-19 now=1789025906257 next=1789025906440 range-ok
+[swing] tgt=monster-4-19 now=1789025906275 next=1789025906440 range-ok
+[swing] tgt=monster-4-19 now=1789025906291 next=1789025906440 range-ok
+[swing] tgt=monster-4-19 now=1789025906306 next=1789025906440 range-ok
+[swing] tgt=monster-4-19 now=1789025906321 next=1789025906440 range-ok
+[swing] tgt=monster-4-19 now=1789025906337 next=1789025906440 range-ok
+[swing] tgt=monster-4-19 now=1789025906353 next=1789025906440 range-ok
+[swing] tgt=monster-4-19 now=1789025906374 next=1789025906440 range-ok
+[swing] tgt=monster-4-19 now=1789025906376 next=1789025906440 range-ok
+[swing] tgt=monster-4-19 now=1789025906390 next=1789025906440 range-ok
+[swing] tgt=monster-4-19 now=1789025906407 next=1789025906440 range-ok
+[swing] tgt=monster-4-19 now=1789025906425 next=1789025906440 range-ok
+[swing] tgt=monster-4-19 now=1789025906441 next=1789025906441 range-ok
+[swing] tgt=monster-4-19 now=1789025906456 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906473 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906490 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906507 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906527 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906527 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906542 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906556 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906573 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906592 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906607 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906623 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906639 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906657 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906672 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906687 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906688 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906707 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906724 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906740 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906758 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906773 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906791 next=1789025906791 range-ok
+[swing] tgt=monster-4-19 now=1789025906807 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025906824 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025906840 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025906840 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025906855 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025906871 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025906887 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025906907 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025906925 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025906940 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025906957 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025906974 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025906990 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025906992 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025907008 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025907025 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025907041 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025907057 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025907075 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025907090 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025907107 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025907125 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025907140 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025907143 next=1789025907141 range-ok
+[swing] tgt=monster-4-19 now=1789025907158 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907173 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907191 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907207 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907225 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907241 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907257 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907273 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907292 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907306 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907307 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907322 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907338 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907353 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907369 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907384 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907400 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907415 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907430 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907447 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907458 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907460 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907474 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907490 next=1789025907493 range-ok
+[swing] tgt=monster-4-19 now=1789025907505 next=1789025907505 range-ok
+note: hunt kill #10 (Warden of the Deep)
+PASS gate-b: slain elite surfaces the circulating heirloom
+PASS gate-b: exact relic uuid recovered underfoot
+PASS gate-b: awaitChronicles restore reads the crypt
+PASS gate-b: crypt relic status is recovered
+PASS gate-b: reconnect upgrades same server
+PASS gate-b: reconnect restores the chronicle session
+PASS gate-b: reconnect payload carries chronicle
+PASS gate-b: identical House/Scion/relic record after reconnect
+PASS gate-b: House name survives reconnect
+PASS gate-b: heir's sworn oath recorded after reconnect
+PASS gate-b: living roster holds only the heir
+PASS gate-b: fallen Scion left the living roster
+PASS gate-b: same House present after reconnect
+PASS gate-b: crypt relic still recovered after reconnect
+PASS gate-b: active House continuity
+PASS gate-b: resumed set-out re-admits the heir
+PASS gate-b: exact heirloom still carried after reconnect
+PASS gate-b: mortal oath survives the reconnect
+PASS gate-b: journey server stopped cleanly
+session tests passed
+PASS strike: input creates one speculative preparation
+PASS strike: repeated input cannot restart a live strike
+PASS strike: early, late, or expired preparation reconciles to one contact
+PASS strike: presentation alone cannot manufacture hit feedback
+PASS strike: authoritative damage supplies contact feedback once
+PASS strike: input during contact cannot revert to preparation
+PASS strike: input creates one speculative preparation
+PASS strike: repeated input cannot restart a live strike
+PASS strike: early, late, or expired preparation reconciles to one contact
+PASS strike: presentation alone cannot manufacture hit feedback
+PASS strike: authoritative damage supplies contact feedback once
+PASS strike: input during contact cannot revert to preparation
+PASS strike: input creates one speculative preparation
+PASS strike: repeated input cannot restart a live strike
+PASS strike: early, late, or expired preparation reconciles to one contact
+PASS strike: presentation alone cannot manufacture hit feedback
+PASS strike: authoritative damage supplies contact feedback once
+PASS strike: input during contact cannot revert to preparation
+PASS strike: input creates one speculative preparation
+PASS strike: early, late, or expired preparation reconciles to one contact
+PASS strike: presentation alone cannot manufacture hit feedback
+PASS strike: authoritative damage supplies contact feedback once
+PASS strike: input during contact cannot revert to preparation
+PASS strike: an enemy arc never becomes the player strike
+PASS strike: unconfirmed preparation expires without hit feedback
+PASS phase-a: table pins the 50ms presentation tick
+PASS phase-a: critical number outlives the ordinary 12-tick number
+PASS phase-a: beat lifetimes are distinct by construction
+PASS phase-a: loss pulse outlives the 3-tick damage pulse
+PASS phase-a: critical flag and style copy onto the damage number
+PASS phase-a: critical number ttl comes from the table and differs
+PASS phase-a: critical flash is longer than the ordinary flash
+PASS phase-a: render list labels critical hits with style
+PASS phase-a: ScionLost produces a loss beat
+PASS phase-a: loss beat lifetime comes from the table
+PASS phase-a: loss pulse comes from the table
+PASS phase-a: loss beat logs a readable line
+PASS phase-a: BuffExpired(war-cry) produces the fade beat with its ttl
+PASS phase-a: only war-cry expiry renders the fade beat
+PASS phase-a: local seam starts
+PASS phase-a: local seam maps BuffExpired through the presentation seam
+PASS phase-a: spawn detection is byte-deterministic across runs
+PASS phase-a: one materialization beat per unseen foe
+PASS phase-a: materialization ttl comes from the table
+PASS phase-a: re-sighting never re-triggers the beat
+PASS phase-a: player facing right no longer flips the monster west
+PASS phase-a: player facing left does not flip the monster east either
+PASS phase-a: local seam starts for the negative control
+PASS phase-a: applying every drained beat leaves the model untouched
+PASS facing: up-left resolves to (-1,-1)
+PASS facing: down-right resolves to (1,1)
+PASS facing: up-right resolves to (1,-1)
+PASS facing: plain left keeps its single axis
+PASS facing: unknown name falls back to down
+PASS message: server text becomes the HUD toast
+PASS message: toast outlives a key-echo hint
+PASS message: empty text never blanks a toast
+PASS 0108: JS payload shape is fromX/fromY/toX/toY/travelMs/kind=monster
+PASS 0108: missing travelMs is not a projectile payload
+PASS 0108: slam-shaped telegraph is not a projectile warning
+PASS 0108: world:projectile keys become a Telegraph event
+PASS 0108: travelMs uses the 50ms tick, not a catalog guess
+PASS 0108: ranged windup records a Telegraph op
+PASS 0108: Telegraph label stays the existing op, action projectile
+PASS 0108: ranged hit lands as attributed Damage/Impact
+PASS 0108: every ranged hit is preceded by its Telegraph op
+PASS 0108: incoming hit is attributed to the ranged attacker
+PASS 0108: a hit without a preceding warning cannot mint a Telegraph
+PASS 0108: negative — damage-only path never records the ranged warning
+PASS 0108: negative — slam telegraph never becomes a projectile warning
+PASS npc: roster entry survives the sync
+PASS npc: name survives the sync
+PASS npc: tile position converts to world units
+PASS npc: server verb list survives verbatim
+PASS npc: render list carries a labeled Npc op
+presentation events tests: PASS
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS discriminator: ActorDied "monster" maps to the kill cue
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: scion death ingests silently
+PASS discriminator: ScionLost still ingests
+PASS discriminator: one Scion death schedules exactly the Scion-loss cue
+PASS silence: no unknown event schedules a cue
+PASS silence: drained schedule is empty
+PASS silence: recording sink received nothing
+PASS ordering: every known cue is voiced once
+PASS ordering: voiced cues ascend by scheduled tick
+PASS ordering: ties resolve by mixer arrival sequence
+PASS bus: default is full volume, unmuted
+PASS bus: volume setter stores permille
+PASS bus: effective gain scales authored gain exactly
+PASS bus: muted bus is silenced while the other still voices
+PASS bus: zero volume silences without mute
+PASS bus: volume clamps above full
+PASS bus: volume clamps below zero
+PASS cap: voice cap bounds the drained schedule
+PASS cap: steal-oldest evicts the earliest same-priority voice
+PASS cap: higher-priority newcomer steals the oldest lower-priority voice
+PASS cap: a lower-priority newcomer never steals a higher-priority voice
+PASS cap: music bus cap is enforced independently of the sfx bus
+PASS byte-identical: ordinary hit ingests
+PASS byte-identical: critical hit ingests
+PASS byte-identical: enemy defeat ingests
+PASS byte-identical: Scion loss ingests
+PASS byte-identical: war-cry expiry ingests
+PASS byte-identical: ordinary hit ingests
+PASS byte-identical: critical hit ingests
+PASS byte-identical: enemy defeat ingests
+PASS byte-identical: Scion loss ingests
+PASS byte-identical: war-cry expiry ingests
+PASS serialization: two independent runs are byte-identical
+PASS serialization: schedule matches the pinned canonical form
+PASS serialization: sink recorded exactly the voiced schedule
+--- begin canonical schedule ---
+cue[000003] tick=5 bus=sfx prio=world id=kill wave=sawtooth 196->49Hz 240ms gain=560 effective=560
+cue[000004] tick=5 bus=sfx prio=player id=scion-lost wave=sine 165->41Hz 900ms gain=700 effective=700
+cue[000005] tick=7 bus=sfx prio=player id=warcry-expire wave=sine 392->262Hz 300ms gain=420 effective=420
+cue[000001] tick=10 bus=sfx prio=player id=hit wave=sine 220->110Hz 90ms gain=480 effective=480
+cue[000002] tick=10 bus=sfx prio=player id=crit wave=square 440->110Hz 150ms gain=640 effective=640
+cue[000006] tick=12 bus=music prio=ui id=menu-loop wave=sine 262->262Hz 1000ms gain=300 effective=300
+--- end canonical schedule ---
+all audio mixer checks passed

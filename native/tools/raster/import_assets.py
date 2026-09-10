@@ -203,6 +203,28 @@ def contact_sheet(assets: list[tuple[str, Image.Image]], path: Path, scale: int 
     preview.save(path)
 
 
+def reduce_cycle_colors(images: list[Image.Image], maximum: int) -> tuple[list[Image.Image], dict]:
+    """Use the owner's palette reducer once across the complete cycle."""
+    if type(maximum) is not int or not 1 <= maximum <= 256:
+        raise ValueError("shared_palette_max_colors must be an integer from 1 to 256")
+    from pixel_perfecter import palettes
+    arrays = [np.asarray(image.convert("RGBA")) for image in images]
+    combined = np.concatenate([array.reshape(-1, 4) for array in arrays], axis=0).reshape(1, -1, 4)
+    before = np.unique(combined[:, :, :3][combined[:, :, 3] > 0], axis=0)
+    reduced = palettes.reduce_colors(combined, maximum).reshape(-1, 4)
+    reduced[reduced[:, 3] == 0, :3] = 0
+    result, offset = [], 0
+    for original in arrays:
+        count = original.shape[0] * original.shape[1]
+        result.append(Image.fromarray(reduced[offset:offset + count].reshape(original.shape)))
+        offset += count
+    palette = np.unique(reduced[reduced[:, 3] > 0, :3], axis=0)
+    return result, {"api": "pixel_perfecter.palettes.reduce_colors", "max_colors": maximum,
+                    "visible_colors_before": len(before), "visible_colors_after": len(palette),
+                    "palette_rgb": palette.tolist(), "dithering": "none",
+                    "scope": "all reconstructed frames in this manifest"}
+
+
 def run(manifest_path: Path, project: Path, output_override: Path | None = None,
         preview_path: Path | None = None, preview_scale: int = 1) -> dict:
     manifest_path = manifest_path.resolve()
@@ -214,6 +236,7 @@ def run(manifest_path: Path, project: Path, output_override: Path | None = None,
         raise ValueError("report_name must be a simple .json filename")
     output = (output_override or manifest_path.parent / manifest["output_dir"]).resolve()
     workspace = load_engine(project)
+    shared_maximum = manifest.get("shared_palette_max_colors")
     assets, records, sources, names = [], [], [], set()
     # Reconstruct and validate everything before writing any runtime asset.
     for sheet in manifest["sheets"]:
@@ -241,7 +264,8 @@ def run(manifest_path: Path, project: Path, output_override: Path | None = None,
             result = workspace.reconstruct(crop, workspace.Options(
                 cell_size=cell_size, offset_x=offset[0], offset_y=offset[1],
                 alpha_mode=options.get("alpha_mode", "preserve"),
-                palette=options.get("palette", "none"), max_colors=options.get("max_colors", 0)))
+                palette=options.get("palette", "none"),
+                max_colors=0 if shared_maximum is not None else options.get("max_colors", 0)))
             if "anchor_source" in options:
                 anchor = pair(options["anchor_source"], "anchor_source", minimum=0)
                 if result.grid_kind not in ("manual", "rigid"):
@@ -271,10 +295,23 @@ def run(manifest_path: Path, project: Path, output_override: Path | None = None,
                 "alpha_partial_pixels": int(np.count_nonzero((alpha > 0) & (alpha < 255))),
                 "warnings": result.warnings, **geometry,
             })
+            if "anchor_source" in options:
+                records[-1]["anchor_source"] = options["anchor_source"]
+            if "native_scale_group" in manifest:
+                records[-1]["native_scale_group"] = manifest["native_scale_group"]
             print(f"{name}: source {box[2] - box[0]}x{box[3] - box[1]} / cell {result.cell_size}"
                   f" -> {geometry['reconstructed_size']} -> {normalized.width}x{normalized.height}")
     if not assets:
         raise ValueError("Manifest has no assets")
+    shared_palette = None
+    if shared_maximum is not None:
+        images, shared_palette = reduce_cycle_colors([art for _, art in assets], shared_maximum)
+        assets = [(name, art) for (name, _), art in zip(assets, images)]
+        for (_, art), record in zip(assets, records):
+            pixels = np.asarray(art)
+            record["max_colors"] = shared_maximum
+            record["palette_scope"] = "manifest_cycle"
+            record["visible_colors"] = len(np.unique(pixels[:, :, :3][pixels[:, :, 3] > 0], axis=0))
     output.mkdir(parents=True, exist_ok=True)
     for (name, art), record in zip(assets, records):
         target = output / f"{name}.png"
@@ -284,6 +321,11 @@ def run(manifest_path: Path, project: Path, output_override: Path | None = None,
               "importer_sha256": digest(Path(__file__)), "engine": engine_provenance(project.resolve()),
               "known_limitations": manifest.get("known_limitations", []),
               "sources": sources, "assets": records}
+    if shared_palette is not None:
+        report["shared_palette"] = shared_palette
+    if "native_scale_group" in manifest:
+        report["native_scale_group"] = manifest["native_scale_group"]
+        report["scale_review"] = manifest.get("scale_review", "Pending native head/torso comparison")
     (output / report_name).write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     if preview_path:
         contact_sheet(assets, preview_path, preview_scale)

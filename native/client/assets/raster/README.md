@@ -8,7 +8,7 @@ visible content height; animation uses the shared full-canvas pivot and scale.
 `source/` retains generated candidates, including rejected ones. `prompts/`
 records the actual image requests, reference paths and observed failures.
 `runtime/catalog.json` resolves import order and records the active source,
-conversion settings, hashes and limitations for each of 75 PNGs. The importer
+conversion settings, hashes and limitations for each of 118 PNGs. The importer
 uses the owner's actual Pixel Respecter project at
 `Z:/Code/Python/pixel-perfecter`; it is not a substitute pixelation filter.
 
@@ -16,6 +16,42 @@ Read [RESEARCH.md](RESEARCH.md) for firsthand Image 2.5 prompts, demonstrations
 and critical feedback, and [PROMPTING.md](PROMPTING.md) for the resulting local
 workflow. Model variant names are recorded only where the source actually
 identifies them; our image tool has no model selector.
+
+## Verified integration milestone, September 10, 2026
+
+- Hero walking now uses SE4, SW8, NW8 and NE8 frames. SE, SW and NW strikes
+  each have six poses, with frame3 displayed at confirmed contact. Distance
+  drives walking phase; completed strikes and released movement return to idle.
+- The actual Pixel Respecter importer reduces one shared palette across each
+  new cycle and preserves common 80x96 canvases. Twenty manifests resolve 127
+  import records to 118 active PNGs from 39 source files. Binary alpha, at most
+  32 colors, dimensions and source/output hashes are verified.
+- Published workflows were applied, with exact prompts and failures retained.
+  Kiki's preparation/contact/recovery structure guided strikes. SW's two bad
+  hand poses were repaired as individual edits using Noel's fallback and
+  Flixly's transition/identity reference roles. Corrected D2 motion references
+  stay in the external study cache; none of their original pixels ship here.
+- Equipment follows measured hands and changing body/finger occlusion. The
+  probe passes 54 poses x five weapons x three scales, with grip error <=0.5px,
+  stable GDI/cache usage and unchanged SE hand fingerprints. Bow/staff carry
+  orientation remains a limitation during these melee body poses.
+- A small pixel spark and a tint through the actual struck sprite replace
+  contact disks at the feet. The 48x48 spark's measured contact origin is
+  [21.5,27.5], used by `draw_contact_spark`; it fades as a static sprite.
+  Damage text ends above its lift rather than extending down across life bars.
+- Decorative trees frame the clearing, team rings are smaller, and life bars
+  follow visible sprite bounds. `ui_skin.hpp` now composites the existing
+  detailed orb art with textured liquid at 21 fill levels, preserving glass,
+  stone hands and empty states. Its layer cache is capped at 64 layers/16MiB.
+- Native suites and all 64 final scenarios pass. The unchanged fullscreen
+  gate measures 18.7ms over twenty 3440x1440 frames; the dense 128-effect frame
+  measures 9.4ms. Browser final rerun passes 32/32. Seven importer tests and
+  the orb, equipment and color checks pass.
+- [Retained live captures, actual motion traces, clips and verification](reviews/2026-09-10/README.md).
+
+This verifies integration for further iteration. It does not certify finished
+animation: NW walking has visibly elevated feet in some production frames,
+SW strike heads broaden, and palette/outline changes remain across clips.
 
 ## Verified milestone, September 9, 2026
 
@@ -64,14 +100,13 @@ The preceding initial milestone established these foundations:
 
 ## Still unfinished
 
-The four-frame SE walk now runs through real travel and returns to idle, but
-its color/body variation and motion quality still need refinement. Other walk
-directions, attack/recovery cycles and enemy motion remain unfinished. The
-legacy attack poses change the hero's design and striking arm; measured weapon
-attachment does not make them correct weapon-specific animations. Item scale,
-equipment changes in play, ground transitions, path composition, scenery
-overlaps and HUD presentation also need further work. Passing checks do not
-certify these visual gaps as complete.
+Walking and the three integrated strikes still need smoother identity, ground
+contact and timing. NE retains the legacy attack; its new preparation image
+is only a candidate. The raider walk remains outside runtime because it loses
+the idle's axe. Enemy motion, weapon-specific actions, motion onset smoothing,
+ground transitions and path composition remain unfinished. Uniform ground
+microtexture, some scenery overlap and HUD clipping/type/chrome inconsistency
+are visible in the live capture. Passing checks do not close these visual gaps.
 
 Local evidence is under `.ci-artifacts/` in the worktree:
 `raster-refined-live.png`, `raster-refined-scenarios.log`,

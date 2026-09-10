@@ -1,0 +1,143 @@
+{
+  "sequence": [
+    "hero_sw",
+    "hero_strike0_sw",
+    "hero_strike1_sw",
+    "hero_strike2_sw",
+    "hero_strike3_sw",
+    "hero_strike4_sw",
+    "hero_strike5_sw",
+    "hero_sw"
+  ],
+  "frames": [
+    {
+      "name": "hero_sw",
+      "canvas": [
+        80,
+        96
+      ],
+      "body_height": 65,
+      "visible_bounds": [
+        24,
+        31,
+        55,
+        96
+      ],
+      "head_top6_width": 12,
+      "sha256": "815aa38865fa79bdf9e9ee3bcf335a8cd3b8833d02ddeb50c237bb8703e064dd"
+    },
+    {
+      "name": "hero_strike0_sw",
+      "canvas": [
+        80,
+        96
+      ],
+      "body_height": 67,
+      "visible_bounds": [
+        20,
+        29,
+        60,
+        96
+      ],
+      "head_top6_width": 15,
+      "sha256": "db56eb0df266f426a56ff1216527b435729c9b70d521b720862409ecd68d7027"
+    },
+    {
+      "name": "hero_strike1_sw",
+      "canvas": [
+        80,
+        96
+      ],
+      "body_height": 66,
+      "visible_bounds": [
+        20,
+        30,
+        68,
+        96
+      ],
+      "head_top6_width": 14,
+      "sha256": "a36acef59d38a1060d3c0edcb862c9dc194b53df565e2f7725b851a5c994a27f"
+    },
+    {
+      "name": "hero_strike2_sw",
+      "canvas": [
+        80,
+        96
+      ],
+      "body_height": 60,
+      "visible_bounds": [
+        16,
+        36,
+        64,
+        96
+      ],
+      "head_top6_width": 15,
+      "sha256": "a6c609e93135280adc2d24ec8019477f23084a6ce713db127259744194a35619"
+    },
+    {
+      "name": "hero_strike3_sw",
+      "canvas": [
+        80,
+        96
+      ],
+      "body_height": 61,
+      "visible_bounds": [
+        15,
+        34,
+        64,
+        95
+      ],
+      "head_top6_width": 14,
+      "sha256": "7e69e501464ade7f467e08db9415ae5e391b8a5eeba3588d3603ea741e301a70"
+    },
+    {
+      "name": "hero_strike4_sw",
+      "canvas": [
+        80,
+        96
+      ],
+      "body_height": 61,
+      "visible_bounds": [
+        15,
+        34,
+        64,
+        95
+      ],
+      "head_top6_width": 14,
+      "sha256": "8b4e062ce67462dc7890b5e8020ef03d26aa779958e407fa5807328fff15e8bc"
+    },
+    {
+      "name": "hero_strike5_sw",
+      "canvas": [
+        80,
+        96
+      ],
+      "body_height": 68,
+      "visible_bounds": [
+        20,
+        28,
+        60,
+        96
+      ],
+      "head_top6_width": 15,
+      "sha256": "d3117ce02256fc83461a7f32b4627c3c9ece61d913c711726f53c3e31acd5124"
+    }
+  ],
+  "shared_colors": 32,
+  "native_scale_group": "hero-sw-strike-v2-sheet5px-isolated12px",
+  "geometry": "No per-pose scaling or fitting; common authored80x96canvas and[40,96]ground pivot; group relates5px sheet pitch to12px isolated pitch.",
+  "hand_review": "Source and native frames show left-hand commitment/contact/retraction, right bronze guard held near face; final equipment sockets delegated.",
+  "known_roughness": [
+    "Strike heads14-15px versus idle12px; standing poses67-68px versus idle65px; darker outlines and torso shading jump remain.",
+    "Mixed-source pitches approximate1254/512ratio within2percent; same contact/follow pitch and scaled source root retained.",
+    "50ms GIF slots are review timing, not proof of production contact correctness.",
+    "Contact/follow alpha feet end one native pixel above other phases despite shared[40,96]pivot; retained source-grid registration roughness."
+  ],
+  "acceptance": "runtime_converted_asset_worker_reviewed_pending_root_production_trial",
+  "verdict": "Usable for root production trial: corrected left-hand action retained at native and4x; final gameplay motion/equipment acceptance pending.",
+  "visual_checks": [
+    "Viewed ordered idle-to-six-poses-to-idle at1x and4x.",
+    "Viewed source guarded-arm gap before removing only its enclosed checker pocket; real bronze glint in phase0 preserved.",
+    "No new hand swap, clipping or unexpected background island visible in final sequence."
+  ]
+}

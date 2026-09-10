@@ -1,0 +1,167 @@
+{
+  "task": "Repair only SW contact3 and follow-through4 hand switch",
+  "tool": "image_gen.imagegen",
+  "imagegen_calls": 2,
+  "model_selection": "No model or variant selector exposed; none claimed.",
+  "published_methods": [
+    {
+      "url": "https://x.com/elle_elle_e/status/2097439673308389840",
+      "adaptation": "Preserve good sheet poses and repair bad phases as individual reference-led images."
+    },
+    {
+      "url": "https://www.flixly.ai/blog/stop-motion-chatgpt-images-2-5",
+      "adaptation": "Preceding accepted pose first as edit target; original identity additionally; one named physical transition. Their fox demonstration is not treated as a proven human gait/strike."
+    }
+  ],
+  "reference_crop": {
+    "path": "../source/actors_hero-strike-sw-v2-phase2-reference.png",
+    "role": "Preceding accepted left-hand commitment pose; first reference/contact edit target. Pure pixel crop[1024,0,1536,512] from v2, no resize or cleanup.",
+    "sha256": "fd160cbeca9e6c80c6011d35e43393f2dcf19b4ddcee1547aa4b02d4963ae197",
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGB"
+  },
+  "attempts": [
+    {
+      "id": "contact3-v3",
+      "prompt": "actors_hero-strike-sw-contact3-v3.txt",
+      "references": [
+        {
+          "path": "../source/actors_hero-strike-sw-v2-phase2-reference.png",
+          "role": "Preceding accepted left-hand commitment pose; first reference/contact edit target. Pure pixel crop[1024,0,1536,512] from v2, no resize or cleanup.",
+          "sha256": "fd160cbeca9e6c80c6011d35e43393f2dcf19b4ddcee1547aa4b02d4963ae197",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGB"
+        },
+        {
+          "path": "../runtime/hero_sw.png",
+          "role": "Original SW character identity/style; second reference in both focused calls; inspected before use.",
+          "sha256": "815aa38865fa79bdf9e9ee3bcf335a8cd3b8833d02ddeb50c237bb8703e064dd",
+          "size": [
+            80,
+            96
+          ],
+          "mode": "RGBA"
+        }
+      ],
+      "output": {
+        "path": "../source/actors_hero-strike-sw-contact3-v3.png",
+        "role": "New isolated contact3; first reference/follow-through edit target after visual review.",
+        "sha256": "8d0892f1ebaa609f956a4f08849cc30ad489fda9f795d304ae2fb75135990f41",
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGB"
+      },
+      "review": "Unarmored physical LEFT fist extends farther toward lower-left beyond the forward knee. Bronze RIGHT arm stays bent with guard fist beside face. Direction, head/clothes and crouched feet/stance track commitment source. Correct handedness and distinct extension accepted at source level. RGB checker requires reviewed cleanup."
+    },
+    {
+      "id": "follow4-v3",
+      "prompt": "actors_hero-strike-sw-follow4-v3.txt",
+      "references": [
+        {
+          "path": "../source/actors_hero-strike-sw-contact3-v3.png",
+          "role": "New isolated contact3; first reference/follow-through edit target after visual review.",
+          "sha256": "8d0892f1ebaa609f956a4f08849cc30ad489fda9f795d304ae2fb75135990f41",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGB"
+        },
+        {
+          "path": "../runtime/hero_sw.png",
+          "role": "Original SW character identity/style; second reference in both focused calls; inspected before use.",
+          "sha256": "815aa38865fa79bdf9e9ee3bcf335a8cd3b8833d02ddeb50c237bb8703e064dd",
+          "size": [
+            80,
+            96
+          ],
+          "mode": "RGBA"
+        }
+      ],
+      "output": {
+        "path": "../source/actors_hero-strike-sw-follow4-v3.png",
+        "role": "New isolated follow-through/retraction4.",
+        "sha256": "8a33834548681b3253a5249316c9aecb62176cbf261ddfe599dff12e5cdeef80",
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGB"
+      },
+      "review": "Same unarmored LEFT fist retracts up/right toward the waist; bronze RIGHT arm remains beside face. Head, body lean and feet remain visibly registered with contact. Retraction is about two fist widths, larger than requested one, but is a coherent transition toward recovery. Source accepted for conversion, not yet native/game acceptance."
+    }
+  ],
+  "selected_sequence": [
+    {
+      "phase": 0,
+      "source": "actors_hero-strike-sw-v2.png",
+      "source_box": [
+        0,
+        0,
+        512,
+        512
+      ]
+    },
+    {
+      "phase": 1,
+      "source": "actors_hero-strike-sw-v2.png",
+      "source_box": [
+        512,
+        0,
+        1024,
+        512
+      ]
+    },
+    {
+      "phase": 2,
+      "source": "actors_hero-strike-sw-v2.png",
+      "source_box": [
+        1024,
+        0,
+        1536,
+        512
+      ]
+    },
+    {
+      "phase": 3,
+      "source": "actors_hero-strike-sw-contact3-v3.png"
+    },
+    {
+      "phase": 4,
+      "source": "actors_hero-strike-sw-follow4-v3.png"
+    },
+    {
+      "phase": 5,
+      "source": "actors_hero-strike-sw-v2.png",
+      "source_box": [
+        1024,
+        512,
+        1536,
+        1024
+      ]
+    }
+  ],
+  "conversion_notes": [
+    "New isolated sources are1254x1254; preceding crop512x512. Whole-canvas ratio2.44921875 tracks source placement closely. Keep source-grid scale relationship and crouch height; do not independently fit contact/follow-through to standing crown height.",
+    "All selected source images contain painted checker and require actual Pixel Respecter connected background cleanup and native review.",
+    "The v2 sheet cells have inconsistent body centering/row placement. Measure authored ground origins instead of assuming each512cell geometric center is the body pivot.",
+    "Root/pipeline must review composed idle\u2192six-frame\u2192idle at shared native scale and hand sockets before production acceptance."
+  ],
+  "acceptance": "contact3_and_follow4_source_pose_corrections_accepted_for_candidate_conversion;native_motion_equipment_pending",
+  "writes": "Source/prompts initially, then root-authorized SW manifest/runtime/provenance/previews; shared importer/order/catalog and game/header code untouched.",
+  "conversion_handoff_completed": {
+    "manifest": "../../../../tools/raster/hero-strike-sw.json",
+    "report": "../../../../tools/raster/hero-strike-sw-review.json",
+    "runtime_names": "hero_strike0_sw through hero_strike5_sw",
+    "status": "Converted through actual Pixel Respecter; native and4x whole-cycle reviewed; usable for root production trial with documented head/outline/scale roughness.",
+    "equipment": "Final PNG-ready notice sent to motion_references; no further writes during socket measurement."
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "generatedOn": "2026-09-09",
+  "generationMode": "built-in image_gen",
+  "modelSelection": "No model or variant selector exposed; no variant asserted.",
+  "status": "Generated source inspected and sent to Pixel Respecter; native cycle review pending.",
+  "source": "native/client/assets/raster/source/actors_hero-walk-nw-d2poses-v1.png",
+  "prompt": "native/client/assets/raster/prompts/actors_hero-walk-nw-d2poses-v1.txt",
+  "generatedOriginal": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-bb1b2a8d-4726-442b-8db7-93312710de9d.png",
+  "sha256": "869f7b68f44b52df59f686ac0b190d147934750c1af51f5bf2b755ed7bd7b130",
+  "size": [
+    1536,
+    1024
+  ],
+  "mode": "RGB",
+  "publishedStartingRecipe": {
+    "creator": "Practical_Low29",
+    "url": "https://www.reddit.com/r/aigamedev/comments/1wbmvnm/gpt_image_25_nailed_a_16_frame_combat_sprite_sheet/?sort=top",
+    "prompt": "Make a simplified 128px pixel art combat motion sprite sheet of this character, transparent background if you can, arrange it 4x4.",
+    "adaptation": "Changed one character combat study to an eight-frame64pxlogical walking study,4x2. Added an ordered motion reference with explicitly separated identity/style and pose roles to address repeated leading-leg failures. This two-reference motion adaptation is our experiment, not a published validated recipe."
+  },
+  "references": [
+    {
+      "index": 1,
+      "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/client/assets/raster/runtime/hero_nw.png",
+      "sha256": "2fd7271f16f65eceefc583746d8373f1a81e25a74e505af7917e8ec722b0becc",
+      "role": "Accepted adult hero identity, upper-left back view, pixel construction and wardrobe. Preserve brown tunic, full trousers, physical-right bronze shoulder guard and physical-left blue sash.",
+      "inspectedWith": "view_image"
+    },
+    {
+      "index": 2,
+      "path": "C:/Users/Alex/Documents/ChatGPT/diablo-reference-cache/motion-study-20260909/body-corrected-cof/nw-ordered-4x2-3x.png",
+      "sha256": "1269e5231c851fb8be6f8a8653e6bf8fb00279914d2b99c630f065ffbaa0e078",
+      "role": "Eight ordered body poses only, one source pose per corresponding generated cell. Not clothing, identity, tattoo, labels, palette or background.",
+      "inspectedWith": "view_image",
+      "directionValidation": "Coordinator reported revalidation through actual movement-to-animation caller and corrected COF/DCC direction. Blue marking is on the back, not a chest cue.",
+      "storage": "Reference remains in external local cache; raw reference not copied into project."
+    }
+  ],
+  "layout": {
+    "columns": 4,
+    "rows": 2,
+    "cell": [
+      384,
+      512
+    ],
+    "order": "row-major0through7",
+    "sourcePixelPitchApprox": 6,
+    "bodyBoundsLocalApprox": [
+      [
+        89,
+        66,
+        308,
+        467
+      ],
+      [
+        79,
+        66,
+        309,
+        480
+      ],
+      [
+        71,
+        71,
+        285,
+        480
+      ],
+      [
+        71,
+        75,
+        294,
+        479
+      ],
+      [
+        83,
+        52,
+        314,
+        447
+      ],
+      [
+        96,
+        55,
+        309,
+        445
+      ],
+      [
+        84,
+        54,
+        316,
+        448
+      ],
+      [
+        81,
+        52,
+        306,
+        454
+      ]
+    ]
+  },
+  "sourceVisualReview": {
+    "identity": "Brown tunic, full dark trouser legs, left sash and physical-right shoulder bronze preserved. Back/upper-left view retained. No borrowed reference2labels, markings or costume visible.",
+    "pose": "Substantially more varied leg progression than previous idle-dominated sheets: wide poses0/1 narrow or cross in2/3;4has a different visible lead/support connection and7opens the stride again. Anatomical alternation in overlapped4–6 requires native playback review; a complete gait is not asserted from this sheet.",
+    "alpha": "Failed actual transparency; source is RGB with painted lightgray/white pattern.",
+    "layout": "Second-row bodies begin roughly14sourcepixels higher within cells and sole extents roughly30pixels higher. Separate authored row-layout drift from natural pose changes; preserve common scale and review anatomical origin rather than fitting frames independently."
+  },
+  "nextCheck": "Pixel Respecter cleanup, shared palette/canvas/origin and chronological native/3x playback. If lead-leg repetition persists, switch to editing the ordered pose sheet while using hero as appearance reference, per coordinator; do not repeat identity-first ambiguous prompt."
+}

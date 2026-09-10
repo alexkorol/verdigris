@@ -1,5 +1,30 @@
 # Native reconstitution handoff
 
+## 2026-09-10 — Directional pixel motion and readable contact HUD
+
+The runtime library now has 118 assets: four hero walk directions and six-pose
+SE/SW/NW strikes, plus a small pixel impact. Equipment follows measured hands
+and changing occlusion; damage tints the actual struck silhouette. Tree
+dressing clears the gate, life bars use visible sprite bounds, damage text
+clears the bars, and existing detailed orb art retains textured liquid/glass.
+Published Image 2.5 workflows are applied with exact prompts and explicit local
+adaptations. Original D2 reference pixels stay in the external study cache.
+
+Final native build/all 64 scenarios pass: 18.7 ms fullscreen over 20 frames and
+9.4ms dense 128 effects, unchanged 40 ms limits. Native suites, browser final 32/32,
+importer 7/7 and equipment 54 poses x 5 weapons x 3 scales pass. The SW motion fixture
+now validates a clear corridor and paints all 15 ms presentation steps; it no
+longer mistakes a blocked route/60ms sampling gap for a missing sprite phase.
+One initial browser final-death timeout did not recur in focused/full reruns;
+bounded failure evidence was added without changing server behavior or gates.
+[Viewed live capture, clips, traces, failures and final logs](../../native/client/assets/raster/reviews/2026-09-10/README.md)
+are retained.
+
+This closes the integration milestone, not the visual goal. NW walking feet
+float in some frames; clip palette/proportions, NE attacks, enemy weapon/motion
+continuity, ground texture/paths and HUD coherence still need work. Pending
+NE/raider candidates are preserved outside runtime. No push or merge.
+
 ## 2026-09-09 — Game-room feedback on edits and texture
 
 The original room-asset developer comment adds a practical positive result

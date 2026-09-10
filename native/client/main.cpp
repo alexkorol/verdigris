@@ -1535,60 +1535,12 @@ void paint_compare_plate(ClientState& state, HDC dc, int x, int y,
 bool draw_wizard_orb(const BillboardAssets& assets, HDC dc, bool life, int cx,
                      int cy, int radius, double ratio, const std::string& caption,
                      bool pulse, render::List& rl, const char* label) {
-  if (!assets.orb_art.ready() || !assets.alpha_blend) return false;
-  const OrbPlateGeom& geom = life ? kOrbLife : kOrbMana;
-  const BillboardAssets::TintedMask& liquid =
-      life ? assets.orb_liquid_life : assets.orb_liquid_mana;
-  const int art_w = geom.art.right - geom.art.left;
-  const int art_h = geom.art.bottom - geom.art.top;
-  if (art_w <= 0 || art_h <= 0) return false;
-  const int dest_h = radius * 5 / 2;
-  const int dest_w = std::max(1, art_w * dest_h / art_h);
-  const int dest_left = cx - dest_w / 2;
-  const int dest_top = cy + radius - dest_h;
-  const double sx = static_cast<double>(dest_w) / static_cast<double>(art_w);
-  const double sy = static_cast<double>(dest_h) / static_cast<double>(art_h);
-  const int gx = dest_left + static_cast<int>(
-                                 (geom.globe.left - geom.art.left) * sx);
-  const int gy =
-      dest_top + static_cast<int>((geom.globe.top - geom.art.top) * sy);
-  const int gw = std::max(
-      1, static_cast<int>((geom.globe.right - geom.globe.left) * sx));
-  const int gh = std::max(
-      1, static_cast<int>((geom.globe.bottom - geom.globe.top) * sy));
-  const BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
-  assets.alpha_blend(dc, dest_left, dest_top, dest_w, dest_h, assets.orb_art.dc,
-                     geom.art.left, geom.art.top, art_w, art_h, blend);
+  (void)assets;
+  if (!skin::raster_orb(dc, life, cx, cy, radius, ratio, caption, pulse)) return false;
   const double bounded = std::clamp(ratio, 0.0, 1.0);
-  if (liquid.ready() && bounded > 0.01) {
-    const int fill_h = std::max(1, static_cast<int>(gh * bounded));
-    const int src_fill_h =
-        std::max(1, static_cast<int>(liquid.h * bounded));
-    assets.alpha_blend(dc, gx, gy + gh - fill_h, gw, fill_h, liquid.dc, 0,
-                       liquid.h - src_fill_h, liquid.w, src_fill_h, blend);
-  }
-  if (pulse) {
-    HPEN ring = CreatePen(PS_SOLID, 2, RGB(214, 92, 72));
-    HGDIOBJ old_pen = SelectObject(dc, ring);
-    HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
-    Ellipse(dc, gx - 2, gy - 2, gx + gw + 2, gy + gh + 2);
-    SelectObject(dc, old_brush);
-    SelectObject(dc, old_pen);
-    DeleteObject(ring);
-  }
   const int bounded_pct = static_cast<int>(bounded * 100.0);
   rl.push_back({render::Op::Orb, static_cast<double>(cx), static_cast<double>(cy),
                 static_cast<double>(radius), bounded_pct, label});
-  SetBkMode(dc, TRANSPARENT);
-  SetTextColor(dc, skin::kInk);
-  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
-  SIZE caption_extent{};
-  GetTextExtentPoint32A(dc, caption.c_str(), static_cast<int>(caption.size()),
-                        &caption_extent);
-  TextOutA(dc, gx + gw / 2 - caption_extent.cx / 2,
-           gy + gh / 2 - caption_extent.cy / 2, caption.c_str(),
-           static_cast<int>(caption.size()));
-  SelectObject(dc, old_font);
   return true;
 }
 
@@ -2496,13 +2448,13 @@ void draw_contact_shadow(HDC dc, const ScreenPoint& base, double world_radius) {
                        std::max(2, rx * 4 / 3), std::max(2, ry));
 }
 
-// TASK-0142: a squashed ground ring in team colors so friend/foe reads at a
-// glance even before the silhouette resolves.
+// A small ground ellipse keeps team recognition close to the feet, beneath
+// the actor silhouette. Match the contact shadow's ground-plane squash.
 void draw_team_ring(HDC dc, const ScreenPoint& base, double world_radius,
                     COLORREF color) {
   const int rx = std::max(5, static_cast<int>(world_radius * base.scale));
-  const int ry = std::max(3, static_cast<int>(world_radius * base.scale * 0.62));
-  ring_ellipse(dc, base.x, base.y, rx, ry, color, 2);
+  const int ry = std::max(3, static_cast<int>(world_radius * base.scale * 0.30));
+  ring_ellipse(dc, base.x, base.y, rx, ry, color, 1);
 }
 
 // A billboard stands vertically on its ground point regardless of camera pitch.
@@ -3200,6 +3152,16 @@ void paint_telegraphs(const ClientState& state, HDC dc, const RECT& bounds,
   RestoreDC(dc, saved);
 }
 
+// The flash core is measured in the reconstructed 48x48 sprite. Its alpha
+// bounds are asymmetric, so centering the canvas would move the contact point.
+bool draw_contact_spark(HDC dc, const ScreenPoint& base, float opacity) {
+  const int lift = static_cast<int>(std::lround(kTileUnits * 0.80 * base.scale));
+  const int height = std::max(8, static_cast<int>(std::lround(
+      kTileUnits * 0.70 * base.scale)));
+  return raster_art::draw_sprite_at_anchor(dc, "effect_hit_spark", base.x,
+      base.y - lift, height, 21.5, 27.5, 0, false, opacity);
+}
+
 void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectFx& fx,
                  render::List& rl) {
   const ScreenPoint base = project(camera, bounds, fx.wx, fx.wy);
@@ -3288,8 +3250,9 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
     case EffectFx::Kind::Impact: {
       rl.push_back({render::Op::Impact, static_cast<double>(base.x),
                     static_cast<double>(base.y)});
-      const int r = std::max(4, static_cast<int>(kTileUnits * 0.35 * base.scale));
-      fill_ellipse(dc, base.x, base.y, r, r, fade_to_background(RGB(255, 214, 120), life));
+      if (draw_contact_spark(dc, base, static_cast<float>(life)))
+        rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                      static_cast<double>(base.y), 0.0, 0, "raster:impact"});
       break;
     }
     case EffectFx::Kind::DeathRing: {
@@ -3331,10 +3294,10 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
                        (fx.style.empty() ? "slash" : fx.style);
       rl.push_back({render::Op::Damage, static_cast<double>(base.x),
                     static_cast<double>(base.y), 0.0, fx.value, damage_label});
-      // Critical hits rise higher and read larger for their longer lifetime;
-      // ordinary hits keep the accepted TASK-0142 treatment.
+      // Start above the pixel actor's head, leaving the hands, hit spark and
+      // footing readable. Critical hits rise farther over their longer life.
       const int lift = static_cast<int>(kTileUnits *
-                                        (0.35 + grow * (fx.critical ? 1.05 : 0.75)) *
+                                        (1.45 + grow * (fx.critical ? 1.05 : 0.75)) *
                                         base.scale);
       const COLORREF color = base_color;
       SetBkMode(dc, TRANSPARENT);
@@ -3345,34 +3308,41 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       HFONT number_font = cached_damage_font(font_h);
       HGDIOBJ old_number_font = SelectObject(dc, number_font);
       // Rise AND fade toward the background over the effect lifetime.
-      SetTextColor(dc, fade_to_background(color, life));
       const std::string text = std::to_string(fx.value);
-      TextOutA(dc, base.x - 9, base.y - lift, text.c_str(),
-               static_cast<int>(text.size()));
-      SelectObject(dc, old_number_font);
+      SIZE text_size{};
+      GetTextExtentPoint32A(dc, text.c_str(), static_cast<int>(text.size()), &text_size);
+      // The lift locates the label's bottom, so glyphs grow upward instead
+      // of crossing the target's head and life bar.
+      const int text_y = base.y - lift - text_size.cy;
       if (fx.critical) {
-        // A short white-hot burst cross behind the numeral separates the
-        // critical beat from every ordinary hit flash.
+        // A compact burst belongs with the critical number, above the body.
         const COLORREF burst = fade_to_background(
             RGB(phase_a::kCriticalFlashColor.r, phase_a::kCriticalFlashColor.g,
                 phase_a::kCriticalFlashColor.b),
             life);
-        const int arm = std::max(6, static_cast<int>(kTileUnits * 0.5 * base.scale));
-        draw_line(dc, base.x - arm, base.y - arm, base.x + arm, base.y + arm, burst, 2);
-        draw_line(dc, base.x - arm, base.y + arm, base.x + arm, base.y - arm, burst, 2);
+        const int arm = std::max(6, font_h / 2);
+        const int burst_y = text_y + text_size.cy / 2;
+        draw_line(dc, base.x - arm, burst_y - arm, base.x + arm, burst_y + arm, burst, 1);
+        draw_line(dc, base.x - arm, burst_y + arm, base.x + arm, burst_y - arm, burst, 1);
       }
+      const int text_x = base.x - text_size.cx / 2;
+      SetTextColor(dc, fade_to_background(RGB(24, 19, 16), life));
+      TextOutA(dc, text_x + 1, text_y + 1, text.c_str(),
+               static_cast<int>(text.size()));
+      SetTextColor(dc, fade_to_background(color, life));
+      TextOutA(dc, text_x, text_y, text.c_str(), static_cast<int>(text.size()));
+      SelectObject(dc, old_number_font);
       break;
     }
     case EffectFx::Kind::TargetFlash: {
       rl.push_back({render::Op::TargetFlash, static_cast<double>(base.x),
                     static_cast<double>(base.y), 0.0, 0,
                     fx.damage_to_player ? "player" : "monster"});
-      // A brief bright ring over the hit target reads as a tint on the sprite.
-      const int r = std::max(6, static_cast<int>(kTileUnits * 0.5 * base.scale));
-      ring_ellipse(dc, base.x, base.y, r, r,
-                   fade_to_background(RGB(255, 244, 190), life), 3);
-      fill_ellipse(dc, base.x, base.y, r / 2, r / 2,
-                   fade_to_background(RGB(255, 238, 160), life));
+      // Actor-owned flashes are drawn through the current sprite's alpha
+      // inside its depth pass. Position-only diagnostic effects retain a
+      // compact flash; ordinary damage no longer paints a second feet disk.
+      if (fx.actor_id.empty())
+        draw_contact_spark(dc, base, static_cast<float>(life * 0.65));
       break;
     }
     case EffectFx::Kind::Materialize: {
@@ -3591,6 +3561,7 @@ void ingest_events(ClientState& state, const RECT& bounds) {
         flash.age = 0;
         flash.ttl = 4;
         flash.damage_to_player = to_player;
+        flash.actor_id = event.actor_id;
         add_effect(state, flash);
         // Floating damage number: the value the core resolved, rising and
         // fading above the target over ~600ms. Red when the Scion took the hit.
@@ -9139,6 +9110,36 @@ const char* raster_direction(double x, double y) {
   return y < 0.0 ? (x < 0.0 ? "nw" : "ne") : (x < 0.0 ? "sw" : "se");
 }
 
+struct RasterDirectionalClip {
+  const char* direction;
+  int frames;
+  int dx;
+  int dy;
+};
+
+// One entry per authored directional cycle. Frame count changes temporal
+// sampling; the distance-driven phase keeps the same stride across directions.
+constexpr RasterDirectionalClip kHeroWalkClips[] = {
+    {"se", 4, 1, 1}, {"sw", 8, -1, 1},
+    {"ne", 8, 1, -1}, {"nw", 8, -1, -1}};
+
+constexpr RasterDirectionalClip kHeroStrikeClips[] = {
+    {"se", 6, 1, 1}, {"sw", 6, -1, 1}, {"nw", 6, -1, -1}};
+
+int raster_walk_frames(const char* family, const std::string& direction) {
+  if (std::strcmp(family, "hero") != 0) return 0;
+  for (const auto& clip : kHeroWalkClips)
+    if (direction == clip.direction) return clip.frames;
+  return 0;
+}
+
+int raster_strike_frames(const char* family, const std::string& direction) {
+  if (std::strcmp(family, "hero") != 0) return 0;
+  for (const auto& clip : kHeroStrikeClips)
+    if (direction == clip.direction) return clip.frames;
+  return 0;
+}
+
 void advance_actor_motion(ClientState& state, double dt_ms) {
   state.breathe_phase = std::fmod(state.breathe_phase + dt_ms / 2400.0, 1.0);
   const auto advance = [&](const std::string& id, const verdigris::Vec2& pos) {
@@ -9166,12 +9167,25 @@ bool draw_raster_actor(HDC dc, const char* family, const ScreenPoint& base,
                        double attack_phase, double moving, double walk_phase,
                        std::string* drawn_asset = nullptr) {
   const std::string direction = raster_direction(facing_x, facing_y);
+  const int strike_frames = raster_strike_frames(family, direction);
   std::string pose;
-  if (attack_phase > 0.18 && attack_phase < 0.82 &&
+  // A negative phase means no strike. The confirmed contact event starts at
+  // phase 0.5, selecting authored contact frame 3 immediately; preparation is
+  // only shown when an actual speculative input effect precedes confirmation.
+  if (strike_frames > 0 && attack_phase >= 0.0 && attack_phase < 1.0)
+    pose = "_strike" + std::to_string(
+        std::clamp(static_cast<int>(attack_phase * strike_frames), 0, strike_frames - 1));
+  else if (attack_phase > 0.18 && attack_phase < 0.82 &&
       (std::strcmp(family, "hero") == 0 || std::strcmp(family, "raider") == 0))
     pose = "_attack";
-  else if (moving > 0.20 && std::strcmp(family, "hero") == 0)
-    pose = "_walk" + std::to_string(static_cast<int>(walk_phase * 4.0) % 4);
+  else if (moving > 0.20) {
+    const int frames = raster_walk_frames(family, direction);
+    if (frames > 0) {
+      const double phase = walk_phase - std::floor(walk_phase);
+      pose = "_walk" + std::to_string(
+          std::clamp(static_cast<int>(phase * frames), 0, frames - 1));
+    }
+  }
   const std::string name = std::string(family) + pose + "_" + direction;
   if (raster_art::draw_sprite(dc, name.c_str(), base.x, base.y, height)) {
     if (drawn_asset) *drawn_asset = name;
@@ -9192,6 +9206,28 @@ void draw_raster_equipment(HDC dc, vector_art::Held held, const ScreenPoint& bas
       : held == vector_art::Held::Club ? "weapon_club" : "weapon_sword";
   raster_equipment::draw_front(dc, resolved_pose.c_str(), name,
                                base.x, base.y, height);
+}
+
+void draw_raster_target_flash(HDC dc, const ClientState& state,
+                              const std::string& actor_id,
+                              const std::string& sprite, const ScreenPoint& base,
+                              int height, render::List& rl) {
+  if (actor_id.empty() || sprite.empty()) return;
+  float opacity = 0.0f;
+  for (const auto& fx : state.effects) {
+    if (fx.kind != EffectFx::Kind::TargetFlash || fx.actor_id != actor_id ||
+        fx.ttl <= 0 || fx.age >= fx.ttl)
+      continue;
+    const float life = std::clamp(
+        1.0f - (fx.age + static_cast<float>(state.tick_accum_ms / 50.0)) / fx.ttl,
+        0.0f, 1.0f);
+    opacity = std::max(opacity, life * (fx.critical ? 0.85f : 0.60f));
+  }
+  if (opacity > 0.0f && raster_art::draw_sprite_flash(
+          dc, sprite.c_str(), base.x, base.y, height, false, opacity))
+    rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                  static_cast<double>(base.y), 0.0, 0,
+                  "raster:target-flash:" + actor_id});
 }
 
 void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
@@ -9363,13 +9399,13 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                       static_cast<double>(base.y), 0.0, static_cast<int>(held),
                       std::string("held-world:") + vector_art::held_label(held)});
         draw_contact_shadow(dc, base, kTileUnits * 0.42);
-        draw_team_ring(dc, base, kTileUnits * 0.55, RGB(120, 214, 168));
+        draw_team_ring(dc, base, kTileUnits * 0.32, RGB(170, 183, 145));
         // Strike lunge: while a swing effect is alive the body steps into
         // the blow along the facing and recovers - a half-sine over the
         // arc's lifetime, sub-tick smoothed so 60 fps rendering reads it
         // as motion rather than three poses. The same phase drives the
         // rig's arm swing.
-        double attack_phase = 0.0;
+        double attack_phase = -1.0;
         if (const auto* strike = verdigris::client::actor_strike(state.effects, player.id)) {
           const auto& fx = *strike;
           const double phase = verdigris::client::strike_phase(fx, state.tick_accum_ms / 50.0);
@@ -9384,7 +9420,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
           pose.walk = motion.walk_phase;
           pose.moving = motion.moving;
           pose.breathe = state.breathe_phase;
-          pose.attack = attack_phase;
+          pose.attack = std::max(0.0, attack_phase);
           pose.attack_stage = player_attack_stage(state);
           pose.mirror = player.facing.x < 0;
           const int height = std::max(10, static_cast<int>(kTileUnits * 1.75 * base.scale));
@@ -9397,6 +9433,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
             rl.push_back({render::Op::Hud, static_cast<double>(base.x),
                           static_cast<double>(base.y), 0.0, 0,
                           "raster:pose:" + raster_pose});
+            draw_raster_target_flash(dc, state, player.id, raster_pose,
+                                      base, height, rl);
             draw_raster_equipment(dc, held, base, height, raster_pose);
           } else {
             vector_art::humanoid(dc, base.x, base.y, height,
@@ -9406,15 +9444,18 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                         static_cast<double>(base.y), 0.0, 0,
                         attack_stage_label(pose.attack_stage)});
         }
-        // Draw the authoritative facing, rather than a client-only mouse hint.
-        const double angle =
-            std::atan2(static_cast<double>(player.facing.y),
-                       static_cast<double>(player.facing.x));
-        const int fx = base.x + static_cast<int>(std::cos(angle) * kTileUnits * 0.6 *
-                                                 base.scale);
-        const int fy = base.y + static_cast<int>(std::sin(angle) * kTileUnits * 0.6 *
-                                                 base.scale);
-        draw_line(dc, base.x, base.y, fx, fy, RGB(140, 208, 172), 2);
+        // The sprite carries facing during play; the geometric aim guide is
+        // diagnostic information for the debug overlay.
+        if (state.debug_overlay) {
+          const double angle =
+              std::atan2(static_cast<double>(player.facing.y),
+                         static_cast<double>(player.facing.x));
+          const int fx = base.x + static_cast<int>(std::cos(angle) * kTileUnits * 0.6 *
+                                                   base.scale);
+          const int fy = base.y + static_cast<int>(std::sin(angle) * kTileUnits * 0.6 *
+                                                   base.scale);
+          draw_line(dc, base.x, base.y, fx, fy, RGB(140, 208, 172), 2);
+        }
         break;
       }
       case DepthDraw::What::Monster: {
@@ -9469,10 +9510,11 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                       static_cast<double>(base.y), 0.0, monster.life,
                       monster.elite ? "elite" : "monster"});
         draw_contact_shadow(dc, base, kTileUnits * 0.42);
-        draw_team_ring(dc, base, kTileUnits * 0.58,
+        draw_team_ring(dc, base, kTileUnits * 0.36,
                        monster.elite ? RGB(239, 208, 116) : RGB(214, 92, 72));
         const double foe_height =
             monster.elite ? kTileUnits * 2.4 : kTileUnits * 2.05;
+        int actor_head_y = base.y - static_cast<int>(foe_height * base.scale);
         {
           // Animated vector rig, chosen by theme and combat role so every
           // road fields a visually distinct bestiary.
@@ -9494,12 +9536,20 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
               : world.theme == "crypt" ? "wight"
               : world.theme == "wilds" || world.theme == "marsh" ? "beast"
               : "raider";
+          std::string raster_pose;
           if (draw_raster_actor(dc, family, base, rig_h, to_player_x, to_player_y,
                                monster_attack_phase, motion_it.moving,
-                               motion_it.walk_phase)) {
+                               motion_it.walk_phase, &raster_pose)) {
             rl.push_back({render::Op::Hud, static_cast<double>(base.x),
                           static_cast<double>(base.y), 0.0, 0,
                           std::string("raster:monster:") + family});
+            draw_raster_target_flash(dc, state, monster.id, raster_pose,
+                                      base, rig_h, rl);
+            const auto canvas = raster_art::dimensions(raster_pose.c_str());
+            const RECT content = raster_art::content_bounds(raster_pose.c_str());
+            if (canvas.valid())
+              actor_head_y = base.y - rig_h + static_cast<int>(std::lround(
+                  static_cast<double>(content.top) * rig_h / canvas.height));
           } else if (monster.behaviour == "buffer") {
             vector_art::totem(dc, base.x, base.y, rig_h, style, pose);
           } else if (monster.behaviour == "ranged") {
@@ -9518,8 +9568,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         // TASK-0142: bordered life bar with a dark backing so the remaining
         // fraction stays readable against any floor.
         const int bar_w = static_cast<int>(kTileUnits * 0.7 * base.scale) + 4;
-        const int bar_y =
-            base.y - static_cast<int>(foe_height * base.scale) - 4;
+        const int bar_y = actor_head_y - std::max(7, static_cast<int>(4 * base.scale));
         const double ratio =
             std::clamp(static_cast<double>(monster.life) /
                            std::max(1, monster.life_max),
@@ -9587,7 +9636,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                              std::string("bank")) != npc.actions.end())
             ring = RGB(120, 214, 168);
         }
-        draw_team_ring(dc, base, kTileUnits * 0.55, ring);
+        draw_team_ring(dc, base, kTileUnits * 0.32, ring);
         {
           vector_art::Pose pose;
           pose.breathe = std::fmod(state.breathe_phase + npc.id * 0.23, 1.0);
@@ -16715,17 +16764,42 @@ int scenario_strike_contact() {
     scenario_check(reference_present(state, 960, 600, dir + "\\strike-" + name + ".png"),
                    "strike-contact: production frame captured");
   };
+  auto has_pose = [&](const char* pose) {
+    const std::string expected = std::string("raster:pose:") + pose;
+    for (const auto& item : state.render_list)
+      if (item.label == expected) return true;
+    return false;
+  };
+  const auto has_hud = [&](const std::string& label) {
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud && item.label == label) return true;
+    return false;
+  };
   capture("before");
+  scenario_check(has_pose("hero_se"),
+                 "strike-contact: an idle actor has no accidental strike pose");
   // Exercise the same preparation helper used by remote dispatch_skill.
   // Contact below is a real local Simulation event, not a fabricated hit.
   verdigris::client::present_strike(state.effects, player->id, player->position, 0, false, true);
   capture("input");
+  scenario_check(has_pose("hero_strike0_se"),
+                 "strike-contact: actual preparation paints the ready frame");
   scenario_check(player_attack_stage(state) == vector_art::Pose::AttackStage::Windup,
                  "strike-contact: preparation renders windup before contact");
+  // Sample the two remaining authored preparation poses without changing the
+  // simulation or inventing a hit. These captures are a presentation review
+  // sequence; the damage assertion below still requires a real melee event.
+  for (int age = 1; age < 3; ++age) {
+    for (auto& fx : state.effects)
+      if (fx.actor_id == player->id && fx.speculative) fx.age = age;
+    capture(age == 1 ? "prepare-1" : "prepare-2");
+  }
   const int before_life = foe->stats.life;
   state.simulation->dispatch(verdigris::Command::action_use(verdigris::ActionType::Melee));
   ingest_events(state, bounds);
   capture("contact");
+  scenario_check(has_pose("hero_strike3_se"),
+                 "strike-contact: first confirmed damage frame paints contact pose 3");
   scenario_check(foe->stats.life < before_life, "strike-contact: simulation actually resolved damage");
   scenario_check(player_attack_stage(state) == vector_art::Pose::AttackStage::Active,
                  "strike-contact: first damage frame presents active contact");
@@ -16735,8 +16809,17 @@ int scenario_strike_contact() {
   scenario_check(arcs == 1, "strike-contact: confirmation leaves exactly one player arc");
   scenario_check(render::any(state.render_list, render::Op::Impact),
                  "strike-contact: actual impact is visible on contact frame");
-  for (auto& fx : state.effects) fx.age += 2;
+  scenario_check(has_hud("raster:impact") &&
+                     has_hud("raster:target-flash:" + foe->id),
+                 "strike-contact: resolved hit paints the pixel spark and struck actor silhouette");
+  for (auto& fx : state.effects) ++fx.age;
+  capture("follow-through");
+  scenario_check(has_pose("hero_strike4_se"),
+                 "strike-contact: contact flows into the authored follow-through");
+  for (auto& fx : state.effects) ++fx.age;
   capture("recovery");
+  scenario_check(has_pose("hero_strike5_se"),
+                 "strike-contact: late recovery paints the final authored pose");
   scenario_check(player_attack_stage(state) == vector_art::Pose::AttackStage::Recovery,
                  "strike-contact: the same strike settles into recovery");
   state.effects.clear();
@@ -16744,8 +16827,58 @@ int scenario_strike_contact() {
   sync_world(state);
   verdigris::client::present_strike(state.effects, foe->id, foe->position, 0, false, false);
   scenario_present(state);
+  scenario_check(has_pose("hero_se"),
+                 "strike-contact: an enemy strike leaves the player in its idle pose");
   scenario_check(player_attack_stage(state) == vector_art::Pose::AttackStage::Idle,
                  "strike-contact: enemy-only arc cannot pose player");
+  scenario_check(!has_hud("raster:target-flash:" + player->id) &&
+                     !has_hud("raster:target-flash:" + foe->id),
+                 "strike-contact: a strike without damage cannot flash either actor");
+
+  // Obtain equipment through the same kill/drop/pickup/equip path as play.
+  // The later target is a real simulation actor, so the equipped capture
+  // verifies the production strike at confirmed damage rather than a montage.
+  for (const auto& clip : kHeroStrikeClips) {
+    ClientState equipped;
+    scenario_begin(equipped);
+    for (int i = 0; i < 52; ++i)
+      scenario_step(equipped, verdigris::Command::move(1, 0));
+    for (int i = 0; i < 8; ++i)
+      scenario_step(equipped, verdigris::Command::action_use(verdigris::ActionType::Melee));
+    if (!equipped.simulation->ground_items().empty())
+      scenario_step(equipped, verdigris::Command::pick_up(
+          equipped.simulation->ground_items().front().id));
+    if (!equipped.simulation->scion().carried_items.empty())
+      scenario_step(equipped, verdigris::Command::equip(
+          equipped.simulation->scion().carried_items.front().id));
+    scenario_check(equipped_held(equipped) == vector_art::Held::Axe,
+                   "strike-contact: actual loot equips an axe for the motion review");
+    auto* equipped_player = equipped.simulation->actor(equipped.simulation->scion().actor_id);
+    if (equipped_player) {
+      const auto at = equipped_player->position;
+      const auto target_id = equipped.simulation->spawn_monster(
+          {at.x + clip.dx * verdigris::world_scale::kMeleeRange / 3,
+           at.y + clip.dy * verdigris::world_scale::kMeleeRange / 3}, 3, false);
+      const int target_life = equipped.simulation->actor(target_id)->stats.life;
+      equipped_player = equipped.simulation->actor(equipped.simulation->scion().actor_id);
+      equipped_player->facing = {clip.dx, clip.dy};
+      equipped_player->cooldown_ticks = 0;
+      ingest_events(equipped, bounds);
+      equipped.effects.clear();
+      scenario_follow_camera(equipped);
+      equipped.simulation->dispatch(verdigris::Command::action_use(verdigris::ActionType::Melee));
+      ingest_events(equipped, bounds);
+      scenario_check(reference_present(equipped, 960, 600,
+                                        dir + "\\strike-equipped-" + clip.direction + "-contact.png"),
+                     "strike-contact: equipped confirmed contact captured through production paint");
+      bool contact_pose = false;
+      for (const auto& item : equipped.render_list)
+        if (item.label == std::string("raster:pose:hero_strike3_") + clip.direction) contact_pose = true;
+      scenario_check(contact_pose && render::any(equipped.render_list, render::Op::Damage) &&
+                         equipped.simulation->actor(target_id)->stats.life < target_life,
+                     "strike-contact: equipped contact pose accompanies real resolved damage");
+    }
+  }
   return scenario_failures;
 }
 
@@ -16897,10 +17030,15 @@ int scenario_dressing_pass() {
   scenario_check(dressing_n == 2, "dressing-pass: v1 plants two dressing trees");
   scenario_check(first_dress && !first_dress->solid,
                  "dressing-pass: production dressing is never solid");
-  const verdigris::Vec2 from = spawn;
+  // Probe the decoration itself. A long ray from spawn can cross an unrelated
+  // solid dwelling after a visual tree moves to the edge of the clearing.
   const verdigris::Vec2 into_dress{first_dress->position.x, first_dress->position.y};
+  const verdigris::Vec2 from{
+      into_dress.x - static_cast<int>(std::lround(first_dress->radius +
+                                                 kActorColliderRadius + 8)),
+      into_dress.y};
   scenario_check(!scenery_blocks_segment(state, from, into_dress),
-                 "dressing-pass: a tree visual does not block the approved layout");
+                 "dressing-pass: a segment through the decorative trunk stays clear");
 
   first_dress->solid = true;
   scenario_check(verdigris::client::world::dressing_is_unreported_obstacle(
@@ -18629,15 +18767,17 @@ int scenario_raster_world() {
       scenario_check(raster_art::content_dimensions(name.c_str()).valid(), label.c_str());
     }
   }
-  for (const char* name : {"tree", "hut", "column", "shrine", "gate", "brazier", "exit_stairs",
+  for (const char* name : {"tree", "hut", "column", "shrine", "gate", "brazier", "exit_stairs", "effect_hit_spark",
                            "terrain_packed_earth", "terrain_dark", "terrain_moss", "terrain_stone"}) {
     const std::string label = std::string("raster-world: scenery decodes: ") + name;
     scenario_check(raster_art::content_dimensions(name).valid(), label.c_str());
   }
-  for (int frame = 0; frame < 4; ++frame) {
-    const std::string name = "hero_walk" + std::to_string(frame) + "_se";
-    const std::string label = "raster-world: SE walk frame decodes: " + name;
-    scenario_check(raster_art::content_dimensions(name.c_str()).valid(), label.c_str());
+  for (const auto& clip : kHeroWalkClips) {
+    for (int frame = 0; frame < clip.frames; ++frame) {
+      const std::string name = "hero_walk" + std::to_string(frame) + "_" + clip.direction;
+      const std::string label = "raster-world: walk frame decodes: " + name;
+      scenario_check(raster_art::content_dimensions(name.c_str()).valid(), label.c_str());
+    }
   }
 
   constexpr int width = 160, height = 160;
@@ -18658,21 +18798,53 @@ int scenario_raster_world() {
     return scenario_failures;
   }
   HGDIOBJ old = SelectObject(dc, bitmap);
-  std::vector<std::uint64_t> hashes;
-  for (int frame = 0; frame < 4; ++frame) {
-    std::memset(bits, 0, width * height * 4);
-    const ScreenPoint base{width / 2, height - 8, 1.0};
-    scenario_check(draw_raster_actor(dc, "hero", base, 128, 1.0, 1.0,
-                                     -1.0, true, frame * 0.25),
-                   "raster-world: moving actor paints through production helper");
-    GdiFlush();
-    std::uint64_t hash = 14695981039346656037ULL;
-    const auto* pixels = static_cast<const std::uint8_t*>(bits);
-    for (int i = 0; i < width * height * 4; ++i)
-      hash = (hash ^ pixels[i]) * 1099511628211ULL;
-    scenario_check(std::find(hashes.begin(), hashes.end(), hash) == hashes.end(),
-                   "raster-world: each SE gait phase changes the rendered pixels");
-    hashes.push_back(hash);
+  for (const auto& clip : kHeroWalkClips) {
+    std::vector<std::uint64_t> hashes;
+    for (int frame = 0; frame < clip.frames; ++frame) {
+      std::memset(bits, 0, width * height * 4);
+      const ScreenPoint base{width / 2, height - 8, 1.0};
+      std::string actual_pose;
+      const std::string expected_pose = "hero_walk" + std::to_string(frame) + "_" + clip.direction;
+      scenario_check(draw_raster_actor(dc, "hero", base, 128, clip.dx, clip.dy,
+                                       -1.0, 1.0, double(frame) / clip.frames,
+                                       &actual_pose) && actual_pose == expected_pose,
+                     "raster-world: moving actor paints the authored frame without idle fallback");
+      GdiFlush();
+      std::uint64_t hash = 14695981039346656037ULL;
+      const auto* pixels = static_cast<const std::uint8_t*>(bits);
+      for (int i = 0; i < width * height * 4; ++i)
+        hash = (hash ^ pixels[i]) * 1099511628211ULL;
+      scenario_check(std::find(hashes.begin(), hashes.end(), hash) == hashes.end(),
+                     "raster-world: each directional gait phase changes the rendered pixels");
+      hashes.push_back(hash);
+    }
+  }
+  for (const auto& clip : kHeroStrikeClips) {
+    std::vector<std::uint64_t> strike_hashes;
+    for (int frame = 0; frame < clip.frames; ++frame) {
+      std::memset(bits, 0, width * height * 4);
+      std::string actual_pose;
+      const std::string expected_pose = "hero_strike" + std::to_string(frame) + "_" + clip.direction;
+      scenario_check(draw_raster_actor(dc, "hero", {width / 2, height - 8, 1.0},
+                                       128, clip.dx, clip.dy, double(frame) / clip.frames,
+                                       1.0, 0.5, &actual_pose) &&
+                         actual_pose == expected_pose,
+                     "raster-world: a strike paints its authored pose ahead of walking");
+      GdiFlush();
+      std::uint64_t hash = 14695981039346656037ULL;
+      const auto* pixels = static_cast<const std::uint8_t*>(bits);
+      for (int i = 0; i < width * height * 4; ++i)
+        hash = (hash ^ pixels[i]) * 1099511628211ULL;
+      scenario_check(std::find(strike_hashes.begin(), strike_hashes.end(), hash) == strike_hashes.end(),
+                     "raster-world: strike phases paint distinct body poses");
+      strike_hashes.push_back(hash);
+    }
+    std::string finished_pose;
+    scenario_check(draw_raster_actor(dc, "hero", {width / 2, height - 8, 1.0},
+                                     128, clip.dx, clip.dy, 1.0, 0.0, 0.5,
+                                     &finished_pose) &&
+                       finished_pose == std::string("hero_") + clip.direction,
+                   "raster-world: each completed directional strike returns to idle");
   }
   // Smoothing approaches zero asymptotically. A bool parameter incorrectly
   // treated this tiny stopped-motion tail as a request for a walking frame.
@@ -18681,6 +18853,10 @@ int scenario_raster_world() {
                                    128, 1.0, 1.0, -1.0, 0.00001, 0.5,
                                    &stopped_pose) && stopped_pose == "hero_se",
                  "raster-world: stopped motion tail returns to the idle pose");
+  scenario_check(draw_raster_actor(dc, "hero", {width / 2, height - 8, 1.0},
+                                   128, 1.0, 1.0, 1.0, 0.0, 0.5,
+                                   &stopped_pose) && stopped_pose == "hero_se",
+                 "raster-world: a finished strike returns to the idle pose");
   // A screenshot must preserve GDI's actual colors. The former exporter
   // swapped red and blue even though both DIB and GDI+ already use BGRA.
   const std::string capture_dir = art_wave_capture_dir();
@@ -18734,23 +18910,40 @@ int scenario_raster_world() {
   return scenario_failures;
 }
 
-int scenario_raster_motion() {
+void capture_raster_walk(const RasterDirectionalClip& clip, const std::string& dir) {
   ClientState state;
   scenario_begin(state);
+  // Select a clear, contained review corridor. The ordinary SW spawn path
+  // reaches the solid shrine before a complete sampled cycle can be seen.
+  // Keep all scenery/collision intact and validate the whole intended route.
+  auto* player = state.simulation->actor(state.simulation->scion().actor_id);
+  scenario_check(player != nullptr, "raster-motion: authoritative player exists");
+  if (!player) return;
+  bool clear_corridor = false;
+  for (const verdigris::Vec2 origin : {verdigris::Vec2{0, 0}, {0, -600},
+                                      {600, 0}, {0, 600}, {-600, 0},
+                                      {-600, -600}, {600, -600},
+                                      {600, 600}, {-600, 600}}) {
+    const verdigris::Vec2 end{origin.x + clip.dx * 220, origin.y + clip.dy * 220};
+    if (!scenery_blocks_segment(state, origin, end)) {
+      player->position = origin;
+      clear_corridor = true;
+      break;
+    }
+  }
+  scenario_check(clear_corridor, "raster-motion: full review corridor clears unchanged scenery");
+  if (!clear_corridor) return;
   scenario_follow_camera(state);
   advance_actor_motion(state, 0.0);
   const auto start = state.world.player.position;
-  const std::string dir = art_wave_capture_dir();
-  scenario_check(!dir.empty(), "raster-motion: capture root accepted");
-  if (dir.empty()) return scenario_failures;
-  std::ofstream trace(dir + "\\raster-motion.csv");
+  std::ofstream trace(dir + "\\raster-motion-" + clip.direction + ".csv");
   scenario_check(trace.good(), "raster-motion: motion trace opened");
-  trace << "time_ms,x,y,moving,phase,pose\n";
+  trace << "time_ms,x,y,moving,phase,pose,captured_frame\n";
   const RECT bounds{0, 0, 960, 600};
-  state.mouse = {800, 450};
+  state.mouse = {clip.dx > 0 ? 800 : 160, clip.dy > 0 ? 450 : 120};
   state.aim_direction_initialized = true;
-  state.last_aim_direction = {1, 1};
-  state.simulation->dispatch(verdigris::Command::aim(1, 1));
+  state.last_aim_direction = {clip.dx, clip.dy};
+  state.simulation->dispatch(verdigris::Command::aim(clip.dx, clip.dy));
   std::unordered_set<std::string> walk_poses;
   std::string final_pose;
   int captured = 0;
@@ -18758,7 +18951,10 @@ int scenario_raster_motion() {
   // presentation pump. The last 600 ms release both movement keys, exposing
   // smoothing tails and the transition back to the actual idle sprite.
   for (int frame = 0; frame < 160; ++frame) {
-    state.d = state.s = frame < 120;
+    state.d = frame < 120 && clip.dx > 0;
+    state.a = frame < 120 && clip.dx < 0;
+    state.s = frame < 120 && clip.dy > 0;
+    state.w = frame < 120 && clip.dy < 0;
     state.tick_accum_ms += 15.0;
     while (state.tick_accum_ms >= 50.0) {
       state.tick_accum_ms -= 50.0;
@@ -18769,11 +18965,19 @@ int scenario_raster_motion() {
     const double keep = std::pow(0.8, 15.0 / 50.0);
     state.camera.x += (state.world.player.position.x - state.camera.x) * (1.0 - keep);
     state.camera.y += (state.world.player.position.y - state.camera.y) * (1.0 - keep);
-    if (frame % 4 != 3) continue;
-    char filename[64]{};
-    std::snprintf(filename, sizeof(filename), "\\raster-motion-%03d.png", captured++);
-    scenario_check(reference_present(state, 960, 600, dir + filename),
-                   "raster-motion: production motion frame captured");
+    int captured_frame = -1;
+    if (frame % 4 == 3) {
+      char filename[64]{};
+      captured_frame = captured++;
+      std::snprintf(filename, sizeof(filename), "\\raster-motion-%s-%03d.png",
+                    clip.direction, captured_frame);
+      scenario_check(reference_present(state, 960, 600, dir + filename),
+                     "raster-motion: production motion frame captured");
+    } else {
+      // Paint every actual 15ms presentation step. Counting only the saved
+      // 60ms frames aliases an eight-pose gait and can miss a visible phase.
+      scenario_present(state);
+    }
     for (const auto& item : state.render_list) {
       if (item.label.rfind("raster:pose:", 0) != 0) continue;
       final_pose = item.label.substr(std::strlen("raster:pose:"));
@@ -18782,15 +18986,29 @@ int scenario_raster_motion() {
     const auto& motion = state.motions.at("player");
     trace << (frame + 1) * 15 << ',' << state.world.player.position.x << ','
           << state.world.player.position.y << ',' << motion.moving << ','
-          << motion.walk_phase << ',' << final_pose << '\n';
+          << motion.walk_phase << ',' << final_pose << ',' << captured_frame << '\n';
   }
-  scenario_check(state.world.player.position.x > start.x &&
-                     state.world.player.position.y > start.y,
-                 "raster-motion: held diagonal input moves the authoritative actor");
-  scenario_check(walk_poses.size() == 4,
-                 "raster-motion: actual travel paints all four SE gait phases");
-  scenario_check(state.motions.at("player").moving < 0.20 && final_pose == "hero_se",
+  const std::string movement_label = std::string("raster-motion: held ") +
+      clip.direction + " input moves the authoritative actor";
+  scenario_check((state.world.player.position.x - start.x) * clip.dx >= kTileUnits * 1.5 &&
+                     (state.world.player.position.y - start.y) * clip.dy >= kTileUnits * 1.5,
+                 movement_label.c_str());
+  bool all_frames = walk_poses.size() == static_cast<std::size_t>(clip.frames);
+  for (int frame = 0; frame < clip.frames; ++frame)
+    all_frames &= walk_poses.count("hero_walk" + std::to_string(frame) + "_" + clip.direction) > 0;
+  const std::string poses_label = std::string("raster-motion: actual ") +
+      clip.direction + " travel paints every authored gait phase";
+  scenario_check(all_frames, poses_label.c_str());
+  scenario_check(state.motions.at("player").moving < 0.20 &&
+                     final_pose == std::string("hero_") + clip.direction,
                  "raster-motion: released input settles into the idle frame");
+}
+
+int scenario_raster_motion() {
+  const std::string dir = art_wave_capture_dir();
+  scenario_check(!dir.empty(), "raster-motion: capture root accepted");
+  if (dir.empty()) return scenario_failures;
+  for (const auto& clip : kHeroWalkClips) capture_raster_walk(clip, dir);
   return scenario_failures;
 }
 

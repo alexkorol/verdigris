@@ -74,8 +74,11 @@ struct DressingSpec {
 inline int append_dressing(DressingSpec* out, int capacity, int version,
                            int spawn_x, int spawn_y) {
   const int n = dressing_count(version);
-  const int ox[5] = {180, -210, 240, -160, 90};
-  const int oy[5] = {140, 190, -120, -220, 80};
+  // Frame the playable clearing. The old first two offsets put trunks in
+  // the village gate (200,180) and shrine (-160,200). These remain purely
+  // visual placements; collision and route topology are unchanged.
+  const int ox[5] = {-620, 680, 240, -160, 90};
+  const int oy[5] = {340, 360, -120, -220, 80};
   const double scale = version <= 1 ? 0.72 : 1.08;
   int written = 0;
   for (int i = 0; i < n && written < capacity; ++i) {
