@@ -10,7 +10,10 @@
     "weapons",
     "hero-single",
     "bestiary-singles",
-    "hero-walk"
+    "hero-walk",
+    "hero-directions",
+    "environment-singles",
+    "large-props"
   ],
   "assets": [
     {
@@ -1041,14 +1044,14 @@
       "name": "tree",
       "file": "tree.png",
       "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
-      "acceptance": "preview_inspected_pending_live_game",
+      "acceptance": "display_comparison_inspected_pending_live_game",
       "source_box": [
         0,
         0,
         386,
         422
       ],
-      "cell_size": 5,
+      "cell_size": 3,
       "grid_offset": [
         0,
         0
@@ -1065,41 +1068,41 @@
       "alpha_partial_pixels": 0,
       "warnings": [],
       "reconstructed_size": [
-        77,
-        84
+        128,
+        140
       ],
       "trim_box": [
-        3,
-        3,
-        77,
-        80
+        6,
+        6,
+        128,
+        133
       ],
       "before_resize": [
-        74,
-        77
+        122,
+        127
       ],
       "placed_size": [
-        64,
-        67
+        122,
+        127
       ],
       "canvas": [
-        64,
-        96
+        192,
+        256
       ],
       "content_bounds": [
-        0,
-        29,
-        64,
-        96
+        35,
+        129,
+        157,
+        256
       ],
       "anchor_px": [
-        32,
-        96
+        96,
+        256
       ],
       "baseline_offset_px": 0,
       "resampling": "nearest_neighbor",
-      "sha256": "4c5ff0d85a91ffbdb99fbd5521032f7b4db5a03494ad1a89ed334926486cb0ec",
-      "provenance": "props.provenance.json"
+      "sha256": "8669936450b2d88206f3567f81e99db0bedfe6b5d0adc3cca4de0a66f44a6a38",
+      "provenance": "large-props.provenance.json"
     },
     {
       "name": "dead_tree",
@@ -1297,14 +1300,14 @@
       "name": "hut",
       "file": "hut.png",
       "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
-      "acceptance": "preview_inspected_pending_live_game",
+      "acceptance": "display_comparison_inspected_pending_live_game",
       "source_box": [
         0,
         422,
         386,
         760
       ],
-      "cell_size": 5,
+      "cell_size": 2,
       "grid_offset": [
         0,
         0
@@ -1321,54 +1324,54 @@
       "alpha_partial_pixels": 0,
       "warnings": [],
       "reconstructed_size": [
-        77,
-        67
+        193,
+        169
       ],
       "trim_box": [
-        4,
-        4,
-        71,
-        65
+        9,
+        10,
+        178,
+        161
       ],
       "before_resize": [
-        67,
-        61
+        169,
+        151
       ],
       "placed_size": [
-        67,
-        61
+        169,
+        151
       ],
       "canvas": [
-        96,
-        128
+        192,
+        256
       ],
       "content_bounds": [
-        14,
-        67,
-        81,
-        128
+        11,
+        105,
+        180,
+        256
       ],
       "anchor_px": [
-        48,
-        128
+        96,
+        256
       ],
       "baseline_offset_px": 0,
       "resampling": "nearest_neighbor",
-      "sha256": "b477d04f784d51e7e87de86b2a4de530a87eeeb111107defa843d8ab53c161e0",
-      "provenance": "props.provenance.json"
+      "sha256": "a88c850579a6d7123f0561a13dbb2d2809cb00ae4d6b4375d97a8f556dcf55d2",
+      "provenance": "large-props.provenance.json"
     },
     {
       "name": "storehut",
       "file": "storehut.png",
       "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
-      "acceptance": "preview_inspected_pending_live_game",
+      "acceptance": "display_comparison_inspected_pending_live_game",
       "source_box": [
         386,
         422,
         728,
         760
       ],
-      "cell_size": 5,
+      "cell_size": 2,
       "grid_offset": [
         0,
         0
@@ -1385,54 +1388,54 @@
       "alpha_partial_pixels": 0,
       "warnings": [],
       "reconstructed_size": [
-        68,
-        67
+        171,
+        169
       ],
       "trim_box": [
-        2,
-        5,
-        68,
-        60
+        6,
+        13,
+        169,
+        150
       ],
       "before_resize": [
-        66,
-        55
+        163,
+        137
       ],
       "placed_size": [
-        66,
-        55
+        163,
+        137
       ],
       "canvas": [
-        96,
-        128
+        192,
+        256
       ],
       "content_bounds": [
-        15,
-        73,
-        81,
-        128
+        14,
+        119,
+        177,
+        256
       ],
       "anchor_px": [
-        48,
-        128
+        96,
+        256
       ],
       "baseline_offset_px": 0,
       "resampling": "nearest_neighbor",
-      "sha256": "b341f0c6d8a8900bd0b0ee4c0e00d8f574ba5b7ed0494af9ca014dba5b826fb1",
-      "provenance": "props.provenance.json"
+      "sha256": "137b9c735cd64b4c9088f263f316cb295d4c849986a11138ca5fbdd0d7be2de5",
+      "provenance": "large-props.provenance.json"
     },
     {
       "name": "column",
       "file": "column.png",
       "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
-      "acceptance": "preview_inspected_pending_live_game",
+      "acceptance": "display_comparison_inspected_pending_live_game",
       "source_box": [
         728,
         422,
         1060,
         760
       ],
-      "cell_size": 5,
+      "cell_size": 3,
       "grid_offset": [
         0,
         0
@@ -1449,41 +1452,41 @@
       "alpha_partial_pixels": 0,
       "warnings": [],
       "reconstructed_size": [
-        66,
-        67
+        110,
+        112
       ],
       "trim_box": [
-        22,
-        3,
-        56,
-        62
+        36,
+        5,
+        93,
+        104
       ],
       "before_resize": [
-        34,
-        59
+        57,
+        99
       ],
       "placed_size": [
-        34,
-        59
+        57,
+        99
       ],
       "canvas": [
-        64,
-        96
+        192,
+        256
       ],
       "content_bounds": [
-        15,
-        37,
-        49,
-        96
+        67,
+        157,
+        124,
+        256
       ],
       "anchor_px": [
-        32,
-        96
+        96,
+        256
       ],
       "baseline_offset_px": 0,
       "resampling": "nearest_neighbor",
-      "sha256": "ac340f6dfe70e513cc6f31f894f6b7536e7dbad0921cebbeead57e362868c497",
-      "provenance": "props.provenance.json"
+      "sha256": "3073e69247d2d2355b3d12c556e851d4e85bb80e9fb54a3aac166777ef41b33c",
+      "provenance": "large-props.provenance.json"
     },
     {
       "name": "shrine",
@@ -1809,14 +1812,14 @@
       "name": "gate",
       "file": "gate.png",
       "source": "../../client/assets/raster/source/environment-gate-v1.png",
-      "acceptance": "preview_inspected_pending_live_game",
+      "acceptance": "display_comparison_inspected_pending_live_game",
       "source_box": [
         0,
         0,
         1024,
         1536
       ],
-      "cell_size": 12,
+      "cell_size": 8,
       "grid_offset": [
         0,
         0
@@ -1833,41 +1836,41 @@
       "alpha_partial_pixels": 0,
       "warnings": [],
       "reconstructed_size": [
-        85,
-        128
+        128,
+        192
       ],
       "trim_box": [
-        4,
-        16,
-        82,
-        117
+        7,
+        24,
+        124,
+        175
       ],
       "before_resize": [
-        78,
-        101
+        117,
+        151
       ],
       "placed_size": [
-        64,
-        83
+        117,
+        151
       ],
       "canvas": [
-        64,
-        96
+        192,
+        256
       ],
       "content_bounds": [
-        0,
-        13,
-        64,
-        96
+        37,
+        105,
+        154,
+        256
       ],
       "anchor_px": [
-        32,
-        96
+        96,
+        256
       ],
       "baseline_offset_px": 0,
       "resampling": "nearest_neighbor",
-      "sha256": "09de92ff51f317be3b77bbbf4644f7b63efd886e4bf7fe623270909c963e3671",
-      "provenance": "gate.provenance.json"
+      "sha256": "701eabbd5156205e808243195c0ad5543cf7608a3588807721f3d532d10e8e4a",
+      "provenance": "large-props.provenance.json"
     },
     {
       "name": "hero_se",
@@ -1936,15 +1939,15 @@
     {
       "name": "hero_sw",
       "file": "hero_sw.png",
-      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "source": "../../client/assets/raster/source/actors_hero-sw-idle-v1.png",
       "acceptance": "preview_inspected_pending_live_game",
       "source_box": [
-        314,
         0,
-        628,
-        351
+        0,
+        1145,
+        1374
       ],
-      "cell_size": 5,
+      "cell_size": 17,
       "grid_offset": [
         0,
         0
@@ -1961,31 +1964,31 @@
       "alpha_partial_pixels": 0,
       "warnings": [],
       "reconstructed_size": [
-        62,
-        70
+        67,
+        80
       ],
       "trim_box": [
-        14,
+        18,
         8,
-        56,
-        66
+        49,
+        73
       ],
       "before_resize": [
-        42,
-        58
+        31,
+        65
       ],
       "placed_size": [
-        42,
-        58
+        31,
+        65
       ],
       "canvas": [
         80,
         96
       ],
       "content_bounds": [
-        23,
-        38,
-        65,
+        24,
+        31,
+        55,
         96
       ],
       "anchor_px": [
@@ -1994,21 +1997,21 @@
       ],
       "baseline_offset_px": 0,
       "resampling": "nearest_neighbor",
-      "sha256": "cbb23d92f5e4a1becf9dff80303cec16d4f36fa45382ba185a0a593f5da3df39",
-      "provenance": "actors.provenance.json"
+      "sha256": "815aa38865fa79bdf9e9ee3bcf335a8cd3b8833d02ddeb50c237bb8703e064dd",
+      "provenance": "hero-directions.provenance.json"
     },
     {
       "name": "hero_nw",
       "file": "hero_nw.png",
-      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "source": "../../client/assets/raster/source/actors_hero-nw-idle-v1.png",
       "acceptance": "preview_inspected_pending_live_game",
       "source_box": [
-        628,
         0,
-        942,
-        351
+        0,
+        1145,
+        1374
       ],
-      "cell_size": 5,
+      "cell_size": 17,
       "grid_offset": [
         0,
         0
@@ -2025,31 +2028,31 @@
       "alpha_partial_pixels": 0,
       "warnings": [],
       "reconstructed_size": [
-        62,
-        70
+        67,
+        80
       ],
       "trim_box": [
-        12,
-        8,
-        50,
-        68
+        21,
+        10,
+        46,
+        73
       ],
       "before_resize": [
-        38,
-        60
+        25,
+        63
       ],
       "placed_size": [
-        38,
-        60
+        25,
+        63
       ],
       "canvas": [
         80,
         96
       ],
       "content_bounds": [
-        21,
-        36,
-        59,
+        27,
+        33,
+        52,
         96
       ],
       "anchor_px": [
@@ -2058,21 +2061,21 @@
       ],
       "baseline_offset_px": 0,
       "resampling": "nearest_neighbor",
-      "sha256": "5a161b6360b570c821d71efbc356791ad4928bd6550a3683ab6535753c309113",
-      "provenance": "actors.provenance.json"
+      "sha256": "2fd7271f16f65eceefc583746d8373f1a81e25a74e505af7917e8ec722b0becc",
+      "provenance": "hero-directions.provenance.json"
     },
     {
       "name": "hero_ne",
       "file": "hero_ne.png",
-      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "source": "../../client/assets/raster/source/actors_hero-ne-idle-v1.png",
       "acceptance": "preview_inspected_pending_live_game",
       "source_box": [
-        942,
         0,
-        1254,
-        351
+        0,
+        1145,
+        1374
       ],
-      "cell_size": 5,
+      "cell_size": 17,
       "grid_offset": [
         0,
         0
@@ -2089,31 +2092,31 @@
       "alpha_partial_pixels": 0,
       "warnings": [],
       "reconstructed_size": [
-        62,
-        70
+        67,
+        80
       ],
       "trim_box": [
-        11,
-        8,
-        49,
-        68
+        22,
+        9,
+        48,
+        74
       ],
       "before_resize": [
-        38,
-        60
+        26,
+        65
       ],
       "placed_size": [
-        38,
-        60
+        26,
+        65
       ],
       "canvas": [
         80,
         96
       ],
       "content_bounds": [
-        20,
-        36,
-        58,
+        27,
+        31,
+        53,
         96
       ],
       "anchor_px": [
@@ -2122,8 +2125,8 @@
       ],
       "baseline_offset_px": 0,
       "resampling": "nearest_neighbor",
-      "sha256": "d8c74c891a47d2d999e31f5fe36522a23e37ae49d6d8c8b233aac543a734a6a6",
-      "provenance": "actors.provenance.json"
+      "sha256": "aafeeed5b41a4ee6cad27d6331b0dec4e121ba711c86380ca2a83228a322c0c5",
+      "provenance": "hero-directions.provenance.json"
     },
     {
       "name": "hero_attack_se",
@@ -4684,6 +4687,134 @@
       "resampling": "nearest_neighbor",
       "sha256": "008280726e2af3a42f230895c96a98108b133a566c8b693b0b2e49bb970b0e55",
       "provenance": "hero-walk.provenance.json"
+    },
+    {
+      "name": "terrain_packed_earth",
+      "file": "terrain_packed_earth.png",
+      "source": "../../client/assets/raster/source/environment-packed-earth-v1.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 13,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 12,
+      "visible_colors": 11,
+      "alpha_range": [
+        255,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        96,
+        96
+      ],
+      "trim_box": [
+        0,
+        0,
+        96,
+        96
+      ],
+      "before_resize": [
+        96,
+        96
+      ],
+      "placed_size": [
+        64,
+        64
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "content_bounds": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "anchor_px": [
+        32,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "b29a6e122529f4535cbb30b130a181bf03af9a7f3d06dd89516a4f3d7954e79f",
+      "provenance": "environment-singles.provenance.json"
+    },
+    {
+      "name": "exit_stairs",
+      "file": "exit_stairs.png",
+      "source": "../../client/assets/raster/source/environment-exit-stairs-v1.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        1299,
+        1211
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        129,
+        121
+      ],
+      "trim_box": [
+        15,
+        10,
+        117,
+        116
+      ],
+      "before_resize": [
+        102,
+        106
+      ],
+      "placed_size": [
+        102,
+        106
+      ],
+      "canvas": [
+        128,
+        128
+      ],
+      "content_bounds": [
+        13,
+        22,
+        115,
+        128
+      ],
+      "anchor_px": [
+        64,
+        128
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "e104ea82dd70eb3321238a6069d4a9047dd12fa8c4b5464b7e41a117561155f4",
+      "provenance": "environment-singles.provenance.json"
     }
   ],
   "known_limitations": [
@@ -4691,7 +4822,12 @@
     "Artisan NW is slightly brighter ochre than other directions; anatomical staff handedness remains uncertain.",
     "The four SE walking poses use a shared pixel scale and source pivot; live-game motion acceptance is still required.",
     "Only the SE walk direction has distinct walking frames.",
-    "Subtle source lighting/color variation persists between generated walking poses."
+    "Subtle source lighting/color variation persists between generated walking poses.",
+    "The three isolated SW/NE/NW idle sources replace the older sheet directions. Their costume and direction are preview inspected; live turn transitions still require inspection.",
+    "SW/NE/NW sources contain baked checker backgrounds. Border-connected fill and individually reviewed enclosed windows are documented in source provenance; matching foreground colors are not globally masked.",
+    "Packed earth is one repeated tile; seam statistics and a repeated preview are supplied, and the live terrain pattern still needs inspection.",
+    "Large static props were freshly reconstructed from original sources after the original coarser sprites failed the hero-relative pixel-pitch comparison. Original props.json/gate.json and their provenance remain as superseded imports.",
+    "Source images do not form exact nearest-neighbor grids (Pixel Respecter detect_nn_scale returns 1); chosen manual grids sample visible source clusters. No resizing occurs after reconstruction. Huts retain source shading texture."
   ],
   "missing_direction_assets": [],
   "walk_sequence": {

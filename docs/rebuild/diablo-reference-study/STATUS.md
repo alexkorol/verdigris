@@ -18,3 +18,11 @@ conversion, reference-led image generation, and research into firsthand Image
 2.5 game/animation workflows. That continuation is active. The first raster
 integration milestone is documented in `native/client/assets/raster/README.md`;
 it does not claim final animation or visual acceptance.
+
+The next verified milestone adds consistent hero idles, quieter ground and
+physical exit stairs, measured equipment attachment, a stopped-motion fix,
+accurate capture colors, and color-correct scenario surfaces. All 64 native
+scenarios pass (18.7 ms fullscreen; 8.6 ms dense effects), alongside browser
+32/32 and the asset/equipment checks. The retained September 9 asset review
+includes the viewed live window and actual motion trace. Full animation and
+scene composition remain active work; this milestone does not close the goal.

@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "defaults": {"alpha_mode": "crisp", "max_colors": 32},
+  "known_limitations": ["Packed earth is one repeated tile; seam statistics and a repeated preview are supplied, and the live terrain pattern still needs inspection."],
+  "sheets": [
+    {"source": "../../client/assets/raster/source/environment-packed-earth-v1.png", "grid": [1,1],
+     "assets": [{"name":"terrain_packed_earth", "cell":[0,0], "cell_size":13, "max_colors":12, "canvas":[64,64], "trim":false, "fill":true, "align":"top_left"}]},
+    {"source": "../../client/assets/raster/source/environment-exit-stairs-v1.png", "grid": [1,1],
+     "assets": [{"name":"exit_stairs", "cell":[0,0], "cell_size":10, "canvas":[128,128], "preserve_scale":true, "require_transparency":true}]}
+  ]
+}

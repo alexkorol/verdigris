@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "output_dir": "large-props-candidates/detail3",
+  "defaults": {
+    "cell_size": 3,
+    "alpha_mode": "crisp",
+    "max_colors": 32,
+    "canvas": [
+      192,
+      256
+    ],
+    "trim": true,
+    "require_transparency": true,
+    "preserve_scale": true,
+    "acceptance": "experiment_pending_review"
+  },
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "assets": [
+        {
+          "name": "tree",
+          "source_box": [
+            0,
+            0,
+            386,
+            422
+          ]
+        },
+        {
+          "name": "hut",
+          "source_box": [
+            0,
+            422,
+            386,
+            760
+          ]
+        },
+        {
+          "name": "storehut",
+          "source_box": [
+            386,
+            422,
+            728,
+            760
+          ]
+        },
+        {
+          "name": "column",
+          "source_box": [
+            728,
+            422,
+            1060,
+            760
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/environment-gate-v1.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "gate",
+          "cell": [
+            0,
+            0
+          ],
+          "cell_size": 8
+        }
+      ]
+    }
+  ]
+}

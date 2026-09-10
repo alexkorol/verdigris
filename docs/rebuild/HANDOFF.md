@@ -1,5 +1,25 @@
 # Native reconstitution handoff
 
+## 2026-09-09 — Consistent hero references, readable ground and reliable captures
+
+- Runtime now has 75 assets. Corrected hero idles preserve trousers/wraps and
+  equipment sides; finer large props match the hero's apparent pixel scale.
+  Packed earth, physical exit stairs and a restrained brazier light improve
+  the viewed live scene. Equipment follows measured grips with body/finger
+  occlusion. Motion smoothing now returns the actor to idle after stopping.
+- Added a real input-tick/presentation-pump motion capture and RGB swatch
+  regression. Fixed swapped channels in orb masks, the PNG exporter and its
+  old color sampler. Corrected monochrome test targets to display-compatible
+  color surfaces, retaining the floor cache and unchanged 40 ms limits.
+- Final build/all 64 scenarios pass: full-screen frame budget 18.7 ms and
+  dense 128-effect paint 8.6 ms. Native suites, browser 32/32, six importer
+  checks and the preserved equipment probes pass. Live 3440x1440 capture
+  inspected at original resolution; [review evidence](../../native/client/assets/raster/reviews/2026-09-09/README.md)
+  includes actual motion trace and clip.
+- Visual goal remains active. SE gait quality, other walking directions,
+  legacy attack identity/weapon action, enemy motion, ground transitions and
+  scene composition are still unfinished. No push or merge.
+
 ## 2026-09-09 — Pixel world runtime and source-backed image workflow
 
 - Added the bounded PNG renderer and actual Pixel Respecter import pipeline;

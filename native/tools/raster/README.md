@@ -9,7 +9,8 @@ Rebuild the current runtime library and verify all active asset hashes:
 This imports the current sprite library, all native RGBA with binary alpha and at most
 32 visible colors, then writes `native/client/assets/raster/runtime/catalog.json`.
 The catalog resolves import order explicitly: `hero-single.json` replaces the
-SE idle frame from the older actor sheet. Each source and actual engine file is
+SE idle frame from the older actor sheet, and `hero-directions.json` replaces
+SW/NE/NW with isolated single-subject sources. Each source and actual engine file is
 hashed. The contact sheets show 3x nearest-neighbor pixels; the runtime files
 remain native resolution.
 
@@ -77,7 +78,8 @@ An asset can override extraction with an exact `source_box` of
 `[left, top, right, bottom]`. Per-asset values override sheet `defaults`,
 which override manifest `defaults`.
 
-The usual sprite canvas is 96x128 for actors and 128x160 for props. Terrain
+Current actors share an 80x96 canvas. Small props use 64x96 or 96x128;
+the approved larger static props use 192x256. Terrain
 can set `canvas: [64,64]`, `trim: false`, `fill: true` and
 `require_transparency: false`. Terrain `fill` explicitly resamples to the
 whole target tile. Sprites shrink only as needed to fit the canvas; set
@@ -134,6 +136,21 @@ or bottom-aligns individual walking-frame bounds. Once all four frames are
 present, `python native/tools/raster/preview_walk.py` produces native and 4x
 strips plus a fixed-origin looping GIF for visual review.
 
+`large-props.json` supersedes tree/hut/storehut/column/gate with fresh source
+reconstructions at source grid sizes 3/2/2/3/8. No resizing follows reconstruction.
+Original `props.json` and `gate.json` settings and provenance remain available.
+The finer choices were inspected beside the hero at intended display heights;
+these sources are not exact nearest-neighbor grids, so the import does not claim
+to recover a mathematically exact original grid. `experiment_large_props.py`
+reproduces the comparison candidates without replacing runtime files.
+
+`environment-singles.json` adds quieter 64x64 packed earth and 128x128 exit
+stairs. `preview_environment.py` writes native and integer previews, the
+four-direction hero strip, and a 3x3 repeated earth preview with opposing-edge
+statistics against ordinary native neighbors. The preview does not apply hidden
+blending or seam corrections. Source prompts and rejected generated candidates
+remain under the asset sources owned by their generation tasks.
+
 Focused checks (including the actual external reconstruction engine):
 
 ```powershell
@@ -141,3 +158,22 @@ Push-Location native/tools/raster
 & 'Z:/Code/Python/pixel-perfecter/.venv/Scripts/python.exe' -m unittest -v test_import_assets
 Pop-Location
 ```
+
+Equipment attachment checks use the production Windows renderer and current
+runtime PNGs. From any working directory, invoke the script by its path:
+
+```powershell
+./native/tools/raster/test_equipment.ps1
+```
+
+The runner discovers Visual Studio C++ Build Tools, compiles both checks with
+assertions enabled, and fails on a compile or check error. `-VcVars` accepts an
+explicit `vcvars64.bat` path. `test_equipment.cpp` checks source grips, mirrored
+placement, actor/finger occlusion, cache reuse, GDI handles, and clip restoration;
+it also produces native and 3x contact sheets. `test_equipment_sampling.cpp`
+compares the helper's finger clip with actual GDI+ source-coordinate sampling
+at eight integer/fractional sizes using synthetic fixtures. All generated
+files stay under `.ci-artifacts/raster-equipment`; runtime assets are read-only.
+These checks preserve attachment evidence; live gameplay and visual acceptance
+remain separate. Legacy attack poses are explicitly marked transitional in
+`native/client/raster_equipment.hpp`.

@@ -1,0 +1,9 @@
+Use case: identity-preserve
+Create ONE idle direction sprite of this exact adult hero, facing SCREEN LOWER-LEFT (southwest).
+
+Reference 1 is the accepted pixel-art identity and rendering anchor: preserve its logical pixel scale, restrained palette, adult proportions and camera elevation.
+Reference 2 is the same hero's original costume reference: preserve the russet-brown tunic, FULL LENGTH dark brown trousers covering both knees, brown leather boots/bracers, pale linen wrist wraps, deep indigo waist sash, and small warm bronze shoulder guard. Both hands remain empty.
+
+Turn the whole body into a three-quarter FRONT view aimed lower-left. His face, chest, knees and both boot toes point lower-left. Show the front of the face looking left; this is not a rear view. Rotate the actual character, preserving the shoulder guard and sash on their same anatomical sides rather than mirroring the outfit.
+
+Keep the same relaxed ready stance, lean grounded adult anatomy and approximately 64 logical pixels from crown to sole. Same natural warm material colors and crisp square pixel clusters. Entire silhouette and both feet visible with generous empty margins. One sprite on actual transparent alpha.

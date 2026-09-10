@@ -7,7 +7,7 @@ from PIL import Image
 import numpy as np
 
 ROOT = Path(__file__).resolve().parent
-ORDER = ("inventory", "terrain", "props", "gate", "actors", "bestiary", "weapons", "hero-single", "bestiary-singles", "hero-walk")
+ORDER = ("inventory", "terrain", "props", "gate", "actors", "bestiary", "weapons", "hero-single", "bestiary-singles", "hero-walk", "hero-directions", "environment-singles", "large-props")
 
 
 def main():

@@ -8,7 +8,7 @@ visible content height; animation uses the shared full-canvas pivot and scale.
 `source/` retains generated candidates, including rejected ones. `prompts/`
 records the actual image requests, reference paths and observed failures.
 `runtime/catalog.json` resolves import order and records the active source,
-conversion settings, hashes and limitations for each of 73 PNGs. The importer
+conversion settings, hashes and limitations for each of 75 PNGs. The importer
 uses the owner's actual Pixel Respecter project at
 `Z:/Code/Python/pixel-perfecter`; it is not a substitute pixelation filter.
 
@@ -18,6 +18,30 @@ workflow. Model variant names are recorded only where the source actually
 identifies them; our image tool has no model selector.
 
 ## Verified milestone, September 9, 2026
+
+- Follow-up: three individual referenced hero directions replace the old
+  costume-changing idles; larger props were reconstructed at a finer grid to
+  match the hero's display pixel scale. Quiet packed earth and physical exit
+  stairs replace the cracked lattice and giant exit plate. A brazier now
+  accompanies the restrained gate light. These changes were inspected in the
+  actual 3440x1440 window and at smaller production capture sizes.
+- Equipment uses measured grips and body/finger occlusion for the sprite
+  actually drawn, including idle fallbacks. Walking settles to idle after
+  movement stops; the former bool conversion treated the smoothing tail as
+  permanent movement. The separate equipment checks pass for 12 poses, five
+  weapons, three sizes, and eight additional sampling sizes.
+- Current final build: all 64 native scenarios pass, including the new actual
+  movement/stop capture. Frame budget is 18.7 ms over twenty 3440x1440 frames;
+  the dense 128-effect frame is 8.6 ms. Both retain the 40 ms limit.
+- Corrected reversed color bytes in the orb masks, PNG exporter and orb test.
+  An independent GDI swatch/export round trip verifies RGB preservation. The
+  scenario painter now uses the display's color format; its former memory-DC
+  bitmap was monochrome and cost 50.6 ms under the dense-effect fixture.
+- Browser playtest passes 32/32. Native core/network/session/presentation/audio
+  suites pass. Six importer checks and the equipment probes pass.
+- Retained [live capture, motion clip, trace and review](reviews/2026-09-09/README.md).
+
+The preceding initial milestone established these foundations:
 
 - Six actor families have four named static direction assets. Hero/raider
   also have attack poses; a first SE hero walk has four separate referenced
@@ -40,14 +64,14 @@ identifies them; our image tool has no model selector.
 
 ## Still unfinished
 
-The four-frame SE walk remains a candidate pending actual game motion review.
-Other walk directions, attack/recovery cycles and enemy motion need work.
-Generated color variation, provisional directional identity differences,
-staff/weapon handedness and held-item attachment need further inspection.
-The repeated ground, extraction marker, gate light shapes and overall scene
-composition still need improvement. Static props and actors have differing
-apparent pixel pitch at the current world scale. Passing checks do not certify
-these visual gaps as complete.
+The four-frame SE walk now runs through real travel and returns to idle, but
+its color/body variation and motion quality still need refinement. Other walk
+directions, attack/recovery cycles and enemy motion remain unfinished. The
+legacy attack poses change the hero's design and striking arm; measured weapon
+attachment does not make them correct weapon-specific animations. Item scale,
+equipment changes in play, ground transitions, path composition, scenery
+overlaps and HUD presentation also need further work. Passing checks do not
+certify these visual gaps as complete.
 
 Local evidence is under `.ci-artifacts/` in the worktree:
 `raster-refined-live.png`, `raster-refined-scenarios.log`,

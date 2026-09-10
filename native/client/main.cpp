@@ -49,6 +49,7 @@ namespace phase_a = verdigris::client::phase_a;
 #include "audio_out.hpp"
 #include "vector_art.hpp"
 #include "raster_art.hpp"
+#include "raster_equipment.hpp"
 #include "framekit_renderer.hpp"
 #include "geometric_skill_tree.hpp"
 #include "inventory_grid.hpp"
@@ -1404,9 +1405,9 @@ bool build_tinted_mask(const SpriteBitmap& mask, const RECT& region,
   for (std::size_t i = 0; i < mask_pixels.size(); ++i) {
     const int coverage = static_cast<int>(mask_pixels[i] & 0xFF);  // gray
     dest[i] = (static_cast<std::uint32_t>(coverage) << 24) |
-              (static_cast<std::uint32_t>(tb * coverage / 255) << 16) |
+              (static_cast<std::uint32_t>(tr * coverage / 255) << 16) |
               (static_cast<std::uint32_t>(tg * coverage / 255) << 8) |
-              static_cast<std::uint32_t>(tr * coverage / 255);
+              static_cast<std::uint32_t>(tb * coverage / 255);
   }
   return true;
 }
@@ -2276,8 +2277,15 @@ void warm_combat_glyphs() {
   (void)cached_pen(RGB(255, 214, 120), 1);
   (void)cached_pen(RGB(214, 118, 86), 2);
   (void)cached_brush(RGB(255, 214, 120));
-  HDC dc = CreateCompatibleDC(nullptr);
-  HBITMAP bitmap = CreateCompatibleBitmap(dc, 64, 64);
+  HDC display = GetDC(nullptr);
+  HDC dc = CreateCompatibleDC(display);
+  HBITMAP bitmap = CreateCompatibleBitmap(display, 64, 64);
+  ReleaseDC(nullptr, display);
+  if (!dc || !bitmap) {
+    if (bitmap) DeleteObject(bitmap);
+    if (dc) DeleteDC(dc);
+    return;
+  }
   HGDIOBJ old = SelectObject(dc, bitmap);
   RECT plate{4, 4, 60, 28};
   skin::panel(dc, plate, skin::kGold, 220, 4.0f);
@@ -2649,6 +2657,11 @@ void draw_scenery_item(const BillboardAssets& assets, HDC dc, const Camera& came
       rl.push_back({render::Op::Hud, static_cast<double>(base.x),
                     static_cast<double>(base.y), 0.0, 0, "material:stone"});
     if (item.kind == SceneryKind::Gate) {
+      const int lantern_x = base.x - static_cast<int>(kTileUnits * 0.82 * base.scale);
+      const int lantern_y = base.y + static_cast<int>(kTileUnits * 0.05 * base.scale);
+      raster_art::draw_sprite_by_visible_height(
+          dc, "brazier", lantern_x, lantern_y,
+          std::max(12, static_cast<int>(kTileUnits * 0.72 * base.scale)));
       rl.push_back({render::Op::Hud, static_cast<double>(base.x),
                     static_cast<double>(base.y), 0.0, 0, "material:bronze-stone"});
       rl.push_back({render::Op::Hud, static_cast<double>(base.x),
@@ -2712,9 +2725,8 @@ void draw_scenery_item(const BillboardAssets& assets, HDC dc, const Camera& came
 
 void paint_material_light_pool(ClientState& state, HDC dc, const RECT& bounds,
                                render::List& rl) {
-  // VG-GPU-006: a moving bronze/stone lantern pool on the village gate.
-  // Intensity stays under the channel cap so a red damage chroma cannot wash
-  // out. HUD labels alone cannot certify the interaction.
+  // The gate brazier casts a restrained warm pool into the ground texture.
+  // Real combat telegraphs paint later, above scenery and ambient light.
   double wx = 0.0;
   double wy = 0.0;
   bool found = false;
@@ -2736,21 +2748,21 @@ void paint_material_light_pool(ClientState& state, HDC dc, const RECT& bounds,
   const std::uint32_t lit =
       verdigris::gpu::shade_texel_lit(bind, light.x, light.y, light);
   const ScreenPoint base = project(state.camera, bounds, wx, wy);
-  const int step = std::max(4, static_cast<int>(kTileUnits * 0.14 * base.scale));
-  const int ox = (light.x - 3) * step;
-  const int oy = (light.y - 3) * (step * 2 / 3);
-  const int rx = std::max(16, static_cast<int>(kTileUnits * 1.05 * base.scale));
+  const int step = std::max(1, static_cast<int>(kTileUnits * 0.02 * base.scale));
+  const int ox = -static_cast<int>(kTileUnits * 0.82 * base.scale) + (light.x - 3) * step;
+  const int oy = static_cast<int>(kTileUnits * 0.05 * base.scale) + (light.y - 3) * step / 2;
+  const int rx = std::max(10, static_cast<int>(kTileUnits * 0.65 * base.scale));
   const int ry = std::max(8, rx / 2);
   const COLORREF bronze = verdigris::art::bronze_stone::gdi(lit);
-  const COLORREF rim = verdigris::art::bronze_stone::gdi_bronze_rim();
-  fill_ellipse(dc, base.x + ox, base.y + oy, rx, ry, bronze);
-  ring_ellipse(dc, base.x + ox, base.y + oy, rx, ry, rim, 2);
-  const COLORREF zone =
-      RGB(static_cast<int>((verdigris::gpu::kDamageZone >> 16) & 0xFF),
-          static_cast<int>((verdigris::gpu::kDamageZone >> 8) & 0xFF),
-          static_cast<int>(verdigris::gpu::kDamageZone & 0xFF));
-  fill_ellipse(dc, base.x + ox, base.y + oy, std::max(4, rx / 3),
-               std::max(3, ry / 3), zone);
+  Gdiplus::Graphics graphics(dc);
+  for (int layer = 0; layer < 3; ++layer) {
+    const int lx = std::max(3, rx * (3 - layer) / 3);
+    const int ly = std::max(2, ry * (3 - layer) / 3);
+    Gdiplus::SolidBrush glow(Gdiplus::Color(
+        static_cast<BYTE>(20 + layer * 9), GetRValue(bronze),
+        GetGValue(bronze), GetBValue(bronze)));
+    graphics.FillEllipse(&glow, base.x + ox - lx, base.y + oy - ly, lx * 2, ly * 2);
+  }
   rl.push_back({render::Op::Hud, static_cast<double>(base.x + ox),
                 static_cast<double>(base.y + oy), static_cast<double>(rx), 0,
                 "material-light:pool"});
@@ -2874,7 +2886,7 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
         const RECT cell{corner0.x, corner0.y, corner1.x, corner1.y};
         const char* terrain = theme == "crypt" ? "terrain_stone"
             : theme == "marsh" ? "terrain_moss"
-            : theme == "town" || theme == "tin" ? "terrain_ochre"
+            : theme == "town" || theme == "tin" ? "terrain_packed_earth"
             : "terrain_dark";
         if (!raster_art::draw_ground(target, terrain, cell))
           vector_art::terrain_tile(target, cell, theme, terrain_tile_hash(tx, ty));
@@ -9127,36 +9139,59 @@ const char* raster_direction(double x, double y) {
   return y < 0.0 ? (x < 0.0 ? "nw" : "ne") : (x < 0.0 ? "sw" : "se");
 }
 
+void advance_actor_motion(ClientState& state, double dt_ms) {
+  state.breathe_phase = std::fmod(state.breathe_phase + dt_ms / 2400.0, 1.0);
+  const auto advance = [&](const std::string& id, const verdigris::Vec2& pos) {
+    auto& motion = state.motions[id];
+    if (motion.has_last) {
+      const double dx = static_cast<double>(pos.x - motion.last_pos.x);
+      const double dy = static_cast<double>(pos.y - motion.last_pos.y);
+      const double moved = std::sqrt(dx * dx + dy * dy);
+      motion.walk_phase =
+          std::fmod(motion.walk_phase + moved / (kTileUnits * 0.9), 1.0);
+      const double target = moved > 0.5 ? 1.0 : 0.0;
+      motion.moving += (target - motion.moving) * std::min(1.0, dt_ms / 120.0);
+    }
+    motion.last_pos = pos;
+    motion.has_last = true;
+  };
+  advance("player", state.world.player.position);
+  for (const auto& monster : state.world.monsters)
+    advance(monster.id, monster.position);
+  if (state.motions.size() > 256) state.motions.clear();
+}
+
 bool draw_raster_actor(HDC dc, const char* family, const ScreenPoint& base,
                        int height, double facing_x, double facing_y,
-                       double attack_phase, bool moving, double walk_phase) {
+                       double attack_phase, double moving, double walk_phase,
+                       std::string* drawn_asset = nullptr) {
   const std::string direction = raster_direction(facing_x, facing_y);
   std::string pose;
   if (attack_phase > 0.18 && attack_phase < 0.82 &&
       (std::strcmp(family, "hero") == 0 || std::strcmp(family, "raider") == 0))
     pose = "_attack";
-  else if (moving && std::strcmp(family, "hero") == 0)
+  else if (moving > 0.20 && std::strcmp(family, "hero") == 0)
     pose = "_walk" + std::to_string(static_cast<int>(walk_phase * 4.0) % 4);
   const std::string name = std::string(family) + pose + "_" + direction;
-  if (raster_art::draw_sprite(dc, name.c_str(), base.x, base.y, height)) return true;
+  if (raster_art::draw_sprite(dc, name.c_str(), base.x, base.y, height)) {
+    if (drawn_asset) *drawn_asset = name;
+    return true;
+  }
   const std::string idle = std::string(family) + "_" + direction;
-  return raster_art::draw_sprite(dc, idle.c_str(), base.x, base.y, height);
+  const bool drawn = raster_art::draw_sprite(dc, idle.c_str(), base.x, base.y, height);
+  if (drawn_asset) *drawn_asset = drawn ? idle : std::string();
+  return drawn;
 }
 
 void draw_raster_equipment(HDC dc, vector_art::Held held, const ScreenPoint& base,
-                           int height, const verdigris::Vec2& facing,
-                           double attack_phase) {
+                           int height, const std::string& resolved_pose) {
   if (held == vector_art::Held::None) return;
   const char* name = held == vector_art::Held::Axe ? "weapon_axe"
       : held == vector_art::Held::Staff ? "weapon_staff"
       : held == vector_art::Held::Bow ? "weapon_bow"
       : held == vector_art::Held::Club ? "weapon_club" : "weapon_sword";
-  const bool active = attack_phase > 0.18 && attack_phase < 0.82;
-  const int sign = facing.x < 0 ? -1 : 1;
-  const int hand_x = base.x + static_cast<int>(height * (active ? 0.24 : 0.16)) * sign;
-  const int hand_y = base.y - static_cast<int>(height * (active ? 0.35 : 0.26));
-  raster_art::draw_sprite(dc, name, hand_x, hand_y,
-                         std::max(8, static_cast<int>(height * 0.58)), sign < 0);
+  raster_equipment::draw_front(dc, resolved_pose.c_str(), name,
+                               base.x, base.y, height);
 }
 
 void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
@@ -9221,47 +9256,32 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     rl.push_back({render::Op::Extraction, static_cast<double>(pad.x),
                   static_cast<double>(pad.y), static_cast<double>(pad_r), 0,
                   "stairs-up"});
-    // TASK-0142: the pad must own its corner of the screen — a bright plate,
-    // a slow tick-driven pulse, and gold chevrons pointing at the way out.
+    // A physical stair landing carries the destination. A light ground halo
+    // and a measured label preserve recognition without covering the actor.
     const bool pulse_on = (world.tick / 9) % 2 == 0;
-    fill_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(30, 92, 64));
-    ring_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(120, 214, 168), 3);
-    if (pulse_on && pad_r > 6)
-      ring_ellipse(dc, pad.x, pad.y, pad_r + 5, pad_r + 5, RGB(160, 236, 190), 2);
-    const int inner = std::max(6, pad_r * 2 / 3);
-    ring_ellipse(dc, pad.x, pad.y, inner, inner, RGB(239, 208, 116), 2);
-    const int step = std::max(5, pad_r / 3);
-    for (int i = 0; i < 3; ++i) {
-      const int y = pad.y + pad_r / 4 - i * step;
-      const int spread = std::max(3, pad_r / 2 - i * 3);
-      const int tip_y = y - step;
-      draw_line(dc, pad.x - spread, y, pad.x, tip_y, RGB(239, 208, 116), 3);
-      draw_line(dc, pad.x + spread, y, pad.x, tip_y, RGB(239, 208, 116), 3);
-      // Arrowheads make the chevron read as direction, not decoration.
-      draw_line(dc, pad.x - spread / 2, tip_y + std::max(2, step / 4), pad.x,
-                tip_y, RGB(255, 232, 150), 2);
-      draw_line(dc, pad.x + spread / 2, tip_y + std::max(2, step / 4), pad.x,
-                tip_y, RGB(255, 232, 150), 2);
-    }
+    const int stairs_h = std::max(24, static_cast<int>(kTileUnits * 0.80 * pad.scale));
+    const int stairs_feet = pad.y + stairs_h * 2 / 5;
     {
-      RECT label_backing{pad.x - 22, pad.y + pad_r + 2, pad.x + 22,
-                         pad.y + pad_r + 18};
-      HBRUSH label_bg = CreateSolidBrush(RGB(16, 22, 20));
-      FillRect(dc, &label_backing, label_bg);
-      DeleteObject(label_bg);
-      HPEN label_pen = CreatePen(PS_SOLID, 1, RGB(120, 214, 168));
-      HGDIOBJ old_label_pen = SelectObject(dc, label_pen);
-      HGDIOBJ old_label_brush =
-          SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
-      Rectangle(dc, label_backing.left, label_backing.top, label_backing.right,
-                label_backing.bottom);
-      SelectObject(dc, old_label_brush);
-      SelectObject(dc, old_label_pen);
-      DeleteObject(label_pen);
-      SetBkMode(dc, TRANSPARENT);
-      SetTextColor(dc, RGB(239, 208, 116));
-      TextOutA(dc, pad.x - 14, pad.y + pad_r + 4, "EXIT", 4);
+      Gdiplus::Graphics graphics(dc);
+      Gdiplus::SolidBrush halo(Gdiplus::Color(pulse_on ? 28 : 18, 225, 188, 102));
+      graphics.FillEllipse(&halo, pad.x - pad_r, pad.y - pad_r / 3,
+                           pad_r * 2, std::max(2, pad_r * 2 / 3));
     }
+    if (raster_art::draw_sprite_by_visible_height(dc, "exit_stairs", pad.x, stairs_feet, stairs_h))
+      rl.push_back({render::Op::Hud, static_cast<double>(pad.x),
+                    static_cast<double>(pad.y), 0.0, 0, "raster:extraction:stairs"});
+    HGDIOBJ label_font = SelectObject(dc, skin::font_small());
+    SIZE label_size{};
+    GetTextExtentPoint32A(dc, "EXIT", 4, &label_size);
+    RECT label_backing{pad.x - label_size.cx / 2 - 10, stairs_feet + 5,
+                       pad.x + label_size.cx / 2 + 10, stairs_feet + label_size.cy + 15};
+    skin::chip(dc, label_backing, RGB(217, 179, 102));
+    SetBkMode(dc, TRANSPARENT);
+    SetTextColor(dc, skin::kInk);
+    TextOutA(dc, pad.x - label_size.cx / 2, label_backing.top + 5, "EXIT", 4);
+    SelectObject(dc, label_font);
+    rl.push_back({render::Op::Hud, static_cast<double>(label_backing.left),
+                  static_cast<double>(label_backing.top), 0.0, 0, "extraction:label"});
   }
 
   paint_material_light_pool(state, dc, bounds, rl);
@@ -9368,12 +9388,16 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
           pose.attack_stage = player_attack_stage(state);
           pose.mirror = player.facing.x < 0;
           const int height = std::max(10, static_cast<int>(kTileUnits * 1.75 * base.scale));
+          std::string raster_pose;
           if (draw_raster_actor(dc, "hero", base, height, player.facing.x,
                                 player.facing.y, attack_phase, motion.moving,
-                                motion.walk_phase)) {
+                                motion.walk_phase, &raster_pose)) {
             rl.push_back({render::Op::Hud, static_cast<double>(base.x),
                           static_cast<double>(base.y), 0.0, 0, "raster:player"});
-            draw_raster_equipment(dc, held, base, height, player.facing, attack_phase);
+            rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                          static_cast<double>(base.y), 0.0, 0,
+                          "raster:pose:" + raster_pose});
+            draw_raster_equipment(dc, held, base, height, raster_pose);
           } else {
             vector_art::humanoid(dc, base.x, base.y, height,
                                  vector_art::player_style(), pose, held);
@@ -10577,31 +10601,8 @@ void timer_step(HWND window, ClientState& state) {
   }
 
   sync_world(state);
-  {
-    // Advance the vector-art animation clocks: a shared breathe cycle plus
-    // per-actor walk phase driven by how far each authoritative position
-    // moved this frame (one full cycle per ~0.9 tile).
-    state.breathe_phase = std::fmod(state.breathe_phase + dt_ms / 2400.0, 1.0);
-    const auto advance = [&](const std::string& id, const verdigris::Vec2& pos) {
-      auto& motion = state.motions[id];
-      if (motion.has_last) {
-        const double dx = static_cast<double>(pos.x - motion.last_pos.x);
-        const double dy = static_cast<double>(pos.y - motion.last_pos.y);
-        const double moved = std::sqrt(dx * dx + dy * dy);
-        motion.walk_phase =
-            std::fmod(motion.walk_phase + moved / (kTileUnits * 0.9), 1.0);
-        const double target = moved > 0.5 ? 1.0 : 0.0;
-        motion.moving += (target - motion.moving) *
-                         std::min(1.0, dt_ms / 120.0);
-      }
-      motion.last_pos = pos;
-      motion.has_last = true;
-    };
-    advance("player", state.world.player.position);
-    for (const auto& monster : state.world.monsters)
-      advance(monster.id, monster.position);
-    if (state.motions.size() > 256) state.motions.clear();  // scene-change purge
-  }
+  // One full gait cycle per ~0.9 tile; shared with the motion capture scenario.
+  advance_actor_motion(state, dt_ms);
   {
     // Follow smoothing (dt-correct exponential, equal to the historical 0.2
     // per 50 ms). Across a scene load the camera starts continents away —
@@ -11158,8 +11159,21 @@ void scenario_check(bool ok, const char* label) {
 }
 
 void scenario_present_size(ClientState& state, int width, int height) {
-  HDC dc = CreateCompatibleDC(nullptr);
-  HBITMAP bitmap = CreateCompatibleBitmap(dc, width, height);
+  // A fresh memory DC holds a 1bpp stock bitmap. Using it as the format
+  // reference forced colored sprites through monochrome conversion, unlike
+  // the live window. Use the display format and retain the real DDB floor cache.
+  HDC display = GetDC(nullptr);
+  HDC dc = CreateCompatibleDC(display);
+  HBITMAP bitmap = CreateCompatibleBitmap(display, width, height);
+  ReleaseDC(nullptr, display);
+  BITMAP format{};
+  if (!dc || !bitmap || GetObject(bitmap, sizeof(format), &format) == 0 ||
+      format.bmBitsPixel <= 1) {
+    scenario_check(false, "scenario paint: a real color surface is required");
+    if (bitmap) DeleteObject(bitmap);
+    if (dc) DeleteDC(dc);
+    return;
+  }
   HGDIOBJ old = SelectObject(dc, bitmap);
   RECT bounds{0, 0, width, height};
   paint_scene(state, dc, bounds);
@@ -11734,14 +11748,7 @@ int scenario_hud_scale_floor() {
     scenario_check(false, "hud-scale-floor: expected a living foe for tooltip");
   }
 
-  HDC dc = CreateCompatibleDC(nullptr);
-  HBITMAP bitmap = CreateCompatibleBitmap(dc, 640, 480);
-  HGDIOBJ old = SelectObject(dc, bitmap);
-  RECT tiny{0, 0, 640, 480};
-  paint_scene(state, dc, tiny);
-  SelectObject(dc, old);
-  DeleteObject(bitmap);
-  DeleteDC(dc);
+  scenario_present_size(state, 640, 480);
   LOGFONTA tiny_small{};
   GetObject(skin::font_small(), sizeof(tiny_small), &tiny_small);
   scenario_check(std::abs(tiny_small.lfHeight) >= skin::kMinSmallPx,
@@ -17632,9 +17639,9 @@ verdigris::client::ui::ChannelMean sample_rect_channels(const void* bits, int wi
   for (int y = y0; y < y1; ++y) {
     for (int x = x0; x < x1; ++x) {
       const int i = (y * width + x) * 4;
-      const int blue = p[i + 2];
+      const int blue = p[i];
       const int green = p[i + 1];
-      const int red = p[i];
+      const int red = p[i + 2];
       if (red + green + blue < 48) continue;
       r += red;
       b += blue;
@@ -17717,6 +17724,7 @@ int scenario_vital_orbs() {
   scenario_check(!mute_on_mana_globe_fails(true, mute_on_mana),
                  "vital-orbs: mute cannot sit on the mana globe");
 
+  GdiFlush();
   const auto life_ch =
       sample_rect_channels(bits, width, height, life_cx, life_cy);
   const auto mana_ch =
@@ -18609,6 +18617,8 @@ int scenario_loot_label_budget() {
   return scenario_failures;
 }
 
+bool save_hbitmap_png(BillboardAssets& assets, HBITMAP bitmap, const std::string& path);
+
 int scenario_raster_world() {
   // Asset absence must not silently certify the old geometric fallback as
   // the new world art. This checks the runtime decode and actual paint paths.
@@ -18619,8 +18629,8 @@ int scenario_raster_world() {
       scenario_check(raster_art::content_dimensions(name.c_str()).valid(), label.c_str());
     }
   }
-  for (const char* name : {"tree", "hut", "column", "shrine", "gate",
-                           "terrain_ochre", "terrain_dark", "terrain_moss", "terrain_stone"}) {
+  for (const char* name : {"tree", "hut", "column", "shrine", "gate", "brazier", "exit_stairs",
+                           "terrain_packed_earth", "terrain_dark", "terrain_moss", "terrain_stone"}) {
     const std::string label = std::string("raster-world: scenery decodes: ") + name;
     scenario_check(raster_art::content_dimensions(name).valid(), label.c_str());
   }
@@ -18664,6 +18674,41 @@ int scenario_raster_world() {
                    "raster-world: each SE gait phase changes the rendered pixels");
     hashes.push_back(hash);
   }
+  // Smoothing approaches zero asymptotically. A bool parameter incorrectly
+  // treated this tiny stopped-motion tail as a request for a walking frame.
+  std::string stopped_pose;
+  scenario_check(draw_raster_actor(dc, "hero", {width / 2, height - 8, 1.0},
+                                   128, 1.0, 1.0, -1.0, 0.00001, 0.5,
+                                   &stopped_pose) && stopped_pose == "hero_se",
+                 "raster-world: stopped motion tail returns to the idle pose");
+  // A screenshot must preserve GDI's actual colors. The former exporter
+  // swapped red and blue even though both DIB and GDI+ already use BGRA.
+  const std::string capture_dir = art_wave_capture_dir();
+  if (!capture_dir.empty()) {
+    BillboardAssets encoder;
+    load_billboards(encoder);
+    const auto& life = encoder.orb_liquid_life;
+    const auto& resource = encoder.orb_liquid_mana;
+    const COLORREF life_pixel = life.ready() ? GetPixel(life.dc, life.w / 2, life.h / 2) : CLR_INVALID;
+    const COLORREF resource_pixel = resource.ready() ? GetPixel(resource.dc, resource.w / 2, resource.h / 2) : CLR_INVALID;
+    scenario_check(life_pixel != CLR_INVALID && GetRValue(life_pixel) > GetBValue(life_pixel) * 2 &&
+                       resource_pixel != CLR_INVALID && GetBValue(resource_pixel) > GetRValue(resource_pixel) * 2,
+                   "raster-world: actual orb masks retain red life and blue resource");
+    const COLORREF swatch = RGB(210, 90, 35);
+    SetPixelV(dc, 0, 0, swatch);
+    GdiFlush();
+    const std::string swatch_path = capture_dir + "\\raster-capture-color.png";
+    scenario_check(save_hbitmap_png(encoder, bitmap, swatch_path),
+                   "raster-world: reference color swatch exported");
+    Gdiplus::Bitmap saved(wide_path(swatch_path).c_str());
+    Gdiplus::Color actual;
+    scenario_check(saved.GetPixel(0, 0, &actual) == Gdiplus::Ok &&
+                       actual.GetRed() == 210 && actual.GetGreen() == 90 &&
+                       actual.GetBlue() == 35,
+                   "raster-world: exported PNG preserves live RGB channels");
+  } else {
+    scenario_check(false, "raster-world: color capture root accepted");
+  }
   SelectObject(dc, old);
   DeleteObject(bitmap);
   DeleteDC(dc);
@@ -18676,14 +18721,76 @@ int scenario_raster_world() {
   if (dir.empty()) return scenario_failures;
   scenario_check(reference_present(state, 1366, 768, dir + "\\raster-world-1366x768.png"),
                  "raster-world: production scene captured");
-  bool player = false, scenery = false, monster = false;
+  bool player = false, scenery = false, monster = false, extraction = false;
   for (const auto& item : state.render_list) {
     player |= item.label == "raster:player";
     scenery |= item.label.rfind("raster:scenery:", 0) == 0;
     monster |= item.label.rfind("raster:monster:", 0) == 0;
+    extraction |= item.label == "raster:extraction:stairs";
   }
   scenario_check(player && scenery && monster,
                  "raster-world: player, enemy and scenery all use raster draws");
+  scenario_check(extraction, "raster-world: the extraction landmark paints pixel stairs");
+  return scenario_failures;
+}
+
+int scenario_raster_motion() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  advance_actor_motion(state, 0.0);
+  const auto start = state.world.player.position;
+  const std::string dir = art_wave_capture_dir();
+  scenario_check(!dir.empty(), "raster-motion: capture root accepted");
+  if (dir.empty()) return scenario_failures;
+  std::ofstream trace(dir + "\\raster-motion.csv");
+  scenario_check(trace.good(), "raster-motion: motion trace opened");
+  trace << "time_ms,x,y,moving,phase,pose\n";
+  const RECT bounds{0, 0, 960, 600};
+  state.mouse = {800, 450};
+  state.aim_direction_initialized = true;
+  state.last_aim_direction = {1, 1};
+  state.simulation->dispatch(verdigris::Command::aim(1, 1));
+  std::unordered_set<std::string> walk_poses;
+  std::string final_pose;
+  int captured = 0;
+  // Exercise production input consumption at 20 Hz and its separate 15 ms
+  // presentation pump. The last 600 ms release both movement keys, exposing
+  // smoothing tails and the transition back to the actual idle sprite.
+  for (int frame = 0; frame < 160; ++frame) {
+    state.d = state.s = frame < 120;
+    state.tick_accum_ms += 15.0;
+    while (state.tick_accum_ms >= 50.0) {
+      state.tick_accum_ms -= 50.0;
+      fixed_game_tick(state, bounds);
+    }
+    sync_world(state);
+    advance_actor_motion(state, 15.0);
+    const double keep = std::pow(0.8, 15.0 / 50.0);
+    state.camera.x += (state.world.player.position.x - state.camera.x) * (1.0 - keep);
+    state.camera.y += (state.world.player.position.y - state.camera.y) * (1.0 - keep);
+    if (frame % 4 != 3) continue;
+    char filename[64]{};
+    std::snprintf(filename, sizeof(filename), "\\raster-motion-%03d.png", captured++);
+    scenario_check(reference_present(state, 960, 600, dir + filename),
+                   "raster-motion: production motion frame captured");
+    for (const auto& item : state.render_list) {
+      if (item.label.rfind("raster:pose:", 0) != 0) continue;
+      final_pose = item.label.substr(std::strlen("raster:pose:"));
+      if (final_pose.rfind("hero_walk", 0) == 0) walk_poses.insert(final_pose);
+    }
+    const auto& motion = state.motions.at("player");
+    trace << (frame + 1) * 15 << ',' << state.world.player.position.x << ','
+          << state.world.player.position.y << ',' << motion.moving << ','
+          << motion.walk_phase << ',' << final_pose << '\n';
+  }
+  scenario_check(state.world.player.position.x > start.x &&
+                     state.world.player.position.y > start.y,
+                 "raster-motion: held diagonal input moves the authoritative actor");
+  scenario_check(walk_poses.size() == 4,
+                 "raster-motion: actual travel paints all four SE gait phases");
+  scenario_check(state.motions.at("player").moving < 0.20 && final_pose == "hero_se",
+                 "raster-motion: released input settles into the idle frame");
   return scenario_failures;
 }
 
@@ -18794,6 +18901,7 @@ int run_scenarios(const std::string& which) {
       {"hud-scale-floor", scenario_hud_scale_floor},
       {"xp-meter", scenario_xp_meter},
       {"raster-world", scenario_raster_world},
+      {"raster-motion", scenario_raster_motion},
       {"loot-to-bank", scenario_loot_to_bank},
       {"telegraph-dodge", scenario_telegraph_dodge},
       {"combat-juice", scenario_combat_juice},
@@ -18957,41 +19065,12 @@ bool save_hbitmap_png(BillboardAssets& assets, HBITMAP bitmap, const std::string
   if (!assets.create_bitmap_from_hbitmap || !assets.save_image_to_file ||
       !assets.dispose_image)
     return false;
-  BITMAP bm{};
-  const int got = GetObject(bitmap, sizeof(bm), &bm);
-  HBITMAP encoded = bitmap;
-  HBITMAP swapped = nullptr;
-  void* swapped_bits = nullptr;
-  // GetObject on a DIB section returns sizeof(DIBSECTION) (> BITMAP). Requiring
-  // an exact BITMAP size silently skipped the channel fix.
-  if (got >= static_cast<int>(sizeof(BITMAP)) && bm.bmBitsPixel == 32 && bm.bmBits &&
-      bm.bmWidth > 0 && bm.bmWidthBytes >= 4) {
-    BITMAPINFO info{};
-    info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    info.bmiHeader.biWidth = bm.bmWidth;
-    info.bmiHeader.biHeight = -std::abs(bm.bmHeight);
-    info.bmiHeader.biPlanes = 1;
-    info.bmiHeader.biBitCount = 32;
-    info.bmiHeader.biCompression = BI_RGB;
-    swapped = CreateDIBSection(nullptr, &info, DIB_RGB_COLORS, &swapped_bits, nullptr, 0);
-    if (swapped && swapped_bits) {
-      const int h = std::abs(bm.bmHeight);
-      const int w = bm.bmWidth;
-      auto* src = static_cast<const std::uint8_t*>(bm.bmBits);
-      auto* dst = static_cast<std::uint8_t*>(swapped_bits);
-      for (int y = 0; y < h; ++y) {
-        const std::uint8_t* srow = src + y * bm.bmWidthBytes;
-        std::uint8_t* drow = dst + y * w * 4;
-        std::memcpy(drow, srow, static_cast<std::size_t>(w) * 4);
-        verdigris::gpu::swap_bgra_rb(drow, w);
-      }
-      encoded = swapped;
-    }
-  }
+  // GDI DIB sections and GDI+ agree on BGRA byte storage. Swapping channels
+  // here made reference captures disagree with both the live window and PNGs.
+  GdiFlush();
   GpBitmap* image = nullptr;
   const bool created =
-      assets.create_bitmap_from_hbitmap(encoded, nullptr, &image) == 0 && image;
-  if (swapped) DeleteObject(swapped);
+      assets.create_bitmap_from_hbitmap(bitmap, nullptr, &image) == 0 && image;
   if (!created) return false;
   const CLSID png_clsid = {0x557cf406, 0x1a04, 0x11d3, {0x9a, 0x73, 0x00, 0x00, 0xf8, 0x1e, 0xf3, 0x2e}};
   const std::wstring wide = wide_path(path);
