@@ -335,7 +335,8 @@ const WorldActor* find_monster(const WorldView& world, const std::string& id) {
 }
 
 verdigris::Vec2 event_anchor(const WorldView& world, const PresentationFx& fx,
-                             const PresentationEvent& event, bool prefer_player) {
+                           const PresentationEvent& event, bool prefer_player) {
+  if (event.has_actor_pose) return {event.actor_x, event.actor_y};
   if (prefer_player) return world.player.position;
   if (const auto* monster = find_monster(world, event.actor_id)) return monster->position;
   if (fx.last_death_pos.x != 0 || fx.last_death_pos.y != 0) return fx.last_death_pos;
@@ -385,26 +386,37 @@ void present_strike(std::vector<EffectFx>& effects, const std::string& actor_id,
 void apply_presentation_event(PresentationFx& fx, const WorldView& world,
                               const PresentationEvent& event, std::uint64_t now_tick) {
   sync_presentation_scene(fx, world);
-  const bool to_player = event.text == "incoming" || event.type == PresentationEventType::ScionDied;
+  const bool to_player = event.text == "incoming" || event.type == PresentationEventType::ScionDied ||
+      (event.type == PresentationEventType::DamageApplied && event.actor_id == world.player.id);
   const verdigris::Vec2 at = event_anchor(world, fx, event, to_player);
   const double ex = static_cast<double>(at.x);
   const double ey = static_cast<double>(at.y);
   switch (event.type) {
     case PresentationEventType::AttackStarted: {
+      const auto warning = fx.telegraphs.find(event.actor_id);
+      const bool committed = warning != fx.telegraphs.end();
+      const Vec2 committed_facing = committed ? warning->second.facing : Vec2{};
       fx.telegraphs.erase(event.actor_id);
       const WorldActor* actor = event.actor_id == world.player.id ? &world.player
           : find_monster(world, event.actor_id);
       if (!actor) break;
       double dx = actor->facing.x;
       double dy = actor->facing.y;
-      if (actor != &world.player &&
+      if (event.has_actor_pose) {
+        dx = event.facing_x;
+        dy = event.facing_y;
+      } else if (committed) {
+        dx = committed_facing.x;
+        dy = committed_facing.y;
+      } else if (actor != &world.player &&
           (actor->position.x != world.player.position.x ||
            actor->position.y != world.player.position.y)) {
         dx = static_cast<double>(world.player.position.x) - actor->position.x;
         dy = static_cast<double>(world.player.position.y) - actor->position.y;
       }
       const double swing_angle = std::atan2(dy, dx);
-      present_strike(fx.effects, event.actor_id, actor->position, swing_angle,
+      const Vec2 contact = event.has_actor_pose ? Vec2{event.actor_x, event.actor_y} : actor->position;
+      present_strike(fx.effects, event.actor_id, contact, swing_angle,
                      event.text == "sweep", false);
       break;
     }
@@ -434,7 +446,7 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       fx.effects.push_back(number);
       if (to_player) {
         fx.screen_pulse_ticks = 3;
-        if (!event.actor_id.empty())
+        if (!event.actor_id.empty() && event.actor_id != world.player.id)
           fx.monster_strikes[event.actor_id] = now_tick;
       }
       break;
@@ -448,6 +460,10 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       telegraph.actor_id = event.actor_id;
       telegraph.position = event_anchor(world, fx, event, false);
       telegraph.start_tick = now_tick;
+      if (event.has_actor_pose)
+        telegraph.facing = {event.facing_x, event.facing_y};
+      else if (const auto* monster = find_monster(world, event.actor_id))
+        telegraph.facing = monster->facing;
       const auto spec = actions::spec_from_payload(
           event.text, event.value, verdigris::Simulation::presentation_catalog());
       actions::apply_spec(telegraph, spec);
@@ -458,13 +474,29 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
     case PresentationEventType::ActorDied: {
       fx.telegraphs.erase(event.actor_id);
       fx.monster_strikes.erase(event.actor_id);
-      // The event has no corpse snapshot. A missing prior-world monster must
-      // not borrow the previous death's position or fabricate a raider Scion.
+      // The prior snapshot supplies identity/family/elite, even if its position
+      // predates the final pursuit step. Pose metadata alone cannot invent a
+      // missing monster or turn a Scion death into a raider corpse.
       const auto* monster = find_monster(world, event.actor_id);
-      if (!monster || !present_actor_death(fx.effects, world, *monster)) break;
-      fx.last_death_pos = monster->position;
-      fx.effects.push_back({EffectFx::Kind::Dust, static_cast<double>(monster->position.x),
-                            static_cast<double>(monster->position.y), 0.7, 0, 10});
+      if (!monster) break;
+      WorldActor death = *monster;
+      if (event.has_actor_pose) {
+        death.position = {event.actor_x, event.actor_y};
+        death.facing = {event.facing_x, event.facing_y};
+      }
+      if (!present_actor_death(fx.effects, world, death)) break;
+      if (event.has_actor_pose && (death.facing.x != 0 || death.facing.y != 0)) {
+        for (auto& effect : fx.effects) {
+          if (effect.kind == EffectFx::Kind::ActorFall && effect.actor_id == death.id) {
+            effect.angle = std::atan2(static_cast<double>(death.facing.y),
+                                      static_cast<double>(death.facing.x));
+            break;
+          }
+        }
+      }
+      fx.last_death_pos = death.position;
+      fx.effects.push_back({EffectFx::Kind::Dust, static_cast<double>(death.position.x),
+                            static_cast<double>(death.position.y), 0.7, 0, 10});
       break;
     }
     case PresentationEventType::ScionDied:

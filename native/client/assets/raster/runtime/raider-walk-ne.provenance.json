@@ -1,0 +1,657 @@
+{
+  "version": 1,
+  "manifest_sha256": "dff840eda53e0a9dba6de75d1b331f5fcbb27469b3657724d2e8dbc47293d2f8",
+  "importer_sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+  "engine": {
+    "project": "Pixel Respecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "root": "Z:/Code/Python/pixel-perfecter",
+    "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+    "git_dirty": true,
+    "source_sha256": {
+      "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+      "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+      "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+      "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+      "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+      "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+      "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+      "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+      "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+      "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+      "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+      "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+      "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+    },
+    "dependencies": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    }
+  },
+  "known_limitations": [
+    "Root reviewed the six native phases at1x/3x, idle transitions and source-alpha comparison; production walk-phase crops and full-frame pursuit feedback are root-reviewed for provisional integration. No smooth-video claim is made.",
+    "Walking stance is narrower than idle and the carried axe has a smaller, nearly edge-on blade. Six authored phases include a close phase5-to0 transition.",
+    "Original v1 supplies phases0,1,4,5 and focused v2 supplies phases2,3. A single cell7 reconstruction and one32-color palette preserve all phase scale and color; no independent frame fitting.",
+    "The whole selected cycle uses source origin315,483 with column455,row490, lowered two native pixels from the initial review without changing relative foot lift. All canvases80x96/pivot40,96.",
+    "Axe remains embedded in the anatomical-right/screen-right hand; no hero weapon overlay."
+  ],
+  "sources": [
+    {
+      "source": "../../client/assets/raster/source/raider-walk-ne-v1.png",
+      "sha256": "ab541dfc0b484703385f32af033ceebf81c880b165fd0d03bbdc112bbcc9e077",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/raider-walk-ne-v2.png",
+      "sha256": "ef41d8775a22ec8a52995a1a9444709a6db94f45e08351207cc6d26a320b4672",
+      "size": [
+        1536,
+        1024
+      ],
+      "background_removal": {
+        "api": "pixel_perfecter.colors.make_border_connected_transparent",
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "tolerance": 100,
+        "interior_windows": [],
+        "transparent_pixels_after": 1296492
+      }
+    },
+    {
+      "source": "../../client/assets/raster/source/raider-walk-ne-v1.png",
+      "sha256": "ab541dfc0b484703385f32af033ceebf81c880b165fd0d03bbdc112bbcc9e077",
+      "size": [
+        1536,
+        1024
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "name": "raider_walk0_ne",
+      "file": "raider_walk0_ne.png",
+      "source": "../../client/assets/raster/source/raider-walk-ne-v1.png",
+      "acceptance": "root_production_pursuit_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "cell_size": 7,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 25,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        73,
+        73
+      ],
+      "trim_box": [
+        30,
+        12,
+        68,
+        68
+      ],
+      "before_resize": [
+        38,
+        56
+      ],
+      "placed_size": [
+        38,
+        56
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        25,
+        39,
+        63,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        315,
+        483
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "a4d4fa77a2d48ce4259c78ef56957912e74751cce939806dc414980ceb383c68"
+    },
+    {
+      "name": "raider_walk1_ne",
+      "file": "raider_walk1_ne.png",
+      "source": "../../client/assets/raster/source/raider-walk-ne-v1.png",
+      "acceptance": "root_production_pursuit_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        512,
+        0,
+        1024,
+        512
+      ],
+      "cell_size": 7,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 27,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        73,
+        73
+      ],
+      "trim_box": [
+        23,
+        12,
+        60,
+        68
+      ],
+      "before_resize": [
+        37,
+        56
+      ],
+      "placed_size": [
+        37,
+        56
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        26,
+        39,
+        63,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        258,
+        483
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "431179cbeb988a77ea7630b885a503e896b605a62e20d8ec1d278148b0bb8c49"
+    },
+    {
+      "name": "raider_walk2_ne",
+      "file": "raider_walk2_ne.png",
+      "source": "../../client/assets/raster/source/raider-walk-ne-v2.png",
+      "acceptance": "root_production_pursuit_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        1024,
+        0,
+        1536,
+        512
+      ],
+      "cell_size": 7,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 27,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        73,
+        73
+      ],
+      "trim_box": [
+        14,
+        12,
+        53,
+        69
+      ],
+      "before_resize": [
+        39,
+        57
+      ],
+      "placed_size": [
+        39,
+        57
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        25,
+        39,
+        64,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        201,
+        483
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "a7da3557936d2864fcfb5be9fe67b6c046396516dd1018025b123349de03ff5e"
+    },
+    {
+      "name": "raider_walk3_ne",
+      "file": "raider_walk3_ne.png",
+      "source": "../../client/assets/raster/source/raider-walk-ne-v2.png",
+      "acceptance": "root_production_pursuit_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        0,
+        512,
+        512,
+        1024
+      ],
+      "cell_size": 7,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 27,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        73,
+        73
+      ],
+      "trim_box": [
+        31,
+        7,
+        69,
+        65
+      ],
+      "before_resize": [
+        38,
+        58
+      ],
+      "placed_size": [
+        38,
+        58
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        26,
+        37,
+        64,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        315,
+        461
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "301c8d88e7cea8efebef76fa0955b70f11581a1f4736ff6a641baa42a66ba129"
+    },
+    {
+      "name": "raider_walk4_ne",
+      "file": "raider_walk4_ne.png",
+      "source": "../../client/assets/raster/source/raider-walk-ne-v1.png",
+      "acceptance": "root_production_pursuit_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        512,
+        512,
+        1024,
+        1024
+      ],
+      "cell_size": 7,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 27,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        73,
+        73
+      ],
+      "trim_box": [
+        23,
+        9,
+        60,
+        62
+      ],
+      "before_resize": [
+        37,
+        53
+      ],
+      "placed_size": [
+        37,
+        53
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        26,
+        39,
+        63,
+        92
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        258,
+        461
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "874a669f55f6fcd85c769577d5175ceee781f0cdbb7a3e80a44ecdbbf9459155"
+    },
+    {
+      "name": "raider_walk5_ne",
+      "file": "raider_walk5_ne.png",
+      "source": "../../client/assets/raster/source/raider-walk-ne-v1.png",
+      "acceptance": "root_production_pursuit_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        1024,
+        512,
+        1536,
+        1024
+      ],
+      "cell_size": 7,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 26,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        73,
+        73
+      ],
+      "trim_box": [
+        15,
+        8,
+        52,
+        65
+      ],
+      "before_resize": [
+        37,
+        57
+      ],
+      "placed_size": [
+        37,
+        57
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        26,
+        38,
+        63,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        201,
+        461
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "4d0af302b2dc723e4c6296f5fb6b567455e470a4e01e56b2544cbe0cb8bae796"
+    }
+  ],
+  "shared_palette": {
+    "api": "pixel_perfecter.palettes.reduce_colors",
+    "max_colors": 32,
+    "visible_colors_before": 632,
+    "visible_colors_after": 32,
+    "palette_rgb": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        15,
+        17,
+        21
+      ],
+      [
+        30,
+        31,
+        45
+      ],
+      [
+        42,
+        16,
+        5
+      ],
+      [
+        51,
+        54,
+        58
+      ],
+      [
+        52,
+        42,
+        26
+      ],
+      [
+        69,
+        71,
+        84
+      ],
+      [
+        85,
+        36,
+        13
+      ],
+      [
+        85,
+        60,
+        49
+      ],
+      [
+        96,
+        82,
+        74
+      ],
+      [
+        108,
+        51,
+        29
+      ],
+      [
+        114,
+        98,
+        95
+      ],
+      [
+        120,
+        61,
+        4
+      ],
+      [
+        127,
+        70,
+        48
+      ],
+      [
+        141,
+        84,
+        25
+      ],
+      [
+        152,
+        99,
+        64
+      ],
+      [
+        168,
+        84,
+        49
+      ],
+      [
+        170,
+        86,
+        5
+      ],
+      [
+        190,
+        109,
+        7
+      ],
+      [
+        195,
+        112,
+        73
+      ],
+      [
+        201,
+        104,
+        35
+      ],
+      [
+        213,
+        138,
+        32
+      ],
+      [
+        219,
+        119,
+        5
+      ],
+      [
+        222,
+        130,
+        83
+      ],
+      [
+        233,
+        123,
+        58
+      ],
+      [
+        236,
+        124,
+        29
+      ],
+      [
+        238,
+        150,
+        99
+      ],
+      [
+        243,
+        172,
+        121
+      ],
+      [
+        243,
+        191,
+        145
+      ],
+      [
+        246,
+        145,
+        64
+      ],
+      [
+        247,
+        139,
+        10
+      ],
+      [
+        251,
+        158,
+        36
+      ]
+    ],
+    "dithering": "none",
+    "scope": "all reconstructed frames in this manifest"
+  }
+}

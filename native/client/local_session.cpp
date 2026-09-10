@@ -1,7 +1,23 @@
 #include "local_session.hpp"
 #include "input/make-aim-independent-of-motion.hpp"
 
+#include <algorithm>
+
 namespace verdigris::client {
+
+namespace {
+// ClientModel coordinates use protocol tiles. This is the inverse of the
+// shared protocol_to_world conversion; the deterministic core uses world units.
+double local_model_coordinate(int world_units) {
+  return static_cast<double>(world_units) * 8.0 / verdigris::world_scale::kArenaHalfExtent;
+}
+
+std::string local_model_facing(verdigris::Vec2 facing) {
+  if (facing.y < 0) return facing.x < 0 ? "up-left" : facing.x > 0 ? "up-right" : "up";
+  if (facing.y > 0) return facing.x < 0 ? "down-left" : facing.x > 0 ? "down-right" : "down";
+  return facing.x < 0 ? "left" : "right";
+}
+}  // namespace
 
 const char* connection_state_label(ConnectionState state) {
   switch (state) {
@@ -127,6 +143,10 @@ LocalCoreSession::~LocalCoreSession() { shutdown(); }
 
 bool LocalCoreSession::start(std::string*) {
   simulation_ = std::make_unique<verdigris::Simulation>(seed_, house_name_);
+  pending_commands_.clear();
+  pending_events_.clear();
+  ground_positions_.clear();
+  aim_hold_ = {};
   processed_events_ = 0;
   state_ = ConnectionState::Ready;  // local play needs no handshake
   pending_events_.push_back({PresentationEventType::SessionReady, "", "", "local", 0});
@@ -135,6 +155,9 @@ bool LocalCoreSession::start(std::string*) {
 }
 
 void LocalCoreSession::shutdown() {
+  pending_commands_.clear();
+  ground_positions_.clear();
+  aim_hold_ = {};
   simulation_.reset();
   state_ = ConnectionState::Disconnected;
 }
@@ -145,14 +168,14 @@ void LocalCoreSession::submit(const ClientCommand& command) {
     case ClientCommand::Type::Login:
       break;  // local sessions are implicitly logged in
     case ClientCommand::Type::Move:
-      simulation_->dispatch(verdigris::Command::move(command.dx, command.dy));
+      queue_command(verdigris::Command::move(command.dx, command.dy));
       if (aim_hold_.held)
-        simulation_->dispatch(
+        queue_command(
             verdigris::Command::aim(aim_hold_.dx, aim_hold_.dy));
       break;
     case ClientCommand::Type::Aim:
       move::remember_aim(aim_hold_, command.dx, command.dy);
-      simulation_->dispatch(verdigris::Command::aim(command.dx, command.dy));
+      queue_command(verdigris::Command::aim(command.dx, command.dy));
       break;
     case ClientCommand::Type::UseAction: {
       // TASK-0122 Phase A: the seam now carries the named action through
@@ -164,20 +187,20 @@ void LocalCoreSession::submit(const ClientCommand& command) {
       else if (command.target == "sweep") action = verdigris::ActionType::Sweep;
       else if (command.target == "wait") action = verdigris::ActionType::Wait;
       else if (command.target == "dash") action = verdigris::ActionType::Dash;
-      simulation_->dispatch(verdigris::Command::action_use(action));
+      queue_command(verdigris::Command::action_use(action));
       break;
     }
     case ClientCommand::Type::PickUp:
-      simulation_->dispatch(verdigris::Command::pick_up(command.target));
+      queue_command(verdigris::Command::pick_up(command.target));
       break;
     case ClientCommand::Type::Equip:
-      simulation_->dispatch(verdigris::Command::equip(command.target));
+      queue_command(verdigris::Command::equip(command.target));
       break;
     case ClientCommand::Type::EnterZone:
-      simulation_->dispatch(verdigris::Command::enter(command.target));
+      queue_command(verdigris::Command::enter(command.target));
       break;
     case ClientCommand::Type::Extract:
-      simulation_->dispatch(verdigris::Command::extract());
+      queue_command(verdigris::Command::extract());
       break;
     case ClientCommand::Type::FoundHouse:
       // Local play always has its seeded House; the front door never shows.
@@ -196,6 +219,44 @@ void LocalCoreSession::submit(const ClientCommand& command) {
   }
 }
 
+void LocalCoreSession::queue_command(const verdigris::Command& command) {
+  // Coalesce sampled intent only after the latest discrete command. An
+  // AimEast / Attack / AimWest batch must still attack toward the east.
+  if (command.type == verdigris::CommandType::MoveIntent ||
+      command.type == verdigris::CommandType::AimIntent) {
+    auto suffix = pending_commands_.end();
+    while (suffix != pending_commands_.begin()) {
+      const auto type = (suffix - 1)->type;
+      if (type != verdigris::CommandType::MoveIntent &&
+          type != verdigris::CommandType::AimIntent) break;
+      --suffix;
+    }
+    pending_commands_.erase(std::remove_if(suffix, pending_commands_.end(),
+        [&](const verdigris::Command& pending) { return pending.type == command.type; }),
+        pending_commands_.end());
+  }
+  constexpr std::size_t kMaxPendingCommands = 64;
+  if (pending_commands_.size() < kMaxPendingCommands) pending_commands_.push_back(command);
+}
+
+void LocalCoreSession::advance_fixed_tick() {
+  if (!simulation_) return;
+  simulation_->dispatch_tick(pending_commands_);
+  pending_commands_.clear();
+  poll();
+}
+
+void LocalCoreSession::set_navigation_obstacles(
+    std::vector<verdigris::NavigationObstacle> obstacles) {
+  if (simulation_)
+    simulation_->set_navigation_obstacles(simulation_->instance().active
+        ? std::move(obstacles) : std::vector<verdigris::NavigationObstacle>{});
+}
+
+std::vector<verdigris::Vec2> LocalCoreSession::navigation_anchors() const {
+  return simulation_ ? simulation_->navigation_anchors() : std::vector<verdigris::Vec2>{};
+}
+
 void LocalCoreSession::poll() {
   if (!simulation_) return;
   translate_new_events();
@@ -211,24 +272,29 @@ std::vector<PresentationEvent> LocalCoreSession::drain_events() {
 void LocalCoreSession::refresh_model() {
   const auto& scion = simulation_->scion();
   model_.house_name = simulation_->house().name;
-  model_.player.uuid = scion.id;
+  // Rendering/event ownership follows the live actor. The persistent Scion
+  // identity remains in the chronicle roster and active_scion_id below.
+  model_.player.uuid = scion.actor_id;
   model_.player.display_name = scion.name;
   model_.player.level = scion.level;
   model_.player.alive = scion.alive;
   if (const auto* actor = simulation_->actor(scion.actor_id)) {
-    model_.player.x = actor->position.x;
-    model_.player.y = actor->position.y;
+    model_.player.x = local_model_coordinate(actor->position.x);
+    model_.player.y = local_model_coordinate(actor->position.y);
     model_.player.life = actor->stats.life;
     model_.player.life_max = actor->stats.life_max;
     model_.player.resource = actor->stats.resource;
     model_.player.resource_max = actor->stats.resource_max;
     model_.player.attack = actor->stats.attack;
-    if (actor->facing.x < 0) model_.player.facing = "left";
-    else if (actor->facing.x > 0) model_.player.facing = "right";
-    else if (actor->facing.y < 0) model_.player.facing = "up";
-    else model_.player.facing = "down";
+    model_.player.facing = local_model_facing(actor->facing);
   }
-  model_.scene.id = simulation_->instance().active ? simulation_->instance().route_id : "surface";
+  const auto& instance = simulation_->instance();
+  model_.player.scene_id = instance.active ? instance.route_id : std::string{};
+  model_.scene.id = instance.active ? instance.route_id : "surface";
+  model_.scene.type = instance.active ? "instance" : "surface";
+  model_.scene.has_stairs_up = instance.active;
+  model_.scene.stairs_up_x = instance.active ? local_model_coordinate(instance.extraction_point.x) : 0.0;
+  model_.scene.stairs_up_y = instance.active ? local_model_coordinate(instance.extraction_point.y) : 0.0;
   model_.inventory.clear();
   model_.equipped = {};
   for (const auto& item : scion.carried_items) {
@@ -237,16 +303,33 @@ void LocalCoreSession::refresh_model() {
     if (item.equipped) model_.equipped = slot;
   }
   model_.ground.clear();
-  for (const auto& item : simulation_->ground_items())
-    model_.ground.push_back({item.id, item.name, 0.0, 0.0});
+  std::unordered_map<std::string, verdigris::Vec2> retained_positions;
+  const auto append_ground = [&](const auto& item) {
+    const auto found = ground_positions_.find(item.id);
+    if (found == ground_positions_.end()) {
+      // Pending recovery can reattach to a new floor without a position
+      // event. Preserve its legacy zero-coordinate representation; this is
+      // explicitly not an authored anchor or an exact-position guarantee.
+      model_.ground.push_back({item.id, item.name, 0.0, 0.0});
+      return;
+    }
+    const auto position = found->second;
+    model_.ground.push_back({item.id, item.name, local_model_coordinate(position.x),
+                             local_model_coordinate(position.y)});
+    retained_positions.emplace(item.id, position);
+  };
+  for (const auto& item : simulation_->ground_items()) append_ground(item);
+  for (const auto& trophy : simulation_->ground_trophies()) append_ground(trophy);
+  ground_positions_.swap(retained_positions);
   model_.monsters.clear();
   for (const auto& actor : simulation_->actors()) {
     if (actor.kind != verdigris::ActorKind::Monster || !actor.alive) continue;
     ClientMonster monster;
     monster.id = actor.id;
     monster.name = actor.elite ? "elite" : "monster";
-    monster.x = static_cast<double>(actor.position.x);
-    monster.y = static_cast<double>(actor.position.y);
+    monster.x = local_model_coordinate(actor.position.x);
+    monster.y = local_model_coordinate(actor.position.y);
+    monster.behaviour = "melee";
     monster.life = actor.stats.life;
     monster.life_max = actor.stats.life_max;
     monster.elite = actor.elite;
@@ -280,6 +363,21 @@ void LocalCoreSession::translate_new_events() {
     out.item_id = event.item_id;
     out.text = event.text;
     out.value = event.value;
+    // Event poses already use world units. Only ClientModel positions use
+    // protocol tiles; converting these would relocate/rotate confirmed hits.
+    out.has_actor_pose = event.has_actor_pose;
+    out.actor_x = event.actor_position.x;
+    out.actor_y = event.actor_position.y;
+    out.facing_x = event.actor_facing.x;
+    out.facing_y = event.actor_facing.y;
+    if (event.has_actor_pose &&
+        (event.type == verdigris::EventType::ItemDropped ||
+         event.type == verdigris::EventType::TrophyDropped ||
+         event.type == verdigris::EventType::RelicResurfaced ||
+         event.type == verdigris::EventType::TrophyResurfaced)) {
+      const auto& id = event.item_id.empty() ? event.trophy_id : event.item_id;
+      if (!id.empty()) ground_positions_[id] = event.actor_position;
+    }
     switch (event.type) {
       case verdigris::EventType::AttackStarted: out.type = PresentationEventType::AttackStarted; break;
       case verdigris::EventType::DamageApplied: out.type = PresentationEventType::DamageApplied; break;

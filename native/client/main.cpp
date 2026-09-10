@@ -10,6 +10,7 @@
 #include <functional>
 #include <iostream>
 #include <limits>
+#include <stdexcept>
 #include <memory>
 #include <string>
 #include <cstdint>
@@ -464,6 +465,7 @@ struct FloorCache {
 struct ClientState {
   std::unique_ptr<verdigris::Simulation> simulation;
   std::unique_ptr<verdigris::client::IClientSession> session;
+  std::vector<verdigris::Command> pending_local_commands;
   bool link_lost = false;
   WorldView world;
   BillboardAssets billboards;
@@ -644,6 +646,7 @@ struct ClientState {
   // position deltas per rendered frame; breathe is a shared idle clock.
   struct ActorMotion {
     verdigris::Vec2 last_pos{};
+    verdigris::Vec2 travel_direction{};
     bool has_last = false;
     double walk_phase = 0.0;
     double moving = 0.0;
@@ -894,6 +897,11 @@ bool presentation_from_sim(const verdigris::Event& event,
   out.item_id = event.item_id;
   out.text = event.text;
   out.value = event.value;
+  out.has_actor_pose = event.has_actor_pose;
+  out.actor_x = event.actor_position.x;
+  out.actor_y = event.actor_position.y;
+  out.facing_x = event.actor_facing.x;
+  out.facing_y = event.actor_facing.y;
   switch (event.type) {
     case verdigris::EventType::DamageApplied:
       out.type = verdigris::client::PresentationEventType::DamageApplied;
@@ -1655,7 +1663,190 @@ void add_scenery(std::vector<SceneryItem>& scenery, SceneryKind kind, double x,
                      radius, scale, solid, dressing});
 }
 
+std::vector<verdigris::NavigationObstacle> scenery_navigation(const ClientState& state) {
+  std::vector<verdigris::NavigationObstacle> obstacles;
+  for (const auto& item : state.scenery)
+    if (item.solid)
+      obstacles.push_back({item.position, static_cast<int>(std::ceil(item.radius))});
+  return obstacles;
+}
+
+void install_scenery_navigation(ClientState& state) {
+  // The native content adapter supplies geometry once per layout. A remote
+  // session keeps its server's collision authority; local dressing never
+  // changes remote movement rules.
+  if (state.simulation)
+    state.simulation->set_navigation_obstacles(state.simulation->instance().active
+        ? scenery_navigation(state) : std::vector<verdigris::NavigationObstacle>{});
+  else if (auto* local = dynamic_cast<verdigris::client::LocalCoreSession*>(state.session.get()))
+    local->set_navigation_obstacles(scenery_navigation(state));
+}
+
+// Reserve entry, extraction and owed spawn positions before installing solids.
+// Failed bounded relocation leaves the original content unchanged.
+
+// Entry visibility is a one-time content constraint, not a change to painter
+// ordering or travel occlusion. Bounds come from the actual runtime alpha and
+// the same canvas/visible-height scale used by draw_raster_actor and scenery.
+double scenery_height(SceneryKind kind);
+
+struct SceneryEntryInkBox {
+  double left = 0.0, top = 0.0, right = 0.0, bottom = 0.0;
+  bool valid = false;
+};
+
+SceneryEntryInkBox scenery_entry_ink_box(const char* asset, verdigris::Vec2 pivot,
+                                        double height, bool visible_height,
+                                        double feet_offset = 0.0) {
+  const auto canvas = raster_art::dimensions(asset);
+  const auto ink = raster_art::content_bounds(asset);
+  const int content_height = static_cast<int>(ink.bottom - ink.top);
+  if (!canvas.valid() || content_height <= 0 || ink.right <= ink.left) return {};
+  const double scale = height / (visible_height ? content_height : canvas.height);
+  return {pivot.x + (ink.left - canvas.width * 0.5) * scale,
+          pivot.y + feet_offset + (ink.top - canvas.height) * scale,
+          pivot.x + (ink.right - canvas.width * 0.5) * scale,
+          pivot.y + feet_offset + (ink.bottom - canvas.height) * scale, true};
+}
+
+bool scenery_entry_ink_intersects(const SceneryEntryInkBox& a,
+                                   const SceneryEntryInkBox& b) {
+  // Cover at most two destination-pixel rounding steps at minimum zoom.
+  constexpr double kRoundingMargin = 2.0 / kCameraMinZoom;
+  return a.valid && b.valid && a.left < b.right + kRoundingMargin &&
+      a.right > b.left - kRoundingMargin && a.top < b.bottom + kRoundingMargin &&
+      a.bottom > b.top - kRoundingMargin;
+}
+
+bool scenery_entry_visual_overlap(const SceneryItem& item, verdigris::Vec2 center,
+                                    const std::vector<verdigris::Vec2>& anchors) {
+  // navigation_anchors orders player, extraction, live actors and owed births.
+  // Only the first two need entry visibility; monster births keep collision-only
+  // clearance. This snapshot is used only while the scene is constructed.
+  if (!item.solid || anchors.size() < 2) return false;
+  const char* asset = item.kind == SceneryKind::Tree ? "tree"
+      : item.kind == SceneryKind::Ruin ? "column"
+      : item.kind == SceneryKind::Dwelling ? "hut"
+      : item.kind == SceneryKind::Shrine ? "shrine" : "gate";
+  const auto visible = scenery_entry_ink_box(
+      asset, center, scenery_height(item.kind) * item.scale, true);
+  // The two existing dwelling appearances share a kind; retain the measured
+  // bounds of both rather than changing their position-based art selection.
+  const auto store = item.kind == SceneryKind::Dwelling
+      ? scenery_entry_ink_box("storehut", center, scenery_height(item.kind) * item.scale, true)
+      : SceneryEntryInkBox{};
+  const double stairs_height = kTileUnits * 0.80;
+  const auto stairs = scenery_entry_ink_box(
+      "exit_stairs", anchors[1], stairs_height, true, stairs_height * 2.0 / 5.0);
+  // Stairs are painted in the ground layer, before every standing prop.
+  if (scenery_entry_ink_intersects(visible, stairs) ||
+      scenery_entry_ink_intersects(store, stairs)) return true;
+  // A rear prop cannot hide the hero under the actual y/x painter ordering.
+  if (camera2d::draw_order_key(center.y, center.x) <=
+      camera2d::draw_order_key(anchors[0].y, anchors[0].x)) return false;
+  for (const char* idle : {"hero_se", "hero_sw", "hero_ne", "hero_nw"}) {
+    const auto hero = scenery_entry_ink_box(idle, anchors[0], kTileUnits * 1.75, false);
+    if (scenery_entry_ink_intersects(visible, hero) ||
+        scenery_entry_ink_intersects(store, hero)) return true;
+  }
+  return false;
+}
+
+bool scenery_anchor_overlap(const SceneryItem& item, verdigris::Vec2 center,
+                            const std::vector<verdigris::Vec2>& anchors) {
+  const double radius = std::ceil(item.radius) +
+      verdigris::world_scale::kActorColliderRadius + 2.0;
+  for (const auto& anchor : anchors) {
+    const double dx = static_cast<double>(center.x) - anchor.x;
+    const double dy = static_cast<double>(center.y) - anchor.y;
+    if (dx * dx + dy * dy <= radius * radius) return true;
+  }
+  return scenery_entry_visual_overlap(item, center, anchors);
+}
+
+bool relocate_scenery_from_navigation_anchors(
+    std::vector<SceneryItem>& scenery,
+    const std::vector<verdigris::Vec2>& anchors) {
+  if (anchors.empty()) return true;
+  // Grid offsets are ranked by distance from each prop's authored position,
+  // then y/x. No RNG or actor position mutation participates in the repair.
+  constexpr int kStep = verdigris::world_scale::kActorColliderRadius / 2;
+  constexpr int kRings = 64;
+  static const std::vector<verdigris::Vec2> offsets = [] {
+    std::vector<verdigris::Vec2> result;
+    for (int y = -kRings; y <= kRings; ++y)
+      for (int x = -kRings; x <= kRings; ++x)
+        if ((x != 0 || y != 0) && x * x + y * y <= kRings * kRings)
+          result.push_back({x * kStep, y * kStep});
+    std::sort(result.begin(), result.end(), [](verdigris::Vec2 a, verdigris::Vec2 b) {
+      const int da = a.x * a.x + a.y * a.y;
+      const int db = b.x * b.x + b.y * b.y;
+      if (da != db) return da < db;
+      if (a.y != b.y) return a.y < b.y;
+      return a.x < b.x;
+    });
+    return result;
+  }();
+  auto repaired = scenery;
+  for (std::size_t index = 0; index < repaired.size(); ++index) {
+    auto& item = repaired[index];
+    if (!item.solid || !scenery_anchor_overlap(item, item.position, anchors)) continue;
+    const auto authored = item.position;
+    bool found = false;
+    for (const auto& offset : offsets) {
+      const std::int64_t x = static_cast<std::int64_t>(authored.x) + offset.x;
+      const std::int64_t y = static_cast<std::int64_t>(authored.y) + offset.y;
+      const double margin = std::ceil(item.radius) +
+          verdigris::world_scale::kActorColliderRadius + 2.0;
+      if (std::abs(x) + margin > std::numeric_limits<int>::max() / 4 ||
+          std::abs(y) + margin > std::numeric_limits<int>::max() / 4) continue;
+      const verdigris::Vec2 candidate{static_cast<int>(x), static_cast<int>(y)};
+      if (scenery_anchor_overlap(item, candidate, anchors)) continue;
+      bool occupied = false;
+      for (std::size_t other = 0; other < repaired.size(); ++other) {
+        if (other == index || !repaired[other].solid) continue;
+        // Preserve a traversable actor-width gap around a relocated solid,
+        // instead of fixing the entry by forming a new touching wall elsewhere.
+        const double separation = std::ceil(item.radius) +
+            std::ceil(repaired[other].radius) +
+            2.0 * verdigris::world_scale::kActorColliderRadius + 4.0;
+        const double dx = static_cast<double>(candidate.x) - repaired[other].position.x;
+        const double dy = static_cast<double>(candidate.y) - repaired[other].position.y;
+        if (dx * dx + dy * dy <= separation * separation) {
+          occupied = true;
+          break;
+        }
+      }
+      if (occupied) continue;
+      item.position = candidate;
+      found = true;
+      break;
+    }
+    if (!found) return false;
+  }
+  scenery = std::move(repaired);
+  return true;
+}
+
+bool clear_native_navigation_anchors(ClientState& state) {
+  std::vector<verdigris::Vec2> anchors;
+  if (state.simulation) {
+    anchors = state.simulation->navigation_anchors();
+  } else if (const auto* local =
+                 dynamic_cast<const verdigris::client::LocalCoreSession*>(state.session.get())) {
+    anchors = local->navigation_anchors();
+  } else {
+    // Remote content/collision remains server-owned. Pure presentation layouts
+    // also retain their authored positions, including the raw regression sample.
+    return true;
+  }
+  return relocate_scenery_from_navigation_anchors(state.scenery, anchors);
+}
+
+
 void finish_scenery_layout(ClientState& state) {
+  if (!clear_native_navigation_anchors(state))
+    throw std::runtime_error("Native scenery cannot clear required entry and spawn positions");
   verdigris::client::world::DressingSpec specs[8];
   const int n = verdigris::client::world::append_dressing(
       specs, 8, state.dressing_pass_version, state.world.player.position.x,
@@ -1679,6 +1870,7 @@ void finish_scenery_layout(ClientState& state) {
   state.topology_hash = verdigris::client::world::topology_hash(
       samples, count, state.world.player.position.x,
       state.world.player.position.y, scenery_seed(route_id));
+  install_scenery_navigation(state);
 }
 
 void generate_scenery(ClientState& state) {
@@ -1692,7 +1884,10 @@ void generate_scenery(ClientState& state) {
     route_id = state.session->model().player.scene_id;
     if (route_id.empty()) route_id = state.session->model().scene.id;
   }
-  if (route_id.empty()) return;
+  if (route_id.empty()) {
+    install_scenery_navigation(state);
+    return;
+  }
 
   SceneryRng rng(scenery_seed(route_id));
   if (route_id.rfind("town:", 0) == 0) {
@@ -1894,18 +2089,36 @@ void ingest_session_events(ClientState& state) {
   state.event_world_known = true;
 }
 
+void queue_local_command(ClientState& state, const verdigris::Command& command) {
+  using Type = verdigris::CommandType;
+  // Preserve aim/attack order. Only supersede intents after the last action;
+  // an aim preceding an attack still belongs to that attack.
+  if (command.type == Type::MoveIntent || command.type == Type::AimIntent) {
+    for (auto it = state.pending_local_commands.end(); it != state.pending_local_commands.begin();) {
+      --it;
+      if (it->type != Type::MoveIntent && it->type != Type::AimIntent) break;
+      if (it->type == command.type) {
+        state.pending_local_commands.erase(it);
+        break;
+      }
+    }
+  }
+  if (state.pending_local_commands.size() < 64)
+    state.pending_local_commands.push_back(command);
+}
+
 void submit_move(ClientState& state, int dx, int dy) {
   if (state.session)
     state.session->submit(verdigris::client::ClientCommand::move(dx, dy));
   else if (state.simulation)
-    state.simulation->dispatch(verdigris::Command::move(dx, dy));
+    queue_local_command(state, verdigris::Command::move(dx, dy));
 }
 
 void submit_aim(ClientState& state, int dx, int dy) {
   if (state.session)
     state.session->submit(verdigris::client::ClientCommand::aim(dx, dy));
   else if (state.simulation)
-    state.simulation->dispatch(verdigris::Command::aim(dx, dy));
+    queue_local_command(state, verdigris::Command::aim(dx, dy));
 }
 
 void submit_action(ClientState& state, verdigris::ActionType action, const char* remote_name) {
@@ -1920,28 +2133,28 @@ void submit_action(ClientState& state, verdigris::ActionType action, const char*
     state.session->submit(verdigris::client::ClientCommand::use_action(remote_name));
     return;
   }
-  if (state.simulation) state.simulation->dispatch(verdigris::Command::action_use(action));
+  if (state.simulation) queue_local_command(state, verdigris::Command::action_use(action));
 }
 
 void submit_pick_up(ClientState& state, const std::string& id) {
   if (state.session)
     state.session->submit(verdigris::client::ClientCommand::pick_up(id));
   else if (state.simulation)
-    state.simulation->dispatch(verdigris::Command::pick_up(id));
+    queue_local_command(state, verdigris::Command::pick_up(id));
 }
 
 void submit_equip(ClientState& state, const std::string& id) {
   if (state.session)
     state.session->submit(verdigris::client::ClientCommand::equip(id));
   else if (state.simulation)
-    state.simulation->dispatch(verdigris::Command::equip(id));
+    queue_local_command(state, verdigris::Command::equip(id));
 }
 
 void submit_extract(ClientState& state) {
   if (state.session)
     state.session->submit(verdigris::client::ClientCommand::extract());
   else if (state.simulation)
-    state.simulation->dispatch(verdigris::Command::extract());
+    queue_local_command(state, verdigris::Command::extract());
 }
 
 void show_hint(ClientState& state, const std::string& message) {
@@ -3646,8 +3859,10 @@ void ingest_events(ClientState& state, const RECT& bounds) {
     const auto& event = events[state.processed_events];
     const verdigris::Actor* subject =
         event.actor_id.empty() ? nullptr : sim.actor(event.actor_id);
-    const double ex = subject ? subject->position.x : state.last_death_pos.x;
-    const double ey = subject ? subject->position.y : state.last_death_pos.y;
+    const double ex = event.has_actor_pose ? event.actor_position.x
+        : subject ? subject->position.x : state.last_death_pos.x;
+    const double ey = event.has_actor_pose ? event.actor_position.y
+        : subject ? subject->position.y : state.last_death_pos.y;
     switch (event.type) {
       case verdigris::EventType::AttackTelegraphed:
         if (subject && subject->alive && subject->kind == verdigris::ActorKind::Monster &&
@@ -3658,8 +3873,8 @@ void ingest_events(ClientState& state, const RECT& bounds) {
               event.text, event.value,
               verdigris::Simulation::presentation_catalog());
           verdigris::client::actions::apply_spec(telegraph, spec);
-          telegraph.facing = subject->facing;
-          telegraph.position = subject->position;
+          telegraph.facing = event.has_actor_pose ? event.actor_facing : subject->facing;
+          telegraph.position = event.has_actor_pose ? event.actor_position : subject->position;
           state.telegraphs[event.actor_id] = std::move(telegraph);
         }
         break;
@@ -3668,16 +3883,10 @@ void ingest_events(ClientState& state, const RECT& bounds) {
         // the core) ends the presentation warning for this actor.
         state.telegraphs.erase(event.actor_id);
         if (subject) {
-          auto facing = subject->facing;
-          if (subject->kind == verdigris::ActorKind::Monster) {
-            const auto* target = sim.actor(sim.scion().actor_id);
-            if (target && (target->position.x != subject->position.x ||
-                           target->position.y != subject->position.y))
-              facing = {target->position.x - subject->position.x,
-                        target->position.y - subject->position.y};
-          }
+          const auto facing = event.has_actor_pose ? event.actor_facing : subject->facing;
           verdigris::client::present_strike(
-              state.effects, event.actor_id, subject->position,
+              state.effects, event.actor_id,
+              event.has_actor_pose ? event.actor_position : subject->position,
               std::atan2(static_cast<double>(facing.y),
                          static_cast<double>(facing.x)),
               event.text == "sweep", false);
@@ -3751,13 +3960,23 @@ void ingest_events(ClientState& state, const RECT& bounds) {
           state.local_combat_xp += static_cast<long long>(monster_level) * 12;
           WorldActor fallen;
           fallen.id = subject->id;
-          fallen.position = subject->position;
-          fallen.facing = subject->facing;
+          fallen.position = event.has_actor_pose ? event.actor_position : subject->position;
+          fallen.facing = event.has_actor_pose ? event.actor_facing : subject->facing;
           fallen.elite = subject->elite;
           fallen.alive = false;
-          verdigris::client::present_actor_death(state.effects, state.world, fallen);
+          if (verdigris::client::present_actor_death(state.effects, state.world, fallen) &&
+              event.has_actor_pose && (fallen.facing.x != 0 || fallen.facing.y != 0)) {
+            for (auto& effect : state.effects) {
+              if (effect.kind == EffectFx::Kind::ActorFall && effect.actor_id == fallen.id) {
+                effect.angle = std::atan2(static_cast<double>(fallen.facing.y),
+                                          static_cast<double>(fallen.facing.x));
+                break;
+              }
+            }
+          }
         }
-        if (subject) state.last_death_pos = subject->position;
+        if (event.has_actor_pose) state.last_death_pos = event.actor_position;
+        else if (subject) state.last_death_pos = subject->position;
         add_effect(state, {EffectFx::Kind::DeathRing, ex, ey, 0.0, 0, 12});
         add_effect(state, {EffectFx::Kind::Dust, ex, ey, 0.7, 0, 10});
         break;
@@ -9278,8 +9497,15 @@ constexpr RasterDirectionalClip kHeroWalkClips[] = {
 constexpr RasterDirectionalClip kHeroStrikeClips[] = {
     {"se", 6, 1, 1}, {"sw", 6, -1, 1}, {"nw", 6, -1, -1}, {"ne", 6, 1, -1}};
 
+constexpr RasterDirectionalClip kRaiderWalkClips[] = {
+    {"sw", 8, -1, 1}, {"ne", 6, 1, -1}, {"nw", 8, -1, -1}};
+
 int raster_walk_frames(const char* family, const std::string& direction) {
-  if (std::strcmp(family, "raider") == 0 && direction == "sw") return 8;
+  if (std::strcmp(family, "raider") == 0) {
+    for (const auto& clip : kRaiderWalkClips)
+      if (direction == clip.direction) return clip.frames;
+    return 0;
+  }
   if (std::strcmp(family, "hero") != 0) return 0;
   for (const auto& clip : kHeroWalkClips)
     if (direction == clip.direction) return clip.frames;
@@ -9308,9 +9534,11 @@ void advance_actor_motion(ClientState& state, double dt_ms) {
       // paints every 15 ms. Smoothing each unchanged presentation sample
       // toward zero delayed the first walk pose despite actual travel. Begin
       // on confirmed movement immediately; smooth only the stopping tail.
-      if (moved > 0.5)
+      if (moved > 0.5) {
         motion.moving = 1.0;
-      else
+        motion.travel_direction = {dx < 0 ? -1 : dx > 0 ? 1 : 0,
+                                   dy < 0 ? -1 : dy > 0 ? 1 : 0};
+      } else
         motion.moving *= 1.0 - std::min(1.0, dt_ms / 120.0);
     }
     motion.last_pos = pos;
@@ -9572,19 +9800,17 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                       std::string("held-world:") + vector_art::held_label(held)});
         draw_contact_shadow(dc, base, kTileUnits * 0.42);
         draw_team_ring(dc, base, kTileUnits * 0.32, RGB(170, 183, 145));
-        // Strike lunge: while a swing effect is alive the body steps into
-        // the blow along the facing and recovers - a half-sine over the
-        // arc's lifetime, sub-tick smoothed so 60 fps rendering reads it
-        // as motion rather than three poses. The same phase drives the
-        // rig's arm swing.
+        // The authored strike supplies its own body motion at a shared feet
+        // pivot. Its resolved direction outlives later aim commands.
         double attack_phase = -1.0;
+        double actor_facing_x = player.facing.x;
+        double actor_facing_y = player.facing.y;
         if (const auto* strike = verdigris::client::actor_strike(state.effects, player.id)) {
           const auto& fx = *strike;
           const double phase = verdigris::client::strike_phase(fx, state.tick_accum_ms / 50.0);
           attack_phase = phase;
-          const double push = std::sin(phase * kPi) * kTileUnits * 0.28;
-          base.x += static_cast<int>(std::cos(fx.angle) * push * base.scale);
-          base.y += static_cast<int>(std::sin(fx.angle) * push * base.scale);
+          actor_facing_x = std::cos(fx.angle);
+          actor_facing_y = std::sin(fx.angle);
         }
         {
           const auto& motion = state.motions["player"];
@@ -9597,8 +9823,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
           pose.mirror = player.facing.x < 0;
           const int height = std::max(10, static_cast<int>(kTileUnits * 1.75 * base.scale));
           std::string raster_pose;
-          if (draw_raster_actor(dc, "hero", base, height, player.facing.x,
-                                player.facing.y, attack_phase, motion.moving,
+          if (draw_raster_actor(dc, "hero", base, height, actor_facing_x,
+                                actor_facing_y, attack_phase, motion.moving,
                                 motion.walk_phase, &raster_pose)) {
             rl.push_back({render::Op::Hud, static_cast<double>(base.x),
                           static_cast<double>(base.y), 0.0, 0, "raster:player"});
@@ -9634,21 +9860,21 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         const auto& monster = world.monsters[entry.index];
         ScreenPoint base =
             project(state.camera, bounds, monster.position.x, monster.position.y);
-        // Presentation-only combat body language, derived entirely from
-        // authoritative positions and events: a windup lean away from the
-        // player while its telegraph runs, a lunge into the player when a
-        // strike lands, and sprite mirroring toward the player.
+        // Committed actions retain the warning/contact direction even when
+        // the player dodges around them. Travel has its own direction below.
         const double to_player_x =
             static_cast<double>(world.player.position.x - monster.position.x);
         const double to_player_y =
             static_cast<double>(world.player.position.y - monster.position.y);
-        const double to_player_len = std::max(
-            1.0, std::sqrt(to_player_x * to_player_x + to_player_y * to_player_y));
         const int mirror_x = to_player_x < 0.0 ? -1 : 1;
+        double action_x = to_player_x;
+        double action_y = to_player_y;
         double monster_attack_phase = -1.0;
         {
           const auto telegraph = state.telegraphs.find(monster.id);
           if (telegraph != state.telegraphs.end()) {
+            action_x = telegraph->second.facing.x;
+            action_y = telegraph->second.facing.y;
             const double windup = std::clamp(
                 (static_cast<double>(world.tick - telegraph->second.start_tick) +
                  state.tick_accum_ms / 50.0) /
@@ -9656,13 +9882,10 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                 0.0, 1.0);
             // The warning owns preparation; only confirmation may show contact.
             monster_attack_phase = std::min(windup * 0.5, 0.499999);
-            const double lean = windup * kTileUnits * 0.14;
-            base.x -= static_cast<int>(to_player_x / to_player_len * lean *
-                                       base.scale);
-            base.y -= static_cast<int>(to_player_y / to_player_len * lean *
-                                       base.scale);
           }
           if (const auto* strike = verdigris::client::actor_strike(state.effects, monster.id)) {
+            action_x = std::cos(strike->angle);
+            action_y = std::sin(strike->angle);
             monster_attack_phase = verdigris::client::strike_phase(
                 *strike, state.tick_accum_ms / 50.0);
           } else if (monster_attack_phase < 0.0) {
@@ -9674,13 +9897,14 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                   (static_cast<double>(world.tick - hit->second) +
                    state.tick_accum_ms / 50.0) / 4.0;
               if (recovery < 1.0) monster_attack_phase = 0.5 + recovery * 0.5;
+              if (recovery < 1.0) {
+                action_x = monster.facing.x;
+                action_y = monster.facing.y;
+              }
             }
           }
-          if (monster_attack_phase >= 0.5 && monster_attack_phase < 1.0) {
-            const double push = std::sin(monster_attack_phase * kPi) * kTileUnits * 0.4;
-            base.x += static_cast<int>(to_player_x / to_player_len * push * base.scale);
-            base.y += static_cast<int>(to_player_y / to_player_len * push * base.scale);
-          }
+          // Authored poses already contain anticipation and follow-through.
+          // Keep their shared ground anchor at the authoritative position.
         }
         rl.push_back({render::Op::Monster, static_cast<double>(base.x),
                       static_cast<double>(base.y), 0.0, monster.life,
@@ -9710,7 +9934,12 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
               std::max(10, static_cast<int>(foe_height * base.scale));
           const char* family = verdigris::client::monster_art_family(monster, world);
           std::string raster_pose;
-          if (draw_raster_actor(dc, family, base, rig_h, to_player_x, to_player_y,
+          // Walk along actual travel, including detours around scenery. A
+          // pursuer must not slide sideways while its body tracks the player.
+          const bool walking = motion_it.moving > 0.20 && monster_attack_phase < 0.0;
+          const double facing_x = walking ? motion_it.travel_direction.x : action_x;
+          const double facing_y = walking ? motion_it.travel_direction.y : action_y;
+          if (draw_raster_actor(dc, family, base, rig_h, facing_x, facing_y,
                                monster_attack_phase, motion_it.moving,
                                motion_it.walk_phase, &raster_pose)) {
             rl.push_back({render::Op::Hud, static_cast<double>(base.x),
@@ -10627,27 +10856,7 @@ constexpr double kActorColliderRadius =
 
 bool scenery_blocks_segment(const ClientState& state, verdigris::Vec2 from,
                             verdigris::Vec2 to) {
-  for (const SceneryItem& item : state.scenery) {
-    if (!item.solid) continue;
-    const double segment_x = static_cast<double>(to.x - from.x);
-    const double segment_y = static_cast<double>(to.y - from.y);
-    const double length_squared = segment_x * segment_x + segment_y * segment_y;
-    const double to_center_x = static_cast<double>(item.position.x - from.x);
-    const double to_center_y = static_cast<double>(item.position.y - from.y);
-    const double projection = length_squared > 0.0
-                                  ? std::clamp((to_center_x * segment_x +
-                                                to_center_y * segment_y) /
-                                                   length_squared,
-                                               0.0, 1.0)
-                                  : 0.0;
-    const double closest_x = static_cast<double>(from.x) + segment_x * projection;
-    const double closest_y = static_cast<double>(from.y) + segment_y * projection;
-    const double dx = closest_x - static_cast<double>(item.position.x);
-    const double dy = closest_y - static_cast<double>(item.position.y);
-    const double minimum = item.radius + kActorColliderRadius;
-    if (dx * dx + dy * dy < minimum * minimum) return true;
-  }
-  return false;
+  return verdigris::navigation_segment_blocked(scenery_navigation(state), from, to);
 }
 
 bool movement_hits_scenery(const ClientState& state, int dx, int dy,
@@ -10755,13 +10964,13 @@ void fixed_game_tick(ClientState& state, const RECT& bounds) {
   if (state.screen_pulse_ticks > 0) --state.screen_pulse_ticks;
   if (state.session) {
     sync_world(state);
-    ingest_session_events(state);
     update_screen_for_model(state);
     watch_crypt_statuses(state);
     // Regenerate landmark scenery whenever the authoritative scene changes
     // (login included - transition envelopes never fire for the first town).
-    const std::string& scene = state.session->model().player.scene_id;
-    if (!scene.empty() && scene != state.scenery_scene) {
+    const auto& model = state.session->model();
+    const std::string& scene = model.player.scene_id.empty() ? model.scene.id : model.player.scene_id;
+    if (scene != state.scenery_scene) {
       state.scenery_scene = scene;
       generate_scenery(state);
     }
@@ -10795,12 +11004,10 @@ void fixed_game_tick(ClientState& state, const RECT& bounds) {
     }
   } else if (state.simulation) {
     if (moving && !movement_hits_scenery(state, dx, dy)) {
-      state.simulation->dispatch(verdigris::Command::move(dx, dy));
+      submit_move(state, dx, dy);
       if (state.aim_direction_initialized)
-        state.simulation->dispatch(verdigris::Command::aim(
-            state.last_aim_direction.x, state.last_aim_direction.y));
+        submit_aim(state, state.last_aim_direction.x, state.last_aim_direction.y);
     } else {
-      state.simulation->dispatch(verdigris::Command::action_use(verdigris::ActionType::Wait));
       if (moving && state.hint_ticks == 0) show_hint(state, "Blocked by scenery");
     }
   }
@@ -10811,6 +11018,20 @@ void fixed_game_tick(ClientState& state, const RECT& bounds) {
   }
   state.was_moving = moving;
 
+  if (state.session) {
+    state.session->advance_fixed_tick();
+    sync_world(state);
+    const auto& model = state.session->model();
+    const std::string& scene = model.player.scene_id.empty() ? model.scene.id : model.player.scene_id;
+    if (scene != state.scenery_scene) {
+      state.scenery_scene = scene;
+      generate_scenery(state);
+    }
+    ingest_session_events(state);
+  } else if (state.simulation) {
+    state.simulation->dispatch_tick(state.pending_local_commands);
+    state.pending_local_commands.clear();
+  }
   ingest_events(state, bounds);
 
   if (state.hint_ticks > 0) --state.hint_ticks;
@@ -11225,7 +11446,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
           state->selected_item = std::min(count - 1, state->selected_item + 1);
         if (wparam == VK_RETURN) equip_selected(*state);
         if (wparam == 'U' && state->simulation) {
-          state->simulation->dispatch(verdigris::Command::unequip());
+          queue_local_command(*state, verdigris::Command::unequip());
           show_hint(*state, "Weapon unequipped");
         }
       }
@@ -11515,6 +11736,80 @@ std::unordered_map<std::string, std::pair<double, double>> tile_screen_by_label(
   return positions;
 }
 
+bool scenario_wait_for_melee_contact(ClientState& state) {
+  auto* sim = state.simulation.get();
+  std::string target_id;
+  for (const auto& actor : sim->actors())
+    if (actor.kind == verdigris::ActorKind::Monster && actor.alive) {
+      target_id = actor.id;
+      break;
+    }
+  if (target_id.empty()) return false;
+  for (int tick = 0; tick < 240; ++tick) {
+    const auto* player = sim->actor(sim->scion().actor_id);
+    const auto* target = sim->actor(target_id);
+    if (!player || !player->alive || !target || !target->alive) return false;
+    if (verdigris::manhattan_distance(player->position, target->position) <=
+            verdigris::world_scale::kMeleeRange &&
+        !sim->movement_blocked(player->position, target->position)) return true;
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+  }
+  return false;
+}
+
+// Only needed by loot-to-bank's carry/exit assertions. This replaces that
+// scenario's call to the old driver that moved enemies and set their life=1.
+bool scenario_clear_pack_with_commands(ClientState& state) {
+  auto* sim = state.simulation.get();
+  for (int tick = 0; tick < 240; ++tick) {
+    const auto* player = sim->actor(sim->scion().actor_id);
+    if (!player || !player->alive) return false;
+    const verdigris::Actor* target = nullptr;
+    int nearest = std::numeric_limits<int>::max();
+    for (const auto& actor : sim->actors()) {
+      if (actor.kind != verdigris::ActorKind::Monster || !actor.alive) continue;
+      const int distance = verdigris::manhattan_distance(player->position, actor.position);
+      if (distance < nearest) {
+        nearest = distance;
+        target = &actor;
+      }
+    }
+    if (!target) {
+      if (sim->pending_wave().empty())
+        return sim->instance().phase == verdigris::ExpeditionPhase::ExtractCarriedValue;
+      scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+    } else if (sim->movement_blocked(player->position, target->position)) {
+      // Existing pursuit finds the visible approach; do not move through a prop.
+      scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+    } else if (nearest <= verdigris::world_scale::kMeleeRange) {
+      scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
+    } else {
+      // Close the elite's longer thrust band rather than waiting outside our
+      // own weapon range while its committed attacks repeatedly resolve.
+      scenario_step(state, verdigris::Command::move(
+          target->position.x - player->position.x, target->position.y - player->position.y));
+    }
+  }
+  return false;
+}
+
+bool scenario_return_to_extraction_with_commands(ClientState& state) {
+  auto* sim = state.simulation.get();
+  for (int tick = 0; tick < 240; ++tick) {
+    const auto* player = sim->actor(sim->scion().actor_id);
+    if (!player || !player->alive) return false;
+    const auto goal = sim->instance().extraction_point;
+    if (verdigris::manhattan_distance(player->position, goal) <=
+        verdigris::world_scale::kExtractionRange) return true;
+    const auto before = player->position;
+    scenario_step(state, verdigris::Command::move(goal.x - before.x, goal.y - before.y));
+    player = sim->actor(sim->scion().actor_id);
+    if (player->position.x == before.x && player->position.y == before.y) return false;
+  }
+  return false;
+}
+
+
 int scenario_move_and_camera() {
   ClientState state;
   scenario_begin(state);
@@ -11774,8 +12069,9 @@ int scenario_first_fight() {
                    "first-fight: town wardens are not hip-to-foot crates");
   }
 
-  for (int i = 0; i < 52; ++i)
-    scenario_step(state, verdigris::Command::move(1, 0));
+  const bool melee_contact_ready = scenario_wait_for_melee_contact(state);
+  scenario_check(melee_contact_ready, "first-fight: real pursuit reaches clear melee contact");
+  if (!melee_contact_ready) return scenario_failures;
 
   bool saw_swing = false, saw_damage = false, saw_death = false, saw_drop = false;
   for (int i = 0; i < 10 && !saw_death; ++i) {
@@ -11801,8 +12097,9 @@ bool reference_present(ClientState& state, int width, int height,
 int scenario_combat_audio() {
   ClientState state;
   scenario_begin(state);
-  for (int i = 0; i < 52; ++i)
-    scenario_step(state, verdigris::Command::move(1, 0));
+  const bool melee_contact_ready = scenario_wait_for_melee_contact(state);
+  scenario_check(melee_contact_ready, "combat-audio: real pursuit reaches clear melee contact");
+  if (!melee_contact_ready) return scenario_failures;
   for (int i = 0; i < 10; ++i)
     scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
   bool heard_hit = false;
@@ -12160,8 +12457,9 @@ int scenario_xp_meter() {
 int scenario_loot_to_bank() {
   ClientState state;
   scenario_begin(state);
-  for (int i = 0; i < 52; ++i)
-    scenario_step(state, verdigris::Command::move(1, 0));
+  const bool melee_contact_ready = scenario_wait_for_melee_contact(state);
+  scenario_check(melee_contact_ready, "loot-to-bank: real pursuit reaches clear melee contact");
+  if (!melee_contact_ready) return scenario_failures;
   for (int i = 0; i < 8; ++i)
     scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
   scenario_check(render::any(state.render_list, render::Op::Drop),
@@ -12329,7 +12627,7 @@ int scenario_loot_to_bank() {
   // TASK-0153: the strip is phase-truthful now, so this journey must actually
   // finish the slay leg (through the same paced real pipeline) before the
   // carry-to-exit guidance is the authoritative thing to say.
-  drive_to_extraction_phase(state);
+  scenario_check(scenario_clear_pack_with_commands(state), "loot-to-bank: ordinary commands clear the remaining real pack");
 
   bool objective_carries = false;
   {
@@ -12344,8 +12642,7 @@ int scenario_loot_to_bank() {
                  "loot-to-bank: objective strip points at the EXIT while carrying");
 
   state.gear_overlay = false;
-  for (int i = 0; i < 52; ++i)
-    scenario_step(state, verdigris::Command::move(-1, 0));
+  scenario_check(scenario_return_to_extraction_with_commands(state), "loot-to-bank: movement reaches the actual extraction band");
   scenario_step(state, verdigris::Command::extract());
   scenario_check(state.simulation->house().stored_items.size() == 1,
                  "loot-to-bank: extraction banks the item");
@@ -12451,8 +12748,9 @@ int scenario_telegraph_dodge() {
 int scenario_combat_juice() {
   ClientState state;
   scenario_begin(state);
-  for (int i = 0; i < 52; ++i)
-    scenario_step(state, verdigris::Command::move(1, 0));
+  const bool melee_contact_ready = scenario_wait_for_melee_contact(state);
+  scenario_check(melee_contact_ready, "combat-juice: real pursuit reaches clear melee contact");
+  if (!melee_contact_ready) return scenario_failures;
 
   // Melee until the monster dies, watching for the target flash + number.
   bool saw_target_flash = false, saw_damage = false, saw_death = false;
@@ -12464,6 +12762,7 @@ int scenario_combat_juice() {
   }
   scenario_check(saw_target_flash, "combat-juice: target sprite flashes on the hit");
   scenario_check(saw_damage, "combat-juice: a floating damage number is spawned");
+  scenario_check(saw_death, "combat-juice: real killing blow precedes the number lifetime check");
 
   const std::string dir = art_wave_capture_dir();
   if (dir.empty()) {
@@ -14788,13 +15087,50 @@ int scenario_pad_path() {
   scenario_check(state.world.player.position.x > before.x,
                  "pad-path: left stick moves the Scion");
 
-  for (int i = 0; i < 40; ++i) fixed_game_tick(state, bounds);
+  // Pursuers no longer wait at the historical 64-walk-tick coordinate.
+  // Keep walking through the real pad path until authority confirms contact.
+  const std::string player_id = state.simulation->scion().actor_id;
+  std::string target_id;
+  for (int i = 0; i < 80 && target_id.empty(); ++i) {
+    const auto* player = state.simulation->actor(player_id);
+    if (!player || !player->alive) break;
+    for (const auto& actor : state.simulation->actors()) {
+      if (actor.kind != verdigris::ActorKind::Monster || !actor.alive) continue;
+      const int distance = std::abs(actor.position.x - player->position.x) +
+                           std::abs(actor.position.y - player->position.y);
+      if (distance <= verdigris::world_scale::kMeleeRange &&
+          !state.simulation->movement_blocked(player->position, actor.position)) {
+        target_id = actor.id;
+        break;
+      }
+    }
+    if (target_id.empty()) fixed_game_tick(state, bounds);
+  }
   state.pad.dx = 0;
+  scenario_check(!target_id.empty(), "pad-path: real controller travel reaches a live melee target");
+  if (target_id.empty()) return scenario_failures;
+  const int target_life = state.simulation->actor(target_id)->stats.life;
+  const auto tick_before = state.simulation->tick();
+  const auto event_begin = state.simulation->events().size();
+  const POINT mouse_before = state.mouse;
   state.pad.a = true;
   fixed_game_tick(state, bounds);
   scenario_present(state);
-  scenario_check(render::any(state.render_list, render::Op::Swing) ||
-                     render::any(state.render_list, render::Op::Damage),
+  bool owned_start = false;
+  bool owned_damage = false;
+  const auto& events = state.simulation->events();
+  for (std::size_t i = event_begin; i < events.size(); ++i) {
+    const auto& event = events[i];
+    if (event.type == verdigris::EventType::AttackStarted && event.actor_id == player_id)
+      owned_start = true;
+    if (event.type == verdigris::EventType::DamageApplied && event.actor_id == target_id &&
+        event.value > 0 && owned_start) owned_damage = true;
+  }
+  scenario_check(state.simulation->tick() == tick_before + 1 && owned_start && owned_damage &&
+                     state.simulation->actor(target_id)->stats.life < target_life &&
+                     verdigris::client::actor_strike(state.effects, player_id) != nullptr &&
+                     render::any(state.render_list, render::Op::Swing) &&
+                     state.mouse.x == mouse_before.x && state.mouse.y == mouse_before.y,
                  "pad-path: A is strike, not a synthetic mouse click");
   state.pad.a = false;
 
@@ -15248,8 +15584,9 @@ int scenario_visual_target() {
   scenario_begin(state);
   // VG-ART-005: the composition sheet is a live expedition with a held
   // weapon. A paper-doll seat or an unarmed crate cannot certify.
-  for (int i = 0; i < 52; ++i)
-    scenario_step(state, verdigris::Command::move(1, 0));
+  const bool melee_contact_ready = scenario_wait_for_melee_contact(state);
+  scenario_check(melee_contact_ready, "visual-target: real pursuit reaches clear melee contact");
+  if (!melee_contact_ready) return scenario_failures;
   for (int i = 0; i < 8; ++i)
     scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
   if (state.simulation && !state.simulation->ground_items().empty())
@@ -16279,8 +16616,9 @@ int scenario_equipment() {
   scenario_check(pending && !ok,
                  "equipment: live HUD cannot pretend a rejected request succeeded");
 
-  for (int i = 0; i < 52; ++i)
-    scenario_step(state, verdigris::Command::move(1, 0));
+  const bool melee_contact_ready = scenario_wait_for_melee_contact(state);
+  scenario_check(melee_contact_ready, "equipment: real pursuit reaches clear melee contact");
+  if (!melee_contact_ready) return scenario_failures;
   for (int i = 0; i < 8; ++i)
     scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
   if (!state.simulation->ground_items().empty())
@@ -17086,8 +17424,9 @@ int scenario_strike_contact() {
   for (const auto& clip : kHeroStrikeClips) {
     ClientState equipped;
     scenario_begin(equipped);
-    for (int i = 0; i < 52; ++i)
-      scenario_step(equipped, verdigris::Command::move(1, 0));
+    const bool melee_contact_ready = scenario_wait_for_melee_contact(equipped);
+    scenario_check(melee_contact_ready, "strike-contact: real pursuit reaches clear melee contact");
+    if (!melee_contact_ready) return scenario_failures;
     for (int i = 0; i < 8; ++i)
       scenario_step(equipped, verdigris::Command::action_use(verdigris::ActionType::Melee));
     if (!equipped.simulation->ground_items().empty())
@@ -18564,8 +18903,9 @@ int scenario_held_item() {
 
   ClientState state;
   scenario_begin(state);
-  for (int i = 0; i < 52; ++i)
-    scenario_step(state, verdigris::Command::move(1, 0));
+  const bool melee_contact_ready = scenario_wait_for_melee_contact(state);
+  scenario_check(melee_contact_ready, "held-item: real pursuit reaches clear melee contact");
+  if (!melee_contact_ready) return scenario_failures;
   for (int i = 0; i < 8; ++i)
     scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
   if (!state.simulation->ground_items().empty())
@@ -18680,8 +19020,9 @@ int scenario_pack_drag() {
 
   ClientState state;
   scenario_begin(state);
-  for (int i = 0; i < 52; ++i)
-    scenario_step(state, verdigris::Command::move(1, 0));
+  const bool melee_contact_ready = scenario_wait_for_melee_contact(state);
+  scenario_check(melee_contact_ready, "pack-drag: real pursuit reaches clear melee contact");
+  if (!melee_contact_ready) return scenario_failures;
   for (int i = 0; i < 8; ++i)
     scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
   if (!state.simulation->ground_items().empty())
@@ -19360,6 +19701,7 @@ int scenario_raster_feedback() {
   std::string error;
   scenario_check(seam_session->start(&error), "raster-feedback: session fixture starts");
   seam_session->submit(verdigris::client::ClientCommand::enter_zone("route:tin:1:0"));
+  seam_session->advance_fixed_tick();
   auto* seam_sim = seam_session->simulation_for_scenarios();
   auto* seam_player = seam_sim->actor(seam_sim->scion().actor_id);
   seam_player->position = {0, 0};
@@ -19376,6 +19718,7 @@ int scenario_raster_feedback() {
   if (before_dead == seam_state.event_world.monsters.end()) return scenario_failures;
   const auto corpse_position = before_dead->position;
   seam_session->submit(verdigris::client::ClientCommand::use_action("melee"));
+  seam_session->advance_fixed_tick();
   seam_session->poll();
   sync_world(seam_state);
   seam_state.camera.x = corpse_position.x;
@@ -19579,8 +19922,8 @@ int scenario_raider_motion() {
   const std::string dir = art_wave_capture_dir();
   scenario_check(!dir.empty(), "raider-motion: capture root accepted");
   if (dir.empty()) return scenario_failures;
-  // Asset-review fixture only: Simulation::enemy_turn faces/attacks but does
-  // not pursue, and MoveIntent only addresses the scion. Preserve the original
+  // Historical asset-review fixture only; real pursuit is tested separately.
+  // Keep its explicitly scripted frames distinct from the original
   // failed raider-motion-sw.csv/PNGs by writing separate scripted filenames.
   std::printf("    raider-motion: SCRIPTED asset-review positions; this does not "
               "verify enemy AI pursuit or navigation.\n");
@@ -19627,7 +19970,7 @@ int scenario_raider_motion() {
   state.camera.x = origin.x - 200;
   state.camera.y = origin.y + 200;
   advance_actor_motion(state, 0.0);
-  const RECT bounds{0, 0, 960, 600};
+
   std::ofstream trace(dir + "\\raider-scripted-motion-sw.csv");
   scenario_check(trace.good(), "raider-motion: scripted asset-review trace opened");
   if (!trace.good()) return scenario_failures;
@@ -19644,10 +19987,10 @@ int scenario_raider_motion() {
     state.tick_accum_ms += 15.0;
     while (state.tick_accum_ms >= verdigris::kSimulationTickMs) {
       state.tick_accum_ms -= verdigris::kSimulationTickMs;
-      fixed_game_tick(state, bounds);
+      // Presentation-only historical fixture; native-pursuit covers real authority.
       auto* actor = state.simulation->actor(id);
       scenario_check(actor && actor->alive,
-                     "raider-motion: scripted actor survives the fixed tick");
+                     "raider-motion: scripted actor remains available at the next sample");
       if (!actor || !actor->alive) return scenario_failures;
       if (scripted_ticks < kScriptedTicks) {
         const verdigris::Vec2 next{actor->position.x + delta.x,
@@ -19710,8 +20053,557 @@ int scenario_raider_motion() {
   return scenario_failures;
 }
 
-// Paint real fullscreen 32bpp frames through production paint_scene. Retain
-// the 40 ms limit and print the measured cost so regressions stay visible.
+// This fixture assigns actor positions only during setup. Every subsequent
+// displacement, contact and timer comes from production fixed_game_tick.
+int scenario_native_pursuit() {
+  const std::string dir = art_wave_capture_dir();
+  scenario_check(!dir.empty(), "native-pursuit: capture root accepted");
+  if (dir.empty()) return scenario_failures;
+  const RECT bounds{0, 0, 1366, 768};
+  auto isolate_existing = [](verdigris::Simulation& sim) {
+    int index = 0;
+    for (const auto& actor : sim.actors()) {
+      if (actor.kind != verdigris::ActorKind::Monster) continue;
+      // Setup only: existing wardens stay alive and keep their ordinary stats.
+      sim.actor(actor.id)->position = {-10000 - index * 300, -10000};
+      ++index;
+    }
+  };
+  auto painted_pose = [](const ClientState& state, const std::string& id) {
+    const std::string prefix = "raster:monster-pose:" + id + ":";
+    for (const auto& item : state.render_list)
+      if (item.label.rfind(prefix, 0) == 0) return item.label.substr(prefix.size());
+    return std::string{};
+  };
+
+  auto run_route = [&](const RasterDirectionalClip* clip) {
+    const bool detour = clip == nullptr;
+    const std::string name = detour ? "tree-detour" : clip->direction;
+    const std::string label = "native-pursuit " + name + ": ";
+    ClientState state;
+    scenario_begin(state);
+    state.pad.inject = true;
+    state.pad.connected = false;
+    // Consume the real entry event before fixture placement so spawn-relative
+    // dressing and navigation cannot be regenerated midway through the route.
+    ingest_events(state, bounds);
+    auto& sim = *state.simulation;
+    isolate_existing(sim);
+    const std::string player_id = sim.scion().actor_id;
+    const verdigris::Vec2 destination = detour ? verdigris::Vec2{500, -100}
+                                               : verdigris::Vec2{3000, 3000};
+    const verdigris::Vec2 origin = detour ? verdigris::Vec2{0, -100}
+        : verdigris::Vec2{destination.x - clip->dx * 400,
+                         destination.y - clip->dy * 400};
+    sim.actor(player_id)->position = destination;
+    const std::string id = sim.spawn_monster(origin, 1, false);
+    const int initial_life = sim.actor(player_id)->stats.life;
+    const std::size_t scenery_count = state.scenery.size();
+    const std::size_t obstacle_count = sim.navigation_obstacles().size();
+    if (detour) {
+      const bool tree_exists = std::any_of(state.scenery.begin(), state.scenery.end(),
+          [](const SceneryItem& item) {
+            return item.kind == SceneryKind::Tree && item.solid &&
+                   item.position.x == 260 && item.position.y == -100;
+          });
+      scenario_check(tree_exists && sim.movement_blocked(origin, destination) &&
+                         scenery_blocks_segment(state, origin, destination),
+                     (label + "existing solid tree blocks the direct route").c_str());
+    } else {
+      scenario_check(!sim.movement_blocked(origin, destination) &&
+                         !scenery_blocks_segment(state, origin, destination),
+                     (label + "open review route preserves existing collision").c_str());
+    }
+    sync_world(state);
+    state.camera.x = (origin.x + destination.x) * 0.5;
+    state.camera.y = (origin.y + destination.y) * 0.5;
+    advance_actor_motion(state, 0.0);
+    scenario_check(reference_present(state, 1366, 768,
+                       dir + "\\native-pursuit-" + name + "-start.png"),
+                   (label + "initial production view saved").c_str());
+    std::ofstream csv(dir + "\\native-pursuit-" + name + ".csv");
+    scenario_check(csv.good(), (label + "trace opened").c_str());
+    if (!csv.good()) return;
+    csv << "time_ms,core_tick,x,y,player_life,moving,phase,pose,pursuit_events,"
+           "segments_clear,capture\n";
+    std::size_t event_cursor = sim.events().size();
+    std::unordered_set<std::string> seen, captured;
+    int first_travel = -1;
+    int first_walk = -1;
+    int contact_frame = -1;
+    int pursuit_events = 0;
+    int movement_steps = 0;
+    bool clear_segments = true;
+    bool clock_exact = true;
+    bool stopped_after_contact = true;
+    bool contact_has_attacker = false;
+    bool contact_has_damage = false;
+    bool mid_saved = false;
+    int maximum_lateral = 0;
+    verdigris::Vec2 contact_position{};
+    bool all_paints = true;
+    for (int frame = 0; frame < 800; ++frame) {
+      const auto previous = sim.actor(id)->position;
+      state.tick_accum_ms += 15.0;
+      while (state.tick_accum_ms >= verdigris::kSimulationTickMs) {
+        state.tick_accum_ms -= verdigris::kSimulationTickMs;
+        const auto before_tick = sim.tick();
+        const auto before_step = sim.actor(id)->position;
+        fixed_game_tick(state, bounds);
+        clock_exact &= sim.tick() == before_tick + 1;
+        const auto after_step = sim.actor(id)->position;
+        if (before_step.x != after_step.x || before_step.y != after_step.y) {
+          ++movement_steps;
+          clear_segments &= !sim.movement_blocked(before_step, after_step) &&
+                            !scenery_blocks_segment(state, before_step, after_step);
+        }
+        bool attacker_this_tick = false;
+        const auto& events = sim.events();
+        for (; event_cursor < events.size(); ++event_cursor) {
+          const auto& event = events[event_cursor];
+          if (event.type == verdigris::EventType::ActorMoved &&
+              event.actor_id == id && event.text == "pursuit") ++pursuit_events;
+          if (event.type == verdigris::EventType::AttackStarted && event.actor_id == id)
+            attacker_this_tick = true;
+          if (event.type == verdigris::EventType::DamageApplied &&
+              event.actor_id == player_id && event.value > 0 && attacker_this_tick) {
+            contact_has_attacker = true;
+            contact_has_damage = true;
+          }
+        }
+      }
+      const auto position = sim.actor(id)->position;
+      const bool travelled = position.x != previous.x || position.y != previous.y;
+      if (travelled && first_travel < 0) first_travel = frame;
+      maximum_lateral = std::max(maximum_lateral, std::abs(position.y - origin.y));
+      if (contact_frame >= 0)
+        stopped_after_contact &= position.x == contact_position.x && position.y == contact_position.y;
+      sync_world(state);
+      advance_actor_motion(state, 15.0);
+      all_paints &= reference_present(state, 1366, 768, "");
+      const std::string pose = painted_pose(state, id);
+      if (pose.rfind("raider_walk", 0) == 0) {
+        seen.insert(pose);
+        if (first_walk < 0) first_walk = frame;
+      }
+      std::string capture;
+      if (clip) {
+        for (int phase = 0; phase < clip->frames; ++phase) {
+          const std::string expected = "raider_walk" + std::to_string(phase) + "_" + clip->direction;
+          if (pose != expected || captured.count(expected)) continue;
+          char suffix[80]{};
+          std::snprintf(suffix, sizeof(suffix), "native-pursuit-%s-walk-%02d.png",
+                        clip->direction, phase);
+          capture = suffix;
+          if (reference_present(state, 1366, 768, dir + "\\" + capture)) captured.insert(expected);
+          else all_paints = false;
+        }
+      } else if (!mid_saved && maximum_lateral >= verdigris::world_scale::kSceneryColliderRadius) {
+        capture = "native-pursuit-tree-detour-mid.png";
+        mid_saved = reference_present(state, 1366, 768, dir + "\\" + capture);
+        all_paints &= mid_saved;
+      }
+      const int life = sim.actor(player_id)->stats.life;
+      if (contact_frame < 0 && life < initial_life && contact_has_attacker && contact_has_damage) {
+        contact_frame = frame;
+        contact_position = position;
+        capture = "native-pursuit-" + name + "-contact.png";
+        all_paints &= reference_present(state, 1366, 768, dir + "\\" + capture);
+      }
+      const auto motion = state.motions.find(id);
+      csv << (frame + 1) * 15 << ',' << sim.tick() << ',' << position.x << ',' << position.y
+          << ',' << life << ',' << (motion == state.motions.end() ? 0.0 : motion->second.moving)
+          << ',' << (motion == state.motions.end() ? 0.0 : motion->second.walk_phase)
+          << ',' << pose << ',' << pursuit_events << ',' << clear_segments << ',' << capture << '\n';
+      if (!sim.scion().alive || (contact_frame >= 0 && frame - contact_frame >= 40)) break;
+    }
+    scenario_check(all_paints, (label + "every 15 ms presentation sample uses production paint").c_str());
+    scenario_check(clock_exact && pursuit_events > 0 && pursuit_events == movement_steps,
+                   (label + "one authority tick emits each real pursuit displacement").c_str());
+    scenario_check(clear_segments && scenery_count == state.scenery.size() &&
+                       obstacle_count == sim.navigation_obstacles().size(),
+                   (label + "every travelled segment respects unchanged shared collision").c_str());
+    if (clip) {
+      bool all_frames = captured.size() == static_cast<std::size_t>(clip->frames);
+      for (int phase = 0; phase < clip->frames; ++phase) {
+        const std::string expected = "raider_walk" + std::to_string(phase) + "_" + clip->direction;
+        all_frames &= seen.count(expected) && captured.count(expected);
+      }
+      scenario_check(all_frames, (label + "real pursuit paints and saves every authored walk phase").c_str());
+      scenario_check(first_travel >= 0 && first_walk == first_travel,
+                     (label + "first confirmed movement immediately paints walking").c_str());
+    } else {
+      scenario_check(maximum_lateral >= verdigris::world_scale::kSceneryColliderRadius && mid_saved,
+                     (label + "authority takes a visible nonstraight route around the actual tree").c_str());
+    }
+    const auto final_position = sim.actor(id)->position;
+    const int final_distance = std::abs(final_position.x - destination.x) +
+                               std::abs(final_position.y - destination.y);
+    const auto motion = state.motions.find(id);
+    scenario_check(contact_frame >= 0 && contact_has_attacker && contact_has_damage &&
+                       final_distance <= verdigris::world_scale::kMeleeRange &&
+                       sim.actor(player_id)->stats.life < initial_life,
+                   (label + "arrival resolves attacker-owned melee and actual player damage").c_str());
+    scenario_check(stopped_after_contact && motion != state.motions.end() &&
+                       motion->second.moving < 0.20 && sim.scion().alive,
+                   (label + "arrival stops travel and settles without inflated player life").c_str());
+  };
+  for (const auto& clip : kRaiderWalkClips) run_route(&clip);
+  run_route(nullptr);
+
+  {
+    ClientState state;
+    scenario_begin(state);
+    state.pad.inject = true;
+    state.pad.connected = false;
+    ingest_events(state, bounds);
+    isolate_existing(*state.simulation);
+    auto* player = state.simulation->actor(state.simulation->scion().actor_id);
+    player->position = {3000, 3000};
+    sync_world(state);
+    state.camera.x = 3000;
+    state.camera.y = 3000;
+    advance_actor_motion(state, 0.0);
+    const auto tick = state.simulation->tick();
+    const auto position = player->position;
+    for (int i = 0; i < 1000; ++i) {
+      submit_move(state, 1, 0);
+      submit_aim(state, i % 2 ? 1 : -1, 0);
+    }
+    scenario_check(state.simulation->tick() == tick && player->position.x == position.x &&
+                       player->position.y == position.y && state.pending_local_commands.size() <= 64,
+                   "native-pursuit: bounded input bursts do not advance authority before a fixed tick");
+    fixed_game_tick(state, bounds);
+    sync_world(state);
+    advance_actor_motion(state, verdigris::kSimulationTickMs);
+    scenario_check(state.simulation->tick() == tick + 1 &&
+                       player->position.x == position.x + verdigris::movement_step_per_tick(player->stats.move_speed) &&
+                       player->position.y == position.y && state.pending_local_commands.empty(),
+                   "native-pursuit: production input batch consumes exactly one tick and movement step");
+    scenario_check(reference_present(state, 1366, 768, dir + "\\native-pursuit-input-batch.png"),
+                   "native-pursuit: bounded input result painted through production");
+    const auto strike_position = player->position;
+    const auto strike_tick = state.simulation->tick();
+    const auto strike_target_id = state.simulation->spawn_monster(
+        {strike_position.x + verdigris::world_scale::kMeleeRange / 2, strike_position.y}, 1, false);
+    const int target_life = state.simulation->actor(strike_target_id)->stats.life;
+    player = state.simulation->actor(state.simulation->scion().actor_id);
+    submit_aim(state, 1, 0);
+    submit_action(state, verdigris::ActionType::Melee, "melee");
+    submit_move(state, 0, -1);
+    submit_aim(state, -1, 0);
+    fixed_game_tick(state, bounds);
+    sync_world(state);
+    const auto* strike = verdigris::client::actor_strike(state.effects, player->id);
+    scenario_check(state.simulation->tick() == strike_tick + 1 &&
+                       player->facing.x == -1 && player->position.y < strike_position.y &&
+                       state.simulation->actor(strike_target_id)->stats.life < target_life &&
+                       strike && std::abs(strike->angle) < 0.0001 &&
+                       strike->wx == strike_position.x && strike->wy == strike_position.y,
+                   "native-pursuit: later movement and aim preserve the event-time east strike pose");
+    scenario_check(reference_present(state, 1366, 768, dir + "\\native-pursuit-committed-strike.png"),
+                   "native-pursuit: committed strike paints through production");
+    const auto ground = project(state.camera, bounds, player->position.x, player->position.y);
+    bool committed_pose_at_ground = false;
+    for (const auto& item : state.render_list)
+      committed_pose_at_ground |= item.label == "raster:pose:hero_strike3_se" &&
+          item.x == ground.x && item.y == ground.y;
+    scenario_check(committed_pose_at_ground,
+                   "native-pursuit: authored strike keeps the resolved direction and shared ground pivot");
+  }
+
+  {
+    ClientState state;
+    state.pad.inject = true;
+    state.pad.connected = false;
+    load_billboards(state.billboards);
+    auto local = std::make_unique<verdigris::client::LocalCoreSession>(0xC011AB1EULL);
+    auto* session = local.get();
+    state.session = std::move(local);
+    scenario_check(session->start(), "native-pursuit: session-only fixture starts");
+    session->submit(verdigris::client::ClientCommand::enter_zone("route:tin:1:0"));
+    session->advance_fixed_tick();
+    sync_world(state);
+    ingest_session_events(state);
+    generate_scenery(state);
+    auto* sim = session->simulation_for_scenarios();
+    isolate_existing(*sim);
+    const auto player_id = sim->scion().actor_id;
+    sim->actor(player_id)->position = {3000, 3000};
+    const auto id = sim->spawn_monster({3400, 2600}, 1, false);
+    session->poll();
+    sync_world(state);
+    ingest_session_events(state);
+    state.camera.x = 3200;
+    state.camera.y = 2800;
+    advance_actor_motion(state, 0.0);
+    const auto tick = sim->tick();
+    const auto before = sim->actor(id)->position;
+    const auto event_cursor = sim->events().size();
+    for (int i = 0; i < 1000; ++i) session->poll();
+    scenario_check(sim->tick() == tick, "native-pursuit: session polling never drives authority");
+    fixed_game_tick(state, bounds);
+    sync_world(state);
+    advance_actor_motion(state, verdigris::kSimulationTickMs);
+    bool pursuit_event = false;
+    for (std::size_t i = event_cursor; i < sim->events().size(); ++i) {
+      const auto& event = sim->events()[i];
+      pursuit_event |= event.type == verdigris::EventType::ActorMoved &&
+                       event.actor_id == id && event.text == "pursuit";
+    }
+    const auto after = sim->actor(id)->position;
+    const auto mirrored = std::find_if(state.world.monsters.begin(), state.world.monsters.end(),
+        [&](const WorldActor& actor) { return actor.id == id; });
+    scenario_check(!state.simulation && sim->tick() == tick + 1 && pursuit_event &&
+                       after.x < before.x && after.y > before.y &&
+                       !sim->movement_blocked(before, after),
+                   "native-pursuit: session-only idle fixed tick advances real collision-checked pursuit");
+    scenario_check(state.world.player.id == player_id && state.world.player.position.x == 3000 &&
+                       state.world.player.position.y == 3000 && mirrored != state.world.monsters.end() &&
+                       mirrored->position.x == after.x && mirrored->position.y == after.y,
+                   "native-pursuit: local session mirror preserves actor identity and actual world coordinates");
+    scenario_check(reference_present(state, 1366, 768, dir + "\\native-pursuit-session-idle.png"),
+                   "native-pursuit: session-only idle pursuit paints through production");
+    session->shutdown();
+  }
+  {
+    ClientState state;
+    state.pad.inject = true;
+    state.pad.connected = false;
+    load_billboards(state.billboards);
+    auto local = std::make_unique<verdigris::client::LocalCoreSession>(0xC011AB1EULL);
+    auto* session = local.get();
+    state.session = std::move(local);
+    session->start();
+    session->submit(verdigris::client::ClientCommand::enter_zone("route:tin:1:0"));
+    fixed_game_tick(state, bounds);
+    auto* sim = session->simulation_for_scenarios();
+    const auto entry_tick = sim->tick();
+    scenario_check(session->model().player.scene_id == "route:tin:1:0" &&
+                       state.scenery_scene == "route:tin:1:0" && !sim->navigation_obstacles().empty(),
+                   "native-pursuit: session route publication installs current scenery before the next pursuit step");
+    const auto anchors = session->navigation_anchors();
+    scenario_check(std::all_of(anchors.begin(), anchors.end(), [&](verdigris::Vec2 at) {
+                       return !sim->movement_blocked(at, at);
+                     }), "native-pursuit: installed route keeps current and owed authority anchors clear");
+    session->submit(verdigris::client::ClientCommand::extract());
+    fixed_game_tick(state, bounds);
+    scenario_check(sim->tick() == entry_tick + 1 && !sim->instance().active &&
+                       session->model().player.scene_id.empty() &&
+                       state.scenery_scene == "surface" && sim->navigation_obstacles().empty(),
+                   "native-pursuit: production retirement clears route collision despite surface dressing");
+    session->submit(verdigris::client::ClientCommand::enter_zone("route:tin:1:0"));
+    fixed_game_tick(state, bounds);
+    scenario_check(sim->tick() == entry_tick + 2 && sim->instance().active &&
+                       state.scenery_scene == "route:tin:1:0" && !sim->navigation_obstacles().empty(),
+                   "native-pursuit: re-entry installs fresh local geometry through the actual scene watcher");
+    sync_world(state);
+    advance_actor_motion(state, 0.0);
+    state.camera.x = state.world.player.position.x;
+    state.camera.y = state.world.player.position.y;
+    scenario_check(reference_present(state, 1366, 768, dir + "\\native-pursuit-route-reentry.png"),
+                   "native-pursuit: route geometry lifecycle paints through production");
+    session->shutdown();
+  }
+  return scenario_failures;
+}
+
+int scenario_native_entry_clearance() {
+  using verdigris::ActorKind;
+  using verdigris::Command;
+  using verdigris::Vec2;
+  auto same_scenery = [](const std::vector<SceneryItem>& a,
+                         const std::vector<SceneryItem>& b) {
+    if (a.size() != b.size()) return false;
+    for (std::size_t i = 0; i < a.size(); ++i)
+      if (a[i].kind != b[i].kind || a[i].solid != b[i].solid ||
+          a[i].radius != b[i].radius || a[i].scale != b[i].scale ||
+          a[i].dressing != b[i].dressing || a[i].position.x != b[i].position.x ||
+          a[i].position.y != b[i].position.y) return false;
+    return true;
+  };
+  verdigris::Simulation graph(0xC011AB1EULL);
+  bool saw_tin2_regression = false;
+  for (const auto& route : graph.house().routes) {
+    std::printf("    native-entry-clearance route %s\n", route.id.c_str());
+    ClientState state;
+    state.simulation = std::make_unique<verdigris::Simulation>(0xC011AB1EULL);
+    auto& sim = *state.simulation;
+    // Scenario admission only: enumerate the actual core route graph without
+    // pretending that this content test earns campaign progression/rewards.
+    auto& house = const_cast<verdigris::House&>(sim.house());
+    if (!house.route_unlocked(route.id)) house.unlocked_routes.push_back(route.id);
+    sim.dispatch(Command::enter(route.id));
+    sync_world(state);
+    scenario_check(sim.instance().active && sim.instance().route_id == route.id,
+                   "native-entry-clearance: current graph route admitted at its real entry");
+    const auto player_id = sim.scion().actor_id;
+    const auto initial_player = sim.actor(player_id)->position;
+    scenario_check(initial_player.x == 0 && initial_player.y == 0,
+                   "native-entry-clearance: initial actor origin is unchanged");
+    const auto anchors = sim.navigation_anchors();
+    const auto actor_count = sim.actors().size();
+    std::unordered_map<std::string, Vec2> initial_actor_positions;
+    for (const auto& actor : sim.actors()) initial_actor_positions[actor.id] = actor.position;
+
+    ClientState raw;
+    raw.world.route_id = route.id;
+    generate_scenery(raw);  // Same production content inputs, no native repair.
+    if (route.id == "route:tin:2:0") {
+      for (const auto& item : raw.scenery) {
+        if (item.solid && item.kind == SceneryKind::Tree &&
+            item.position.x == -31 && item.position.y == 87) {
+          saw_tin2_regression = verdigris::navigation_segment_blocked(
+              {{{item.position.x, item.position.y}, static_cast<int>(std::ceil(item.radius))}},
+              initial_player, initial_player);
+          auto collision_only = item;
+          collision_only.position.y += verdigris::world_scale::kActorColliderRadius / 2;
+          scenario_check(!verdigris::navigation_segment_blocked(
+                             {{collision_only.position, static_cast<int>(std::ceil(item.radius))}},
+                             initial_player, initial_player) &&
+                             scenery_entry_visual_overlap(collision_only, collision_only.position, anchors),
+                         "native-entry-clearance: rejected Tin2 collision-only tree still occludes rendered entry");
+        }
+      }
+      scenario_check(saw_tin2_regression,
+                     "native-entry-clearance: actual MSVC Tin2 tree(-31,87) blocked origin before repair");
+    }
+    auto expected = raw.scenery;
+    scenario_check(relocate_scenery_from_navigation_anchors(expected, anchors),
+                   "native-entry-clearance: bounded content relocation finds space");
+    generate_scenery(state);  // Repair precedes the topology hash and collision install.
+    if (route.id == "route:tin:2:0") {
+      load_billboards(state.billboards);
+      state.camera.x = initial_player.x;
+      state.camera.y = initial_player.y;
+      advance_actor_motion(state, 0.0);
+      const auto capture_root = art_wave_capture_dir();
+      scenario_check(!capture_root.empty() && reference_present(state, 1366, 768,
+                         capture_root + "\\native-entry-tin2-cleared.png"),
+                     "native-entry-clearance: repaired real Tin2 entry paints through production");
+    }
+    scenario_check(same_scenery(expected, state.scenery),
+                   "native-entry-clearance: production layout uses deterministic repaired positions");
+    auto repeated = expected;
+    const bool repeat_ok = relocate_scenery_from_navigation_anchors(repeated, anchors);
+    scenario_check(repeat_ok && same_scenery(expected, repeated),
+                   "native-entry-clearance: repeated repair is idempotent");
+
+    bool actors_unchanged = actor_count == sim.actors().size();
+    for (const auto& actor : sim.actors()) {
+      const auto before = initial_actor_positions.find(actor.id);
+      actors_unchanged &= before != initial_actor_positions.end() &&
+          before->second.x == actor.position.x && before->second.y == actor.position.y;
+    }
+    scenario_check(actors_unchanged,
+                   "native-entry-clearance: construction never moves actors or adds monsters");
+    bool anchors_clear = true;
+    for (const auto anchor : anchors) anchors_clear &= !sim.movement_blocked(anchor, anchor);
+    scenario_check(anchors_clear,
+                   "native-entry-clearance: player extraction live and owed pack birth anchors are clear");
+    bool entry_ink_clear = true;
+    for (const auto& item : state.scenery)
+      entry_ink_clear &= !scenery_entry_visual_overlap(item, item.position, anchors);
+    scenario_check(raster_art::dimensions("tree").valid() &&
+                       raster_art::dimensions("exit_stairs").valid() &&
+                       raster_art::dimensions("hero_se").valid() && entry_ink_clear,
+                   "native-entry-clearance: rendered hero and stair bounds stay visible at initial entry");
+    bool only_conflicting_props_moved = raw.scenery.size() == state.scenery.size();
+    bool moved_solids_have_space = true;
+    int moved_props = 0;
+    for (std::size_t i = 0; i < std::min(raw.scenery.size(), state.scenery.size()); ++i) {
+      const auto& before = raw.scenery[i];
+      const auto& after = state.scenery[i];
+      only_conflicting_props_moved &= before.kind == after.kind && before.solid == after.solid &&
+          before.radius == after.radius && before.scale == after.scale && before.dressing == after.dressing;
+      const bool moved = before.position.x != after.position.x || before.position.y != after.position.y;
+      if (!moved) continue;
+      ++moved_props;
+      only_conflicting_props_moved &= before.solid && scenery_anchor_overlap(before, before.position, anchors);
+      for (std::size_t j = 0; j < state.scenery.size(); ++j) {
+        if (i == j || !state.scenery[j].solid) continue;
+        const double distance = std::hypot(static_cast<double>(after.position.x) - state.scenery[j].position.x,
+                                           static_cast<double>(after.position.y) - state.scenery[j].position.y);
+        moved_solids_have_space &= distance > std::ceil(after.radius) + std::ceil(state.scenery[j].radius) +
+            2.0 * verdigris::world_scale::kActorColliderRadius + 4.0;
+      }
+    }
+    scenario_check(only_conflicting_props_moved && moved_solids_have_space,
+                   "native-entry-clearance: only overlapping solid positions change without new stacking");
+    std::printf("    native-entry-clearance: relocated %d of %zu props; protected %zu anchors\n",
+                moved_props, state.scenery.size(), anchors.size());
+
+    // Escape uses one real MoveIntent; no fixture teleports any actor.
+    bool escaped = false;
+    const int step = verdigris::movement_step_per_tick(sim.actor(player_id)->stats.move_speed);
+    for (const auto direction : {Vec2{-1, 0}, Vec2{1, 0}, Vec2{0, -1}, Vec2{0, 1}}) {
+      const Vec2 destination{initial_player.x + direction.x * step,
+                             initial_player.y + direction.y * step};
+      if (sim.movement_blocked(initial_player, destination)) continue;
+      sim.dispatch_tick({Command::move(direction.x, direction.y)});
+      const auto actual = sim.actor(player_id)->position;
+      escaped = actual.x == destination.x && actual.y == destination.y &&
+          !sim.movement_blocked(initial_player, actual);
+      break;
+    }
+    scenario_check(escaped, "native-entry-clearance: player escapes origin through core movement");
+    bool valid_segments = true;
+    bool reached_contact = false;
+    bool pursuer_moved = false;
+    for (int tick = 0; tick < 600 && !reached_contact; ++tick) {
+      std::unordered_map<std::string, Vec2> before;
+      for (const auto& actor : sim.actors()) if (actor.alive) before[actor.id] = actor.position;
+      sim.dispatch_tick({});
+      const auto* player = sim.actor(player_id);
+      if (!player || !player->alive) break;
+      for (const auto& actor : sim.actors()) {
+        if (!actor.alive) continue;
+        const auto was = before.find(actor.id);
+        valid_segments &= was != before.end() && !sim.movement_blocked(was->second, actor.position);
+        if (actor.kind != ActorKind::Monster) continue;
+        pursuer_moved |= was != before.end() &&
+            (was->second.x != actor.position.x || was->second.y != actor.position.y);
+        const int distance = std::abs(actor.position.x - player->position.x) +
+                             std::abs(actor.position.y - player->position.y);
+        const int range = actor.elite ? verdigris::world_scale::kThrustRange :
+                                       verdigris::world_scale::kMeleeRange;
+        reached_contact |= distance <= range && !sim.movement_blocked(actor.position, player->position);
+      }
+    }
+    scenario_check(valid_segments && pursuer_moved && reached_contact,
+                   "native-entry-clearance: actual route pursuer reaches legal contact with every segment clear");
+    scenario_check(sim.scion().carried_items.empty() && sim.ground_items().empty(),
+                   "native-entry-clearance: navigation fixture awards no extra loot");
+
+    ClientState non_native;
+    non_native.scenery = raw.scenery;
+    non_native.session = std::make_unique<verdigris::client::RemoteProtocolSession>(
+        "127.0.0.1", 1, "clearance-read-only", true);
+    scenario_check(clear_native_navigation_anchors(non_native) &&
+                       same_scenery(non_native.scenery, raw.scenery),
+                   "native-entry-clearance: unstarted remote session never relocates local scenery");
+  }
+  scenario_check(saw_tin2_regression, "native-entry-clearance: current core graph includes the Tin2 regression");
+
+  ClientState local_state;
+  auto local = std::make_unique<verdigris::client::LocalCoreSession>(0xC011AB1EULL);
+  local->start();
+  const auto route = graph.house().unlocked_routes.front();
+  local->submit(verdigris::client::ClientCommand::enter_zone(route));
+  local->advance_fixed_tick();
+  const auto local_anchors = local->navigation_anchors();
+  local_state.session = std::move(local);
+  sync_world(local_state);
+  generate_scenery(local_state);
+  auto* local_sim = dynamic_cast<verdigris::client::LocalCoreSession*>(local_state.session.get())
+                        ->simulation_for_scenarios();
+  bool local_clear = !local_anchors.empty() && !local_sim->navigation_obstacles().empty();
+  for (const auto anchor : local_anchors) local_clear &= !local_sim->movement_blocked(anchor, anchor);
+  scenario_check(local_clear,
+                 "native-entry-clearance: LocalCoreSession delegates the same anchor and collision contract");
+  return scenario_failures;
+}
+
 int scenario_frame_budget() {
   ClientState state;
   scenario_begin(state);
@@ -20017,6 +20909,8 @@ int run_scenarios(const std::string& which) {
       {"raster-feedback", scenario_raster_feedback},
       {"raster-motion", scenario_raster_motion},
       {"raider-motion", scenario_raider_motion},
+      {"native-pursuit", scenario_native_pursuit},
+      {"native-entry-clearance", scenario_native_entry_clearance},
       {"loot-to-bank", scenario_loot_to_bank},
       {"telegraph-dodge", scenario_telegraph_dodge},
       {"combat-juice", scenario_combat_juice},

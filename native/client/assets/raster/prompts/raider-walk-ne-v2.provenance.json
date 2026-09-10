@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "tool": "built-in image_gen",
+  "model_variant": "Not selectable or identified by this tool; no variant asserted.",
+  "use_case": "identity-preserve",
+  "source": "native/client/assets/raster/source/raider-walk-ne-v2.png",
+  "source_raw_sha256": "ef41d8775a22ec8a52995a1a9444709a6db94f45e08351207cc6d26a320b4672",
+  "dimensions": [
+    1536,
+    1024
+  ],
+  "source_mode": "RGB",
+  "generated_original": "C:/Users/Alex/.codex/generated_images/01a0896f-29de-7452-bb4b-6fb64351c1eb/exec-27b45f72-5e9d-41f6-81db-9b17f5882137.png",
+  "prompt": "native/client/assets/raster/prompts/raider-walk-ne-v2.txt",
+  "prompt_raw_sha256": "371511b7f39c79b6f077186f66aae2eaaf3bc4f80c75e65a7c594dff86790aeb",
+  "submitted_prompt": "Edit Image 1, the six-frame rear-view raider walk sheet. Repair ONLY the legs in frame 2 (top-right) and frame 3 (bottom-left). Both currently repeat the long screen-left trailing leg from frame 0, so the cycle lacks the opposite contact.\n\nFrame 2: advance the LEFT leg forward toward upper-right while the RIGHT heel leaves the ground. The long foreground leg must come from the screen-right hip; move its boot to the lower-right side of the silhouette. The LEFT boot recedes higher and closer to the body center as it reaches forward.\nFrame 3: complete that opposite contact. The LEFT foot now supports the body ahead; the RIGHT leg extends behind. Show the long screen-right leg continuing down into the low foreground boot on the screen-right side, while the screen-left leg is foreshortened and its forward boot is higher. Do not repeat frame 0's long screen-left leg. Keep both legs anatomically attached to their original hips.\n\nPreserve frames 0,1,4,5, all upper bodies, the six cell placements, body scale, upper-right/back-facing camera, and the broad bronze axe held in the anatomical-right/screen-right hand. Image 2 is the original raider identity reference only, never its idle pose. Preserve dark blue-charcoal cloth, ochre sash, dark torn trousers, brown boots, hair and crisp pixel clusters. Return the same complete three-column by two-row sheet with real transparent alpha, no labels or background.",
+  "references": [
+    {
+      "path": "native/client/assets/raster/source/raider-walk-ne-v1.png",
+      "sha256": "ab541dfc0b484703385f32af033ceebf81c880b165fd0d03bbdc112bbcc9e077",
+      "role": "Edit target: repair legs of phases2/3 only; preserve the remaining poses and upper bodies."
+    },
+    {
+      "path": "native/client/assets/raster/runtime/raider_ne.png",
+      "sha256": "4a78a7f7e1e02c2ca9c18a0e2d4d403412ab2ef4cdae592c98acf052122a7544",
+      "role": "Accepted NE raider identity, rear upper-right camera, anatomy, clothing and anatomical-right axe reference. Never copy its idle pose in the correction."
+    }
+  ],
+  "all_references_viewed_before_call": true,
+  "recipe": {
+    "primary_source": "https://www.reddit.com/r/aigamedev/comments/1wbmvnm/gpt_image_25_nailed_a_16_frame_combat_sprite_sheet/?sort=top",
+    "original_read": "Opened the original post with web.run in this task; read its exact prompt, creator claim and critical replies identifying limb swaps and poor temporal progression.",
+    "published_prompt": "Make a simplified 128px pixel art combat motion sprite sheet of this character, transparent background if you can, arrange it 4x4.",
+    "adaptation": "Retain one supplied character reference, simplified pixel construction, one motion sheet and separate GIF assembly. Change the motion to six chronological NE walking poses in3x2, around64 logical body pixels. Add explicit opposite contact/passing legs and equipment hand to address observed prior gait/weapon failures. V2 changes only the failed legs in phases2/3 using the original identity alongside the first sheet.",
+    "local_prior_inspected": [
+      "native/client/assets/raster/source/raider-walk-sw-axe-v3.png",
+      "native/client/assets/raster/runtime/raider_walk0_sw.png",
+      "native/client/assets/raster/prompts/raider-walk-sw-d2poses-v1.txt",
+      "native/client/assets/raster/prompts/raider-walk-sw-axe-v3.txt"
+    ],
+    "prior_images_not_supplied": "SW front-facing references were inspected for identity/equipment history, not sent as NE pose inputs. No external D2 image was supplied or copied.",
+    "claim_boundary": "The creator did not demonstrate this adult raider NE walk or our Pixel Respecter reconstruction. Their named model/access path is not attributed to our built-in call."
+  },
+  "observations": {
+    "v1_failure": "Phases2/3 repeated the long screen-left trailing leg; rejected as a complete alternating cycle. Real alpha existed but included a faint partial-alpha halo.",
+    "v2_result": "Phases2/3 now give the opposite screen-right foreground leg and raised/receding opposite boot. The edit changed non-target cells and painted an opaque checker; only corrected phases2/3 are selected.",
+    "selected_composition": "V1 phases0,1,4,5 plus V2 phases2,3. No body repainting or mirrored pose substitution.",
+    "identity": "Rear upper-right view, tied dark hair, blue-charcoal clothing, ochre sash, brown boots/bracers; axe stays in anatomical-right/screen-right hand. Walk silhouette is narrower and its blade slimmer/near edge-on compared with idle.",
+    "phase_limit": "Six key poses with distinct opposite contacts and passing legs; phases5/0 remain close, and arms/torso have modest motion. This is a provisional gait, not a biomechanical or production-motion guarantee."
+  },
+  "conversion": {
+    "manifest": "native/tools/raster/raider-walk-ne-candidates/selected/import.json",
+    "manifest_raw_sha256": "ef8e82fb774ada1e7a1bae9dff48d02519a437ccf5683857e13f0700fefa7b7f",
+    "report": "native/tools/raster/raider-walk-ne-candidates/selected/import.provenance.json",
+    "report_raw_sha256": "83123335b04468a96e8546181686ec339a7f362e439e2ef08e34da54ec6e5bf2",
+    "engine": "Actual external Pixel Respecter workspace.reconstruct and shared palettes.reduce_colors via import_assets.py",
+    "cell_size": 7,
+    "canvas": [
+      80,
+      96
+    ],
+    "pivot": [
+      40,
+      96
+    ],
+    "source_origin": [
+      315,
+      483
+    ],
+    "column_stride": 455,
+    "row_stride": 490,
+    "shared_colors": 32,
+    "scale_policy": "One common scale and source origin pattern; no per-pose fitting or centering. Common baseline was lowered two pixels after idle-transition review; phase-specific lift was preserved.",
+    "alpha": "V1 crisp reconstruction uses its actual alpha and alpha_floor128. V2 border-connected cleanup uses RGB160 and tolerance100. No local windows or selected chromatic pixels removed. See selected/alpha-audit.json."
+  },
+  "acceptance": "Root viewed native1x/3x and source alpha comparison; approved provisional production integration with smaller-axe/narrower-body caveats, pending actual game check. Selected source/manifest/PNG/report bytes are frozen.",
+  "ownership": "Only new raider-walk-ne sources/prompts and raider-walk-ne-candidates folder. No runtime/catalog/main edits or git operations."
+}

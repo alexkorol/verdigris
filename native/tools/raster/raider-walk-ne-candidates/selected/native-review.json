@@ -1,0 +1,99 @@
+{
+  "canvas": [
+    80,
+    96
+  ],
+  "pivot": [
+    40,
+    96
+  ],
+  "source_origin": [
+    315,
+    483
+  ],
+  "source_column_stride": 455,
+  "source_row_stride": 490,
+  "shared_cell_size": 7,
+  "idle_bbox": [
+    22,
+    39,
+    68,
+    96
+  ],
+  "preview_frame_ms": 100,
+  "frames": [
+    {
+      "name": "raider_walk0_ne",
+      "bounds": [
+        25,
+        39,
+        63,
+        95
+      ],
+      "partial_alpha_pixels": 0,
+      "neutral_pixels": [],
+      "sha256": "a4d4fa77a2d48ce4259c78ef56957912e74751cce939806dc414980ceb383c68"
+    },
+    {
+      "name": "raider_walk1_ne",
+      "bounds": [
+        26,
+        39,
+        63,
+        95
+      ],
+      "partial_alpha_pixels": 0,
+      "neutral_pixels": [],
+      "sha256": "431179cbeb988a77ea7630b885a503e896b605a62e20d8ec1d278148b0bb8c49"
+    },
+    {
+      "name": "raider_walk2_ne",
+      "bounds": [
+        25,
+        39,
+        64,
+        96
+      ],
+      "partial_alpha_pixels": 0,
+      "neutral_pixels": [],
+      "sha256": "a7da3557936d2864fcfb5be9fe67b6c046396516dd1018025b123349de03ff5e"
+    },
+    {
+      "name": "raider_walk3_ne",
+      "bounds": [
+        26,
+        37,
+        64,
+        95
+      ],
+      "partial_alpha_pixels": 0,
+      "neutral_pixels": [],
+      "sha256": "301c8d88e7cea8efebef76fa0955b70f11581a1f4736ff6a641baa42a66ba129"
+    },
+    {
+      "name": "raider_walk4_ne",
+      "bounds": [
+        26,
+        39,
+        63,
+        92
+      ],
+      "partial_alpha_pixels": 0,
+      "neutral_pixels": [],
+      "sha256": "874a669f55f6fcd85c769577d5175ceee781f0cdbb7a3e80a44ecdbbf9459155"
+    },
+    {
+      "name": "raider_walk5_ne",
+      "bounds": [
+        26,
+        38,
+        63,
+        95
+      ],
+      "partial_alpha_pixels": 0,
+      "neutral_pixels": [],
+      "sha256": "4d0af302b2dc723e4c6296f5fb6b567455e470a4e01e56b2544cbe0cb8bae796"
+    }
+  ],
+  "shared_colors": 32
+}

@@ -1,0 +1,159 @@
+{
+  "version": 1,
+  "scope": "Frozen raider NE6 candidate approved for provisional integration; all paths repository-relative.",
+  "hash_policy": "Text canonicalizes CRLF to LF only; binary uses raw bytes. Historical generation raw hashes are not rewritten.",
+  "active_inputs": [
+    {
+      "path": "native/client/assets/raster/source/raider-walk-ne-v1.png",
+      "role": "selected generated source: phases0/1/4/5",
+      "sha256": "ab541dfc0b484703385f32af033ceebf81c880b165fd0d03bbdc112bbcc9e077",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/client/assets/raster/source/raider-walk-ne-v2.png",
+      "role": "selected leg correction: phases2/3",
+      "sha256": "ef41d8775a22ec8a52995a1a9444709a6db94f45e08351207cc6d26a320b4672",
+      "hash_policy": "raw_binary"
+    }
+  ],
+  "active_recipes": [
+    {
+      "path": "native/tools/raster/raider-walk-ne-candidates/selected/import.json",
+      "role": "complete selected candidate recipe",
+      "sha256": "c6768cec2295d9cb9dcccdc31f201d18b518dac0ddcb05ccbc74b9206432a0e5",
+      "hash_policy": "canonical_lf_crlf_to_lf_only"
+    },
+    {
+      "path": "native/tools/raster/import_assets.py",
+      "role": "actual Pixel Respecter adapter",
+      "sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+      "hash_policy": "canonical_lf_crlf_to_lf_only"
+    }
+  ],
+  "historical_provenance": [
+    {
+      "path": "native/client/assets/raster/runtime/raider_ne.png",
+      "role": "accepted identity reference",
+      "sha256": "4a78a7f7e1e02c2ca9c18a0e2d4d403412ab2ef4cdae592c98acf052122a7544",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/raider-walk-ne-v1.txt",
+      "role": "exact prompt or generation/reference provenance",
+      "sha256": "7e61460bf0f533667c227ce4c8a364e4f96848b181f8703fc2ece2554fb4e1ef",
+      "hash_policy": "canonical_lf_crlf_to_lf_only"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/raider-walk-ne-v1.provenance.json",
+      "role": "exact prompt or generation/reference provenance",
+      "sha256": "cb6c714c5e69f80da46ba732f6be9048dfbead1537643fe4e8639c4814553bcd",
+      "hash_policy": "canonical_lf_crlf_to_lf_only"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/raider-walk-ne-v2.txt",
+      "role": "exact prompt or generation/reference provenance",
+      "sha256": "371511b7f39c79b6f077186f66aae2eaaf3bc4f80c75e65a7c594dff86790aeb",
+      "hash_policy": "canonical_lf_crlf_to_lf_only"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/raider-walk-ne-v2.provenance.json",
+      "role": "exact prompt or generation/reference provenance",
+      "sha256": "521a10a9e38c45df5e18b6c68edc644681be517417949e2d0c5cfc9b9d4ec442",
+      "hash_policy": "canonical_lf_crlf_to_lf_only"
+    },
+    {
+      "path": "native/tools/raster/raider-walk-ne-candidates/selected/import.provenance.json",
+      "role": "actual candidate import and external engine fingerprint report",
+      "sha256": "aa4b6f7a8d280527693a20dcbfa0cc5229a6b94cda464053d0042344ed9f960d",
+      "hash_policy": "canonical_lf_crlf_to_lf_only"
+    }
+  ],
+  "review_evidence": [
+    {
+      "path": "native/tools/raster/raider-walk-ne-candidates/selected/acceptance-review.json",
+      "role": "native or alpha review evidence",
+      "sha256": "6f5a8d8d6498d097e0b5f8c182bba24f877e79a626cb97beeebc004f7db5d4c9",
+      "hash_policy": "canonical_lf_crlf_to_lf_only"
+    },
+    {
+      "path": "native/tools/raster/raider-walk-ne-candidates/selected/native-review.json",
+      "role": "native or alpha review evidence",
+      "sha256": "c7da98cfa6141659de281753407edd8eac8ec8ca294a382fd6a27275fb0f090d",
+      "hash_policy": "canonical_lf_crlf_to_lf_only"
+    },
+    {
+      "path": "native/tools/raster/raider-walk-ne-candidates/selected/alpha-audit.json",
+      "role": "native or alpha review evidence",
+      "sha256": "c832542d7d8126ce4376822a6371fa7f8bc7de658c3b1754b910e55ca10dd1c4",
+      "hash_policy": "canonical_lf_crlf_to_lf_only"
+    },
+    {
+      "path": "native/tools/raster/raider-walk-ne-candidates/selected/alpha-source-comparison.png",
+      "role": "native or alpha review evidence",
+      "sha256": "8c4c9b86d78e1552520c83ec2937da1524b3439d759f45bf4562f7f4fa98110e",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/tools/raster/raider-walk-ne-candidates/selected/idle-walk-idle-1x.png",
+      "role": "native or alpha review evidence",
+      "sha256": "c0d383bc9c3d59e939b19542419cdf01330fb7e64944409ab492d49b472e8a30",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/tools/raster/raider-walk-ne-candidates/selected/idle-walk-idle-3x.png",
+      "role": "native or alpha review evidence",
+      "sha256": "c4e3758dc34c3d09613edf3206f65e84bf26dc63eb636303771938b64755d512",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/tools/raster/raider-walk-ne-candidates/selected/walk-preview.gif",
+      "role": "native or alpha review evidence",
+      "sha256": "a09b22de507030aa034bdb0ef9e9b005becf923be52b297153194b4b14ada42c",
+      "hash_policy": "raw_binary"
+    }
+  ],
+  "selected_outputs": [
+    {
+      "path": "native/tools/raster/raider-walk-ne-candidates/selected/raider_walk0_ne.png",
+      "role": "frozen selected candidate frame",
+      "sha256": "a4d4fa77a2d48ce4259c78ef56957912e74751cce939806dc414980ceb383c68",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/tools/raster/raider-walk-ne-candidates/selected/raider_walk1_ne.png",
+      "role": "frozen selected candidate frame",
+      "sha256": "431179cbeb988a77ea7630b885a503e896b605a62e20d8ec1d278148b0bb8c49",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/tools/raster/raider-walk-ne-candidates/selected/raider_walk2_ne.png",
+      "role": "frozen selected candidate frame",
+      "sha256": "a7da3557936d2864fcfb5be9fe67b6c046396516dd1018025b123349de03ff5e",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/tools/raster/raider-walk-ne-candidates/selected/raider_walk3_ne.png",
+      "role": "frozen selected candidate frame",
+      "sha256": "301c8d88e7cea8efebef76fa0955b70f11581a1f4736ff6a641baa42a66ba129",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/tools/raster/raider-walk-ne-candidates/selected/raider_walk4_ne.png",
+      "role": "frozen selected candidate frame",
+      "sha256": "874a669f55f6fcd85c769577d5175ceee781f0cdbb7a3e80a44ecdbbf9459155",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/tools/raster/raider-walk-ne-candidates/selected/raider_walk5_ne.png",
+      "role": "frozen selected candidate frame",
+      "sha256": "4d0af302b2dc723e4c6296f5fb6b567455e470a4e01e56b2544cbe0cb8bae796",
+      "hash_policy": "raw_binary"
+    }
+  ],
+  "external_project": {
+    "path": "Z:/Code/Python/pixel-perfecter",
+    "vendored": false,
+    "fingerprints_in": "native/tools/raster/raider-walk-ne-candidates/selected/import.provenance.json"
+  },
+  "reproduction": "Run existing import_assets.py with selected/import.json. Two source PNGs and the complete manifest reproduce the frozen six-frame batch; no rejected candidate PNG is needed."
+}

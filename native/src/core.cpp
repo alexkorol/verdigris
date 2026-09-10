@@ -8,6 +8,7 @@
 #include <map>
 #include <sstream>
 #include <stdexcept>
+#include <tuple>
 
 #include "verdigris/seasonal.hpp"
 
@@ -56,6 +57,28 @@ Vec2 movement_delta(int dx, int dy, int move_speed) {
   const int length = std::max(1, std::abs(dx) + std::abs(dy));
   const int step = movement_step_per_tick(move_speed);
   return {(dx * step) / length, (dy * step) / length};
+}
+
+Vec2 step_towards(Vec2 from, Vec2 to, int budget) {
+  const int dx = to.x - from.x;
+  const int dy = to.y - from.y;
+  const int length = std::abs(dx) + std::abs(dy);
+  if (length == 0 || budget <= 0) return from;
+  budget = std::min(budget, length);
+  Vec2 delta{static_cast<int>(static_cast<std::int64_t>(dx) * budget / length),
+             static_cast<int>(static_cast<std::int64_t>(dy) * budget / length)};
+  // Retain a shallow waypoint's minor axis. Truncating it to zero on every
+  // tick can alternate visibility sides forever instead of clearing a body.
+  if (budget > 1) {
+    if (dx != 0 && delta.x == 0) delta.x = direction_component(dx);
+    if (dy != 0 && delta.y == 0) delta.y = direction_component(dy);
+  }
+  // Integer division must not strand a final one-unit diagonal approach.
+  if (delta.x == 0 && delta.y == 0) {
+    if (std::abs(dx) >= std::abs(dy)) delta.x = direction_component(dx);
+    else delta.y = direction_component(dy);
+  }
+  return {from.x + delta.x, from.y + delta.y};
 }
 
 bool is_forward(const Vec2& facing, Vec2 delta) {
@@ -248,13 +271,18 @@ Actor* Simulation::actor(const std::string& id) {
 
 Actor Simulation::make_monster(Vec2 position, int level, bool elite) {
   const int bounded_level = std::max(1, level);
-  return Actor{rng_.token("actor"), ActorKind::Monster, enemy_stats(bounded_level), position,
-               true, 0, std::nullopt, elite};
+  Actor enemy{rng_.token("actor"), ActorKind::Monster, enemy_stats(bounded_level), position,
+              true, 0, std::nullopt, elite};
+  if (const Actor* player = actor(scion_.actor_id))
+    enemy.facing = quantize_direction(player->position.x - position.x,
+                                      player->position.y - position.y);
+  return enemy;
 }
 
 std::string Simulation::spawn_monster(Vec2 position, int level, bool elite) {
   Actor enemy = make_monster(position, level, elite);
   actors_.push_back(enemy);
+  enemies_active_ = true;
   return enemy.id;
 }
 
@@ -265,6 +293,11 @@ void Simulation::set_seasonal_mechanic(SeasonalMechanic* mechanic) {
 void Simulation::emit(EventType type, const std::string& actor_id, const std::string& item_id,
                       const std::string& trophy_id, const std::string& text, int value) {
   Event event{type, actor_id, item_id, trophy_id, text, value, tick_};
+  if (const Actor* subject = actor(actor_id)) {
+    event.has_actor_pose = true;
+    event.actor_position = subject->position;
+    event.actor_facing = subject->facing;
+  }
   events_.push_back(event);
   if (seasonal_mechanic_) seasonal_mechanic_->on_event(*this, event);
 }
@@ -298,16 +331,179 @@ void Simulation::record_legend(const std::string& kind, const std::string& subje
 }
 
 void Simulation::dispatch(const Command& command) {
-  if (command.type == CommandType::MoveIntent) resolve_move(command.dx, command.dy);
-  if (command.type == CommandType::AimIntent) resolve_aim(command.dx, command.dy);
-  if (command.type == CommandType::UseAction) resolve_action(command.action);
-  if (command.type == CommandType::Interact) resolve_interact(command.target);
-  if (command.type == CommandType::PickUp) resolve_pickup(command.target);
-  if (command.type == CommandType::Equip) resolve_equip(command.target);
-  if (command.type == CommandType::Unequip) resolve_unequip();
-  if (command.type == CommandType::EnterInstance) resolve_enter(command.target);
-  if (command.type == CommandType::ExtractToHouse) resolve_extract();
+  dispatch_tick({command});
+}
+
+void Simulation::dispatch_tick(const std::vector<Command>& commands) {
+  bool dash = false;
+  for (const auto& command : commands) {
+    if (command.type == CommandType::UseAction && command.action == ActionType::Dash) dash = true;
+  }
+  bool walked = false;
+  std::vector<ActionType> actions;
+  for (const auto& command : commands) {
+    if (command.type == CommandType::MoveIntent && !dash && !walked) {
+      resolve_move(command.dx, command.dy);
+      walked = true;
+    }
+    if (command.type == CommandType::AimIntent) resolve_aim(command.dx, command.dy);
+    if (command.type == CommandType::UseAction &&
+        std::find(actions.begin(), actions.end(), command.action) == actions.end()) {
+      resolve_action(command.action);
+      actions.push_back(command.action);
+    }
+    if (command.type == CommandType::Interact) resolve_interact(command.target);
+    if (command.type == CommandType::PickUp) resolve_pickup(command.target);
+    if (command.type == CommandType::Equip) resolve_equip(command.target);
+    if (command.type == CommandType::Unequip) resolve_unequip();
+    if (command.type == CommandType::EnterInstance) {
+      resolve_enter(command.target);
+      // Publish the new scene before accepting movement against its as-yet
+      // uninstalled content snapshot. Later queued intents belong to old UI.
+      if (defer_enemy_turn_) break;
+    }
+    if (command.type == CommandType::ExtractToHouse) {
+      const bool was_active = instance_.active;
+      resolve_extract();
+      if (was_active && !instance_.active) break;
+    }
+  }
   advance_tick();
+}
+
+bool Simulation::movement_blocked(Vec2 from, Vec2 to) const {
+  return navigation_segment_blocked(navigation_obstacles_, from, to);
+}
+
+std::vector<Vec2> Simulation::navigation_anchors() const {
+  std::vector<Vec2> anchors;
+  if (const Actor* player = actor(scion_.actor_id)) anchors.push_back(player->position);
+  anchors.push_back(instance_.extraction_point);
+  for (const Actor& candidate : actors_)
+    if (candidate.kind == ActorKind::Monster && candidate.alive) anchors.push_back(candidate.position);
+  for (const Actor& candidate : pending_wave_) anchors.push_back(candidate.position);
+  return anchors;
+}
+
+bool navigation_segment_blocked(const std::vector<NavigationObstacle>& obstacles,
+                                Vec2 from, Vec2 to) {
+  // Same swept-circle contract for walking, Dash, pursuit and contact sight.
+  // Products are formed in double so arbitrary integer command coordinates
+  // cannot overflow signed arithmetic; no normalization or random choice.
+  const double sx = static_cast<double>(to.x) - from.x;
+  const double sy = static_cast<double>(to.y) - from.y;
+  const double length_squared = sx * sx + sy * sy;
+  for (const auto& obstacle : obstacles) {
+    const double cx = static_cast<double>(obstacle.center.x) - from.x;
+    const double cy = static_cast<double>(obstacle.center.y) - from.y;
+    const double projection = length_squared == 0.0 ? 0.0 :
+        std::clamp((cx * sx + cy * sy) / length_squared, 0.0, 1.0);
+    const double dx = cx - sx * projection;
+    const double dy = cy - sy * projection;
+    const double radius = static_cast<double>(obstacle.radius) + world_scale::kActorColliderRadius;
+    if (dx * dx + dy * dy < radius * radius) return true;
+  }
+  return false;
+}
+
+void Simulation::set_navigation_obstacles(std::vector<NavigationObstacle> obstacles) {
+  if (obstacles.size() > kMaxNavigationObstacles)
+    throw std::invalid_argument("navigation obstacle capacity exceeded");
+  for (const auto& obstacle : obstacles) {
+    const std::int64_t margin = static_cast<std::int64_t>(obstacle.radius) +
+                                world_scale::kActorColliderRadius + 2;
+    if (obstacle.radius < 0 || margin > std::numeric_limits<int>::max() ||
+        std::abs(static_cast<std::int64_t>(obstacle.center.x)) + margin >
+            std::numeric_limits<int>::max() / 4 ||
+        std::abs(static_cast<std::int64_t>(obstacle.center.y)) + margin >
+            std::numeric_limits<int>::max() / 4)
+      throw std::invalid_argument("invalid navigation circle");
+  }
+  std::sort(obstacles.begin(), obstacles.end(), [](const auto& a, const auto& b) {
+    return std::tie(a.center.x, a.center.y, a.radius) < std::tie(b.center.x, b.center.y, b.radius);
+  });
+  obstacles.erase(std::unique(obstacles.begin(), obstacles.end(), [](const auto& a, const auto& b) {
+    return a.center.x == b.center.x && a.center.y == b.center.y && a.radius == b.radius;
+  }), obstacles.end());
+  navigation_obstacles_ = std::move(obstacles);
+  navigation_vertices_.clear();
+  // Four exterior square corners per inflated circle give a finite visibility
+  // graph. Every edge still tests all circles, including overlapping bodies.
+  for (const auto& obstacle : navigation_obstacles_) {
+    const int r = obstacle.radius + world_scale::kActorColliderRadius + 2;
+    for (int y : {-1, 1}) for (int x : {-1, 1}) {
+      const Vec2 vertex{obstacle.center.x + x * r, obstacle.center.y + y * r};
+      if (!movement_blocked(vertex, vertex)) navigation_vertices_.push_back(vertex);
+    }
+  }
+  const std::size_t count = navigation_vertices_.size();
+  navigation_edges_.assign(count, std::vector<int>(count, -1));
+  for (std::size_t i = 0; i < count; ++i) for (std::size_t j = i + 1; j < count; ++j) {
+    if (!movement_blocked(navigation_vertices_[i], navigation_vertices_[j])) {
+      navigation_edges_[i][j] = navigation_edges_[j][i] =
+          manhattan_distance(navigation_vertices_[i], navigation_vertices_[j]);
+    }
+  }
+}
+
+std::optional<Vec2> Simulation::pursuit_waypoint(Vec2 from, Vec2 target) const {
+  if (!movement_blocked(from, target)) return target;
+  if (movement_blocked(from, from) || movement_blocked(target, target)) return std::nullopt;
+  const std::size_t count = navigation_vertices_.size();
+  std::vector<int> to_goal(count, -1);
+  std::vector<std::int64_t> costs(count, std::numeric_limits<std::int64_t>::max());
+  std::vector<int> first(count, -1);
+  std::vector<bool> closed(count, false);
+  for (std::size_t i = 0; i < count; ++i) {
+    if (!movement_blocked(from, navigation_vertices_[i])) {
+      const int distance = manhattan_distance(from, navigation_vertices_[i]);
+      // Reaching a corner must select the next edge, not choose the current
+      // position as the first waypoint of an otherwise valid complete path.
+      if (distance > 0) {
+        costs[i] = distance;
+        first[i] = static_cast<int>(i);
+      }
+    }
+    if (!movement_blocked(navigation_vertices_[i], target))
+      to_goal[i] = manhattan_distance(navigation_vertices_[i], target);
+  }
+  std::int64_t best = std::numeric_limits<std::int64_t>::max();
+  int waypoint = -1;
+  for (std::size_t step = 0; step < count; ++step) {
+    int current = -1;
+    for (std::size_t i = 0; i < count; ++i)
+      if (!closed[i] && (current < 0 || costs[i] < costs[current])) current = static_cast<int>(i);
+    if (current < 0 || costs[current] >= best || first[current] < 0) break;
+    closed[current] = true;
+    if (to_goal[current] >= 0 && costs[current] + to_goal[current] < best) {
+      best = costs[current] + to_goal[current];
+      waypoint = first[current];
+    }
+    for (std::size_t i = 0; i < count; ++i) {
+      const int edge = navigation_edges_[current][i];
+      if (!closed[i] && edge >= 0 && costs[current] + edge < costs[i]) {
+        costs[i] = costs[current] + edge;
+        first[i] = first[current];
+      }
+    }
+  }
+  if (waypoint < 0) return std::nullopt;
+  return navigation_vertices_[waypoint];
+}
+
+void Simulation::pursue(Actor& enemy, const Actor& player, int contact_range) {
+  const auto waypoint = pursuit_waypoint(enemy.position, player.position);
+  if (!waypoint) return;
+  int budget = movement_step_per_tick(enemy.stats.move_speed);
+  if (waypoint->x == player.position.x && waypoint->y == player.position.y)
+    budget = std::min(budget, manhattan_distance(enemy.position, player.position) - contact_range);
+  const Vec2 destination = step_towards(enemy.position, *waypoint, budget);
+  if ((destination.x == enemy.position.x && destination.y == enemy.position.y) ||
+      movement_blocked(enemy.position, destination)) return;
+  enemy.facing = quantize_direction(destination.x - enemy.position.x,
+                                    destination.y - enemy.position.y);
+  enemy.position = destination;
+  emit(EventType::ActorMoved, enemy.id, {}, {}, "pursuit", enemy.position.x);
 }
 
 void Simulation::resolve_move(int dx, int dy) {
@@ -316,6 +512,8 @@ void Simulation::resolve_move(int dx, int dy) {
   const Vec2 direction = quantize_direction(dx, dy);
   if (direction.x != 0 || direction.y != 0) player->facing = direction;
   const Vec2 delta = movement_delta(dx, dy, player->stats.move_speed);
+  const Vec2 destination{player->position.x + delta.x, player->position.y + delta.y};
+  if (movement_blocked(player->position, destination)) return;
   player->position.x += delta.x;
   player->position.y += delta.y;
   emit(EventType::ActorMoved, player->id, {}, {}, {}, player->position.x);
@@ -339,8 +537,10 @@ void Simulation::resolve_actor_action(Actor& attacker, ActionType action) {
   if (action == ActionType::Dash) {
     const Vec2 delta = movement_delta(attacker.facing.x, attacker.facing.y,
                                       attacker.stats.move_speed);
-    attacker.position.x += delta.x * kDashMovementTicks;
-    attacker.position.y += delta.y * kDashMovementTicks;
+    const Vec2 destination{attacker.position.x + delta.x * kDashMovementTicks,
+                           attacker.position.y + delta.y * kDashMovementTicks};
+    if (movement_blocked(attacker.position, destination)) return;
+    attacker.position = destination;
     emit(EventType::ActorMoved, attacker.id, {}, {}, "dash", attacker.position.x);
     return;
   }
@@ -374,7 +574,7 @@ void Simulation::resolve_actor_action(Actor& attacker, ActionType action) {
     const int distance = manhattan_distance(attacker.position, candidate.position);
     const bool in_range = action == ActionType::Thrust ? distance <= kThrustRange
                                                        : distance <= kMeleeRange;
-    if (!in_range) continue;
+    if (!in_range || movement_blocked(attacker.position, candidate.position)) continue;
     if (action == ActionType::Thrust) {
       const Vec2 delta{candidate.position.x - attacker.position.x,
                        candidate.position.y - attacker.position.y};
@@ -546,6 +746,7 @@ void Simulation::resolve_enter(const std::string& route_id) {
   instance_.route_id = route_id;
   instance_.phase = ExpeditionPhase::SlayWardens;
   spawn_enemy();
+  defer_enemy_turn_ = true;
   for (const auto& relic : pending_relic_items_) {
     ground_items_.push_back(relic);
     instance_.ground_item_ids.push_back(relic.id);
@@ -562,6 +763,8 @@ void Simulation::resolve_enter(const std::string& route_id) {
 }
 
 void Simulation::retire_instance() {
+  set_navigation_obstacles({});
+  enemies_active_ = false;
   // Floor value belongs to the instance that produced it. Leaving by
   // extraction, death, or a route transition abandons all uncollected floor
   // items/trophies; carried value is handled separately by extraction or the
@@ -645,11 +848,12 @@ void Simulation::materialize_wave() {
   }
   pending_wave_.clear();
   wave_materialization_tick_ = 0;
+  defer_enemy_turn_ = true;
 }
 
 void Simulation::enemy_turn() {
   Actor* player = actor(scion_.actor_id);
-  if (!player || !player->alive || !scion_.alive) return;
+  if (!player || !player->alive || !scion_.alive || !enemies_active_) return;
   for (auto& enemy : actors_) {
     if (enemy.kind != ActorKind::Monster || !enemy.alive) continue;
 
@@ -672,13 +876,19 @@ void Simulation::enemy_turn() {
       continue;
     }
 
+    // Recovery owns the feet and facing just like a committed warning.
+    if (enemy.cooldown_ticks > 0) continue;
     const Vec2 pursuit{player->position.x - enemy.position.x,
                        player->position.y - enemy.position.y};
     const Vec2 direction = quantize_direction(pursuit.x, pursuit.y);
     if (direction.x != 0 || direction.y != 0) enemy.facing = direction;
-    if (enemy.cooldown_ticks > 0) continue;
 
     const int distance = manhattan_distance(enemy.position, player->position);
+    const int contact_range = enemy.elite ? kThrustRange : kMeleeRange;
+    if (distance > contact_range || movement_blocked(enemy.position, player->position)) {
+      pursue(enemy, *player, contact_range);
+      continue;
+    }
     if (enemy.elite) {
       const Vec2 delta{player->position.x - enemy.position.x,
                        player->position.y - enemy.position.y};
@@ -705,9 +915,7 @@ void Simulation::enemy_turn() {
 
     // Plain melee remains the original non-elite cadence. Elite monsters also
     // use it when they are in melee range but cannot fund Sweep. The shared
-    // movement_delta() derivation is used by any Actor action (player WASD
-    // and Dash alike); pursuit remains presentation-neutral until the native
-    // collision/navigation pass owns monster locomotion.
+    // stat-derived movement and scenery collision are shared with the player.
     if (distance > kMeleeRange) continue;
     enemy.cooldown_ticks = enemy.stats.attack_speed_ticks;
     // Match the shared action resolver: name the attacker at committed contact
@@ -739,10 +947,11 @@ void Simulation::advance_tick() {
       }
     }
   }
-  enemy_turn();
+  if (!defer_enemy_turn_) enemy_turn();
+  defer_enemy_turn_ = false;
 }
 
-void Simulation::drop_reward() {
+void Simulation::drop_reward(const std::string& defeated_actor_id) {
   Item item;
   item.id = rng_.token("item");
   item.name = "Ember-edged axe";
@@ -750,7 +959,7 @@ void Simulation::drop_reward() {
   item.history.push_back("forged by the expedition seed");
   ground_items_.push_back(item);
   instance_.ground_item_ids.push_back(item.id);
-  emit(EventType::ItemDropped, {}, item.id, {}, item.name, item.attack_bonus);
+  emit(EventType::ItemDropped, defeated_actor_id, item.id, {}, item.name, item.attack_bonus);
 
   // Relics re-enter only through the ordinary seeded reward stream.  The pool
   // is the proof that a Scion has already died with a meaningful item, and
@@ -762,7 +971,7 @@ void Simulation::drop_reward() {
     relic.history.push_back("resurfaced on route " + instance_.route_id);
     ground_items_.push_back(relic);
     instance_.ground_item_ids.push_back(relic.id);
-    emit(EventType::RelicResurfaced, {}, relic.id, {}, instance_.route_id);
+    emit(EventType::RelicResurfaced, defeated_actor_id, relic.id, {}, instance_.route_id);
     record_legend("relic_resurfaced", relic.id, "route=" + instance_.route_id, {},
                   instance_.route_id);
   }
@@ -777,7 +986,7 @@ void Simulation::drop_reward() {
     ground_trophies_.push_back(trophy);
     resurfaced_trophy_ids_.push_back(trophy.id);
     instance_.ground_trophy_ids.push_back(trophy.id);
-    emit(EventType::TrophyResurfaced, {}, {}, trophy.id, instance_.route_id);
+    emit(EventType::TrophyResurfaced, defeated_actor_id, {}, trophy.id, instance_.route_id);
     record_legend("trophy_resurfaced", trophy.id, "route=" + instance_.route_id, {},
                   instance_.route_id);
   }
@@ -785,7 +994,7 @@ void Simulation::drop_reward() {
   Trophy trophy{rng_.token("trophy"), "Warden's ember"};
   ground_trophies_.push_back(trophy);
   instance_.ground_trophy_ids.push_back(trophy.id);
-  emit(EventType::TrophyDropped, {}, {}, trophy.id, trophy.name);
+  emit(EventType::TrophyDropped, defeated_actor_id, {}, trophy.id, trophy.name);
 }
 
 void Simulation::clear_route_and_unlock_children() {
@@ -835,7 +1044,7 @@ void Simulation::handle_death(Actor& actor_value, const std::string& killer_id) 
                     instance_.route_id);
     }
     if (instance_.active) {
-      drop_reward();
+      drop_reward(actor_value.id);
       // A fallen warden alerts the rest of its pack: while roster entries
       // remain, the entire remaining pack materializes together one
       // telegraph window after this death. Pack-clear progression therefore

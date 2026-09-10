@@ -76,8 +76,10 @@ void local_session_ready_and_deterministic() {
   const auto before_x = session.model().player.x;
   const auto before_y = session.model().player.y;
   session.submit(verdigris::client::ClientCommand::enter_zone("route:tin:1:0"));
+  session.advance_fixed_tick();
   for (int i = 0; i < 4; ++i) {
     session.submit(verdigris::client::ClientCommand::move(1, 0));
+    session.advance_fixed_tick();
   }
   session.poll();
   const bool moved = session.model().player.x != before_x ||
@@ -93,6 +95,318 @@ void local_session_ready_and_deterministic() {
   session.shutdown();
   check(session.connection_state() == verdigris::client::ConnectionState::Disconnected,
         "local: shutdown reaches disconnected state");
+}
+
+void local_fixed_step_is_independent_of_input_and_polling() {
+  using namespace verdigris::client;
+  LocalCoreSession session(0xF17EDULL);
+  check(session.start(), "local-clock: session starts");
+  auto* sim = session.simulation_for_scenarios();
+  const auto player_id = sim->scion().actor_id;
+  const auto foe_id = sim->spawn_monster({verdigris::world_scale::kMeleeRange * 4, 0});
+  auto* player = sim->actor(player_id);
+  player->stats.resource = 0;
+  player->cooldown_ticks = 4;
+  const auto foe_before = sim->actor(foe_id)->position;
+  for (int i = 0; i < 1000; ++i) {
+    session.submit(ClientCommand::aim(i % 2 ? 1 : -1, 0));
+    session.poll();
+  }
+  check(sim->tick() == 0 && sim->actor(foe_id)->position.x == foe_before.x &&
+            sim->actor(foe_id)->position.y == foe_before.y &&
+            player->stats.resource == 0 && player->cooldown_ticks == 4,
+        "local-clock: aim spam and polling advance neither pursuit nor timers");
+  IClientSession& seam = session;
+  seam.advance_fixed_tick();
+  const auto foe_after = sim->actor(foe_id)->position;
+  check(sim->tick() == 1 && foe_after.x < foe_before.x &&
+            player->stats.resource == verdigris::presentation_constants::kResourceRegenPerTick &&
+            player->cooldown_ticks == 3,
+        "local-clock: interface step advances pursuit and timers exactly once");
+  seam.advance_fixed_tick();
+  check(sim->tick() == 2 && sim->actor(foe_id)->position.x < foe_after.x &&
+            player->cooldown_ticks == 2,
+        "local-clock: empty input batch still advances idle enemies");
+
+  const auto position = player->position;
+  for (int i = 0; i < 1000; ++i) {
+    session.submit(ClientCommand::move(0, 1));
+    session.submit(ClientCommand::aim(-1, 0));
+  }
+  seam.advance_fixed_tick();
+  check(sim->tick() == 3 && player->position.x == position.x &&
+            player->position.y == position.y + verdigris::movement_step_per_tick(player->stats.move_speed) &&
+            player->facing.x == -1 && player->facing.y == 0,
+        "local-clock: move and aim bursts consume one movement step and keep held aim");
+  session.submit(ClientCommand::move(0, 1));
+  seam.advance_fixed_tick();
+  check(player->facing.x == -1 && player->facing.y == 0,
+        "local-clock: next tick movement preserves prior held aim");
+  session.submit(ClientCommand::move(1, 0));
+  session.shutdown();
+  check(session.start(), "local-clock: session restarts");
+  seam.advance_fixed_tick();
+  sim = session.simulation_for_scenarios();
+  const auto restarted_position = sim->actor(sim->scion().actor_id)->position;
+  check(sim->tick() == 1 && restarted_position.x == 0 && restarted_position.y == 0,
+        "local-clock: restart discards queued movement and old clock state");
+}
+
+void local_fixed_step_preserves_action_order_and_expiry() {
+  using namespace verdigris::client;
+  LocalCoreSession session(0xF17EDULL);
+  session.start();
+  auto* sim = session.simulation_for_scenarios();
+  const auto player_id = sim->scion().actor_id;
+  const int reach = verdigris::world_scale::kThrustRange - 1;
+  const auto east_id = sim->spawn_monster({reach, 0});
+  const auto west_id = sim->spawn_monster({-reach, 0});
+  auto* player = sim->actor(player_id);
+  player->stats.resource = player->stats.resource_max;
+  const int east_life = sim->actor(east_id)->stats.life;
+  const int west_life = sim->actor(west_id)->stats.life;
+  session.drain_events();
+  session.submit(ClientCommand::aim(1, 0));
+  session.submit(ClientCommand::use_action("thrust"));
+  session.submit(ClientCommand::aim(-1, 0));
+  session.poll();
+  check(sim->tick() == 0 && sim->actor(east_id)->stats.life == east_life,
+        "local-clock: queued attack remains unresolved before fixed step");
+  session.advance_fixed_tick();
+  check(sim->tick() == 1 && sim->actor(east_id)->stats.life < east_life &&
+            sim->actor(west_id)->stats.life == west_life &&
+            player->facing.x == -1 && player->facing.y == 0,
+        "local-clock: AimEast Attack AimWest hits east before final west aim");
+  int starts = 0;
+  int damage = 0;
+  bool ordered = true;
+  bool captured_east = false;
+  WorldView attack_world;
+  sync_world_from_model(attack_world, session.model());
+  PresentationFx attack_fx;
+  for (const auto& event : session.drain_events()) {
+    if (event.type == PresentationEventType::AttackStarted && event.actor_id == player_id) {
+      ++starts;
+      captured_east = event.has_actor_pose && event.actor_x == 0 && event.actor_y == 0 &&
+                      event.facing_x == 1 && event.facing_y == 0;
+    }
+    if (event.type == PresentationEventType::DamageApplied && event.actor_id == east_id) {
+      ++damage;
+      ordered = ordered && starts == 1;
+    }
+    apply_presentation_event(attack_fx, attack_world, event, sim->tick());
+  }
+  check(starts == 1 && damage == 1 && ordered &&
+            player->cooldown_ticks == player->stats.attack_speed_ticks - 1,
+        "local-clock: one confirmed attack precedes damage and one cooldown tick");
+  const auto* owned_strike = actor_strike(attack_fx.effects, player_id);
+  check(captured_east && attack_world.player.id == player_id && owned_strike &&
+            owned_strike->wx == 0 && owned_strike->wy == 0 &&
+            std::abs(owned_strike->angle) < 0.000001 && !owned_strike->speculative,
+        "local-clock: rendered owned strike keeps event-time east pose after final west aim");
+  const int after_hit = sim->actor(east_id)->stats.life;
+  for (int i = 0; i < 1000; ++i) {
+    session.submit(ClientCommand::use_action("thrust"));
+    session.poll();
+  }
+  check(sim->tick() == 1 && player->cooldown_ticks == player->stats.attack_speed_ticks - 1,
+        "local-clock: action spam cannot accelerate cooldown");
+  session.advance_fixed_tick();
+  check(sim->tick() == 2 && sim->actor(east_id)->stats.life == after_hit &&
+            sim->actor(west_id)->stats.life == west_life,
+        "local-clock: bounded attack batch cannot bypass active cooldown");
+
+  LocalCoreSession buff_session(0xB0FFULL);
+  buff_session.start();
+  auto* buff_sim = buff_session.simulation_for_scenarios();
+  buff_session.submit(ClientCommand::use_action("war-cry"));
+  buff_session.advance_fixed_tick();
+  const auto* buff_player = buff_sim->actor(buff_sim->scion().actor_id);
+  const int duration = verdigris::presentation_constants::kWarCryDurationTicks;
+  for (int i = 0; i < 100; ++i) buff_session.poll();
+  check(buff_sim->tick() == 1 && buff_player->war_cry_ticks_remaining == duration - 1,
+        "local-clock: polling cannot shorten the buff duration");
+  for (int i = 0; i < duration - 2; ++i) buff_session.advance_fixed_tick();
+  check(buff_player->war_cry_ticks_remaining == 1,
+        "local-clock: buff remains active until its last explicit step");
+  buff_session.advance_fixed_tick();
+  int expired = 0;
+  for (const auto& event : buff_session.drain_events())
+    if (event.type == PresentationEventType::BuffExpired && event.text == "war-cry") ++expired;
+  check(buff_sim->tick() == static_cast<std::uint64_t>(duration) &&
+            buff_player->war_cry_ticks_remaining == 0 && expired == 1,
+        "local-clock: idle steps publish buff expiry once at the authoritative tick");
+}
+
+void local_fixed_step_uses_authoritative_obstacles() {
+  using namespace verdigris::client;
+  LocalCoreSession session(0xC0111DEULL);
+  session.start();
+  session.submit(ClientCommand::enter_zone("route:tin:1:0"));
+  session.advance_fixed_tick();
+  auto* sim = session.simulation_for_scenarios();
+  const auto initial_tick = sim->tick();
+  auto* player = sim->actor(sim->scion().actor_id);
+  const int step = verdigris::movement_step_per_tick(player->stats.move_speed);
+  const int radius = 5;
+  const int wall = verdigris::world_scale::kActorColliderRadius + radius + step / 2;
+  session.set_navigation_obstacles({{{wall, 0}, radius}});
+  for (int i = 0; i < 100; ++i) session.submit(ClientCommand::move(1, 0));
+  session.advance_fixed_tick();
+  check(sim->tick() == initial_tick + 1 && player->position.x == 0 && player->position.y == 0,
+        "local-clock: batched player movement obeys local authority obstacles");
+  session.set_navigation_obstacles({{{step * verdigris::kDashMovementTicks / 2, 0}, radius}});
+  session.submit(ClientCommand::aim(1, 0));
+  session.submit(ClientCommand::use_action("dash"));
+  session.advance_fixed_tick();
+  check(sim->tick() == initial_tick + 2 && !sim->movement_blocked({0, 0}, player->position) &&
+            player->position.x < step * verdigris::kDashMovementTicks / 2,
+        "local-clock: dash cannot tunnel through authority obstacles");
+  const auto before = player->position;
+  session.set_navigation_obstacles({});
+  session.submit(ClientCommand::move(1, 0));
+  session.advance_fixed_tick();
+  check(sim->tick() == initial_tick + 3 && player->position.x == before.x + step,
+        "local-clock: replacing local obstacles restores one ordinary movement step");
+}
+
+void local_model_round_trips_world_and_drop_anchors() {
+  using namespace verdigris::client;
+  LocalCoreSession session(0xA11C40ULL);
+  session.start();
+  session.submit(ClientCommand::enter_zone("route:tin:1:0"));
+  session.advance_fixed_tick();
+  auto* sim = session.simulation_for_scenarios();
+  const auto player_id = sim->scion().actor_id;
+  int index = 0;
+  for (const auto& actor : sim->actors())
+    if (actor.kind == verdigris::ActorKind::Monster)
+      sim->actor(actor.id)->position = {-10000 - index++ * 300, -10000};
+  const verdigris::Vec2 drop_at{-300, 219};
+  const auto foe_id = sim->spawn_monster(drop_at);
+  auto* player = sim->actor(player_id);
+  bool exact = true;
+  for (const auto position : {verdigris::Vec2{-371, 219}, {3157, -2409}, {0, 0}}) {
+    player->position = position;
+    player->facing = {-1, 1};
+    session.poll();
+    WorldView world;
+    sync_world_from_model(world, session.model());
+    const auto foe = std::find_if(world.monsters.begin(), world.monsters.end(),
+        [&](const WorldActor& actor) { return actor.id == foe_id; });
+    exact &= world.player.id == player_id && world.player.position.x == position.x &&
+             world.player.position.y == position.y && world.player.facing.x == -1 &&
+             world.player.facing.y == 1 && foe != world.monsters.end() &&
+             foe->position.x == drop_at.x && foe->position.y == drop_at.y &&
+             world.has_extraction && world.extraction.x == sim->instance().extraction_point.x &&
+             world.extraction.y == sim->instance().extraction_point.y;
+  }
+  check(exact, "local-mirror: signed player, monster, facing and extraction data round-trip world units");
+  check(session.model().player.uuid == player_id &&
+            session.model().chronicle.active_scion_id == sim->scion().id &&
+            session.model().player.uuid != session.model().chronicle.active_scion_id &&
+            session.model().player.scene_id == sim->instance().route_id &&
+            session.model().scene.type == "instance",
+        "local-mirror: live actor ownership, persistent Scion identity and scene identity stay distinct");
+  const auto anchors = session.navigation_anchors();
+  check(std::any_of(anchors.begin(), anchors.end(), [&](const verdigris::Vec2& anchor) {
+          return anchor.x == player->position.x && anchor.y == player->position.y;
+        }), "local-mirror: navigation keepouts expose current world coordinates");
+
+  player->position = {-371, 219};
+  sim->actor(foe_id)->stats.life = 1;
+  session.submit(ClientCommand::aim(1, 0));
+  session.submit(ClientCommand::use_action("melee"));
+  session.submit(ClientCommand::move(0, 1));
+  session.advance_fixed_tick();
+  bool ground_exact = !session.model().ground.empty() &&
+      session.model().ground.size() == sim->ground_items().size() + sim->ground_trophies().size();
+  for (const auto& item : session.model().ground)
+    ground_exact &= static_cast<int>(std::lround(protocol_to_world(item.x))) == drop_at.x &&
+                    static_cast<int>(std::lround(protocol_to_world(item.y))) == drop_at.y;
+  check(ground_exact && player->position.y != drop_at.y,
+        "local-mirror: item and trophy anchors keep the defeated actor position after later movement");
+  bool drop_event = false;
+  for (const auto& event : session.drain_events())
+    if (event.type == PresentationEventType::ItemDropped)
+      drop_event |= event.actor_id == foe_id && event.has_actor_pose &&
+                    event.actor_x == drop_at.x && event.actor_y == drop_at.y;
+  check(drop_event, "local-mirror: dropped item event carries its actor-owned world anchor");
+  if (!sim->ground_items().empty()) {
+    const auto item_id = sim->ground_items().front().id;
+    session.submit(ClientCommand::pick_up(item_id));
+    session.advance_fixed_tick();
+    check(std::none_of(session.model().ground.begin(), session.model().ground.end(),
+        [&](const ClientGroundItem& item) { return item.uuid == item_id; }),
+        "local-mirror: pickup removes the floor anchor from the mirror");
+  }
+  sim->actor(player_id)->position = sim->instance().extraction_point;
+  session.set_navigation_obstacles({{{1500, 1500}, 50}});
+  session.submit(ClientCommand::extract());
+  session.advance_fixed_tick();
+  check(!sim->instance().active && sim->navigation_obstacles().empty() &&
+            session.model().player.scene_id.empty() && session.model().scene.id == "surface" &&
+            !session.model().scene.has_stairs_up && session.model().ground.empty(),
+        "local-mirror: retirement clears scene identity, navigation, extraction and old loot anchors");
+  session.set_navigation_obstacles({{{1700, -1200}, 40}});
+  check(sim->navigation_obstacles().empty(),
+        "local-mirror: surface dressing cannot reinstall retired instance collision");
+  session.submit(ClientCommand::enter_zone("route:tin:1:0"));
+  session.advance_fixed_tick();
+  check(session.model().player.scene_id == "route:tin:1:0" &&
+            session.model().scene.has_stairs_up && sim->navigation_obstacles().empty(),
+        "local-mirror: next route publishes stationary geometry-install boundary");
+  session.set_navigation_obstacles({{{1700, -1200}, 40}});
+  check(sim->navigation_obstacles().size() == 1 && sim->navigation_obstacles()[0].center.x == 1700,
+        "local-mirror: next route accepts its own world-space geometry");
+  session.shutdown();
+  check(session.navigation_anchors().empty(), "local-mirror: stopped session exposes no stale keepouts");
+}
+
+void local_session_pursuit_mirror_obeys_world_obstacles() {
+  using namespace verdigris::client;
+  LocalCoreSession session(0xDE7012ULL);
+  session.start();
+  session.submit(ClientCommand::enter_zone("route:tin:1:0"));
+  session.advance_fixed_tick();
+  auto* sim = session.simulation_for_scenarios();
+  int index = 0;
+  for (const auto& actor : sim->actors())
+    if (actor.kind == verdigris::ActorKind::Monster)
+      sim->actor(actor.id)->position = {-10000 - index++ * 300, -10000};
+  const auto player_id = sim->scion().actor_id;
+  sim->actor(player_id)->position = {500, -100};
+  const auto foe_id = sim->spawn_monster({0, -100});
+  session.set_navigation_obstacles({{{260, -100}, verdigris::world_scale::kSceneryColliderRadius}});
+  const int initial_life = sim->actor(player_id)->stats.life;
+  bool exact = true, clear = true, incoming_feedback = false;
+  int lateral = 0;
+  for (int i = 0; i < 160 && sim->actor(player_id)->stats.life == initial_life; ++i) {
+    const auto before = sim->actor(foe_id)->position;
+    session.advance_fixed_tick();
+    const auto after = sim->actor(foe_id)->position;
+    clear &= !sim->movement_blocked(before, after);
+    lateral = (std::max)(lateral, std::abs(after.y + 100));
+    WorldView world;
+    sync_world_from_model(world, session.model());
+    const auto foe = std::find_if(world.monsters.begin(), world.monsters.end(),
+        [&](const WorldActor& actor) { return actor.id == foe_id; });
+    exact &= world.player.id == player_id && world.player.position.x == 500 &&
+             world.player.position.y == -100 && foe != world.monsters.end() &&
+             foe->position.x == after.x && foe->position.y == after.y;
+    PresentationFx fx;
+    for (const auto& event : session.drain_events()) apply_presentation_event(fx, world, event, sim->tick());
+    const auto* strike = actor_strike(fx.effects, foe_id);
+    incoming_feedback |= strike && !strike->speculative && fx.screen_pulse_ticks > 0 &&
+        std::any_of(fx.effects.begin(), fx.effects.end(), [&](const EffectFx& effect) {
+          return effect.kind == EffectFx::Kind::TargetFlash && effect.damage_to_player &&
+                 effect.actor_id == player_id && effect.wx == 500 && effect.wy == -100;
+        });
+  }
+  check(exact && clear && lateral >= verdigris::world_scale::kSceneryColliderRadius,
+        "local-mirror: real idle pursuit round-trips every detour position outside world-space circles");
+  check(sim->actor(player_id)->stats.life < initial_life && incoming_feedback,
+        "local-mirror: detour arrival produces owned strike and incoming player feedback at actual positions");
 }
 
 void hunt_step(verdigris::client::IClientSession& session, const char* action = "melee") {
@@ -2814,6 +3128,11 @@ int main() {
   // at this volume.
   std::setvbuf(stdout, nullptr, _IONBF, 0);
   local_session_ready_and_deterministic();
+  local_fixed_step_is_independent_of_input_and_polling();
+  local_fixed_step_preserves_action_order_and_expiry();
+  local_fixed_step_uses_authoritative_obstacles();
+  local_model_round_trips_world_and_drop_anchors();
+  local_session_pursuit_mirror_obeys_world_obstacles();
   remote_dead_endpoint_is_a_visible_failure();
   remote_handshake_reaches_ready();
   remote_guest_journey();

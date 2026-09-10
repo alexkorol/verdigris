@@ -1,0 +1,150 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "report_name": "raider-walk-ne.provenance.json",
+  "shared_palette_max_colors": 32,
+  "defaults": {
+    "cell_size": 7,
+    "alpha_mode": "crisp",
+    "alpha_floor": 128,
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "root_production_pursuit_reviewed_provisional_integration_2026-09-10"
+  },
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/raider-walk-ne-v1.png",
+      "assets": [
+        {
+          "name": "raider_walk0_ne",
+          "source_box": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "anchor_source": [
+            315,
+            483
+          ]
+        },
+        {
+          "name": "raider_walk1_ne",
+          "source_box": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "anchor_source": [
+            258,
+            483
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/raider-walk-ne-v2.png",
+      "border_background": {
+        "color": [
+          160,
+          160,
+          160
+        ],
+        "tolerance": 100
+      },
+      "assets": [
+        {
+          "name": "raider_walk2_ne",
+          "source_box": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "anchor_source": [
+            201,
+            483
+          ]
+        },
+        {
+          "name": "raider_walk3_ne",
+          "source_box": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "anchor_source": [
+            315,
+            461
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/raider-walk-ne-v1.png",
+      "assets": [
+        {
+          "name": "raider_walk4_ne",
+          "source_box": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "anchor_source": [
+            258,
+            461
+          ]
+        },
+        {
+          "name": "raider_walk5_ne",
+          "source_box": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "anchor_source": [
+            201,
+            461
+          ]
+        }
+      ]
+    }
+  ],
+  "candidate_manifest": "native/tools/raster/raider-walk-ne-candidates/selected/import.json",
+  "known_limitations": [
+    "Root reviewed the six native phases at1x/3x, idle transitions and source-alpha comparison; production walk-phase crops and full-frame pursuit feedback are root-reviewed for provisional integration. No smooth-video claim is made.",
+    "Walking stance is narrower than idle and the carried axe has a smaller, nearly edge-on blade. Six authored phases include a close phase5-to0 transition.",
+    "Original v1 supplies phases0,1,4,5 and focused v2 supplies phases2,3. A single cell7 reconstruction and one32-color palette preserve all phase scale and color; no independent frame fitting.",
+    "The whole selected cycle uses source origin315,483 with column455,row490, lowered two native pixels from the initial review without changing relative foot lift. All canvases80x96/pivot40,96.",
+    "Axe remains embedded in the anatomical-right/screen-right hand; no hero weapon overlay."
+  ],
+  "registration": {
+    "source_origin": [
+      315,
+      483
+    ],
+    "column_stride": 455,
+    "row_stride": 490,
+    "canvas": [
+      80,
+      96
+    ],
+    "pivot": [
+      40,
+      96
+    ]
+  },
+  "promotion_review": {
+    "acceptance": "root_production_pursuit_reviewed_provisional_integration_2026-09-10",
+    "scope": "Root viewed all14 production-rendered NE/NW walk phase crops at original scale, native idle cycles, and full-frame NE walk, NW contact and tree-detour captures. Provisional production integration accepted with existing smaller axe, narrower body and crown/phase drift caveats; no smooth-video claim. Final supported build/all-scenario validation remains root-owned.",
+    "pixel_policy": "Actual Pixel Respecter import must reproduce all six selected candidate PNG hashes exactly."
+  }
+}

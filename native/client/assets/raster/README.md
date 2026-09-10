@@ -8,7 +8,7 @@ visible content height; animation uses the shared full-canvas pivot and scale.
 `source/` retains generated candidates, including rejected ones. `prompts/`
 records the actual image requests, reference paths and observed failures.
 `runtime/catalog.json` resolves import order and records the active source,
-conversion settings, hashes and limitations for each of 148 PNGs. The importer
+conversion settings, hashes and limitations for each of 162 PNGs. The importer
 uses the owner's actual Pixel Respecter project at
 `Z:/Code/Python/pixel-perfecter`; it is not a substitute pixelation filter.
 
@@ -17,7 +17,33 @@ and critical feedback, and [PROMPTING.md](PROMPTING.md) for the resulting local
 workflow. Model variant names are recorded only where the source actually
 identifies them; our image tool has no model selector.
 
-## Current milestone: pixel contact, dust and retained bodies
+## Current milestone: real pursuit and directional walking
+
+Six NE and eight NW raider walk frames join the existing SW eight-frame walk.
+All 148 previous runtime PNGs remain unchanged; 29 manifests resolve 55 sources
+to 162 active sprites. SE walking remains rejected because its repeated
+leading leg did not form a complete gait.
+
+Native enemies now pursue around shared scenery collision. Input commands
+resolve once per 50 ms tick, and actor motion follows actual travel. Immutable
+event poses preserve strike direction and death/drop positions across later
+movement. Local sessions preserve coordinates, actor identity and floor
+geometry through entry, extraction and re-entry. Entry construction clears
+both physical anchors and the initial hero/stair artwork; one Tin2 tree moves
+to make the previously hidden entrance visible.
+
+Final supported build/all 71 scenarios pass. Native suites, browser 32/32,
+importer 10/10 and equipment/sampling checks pass. Fullscreen static/moving
+averages are 23.283/25.402 ms; moving peak is 34.124 ms. Both average limits
+remain 40 ms. Root viewed all fourteen new production walk poses, the actual
+detour/contact and cleared entrance, and the 3440x1440 live window. The live
+local testbed killed the idle character during inspection; successful fight,
+loot and extraction evidence comes from the production harness. Opening pace
+and full interactive-session acceptance remain unfinished.
+
+[Evidence and precise acceptance limits](reviews/2026-09-10-pursuit/README.md).
+
+## Previous milestone: pixel contact, dust and retained bodies
 
 Nine new pixel sprites replace geometric dust/swing feedback and add a four-pose SW
 raider collapse. The catalog now contains 148 assets across 27 manifests and 52

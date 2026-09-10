@@ -1,0 +1,3 @@
+Edit Image 1 to remove its background completely. Return the eight isolated figures on genuine transparent alpha, including the empty spaces between their arms and bodies and between their legs. Preserve all eight figures exactly: the distinct chronological walking poses, upper-left back view, cell placement, body scale, pixel clusters, clothing, hair, and the bronze axes gripped in the anatomical right hand. Do not redraw the motion or rearrange any limbs.
+
+Image 2 is the original raider identity reference. Retain this character's appearance; do not copy the idle pose. The only requested correction is actual transparency around the complete eight silhouettes. Return the same four-column by two-row sheet without any backdrop, labels, or border.

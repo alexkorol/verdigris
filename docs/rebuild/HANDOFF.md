@@ -1,5 +1,41 @@
 # Native reconstitution handoff
 
+## 2026-09-10 — Real pursuit, directional walks and visible entrances
+
+Native enemies now pursue through bounded circle navigation shared with player
+collision. Input batches resolve in order once per 50 ms tick; mouse/polling
+bursts cannot advance time. Immutable event poses preserve strike direction,
+hit feedback, corpse facing and ordinary drop positions. Local sessions now
+mirror world coordinates and actor identity correctly and install/retire scene
+collision through entry, extraction and re-entry.
+
+Fourteen new Pixel Respecter outputs add NE6/NW8 raider walking, alongside SW8.
+All 148 old PNGs remain unchanged; the catalog has 162 sprites, 29 manifests
+and 55 sources. SE remains rejected after three same-leading-leg attempts.
+The new production pursuit scenario covers directional phases, collision,
+tree detour, contact, input bursts and session lifecycle. Entry construction
+clears physical anchors and the initial hero/stair artwork. Visual inspection
+rejected a collision-only Tin2 repair, then verified the single-tree move that
+exposes the hero and exit. Other props and normal travel occlusion remain.
+
+Final supported build/all 71 scenarios pass. The preceding supported run passes
+every native suite; its two remaining main-fixture failures are corrected in
+the final run. Browser 32/32, importer 10/10 and equipment/sampling pass.
+Fullscreen static/moving averages are 23.283/25.402 ms; moving peak 34.124 ms,
+under unchanged 40 ms average gates. Root viewed native and production phase
+images, actual detour/contact/entry and the live 3440x1440 window. Both live
+local testbed sessions lost the idle character during observation; gear input
+and clean closure were verified, but no completed manual fight is claimed.
+Harness results prove real fight, loot, equipment and extraction. Opening pace
+and full interactive-session acceptance remain open.
+
+Smaller axe/body differences, missing SE and other monster motion, bow/staff
+actions, terrain repetition and remote wall presentation remain active work.
+Previously recovered items without authored positions retain legacy placement.
+No goal completion, push or merge is claimed.
+
+[Evidence, original failures and exact limits](../../native/client/assets/raster/reviews/2026-09-10-pursuit/README.md).
+
 ## 2026-09-10 — Pixel contact, dust and retained bodies
 
 Nine new pixel sprites replace geometric dust/swing feedback and add a four-pose SW

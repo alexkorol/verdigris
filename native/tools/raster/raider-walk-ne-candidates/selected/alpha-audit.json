@@ -1,0 +1,34 @@
+{
+  "v1": {
+    "original_mode": "RGBA",
+    "transparent_pixels": 1244062,
+    "partial_alpha_pixels": 328802,
+    "opaque_pixels": 0,
+    "handling": "Actual alpha retained into Pixel Respecter crisp reconstruction, with alpha_floor128; faint source halo is excluded."
+  },
+  "v2": {
+    "original_mode": "RGB",
+    "failure": "Focused edit painted an opaque checker.",
+    "cleanup": {
+      "api": "pixel_perfecter.colors.make_border_connected_transparent",
+      "color": [
+        160,
+        160,
+        160
+      ],
+      "tolerance": 100,
+      "interior_windows": [],
+      "transparent_pixels_after": 1296492
+    },
+    "removed_chromatic_channel_spread_gt20": 4,
+    "local_windows": 0,
+    "review": "Border-connected matte removed; original and cleaned selected figures were compared for hair, forearm, torso and leg openings.",
+    "selected_phase_chromatic_pixels_removed": 0,
+    "unselected_source_cells_note": "The four chromatic fringe pixels removed from the full sheet belong to unused v2 phases0/1. Selected phases2/3 remove zero such pixels."
+  },
+  "final": {
+    "binary_alpha_all_frames": true,
+    "neutral_gap_pixels_report": "native-review.json",
+    "interior_cleanup": "No additional local windows needed; no body pixels repainted."
+  }
+}

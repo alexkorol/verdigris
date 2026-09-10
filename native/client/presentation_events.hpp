@@ -44,6 +44,13 @@ struct PresentationEvent {
   int from_y = 0;
   int to_x = 0;
   int to_y = 0;
+  // Local authoritative event snapshot, in world units. A later command in
+  // the same fixed tick must not rotate or relocate an already resolved hit.
+  bool has_actor_pose = false;
+  int actor_x = 0;
+  int actor_y = 0;
+  int facing_x = 0;
+  int facing_y = 0;
 };
 
 // TASK-0122 Phase A: the single named table for every new animation/VFX TTL,

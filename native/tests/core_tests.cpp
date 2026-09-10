@@ -89,7 +89,9 @@ std::vector<std::string> relevant(const Simulation& sim) {
   for (const auto& event : sim.events()) {
     result.push_back(std::to_string(static_cast<int>(event.type)) + ":" + event.actor_id + ":" +
                      event.item_id + ":" + event.trophy_id + ":" + event.text + ":" +
-                     std::to_string(event.value));
+                     std::to_string(event.value) + ":" + std::to_string(event.has_actor_pose) + ":" +
+                     std::to_string(event.actor_position.x) + ":" + std::to_string(event.actor_position.y) + ":" +
+                     std::to_string(event.actor_facing.x) + ":" + std::to_string(event.actor_facing.y));
   }
   result.push_back(sim.house().id);
   result.push_back(sim.scion().id);
@@ -145,6 +147,18 @@ int living_monster_count(const Simulation& sim) {
     if (actor.kind == ActorKind::Monster && actor.alive) ++count;
   }
   return count;
+}
+
+bool drop_matches_death_pose(const Simulation& sim, const Event& drop) {
+  if (!drop.has_actor_pose || drop.actor_id.empty()) return false;
+  for (const Event& death : sim.events()) {
+    if (death.type == EventType::ActorDied && death.actor_id == drop.actor_id &&
+        death.tick == drop.tick && death.has_actor_pose &&
+        death.actor_position.x == drop.actor_position.x && death.actor_position.y == drop.actor_position.y &&
+        death.actor_facing.x == drop.actor_facing.x && death.actor_facing.y == drop.actor_facing.y)
+      return true;
+  }
+  return false;
 }
 
 void test_skill_resource_gating_and_thrust() {
@@ -336,6 +350,330 @@ void test_facing_replay_is_deterministic() {
   check(first_player && second_player && first_player->facing.x == second_player->facing.x &&
             first_player->facing.y == second_player->facing.y,
         "facing state remains identical under deterministic replay");
+}
+
+void test_fixed_tick_batches_preserve_order_and_bound_motion() {
+  Simulation sim(0xA020ULL);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  const std::string enemy_id = first_monster(sim)->id;
+  Actor* player = sim.actor(sim.scion().actor_id);
+  player->stats.resource = 0;
+  player->cooldown_ticks = 10;
+  const auto tick = sim.tick();
+  sim.dispatch_tick({Command::move(1, 0), Command::move(1, 0), Command::aim(0, 1),
+                     Command::aim(1, 0), Command::move(1, 0)});
+  check(sim.tick() == tick + 1 && player->position.x == world_scale::kPlayerStepPerTick &&
+            player->stats.resource == presentation_constants::kResourceRegenPerTick &&
+            player->cooldown_ticks == 9 &&
+            sim.actor(enemy_id)->position.x == world_scale::kEnemySpawnDistance - 12,
+        "many inputs spend one movement, pursuit, regeneration and cooldown tick");
+  const Vec2 before_dash = player->position;
+  sim.dispatch_tick({Command::move(1, 0), Command::action_use(ActionType::Dash),
+                     Command::action_use(ActionType::Dash), Command::aim(-1, 0)});
+  check(player->position.x == before_dash.x + world_scale::kPlayerStepPerTick * kDashMovementTicks &&
+            player->position.y == before_dash.y && player->facing.x == -1,
+        "one Dash replaces walking without duplicate displacement and later aim remains ordered");
+  const int resource_before = player->stats.resource;
+  sim.dispatch_tick({});
+  check(sim.tick() == tick + 3 && player->stats.resource ==
+            resource_before + presentation_constants::kResourceRegenPerTick,
+        "an empty input batch advances one idle authority tick");
+
+  Simulation ordered(0xA021ULL);
+  const std::string east = ordered.spawn_monster({world_scale::kMeleeRange + 1, 0});
+  const std::string west = ordered.spawn_monster({-world_scale::kMeleeRange - 1, 0});
+  const int life = ordered.actor(east)->stats.life;
+  ordered.dispatch_tick({Command::aim(1, 0), Command::action_use(ActionType::Thrust),
+                         Command::action_use(ActionType::Thrust), Command::aim(-1, 0)});
+  check(ordered.actor(east)->stats.life < life && ordered.actor(west)->stats.life == life &&
+            ordered.actor(ordered.scion().actor_id)->facing.x == -1 &&
+            count_events(ordered, EventType::AttackStarted, "thrust") == 1,
+        "aim east, attack, aim west hits east once and leaves facing west");
+  const Event* east_attack = last_event(ordered, EventType::AttackStarted, "thrust");
+  check(east_attack && east_attack->has_actor_pose && east_attack->actor_position.x == 0 &&
+            east_attack->actor_position.y == 0 && east_attack->actor_facing.x == 1 &&
+            east_attack->actor_facing.y == 0,
+        "the batched attack event retains east aim independently of the actor's final west aim");
+  Simulation cry(0xA022ULL);
+  cry.dispatch_tick({Command::action_use(ActionType::WarCry),
+                     Command::action_use(ActionType::WarCry)});
+  check(count_events(cry, EventType::BuffApplied) == 1 &&
+            cry.actor(cry.scion().actor_id)->stats.resource == 32,
+        "duplicate non-cooldown actions cannot spend their resource cost twice in one tick");
+}
+
+void test_event_poses_survive_later_movement_and_enemy_retargeting() {
+  const Event legacy{EventType::AttackStarted, "actor", {}, {}, "melee", 0, 7};
+  check(!legacy.has_actor_pose && legacy.actor_position.x == 0 && legacy.actor_facing.y == 0,
+        "existing aggregate event construction defaults to an explicitly unavailable pose");
+  Simulation moving(0xA02BULL);
+  moving.spawn_monster({world_scale::kMeleeRange, 0});
+  moving.dispatch_tick({Command::aim(1, 0), Command::action_use(ActionType::Melee),
+                        Command::move(0, 1)});
+  const Event* attack = last_event(moving, EventType::AttackStarted, "melee");
+  const Actor* player = moving.actor(moving.scion().actor_id);
+  check(attack && attack->actor_id == player->id && attack->has_actor_pose &&
+            attack->actor_position.x == 0 && attack->actor_position.y == 0 &&
+            attack->actor_facing.x == 1 && attack->actor_facing.y == 0 &&
+            player->position.y == world_scale::kPlayerStepPerTick && player->facing.y == 1,
+        "attack then walk preserves the emitted strike origin and direction before final movement");
+  const Event* move = last_event(moving, EventType::ActorMoved, "");
+  // The final event may be enemy pursuit, so locate the named player's move.
+  for (const Event& event : moving.events())
+    if (event.type == EventType::ActorMoved && event.actor_id == player->id) move = &event;
+  check(move && move->has_actor_pose && move->actor_position.y == world_scale::kPlayerStepPerTick &&
+            move->actor_facing.x == 0 && move->actor_facing.y == 1,
+        "movement events independently capture their post-move pose");
+
+  for (bool elite : {false, true}) {
+    Simulation sim(0xA02CULL);
+    const int x = world_scale::kMeleeRange + (elite ? 1 : 0);
+    const std::string enemy_id = sim.spawn_monster({x, 0}, 1, elite);
+    const std::size_t begin = sim.events().size();
+    sim.dispatch_tick({});
+    const EventType expected = elite ? EventType::AttackTelegraphed : EventType::AttackStarted;
+    check(sim.events()[begin].type == expected && sim.events()[begin].actor_id == enemy_id &&
+              sim.events()[begin].has_actor_pose && sim.events()[begin].actor_position.x == x &&
+              sim.events()[begin].actor_position.y == 0 && sim.events()[begin].actor_facing.x == -1 &&
+              sim.events()[begin].actor_facing.y == 0,
+          "ordinary contact and elite warning capture their actual attacker at emission");
+    sim.dispatch_tick({Command::aim(0, -1), Command::action_use(ActionType::Dash)});
+    for (int tick = 0; tick < 5; ++tick) sim.dispatch_tick({});
+    check(sim.actor(enemy_id)->position.y < 0 && sim.actor(enemy_id)->facing.y < 0 &&
+              sim.events()[begin].actor_position.x == x && sim.events()[begin].actor_position.y == 0 &&
+              sim.events()[begin].actor_facing.x == -1 && sim.events()[begin].actor_facing.y == 0,
+          "later enemy pursuit and retargeting cannot rewrite its stored warning or contact pose");
+  }
+}
+
+void test_drop_events_capture_the_defeated_actor_anchor() {
+  Simulation sim(0xA02DULL);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  Actor* enemy = first_monster(sim);
+  const std::string enemy_id = enemy->id;
+  const Vec2 corpse{100, 30};
+  enemy->position = corpse;
+  enemy->facing = {-1, -1};
+  enemy->stats.life = 1;
+  sim.dispatch_tick({Command::action_use(ActionType::Melee), Command::move(0, -1)});
+  check(!sim.actor(enemy_id)->alive && sim.ground_items().size() == 1 &&
+            sim.ground_trophies().size() == 1,
+        "an actual melee death still creates exactly its ordinary item and trophy");
+  for (EventType type : {EventType::ActorDied, EventType::ItemDropped, EventType::TrophyDropped}) {
+    const Event* event = last_event(sim, type);
+    check(event && event->actor_id == enemy_id && event->has_actor_pose &&
+              event->actor_position.x == corpse.x && event->actor_position.y == corpse.y &&
+              event->actor_facing.x == -1 && event->actor_facing.y == -1,
+          "death and floor rewards preserve the defeated actor's real pose after it is no longer alive");
+    check(event->actor_position.y != sim.actor(sim.scion().actor_id)->position.y,
+          "loot remains anchored to its corpse instead of the player's later batched position");
+  }
+  const Event* item = last_event(sim, EventType::ItemDropped);
+  const Event* trophy = last_event(sim, EventType::TrophyDropped);
+  check(item->item_id == sim.ground_items().front().id &&
+            item->value == sim.ground_items().front().attack_bonus &&
+            trophy->trophy_id == sim.ground_trophies().front().id &&
+            sim.ground_items().front().owner_id.empty(),
+        "drop anchors retain item identity, stats and unowned floor ownership");
+}
+
+void test_pursuit_reaches_real_contact_at_stat_speed() {
+  Simulation sim(0xA023ULL);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  const std::string id = first_monster(sim)->id;
+  const ActorStats original_stats = sim.actor(id)->stats;
+  check(sim.actor(id)->position.x == world_scale::kEnemySpawnDistance,
+        "instance entry publishes the stationary authored spawn before its first pursuit tick");
+  const auto birth_anchors = sim.navigation_anchors();
+  check(birth_anchors.size() == 5 && birth_anchors[0].x == 0 && birth_anchors[0].y == 0 &&
+            birth_anchors[1].x == sim.instance().extraction_point.x &&
+            birth_anchors[1].y == sim.instance().extraction_point.y &&
+            birth_anchors[2].x == world_scale::kEnemySpawnDistance &&
+            birth_anchors[3].x == sim.pending_wave()[0].position.x &&
+            birth_anchors[3].y == sim.pending_wave()[0].position.y &&
+            birth_anchors[4].x == sim.pending_wave()[1].position.x &&
+            birth_anchors[4].y == sim.pending_wave()[1].position.y,
+        "scene construction receives player, extraction, live and owed birth anchors");
+  int moved_ticks = 0;
+  while (manhattan_distance(sim.actor(id)->position, {0, 0}) > world_scale::kMeleeRange) {
+    const Vec2 before = sim.actor(id)->position;
+    const std::size_t begin = sim.events().size();
+    sim.dispatch_tick({});
+    const Actor* enemy = sim.actor(id);
+    const int expected = std::min(movement_step_per_tick(enemy->stats.move_speed),
+                                 before.x - world_scale::kMeleeRange);
+    check(before.x - enemy->position.x == expected && enemy->position.y == 0 &&
+              enemy->facing.x == -1 && enemy->cooldown_ticks == 0 &&
+              sim.events().size() == begin + 1 &&
+              sim.events().back().type == EventType::ActorMoved &&
+              sim.events().back().actor_id == id && sim.events().back().text == "pursuit",
+          "ordinary approach moves at the shared stat-derived speed and emits actual displacement");
+    check(++moved_ticks < 100, "the ordinary warden reaches the contact band in bounded time");
+  }
+  check(moved_ticks == 48 && count_events(sim, EventType::AttackStarted) == 0,
+        "the natural spawn needs 48 movement ticks and does not attack during its arrival step");
+  const auto moved_anchors = sim.navigation_anchors();
+  check(moved_anchors[2].x == world_scale::kMeleeRange &&
+            birth_anchors[2].x == world_scale::kEnemySpawnDistance &&
+            moved_anchors[3].x == birth_anchors[3].x && moved_anchors[3].y == birth_anchors[3].y &&
+            moved_anchors[4].x == birth_anchors[4].x && moved_anchors[4].y == birth_anchors[4].y,
+        "captured birth anchors stay immutable while later snapshots report live pursuit and owed spawns");
+  const Vec2 contact = sim.actor(id)->position;
+  const int life = sim.actor(sim.scion().actor_id)->stats.life;
+  const int damage = Simulation::resolve_damage(*sim.actor(id), *sim.actor(sim.scion().actor_id));
+  sim.dispatch_tick({});
+  check(sim.actor(id)->position.x == contact.x && sim.actor(id)->position.y == contact.y &&
+            sim.actor(id)->stats == original_stats &&
+            sim.actor(sim.scion().actor_id)->stats.life == life - damage &&
+            count_events(sim, EventType::AttackStarted, "melee") == 1,
+        "pursuit ends at real ordinary contact with unchanged combat stats and actual damage");
+}
+
+void test_pursuit_navigates_corners_and_overlapping_bodies_deterministically() {
+  const std::vector<std::vector<NavigationObstacle>> layouts = {
+      {{{350, 0}, 90}},
+      {{{350, -60}, 90}, {{350, 80}, 90}, {{480, 80}, 55}}};
+  for (auto obstacles : layouts) {
+    Simulation first(0xA024ULL), second(0xA024ULL);
+    first.dispatch(Command::enter("route:tin:1:0"));
+    second.dispatch(Command::enter("route:tin:1:0"));
+    first.set_navigation_obstacles(obstacles);
+    std::reverse(obstacles.begin(), obstacles.end());
+    second.set_navigation_obstacles(obstacles);
+    const std::string id = first_monster(first)->id;
+    bool detoured = false;
+    bool contacted = false;
+    for (int tick = 0; tick < 240; ++tick) {
+      const Vec2 from = first.actor(id)->position;
+      first.dispatch_tick({});
+      second.dispatch_tick({});
+      const Actor* a = first.actor(id);
+      const Actor* b = second.actor(id);
+      const int distance = manhattan_distance(from, a->position);
+      check(distance <= movement_step_per_tick(a->stats.move_speed) &&
+                !first.movement_blocked(from, a->position),
+            "every pursuit segment respects speed and all expanded solid circles");
+      check(a->position.x == b->position.x && a->position.y == b->position.y &&
+                a->facing.x == b->facing.x && a->facing.y == b->facing.y &&
+                a->cooldown_ticks == b->cooldown_ticks && relevant(first) == relevant(second),
+            "obstacle input order does not change the deterministic route or event stream");
+      detoured = detoured || a->position.y != 0;
+      if (count_events(first, EventType::DamageApplied, "enemy-melee") > 0) {
+        contacted = true;
+        check(!first.movement_blocked(a->position, {0, 0}) &&
+                  manhattan_distance(a->position, {0, 0}) <= world_scale::kMeleeRange,
+              "a detouring enemy only attacks with a clear real contact segment");
+        break;
+      }
+    }
+    check(detoured && contacted, "actual pursuit goes around the blocked approach into contact");
+    check(snapshot(first) == snapshot(second), "navigation preserves same-seed durable and RNG state");
+  }
+}
+
+void test_shared_collision_blocks_dash_corner_cutting_and_wall_attacks() {
+  Simulation sim(0xA025ULL);
+  sim.set_navigation_obstacles({{{40, 0}, 1}});
+  const int radius = 1 + world_scale::kActorColliderRadius;
+  check(!sim.movement_blocked({0, radius}, {80, radius}) &&
+            sim.movement_blocked({0, radius - 1}, {80, radius - 1}),
+        "shared swept collision preserves exact tangent clearance and blocks its inner neighbor");
+  sim.dispatch_tick({Command::move(1, 0)});
+  check(sim.actor(sim.scion().actor_id)->position.x == 11,
+        "walking can reach exact expanded-circle tangency");
+  sim.dispatch_tick({Command::move(1, 0)});
+  check(sim.actor(sim.scion().actor_id)->position.x == 11,
+        "ordinary player movement uses the same core obstacle authority");
+  sim.dispatch_tick({Command::action_use(ActionType::Dash)});
+  check(sim.actor(sim.scion().actor_id)->position.x == 11 &&
+            count_events(sim, EventType::ActorMoved, "dash") == 0,
+        "a Dash cannot tunnel through a circle even when its destination is clear");
+  check(navigation_segment_blocked({{{40, 40}, 1}}, {0, 0}, {80, 80}),
+        "a diagonal segment cannot cut through a solid corner between clear endpoints");
+
+  Simulation wall(0xA026ULL);
+  wall.spawn_monster({world_scale::kMeleeRange, 0});
+  wall.set_navigation_obstacles({{{71, 0}, 10}});
+  wall.dispatch_tick({Command::action_use(ActionType::Melee),
+                      Command::action_use(ActionType::Thrust),
+                      Command::action_use(ActionType::Sweep)});
+  check(count_events(wall, EventType::AttackStarted) == 0 &&
+            count_events(wall, EventType::DamageApplied) == 0 &&
+            wall.actor(wall.scion().actor_id)->stats.resource == 50,
+        "solid contact sight gates both sides and every shared melee action before cost or damage");
+}
+
+void test_pursuit_respects_warning_recovery_and_unreachable_goals() {
+  Simulation warning(0xA027ULL);
+  const std::string elite_id = warning.spawn_monster({world_scale::kMeleeRange + 1, 0}, 1, true);
+  warning.dispatch_tick({});
+  const Vec2 start = warning.actor(elite_id)->position;
+  const Vec2 facing = warning.actor(elite_id)->facing;
+  for (int tick = 0; tick < kTelegraphTicks; ++tick) {
+    if (tick == 0)
+      warning.dispatch_tick({Command::aim(0, -1), Command::action_use(ActionType::Dash)});
+    else warning.dispatch_tick({});
+    const Actor* elite = warning.actor(elite_id);
+    check(elite->position.x == start.x && elite->position.y == start.y &&
+              elite->facing.x == facing.x && elite->facing.y == facing.y,
+          "a warning holds the actor's exact feet and facing through the resolution tick");
+  }
+  check(count_events(warning, EventType::DamageApplied) == 0,
+        "escaping a committed warning still avoids its attack");
+  warning.dispatch_tick({});
+  check(manhattan_distance(start, warning.actor(elite_id)->position) > 0,
+        "pursuit resumes on the tick after an escaped warning resolves");
+
+  Simulation recovery(0xA028ULL);
+  const std::string id = recovery.spawn_monster({world_scale::kMeleeRange, 0});
+  recovery.dispatch_tick({});
+  const int cadence = recovery.actor(id)->stats.attack_speed_ticks;
+  for (int tick = 1; tick < cadence; ++tick) {
+    if (tick == 1)
+      recovery.dispatch_tick({Command::aim(0, -1), Command::action_use(ActionType::Dash)});
+    else recovery.dispatch_tick({});
+    check(recovery.actor(id)->position.x == world_scale::kMeleeRange &&
+              recovery.actor(id)->position.y == 0 && recovery.actor(id)->facing.y == 0,
+          "attack recovery plants enemy feet and facing while player movement remains free");
+  }
+  recovery.dispatch_tick({});
+  check(recovery.actor(id)->position.y < 0 &&
+            count_events(recovery, EventType::DamageApplied, "enemy-melee") == 1,
+        "recovery expiry resumes pursuit rather than causing an out-of-range duplicate hit");
+
+  Simulation trapped(0xA029ULL);
+  trapped.dispatch(Command::enter("route:tin:1:0"));
+  const std::string trapped_id = first_monster(trapped)->id;
+  trapped.set_navigation_obstacles({{{100, 0}, 50}, {{70, 70}, 50}, {{0, 100}, 50},
+                                    {{-70, 70}, 50}, {{-100, 0}, 50}, {{-70, -70}, 50},
+                                    {{0, -100}, 50}, {{70, -70}, 50}});
+  const auto events = trapped.events().size();
+  for (int tick = 0; tick < 40; ++tick) trapped.dispatch_tick({});
+  check(trapped.actor(trapped_id)->position.x == world_scale::kEnemySpawnDistance &&
+            trapped.actor(trapped_id)->position.y == 0 && trapped.events().size() == events,
+        "an enclosed goal makes pursuit wait without clipping, teleporting or phantom movement");
+}
+
+void test_navigation_obstacles_retire_with_the_scene() {
+  Simulation sim(0xA02AULL);
+  sim.set_navigation_obstacles({{{40, 0}, 10}});
+  sim.dispatch_tick({Command::enter("route:tin:1:0"), Command::move(1, 0),
+                     Command::action_use(ActionType::Dash)});
+  check(sim.navigation_obstacles().empty(), "entry discards the preceding scene's obstacle snapshot");
+  check(sim.actor(sim.scion().actor_id)->position.x == 0 &&
+            first_monster(sim)->position.x == world_scale::kEnemySpawnDistance &&
+            count_events(sim, EventType::ActorMoved) == 0,
+        "scene entry publishes stationary actors before accepting any stale movement intent");
+  sim.set_navigation_obstacles({{{350, 0}, 90}});
+  const std::string id = first_monster(sim)->id;
+  sim.dispatch(Command::extract());
+  const Vec2 left_behind = sim.actor(id)->position;
+  check(!sim.instance().active && sim.navigation_obstacles().empty(),
+        "extraction clears the floor's collision and retires its active scene");
+  for (int i = 0; i < 80; ++i) sim.dispatch_tick({});
+  check(sim.actor(id)->position.x == left_behind.x && sim.actor(id)->position.y == left_behind.y &&
+            count_events(sim, EventType::AttackStarted) == 0,
+        "abandoned wardens cannot pursue or attack across the House boundary");
 }
 
 void test_sweep_hits_multiple_targets_and_gates_resource() {
@@ -541,8 +879,8 @@ void test_non_elite_melee_cadence_is_unchanged() {
     Actor* player = state->actor(state->scion().actor_id);
     player->position = {0, 0};
     player->stats.life = player->stats.life_max = 1000;
-    first_monster(*state)->position = {world_scale::kMeleeRange + 1, 0};
   }
+  first_monster(sim)->position = {world_scale::kMeleeRange + 1, 0};
   const std::string monster_id = first_monster(sim)->id;
   Actor* player = sim.actor(sim.scion().actor_id);
   Actor* monster = sim.actor(monster_id);
@@ -553,9 +891,11 @@ void test_non_elite_melee_cadence_is_unchanged() {
   };
   const std::size_t before_miss = sim.events().size();
   wait_both();
-  check(sim.events().size() == before_miss && player->stats.life == 1000 &&
+  check(sim.events().size() == before_miss + 1 &&
+            sim.events().back().type == EventType::ActorMoved &&
+            sim.events().back().actor_id == monster_id && player->stats.life == 1000 &&
             monster->cooldown_ticks == 0,
-        "out-of-range ordinary melee emits no attack or damage and spends no cooldown");
+        "out-of-range ordinary melee approaches but emits no attack or spends cooldown");
 
   // Equality is the contact boundary. The control takes the same ticks while
   // remaining outside it, so later rewards expose any accidental RNG draws.
@@ -780,6 +1120,8 @@ void test_relic_resurface_round_trip() {
   for (const auto& event : sim.events()) {
     if (event.type == EventType::RelicResurfaced && event.item_id == relic_id &&
         event.text == "route:tin:1:0") {
+      check(drop_matches_death_pose(sim, event),
+            "a resurfaced relic retains the actual death anchor of the reward that produced it");
       saw_resurfaced_event = true;
       break;
     }
@@ -1629,6 +1971,10 @@ void test_d106_recovery_is_ordered_and_deterministic() {
   const bool saw_trophy_event =
       count_events(first, EventType::TrophyResurfaced) >= 1;
   check(saw_trophy_event, "trophy resurfacing emits a dedicated recovery event");
+  for (const Event& event : first.events())
+    if (event.type == EventType::TrophyResurfaced)
+      check(drop_matches_death_pose(first, event),
+            "every recovered trophy carries the original defeated actor's immutable drop anchor");
   if (!first.house().lost_trophies.empty()) {
     force_trophy_resurface(first, "route:tin:1:0", first.house().lost_trophies.front().id);
   }
@@ -2235,6 +2581,14 @@ int main() {
   test_dash_is_a_named_readable_burst();
   test_monster_facing_tracks_pursuit_target();
   test_facing_replay_is_deterministic();
+  test_fixed_tick_batches_preserve_order_and_bound_motion();
+  test_event_poses_survive_later_movement_and_enemy_retargeting();
+  test_drop_events_capture_the_defeated_actor_anchor();
+  test_pursuit_reaches_real_contact_at_stat_speed();
+  test_pursuit_navigates_corners_and_overlapping_bodies_deterministically();
+  test_shared_collision_blocks_dash_corner_cutting_and_wall_attacks();
+  test_pursuit_respects_warning_recovery_and_unreachable_goals();
+  test_navigation_obstacles_retire_with_the_scene();
   test_skill_resource_gating_and_thrust();
   test_sweep_hits_multiple_targets_and_gates_resource();
   test_elite_thrust_telegraph_timing();

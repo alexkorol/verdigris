@@ -1,0 +1,176 @@
+[
+  {
+    "retained": "browser-32-of-32.log",
+    "sha256": "143275773722b6e97eec5397239133e8fb158032cb7e7938331906d660a771ab",
+    "source": ".ci-artifacts/pursuit-playtest.log",
+    "source_sha256": "f408bf5f8a2afe663e12c632738f057923c4d9f0cc4925edec64e16e66ab205c"
+  },
+  {
+    "retained": "committed-strike.png",
+    "sha256": "9086656029f6b667b7f3dbea8315a08704799ef117306d10bd768d42992a3c44",
+    "source": "docs/execution/captures/art-wave/native-pursuit-committed-strike.png",
+    "source_sha256": "9086656029f6b667b7f3dbea8315a08704799ef117306d10bd768d42992a3c44"
+  },
+  {
+    "retained": "crop-method.py.txt",
+    "sha256": "d3c30edf24bdcf59aa063742a6c9ee12e12ce346394668fba403d39f2183a06f",
+    "source": ".ci-artifacts/pursuit-crops.py",
+    "source_sha256": "d3c30edf24bdcf59aa063742a6c9ee12e12ce346394668fba403d39f2183a06f"
+  },
+  {
+    "retained": "equipment.log",
+    "sha256": "fb2a1f742e89b6eed1410b4b94e31459301f7e9d8e61993d212563fb6ae49d6b",
+    "source": ".ci-artifacts/pursuit-equipment.log",
+    "source_sha256": "3f76552cd2dfb77b2ad7aa63be578a4685d31bf52cd3f6da977513743f94d2a7"
+  },
+  {
+    "retained": "frame-budget-report.txt",
+    "sha256": "ff2b2a430afd67da5a5a8b2c63817464c05c56f50acc4dd2b7d977db30e06bec",
+    "source": "docs/execution/captures/art-wave/frame-budget-report.txt",
+    "source_sha256": "ff2b2a430afd67da5a5a8b2c63817464c05c56f50acc4dd2b7d977db30e06bec"
+  },
+  {
+    "retained": "importer-10-of-10.log",
+    "sha256": "be332ebe35adc9aff726174eaee161329ac718721bc55f8acd39e7dbd781e146",
+    "source": ".ci-artifacts/pursuit-importer.log",
+    "source_sha256": "b2f674be1bfc8e85126c8a2374f039378b881e85f6d79a75de6a6f4bcfc3ff33"
+  },
+  {
+    "retained": "initial-scenario-failures.log",
+    "sha256": "a49252497bbfc723b85b4c3c97543ace8ec1b9c09dc5770d78b5b9cb7dad8b3b",
+    "source": ".ci-artifacts/pursuit-scenarios-initial.log",
+    "source_sha256": "2ee98e583da184637ad1b2413a67c4530c771b7ed5db8c809b4bb5a7982bb160"
+  },
+  {
+    "retained": "initial-suite-failure.log",
+    "sha256": "b94bcfdf7af6702a9fa0d88f2dea4f915337f507012f8c8b386fb95e80ac7ed3",
+    "source": ".ci-artifacts/pursuit-build.log",
+    "source_sha256": "1bcab7bde8852746ba4e4e68187d1e5b527ab01d0a8baf9555b732c5517e6374"
+  },
+  {
+    "retained": "live-actions-3440x1440.png",
+    "sha256": "1596f62c2761e9b9d5207b89c6a235bee6396d3e0dff8a4ad5751a413c382017",
+    "source": "native/client/assets/raster/reviews/2026-09-10-pursuit/live-actions-3440x1440.png",
+    "source_sha256": "1596f62c2761e9b9d5207b89c6a235bee6396d3e0dff8a4ad5751a413c382017"
+  },
+  {
+    "retained": "live-first-launch-close.log",
+    "sha256": "9781cc9a2efa9f00ce9c35987a575a009a314ebff45d269da042ef1291e7380c",
+    "source": ".ci-artifacts/pursuit-live-launch.log",
+    "source_sha256": "ab77fd65e01bf13ba9825803327a3d57105a5841db2b1c27b8524bcd17a82c8a"
+  },
+  {
+    "retained": "live-gear-3440x1440.png",
+    "sha256": "8da43d07f05cd37fb4adf39fb2b4c26d76772fa5fb022599474f7e9ed9cf0a10",
+    "source": "native/client/assets/raster/reviews/2026-09-10-pursuit/live-gear-3440x1440.png",
+    "source_sha256": "8da43d07f05cd37fb4adf39fb2b4c26d76772fa5fb022599474f7e9ed9cf0a10"
+  },
+  {
+    "retained": "live-initial-3440x1440.png",
+    "sha256": "c2852aeb8c6b41b718c6cca1f8baef82865515dd580a2935d7360471868540e2",
+    "source": "native/client/assets/raster/reviews/2026-09-10-pursuit/live-initial-3440x1440.png",
+    "source_sha256": "c2852aeb8c6b41b718c6cca1f8baef82865515dd580a2935d7360471868540e2"
+  },
+  {
+    "retained": "live-second-launch-close.log",
+    "sha256": "ad2ae3a5174b19714917506982ad0bcdb113dcfa4c70fab145f45120534ae649",
+    "source": ".ci-artifacts/pursuit-live-play.log",
+    "source_sha256": "ad2ae3a5174b19714917506982ad0bcdb113dcfa4c70fab145f45120534ae649"
+  },
+  {
+    "retained": "native-final-build-all.log",
+    "sha256": "62f5b7d639149ffabcf2a37adbdc5cee15538c0eab68a8f3fd72446d53b397f1",
+    "source": ".ci-artifacts/pursuit-final-scenarios.log",
+    "source_sha256": "7dfcf85c00e09fb310616403cb5df7b0189cf8b1125c5abdc23c8748ffd1e525"
+  },
+  {
+    "retained": "native-pursuit-ne-contact.png",
+    "sha256": "03b2c125fcd1bde5de08a1a55f138da7eeaa67db02eeef8de17ca26328447c7d",
+    "source": "docs/execution/captures/art-wave/native-pursuit-ne-contact.png",
+    "source_sha256": "03b2c125fcd1bde5de08a1a55f138da7eeaa67db02eeef8de17ca26328447c7d"
+  },
+  {
+    "retained": "native-pursuit-ne.csv",
+    "sha256": "fa3ded82b36197bb6a969b01141f2f64f712d95942b51d8cebadc55894902bc4",
+    "source": "docs/execution/captures/art-wave/native-pursuit-ne.csv",
+    "source_sha256": "819f401f93c1b5457ecf3e6c86cad6fa29d9ce53f704722f9c02201a265a1d8c"
+  },
+  {
+    "retained": "native-pursuit-nw-contact.png",
+    "sha256": "0cf740cdad6ca5c57cac15392beb57c807dd0c3327d1ecacfc8e13dc1df73763",
+    "source": "docs/execution/captures/art-wave/native-pursuit-nw-contact.png",
+    "source_sha256": "0cf740cdad6ca5c57cac15392beb57c807dd0c3327d1ecacfc8e13dc1df73763"
+  },
+  {
+    "retained": "native-pursuit-nw.csv",
+    "sha256": "2a9dec20b45c132504c3360b077126a84f7060651106231771e4c793184ba334",
+    "source": "docs/execution/captures/art-wave/native-pursuit-nw.csv",
+    "source_sha256": "3aae4e4c200f900cbdb3c01762bfe9297aa3b89e19207cd9c5ed9ca7edc06836"
+  },
+  {
+    "retained": "native-pursuit-sw-contact.png",
+    "sha256": "a60fc9f947e11e6be8ee20a6adf3428f5c4b87d643bbe892b32a8ea35bc9823a",
+    "source": "docs/execution/captures/art-wave/native-pursuit-sw-contact.png",
+    "source_sha256": "a60fc9f947e11e6be8ee20a6adf3428f5c4b87d643bbe892b32a8ea35bc9823a"
+  },
+  {
+    "retained": "native-pursuit-sw.csv",
+    "sha256": "88c55f847432cd78197275171371480ba5d5867cb0f6e2f1d679cfb02d066fd4",
+    "source": "docs/execution/captures/art-wave/native-pursuit-sw.csv",
+    "source_sha256": "30354ca6e6c29f35a9d2ddab7d72aede960b1e9edecf3f5255539e1394e6ddfc"
+  },
+  {
+    "retained": "native-pursuit-tree-detour-contact.png",
+    "sha256": "19e6a1996109721f79f98a07fd73907619e95bd51776dd015113f318985aa973",
+    "source": "docs/execution/captures/art-wave/native-pursuit-tree-detour-contact.png",
+    "source_sha256": "19e6a1996109721f79f98a07fd73907619e95bd51776dd015113f318985aa973"
+  },
+  {
+    "retained": "native-pursuit-tree-detour-mid.png",
+    "sha256": "f7e13cf471b25099fefcf010bda1f5f5ecc2779cc107ae89408deeeef1b1124a",
+    "source": "docs/execution/captures/art-wave/native-pursuit-tree-detour-mid.png",
+    "source_sha256": "f7e13cf471b25099fefcf010bda1f5f5ecc2779cc107ae89408deeeef1b1124a"
+  },
+  {
+    "retained": "native-pursuit-tree-detour-start.png",
+    "sha256": "446fe0cb590a8c24c0e8dbb9e88f2e757a5f6fe7f452eef8e29b26a899057e79",
+    "source": "docs/execution/captures/art-wave/native-pursuit-tree-detour-start.png",
+    "source_sha256": "446fe0cb590a8c24c0e8dbb9e88f2e757a5f6fe7f452eef8e29b26a899057e79"
+  },
+  {
+    "retained": "native-pursuit-tree-detour.csv",
+    "sha256": "bab1595328e3fe68dc30d8e58f98113bb241c9cac475752987153fc6e6a4e7ae",
+    "source": "docs/execution/captures/art-wave/native-pursuit-tree-detour.csv",
+    "source_sha256": "473ea700d6cb13f1381053e481ddb6f29dc3bbb8b4ca3dd80779ec19116bf459"
+  },
+  {
+    "retained": "native-suites-and-commitment-fixture-failure.log",
+    "sha256": "028638074975d8ca2d1d3a0297db42a4a3349eb555c026f895b41117a4833b66",
+    "source": ".ci-artifacts/pursuit-final-build-all.log",
+    "source_sha256": "8060ef18784aa0964a308072a2163a5ca22d951b4cdaf5dc338a8b4f8b9b1a92"
+  },
+  {
+    "retained": "README.md",
+    "sha256": "84e8d9572723de78510b5d66e0d337e2b08dc637a6fde5e4e6b730a0951db244",
+    "source": "native/client/assets/raster/reviews/2026-09-10-pursuit/README.md",
+    "source_sha256": "84e8d9572723de78510b5d66e0d337e2b08dc637a6fde5e4e6b730a0951db244"
+  },
+  {
+    "retained": "rejected-tin2-collision-only.png",
+    "sha256": "f41bc49c889080e6c95f30460ce414671c387cd75528e2c015396a1b60f98a23",
+    "source": "native/client/assets/raster/reviews/2026-09-10-pursuit/rejected-tin2-collision-only.png",
+    "source_sha256": "f41bc49c889080e6c95f30460ce414671c387cd75528e2c015396a1b60f98a23"
+  },
+  {
+    "retained": "tin2-visible-entry.png",
+    "sha256": "67fa1b8f93b8e562e8a458e80484acebccfb80140cf29c74e50d81ccb2b807d3",
+    "source": "docs/execution/captures/art-wave/native-entry-tin2-cleared.png",
+    "source_sha256": "67fa1b8f93b8e562e8a458e80484acebccfb80140cf29c74e50d81ccb2b807d3"
+  },
+  {
+    "retained": "walk-production-crops-1x.png",
+    "sha256": "74f148e68f8fe82b3e1e40176ebe289223243ffc1683a98512b4e24439fe2217",
+    "source": ".ci-artifacts/pursuit-production-crops-1x.png",
+    "source_sha256": "74f148e68f8fe82b3e1e40176ebe289223243ffc1683a98512b4e24439fe2217"
+  }
+]

@@ -145,10 +145,19 @@ void local_seam_maps_lifecycle_events() {
   std::string error;
   check(session.start(&error), "phase-a: local seam starts");
   session.submit(verdigris::client::ClientCommand::enter_zone("route:tin:1:0"));
+  // Route publication ends its input batch; cast only after the new scene
+  // exists, exactly as production accepts post-entry input.
+  session.advance_fixed_tick();
   session.submit(verdigris::client::ClientCommand::use_action("war-cry"));
+  session.advance_fixed_tick();
+  const auto* sim = session.simulation_for_scenarios();
+  const auto* player = sim->actor(sim->scion().actor_id);
+  check(player && player->war_cry_ticks_remaining ==
+                     verdigris::presentation_constants::kWarCryDurationTicks - 1,
+        "phase-a: post-entry WarCry activates before checking expiry");
   // Advance past the authoritative war-cry window so BuffExpired fires.
   for (int i = 0; i < verdigris::presentation_constants::kWarCryDurationTicks + 2; ++i)
-    session.submit(verdigris::client::ClientCommand::use_action("wait"));
+    session.advance_fixed_tick();
   session.poll();
   bool saw_expired = false;
   for (const auto& event : session.drain_events())
@@ -221,6 +230,7 @@ void seam_events_cannot_mutate_simulation() {
   std::string error;
   check(session.start(&error), "phase-a: local seam starts for the negative control");
   session.submit(verdigris::client::ClientCommand::enter_zone("route:tin:1:0"));
+  session.advance_fixed_tick();
   session.poll();
   const auto before = session.model();
   WorldView world;
@@ -646,9 +656,71 @@ void strike_angle_matches_rendered_actor_direction() {
   strike = actor_strike(fx.effects, world.player.id);
   check(strike && std::abs(strike->angle - std::atan2(-1.0, 0.0)) < 0.0001,
         "strike: player slash preserves player aim rather than aiming at a monster");
+  world.monsters[0].position = {160, 180};
+  world.monsters[0].facing = {1, -1};
+  apply_presentation_event(fx, world,
+      {PresentationEventType::Telegraph, "foe-1", "", "thrust", 3}, 4);
+  world.player.position = {80, 260};
+  apply_presentation_event(fx, world,
+      {PresentationEventType::AttackStarted, "foe-1", "", "thrust", 0}, 7);
+  strike = actor_strike(fx.effects, "foe-1");
+  check(strike && std::abs(strike->angle - std::atan2(-1.0, 1.0)) < 0.0001 &&
+            fx.telegraphs.count("foe-1") == 0,
+        "strike: a dodge cannot rotate the committed warning at contact");
+}
+
+void actor_fall_uses_immutable_pose_with_known_identity() {
+  using namespace verdigris::client;
+  auto prior = world_with_player_and_foe("right");
+  prior.theme = "crypt";
+  prior.monsters[0].elite = true;
+  const auto old_monster = prior.monsters[0];
+  PresentationEvent death{PresentationEventType::ActorDied, "foe-1", "", "Warden", 0};
+  death.has_actor_pose = true;
+  death.actor_x = 313;
+  death.actor_y = 229;
+  death.facing_x = 1;
+  death.facing_y = -1;
+  PresentationFx fx;
+  apply_presentation_event(fx, prior, death, 7);
+  const auto* fall = first_kind(fx, EffectFx::Kind::ActorFall);
+  const auto* dust = first_kind(fx, EffectFx::Kind::Dust);
+  check(fall && fall->wx == 313 && fall->wy == 229 &&
+            std::abs(fall->angle - std::atan2(-1.0, 1.0)) < 0.0001,
+        "fall event pose: final position and committed facing override stale prior geometry");
+  check(fall && fall->actor_id == "foe-1" && fall->actor_family == "wight" && fall->actor_elite,
+        "fall event pose: known snapshot still supplies identity family and elite");
+  check(dust && dust->wx == 313 && dust->wy == 229 &&
+            fx.last_death_pos.x == 313 && fx.last_death_pos.y == 229,
+        "fall event pose: dust and loot anchor share the immutable death position");
+  check(prior.monsters[0].position.x == old_monster.position.x &&
+            prior.monsters[0].position.y == old_monster.position.y &&
+            prior.monsters[0].facing.x == old_monster.facing.x &&
+            prior.monsters[0].facing.y == old_monster.facing.y,
+        "fall event pose: presentation does not mutate the retained actor snapshot");
+  for (int tick = 0; tick < 3; ++tick) age_presentation_fx(fx);
+  death.actor_x = 777;
+  death.actor_y = 888;
+  death.facing_x = -1;
+  apply_presentation_event(fx, prior, death, 10);
+  fall = first_kind(fx, EffectFx::Kind::ActorFall);
+  dust = first_kind(fx, EffectFx::Kind::Dust);
+  check(count_kind(fx, EffectFx::Kind::ActorFall) == 1 && fall && fall->age == 3 &&
+            fall->wx == 313 && fall->wy == 229 &&
+            std::abs(fall->angle - std::atan2(-1.0, 1.0)) < 0.0001 &&
+            count_kind(fx, EffectFx::Kind::Dust) == 1 && dust && dust->age == 3 &&
+            fx.last_death_pos.x == 313 && fx.last_death_pos.y == 229,
+        "fall event pose: duplicate metadata cannot relocate restart or duplicate a death");
+  PresentationFx absent;
+  absent.last_death_pos = {19, 23};
+  death.actor_id = "unknown-even-with-pose";
+  apply_presentation_event(absent, prior, death, 11);
+  check(absent.effects.empty() && absent.last_death_pos.x == 19 && absent.last_death_pos.y == 23,
+        "fall event pose: pose-only unknown actor still creates no body or dust");
 }
 
 int main() {
+  actor_fall_uses_immutable_pose_with_known_identity();
   strike_angle_matches_rendered_actor_direction();
   actor_fall_retains_snapshot_without_live_actor_or_reward();
   actor_fall_dedupe_caps_and_lifetime();

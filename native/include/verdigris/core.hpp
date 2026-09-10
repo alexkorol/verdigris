@@ -259,6 +259,11 @@ struct Event {
   std::string text;
   int value = 0;
   std::uint64_t tick = 0;
+  // Immutable pose of actor_id at emission. Later commands in the same tick
+  // may turn or move that actor before presentation drains this event.
+  bool has_actor_pose = false;
+  Vec2 actor_position{};
+  Vec2 actor_facing{};
 };
 
 enum class CommandType {
@@ -311,11 +316,35 @@ struct InstanceState {
   std::string seasonal_objective_text;
 };
 
+// Content supplies the same solid circles that presentation draws. Radii are
+// rounded outward to whole world units; actor clearance is added by the core.
+// This live scene data is deliberately absent from durable House snapshots.
+struct NavigationObstacle {
+  Vec2 center;
+  int radius = 0;
+};
+inline constexpr std::size_t kMaxNavigationObstacles = 64;
+bool navigation_segment_blocked(const std::vector<NavigationObstacle>& obstacles,
+                                Vec2 from, Vec2 to);
+
 class Simulation {
  public:
   explicit Simulation(std::uint64_t seed, const std::string& house_name = "House Verdigris");
 
   void dispatch(const Command& command);
+  // One 50 ms authority step, including when commands is empty. Repeated
+  // movement cannot multiply displacement; Dash replaces walking and each
+  // action kind resolves at most once. Aim/action ordering is preserved.
+  void dispatch_tick(const std::vector<Command>& commands);
+  void set_navigation_obstacles(std::vector<NavigationObstacle> obstacles);
+  const std::vector<NavigationObstacle>& navigation_obstacles() const {
+    return navigation_obstacles_;
+  }
+  // Capture when constructing scene content: player, extraction, living
+  // monsters and the still-owed pack's birth positions. Later calls reflect
+  // current living positions; callers retain the route-construction snapshot.
+  std::vector<Vec2> navigation_anchors() const;
+  bool movement_blocked(Vec2 from, Vec2 to) const;
   void set_seasonal_mechanic(SeasonalMechanic* mechanic);
   void create_successor(const std::string& name);
 
@@ -385,11 +414,13 @@ class Simulation {
   void retire_instance();
   void advance_tick();
   void enemy_turn();
+  void pursue(Actor& enemy, const Actor& player, int contact_range);
+  std::optional<Vec2> pursuit_waypoint(Vec2 from, Vec2 target) const;
   Actor make_monster(Vec2 position, int level, bool elite);
   void spawn_enemy();
   void materialize_wave();
   void record_equipped_item_use(Actor& attacker);
-  void drop_reward();
+  void drop_reward(const std::string& defeated_actor_id);
   void clear_route_and_unlock_children();
   void handle_death(Actor& actor, const std::string& killer_id = {});
   void record_legend(const std::string& kind, const std::string& subject,
@@ -404,6 +435,11 @@ class Simulation {
   std::vector<Scion> fallen_scions_;
   std::vector<Actor> actors_;
   InstanceState instance_;
+  std::vector<NavigationObstacle> navigation_obstacles_;
+  std::vector<Vec2> navigation_vertices_;
+  std::vector<std::vector<int>> navigation_edges_;
+  bool defer_enemy_turn_ = false;
+  bool enemies_active_ = true;
   // Unmaterialized warden roster of the active instance (see pending_wave()).
   std::vector<Actor> pending_wave_;
   // Tick at which the remaining owed pack materializes together; 0 when

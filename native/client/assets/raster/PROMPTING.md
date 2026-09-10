@@ -27,6 +27,8 @@ control method, not a universal limitation of Image 2.5.
 | Separate back-left wight and artisan edits | Missing direction slots filled; artisan brightness and staff handedness still need review | Fix the direction with a targeted reference edit, then review other properties across the full set |
 | NE overhead contact edited from a prior pose plus the original identity | The corrected left forearm supported an attached axe toward upper-right; the next follow-through attempt switched arms again | Accept individual transitions only after reviewing the actual held weapon; a successful reference edit does not validate the remaining cycle |
 | Gray-matte cleanup on a failed follow-through source | Pale wrap, fist and forearm pixels were also removed | Compare reconstructed anatomy with the original source; reject cleanup that erases foreground colors and request actual alpha instead of accepting a clean-looking silhouette |
+| Reference-led NE/NW raider walks | Fourteen reconstructed frames show leg progression in the production renderer, with narrower bodies and smaller axes | Accept motion and identity separately; retain the shared pivot and document the remaining cross-clip differences |
+| SE raider sheet plus two targeted repairs | All three attempts kept the same anatomical leg forward, even with an ordered motion reference in the final repair | Stop promoting repeated contacts as a walk; preserve the failed experiment and leave that direction unavailable until an actual opposite support pose exists |
 
 ## Workflow
 

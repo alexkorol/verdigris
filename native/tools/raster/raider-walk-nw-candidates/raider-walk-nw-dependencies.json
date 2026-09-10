@@ -1,0 +1,138 @@
+{
+  "status": "frozen; root provisionally approved8 frames for production trial, game review pending",
+  "production_import_dependencies": [
+    {
+      "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/client/assets/raster/source/raider-walk-nw-d2poses-v2.png",
+      "role": "selected source",
+      "sha256": "31c9e5de5cfbced1c7f1cecd4cc5d4a10235905635c622119d6bffe948139a5b"
+    },
+    {
+      "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/tools/raster/raider-walk-nw-candidates/raider-walk-nw-candidate.json",
+      "role": "candidate recipe; paths resolve from its current directory",
+      "sha256": "f72ef23323108a80c7a47af7dc5aeea593094498727a58ff9b184c1e55a94a3f"
+    },
+    {
+      "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/client/assets/raster/runtime/raider_nw.png",
+      "role": "fixed palette reference",
+      "sha256": "12d3c12796a2262c6f876d12caccb0536e6810d5bcec58fe0c3c797b00c93a74"
+    },
+    {
+      "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/tools/raster/import_assets.py",
+      "role": "existing shared importer; no changes by this lane",
+      "sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017"
+    }
+  ],
+  "conversion_report": {
+    "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/tools/raster/raider-walk-nw-candidates/selected/raider-walk-nw-candidate.provenance.json",
+    "role": "complete actual engine API/version/source/dependency provenance",
+    "sha256": "b173bbf4dcf4a063f0c3983b23d492fa721f1cfe870f3818f2c373a7bc316a2e"
+  },
+  "candidate_outputs": [
+    {
+      "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/tools/raster/raider-walk-nw-candidates/selected/raider_walk0_nw.png",
+      "role": "candidate frame 0",
+      "sha256": "1ec3e09192d5d669b1eec90a13a207674d2f05dcf66f9951f20534138e2df0a3"
+    },
+    {
+      "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/tools/raster/raider-walk-nw-candidates/selected/raider_walk1_nw.png",
+      "role": "candidate frame 1",
+      "sha256": "dab0e2bdfd6aacafb73e5764019c9af4b16c43c7d1bea67b7781d27466d2a634"
+    },
+    {
+      "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/tools/raster/raider-walk-nw-candidates/selected/raider_walk2_nw.png",
+      "role": "candidate frame 2",
+      "sha256": "e5bc6705f3a2c5de17de51d79e609274713ee17684c5994be412b662dd58c886"
+    },
+    {
+      "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/tools/raster/raider-walk-nw-candidates/selected/raider_walk3_nw.png",
+      "role": "candidate frame 3",
+      "sha256": "f059217063420816a5f0e5c3c8ff01320847d75b2224ed9d37b28f0affdbbf45"
+    },
+    {
+      "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/tools/raster/raider-walk-nw-candidates/selected/raider_walk4_nw.png",
+      "role": "candidate frame 4",
+      "sha256": "14a9fcea0e76cf6c15ea359fef5927500e9466d00b298c3602f0249467d7a116"
+    },
+    {
+      "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/tools/raster/raider-walk-nw-candidates/selected/raider_walk5_nw.png",
+      "role": "candidate frame 5",
+      "sha256": "eb03c4c09c71afb80b0f2d9d10c42f746139fb5a97083a0a8e116c464709abbb"
+    },
+    {
+      "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/tools/raster/raider-walk-nw-candidates/selected/raider_walk6_nw.png",
+      "role": "candidate frame 6",
+      "sha256": "8e6609679f0b79397dc0277baacc13f73b96a6fa1a9b1e491804dd597fab4231"
+    },
+    {
+      "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/tools/raster/raider-walk-nw-candidates/selected/raider_walk7_nw.png",
+      "role": "candidate frame 7",
+      "sha256": "6ec9c432a3129ca3638cb70d9eb0d47c83472c6d5fb4e6ff82ce0626f71dfe0d"
+    }
+  ],
+  "generation_provenance": {
+    "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/client/assets/raster/prompts/raider-walk-nw-provenance.json",
+    "role": "exact three prompts, source hashes, reference roles and rejection reasons",
+    "sha256": "ff26071b79cd16229d48ff47946e77f5926d2bc51ec6b96ed624274adb917bf6"
+  },
+  "external_reference_provenance": {
+    "path": "C:/Users/Alex/Documents/ChatGPT/diablo-reference-cache/motion-study-20260909/body-corrected-cof/nw-ordered-4x2-3x.png",
+    "role": "external generation-only pose reference; do not stage original image",
+    "sha256": "1269e5231c851fb8be6f8a8653e6bf8fb00279914d2b99c630f065ffbaa0e078"
+  },
+  "external_engine": "Z:/Code/Python/pixel-perfecter",
+  "python": "Z:/Code/Python/pixel-perfecter/.venv/Scripts/python.exe",
+  "command": "Z:/Code/Python/pixel-perfecter/.venv/Scripts/python.exe native/tools/raster/import_assets.py native/tools/raster/raider-walk-nw-candidates/raider-walk-nw-candidate.json --contact-sheet native/tools/raster/raider-walk-nw-candidates/selected/native-3x.png --preview-scale 3",
+  "native_geometry": {
+    "canvas": [
+      80,
+      96
+    ],
+    "pivot": [
+      40,
+      96
+    ],
+    "cell_size": 6,
+    "source_origin": [
+      190,
+      468
+    ],
+    "packing_stride": [
+      406,
+      475
+    ],
+    "frame_order": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "body_height_range": [
+      54,
+      59
+    ],
+    "used_cycle_colors": 30,
+    "palette_limit": 32,
+    "binary_alpha": true,
+    "independent_frame_fitting": false
+  },
+  "review_files": [
+    "selected/native-1x.png",
+    "selected/identity-3x.png",
+    "selected/native-3x.png",
+    "selected/walk-3x.gif",
+    "selected/playback.html",
+    "selected/measurements.json",
+    "cleanup-windows-source-audit.png"
+  ],
+  "known_limits": [
+    "Axe is visibly smaller and narrower than accepted idle, although same right hand is preserved.",
+    "Crown tops35\u201338 versus idle40 after the maximum common2px downshift; source body/stride variation remains.",
+    "Frames0/1 and3/4/5 include close contact/weight-settle phases; eight different images alone is not proof of perfect gait.",
+    "Sourcev2 and alpha-onlyv3 are opaque RGB; selected alpha uses actual owner border-connected fill, with12 source-reviewed hair-loop/elbow windows. Gray cloak highlights outside those windows preserved.",
+    "Candidate native/ordered pose review does not establish autonomous production gameplay motion."
+  ]
+}

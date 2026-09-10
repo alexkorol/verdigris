@@ -1,0 +1,886 @@
+{
+  "version": 1,
+  "manifest_sha256": "f72ef23323108a80c7a47af7dc5aeea593094498727a58ff9b184c1e55a94a3f",
+  "importer_sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+  "engine": {
+    "project": "Pixel Respecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "root": "Z:/Code/Python/pixel-perfecter",
+    "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+    "git_dirty": true,
+    "source_sha256": {
+      "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+      "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+      "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+      "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+      "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+      "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+      "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+      "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+      "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+      "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+      "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+      "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+      "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+    },
+    "dependencies": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    }
+  },
+  "known_limitations": [],
+  "sources": [
+    {
+      "source": "../../../client/assets/raster/source/raider-walk-nw-d2poses-v2.png",
+      "sha256": "31c9e5de5cfbced1c7f1cecd4cc5d4a10235905635c622119d6bffe948139a5b",
+      "size": [
+        1575,
+        999
+      ],
+      "background_removal": {
+        "api": "pixel_perfecter.colors.make_border_connected_transparent",
+        "color": [
+          170,
+          170,
+          170
+        ],
+        "tolerance": 125,
+        "interior_windows": [
+          {
+            "source_box": [
+              195,
+              163,
+              200,
+              168
+            ],
+            "new_transparent_pixels": 22
+          },
+          {
+            "source_box": [
+              206,
+              164,
+              210,
+              169
+            ],
+            "new_transparent_pixels": 20
+          },
+          {
+            "source_box": [
+              1004,
+              159,
+              1013,
+              164
+            ],
+            "new_transparent_pixels": 40
+          },
+          {
+            "source_box": [
+              1412,
+              159,
+              1416,
+              163
+            ],
+            "new_transparent_pixels": 16
+          },
+          {
+            "source_box": [
+              220,
+              628,
+              226,
+              633
+            ],
+            "new_transparent_pixels": 30
+          },
+          {
+            "source_box": [
+              608,
+              628,
+              612,
+              633
+            ],
+            "new_transparent_pixels": 20
+          },
+          {
+            "source_box": [
+              226,
+              235,
+              230,
+              238
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              632,
+              230,
+              637,
+              237
+            ],
+            "new_transparent_pixels": 28
+          },
+          {
+            "source_box": [
+              627,
+              240,
+              632,
+              245
+            ],
+            "new_transparent_pixels": 25
+          },
+          {
+            "source_box": [
+              1441,
+              230,
+              1446,
+              235
+            ],
+            "new_transparent_pixels": 25
+          },
+          {
+            "source_box": [
+              1436,
+              240,
+              1441,
+              245
+            ],
+            "new_transparent_pixels": 24
+          },
+          {
+            "source_box": [
+              233,
+              698,
+              238,
+              703
+            ],
+            "new_transparent_pixels": 24
+          }
+        ],
+        "transparent_pixels_after": 1291201
+      }
+    }
+  ],
+  "assets": [
+    {
+      "name": "raider_walk0_nw",
+      "file": "raider_walk0_nw.png",
+      "source": "../../../client/assets/raster/source/raider-walk-nw-d2poses-v2.png",
+      "acceptance": "candidate_native_review_pending_production_axe_identity_limit",
+      "source_box": [
+        0,
+        0,
+        394,
+        500
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 25,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        65,
+        83
+      ],
+      "trim_box": [
+        12,
+        20,
+        52,
+        75
+      ],
+      "before_resize": [
+        40,
+        55
+      ],
+      "placed_size": [
+        40,
+        55
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        20,
+        38,
+        60,
+        93
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        190,
+        468
+      ],
+      "palette_scope": "manifest_reference",
+      "sha256": "1ec3e09192d5d669b1eec90a13a207674d2f05dcf66f9951f20534138e2df0a3"
+    },
+    {
+      "name": "raider_walk1_nw",
+      "file": "raider_walk1_nw.png",
+      "source": "../../../client/assets/raster/source/raider-walk-nw-d2poses-v2.png",
+      "acceptance": "candidate_native_review_pending_production_axe_identity_limit",
+      "source_box": [
+        394,
+        0,
+        788,
+        500
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 27,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        65,
+        83
+      ],
+      "trim_box": [
+        15,
+        19,
+        54,
+        74
+      ],
+      "before_resize": [
+        39,
+        55
+      ],
+      "placed_size": [
+        39,
+        55
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        21,
+        37,
+        60,
+        92
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        202,
+        468
+      ],
+      "palette_scope": "manifest_reference",
+      "sha256": "dab0e2bdfd6aacafb73e5764019c9af4b16c43c7d1bea67b7781d27466d2a634"
+    },
+    {
+      "name": "raider_walk2_nw",
+      "file": "raider_walk2_nw.png",
+      "source": "../../../client/assets/raster/source/raider-walk-nw-d2poses-v2.png",
+      "acceptance": "candidate_native_review_pending_production_axe_identity_limit",
+      "source_box": [
+        788,
+        0,
+        1181,
+        500
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 27,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        65,
+        83
+      ],
+      "trim_box": [
+        17,
+        18,
+        56,
+        75
+      ],
+      "before_resize": [
+        39,
+        57
+      ],
+      "placed_size": [
+        39,
+        57
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        21,
+        36,
+        60,
+        93
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        214,
+        468
+      ],
+      "palette_scope": "manifest_reference",
+      "sha256": "e5bc6705f3a2c5de17de51d79e609274713ee17684c5994be412b662dd58c886"
+    },
+    {
+      "name": "raider_walk3_nw",
+      "file": "raider_walk3_nw.png",
+      "source": "../../../client/assets/raster/source/raider-walk-nw-d2poses-v2.png",
+      "acceptance": "candidate_native_review_pending_production_axe_identity_limit",
+      "source_box": [
+        1181,
+        0,
+        1575,
+        500
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 25,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        65,
+        83
+      ],
+      "trim_box": [
+        18,
+        19,
+        57,
+        78
+      ],
+      "before_resize": [
+        39,
+        59
+      ],
+      "placed_size": [
+        39,
+        59
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        20,
+        37,
+        59,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        227,
+        468
+      ],
+      "palette_scope": "manifest_reference",
+      "sha256": "f059217063420816a5f0e5c3c8ff01320847d75b2224ed9d37b28f0affdbbf45"
+    },
+    {
+      "name": "raider_walk4_nw",
+      "file": "raider_walk4_nw.png",
+      "source": "../../../client/assets/raster/source/raider-walk-nw-d2poses-v2.png",
+      "acceptance": "candidate_native_review_pending_production_axe_identity_limit",
+      "source_box": [
+        0,
+        500,
+        394,
+        999
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 27,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        65,
+        83
+      ],
+      "trim_box": [
+        13,
+        14,
+        53,
+        72
+      ],
+      "before_resize": [
+        40,
+        58
+      ],
+      "placed_size": [
+        40,
+        58
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        21,
+        36,
+        61,
+        94
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        190,
+        443
+      ],
+      "palette_scope": "manifest_reference",
+      "sha256": "14a9fcea0e76cf6c15ea359fef5927500e9466d00b298c3602f0249467d7a116"
+    },
+    {
+      "name": "raider_walk5_nw",
+      "file": "raider_walk5_nw.png",
+      "source": "../../../client/assets/raster/source/raider-walk-nw-d2poses-v2.png",
+      "acceptance": "candidate_native_review_pending_production_axe_identity_limit",
+      "source_box": [
+        394,
+        500,
+        788,
+        999
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 27,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        65,
+        83
+      ],
+      "trim_box": [
+        15,
+        14,
+        55,
+        69
+      ],
+      "before_resize": [
+        40,
+        55
+      ],
+      "placed_size": [
+        40,
+        55
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        21,
+        36,
+        61,
+        91
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        202,
+        443
+      ],
+      "palette_scope": "manifest_reference",
+      "sha256": "eb03c4c09c71afb80b0f2d9d10c42f746139fb5a97083a0a8e116c464709abbb"
+    },
+    {
+      "name": "raider_walk6_nw",
+      "file": "raider_walk6_nw.png",
+      "source": "../../../client/assets/raster/source/raider-walk-nw-d2poses-v2.png",
+      "acceptance": "candidate_native_review_pending_production_axe_identity_limit",
+      "source_box": [
+        788,
+        500,
+        1181,
+        999
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 27,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        65,
+        83
+      ],
+      "trim_box": [
+        17,
+        13,
+        59,
+        71
+      ],
+      "before_resize": [
+        42,
+        58
+      ],
+      "placed_size": [
+        42,
+        58
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        21,
+        35,
+        63,
+        93
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        214,
+        443
+      ],
+      "palette_scope": "manifest_reference",
+      "sha256": "8e6609679f0b79397dc0277baacc13f73b96a6fa1a9b1e491804dd597fab4231"
+    },
+    {
+      "name": "raider_walk7_nw",
+      "file": "raider_walk7_nw.png",
+      "source": "../../../client/assets/raster/source/raider-walk-nw-d2poses-v2.png",
+      "acceptance": "candidate_native_review_pending_production_axe_identity_limit",
+      "source_box": [
+        1181,
+        500,
+        1575,
+        999
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 26,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        65,
+        83
+      ],
+      "trim_box": [
+        17,
+        14,
+        58,
+        68
+      ],
+      "before_resize": [
+        41,
+        54
+      ],
+      "placed_size": [
+        41,
+        54
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        19,
+        36,
+        60,
+        90
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        227,
+        443
+      ],
+      "palette_scope": "manifest_reference",
+      "sha256": "6ec9c432a3129ca3638cb70d9eb0d47c83472c6d5fb4e6ff82ce0626f71dfe0d"
+    }
+  ],
+  "palette_reference": {
+    "source": "../../../client/assets/raster/runtime/raider_nw.png",
+    "sha256": "12d3c12796a2262c6f876d12caccb0536e6810d5bcec58fe0c3c797b00c93a74",
+    "size": [
+      80,
+      96
+    ],
+    "max_colors": 32,
+    "visible_colors": 32,
+    "palette_rgb": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        23,
+        26,
+        38
+      ],
+      [
+        27,
+        10,
+        12
+      ],
+      [
+        54,
+        45,
+        45
+      ],
+      [
+        64,
+        69,
+        79
+      ],
+      [
+        66,
+        33,
+        9
+      ],
+      [
+        82,
+        40,
+        32
+      ],
+      [
+        85,
+        89,
+        89
+      ],
+      [
+        102,
+        106,
+        114
+      ],
+      [
+        105,
+        56,
+        43
+      ],
+      [
+        116,
+        84,
+        73
+      ],
+      [
+        121,
+        65,
+        18
+      ],
+      [
+        134,
+        137,
+        145
+      ],
+      [
+        141,
+        72,
+        54
+      ],
+      [
+        150,
+        108,
+        86
+      ],
+      [
+        152,
+        86,
+        24
+      ],
+      [
+        165,
+        163,
+        167
+      ],
+      [
+        169,
+        85,
+        59
+      ],
+      [
+        172,
+        115,
+        46
+      ],
+      [
+        188,
+        189,
+        197
+      ],
+      [
+        191,
+        102,
+        18
+      ],
+      [
+        194,
+        108,
+        71
+      ],
+      [
+        194,
+        147,
+        89
+      ],
+      [
+        215,
+        104,
+        47
+      ],
+      [
+        222,
+        129,
+        27
+      ],
+      [
+        224,
+        129,
+        75
+      ],
+      [
+        251,
+        148,
+        20
+      ],
+      [
+        252,
+        197,
+        117
+      ],
+      [
+        253,
+        152,
+        81
+      ],
+      [
+        254,
+        168,
+        108
+      ],
+      [
+        254,
+        177,
+        55
+      ],
+      [
+        255,
+        138,
+        54
+      ]
+    ],
+    "api": "pixel_perfecter.palettes.snap_to_palette",
+    "matching": "CIELAB",
+    "scope": "all reconstructed frames in this manifest",
+    "alpha_policy": "unchanged alpha; zero-alpha RGB normalized to zero"
+  }
+}

@@ -101,6 +101,11 @@ class IClientSession {
   // stage presentation events. Cheap; call once per frame.
   virtual void poll() = 0;
 
+  // Advance one caller-scheduled 50 ms authority step. Remote time belongs
+  // to the server; local sessions consume their input batch here. Polling
+  // and input frequency must never determine simulation time.
+  virtual void advance_fixed_tick() {}
+
   virtual ConnectionState connection_state() const = 0;
   virtual const ClientModel& model() const = 0;
   virtual std::vector<PresentationEvent> drain_events() = 0;
