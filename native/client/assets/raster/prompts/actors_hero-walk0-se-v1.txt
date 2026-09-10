@@ -1,0 +1,8 @@
+Use case: identity-preserve
+Asset: one isolated southeast-facing WALK animation frame, based on the attached accepted pixel-art hero.
+
+Reference 1 is the identity anchor. Preserve this exact adult character, clothing, warm bronze shoulder guard, russet linen, indigo sash, leather, palette, camera elevation, facing, pixel construction and apparent anatomical scale. Keep mature long-legged adult proportions.
+
+Frame 0 — LEFT FOOT CONTACT: Change only the walking pose. The character's LEFT leg (the leg on the screen-right side of his body in the reference) reaches forward toward screen lower-right; its heel has just touched the ground. His RIGHT leg trails behind toward screen upper-left with heel raised. The right arm swings gently forward and left arm gently back. An ordinary deliberate walk, with relaxed shoulders and empty hands.
+
+Keep the chest and face aimed lower-right, showing the same three-quarter front view. Full silhouette visible, centered around the same body/feet origin with generous empty margin. Approximately 64 logical pixels crown to sole, deliberate square clusters and the same limited palette as the reference. One frame, one character, no scenery or effects. Output actual transparent alpha.

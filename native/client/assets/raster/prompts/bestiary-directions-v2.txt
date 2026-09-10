@@ -1,0 +1,26 @@
+Use case: stylized-concept
+Asset type: low-resolution PIXEL ART GAME SPRITE SHEET, original Verdigris Bronze Age dark fantasy actors.
+
+CRITICAL ART DIRECTION: This must be actual LOW RESOLUTION PIXEL ART drawn on a 320 by 320 logical pixel canvas, then displayed enlarged EXACTLY 4 TIMES with nearest-neighbor scaling to 1280 by 1280. The entire image uses a maximum palette of 32 flat colors. Every visible square pixel is 4 by 4 display pixels. LARGE obvious square pixel clusters. Every humanoid body is only 64 logical pixels tall; a head only 7 to 9 logical pixels high, an eye a single pixel. All shading must be broad connected hard-edged clusters of 2 to 8 logical pixels. This is a GAME SPRITE atlas, NOT a detailed illustration, concept painting, hand-painted render, realism, texture painting or a high-resolution image with a pixel filter. No fine flecked detail. No gradients. No antialiasing. No soft edges. No subpixel detail. Think painstakingly authored gritty 1990s 16-bit isometric RPG sprites with visibly limited information, mature adult proportions.
+
+Transparent background: TRUE transparent alpha everywhere between sprite pixels. No checkerboard, no solid backdrop, no shadow, no tile, no environment. Exactly sixteen sprites on an evenly spaced invisible 4-column 4-row grid. Entire logical canvas 320x320, each cell80x80. Cell centers x40,120,200,280. Foot baselines y74,154,234,314. Humanoid bodies64logicalpixels tall. All weapons, tails and staffs fit wholly in own cells. No outlines of grid, no labels, no text.
+
+Camera: consistent isometric 3/4 view slightly from above, 30 degrees down. Every row shows the SAME actor in four directions.
+Exact column order EVERY ROW:
+1: down-right / southeast, front and right side seen.
+2: down-left / southwest, front and left side seen.
+3: up-left / northwest, back and left side seen, face fully hidden.
+4: up-right / northeast, back and right side seen, face fully hidden.
+Essential: last two columns must be BACK VIEWS, no face looking over shoulder.
+
+ROW 1: Four views of a dangerous low-slung long-bodied marsh beast. Original adult sinewy quadrupedal predator, slate-olive hide, angular narrow head, low pointed muzzle, clawed paws, long low tail, raised shoulder ridge. Body about52logicalpixels nose-to-tail and35logicalpixels high. Creeping ready posture. Draw hide as 3 broad flat gray-olive shades with a few strong ochre highlights, NO scales/fur/spotted texture. No armor or rider. Back views show haunches and tail, front views show jaws.
+
+ROW 2: Four views of an adult burial wight. Small ivory skull, thin exposed ribs suggested by a FEW bold pale pixel bars, dark empty sockets, bony limbs, ragged charcoal linen winding shroud and a FEW turquoise-green bronze burial disks on chest/belt. Threatening open claw hands, hunched slightly forward. Seven-head-tall adult proportions. No weapon, no crown, no medieval costume. Skull is 8logicalpixels tall. Linen limited to3flattones. The sprite must read clearly at64pixels tall.
+
+ROW 3: Four views of a hostile adult Bronze Age bow raider. Charcoal linen short tunic, dark leather boots/bracers, ochre sash. Small pale bone face mask with two short horn points, dark tied hair. Small simple wooden bow in hands, aimed low along facing direction; reed quiver on back. No steel or plate armor. Mask visible only in front views. Human body64logicalpixels tall. Dark cloth uses3flattones, bone uses3flattones, bow solid dark ochre.
+
+ROW 4: Four views of a peaceful older civilian artisan. Modest grey-haired bearded head, ochre calf-length linen robe, umber belt and plain leather pouch, sandals. Plain wooden walking staff to one side, relaxed posture. No armor, no weapon, no mask, no magic. Small grey hair shape, beard suggested by2colors. Robe uses4big flat ochre color clusters with only a few large straight folds. Adult anatomy, body64logicalpixels tall. Back views conceal the face.
+
+Shared palette: deep near-black umber outlines and occlusion, charcoal cloth, warm pale ivory bones, restrained ochre linen, olive-gray hide, dark brown leather, muted verdigris bronze ornaments. Warm light from upper-left, represented only by hard-edged pixel clusters. Palette globally restricted to32colors. Crisp stepped silhouettes. Grounded dangerous adult characters, not chibi and not cute.
+
+FINAL CHECK: actual low-resolution authored PIXEL ART, big visible square pixels, flat tightly limited colors, no stipple/noise, no painterly surface, no smooth shading. Sixteen isolated sprites, exact four-direction order, each body complete. Original designs only.

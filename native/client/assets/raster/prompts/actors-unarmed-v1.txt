@@ -1,0 +1,6 @@
+Use case: precise-object-edit
+Asset type: production transparent 4x4 pixel-art character sprite sheet.
+Input image 1 is the edit target. Preserve the exact image dimensions, transparent alpha, 4x4 grid layout, positions, anatomy, palette, pixel-art style, clothes, lighting, and all directions.
+Change only one thing: REMOVE THE HELD AXE AND ITS ENTIRE HAFT from each of the EIGHT HERO sprites in the TOP TWO ROWS. The hero's hand should remain naturally curled as an empty equipment grip, in the same hand position as the existing pose. Paint in only the tiny exposed hand or clothing pixels where the axe is removed, with clean true transparency everywhere the weapon used to cover empty space. The four first-row ready stances and four second-row attack stances remain unchanged. The hero is now entirely empty-handed, no weapon fragments, no shafts, no floating props.
+The EIGHT RAIDER sprites in the BOTTOM TWO ROWS must remain unchanged, including their bronze axes.
+Essential: the image remains a real transparent-alpha sprite sheet, without background or cast shadows. Keep all sixteen original sprites, all cell positions and feet baselines. Do not add or rearrange sprites. No text, no grid, no effects, no new equipment.

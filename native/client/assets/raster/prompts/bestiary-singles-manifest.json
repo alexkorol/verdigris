@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "generationMode": "built-in image_gen",
+  "model": "Not exposed by tool",
+  "workflow": "Noel separate-image fallback adapted from raster/RESEARCH.md; one character and one direction per call, accepted runtime identity reference.",
+  "status": "Both NW replacements converted and inspected at native80x96 and3x integer enlargement. Static direction coverage accepted with recorded artisan caveats. Gameplay acceptance belongs to live renderer gate.",
+  "acceptedSourceCandidates": [
+    {
+      "name": "wight_nw",
+      "source": "native/client/assets/raster/source/bestiary_wight-nw-v1.png",
+      "prompt": "native/client/assets/raster/prompts/bestiary_wight-nw-v1.txt",
+      "identityReference": "native/client/assets/raster/runtime/wight_ne.png",
+      "generatedOriginal": "C:/Users/Alex/.codex/generated_images/01a0896f-29de-7452-bb4b-6fb64351c1eb/exec-e07cf8dd-2058-470a-a99b-9112bd6d1a5a.png",
+      "dimensions": [
+        1145,
+        1374
+      ],
+      "alphaZeroPixels": 1360849,
+      "alphaPartialPixels": 211035,
+      "alphaOpaquePixels": 1346,
+      "alpha128BoundsInclusive": [
+        329,
+        438,
+        821,
+        1233
+      ],
+      "directionReview": "Back-left silhouette, skull above-left of hips, spine/back of shroud visible, toes left. Distinct from accepted northeast.",
+      "runtime": "native/client/assets/raster/runtime/wight_nw.png",
+      "runtimeInspection": "Viewed80x96 native and3x integer preview. PixelRespecter cell13,32colors,crispalpha; body60px. Accepted as a static NW source/runtime candidate; live gameplay remains unverified."
+    },
+    {
+      "name": "artisan_nw",
+      "source": "native/client/assets/raster/source/bestiary_artisan-nw-v3.png",
+      "promptHistory": [
+        "native/client/assets/raster/prompts/bestiary_artisan-nw-v2.txt",
+        "native/client/assets/raster/prompts/bestiary_artisan-nw-v3-alpha.txt"
+      ],
+      "identityReference": "native/client/assets/raster/runtime/artisan_se.png",
+      "alphaEditTarget": "native/client/assets/raster/source/bestiary_artisan-nw-v2.png",
+      "generatedOriginal": "C:/Users/Alex/.codex/generated_images/01a0896f-29de-7452-bb4b-6fb64351c1eb/exec-74421f45-6261-49d0-b55c-9ac72558a013.png",
+      "dimensions": [
+        1145,
+        1374
+      ],
+      "alphaZeroPixels": 1374184,
+      "alphaPartialPixels": 197623,
+      "alphaOpaquePixels": 1423,
+      "alpha128BoundsInclusive": [
+        385,
+        389,
+        771,
+        1111
+      ],
+      "directionReview": "Rear-left robe planes and left-facing head silhouette; toes point left; small edge of profile/beard visible. Distinct from northeast.",
+      "runtime": "native/client/assets/raster/runtime/artisan_nw.png",
+      "runtimeInspection": "Viewed80x96 native and3x integer preview. PixelRespecter cell12,32colors,crispalpha; approximately60px body. Distinct left-facing rear-left pose, ochre robe and grey-haired identity preserved. Ochre is slightly brighter than existing views; exact staff anatomical handedness remains uncertain. Static direction candidate accepted; live gameplay remains unverified."
+    }
+  ],
+  "rejectedSources": [
+    {
+      "source": "native/client/assets/raster/source/bestiary_artisan-nw-v1.png",
+      "prompt": "native/client/assets/raster/prompts/bestiary_artisan-nw-v1.txt",
+      "identityReference": "native/client/assets/raster/runtime/artisan_ne.png",
+      "reason": "Repeated near-straight-back/northeast stance with toes right; rejected as NW."
+    },
+    {
+      "source": "native/client/assets/raster/source/bestiary_artisan-nw-v2.png",
+      "prompt": "native/client/assets/raster/prompts/bestiary_artisan-nw-v2.txt",
+      "identityReference": "native/client/assets/raster/runtime/artisan_se.png",
+      "reason": "Direction corrected but RGB with fully opaque drawn background. Alpha extraction generated v3."
+    }
+  ],
+  "remainingStaticReview": "Viewed native/tools/raster/bestiary-preview-3x.png. Beast directions distinct; archer SE/SW show mask fronts and NW/NE show distinct rear diagonals; no additional known wrong static pose found. No motion-cycle or live-renderer acceptance claim.",
+  "ownership": "Bestiary source and prompt assets only. Pipeline worker owns runtime/atlas/provenance. No code or commits."
+}

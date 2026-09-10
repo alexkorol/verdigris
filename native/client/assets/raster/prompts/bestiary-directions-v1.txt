@@ -1,0 +1,27 @@
+Use case: stylized-concept
+Asset type: production raster sprite sheet for Verdigris, an ORIGINAL dark Bronze Age isometric action RPG.
+
+Primary request: Create one SQUARE 1024 x 1024 image with a REAL TRANSPARENT ALPHA background, containing exactly SIXTEEN isolated full-body creature/character sprites in a mathematically even 4-column by 4-row grid. No visible grid. Each cell is 256 x 256 pixels. Each row is one consistent actor in four directions. Every body, tail, bow and staff must fit completely inside its own cell with generous transparent separation. No extra figures, no labels, no text.
+
+Composition and technical layout: Center x coordinates 128, 384, 640, 896. Ground-contact / feet baseline in each row y=230, 486, 742, 998. Standing human and skeleton bodies approximately 184 pixels high from feet to head at the SAME adult anatomical scale; beast is lower-slung, about 110 pixels high and 196 pixels nose-to-tail. All extremities remain at least 16 pixels inside the cell. Each sprite is an individual standalone cutout, no background, no tile, no pedestal, no cast shadow, no connecting elements. Render the sheet straight-on; actors use one coherent isometric game camera, viewed slightly from above, roughly 30 degrees downward.
+
+EXACT directional order in EVERY ROW, left to right:
+COLUMN 1: facing screen down-right (SOUTHEAST), front and right side visible.
+COLUMN 2: facing screen down-left (SOUTHWEST), front and left side visible.
+COLUMN 3: facing screen up-left (NORTHWEST), back and left side visible. Head points away. No face looking back over shoulder.
+COLUMN 4: facing screen up-right (NORTHEAST), back and right side visible. Head points away. No face looking back over shoulder.
+All four sprites in a row show the SAME actor, same anatomy, clothing, colors and held equipment.
+
+ROW 1 — MARSH BEAST: Feral sinewy long-bodied quadrupedal marsh predator, a lean adult dangerous animal, slate-olive mottled hide, angular narrow hound-like head and jaws, hunched shoulder ridge, small sharp ochre eyes, wiry bent muscular legs and clawed paws, long low tail. Gaunt ancient swamp hunter, not a cute pet, not a furry plush wolf. Aggressive low stalking ready posture. No armor, no harness, no glowing magic, no mounted human. Keep whole tail within each cell. Front views show face/jaws; back views show haunches, back of skull and tail.
+
+ROW 2 — BURIAL WIGHT: Skeletal adult undead, realistic approximately seven-head-tall proportions and small skull. Ancient desiccated warm ivory bones, deep dark sockets, ragged dusty charcoal and sand-colored linen winding shroud, oxidized bronze burial chest ornaments and small bronze belt plaques. Exposed rib cage and thin bony shins, empty claw hands held in a threatening slightly forward ready stance. No sword, no shield, no crown, no robe train, no oversized skull, no medieval helmet. Same torn wraps and ornaments on every view.
+
+ROW 3 — BOW RAIDER: Hostile adult human archer with realistic approximately seven-head-tall proportions and modest head size. Weathered bone face mask with two modest short horn tips, dark charcoal linen wraps and short tunic, dark leather bracers and boots, narrow ochre sash. Dark hair tied back. Holds a simple long wooden Bronze Age bow and one bronze-tipped arrow in a tense ready position aimed low along facing direction; wrapped reed quiver on back. Bone mask visible only in first two front directions and concealed in back directions. Ragged but restrained, all equipment pre-iron. No steel, chainmail, plate, sword, giant antlers or decorative modern compound bow.
+
+ROW 4 — TOWN ARTISAN: Peaceful older human town artisan, adult realistic anatomy at same scale as other humanoids; slightly stooped, modest small head, short grey hair and beard. Warm ochre linen calf-length robe, woven umber belt, soft brown leather sandals, simple leather tool pouch, plain wooden walking staff held relaxed vertically to one side. Clearly a civilian: calm unguarded posture, no armor, no weapon, no mask, no glowing magic. Back views show back of grey-haired head, robe and pouch with face fully concealed. Four consistent views of the same person.
+
+Style/medium: Authored crunchy detailed PIXEL ART, discrete crisp pixel clusters, readable silhouettes, deliberate 4-to-6-tone material ramps, restrained edge highlights and deep occlusion. Target detail density should remain readable when each character is processed to a 96 x 128 pixel sprite by PixelRespecter. Shapes and posture mature and grounded. Sharp stepped pixel edges and grouped shading; no smooth painted gradients, no blur, no antialiasing halo, no glossy 3D toy finish. Rich dark ARPG sprites with legible bone, bronze, hide, leather and linen texture. All designs entirely original.
+
+Lighting: Consistent soft warm light from upper left on all views. Bronze is warm brown-gold with restrained verdigris accents; no silver or steel. Muted earthy ochre, charcoal, umber, ivory and slate-olive. Deep but legible shadows, purposeful texture clusters.
+
+Constraints: REAL TRANSPARENT ALPHA, not a checkerboard drawing and not a solid color background. Exactly 4 rows and 4 columns. Full bodies of uniform physical scale. Correct front-versus-back direction order essential. Entire bows, tails, staff, heads and feet visible and separated from cell edges. No text, guides, shadows, FX, environment, grid lines or extra items. Avoid chibi proportions, oversized heads, medieval steel equipment, knight costumes, copied commercial characters, and gore.

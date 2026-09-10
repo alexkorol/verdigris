@@ -48,6 +48,7 @@ namespace phase_a = verdigris::client::phase_a;
 #include "../audio/audio_mixer.hpp"
 #include "audio_out.hpp"
 #include "vector_art.hpp"
+#include "raster_art.hpp"
 #include "framekit_renderer.hpp"
 #include "geometric_skill_tree.hpp"
 #include "inventory_grid.hpp"
@@ -2475,11 +2476,16 @@ void draw_kit_symbol(HDC dc, const kit::Symbol& symbol, int base_x, int base_y,
 }
 
 void draw_contact_shadow(HDC dc, const ScreenPoint& base, double world_radius) {
-  // Flat warm shadow pool; vector figures no longer hide a tall ellipse the
-  // way full sprite plates did.
   const int rx = std::max(3, static_cast<int>(world_radius * base.scale));
-  const int ry = std::max(2, static_cast<int>(world_radius * base.scale * 0.45));
-  fill_ellipse(dc, base.x, base.y, rx, ry, RGB(34, 28, 22));
+  const int ry = std::max(2, static_cast<int>(world_radius * base.scale * 0.30));
+  // Let the ground texture show through the foot contact, including on light
+  // soil. An opaque dark plate reads as a hole under the smaller pixel actors.
+  Gdiplus::Graphics graphics(dc);
+  Gdiplus::SolidBrush outer(Gdiplus::Color(38, 34, 28, 22));
+  graphics.FillEllipse(&outer, base.x - rx, base.y - ry, rx * 2, ry * 2);
+  Gdiplus::SolidBrush contact(Gdiplus::Color(45, 34, 28, 22));
+  graphics.FillEllipse(&contact, base.x - rx * 2 / 3, base.y - ry / 2,
+                       std::max(2, rx * 4 / 3), std::max(2, ry));
 }
 
 // TASK-0142: a squashed ground ring in team colors so friend/foe reads at a
@@ -2547,10 +2553,10 @@ const char* scenery_kit_role(SceneryKind kind) {
 
 double scenery_height(SceneryKind kind) {
   switch (kind) {
-    case SceneryKind::Tree: return kTileUnits * 4.2;
-    case SceneryKind::Ruin: return kTileUnits * 2.6;
-    case SceneryKind::Dwelling: return kTileUnits * 2.8;
-    case SceneryKind::Shrine: return kTileUnits * 2.6;
+    case SceneryKind::Tree: return kTileUnits * 3.0;
+    case SceneryKind::Ruin: return kTileUnits * 2.0;
+    case SceneryKind::Dwelling: return kTileUnits * 2.65;
+    case SceneryKind::Shrine: return kTileUnits * 1.35;
     case SceneryKind::Gate: return kTileUnits * 2.6;
   }
   return kTileUnits * 2.0;
@@ -2631,6 +2637,25 @@ void draw_scenery_item(const BillboardAssets& assets, HDC dc, const Camera& came
   const double phase_seed =
       static_cast<double>((item.position.x * 31 + item.position.y * 17) % 628) /
       100.0;
+  const char* raster_name = item.kind == SceneryKind::Tree ? "tree"
+      : item.kind == SceneryKind::Ruin ? "column"
+      : item.kind == SceneryKind::Dwelling ? "hut"
+      : item.kind == SceneryKind::Shrine ? "shrine" : "gate";
+  if (raster_art::draw_sprite_by_visible_height(dc, raster_name, base.x, base.y, h)) {
+    rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                  static_cast<double>(base.y), 0.0, 0,
+                  std::string("raster:scenery:") + raster_name});
+    if (item.kind == SceneryKind::Ruin || item.kind == SceneryKind::Shrine)
+      rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                    static_cast<double>(base.y), 0.0, 0, "material:stone"});
+    if (item.kind == SceneryKind::Gate) {
+      rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                    static_cast<double>(base.y), 0.0, 0, "material:bronze-stone"});
+      rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                    static_cast<double>(base.y), 0.0, 0, "material-light:moving"});
+    }
+    return;
+  }
   switch (item.kind) {
     case SceneryKind::Tree:
       vector_art::tree(dc, base.x, base.y, h, sway_clock + phase_seed,
@@ -2790,8 +2815,7 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
                 FloorCache* cache = nullptr,
                 const std::string& theme = std::string("town")) {
   (void)assets;
-  // Fully procedural themed ground (vector_art::terrain_tile): the tiled
-  // contract is always honest because real tiles are always drawn.
+  // Texture coordinates follow world tiles, so grain stays fixed under movement.
   rl.push_back({render::Op::Floor, 0.0, 0.0, 0.0, 1, "tiled"});
 
   HBRUSH background = CreateSolidBrush(vector_art::dc_color(dc, RGB(23, 29, 32)));
@@ -2848,7 +2872,12 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
         const ScreenPoint corner0 = project(cam, frame, wx, wy);
         const ScreenPoint corner1 = project(cam, frame, wx + tile, wy + tile);
         const RECT cell{corner0.x, corner0.y, corner1.x, corner1.y};
-        vector_art::terrain_tile(target, cell, theme, terrain_tile_hash(tx, ty));
+        const char* terrain = theme == "crypt" ? "terrain_stone"
+            : theme == "marsh" ? "terrain_moss"
+            : theme == "town" || theme == "tin" ? "terrain_ochre"
+            : "terrain_dark";
+        if (!raster_art::draw_ground(target, terrain, cell))
+          vector_art::terrain_tile(target, cell, theme, terrain_tile_hash(tx, ty));
       }
     }
   };
@@ -9094,6 +9123,42 @@ vector_art::Pose::AttackStage player_attack_stage(const ClientState& state) {
   return vector_art::Pose::AttackStage::Idle;
 }
 
+const char* raster_direction(double x, double y) {
+  return y < 0.0 ? (x < 0.0 ? "nw" : "ne") : (x < 0.0 ? "sw" : "se");
+}
+
+bool draw_raster_actor(HDC dc, const char* family, const ScreenPoint& base,
+                       int height, double facing_x, double facing_y,
+                       double attack_phase, bool moving, double walk_phase) {
+  const std::string direction = raster_direction(facing_x, facing_y);
+  std::string pose;
+  if (attack_phase > 0.18 && attack_phase < 0.82 &&
+      (std::strcmp(family, "hero") == 0 || std::strcmp(family, "raider") == 0))
+    pose = "_attack";
+  else if (moving && std::strcmp(family, "hero") == 0)
+    pose = "_walk" + std::to_string(static_cast<int>(walk_phase * 4.0) % 4);
+  const std::string name = std::string(family) + pose + "_" + direction;
+  if (raster_art::draw_sprite(dc, name.c_str(), base.x, base.y, height)) return true;
+  const std::string idle = std::string(family) + "_" + direction;
+  return raster_art::draw_sprite(dc, idle.c_str(), base.x, base.y, height);
+}
+
+void draw_raster_equipment(HDC dc, vector_art::Held held, const ScreenPoint& base,
+                           int height, const verdigris::Vec2& facing,
+                           double attack_phase) {
+  if (held == vector_art::Held::None) return;
+  const char* name = held == vector_art::Held::Axe ? "weapon_axe"
+      : held == vector_art::Held::Staff ? "weapon_staff"
+      : held == vector_art::Held::Bow ? "weapon_bow"
+      : held == vector_art::Held::Club ? "weapon_club" : "weapon_sword";
+  const bool active = attack_phase > 0.18 && attack_phase < 0.82;
+  const int sign = facing.x < 0 ? -1 : 1;
+  const int hand_x = base.x + static_cast<int>(height * (active ? 0.24 : 0.16)) * sign;
+  const int hand_y = base.y - static_cast<int>(height * (active ? 0.35 : 0.26));
+  raster_art::draw_sprite(dc, name, hand_x, hand_y,
+                         std::max(8, static_cast<int>(height * 0.58)), sign < 0);
+}
+
 void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   sync_world(state);
   if (state.session) {
@@ -9302,10 +9367,17 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
           pose.attack = attack_phase;
           pose.attack_stage = player_attack_stage(state);
           pose.mirror = player.facing.x < 0;
-          vector_art::humanoid(dc, base.x, base.y,
-                               std::max(10, static_cast<int>(kTileUnits * 1.75 *
-                                                             base.scale)),
-                               vector_art::player_style(), pose, held);
+          const int height = std::max(10, static_cast<int>(kTileUnits * 1.75 * base.scale));
+          if (draw_raster_actor(dc, "hero", base, height, player.facing.x,
+                                player.facing.y, attack_phase, motion.moving,
+                                motion.walk_phase)) {
+            rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                          static_cast<double>(base.y), 0.0, 0, "raster:player"});
+            draw_raster_equipment(dc, held, base, height, player.facing, attack_phase);
+          } else {
+            vector_art::humanoid(dc, base.x, base.y, height,
+                                 vector_art::player_style(), pose, held);
+          }
           rl.push_back({render::Op::Hud, static_cast<double>(base.x),
                         static_cast<double>(base.y), 0.0, 0,
                         attack_stage_label(pose.attack_stage)});
@@ -9394,7 +9466,17 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
               vector_art::monster_style(world.theme, monster.elite);
           const int rig_h =
               std::max(10, static_cast<int>(foe_height * base.scale));
-          if (monster.behaviour == "buffer") {
+          const char* family = monster.behaviour == "ranged" ? "archer"
+              : world.theme == "crypt" ? "wight"
+              : world.theme == "wilds" || world.theme == "marsh" ? "beast"
+              : "raider";
+          if (draw_raster_actor(dc, family, base, rig_h, to_player_x, to_player_y,
+                               monster_attack_phase, motion_it.moving,
+                               motion_it.walk_phase)) {
+            rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                          static_cast<double>(base.y), 0.0, 0,
+                          std::string("raster:monster:") + family});
+          } else if (monster.behaviour == "buffer") {
             vector_art::totem(dc, base.x, base.y, rig_h, style, pose);
           } else if (monster.behaviour == "ranged") {
             vector_art::humanoid(dc, base.x, base.y, rig_h, style, pose,
@@ -9467,8 +9549,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         rl.push_back({render::Op::Npc, static_cast<double>(base.x),
                       static_cast<double>(base.y), 0.0, npc.id, npc.name});
         draw_contact_shadow(dc, base, kTileUnits * 0.42);
-        // Role-coloured ring, and always the vector silhouette so townsfolk
-        // never read as copies of the raster player plate.
+        // A distinct townsfolk sprite and role-coloured ring keep NPCs
+        // recognizable beside the player's equipment silhouette.
         COLORREF ring = RGB(122, 168, 230);  // guide/talk
         if (!npc.actions.empty()) {
           const std::string& lead = npc.actions.front();
@@ -9496,7 +9578,11 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                                std::string("trade")) != npc.actions.end())
               prop = vector_art::Held::Sword;  // the weapons trader
           }
-          vector_art::humanoid(
+          if (!draw_raster_actor(dc, "artisan", base,
+              std::max(10, static_cast<int>(kTileUnits * 1.45 * base.scale)),
+              world.player.position.x - npc.position.x,
+              world.player.position.y - npc.position.y, 0.0, false, 0.0))
+            vector_art::humanoid(
               dc, base.x, base.y,
               std::max(10, static_cast<int>(kTileUnits * 1.45 * base.scale)),
               vector_art::npc_style(npc.id), pose, prop);
@@ -9545,8 +9631,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         const int lift = static_cast<int>(kTileUnits * 0.28 * base.scale);
         const int gx = base.x;
         const int gy = base.y - lift;
-        // Category glyph from the item's name: every drop reads as a thing,
-        // not an abstract marker. Vector-only placeholders by design.
+        // Physical drops use the same raster item family as carried equipment.
         std::string kind_name = loot_label(state, entry_loot.first);
         for (auto& ch : kind_name)
           ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
@@ -9572,6 +9657,11 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                                : is_shield ? RGB(168, 128, 84)
                                : is_vessel ? RGB(120, 190, 214)
                                            : RGB(230, 181, 74);
+        const char* item_sprite = is_trophy ? "item_bird"
+            : is_coins ? "item_bundle" : is_weapon ? "weapon_sword"
+            : is_shield ? "item_shield" : is_vessel ? "item_vessel" : "item_bundle";
+        if (!raster_art::draw_sprite(dc, item_sprite, base.x, base.y,
+                                     std::max(12, static_cast<int>(kTileUnits * 0.6 * base.scale)))) {
         HBRUSH brush = CreateSolidBrush(color);
         HPEN pen = CreatePen(PS_SOLID, 2, RGB(18, 16, 14));
         HGDIOBJ old_brush = SelectObject(dc, brush);
@@ -9619,6 +9709,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         SelectObject(dc, old_pen);
         DeleteObject(brush);
         DeleteObject(pen);
+        }
         if (state.loot_labels && entry.index < loot_plates.size() &&
             loot_plates[entry.index]) {
           const std::string label = loot_label(state, entry_loot.first);
@@ -11763,7 +11854,9 @@ int scenario_xp_meter() {
     const int x0 = std::max(0, bar_x + 4);
     const int x1 = std::min(width, bar_x + 120);
     const int y0 = std::max(0, bar_y + 1);
-    const int y1 = std::min(height, bar_y + 9);
+    // At this viewport the meter is eight pixels high: sample its six-row
+    // interior, excluding the border and the ochre world below the meter.
+    const int y1 = std::min(height, bar_y + 7);
     for (int y = y0; y < y1; ++y) {
       for (int x = x0; x < x1; ++x) {
         const int i = (y * width + x) * 4;
@@ -18516,11 +18609,86 @@ int scenario_loot_label_budget() {
   return scenario_failures;
 }
 
-// Machine-checkable presentation budget: paints real fullscreen-sized 32bpp
-// frames through the production paint_scene path and fails when the average
-// frame cost would visibly stutter the 20 Hz tick. The bound is deliberately
-// generous (regressions of the kind this gate exists for cost hundreds of
-// milliseconds); the measured value prints so drift is visible in every run.
+int scenario_raster_world() {
+  // Asset absence must not silently certify the old geometric fallback as
+  // the new world art. This checks the runtime decode and actual paint paths.
+  for (const char* family : {"hero", "raider", "beast", "wight", "archer", "artisan"}) {
+    for (const char* direction : {"se", "sw", "ne", "nw"}) {
+      const std::string name = std::string(family) + "_" + direction;
+      const std::string label = "raster-world: directional sprite decodes: " + name;
+      scenario_check(raster_art::content_dimensions(name.c_str()).valid(), label.c_str());
+    }
+  }
+  for (const char* name : {"tree", "hut", "column", "shrine", "gate",
+                           "terrain_ochre", "terrain_dark", "terrain_moss", "terrain_stone"}) {
+    const std::string label = std::string("raster-world: scenery decodes: ") + name;
+    scenario_check(raster_art::content_dimensions(name).valid(), label.c_str());
+  }
+  for (int frame = 0; frame < 4; ++frame) {
+    const std::string name = "hero_walk" + std::to_string(frame) + "_se";
+    const std::string label = "raster-world: SE walk frame decodes: " + name;
+    scenario_check(raster_art::content_dimensions(name.c_str()).valid(), label.c_str());
+  }
+
+  constexpr int width = 160, height = 160;
+  BITMAPINFO info{};
+  info.bmiHeader.biSize = sizeof(info.bmiHeader);
+  info.bmiHeader.biWidth = width;
+  info.bmiHeader.biHeight = -height;
+  info.bmiHeader.biPlanes = 1;
+  info.bmiHeader.biBitCount = 32;
+  info.bmiHeader.biCompression = BI_RGB;
+  void* bits = nullptr;
+  HDC dc = CreateCompatibleDC(nullptr);
+  HBITMAP bitmap = CreateDIBSection(dc, &info, DIB_RGB_COLORS, &bits, nullptr, 0);
+  scenario_check(bitmap && bits, "raster-world: animation paint surface allocated");
+  if (!bitmap || !bits) {
+    if (bitmap) DeleteObject(bitmap);
+    DeleteDC(dc);
+    return scenario_failures;
+  }
+  HGDIOBJ old = SelectObject(dc, bitmap);
+  std::vector<std::uint64_t> hashes;
+  for (int frame = 0; frame < 4; ++frame) {
+    std::memset(bits, 0, width * height * 4);
+    const ScreenPoint base{width / 2, height - 8, 1.0};
+    scenario_check(draw_raster_actor(dc, "hero", base, 128, 1.0, 1.0,
+                                     -1.0, true, frame * 0.25),
+                   "raster-world: moving actor paints through production helper");
+    GdiFlush();
+    std::uint64_t hash = 14695981039346656037ULL;
+    const auto* pixels = static_cast<const std::uint8_t*>(bits);
+    for (int i = 0; i < width * height * 4; ++i)
+      hash = (hash ^ pixels[i]) * 1099511628211ULL;
+    scenario_check(std::find(hashes.begin(), hashes.end(), hash) == hashes.end(),
+                   "raster-world: each SE gait phase changes the rendered pixels");
+    hashes.push_back(hash);
+  }
+  SelectObject(dc, old);
+  DeleteObject(bitmap);
+  DeleteDC(dc);
+
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  const std::string dir = art_wave_capture_dir();
+  scenario_check(!dir.empty(), "raster-world: capture root accepted");
+  if (dir.empty()) return scenario_failures;
+  scenario_check(reference_present(state, 1366, 768, dir + "\\raster-world-1366x768.png"),
+                 "raster-world: production scene captured");
+  bool player = false, scenery = false, monster = false;
+  for (const auto& item : state.render_list) {
+    player |= item.label == "raster:player";
+    scenery |= item.label.rfind("raster:scenery:", 0) == 0;
+    monster |= item.label.rfind("raster:monster:", 0) == 0;
+  }
+  scenario_check(player && scenery && monster,
+                 "raster-world: player, enemy and scenery all use raster draws");
+  return scenario_failures;
+}
+
+// Paint real fullscreen 32bpp frames through production paint_scene. Retain
+// the 40 ms limit and print the measured cost so regressions stay visible.
 int scenario_frame_budget() {
   ClientState state;
   scenario_begin(state);
@@ -18625,6 +18793,7 @@ int run_scenarios(const std::string& which) {
       {"combat-audio", scenario_combat_audio},
       {"hud-scale-floor", scenario_hud_scale_floor},
       {"xp-meter", scenario_xp_meter},
+      {"raster-world", scenario_raster_world},
       {"loot-to-bank", scenario_loot_to_bank},
       {"telegraph-dodge", scenario_telegraph_dodge},
       {"combat-juice", scenario_combat_juice},

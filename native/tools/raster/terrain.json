@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "defaults": {
+    "cell_size": 8,
+    "alpha_mode": "crisp",
+    "max_colors": 32,
+    "canvas": [
+      32,
+      32
+    ],
+    "trim": false,
+    "fill": true,
+    "align": "top_left"
+  },
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/environment-terrain-warm-pixel-v3.png",
+      "grid": [
+        2,
+        2
+      ],
+      "assets": [
+        {
+          "name": "terrain_dark",
+          "cell": [
+            0,
+            0
+          ]
+        },
+        {
+          "name": "terrain_ochre",
+          "cell": [
+            1,
+            0
+          ]
+        },
+        {
+          "name": "terrain_moss",
+          "cell": [
+            0,
+            1
+          ]
+        },
+        {
+          "name": "terrain_stone",
+          "cell": [
+            1,
+            1
+          ]
+        }
+      ]
+    }
+  ]
+}

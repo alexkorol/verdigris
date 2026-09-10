@@ -1,0 +1,11 @@
+Use case: identity-preserve
+Create ONE next walking frame of this adult pixel-art hero.
+
+Reference 1 is the accepted identity anchor: preserve exactly this adult, clothes, face, warm bronze, russet linen, indigo sash, scale, southeast-facing camera and limited pixel palette.
+Reference 2 is the previous opposite-contact walk pose. Advance it into a NARROW PASSING pose without changing which leg supports the body.
+
+The straight supporting leg stays on the SCREEN-LEFT side; move its planted foot just beneath the pelvis, toe pointing right.
+The bent leg stays on the SCREEN-RIGHT side; bring that raised knee forward beside the supporting knee, and bring its raised boot close to the supporting calf. The rightmost boot stays OFF THE GROUND and points right.
+Make the leg silhouette compact, knees passing close together, compared with the spread stride in reference 2. The supporting leg must NOT switch to the screen-right side. Arms move gently inward past the sides; both hands remain empty. Ordinary walking, not kicking.
+
+Keep the head, torso, clothing identity, body scale and body origin aligned with reference 2, with only a tiny natural upward bob. Crisp deliberate square pixels, full silhouette, generous clear margin. Actual transparent alpha background. No other subject or scenery.

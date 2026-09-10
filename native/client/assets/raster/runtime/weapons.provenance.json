@@ -1,0 +1,550 @@
+{
+  "version": 1,
+  "manifest_sha256": "d111bc92f4f53ba7a75a7e512f8015a99e76c48df2148a914a41243d47a196f5",
+  "importer_sha256": "4ea3788b6d7916b0567d387da4698548460bc1779ff760c2215a24e52368a427",
+  "engine": {
+    "project": "Pixel Respecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "root": "Z:/Code/Python/pixel-perfecter",
+    "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+    "git_dirty": true,
+    "source_sha256": {
+      "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+      "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+      "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+      "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+      "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+      "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+      "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+      "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+      "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+      "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+      "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+      "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+      "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+    },
+    "dependencies": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    }
+  },
+  "known_limitations": [],
+  "sources": [
+    {
+      "source": "../../client/assets/raster/source/weapons-v1.png",
+      "sha256": "7fbaa9f91e3ee9ec484a583ea55e90e5d838959a26deb4eb6ff6d259949a57a6",
+      "size": [
+        1774,
+        887
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "name": "weapon_axe",
+      "file": "weapon_axe.png",
+      "source": "../../client/assets/raster/source/weapons-v1.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        444,
+        444
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 24,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        55,
+        55
+      ],
+      "trim_box": [
+        17,
+        4,
+        40,
+        51
+      ],
+      "before_resize": [
+        23,
+        47
+      ],
+      "placed_size": [
+        23,
+        47
+      ],
+      "canvas": [
+        32,
+        64
+      ],
+      "content_bounds": [
+        4,
+        17,
+        27,
+        64
+      ],
+      "anchor_px": [
+        16,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "84e987a2d16ba5250f8d2528cd033d461029b293183f68cef5f4d6e652e9e8c9"
+    },
+    {
+      "name": "weapon_sword",
+      "file": "weapon_sword.png",
+      "source": "../../client/assets/raster/source/weapons-v1.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        444,
+        0,
+        887,
+        444
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 24,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        55,
+        55
+      ],
+      "trim_box": [
+        20,
+        4,
+        35,
+        52
+      ],
+      "before_resize": [
+        15,
+        48
+      ],
+      "placed_size": [
+        15,
+        48
+      ],
+      "canvas": [
+        32,
+        64
+      ],
+      "content_bounds": [
+        8,
+        16,
+        23,
+        64
+      ],
+      "anchor_px": [
+        16,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "dc5e04f87784f3becbc4aa368ce67b085fd62a704ddcef2e911ec6b644899231"
+    },
+    {
+      "name": "weapon_staff",
+      "file": "weapon_staff.png",
+      "source": "../../client/assets/raster/source/weapons-v1.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        887,
+        0,
+        1330,
+        444
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 24,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        55,
+        55
+      ],
+      "trim_box": [
+        24,
+        2,
+        31,
+        54
+      ],
+      "before_resize": [
+        7,
+        52
+      ],
+      "placed_size": [
+        7,
+        52
+      ],
+      "canvas": [
+        32,
+        64
+      ],
+      "content_bounds": [
+        12,
+        12,
+        19,
+        64
+      ],
+      "anchor_px": [
+        16,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "90ac50d72b604d14bda1017c7f727dee0484d07ef87107c6b36931456756e52f"
+    },
+    {
+      "name": "weapon_bow",
+      "file": "weapon_bow.png",
+      "source": "../../client/assets/raster/source/weapons-v1.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        1330,
+        0,
+        1774,
+        444
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 24,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        55,
+        55
+      ],
+      "trim_box": [
+        19,
+        2,
+        32,
+        53
+      ],
+      "before_resize": [
+        13,
+        51
+      ],
+      "placed_size": [
+        13,
+        51
+      ],
+      "canvas": [
+        32,
+        64
+      ],
+      "content_bounds": [
+        9,
+        13,
+        22,
+        64
+      ],
+      "anchor_px": [
+        16,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "b45864b07e860489f4ed275b8ba819fd182880c0fad265e9301e290dc66d1396"
+    },
+    {
+      "name": "weapon_club",
+      "file": "weapon_club.png",
+      "source": "../../client/assets/raster/source/weapons-v1.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        444,
+        444,
+        887
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 24,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        55,
+        55
+      ],
+      "trim_box": [
+        19,
+        2,
+        36,
+        51
+      ],
+      "before_resize": [
+        17,
+        49
+      ],
+      "placed_size": [
+        17,
+        49
+      ],
+      "canvas": [
+        32,
+        64
+      ],
+      "content_bounds": [
+        7,
+        15,
+        24,
+        64
+      ],
+      "anchor_px": [
+        16,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "f73a33f2ff5c5ad868f7590432104e59594525356c56dfca8326716817e92a50"
+    },
+    {
+      "name": "item_shield",
+      "file": "item_shield.png",
+      "source": "../../client/assets/raster/source/weapons-v1.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        444,
+        444,
+        887,
+        887
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 24,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        55,
+        55
+      ],
+      "trim_box": [
+        6,
+        5,
+        49,
+        47
+      ],
+      "before_resize": [
+        43,
+        42
+      ],
+      "placed_size": [
+        43,
+        42
+      ],
+      "canvas": [
+        48,
+        48
+      ],
+      "content_bounds": [
+        2,
+        6,
+        45,
+        48
+      ],
+      "anchor_px": [
+        24,
+        48
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "6bd6e9e496dc20957f9dcf86fcacb92acfc73daf983296c334fb551d3816104c"
+    },
+    {
+      "name": "item_vessel",
+      "file": "item_vessel.png",
+      "source": "../../client/assets/raster/source/weapons-v1.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        887,
+        444,
+        1330,
+        887
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 24,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        55,
+        55
+      ],
+      "trim_box": [
+        12,
+        13,
+        43,
+        45
+      ],
+      "before_resize": [
+        31,
+        32
+      ],
+      "placed_size": [
+        31,
+        32
+      ],
+      "canvas": [
+        48,
+        48
+      ],
+      "content_bounds": [
+        8,
+        16,
+        39,
+        48
+      ],
+      "anchor_px": [
+        24,
+        48
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "4b22478fd3d41836c0112c6169f03c18e355d3320fe5cab6fe405bdd85ff9289"
+    },
+    {
+      "name": "item_bundle",
+      "file": "item_bundle.png",
+      "source": "../../client/assets/raster/source/weapons-v1.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        1330,
+        444,
+        1774,
+        887
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 24,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        55,
+        55
+      ],
+      "trim_box": [
+        9,
+        14,
+        46,
+        42
+      ],
+      "before_resize": [
+        37,
+        28
+      ],
+      "placed_size": [
+        37,
+        28
+      ],
+      "canvas": [
+        48,
+        48
+      ],
+      "content_bounds": [
+        5,
+        20,
+        42,
+        48
+      ],
+      "anchor_px": [
+        24,
+        48
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "d7dc622fc296fa41a0f20301255f99db2aa3718fbf6e645adb76f503fc365a4d"
+    }
+  ]
+}

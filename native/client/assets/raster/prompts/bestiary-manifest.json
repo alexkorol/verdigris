@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "generationMode": "built-in image_gen",
+  "generatedOn": "2026-09-09",
+  "status": "Source candidates inspected; final runtime-scale acceptance requires PixelRespecter conversion and live review.",
+  "candidateSheet": {
+    "source": "native/client/assets/raster/source/bestiary-directions-v4.png",
+    "promptHistory": [
+      "bestiary-directions-v2.txt",
+      "bestiary-directions-v3.txt",
+      "bestiary-directions-v4-alpha.txt"
+    ],
+    "width": 1254,
+    "height": 1254,
+    "alphaZeroPixels": 988897,
+    "alphaPartialPixels": 580436,
+    "alphaOpaquePixels": 3183,
+    "xBoundaries": [
+      0,
+      314,
+      627,
+      941,
+      1254
+    ],
+    "yBoundaries": [
+      0,
+      290,
+      611,
+      926,
+      1254
+    ],
+    "alphaThresholdForBoundaryInspection": 96,
+    "rowMajorCandidates": [
+      "beast_se",
+      "beast_sw",
+      "beast_nw",
+      "beast_ne",
+      "wight_se",
+      "wight_sw",
+      "wight_nw_REJECTED_DUPLICATE_NE",
+      "wight_ne",
+      "archer_se",
+      "archer_sw",
+      "archer_nw",
+      "archer_ne",
+      "artisan_se",
+      "artisan_sw",
+      "artisan_nw_REJECTED_DUPLICATE_NE",
+      "artisan_ne"
+    ],
+    "acceptedDirectionsOnSourceReview": [
+      "beast_se",
+      "beast_sw",
+      "beast_nw",
+      "beast_ne",
+      "wight_se",
+      "wight_sw",
+      "wight_ne",
+      "artisan_se",
+      "artisan_sw",
+      "artisan_ne"
+    ],
+    "plausibleDirectionsRequiringRuntimeReview": [
+      "archer_se",
+      "archer_sw",
+      "archer_nw",
+      "archer_ne"
+    ],
+    "rejectedDirections": [
+      "wight_nw",
+      "artisan_nw"
+    ],
+    "knownLimitations": [
+      "Even cell geometry and exact baselines were not followed by image model; use explicit crop bounds then normalize feet.",
+      "The sheet's wight NW and artisan NW slots repeat northeast-looking views.",
+      "Image model did not literally enforce exact logical pixel dimensions or strict palette count.",
+      "Partially opaque source pixels need thresholding and background-edge inspection in the actual pipeline."
+    ]
+  },
+  "replacements": [],
+  "ungeneratedPromptFiles": [
+    "native/client/assets/raster/prompts/bestiary-wight-nw-v1.txt",
+    "native/client/assets/raster/prompts/bestiary-artisan-nw-v1.txt"
+  ],
+  "isolatedReferences": [
+    "native/tools/raster/wight_ne_reference.png",
+    "native/tools/raster/artisan_ne_reference.png"
+  ],
+  "generationPause": "Resumed after research completed. See bestiary-singles-manifest.json for reference-led NW replacements and their actual acceptance state.",
+  "rejectedSources": [
+    {
+      "source": "bestiary-directions-v1.png",
+      "reason": "Fine painterly textures instead of low-resolution pixel art."
+    },
+    {
+      "source": "bestiary-directions-v2.png",
+      "reason": "Wight ornaments teal, beast olive cast; wrong beast northwest; superseded."
+    },
+    {
+      "source": "bestiary-directions-v3.png",
+      "reason": "Color and beast direction fixed but background is opaque checkerboard."
+    }
+  ],
+  "workflow": "Next pose calls use one isolated accepted actor image as a strong identity/style reference; generate one subject and one direction per call. Verify actual pose and alpha before handoff, then assembler makes atlas.",
+  "ownership": "Only bestiary source and prompt files; no code changes and no commits."
+}

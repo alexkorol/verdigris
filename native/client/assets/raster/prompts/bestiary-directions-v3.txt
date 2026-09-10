@@ -1,0 +1,10 @@
+Use case: precise-object-edit
+Asset type: original low-resolution pixel-art game sprite sheet with true transparent alpha.
+Edit target: provided 4x4 sprite sheet. Preserve the grid layout, creature identities, large crunchy pixel clusters, anatomy, all clothes/equipment and true transparent alpha. Keep the image visibly LOW RESOLUTION with flat limited colors and hard-edged square pixel clusters. Keep all humanoid sprites unchanged except the specific color correction below.
+
+Make these precise corrections:
+1. In row 2 (all four skeleton wights), replace every green/teal/turquoise ornament color with ordinary warm bronze: dark reddish brown shadows, copper brown middle, restrained warm ochre highlight. Plain metal, no green anywhere. Keep the ornament shapes and positions unchanged.
+2. In row 1 (all four beasts), use charcoal/dark umber hide with tan accents instead of olive shades. No green coloration. Retain big flat pixel color clusters; no detailed fur/scale texture.
+3. TOP ROW THIRD CELL ONLY: correct the animal direction. It must face UP-LEFT (northwest), away from viewer, snout at upper-left and tail trailing toward lower-right. It is the back/left-side view counterpart to the northeast animal in the fourth cell. Keep the complete tail, feet and head contained within its own cell and keep the same foot baseline. Do not move or change the fourth cell northeast animal.
+
+Maintain large square pixels, deliberate chunky flat 3-to-4-tone material shading, limited 32-color palette overall, no antialiasing, no smooth painting, no noise, no fine highlights, no green tint. Keep exactly four columns and four rows, true transparent background and full isolated sprites. No labels, grid, text, shadows or scenery.

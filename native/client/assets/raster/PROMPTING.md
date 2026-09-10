@@ -1,0 +1,99 @@
+# Reference-driven pixel art production
+
+This standard records results observed in the September 9, 2026 run, including
+the owner's corrections. It describes this tool's observed behavior rather
+than making universal claims about a model version. The built-in image tool
+does not expose a model selector in this session.
+
+The first draft overgeneralized our sheet failures. Subsequent primary-source
+research found both useful single-character motion sheets and failed grids.
+Read `RESEARCH.md`: use the demonstrated workflow appropriate to the asset,
+then judge the actual result. Individual frames are a fallback and a focused
+control method, not a universal limitation of Image 2.5.
+
+## What the attempts showed
+
+| Attempt | Observed result | Production rule |
+|---|---|---|
+| Sixteen actor views in a 4x4 sheet | Wrong or near-duplicate back views; feet crossed cell boundaries | Study one character/direction; use isolated frames when needed; assemble the production atlas in code |
+| Four walk frames across a directional sheet | Leading legs repeated; passing poses duplicated | Specify one temporal transition using an accepted reference; review a played sequence |
+| "Pixel art" with textured material language | Detailed raster illustration instead of deliberate low-resolution clusters | Set a logical body height and palette; inspect reconstructed pixels at native and gameplay scales |
+| Exact dimensions and tiled texture requests | Grid and dimensions drifted; seamlessness was not established | Crop/pack with measured bounds; verify any intended repeat at actual scale |
+| Editing a sheet that showed a transparency pattern | The pattern became opaque RGB background | Prefer an isolated alpha-bearing reference; request transparency, then test the actual alpha channel |
+| Name-derived patina styling | Green spread to armor, props and architectural accents | Describe materials directly: bronze, linen, leather, wood, clay, bone and stone |
+| Reference edits of clothing and bodies | Identity was more stable than pose and layout | Keep accepted identity references; independently verify direction and movement |
+| Referenced SE walk as four separate images | Opposite contact repeated the same leg in three candidates; a focused correction naming screen-left/right foot positions finally changed the silhouette | Use visible pose differences to resolve anatomical ambiguity; retain the identity reference and reject repeated phases |
+| Four reconstructed SE walk candidates at a shared pivot | Distinct contact/passing poses survive at native size; small color/body shifts remain | Keep preview acceptance separate from actual game motion acceptance |
+| Separate back-left wight and artisan edits | Missing direction slots filled; artisan brightness and staff handedness still need review | Fix the direction with a targeted reference edit, then review other properties across the full set |
+
+## Workflow
+
+1. Establish one isolated anchor: one actor, neutral ready pose, one camera
+   direction. For a human, begin around 64 logical pixels from crown to sole,
+   with grounded adult proportions and about 24–32 purposeful colors.
+2. Inspect the source. Reject wrong anatomy, baked backgrounds, full-detail
+   illustration, excessive texture, green palette bias, and an incorrect view.
+3. Reconstruct with the actual Pixel Respecter API. Use measured pixel pitch,
+   limited colors, crisp alpha, nearest-neighbor only, and recorded tool/source
+   hashes. Normalization must preserve common scale and a stable feet pivot.
+4. Inspect the native output and an integer enlargement. Accept this isolated
+   image as the identity anchor only when silhouette and material reads survive.
+5. For an individual-frame workflow, generate each next pose from that anchor. Supply the preceding accepted
+   frame as a second reference when it clarifies the transition; explicitly
+   distinguish identity reference from pose reference. Retain the anchor to
+   prevent accumulated drift.
+   A single-character motion sheet is also a valid experiment: begin with
+   the published reference-led prompt in `RESEARCH.md`, preserve its simple
+   structure, and change the subject/action only. Do not expand it into a
+   mixed-character, mixed-direction brief. Verify every frame before reuse.
+6. Describe facing in screen terms: "face upper-left, show the back and the
+   left-facing silhouette" rather than relying only on "NW". Verify visually;
+   do not silently relabel a duplicate NE view as NW.
+7. For movement, request explicit leg/arm changes: left foot planted forward,
+   right foot passing, right foot planted forward, left foot passing. Ensure
+   contact points and frame timing form a cycle rather than a row of portraits.
+8. Assemble sheets in code with integer cell rectangles and stored pivots.
+   Do not independently stretch each pose to fill its cell.
+9. Check terrain repetition in a 3x3 preview and the live camera. A texture
+   may be useful as a patch without being seamless. Do not label it tileable
+   until opposite edges and visible joins are reviewed.
+10. Run the asset inside the production renderer. Check movement, attacks,
+    equipment changes, occlusion, contrasting ground, and performance. A contact
+    sheet and a passing build do not prove gameplay visual acceptance.
+
+## Single-frame prompt template
+
+Start with this compact adaptation of Noel's separate-image method and the
+Flixly one-action edit. Expand it only to address a visible failure:
+
+> Using reference 1 as the character identity and reference 2 as the preceding
+> pose, create the next pixel-art walking frame facing lower-right. The right
+> foot moves forward and plants; the left foot trails. Preserve the character,
+> camera, scale and palette. Keep the whole silhouette on a transparent
+> background. Return one frame.
+
+This is our adapted prompt, not a quotation from a creator or a proven gait.
+Anatomical left/right must be checked in the resulting image. For a single
+reference, omit reference 2 rather than implying an image was provided.
+
+Use case: stylized-concept (new reference-led generation) or identity-preserve
+(edit of an accepted actor).
+
+Asset: one isolated [actor/prop], [one pose], [one screen direction].
+Reference 1: accepted identity anchor; preserve anatomy, clothing, palette,
+camera elevation, apparent scale, and light direction.
+Reference 2, if supplied: previous accepted animation frame; change only
+[named limb and weight transition].
+Pixel construction: [64]-pixel crown-to-sole logical body, deliberate square
+clusters, [24–32] color palette, large readable shadow masses, crisp edges.
+Materials: [specific natural materials and colors].
+Composition: full silhouette and all extremities visible, stable ground
+contact and generous empty margin, no other subjects or scenery.
+Background: actual transparent alpha.
+Output: one frame. Atlas placement and exact output dimensions are handled
+by the importer.
+
+Do not paste every failure into every prompt. Keep constraints short and
+target the current failure; repeated negative descriptions can contaminate
+the requested appearance. Save the actual prompt, references, output path,
+observed checks, acceptance state, and conversion provenance for each attempt.

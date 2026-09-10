@@ -1,0 +1,2 @@
+Use case: background-extraction
+Remove the background from this single pixel-art civilian and output genuine transparent alpha. Keep every character pixel unchanged, including pose, colors, square pixels, staff, hair, robe, feet and silhouette. Clear the spaces around the character and enclosed gaps beside the staff. The output contains only this one isolated character on empty transparency.

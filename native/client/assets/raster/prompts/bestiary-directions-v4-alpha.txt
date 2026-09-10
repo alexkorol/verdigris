@@ -1,0 +1,4 @@
+Use case: background-extraction
+Edit target: the supplied sixteen-sprite pixel-art sheet.
+Remove ONLY the entire white and light gray checkerboard background and replace with REAL PNG TRANSPARENT ALPHA (alpha=0). The checkerboard is an unwanted drawn background. Remove all checkerboard squares throughout the canvas and inside gaps between legs, arms, bows and tails. Do not replace it with another visible color, pattern or simulated transparency.
+Keep all sixteen pixel-art figures absolutely unchanged: positions, forms, colors, scale, large square pixels, outlines, bones, faces, direction, weapons and equipment. Keep 4x4 sheet layout. Preserve all warm bronze ornaments and charcoal-brown beast hides. No painting, no smoothing, no reinterpreting, no shadows. Output genuinely transparent PNG with just the sixteen isolated original sprites.

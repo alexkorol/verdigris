@@ -105,6 +105,7 @@ pane/HUD state.
 ./native/build.ps1 -RunClientScenarios   # build + run all scenarios
 native/build/verdigris_client.exe --scenario first-fight   # one scenario
 native/build/verdigris_client.exe --scenario first-session-clarity   # TASK-0153 contracts
+native/build/verdigris_client.exe --scenario raster-world   # runtime sprites + SE walking-frame paint
 ~~~
 
 Every future client wave must add its own scenario. To add one:
@@ -124,4 +125,3 @@ Every future client wave must add its own scenario. To add one:
    is caught by the scenario).
 
 The runner exits non-zero on any `scenario_check` failure.
-

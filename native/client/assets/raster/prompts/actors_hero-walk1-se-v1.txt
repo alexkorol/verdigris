@@ -1,0 +1,9 @@
+Use case: identity-preserve
+Asset: one isolated southeast WALK animation frame of the same pixel-art hero.
+
+Reference 1 is the accepted identity anchor. Preserve its exact adult anatomy, russet tunic, warm bronze shoulder guard, indigo sash, dark leather, palette, face, pixel scale, camera and southeast three-quarter front view.
+Reference 2 is the previous walk frame, LEFT FOOT CONTACT. Advance that movement to the next pose; keep identity anchored to reference 1.
+
+Frame 1 — LEFT LEG SUPPORT, RIGHT LEG PASSING: The character's LEFT leg (near leg, appearing screen-right in the anchor) is straight and weight-bearing with its foot planted directly beneath the pelvis. The RIGHT leg (far leg, screen-left in the anchor) bends at the knee, lifts its boot completely off the ground and swings it FORWARD past the planted ankle. Show the raised right knee just in front of the standing leg. This is a compact narrow passing pose; it must clearly differ from the spread fore/aft stride in reference 2. Arms pass close to the body midway through their gentle opposite swing. Empty hands, relaxed shoulders. Ordinary walking, not running or kicking.
+
+Keep face/chest aimed screen lower-right, same full-body scale and ground-contact plane, only one logical pixel of upward body bob. Approximately 64 logical pixels crown to sole, crisp square clusters, same limited palette. Full silhouette inside generous transparent margin; actual transparent alpha. One character, one pose, no other content.

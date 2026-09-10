@@ -1,0 +1,26 @@
+Use case: stylized-concept
+Asset type: low-resolution pixel-art WALK ANIMATION sprite sheet.
+Input image 1: character identity, colors and pixel-art style reference ONLY. Use ONLY the russet-clothed, indigo-sash, empty-handed HERO from the top two rows. Do not copy the old poses or include the masked raider.
+
+Generate a NEW SQUARE 4-column x 4-row sprite sheet, sixteen full-body sprites total, showing one continuous four-frame walk cycle for the same adult hero in four isometric directions. The sprite sheet has a genuinely TRANSPARENT PNG background. DO NOT DRAW OR COPY THE REFERENCE CHECKERBOARD. The reference checkerboard is unwanted backdrop and must be discarded completely.
+
+Cell layout is an exactly even 4x4 grid. Leave unusually generous empty transparent margins around each sprite so no sprite can touch a neighbor or be cut by an equal-quarter crop. Each 25%-width square cell has its figure centered horizontally, about 60% of the cell height tall, and feet at 85% of cell height. Keep identical adult body height and feet origin in every cell. Do not enlarge the figures to fill the cells.
+
+COLUMNS, fixed direction across all four rows:
+Column 1: walking screen down-right (SE), front/right side visible.
+Column 2: walking screen down-left (SW), front/left side visible.
+Column 3: walking screen up-left (NW), BACK of head and torso visible, face hidden.
+Column 4: walking screen up-right (NE), BACK of head and torso visible, face hidden.
+
+ROWS, fixed phase across all four directions:
+Row 1 / frame 0: LEFT leg reaches forward toward the walking direction, left heel touches down; RIGHT leg trails well behind, opposite right arm swings gently forward.
+Row 2 / frame 1: LEFT foot planted under the body; RIGHT knee and foot lift and PASS beside the planted left leg, compact narrow passing pose. Body rises very slightly.
+Row 3 / frame 2: RIGHT leg reaches forward toward the walking direction, right heel touches down; LEFT leg trails well behind, opposite left arm swings gently forward. This must clearly swap the leg arrangement of row 1.
+Row 4 / frame 3: RIGHT foot planted under the body; LEFT knee and foot lift and PASS beside the planted right leg, compact narrow passing pose. This must clearly swap the leg arrangement of row 2.
+These are four DISTINCT sequential WALK poses, not four copies of idle. Keep head, chest and pelvis balanced; do not run, crouch, attack or leap. Empty hands gently swing opposite the legs. No weapons. The cycle should loop naturally row 4 back to row 1.
+
+Hero: Same adult human as reference, approximately seven-head-tall lean practical build, modest head size, short dark hair and small dark beard. Muted russet linen tunic, dark brown leather wraps/bracers/boots, clean warm bronze shoulder plate (deep brown, copper middle and warm gold highlights), DEEP INDIGO BLUE cloth sash. No green metal, no turquoise, no patina. Mature grounded Bronze Age materials, no medieval steel or oversized fantasy equipment.
+
+TRUE PIXEL ART CONSTRUCTION: Build on a single low-resolution logical pixel grid. The entire sheet should look like a 384 x 384 pixel image displayed 3x with strict nearest-neighbor scaling. Each body is roughly 32 to 42 logical pixels wide and 60 to 64 logical pixels tall. All outlines use visible large square staircase steps. At most 24 opaque colors total; broad connected flat color clusters and only 3 shades per material. A face uses a handful of pixels. NO smooth gradients, antialiasing, dithering, fine texture, speckled hair, painterly detail, glossy 3D rendering or subpixel details. Same low-resolution grid and same palette in all cells.
+
+Slightly elevated isometric camera, consistent warm upper-left light expressed only with flat pixel clusters. Entire head, arms, sash and both feet visible inside every cell. Actual RGBA transparency, binary transparent/opaque pixels, no checkerboard, no gray or white backing, no floor, no shadows, no effects, no text and no visible grid.

@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: ONE transparent low-resolution pixel-art game civilian sprite.
+
+The provided image is the approved identity and pixel-art style reference. Preserve it with the strongest possible visual fidelity: SAME older civilian, modest grey-haired head and beard, ochre calf-length linen robe, umber sash, leather belt pouch and sandals, plain straight wooden staff. Keep the same body proportions, garment design, warm ochre colors, shadow shapes, sparse flat color ramps and exact low pixel count. Change ONLY the viewpoint/pose to the missing direction. No redesign. ONE subject, ONE pose, no sheet.
+
+Required physical orientation: NORTHWEST, travelling diagonally toward the UPPER LEFT corner of the image, AWAY from the viewer. Show the civilian's UPPER BACK and LEFT SIDE. His head sits to the LEFT of his hips in screen space. His nose points upper-left and is fully hidden. We see the BACK OF HIS GREY-HAIRED HEAD, the rear and left side of the ochre robe, back shoulders and left elbow. NO FACE, EYES, NOSE, BEARD OR FRONT CHEST visible. The staff stays in his RIGHT HAND on his body's RIGHT SIDE, partly behind him in this view. Both feet face upper-left. This is the opposite diagonal to an upper-right / northeast back view. Relaxed peaceful slightly stooped stance. Do not look over the shoulder.
+
+Pixel design: true authored low-resolution pixel art, body about64logicalpixels tall at seven-head adult proportions. Large obvious square pixel clusters, max32colors, grouped flat3-to-4-tone materials, dark stepped silhouette. Robe folds are FEW large hard-edged ochre planes. No fine texture, smooth painting, gradients, noise, stipple, blur or antialiasing. Match reference density and colors.
+
+One full complete figure centered with generous transparent margin and feet on a horizontal baseline near the bottom. Camera is isometric3/4 slightly above at30degrees. Background genuinely empty transparent alpha. PNG transparency. Entire head, staff, hands and feet complete. Only one peaceful civilian. No armor, weapon, labels, text, effects, scenery, cast shadows or other actors.

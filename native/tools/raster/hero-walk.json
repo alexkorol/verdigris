@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "defaults": {
+    "cell_size": 14,
+    "alpha_mode": "crisp",
+    "max_colors": 32,
+    "canvas": [
+      80,
+      96
+    ],
+    "trim": true,
+    "require_transparency": true,
+    "preserve_scale": true,
+    "anchor_source": [
+      572,
+      1344
+    ],
+    "acceptance": "preview_inspected_pending_live_game_motion"
+  },
+  "known_limitations": [
+    "The four SE walking poses use a shared pixel scale and source pivot; live-game motion acceptance is still required.",
+    "Only the SE walk direction has distinct walking frames.",
+    "Subtle source lighting/color variation persists between generated walking poses."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/actors_hero-walk0-se-v1.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_walk0_se",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/actors_hero-walk1-se-v1.png",
+      "border_background": {
+        "color": [
+          223,
+          223,
+          223
+        ],
+        "tolerance": 90
+      },
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_walk1_se",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/actors_hero-walk2-se-v4.png",
+      "border_background": {
+        "color": [
+          0,
+          0,
+          0
+        ],
+        "tolerance": 3,
+        "interior_windows": [
+          [
+            634,
+            788,
+            698,
+            911
+          ]
+        ]
+      },
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_walk2_se",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/actors_hero-walk3-se-v1.png",
+      "border_background": {
+        "color": [
+          223,
+          223,
+          223
+        ],
+        "tolerance": 90,
+        "interior_windows": [
+          [
+            468,
+            750,
+            490,
+            826
+          ],
+          [
+            628,
+            761,
+            635,
+            774
+          ]
+        ]
+      },
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_walk3_se",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,4706 @@
+{
+  "version": 1,
+  "import_order": [
+    "inventory",
+    "terrain",
+    "props",
+    "gate",
+    "actors",
+    "bestiary",
+    "weapons",
+    "hero-single",
+    "bestiary-singles",
+    "hero-walk"
+  ],
+  "assets": [
+    {
+      "name": "item_dagger",
+      "file": "item_dagger.png",
+      "source": "../../client/assets/wizard/items/dagger_bronze.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        344,
+        512
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        43,
+        64
+      ],
+      "trim_box": [
+        0,
+        0,
+        42,
+        63
+      ],
+      "before_resize": [
+        42,
+        63
+      ],
+      "placed_size": [
+        42,
+        63
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        3,
+        1,
+        45,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "27e20ab8965efc8d28a32ef122bc7aa141ec6cf82f933be8c53a6eb595a83518",
+      "provenance": "inventory.provenance.json"
+    },
+    {
+      "name": "item_pike",
+      "file": "item_pike.png",
+      "source": "../../client/assets/wizard/items/boar_pike.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        204,
+        512
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 25,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        25,
+        64
+      ],
+      "trim_box": [
+        1,
+        1,
+        25,
+        63
+      ],
+      "before_resize": [
+        24,
+        62
+      ],
+      "placed_size": [
+        24,
+        62
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        12,
+        2,
+        36,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "8eaf98c66b093a1335cd53727907e703d54fff2d0ca0af8422bc9f57430907a4",
+      "provenance": "inventory.provenance.json"
+    },
+    {
+      "name": "item_armor",
+      "file": "item_armor.png",
+      "source": "../../client/assets/wizard/items/astral_plate.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        421,
+        512
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        52,
+        64
+      ],
+      "trim_box": [
+        1,
+        1,
+        52,
+        63
+      ],
+      "before_resize": [
+        51,
+        62
+      ],
+      "placed_size": [
+        48,
+        58
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        0,
+        6,
+        48,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "7031609e488f76c4257b4140b2e60bd98ee71c74429cc291ad0e7ba25833e1a8",
+      "provenance": "inventory.provenance.json"
+    },
+    {
+      "name": "item_boots",
+      "file": "item_boots.png",
+      "source": "../../client/assets/wizard/items/boots_fur.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        471,
+        512
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        58,
+        64
+      ],
+      "trim_box": [
+        1,
+        1,
+        58,
+        63
+      ],
+      "before_resize": [
+        57,
+        62
+      ],
+      "placed_size": [
+        48,
+        52
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        0,
+        12,
+        48,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "140d44523e847383d8542d55d4c5e995ae44cd0e1f69b099f27b5f730d359986",
+      "provenance": "inventory.provenance.json"
+    },
+    {
+      "name": "item_chisel",
+      "file": "item_chisel.png",
+      "source": "../../client/assets/wizard/items/cur_chisel.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        84,
+        512
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        10,
+        64
+      ],
+      "trim_box": [
+        1,
+        1,
+        10,
+        63
+      ],
+      "before_resize": [
+        9,
+        62
+      ],
+      "placed_size": [
+        9,
+        62
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        19,
+        2,
+        28,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "2674beb23754754bad3d965502daf5a31378a70e5af6bbb01a87007272611596",
+      "provenance": "inventory.provenance.json"
+    },
+    {
+      "name": "item_knife",
+      "file": "item_knife.png",
+      "source": "../../client/assets/wizard/items/cur_knife.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        470,
+        512
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 23,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        58,
+        64
+      ],
+      "trim_box": [
+        1,
+        1,
+        58,
+        63
+      ],
+      "before_resize": [
+        57,
+        62
+      ],
+      "placed_size": [
+        48,
+        52
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        0,
+        12,
+        48,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "f95af632fcddf6edb15eefde3bb234780a34588a262a7620455bbe01e33c057e",
+      "provenance": "inventory.provenance.json"
+    },
+    {
+      "name": "item_draught",
+      "file": "item_draught.png",
+      "source": "../../client/assets/wizard/items/cur_draught.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        376,
+        512
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        47,
+        64
+      ],
+      "trim_box": [
+        1,
+        1,
+        46,
+        63
+      ],
+      "before_resize": [
+        45,
+        62
+      ],
+      "placed_size": [
+        45,
+        62
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        1,
+        2,
+        46,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "36c3535d9c766b644dabc2f141744379f89b6f55468b573fdcd3764c4d99d84e",
+      "provenance": "inventory.provenance.json"
+    },
+    {
+      "name": "item_orb",
+      "file": "item_orb.png",
+      "source": "../../client/assets/wizard/items/cur_orb.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        416,
+        512
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        52,
+        64
+      ],
+      "trim_box": [
+        1,
+        1,
+        51,
+        63
+      ],
+      "before_resize": [
+        50,
+        62
+      ],
+      "placed_size": [
+        48,
+        60
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        0,
+        4,
+        48,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "28c0ae633e8e4218d11b8b4558da7d3e76a5841f244fe8d4cf9745b4f952f647",
+      "provenance": "inventory.provenance.json"
+    },
+    {
+      "name": "item_bird",
+      "file": "item_bird.png",
+      "source": "../../client/assets/wizard/items/bird_omen.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        339,
+        512
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        42,
+        64
+      ],
+      "trim_box": [
+        1,
+        1,
+        42,
+        63
+      ],
+      "before_resize": [
+        41,
+        62
+      ],
+      "placed_size": [
+        41,
+        62
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        3,
+        2,
+        44,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "aa2709a32862cbf03e76a08bc6b20cbcba86fec9e21e9939e0577be79aaf00af",
+      "provenance": "inventory.provenance.json"
+    },
+    {
+      "name": "item_blood",
+      "file": "item_blood.png",
+      "source": "../../client/assets/wizard/items/blood_omen.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        512,
+        381
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        64,
+        47
+      ],
+      "trim_box": [
+        0,
+        0,
+        64,
+        47
+      ],
+      "before_resize": [
+        64,
+        47
+      ],
+      "placed_size": [
+        48,
+        35
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        0,
+        29,
+        48,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "75bc35d5490ff0458995ca1d7eee3d972f4760a4a46a914202affb0ba582b567",
+      "provenance": "inventory.provenance.json"
+    },
+    {
+      "name": "item_shell",
+      "file": "item_shell.png",
+      "source": "../../client/assets/wizard/items/ember_shell.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        399,
+        512
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        49,
+        64
+      ],
+      "trim_box": [
+        1,
+        1,
+        49,
+        63
+      ],
+      "before_resize": [
+        48,
+        62
+      ],
+      "placed_size": [
+        48,
+        62
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        0,
+        2,
+        48,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "113d30219b9a54b905437f02a5e00fbc92b33c85a5464918bfc2c1c9a135afab",
+      "provenance": "inventory.provenance.json"
+    },
+    {
+      "name": "item_bowl",
+      "file": "item_bowl.png",
+      "source": "../../client/assets/wizard/items/bowl_bronze_offering.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        512,
+        323
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 31,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        64,
+        40
+      ],
+      "trim_box": [
+        1,
+        1,
+        63,
+        39
+      ],
+      "before_resize": [
+        62,
+        38
+      ],
+      "placed_size": [
+        48,
+        29
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        0,
+        35,
+        48,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "cfdc7c41af6b4ef3c0ead7ece7c14850fd3339b0b80007d5d34e9673a18d54e6",
+      "provenance": "inventory.provenance.json"
+    },
+    {
+      "name": "terrain_dark",
+      "file": "terrain_dark.png",
+      "source": "../../client/assets/raster/source/environment-terrain-warm-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 25,
+      "alpha_range": [
+        255,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        78,
+        78
+      ],
+      "trim_box": [
+        0,
+        0,
+        78,
+        78
+      ],
+      "before_resize": [
+        78,
+        78
+      ],
+      "placed_size": [
+        32,
+        32
+      ],
+      "canvas": [
+        32,
+        32
+      ],
+      "content_bounds": [
+        0,
+        0,
+        32,
+        32
+      ],
+      "anchor_px": [
+        16,
+        32
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "01cabd2f4fd703ff50ba218d6c86ee0f96546e06aa253bec13551f45e055c555",
+      "provenance": "terrain.provenance.json"
+    },
+    {
+      "name": "terrain_ochre",
+      "file": "terrain_ochre.png",
+      "source": "../../client/assets/raster/source/environment-terrain-warm-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        627,
+        0,
+        1254,
+        627
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 22,
+      "alpha_range": [
+        255,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        78,
+        78
+      ],
+      "trim_box": [
+        0,
+        0,
+        78,
+        78
+      ],
+      "before_resize": [
+        78,
+        78
+      ],
+      "placed_size": [
+        32,
+        32
+      ],
+      "canvas": [
+        32,
+        32
+      ],
+      "content_bounds": [
+        0,
+        0,
+        32,
+        32
+      ],
+      "anchor_px": [
+        16,
+        32
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "3b12c89a0ffd8441d3c932c0d638d9692d26a2e8f23a49bc7b5a08246628b7d8",
+      "provenance": "terrain.provenance.json"
+    },
+    {
+      "name": "terrain_moss",
+      "file": "terrain_moss.png",
+      "source": "../../client/assets/raster/source/environment-terrain-warm-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        627,
+        627,
+        1254
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 31,
+      "alpha_range": [
+        255,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        78,
+        78
+      ],
+      "trim_box": [
+        0,
+        0,
+        78,
+        78
+      ],
+      "before_resize": [
+        78,
+        78
+      ],
+      "placed_size": [
+        32,
+        32
+      ],
+      "canvas": [
+        32,
+        32
+      ],
+      "content_bounds": [
+        0,
+        0,
+        32,
+        32
+      ],
+      "anchor_px": [
+        16,
+        32
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "613a340299a15fdb62cbc9f2872b2fa23e8ba338139783799108ad0d4808d528",
+      "provenance": "terrain.provenance.json"
+    },
+    {
+      "name": "terrain_stone",
+      "file": "terrain_stone.png",
+      "source": "../../client/assets/raster/source/environment-terrain-warm-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        627,
+        627,
+        1254,
+        1254
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 25,
+      "alpha_range": [
+        255,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        78,
+        78
+      ],
+      "trim_box": [
+        0,
+        0,
+        78,
+        78
+      ],
+      "before_resize": [
+        78,
+        78
+      ],
+      "placed_size": [
+        32,
+        32
+      ],
+      "canvas": [
+        32,
+        32
+      ],
+      "content_bounds": [
+        0,
+        0,
+        32,
+        32
+      ],
+      "anchor_px": [
+        16,
+        32
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "7cd4b45eefa6b6acfed7f718f16ca108daee933102e2ecb3f2a4067021b25342",
+      "provenance": "terrain.provenance.json"
+    },
+    {
+      "name": "tree",
+      "file": "tree.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        386,
+        422
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        77,
+        84
+      ],
+      "trim_box": [
+        3,
+        3,
+        77,
+        80
+      ],
+      "before_resize": [
+        74,
+        77
+      ],
+      "placed_size": [
+        64,
+        67
+      ],
+      "canvas": [
+        64,
+        96
+      ],
+      "content_bounds": [
+        0,
+        29,
+        64,
+        96
+      ],
+      "anchor_px": [
+        32,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "4c5ff0d85a91ffbdb99fbd5521032f7b4db5a03494ad1a89ed334926486cb0ec",
+      "provenance": "props.provenance.json"
+    },
+    {
+      "name": "dead_tree",
+      "file": "dead_tree.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        386,
+        0,
+        728,
+        422
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        68,
+        84
+      ],
+      "trim_box": [
+        12,
+        4,
+        65,
+        80
+      ],
+      "before_resize": [
+        53,
+        76
+      ],
+      "placed_size": [
+        53,
+        76
+      ],
+      "canvas": [
+        64,
+        96
+      ],
+      "content_bounds": [
+        5,
+        20,
+        58,
+        96
+      ],
+      "anchor_px": [
+        32,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "65d1243156818fdd491a09502ad77ca84c58f32a60b57daa23150aca5a25ade4",
+      "provenance": "props.provenance.json"
+    },
+    {
+      "name": "rock",
+      "file": "rock.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        728,
+        0,
+        1060,
+        422
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        66,
+        84
+      ],
+      "trim_box": [
+        7,
+        35,
+        64,
+        82
+      ],
+      "before_resize": [
+        57,
+        47
+      ],
+      "placed_size": [
+        57,
+        47
+      ],
+      "canvas": [
+        64,
+        96
+      ],
+      "content_bounds": [
+        3,
+        49,
+        60,
+        96
+      ],
+      "anchor_px": [
+        32,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "345a51050f4cd696aac300b996e9266d6e71ea0c23b1e8a274f0bcbac74b53c8",
+      "provenance": "props.provenance.json"
+    },
+    {
+      "name": "grass",
+      "file": "grass.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        1060,
+        0,
+        1448,
+        422
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        77,
+        84
+      ],
+      "trim_box": [
+        10,
+        34,
+        72,
+        82
+      ],
+      "before_resize": [
+        62,
+        48
+      ],
+      "placed_size": [
+        62,
+        48
+      ],
+      "canvas": [
+        64,
+        96
+      ],
+      "content_bounds": [
+        1,
+        48,
+        63,
+        96
+      ],
+      "anchor_px": [
+        32,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "dce96f585dec7c240a5b9586b3ea2224e57e44602bcd9262c0f94f4b813a3dd7",
+      "provenance": "props.provenance.json"
+    },
+    {
+      "name": "hut",
+      "file": "hut.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        422,
+        386,
+        760
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        77,
+        67
+      ],
+      "trim_box": [
+        4,
+        4,
+        71,
+        65
+      ],
+      "before_resize": [
+        67,
+        61
+      ],
+      "placed_size": [
+        67,
+        61
+      ],
+      "canvas": [
+        96,
+        128
+      ],
+      "content_bounds": [
+        14,
+        67,
+        81,
+        128
+      ],
+      "anchor_px": [
+        48,
+        128
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "b477d04f784d51e7e87de86b2a4de530a87eeeb111107defa843d8ab53c161e0",
+      "provenance": "props.provenance.json"
+    },
+    {
+      "name": "storehut",
+      "file": "storehut.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        386,
+        422,
+        728,
+        760
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        68,
+        67
+      ],
+      "trim_box": [
+        2,
+        5,
+        68,
+        60
+      ],
+      "before_resize": [
+        66,
+        55
+      ],
+      "placed_size": [
+        66,
+        55
+      ],
+      "canvas": [
+        96,
+        128
+      ],
+      "content_bounds": [
+        15,
+        73,
+        81,
+        128
+      ],
+      "anchor_px": [
+        48,
+        128
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "b341f0c6d8a8900bd0b0ee4c0e00d8f574ba5b7ed0494af9ca014dba5b826fb1",
+      "provenance": "props.provenance.json"
+    },
+    {
+      "name": "column",
+      "file": "column.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        728,
+        422,
+        1060,
+        760
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        66,
+        67
+      ],
+      "trim_box": [
+        22,
+        3,
+        56,
+        62
+      ],
+      "before_resize": [
+        34,
+        59
+      ],
+      "placed_size": [
+        34,
+        59
+      ],
+      "canvas": [
+        64,
+        96
+      ],
+      "content_bounds": [
+        15,
+        37,
+        49,
+        96
+      ],
+      "anchor_px": [
+        32,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "ac340f6dfe70e513cc6f31f894f6b7536e7dbad0921cebbeead57e362868c497",
+      "provenance": "props.provenance.json"
+    },
+    {
+      "name": "shrine",
+      "file": "shrine.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        1060,
+        422,
+        1448,
+        760
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        77,
+        67
+      ],
+      "trim_box": [
+        12,
+        19,
+        69,
+        65
+      ],
+      "before_resize": [
+        57,
+        46
+      ],
+      "placed_size": [
+        57,
+        46
+      ],
+      "canvas": [
+        64,
+        96
+      ],
+      "content_bounds": [
+        3,
+        50,
+        60,
+        96
+      ],
+      "anchor_px": [
+        32,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "20775f855f3b114029d3ecb10c910c7d761c4babc60849dc13be1f43267cd489",
+      "provenance": "props.provenance.json"
+    },
+    {
+      "name": "chest",
+      "file": "chest.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        760,
+        386,
+        1086
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        77,
+        65
+      ],
+      "trim_box": [
+        10,
+        9,
+        64,
+        57
+      ],
+      "before_resize": [
+        54,
+        48
+      ],
+      "placed_size": [
+        54,
+        48
+      ],
+      "canvas": [
+        64,
+        96
+      ],
+      "content_bounds": [
+        5,
+        48,
+        59,
+        96
+      ],
+      "anchor_px": [
+        32,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "97883631d0cfd184e92c236282bfa8e5c1f2a07fc74792e70f66a6f3ea4542b2",
+      "provenance": "props.provenance.json"
+    },
+    {
+      "name": "brazier",
+      "file": "brazier.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        386,
+        760,
+        728,
+        1086
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        68,
+        65
+      ],
+      "trim_box": [
+        10,
+        2,
+        54,
+        56
+      ],
+      "before_resize": [
+        44,
+        54
+      ],
+      "placed_size": [
+        44,
+        54
+      ],
+      "canvas": [
+        64,
+        96
+      ],
+      "content_bounds": [
+        10,
+        42,
+        54,
+        96
+      ],
+      "anchor_px": [
+        32,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "f299515c5494d8236785820e9a929025a440f636679eb24495a5fd27997389fe",
+      "provenance": "props.provenance.json"
+    },
+    {
+      "name": "pottery",
+      "file": "pottery.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        728,
+        760,
+        1060,
+        1086
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        66,
+        65
+      ],
+      "trim_box": [
+        7,
+        6,
+        62,
+        57
+      ],
+      "before_resize": [
+        55,
+        51
+      ],
+      "placed_size": [
+        55,
+        51
+      ],
+      "canvas": [
+        64,
+        96
+      ],
+      "content_bounds": [
+        4,
+        45,
+        59,
+        96
+      ],
+      "anchor_px": [
+        32,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "3e4219eaac993e7d51889eecbfd66918e1248e4deeb88d710a0eb0be37a76bca",
+      "provenance": "props.provenance.json"
+    },
+    {
+      "name": "wall",
+      "file": "wall.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        1060,
+        760,
+        1448,
+        1086
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        77,
+        65
+      ],
+      "trim_box": [
+        8,
+        6,
+        70,
+        56
+      ],
+      "before_resize": [
+        62,
+        50
+      ],
+      "placed_size": [
+        62,
+        50
+      ],
+      "canvas": [
+        64,
+        96
+      ],
+      "content_bounds": [
+        1,
+        46,
+        63,
+        96
+      ],
+      "anchor_px": [
+        32,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "052a4bd1ad3d753bbbf8bfed32e197663be7c5e0d4f3554daac53e31def47590",
+      "provenance": "props.provenance.json"
+    },
+    {
+      "name": "gate",
+      "file": "gate.png",
+      "source": "../../client/assets/raster/source/environment-gate-v1.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        1024,
+        1536
+      ],
+      "cell_size": 12,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        128
+      ],
+      "trim_box": [
+        4,
+        16,
+        82,
+        117
+      ],
+      "before_resize": [
+        78,
+        101
+      ],
+      "placed_size": [
+        64,
+        83
+      ],
+      "canvas": [
+        64,
+        96
+      ],
+      "content_bounds": [
+        0,
+        13,
+        64,
+        96
+      ],
+      "anchor_px": [
+        32,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "09de92ff51f317be3b77bbbf4644f7b63efd886e4bf7fe623270909c963e3671",
+      "provenance": "gate.provenance.json"
+    },
+    {
+      "name": "hero_se",
+      "file": "hero_se.png",
+      "source": "../../client/assets/raster/source/actors_hero-se-idle-v1.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        971,
+        1619
+      ],
+      "cell_size": 23,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        42,
+        70
+      ],
+      "trim_box": [
+        8,
+        4,
+        35,
+        67
+      ],
+      "before_resize": [
+        27,
+        63
+      ],
+      "placed_size": [
+        27,
+        63
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        26,
+        33,
+        53,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "56a882d079b83d942c42340ac9155b25ddbd923d436173019e8f2bd4ed5d28f7",
+      "provenance": "hero-single.provenance.json"
+    },
+    {
+      "name": "hero_sw",
+      "file": "hero_sw.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        314,
+        0,
+        628,
+        351
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        70
+      ],
+      "trim_box": [
+        14,
+        8,
+        56,
+        66
+      ],
+      "before_resize": [
+        42,
+        58
+      ],
+      "placed_size": [
+        42,
+        58
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        23,
+        38,
+        65,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "cbb23d92f5e4a1becf9dff80303cec16d4f36fa45382ba185a0a593f5da3df39",
+      "provenance": "actors.provenance.json"
+    },
+    {
+      "name": "hero_nw",
+      "file": "hero_nw.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        628,
+        0,
+        942,
+        351
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        70
+      ],
+      "trim_box": [
+        12,
+        8,
+        50,
+        68
+      ],
+      "before_resize": [
+        38,
+        60
+      ],
+      "placed_size": [
+        38,
+        60
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        21,
+        36,
+        59,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "5a161b6360b570c821d71efbc356791ad4928bd6550a3683ab6535753c309113",
+      "provenance": "actors.provenance.json"
+    },
+    {
+      "name": "hero_ne",
+      "file": "hero_ne.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        942,
+        0,
+        1254,
+        351
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        70
+      ],
+      "trim_box": [
+        11,
+        8,
+        49,
+        68
+      ],
+      "before_resize": [
+        38,
+        60
+      ],
+      "placed_size": [
+        38,
+        60
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        20,
+        36,
+        58,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "d8c74c891a47d2d999e31f5fe36522a23e37ae49d6d8c8b233aac543a734a6a6",
+      "provenance": "actors.provenance.json"
+    },
+    {
+      "name": "hero_attack_se",
+      "file": "hero_attack_se.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        351,
+        314,
+        651
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        60
+      ],
+      "trim_box": [
+        10,
+        4,
+        62,
+        56
+      ],
+      "before_resize": [
+        52,
+        52
+      ],
+      "placed_size": [
+        52,
+        52
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        19,
+        44,
+        71,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "c74fa579f142ad94b0ae7564ba48e8e7ed8d8956dd8413aab20349cf9650e5c5",
+      "provenance": "actors.provenance.json"
+    },
+    {
+      "name": "hero_attack_sw",
+      "file": "hero_attack_sw.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        314,
+        351,
+        628,
+        651
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        60
+      ],
+      "trim_box": [
+        11,
+        3,
+        60,
+        56
+      ],
+      "before_resize": [
+        49,
+        53
+      ],
+      "placed_size": [
+        49,
+        53
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        20,
+        43,
+        69,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "1514fd4d08b76073477820a4a2eddca91e3b5d514e30ab945332b3c4fbde7f4a",
+      "provenance": "actors.provenance.json"
+    },
+    {
+      "name": "hero_attack_nw",
+      "file": "hero_attack_nw.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        628,
+        351,
+        942,
+        651
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        60
+      ],
+      "trim_box": [
+        9,
+        6,
+        57,
+        59
+      ],
+      "before_resize": [
+        48,
+        53
+      ],
+      "placed_size": [
+        48,
+        53
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        18,
+        43,
+        66,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "eb7c2bf11c2500a15eee07086c7b8e63144c96ebbe67ad85615516ac80c09853",
+      "provenance": "actors.provenance.json"
+    },
+    {
+      "name": "hero_attack_ne",
+      "file": "hero_attack_ne.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        942,
+        351,
+        1254,
+        651
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        60
+      ],
+      "trim_box": [
+        8,
+        6,
+        55,
+        58
+      ],
+      "before_resize": [
+        47,
+        52
+      ],
+      "placed_size": [
+        47,
+        52
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        17,
+        44,
+        64,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "08374bf592e3f985deefe4f96aa550389f3245b906bffa10abe08406a4e9a509",
+      "provenance": "actors.provenance.json"
+    },
+    {
+      "name": "raider_se",
+      "file": "raider_se.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        651,
+        314,
+        955
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        60
+      ],
+      "trim_box": [
+        15,
+        2,
+        53,
+        58
+      ],
+      "before_resize": [
+        38,
+        56
+      ],
+      "placed_size": [
+        38,
+        56
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        24,
+        40,
+        62,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "bd0db16b309b39705764b05fff310401e61d932caae010117f0efcc2acf421d0",
+      "provenance": "actors.provenance.json"
+    },
+    {
+      "name": "raider_sw",
+      "file": "raider_sw.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        314,
+        651,
+        628,
+        955
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        60
+      ],
+      "trim_box": [
+        8,
+        1,
+        53,
+        58
+      ],
+      "before_resize": [
+        45,
+        57
+      ],
+      "placed_size": [
+        45,
+        57
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        17,
+        39,
+        62,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "13e515e678d001de0e764729048986d1d459c9df2de9c2b52d2d1c8538b3daf4",
+      "provenance": "actors.provenance.json"
+    },
+    {
+      "name": "raider_nw",
+      "file": "raider_nw.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        628,
+        651,
+        942,
+        955
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        60
+      ],
+      "trim_box": [
+        16,
+        3,
+        62,
+        59
+      ],
+      "before_resize": [
+        46,
+        56
+      ],
+      "placed_size": [
+        46,
+        56
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        25,
+        40,
+        71,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "12d3c12796a2262c6f876d12caccb0536e6810d5bcec58fe0c3c797b00c93a74",
+      "provenance": "actors.provenance.json"
+    },
+    {
+      "name": "raider_ne",
+      "file": "raider_ne.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        942,
+        651,
+        1254,
+        955
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        60
+      ],
+      "trim_box": [
+        13,
+        2,
+        59,
+        59
+      ],
+      "before_resize": [
+        46,
+        57
+      ],
+      "placed_size": [
+        46,
+        57
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        22,
+        39,
+        68,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "4a78a7f7e1e02c2ca9c18a0e2d4d403412ab2ef4cdae592c98acf052122a7544",
+      "provenance": "actors.provenance.json"
+    },
+    {
+      "name": "raider_attack_se",
+      "file": "raider_attack_se.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        955,
+        342,
+        1254
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        68,
+        59
+      ],
+      "trim_box": [
+        9,
+        5,
+        68,
+        53
+      ],
+      "before_resize": [
+        59,
+        48
+      ],
+      "placed_size": [
+        59,
+        48
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        15,
+        48,
+        74,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "05b8dfeeee4b04a9cbc6c107d0504b1fea29e5dd7894d8ccb1e448c33f65b3c5",
+      "provenance": "actors.provenance.json"
+    },
+    {
+      "name": "raider_attack_sw",
+      "file": "raider_attack_sw.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        342,
+        955,
+        644,
+        1254
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        60,
+        59
+      ],
+      "trim_box": [
+        1,
+        4,
+        54,
+        52
+      ],
+      "before_resize": [
+        53,
+        48
+      ],
+      "placed_size": [
+        53,
+        48
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        11,
+        48,
+        64,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "fe8d83d973d66049fa6e9f8747a1b81689fcd08aa90ccbde867c2606103d8537",
+      "provenance": "actors.provenance.json"
+    },
+    {
+      "name": "raider_attack_nw",
+      "file": "raider_attack_nw.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        644,
+        955,
+        959,
+        1254
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        63,
+        59
+      ],
+      "trim_box": [
+        3,
+        0,
+        57,
+        55
+      ],
+      "before_resize": [
+        54,
+        55
+      ],
+      "placed_size": [
+        54,
+        55
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        11,
+        41,
+        65,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "fe1b11265c7fac503981f35d746bc748eb30b40f4c59268a36609c262c2be27f",
+      "provenance": "actors.provenance.json"
+    },
+    {
+      "name": "raider_attack_ne",
+      "file": "raider_attack_ne.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        959,
+        955,
+        1254,
+        1254
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        59,
+        59
+      ],
+      "trim_box": [
+        4,
+        2,
+        54,
+        55
+      ],
+      "before_resize": [
+        50,
+        53
+      ],
+      "placed_size": [
+        50,
+        53
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        14,
+        43,
+        64,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "5cc30d9c0e723c278a33bb089a2c8acee95937ea01e7e687eb47eaa255af7bea",
+      "provenance": "actors.provenance.json"
+    },
+    {
+      "name": "beast_se",
+      "file": "beast_se.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        314,
+        290
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        58
+      ],
+      "trim_box": [
+        4,
+        12,
+        59,
+        55
+      ],
+      "before_resize": [
+        55,
+        43
+      ],
+      "placed_size": [
+        55,
+        43
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        13,
+        53,
+        68,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "0f4b45bb0be9ad1bc9eb53ec60a30f1cabd6f119d34d08102cbd500b34de96fc",
+      "provenance": "bestiary.provenance.json"
+    },
+    {
+      "name": "beast_sw",
+      "file": "beast_sw.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        314,
+        0,
+        627,
+        290
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        58
+      ],
+      "trim_box": [
+        6,
+        12,
+        61,
+        55
+      ],
+      "before_resize": [
+        55,
+        43
+      ],
+      "placed_size": [
+        55,
+        43
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        15,
+        53,
+        70,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "2952e2c46b31813d10e72111485f93e3f022d76cb962b9d28607f132ce1def80",
+      "provenance": "bestiary.provenance.json"
+    },
+    {
+      "name": "beast_nw",
+      "file": "beast_nw.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        627,
+        0,
+        941,
+        290
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        58
+      ],
+      "trim_box": [
+        12,
+        12,
+        60,
+        54
+      ],
+      "before_resize": [
+        48,
+        42
+      ],
+      "placed_size": [
+        48,
+        42
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        21,
+        54,
+        69,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "28a885c935d4954337120bfec06f2a0cdef8e6534fe97840f3f077ff433ee95f",
+      "provenance": "bestiary.provenance.json"
+    },
+    {
+      "name": "beast_ne",
+      "file": "beast_ne.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        941,
+        0,
+        1254,
+        290
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        58
+      ],
+      "trim_box": [
+        3,
+        11,
+        59,
+        55
+      ],
+      "before_resize": [
+        56,
+        44
+      ],
+      "placed_size": [
+        56,
+        44
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        12,
+        52,
+        68,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "d0772bd832c1e812d23143a0d8007818d85255aefdfd73a236a07bd495b0e0f4",
+      "provenance": "bestiary.provenance.json"
+    },
+    {
+      "name": "wight_se",
+      "file": "wight_se.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        290,
+        314,
+        611
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        64
+      ],
+      "trim_box": [
+        12,
+        3,
+        59,
+        62
+      ],
+      "before_resize": [
+        47,
+        59
+      ],
+      "placed_size": [
+        47,
+        59
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        21,
+        37,
+        68,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "7f075c51d5b231083fc201b80f97ef0eec62230549a8b0636ea43eda20492f33",
+      "provenance": "bestiary.provenance.json"
+    },
+    {
+      "name": "wight_sw",
+      "file": "wight_sw.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        314,
+        290,
+        627,
+        611
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        64
+      ],
+      "trim_box": [
+        6,
+        3,
+        56,
+        64
+      ],
+      "before_resize": [
+        50,
+        61
+      ],
+      "placed_size": [
+        50,
+        61
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        15,
+        35,
+        65,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "b2a71f83a721a4a6e9414706f4148b432f5a50acbcbd5d73b15a9980b8b8697d",
+      "provenance": "bestiary.provenance.json"
+    },
+    {
+      "name": "wight_ne",
+      "file": "wight_ne.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        941,
+        290,
+        1254,
+        611
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        64
+      ],
+      "trim_box": [
+        13,
+        4,
+        55,
+        63
+      ],
+      "before_resize": [
+        42,
+        59
+      ],
+      "placed_size": [
+        42,
+        59
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        22,
+        37,
+        64,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "ced357318b062af32d08f17e3b7fa5ea0e79faa2a335140fbbb028391ad4b87e",
+      "provenance": "bestiary.provenance.json"
+    },
+    {
+      "name": "archer_se",
+      "file": "archer_se.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        611,
+        314,
+        926
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        63
+      ],
+      "trim_box": [
+        13,
+        1,
+        53,
+        61
+      ],
+      "before_resize": [
+        40,
+        60
+      ],
+      "placed_size": [
+        40,
+        60
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        22,
+        36,
+        62,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "69dd1032ed0ca8fbd82e1949aadd78617b2099e8aca1b2da59c6d1aea3c24c65",
+      "provenance": "bestiary.provenance.json"
+    },
+    {
+      "name": "archer_sw",
+      "file": "archer_sw.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        314,
+        611,
+        627,
+        926
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        63
+      ],
+      "trim_box": [
+        11,
+        1,
+        50,
+        61
+      ],
+      "before_resize": [
+        39,
+        60
+      ],
+      "placed_size": [
+        39,
+        60
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        20,
+        36,
+        59,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "54f2fef2efeb4a5969a7702a0edd5bd942e086753cd63d50b953a065bb27d8cc",
+      "provenance": "bestiary.provenance.json"
+    },
+    {
+      "name": "archer_nw",
+      "file": "archer_nw.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        627,
+        611,
+        941,
+        926
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        63
+      ],
+      "trim_box": [
+        8,
+        3,
+        49,
+        61
+      ],
+      "before_resize": [
+        41,
+        58
+      ],
+      "placed_size": [
+        41,
+        58
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        17,
+        38,
+        58,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "005c0606cc1c74b9efc62b3ac2e8af1cd0da11517a3bdc3dd0350eaf385dd414",
+      "provenance": "bestiary.provenance.json"
+    },
+    {
+      "name": "archer_ne",
+      "file": "archer_ne.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        941,
+        611,
+        1254,
+        926
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        63
+      ],
+      "trim_box": [
+        16,
+        1,
+        56,
+        61
+      ],
+      "before_resize": [
+        40,
+        60
+      ],
+      "placed_size": [
+        40,
+        60
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        25,
+        36,
+        65,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "de8e780f81425276aeb78b4ea02e2b355c11f667775c76dc3e9a8926e68ef4d6",
+      "provenance": "bestiary.provenance.json"
+    },
+    {
+      "name": "artisan_se",
+      "file": "artisan_se.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        926,
+        314,
+        1254
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        65
+      ],
+      "trim_box": [
+        16,
+        2,
+        48,
+        58
+      ],
+      "before_resize": [
+        32,
+        56
+      ],
+      "placed_size": [
+        32,
+        56
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        25,
+        40,
+        57,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "7812fd17be282e428fcd4901f809ac20605300560b2251348b0b5d72dcb767e9",
+      "provenance": "bestiary.provenance.json"
+    },
+    {
+      "name": "artisan_sw",
+      "file": "artisan_sw.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        314,
+        926,
+        627,
+        1254
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        65
+      ],
+      "trim_box": [
+        15,
+        2,
+        46,
+        59
+      ],
+      "before_resize": [
+        31,
+        57
+      ],
+      "placed_size": [
+        31,
+        57
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        24,
+        39,
+        55,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "5d7806014b08433c6fdb05ba6c9905444e691c29fcf042663027e6e7a38d7b02",
+      "provenance": "bestiary.provenance.json"
+    },
+    {
+      "name": "artisan_ne",
+      "file": "artisan_ne.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        941,
+        926,
+        1254,
+        1254
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        65
+      ],
+      "trim_box": [
+        18,
+        2,
+        50,
+        58
+      ],
+      "before_resize": [
+        32,
+        56
+      ],
+      "placed_size": [
+        32,
+        56
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        27,
+        40,
+        59,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "f18d4587bee4f8f7e375f34161672f2b8806583aa33572cbeebf2ab2036592a9",
+      "provenance": "bestiary.provenance.json"
+    },
+    {
+      "name": "weapon_axe",
+      "file": "weapon_axe.png",
+      "source": "../../client/assets/raster/source/weapons-v1.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        444,
+        444
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 24,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        55,
+        55
+      ],
+      "trim_box": [
+        17,
+        4,
+        40,
+        51
+      ],
+      "before_resize": [
+        23,
+        47
+      ],
+      "placed_size": [
+        23,
+        47
+      ],
+      "canvas": [
+        32,
+        64
+      ],
+      "content_bounds": [
+        4,
+        17,
+        27,
+        64
+      ],
+      "anchor_px": [
+        16,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "84e987a2d16ba5250f8d2528cd033d461029b293183f68cef5f4d6e652e9e8c9",
+      "provenance": "weapons.provenance.json"
+    },
+    {
+      "name": "weapon_sword",
+      "file": "weapon_sword.png",
+      "source": "../../client/assets/raster/source/weapons-v1.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        444,
+        0,
+        887,
+        444
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 24,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        55,
+        55
+      ],
+      "trim_box": [
+        20,
+        4,
+        35,
+        52
+      ],
+      "before_resize": [
+        15,
+        48
+      ],
+      "placed_size": [
+        15,
+        48
+      ],
+      "canvas": [
+        32,
+        64
+      ],
+      "content_bounds": [
+        8,
+        16,
+        23,
+        64
+      ],
+      "anchor_px": [
+        16,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "dc5e04f87784f3becbc4aa368ce67b085fd62a704ddcef2e911ec6b644899231",
+      "provenance": "weapons.provenance.json"
+    },
+    {
+      "name": "weapon_staff",
+      "file": "weapon_staff.png",
+      "source": "../../client/assets/raster/source/weapons-v1.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        887,
+        0,
+        1330,
+        444
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 24,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        55,
+        55
+      ],
+      "trim_box": [
+        24,
+        2,
+        31,
+        54
+      ],
+      "before_resize": [
+        7,
+        52
+      ],
+      "placed_size": [
+        7,
+        52
+      ],
+      "canvas": [
+        32,
+        64
+      ],
+      "content_bounds": [
+        12,
+        12,
+        19,
+        64
+      ],
+      "anchor_px": [
+        16,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "90ac50d72b604d14bda1017c7f727dee0484d07ef87107c6b36931456756e52f",
+      "provenance": "weapons.provenance.json"
+    },
+    {
+      "name": "weapon_bow",
+      "file": "weapon_bow.png",
+      "source": "../../client/assets/raster/source/weapons-v1.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        1330,
+        0,
+        1774,
+        444
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 24,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        55,
+        55
+      ],
+      "trim_box": [
+        19,
+        2,
+        32,
+        53
+      ],
+      "before_resize": [
+        13,
+        51
+      ],
+      "placed_size": [
+        13,
+        51
+      ],
+      "canvas": [
+        32,
+        64
+      ],
+      "content_bounds": [
+        9,
+        13,
+        22,
+        64
+      ],
+      "anchor_px": [
+        16,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "b45864b07e860489f4ed275b8ba819fd182880c0fad265e9301e290dc66d1396",
+      "provenance": "weapons.provenance.json"
+    },
+    {
+      "name": "weapon_club",
+      "file": "weapon_club.png",
+      "source": "../../client/assets/raster/source/weapons-v1.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        444,
+        444,
+        887
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 24,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        55,
+        55
+      ],
+      "trim_box": [
+        19,
+        2,
+        36,
+        51
+      ],
+      "before_resize": [
+        17,
+        49
+      ],
+      "placed_size": [
+        17,
+        49
+      ],
+      "canvas": [
+        32,
+        64
+      ],
+      "content_bounds": [
+        7,
+        15,
+        24,
+        64
+      ],
+      "anchor_px": [
+        16,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "f73a33f2ff5c5ad868f7590432104e59594525356c56dfca8326716817e92a50",
+      "provenance": "weapons.provenance.json"
+    },
+    {
+      "name": "item_shield",
+      "file": "item_shield.png",
+      "source": "../../client/assets/raster/source/weapons-v1.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        444,
+        444,
+        887,
+        887
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 24,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        55,
+        55
+      ],
+      "trim_box": [
+        6,
+        5,
+        49,
+        47
+      ],
+      "before_resize": [
+        43,
+        42
+      ],
+      "placed_size": [
+        43,
+        42
+      ],
+      "canvas": [
+        48,
+        48
+      ],
+      "content_bounds": [
+        2,
+        6,
+        45,
+        48
+      ],
+      "anchor_px": [
+        24,
+        48
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "6bd6e9e496dc20957f9dcf86fcacb92acfc73daf983296c334fb551d3816104c",
+      "provenance": "weapons.provenance.json"
+    },
+    {
+      "name": "item_vessel",
+      "file": "item_vessel.png",
+      "source": "../../client/assets/raster/source/weapons-v1.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        887,
+        444,
+        1330,
+        887
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 24,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        55,
+        55
+      ],
+      "trim_box": [
+        12,
+        13,
+        43,
+        45
+      ],
+      "before_resize": [
+        31,
+        32
+      ],
+      "placed_size": [
+        31,
+        32
+      ],
+      "canvas": [
+        48,
+        48
+      ],
+      "content_bounds": [
+        8,
+        16,
+        39,
+        48
+      ],
+      "anchor_px": [
+        24,
+        48
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "4b22478fd3d41836c0112c6169f03c18e355d3320fe5cab6fe405bdd85ff9289",
+      "provenance": "weapons.provenance.json"
+    },
+    {
+      "name": "item_bundle",
+      "file": "item_bundle.png",
+      "source": "../../client/assets/raster/source/weapons-v1.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        1330,
+        444,
+        1774,
+        887
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 24,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        55,
+        55
+      ],
+      "trim_box": [
+        9,
+        14,
+        46,
+        42
+      ],
+      "before_resize": [
+        37,
+        28
+      ],
+      "placed_size": [
+        37,
+        28
+      ],
+      "canvas": [
+        48,
+        48
+      ],
+      "content_bounds": [
+        5,
+        20,
+        42,
+        48
+      ],
+      "anchor_px": [
+        24,
+        48
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "d7dc622fc296fa41a0f20301255f99db2aa3718fbf6e645adb76f503fc365a4d",
+      "provenance": "weapons.provenance.json"
+    },
+    {
+      "name": "wight_nw",
+      "file": "wight_nw.png",
+      "source": "../../client/assets/raster/source/bestiary_wight-nw-v1.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        1145,
+        1374
+      ],
+      "cell_size": 13,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        88,
+        105
+      ],
+      "trim_box": [
+        25,
+        34,
+        63,
+        95
+      ],
+      "before_resize": [
+        38,
+        61
+      ],
+      "placed_size": [
+        38,
+        61
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        21,
+        35,
+        59,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "ab744c30229b7304b1163cca8d2d5f4068f9b24cd670003c69fa7967024ea6e4",
+      "provenance": "bestiary-singles.provenance.json"
+    },
+    {
+      "name": "artisan_nw",
+      "file": "artisan_nw.png",
+      "source": "../../client/assets/raster/source/bestiary_artisan-nw-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        1145,
+        1374
+      ],
+      "cell_size": 12,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        95,
+        114
+      ],
+      "trim_box": [
+        32,
+        32,
+        64,
+        93
+      ],
+      "before_resize": [
+        32,
+        61
+      ],
+      "placed_size": [
+        32,
+        61
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        24,
+        35,
+        56,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "4901a143974357f3626f29e5e4912d8b93250892a7c8ab6d28ea7f36b43c333a",
+      "provenance": "bestiary-singles.provenance.json"
+    },
+    {
+      "name": "hero_walk0_se",
+      "file": "hero_walk0_se.png",
+      "source": "../../client/assets/raster/source/actors_hero-walk0-se-v1.png",
+      "acceptance": "preview_inspected_pending_live_game_motion",
+      "source_box": [
+        0,
+        0,
+        1145,
+        1374
+      ],
+      "cell_size": 14,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        81,
+        98
+      ],
+      "trim_box": [
+        27,
+        33,
+        54,
+        96
+      ],
+      "before_resize": [
+        27,
+        63
+      ],
+      "placed_size": [
+        27,
+        63
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        26,
+        33,
+        53,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "cac714cf1f0c5e00aac781930c309b58fe752c4fdf77dad268513c106ebf3541",
+      "provenance": "hero-walk.provenance.json"
+    },
+    {
+      "name": "hero_walk1_se",
+      "file": "hero_walk1_se.png",
+      "source": "../../client/assets/raster/source/actors_hero-walk1-se-v1.png",
+      "acceptance": "preview_inspected_pending_live_game_motion",
+      "source_box": [
+        0,
+        0,
+        1145,
+        1374
+      ],
+      "cell_size": 14,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        81,
+        98
+      ],
+      "trim_box": [
+        27,
+        34,
+        54,
+        93
+      ],
+      "before_resize": [
+        27,
+        59
+      ],
+      "placed_size": [
+        27,
+        59
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        26,
+        34,
+        53,
+        93
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "5ebe4b3b765e2f80ae219e52ddff0f6bd0ae00d70f52b02c5676b5ee619cbb61",
+      "provenance": "hero-walk.provenance.json"
+    },
+    {
+      "name": "hero_walk2_se",
+      "file": "hero_walk2_se.png",
+      "source": "../../client/assets/raster/source/actors_hero-walk2-se-v4.png",
+      "acceptance": "preview_inspected_pending_live_game_motion",
+      "source_box": [
+        0,
+        0,
+        1145,
+        1374
+      ],
+      "cell_size": 14,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        81,
+        98
+      ],
+      "trim_box": [
+        26,
+        34,
+        54,
+        95
+      ],
+      "before_resize": [
+        28,
+        61
+      ],
+      "placed_size": [
+        28,
+        61
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        25,
+        34,
+        53,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "608aedb034d9ffaa1ae7b784456d4c0c61f67d9469a41921bb9f07c7ab3394b7",
+      "provenance": "hero-walk.provenance.json"
+    },
+    {
+      "name": "hero_walk3_se",
+      "file": "hero_walk3_se.png",
+      "source": "../../client/assets/raster/source/actors_hero-walk3-se-v1.png",
+      "acceptance": "preview_inspected_pending_live_game_motion",
+      "source_box": [
+        0,
+        0,
+        1145,
+        1374
+      ],
+      "cell_size": 14,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        81,
+        98
+      ],
+      "trim_box": [
+        28,
+        31,
+        53,
+        91
+      ],
+      "before_resize": [
+        25,
+        60
+      ],
+      "placed_size": [
+        25,
+        60
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        27,
+        31,
+        52,
+        91
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "008280726e2af3a42f230895c96a98108b133a566c8b693b0b2e49bb970b0e55",
+      "provenance": "hero-walk.provenance.json"
+    }
+  ],
+  "known_limitations": [
+    "Archer rear diagonals require live-game directional review.",
+    "Artisan NW is slightly brighter ochre than other directions; anatomical staff handedness remains uncertain.",
+    "The four SE walking poses use a shared pixel scale and source pivot; live-game motion acceptance is still required.",
+    "Only the SE walk direction has distinct walking frames.",
+    "Subtle source lighting/color variation persists between generated walking poses."
+  ],
+  "missing_direction_assets": [],
+  "walk_sequence": {
+    "frames": [
+      "hero_walk0_se",
+      "hero_walk1_se",
+      "hero_walk2_se",
+      "hero_walk3_se"
+    ],
+    "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+  }
+}

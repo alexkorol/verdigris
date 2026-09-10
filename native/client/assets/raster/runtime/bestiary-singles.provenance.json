@@ -1,0 +1,182 @@
+{
+  "version": 1,
+  "manifest_sha256": "d71d80a1b075c52c98c0fe03986ce8cd4b95a1cc24484f36430395b62d852c34",
+  "importer_sha256": "4ea3788b6d7916b0567d387da4698548460bc1779ff760c2215a24e52368a427",
+  "engine": {
+    "project": "Pixel Respecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "root": "Z:/Code/Python/pixel-perfecter",
+    "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+    "git_dirty": true,
+    "source_sha256": {
+      "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+      "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+      "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+      "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+      "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+      "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+      "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+      "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+      "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+      "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+      "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+      "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+      "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+    },
+    "dependencies": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    }
+  },
+  "known_limitations": [
+    "Artisan NW is slightly brighter ochre than other directions; anatomical staff handedness remains uncertain."
+  ],
+  "sources": [
+    {
+      "source": "../../client/assets/raster/source/bestiary_wight-nw-v1.png",
+      "sha256": "cc977802b55a16ae7b5906a74b0c97731c2d95f9f0dec90c078c500bc7ecbffb",
+      "size": [
+        1145,
+        1374
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/bestiary_artisan-nw-v3.png",
+      "sha256": "5e19b86fcbffd0cf4c6db56f022a18ad9e83cd04a8001811f82c74ace91a5605",
+      "size": [
+        1145,
+        1374
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "name": "wight_nw",
+      "file": "wight_nw.png",
+      "source": "../../client/assets/raster/source/bestiary_wight-nw-v1.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        1145,
+        1374
+      ],
+      "cell_size": 13,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        88,
+        105
+      ],
+      "trim_box": [
+        25,
+        34,
+        63,
+        95
+      ],
+      "before_resize": [
+        38,
+        61
+      ],
+      "placed_size": [
+        38,
+        61
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        21,
+        35,
+        59,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "ab744c30229b7304b1163cca8d2d5f4068f9b24cd670003c69fa7967024ea6e4"
+    },
+    {
+      "name": "artisan_nw",
+      "file": "artisan_nw.png",
+      "source": "../../client/assets/raster/source/bestiary_artisan-nw-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        1145,
+        1374
+      ],
+      "cell_size": 12,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        95,
+        114
+      ],
+      "trim_box": [
+        32,
+        32,
+        64,
+        93
+      ],
+      "before_resize": [
+        32,
+        61
+      ],
+      "placed_size": [
+        32,
+        61
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        24,
+        35,
+        56,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "4901a143974357f3626f29e5e4912d8b93250892a7c8ab6d28ea7f36b43c333a"
+    }
+  ]
+}

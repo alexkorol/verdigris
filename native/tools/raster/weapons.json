@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "defaults": {
+    "cell_size": 8,
+    "alpha_mode": "crisp",
+    "max_colors": 24,
+    "canvas": [
+      32,
+      64
+    ],
+    "trim": true,
+    "require_transparency": true
+  },
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/weapons-v1.png",
+      "assets": [
+        {
+          "name": "weapon_axe",
+          "source_box": [
+            0,
+            0,
+            444,
+            444
+          ]
+        },
+        {
+          "name": "weapon_sword",
+          "source_box": [
+            444,
+            0,
+            887,
+            444
+          ]
+        },
+        {
+          "name": "weapon_staff",
+          "source_box": [
+            887,
+            0,
+            1330,
+            444
+          ]
+        },
+        {
+          "name": "weapon_bow",
+          "source_box": [
+            1330,
+            0,
+            1774,
+            444
+          ]
+        },
+        {
+          "name": "weapon_club",
+          "source_box": [
+            0,
+            444,
+            444,
+            887
+          ]
+        },
+        {
+          "name": "item_shield",
+          "source_box": [
+            444,
+            444,
+            887,
+            887
+          ],
+          "canvas": [
+            48,
+            48
+          ]
+        },
+        {
+          "name": "item_vessel",
+          "source_box": [
+            887,
+            444,
+            1330,
+            887
+          ],
+          "canvas": [
+            48,
+            48
+          ]
+        },
+        {
+          "name": "item_bundle",
+          "source_box": [
+            1330,
+            444,
+            1774,
+            887
+          ],
+          "canvas": [
+            48,
+            48
+          ]
+        }
+      ]
+    }
+  ]
+}

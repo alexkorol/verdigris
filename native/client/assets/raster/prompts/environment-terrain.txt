@@ -1,0 +1,7 @@
+Use case: stylized-concept.
+Asset type: production raster terrain material atlas for Verdigris, an original native Bronze Age fantasy action RPG.
+Primary request: a square 2-by-2 grid atlas of exactly four different seamless top-down ground textures, each occupying its whole equal-sized quadrant. Intended to be sampled as square 64x64 tiles then projected to isometric diamonds by the game engine.
+Layout, left to right, top to bottom: top-left dark umber trodden earth with sparse tiny pebbles; top-right warm ochre compacted clay earth with sparse subtle cracks; bottom-left dark olive and moss ground with clustered coarse grass texture; bottom-right ancient worn irregular gray-brown stone paving with subdued moss in narrow joints.
+Style: original sophisticated pixel-art ground materials, readable deliberate pixel clusters, subtle controlled dithering and rich surface texture, handmade mature game art. Terrain is low contrast enough that characters remain readable above it. Hard pixel edges and limited earthy palette, no smooth illustration gradients.
+Palette: restrained dark olive, warm ochre, dark earth, charcoal-brown stone, muted moss. Diffuse lighting with no directional drop shadows.
+Composition: each quadrant completely opaque and filled edge-to-edge by its texture; zero gutters, zero margins, no grid lines or borders, no labels, no text, no objects, no sprites. Each of the four quadrants should itself tile seamlessly on both axes. All materials at consistent scale. Exactly 2 columns and 2 rows. No diamonds: these are square material textures.

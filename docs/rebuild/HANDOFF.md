@@ -1,5 +1,27 @@
 # Native reconstitution handoff
 
+## 2026-09-09 — Pixel world runtime and source-backed image workflow
+
+- Added the bounded PNG renderer and actual Pixel Respecter import pipeline;
+  73 native RGBA assets now serve player/enemy/NPC, scenery, ground and loot
+  presentation. Source images, exact prompts, references, rejected attempts,
+  conversion settings and hashes are retained. Static props use visible
+  height; animation retains a common canvas/pivot.
+- Firsthand Image 2.5 prompts, published outputs and critical feedback changed
+  the process: accepted references, distinct reference roles, useful motion
+  sheets where they work, separate images when they fail, measured alpha/grid
+  cleanup, and a separate motion review. See
+  [the asset record](../../native/client/assets/raster/README.md) and its research.
+- Existing 62 native scenarios pass (16.6 ms frame budget), the new
+  `raster-world` scenario passes separately, and browser playtest passes 32/32.
+  Six importer checks and the padded-sprite renderer probe pass. Viewed the
+  real 3440x1440 window capture and native/enlarged walk strips.
+- This is an integration milestone, not completion of the active visual goal.
+  Only SE has four walking candidates; full motion, directional identity,
+  weapon attachment, consistent pixel pitch, terrain repetition and world
+  marker treatment remain. Continue in the isolated Diablo study worktree.
+  No push or merge.
+
 ## 2026-09-09 — D2R play reference and coherent native strike contact
 
 - Resolved the D2R screenshot blocker, created offline Barbarian `verdigris`,

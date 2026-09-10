@@ -1,0 +1,1228 @@
+{
+  "version": 1,
+  "manifest_sha256": "36fedf07c6b11fb091da8a3faf23eee4cb680b9c3adf071cc3860be8a2293a99",
+  "importer_sha256": "4ea3788b6d7916b0567d387da4698548460bc1779ff760c2215a24e52368a427",
+  "engine": {
+    "project": "Pixel Respecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "root": "Z:/Code/Python/pixel-perfecter",
+    "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+    "git_dirty": true,
+    "source_sha256": {
+      "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+      "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+      "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+      "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+      "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+      "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+      "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+      "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+      "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+      "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+      "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+      "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+      "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+    },
+    "dependencies": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    }
+  },
+  "known_limitations": [],
+  "sources": [
+    {
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "sha256": "1defcdfad4565a20563f91a55c8ff8eb92c9fd0413359068597ec8523f2cdd22",
+      "size": [
+        1254,
+        1254
+      ],
+      "background_removal": {
+        "api": "pixel_perfecter.colors.make_border_connected_transparent",
+        "color": [
+          231,
+          231,
+          233
+        ],
+        "tolerance": 68,
+        "interior_windows": [
+          {
+            "source_box": [
+              1031,
+              165,
+              1051,
+              210
+            ],
+            "new_transparent_pixels": 410
+          },
+          {
+            "source_box": [
+              1120,
+              179,
+              1126,
+              189
+            ],
+            "new_transparent_pixels": 40
+          },
+          {
+            "source_box": [
+              830,
+              214,
+              835,
+              218
+            ],
+            "new_transparent_pixels": 14
+          },
+          {
+            "source_box": [
+              736,
+              244,
+              739,
+              248
+            ],
+            "new_transparent_pixels": 10
+          },
+          {
+            "source_box": [
+              730,
+              248,
+              734,
+              253
+            ],
+            "new_transparent_pixels": 18
+          },
+          {
+            "source_box": [
+              724,
+              254,
+              729,
+              259
+            ],
+            "new_transparent_pixels": 22
+          },
+          {
+            "source_box": [
+              562,
+              532,
+              565,
+              537
+            ],
+            "new_transparent_pixels": 11
+          },
+          {
+            "source_box": [
+              744,
+              548,
+              755,
+              558
+            ],
+            "new_transparent_pixels": 55
+          },
+          {
+            "source_box": [
+              1072,
+              715,
+              1076,
+              719
+            ],
+            "new_transparent_pixels": 16
+          },
+          {
+            "source_box": [
+              108,
+              773,
+              135,
+              827
+            ],
+            "new_transparent_pixels": 594
+          },
+          {
+            "source_box": [
+              206,
+              783,
+              229,
+              832
+            ],
+            "new_transparent_pixels": 310
+          },
+          {
+            "source_box": [
+              519,
+              782,
+              546,
+              831
+            ],
+            "new_transparent_pixels": 424
+          },
+          {
+            "source_box": [
+              743,
+              787,
+              760,
+              821
+            ],
+            "new_transparent_pixels": 226
+          },
+          {
+            "source_box": [
+              1050,
+              788,
+              1058,
+              810
+            ],
+            "new_transparent_pixels": 115
+          },
+          {
+            "source_box": [
+              1045,
+              807,
+              1050,
+              821
+            ],
+            "new_transparent_pixels": 51
+          },
+          {
+            "source_box": [
+              1135,
+              822,
+              1146,
+              842
+            ],
+            "new_transparent_pixels": 73
+          },
+          {
+            "source_box": [
+              1038,
+              832,
+              1040,
+              836
+            ],
+            "new_transparent_pixels": 8
+          },
+          {
+            "source_box": [
+              729,
+              869,
+              734,
+              874
+            ],
+            "new_transparent_pixels": 23
+          }
+        ],
+        "transparent_pixels_after": 1080509
+      }
+    }
+  ],
+  "assets": [
+    {
+      "name": "hero_se",
+      "file": "hero_se.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        314,
+        351
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        70
+      ],
+      "trim_box": [
+        14,
+        8,
+        55,
+        66
+      ],
+      "before_resize": [
+        41,
+        58
+      ],
+      "placed_size": [
+        41,
+        58
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        23,
+        38,
+        64,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "45c8bd0050dbe097fe50603519938718dce6614a9cd9e529bfb5bcd60512f4ba"
+    },
+    {
+      "name": "hero_sw",
+      "file": "hero_sw.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        314,
+        0,
+        628,
+        351
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        70
+      ],
+      "trim_box": [
+        14,
+        8,
+        56,
+        66
+      ],
+      "before_resize": [
+        42,
+        58
+      ],
+      "placed_size": [
+        42,
+        58
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        23,
+        38,
+        65,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "cbb23d92f5e4a1becf9dff80303cec16d4f36fa45382ba185a0a593f5da3df39"
+    },
+    {
+      "name": "hero_nw",
+      "file": "hero_nw.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        628,
+        0,
+        942,
+        351
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        70
+      ],
+      "trim_box": [
+        12,
+        8,
+        50,
+        68
+      ],
+      "before_resize": [
+        38,
+        60
+      ],
+      "placed_size": [
+        38,
+        60
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        21,
+        36,
+        59,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "5a161b6360b570c821d71efbc356791ad4928bd6550a3683ab6535753c309113"
+    },
+    {
+      "name": "hero_ne",
+      "file": "hero_ne.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        942,
+        0,
+        1254,
+        351
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        70
+      ],
+      "trim_box": [
+        11,
+        8,
+        49,
+        68
+      ],
+      "before_resize": [
+        38,
+        60
+      ],
+      "placed_size": [
+        38,
+        60
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        20,
+        36,
+        58,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "d8c74c891a47d2d999e31f5fe36522a23e37ae49d6d8c8b233aac543a734a6a6"
+    },
+    {
+      "name": "hero_attack_se",
+      "file": "hero_attack_se.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        351,
+        314,
+        651
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        60
+      ],
+      "trim_box": [
+        10,
+        4,
+        62,
+        56
+      ],
+      "before_resize": [
+        52,
+        52
+      ],
+      "placed_size": [
+        52,
+        52
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        19,
+        44,
+        71,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "c74fa579f142ad94b0ae7564ba48e8e7ed8d8956dd8413aab20349cf9650e5c5"
+    },
+    {
+      "name": "hero_attack_sw",
+      "file": "hero_attack_sw.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        314,
+        351,
+        628,
+        651
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        60
+      ],
+      "trim_box": [
+        11,
+        3,
+        60,
+        56
+      ],
+      "before_resize": [
+        49,
+        53
+      ],
+      "placed_size": [
+        49,
+        53
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        20,
+        43,
+        69,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "1514fd4d08b76073477820a4a2eddca91e3b5d514e30ab945332b3c4fbde7f4a"
+    },
+    {
+      "name": "hero_attack_nw",
+      "file": "hero_attack_nw.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        628,
+        351,
+        942,
+        651
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        60
+      ],
+      "trim_box": [
+        9,
+        6,
+        57,
+        59
+      ],
+      "before_resize": [
+        48,
+        53
+      ],
+      "placed_size": [
+        48,
+        53
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        18,
+        43,
+        66,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "eb7c2bf11c2500a15eee07086c7b8e63144c96ebbe67ad85615516ac80c09853"
+    },
+    {
+      "name": "hero_attack_ne",
+      "file": "hero_attack_ne.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        942,
+        351,
+        1254,
+        651
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        60
+      ],
+      "trim_box": [
+        8,
+        6,
+        55,
+        58
+      ],
+      "before_resize": [
+        47,
+        52
+      ],
+      "placed_size": [
+        47,
+        52
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        17,
+        44,
+        64,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "08374bf592e3f985deefe4f96aa550389f3245b906bffa10abe08406a4e9a509"
+    },
+    {
+      "name": "raider_se",
+      "file": "raider_se.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        651,
+        314,
+        955
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        60
+      ],
+      "trim_box": [
+        15,
+        2,
+        53,
+        58
+      ],
+      "before_resize": [
+        38,
+        56
+      ],
+      "placed_size": [
+        38,
+        56
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        24,
+        40,
+        62,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "bd0db16b309b39705764b05fff310401e61d932caae010117f0efcc2acf421d0"
+    },
+    {
+      "name": "raider_sw",
+      "file": "raider_sw.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        314,
+        651,
+        628,
+        955
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        60
+      ],
+      "trim_box": [
+        8,
+        1,
+        53,
+        58
+      ],
+      "before_resize": [
+        45,
+        57
+      ],
+      "placed_size": [
+        45,
+        57
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        17,
+        39,
+        62,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "13e515e678d001de0e764729048986d1d459c9df2de9c2b52d2d1c8538b3daf4"
+    },
+    {
+      "name": "raider_nw",
+      "file": "raider_nw.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        628,
+        651,
+        942,
+        955
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        60
+      ],
+      "trim_box": [
+        16,
+        3,
+        62,
+        59
+      ],
+      "before_resize": [
+        46,
+        56
+      ],
+      "placed_size": [
+        46,
+        56
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        25,
+        40,
+        71,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "12d3c12796a2262c6f876d12caccb0536e6810d5bcec58fe0c3c797b00c93a74"
+    },
+    {
+      "name": "raider_ne",
+      "file": "raider_ne.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        942,
+        651,
+        1254,
+        955
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        60
+      ],
+      "trim_box": [
+        13,
+        2,
+        59,
+        59
+      ],
+      "before_resize": [
+        46,
+        57
+      ],
+      "placed_size": [
+        46,
+        57
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        22,
+        39,
+        68,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "4a78a7f7e1e02c2ca9c18a0e2d4d403412ab2ef4cdae592c98acf052122a7544"
+    },
+    {
+      "name": "raider_attack_se",
+      "file": "raider_attack_se.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        955,
+        342,
+        1254
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        68,
+        59
+      ],
+      "trim_box": [
+        9,
+        5,
+        68,
+        53
+      ],
+      "before_resize": [
+        59,
+        48
+      ],
+      "placed_size": [
+        59,
+        48
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        15,
+        48,
+        74,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "05b8dfeeee4b04a9cbc6c107d0504b1fea29e5dd7894d8ccb1e448c33f65b3c5"
+    },
+    {
+      "name": "raider_attack_sw",
+      "file": "raider_attack_sw.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        342,
+        955,
+        644,
+        1254
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        60,
+        59
+      ],
+      "trim_box": [
+        1,
+        4,
+        54,
+        52
+      ],
+      "before_resize": [
+        53,
+        48
+      ],
+      "placed_size": [
+        53,
+        48
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        11,
+        48,
+        64,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "fe8d83d973d66049fa6e9f8747a1b81689fcd08aa90ccbde867c2606103d8537"
+    },
+    {
+      "name": "raider_attack_nw",
+      "file": "raider_attack_nw.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        644,
+        955,
+        959,
+        1254
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        63,
+        59
+      ],
+      "trim_box": [
+        3,
+        0,
+        57,
+        55
+      ],
+      "before_resize": [
+        54,
+        55
+      ],
+      "placed_size": [
+        54,
+        55
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        11,
+        41,
+        65,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "fe1b11265c7fac503981f35d746bc748eb30b40f4c59268a36609c262c2be27f"
+    },
+    {
+      "name": "raider_attack_ne",
+      "file": "raider_attack_ne.png",
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        959,
+        955,
+        1254,
+        1254
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        59,
+        59
+      ],
+      "trim_box": [
+        4,
+        2,
+        54,
+        55
+      ],
+      "before_resize": [
+        50,
+        53
+      ],
+      "placed_size": [
+        50,
+        53
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        14,
+        43,
+        64,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "5cc30d9c0e723c278a33bb089a2c8acee95937ea01e7e687eb47eaa255af7bea"
+    }
+  ]
+}

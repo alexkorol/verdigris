@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "generationMode": "built-in image_gen",
+  "generatedOn": "2026-09-09",
+  "status": "Approved source inputs for conversion; runtime-scale acceptance belongs to the pixel conversion and live-client review.",
+  "acceptedSources": [
+    {
+      "id": "environment-terrain-warm-pixel-v3",
+      "source": "native/client/assets/raster/source/environment-terrain-warm-pixel-v3.png",
+      "prompt": "native/client/assets/raster/prompts/environment-terrain-warm-pixel-v3.txt",
+      "generatedOriginal": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-8735f128-fbf3-4137-ae1c-30a78fbc946f.png",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGB",
+      "layout": {
+        "columns": 2,
+        "rows": 2,
+        "xBoundaries": [
+          0,
+          627,
+          1254
+        ],
+        "yBoundaries": [
+          0,
+          627,
+          1254
+        ]
+      },
+      "rowMajorNames": [
+        "earth-dark",
+        "earth-ochre",
+        "grass-dry",
+        "stone-paving"
+      ],
+      "requestedRuntimeSize": [
+        32,
+        32
+      ],
+      "suggestedMaxColors": 32,
+      "observedSourcePixelPitchApprox": 8,
+      "visualInspection": "Warm earth, ochre clay, dry straw and natural green grass, warm stone; broad stepped source clusters.",
+      "limitations": [
+        "Seamless tiling was requested but has not been measured or visually accepted in a repeated tile pattern.",
+        "The model did not literally honor the requested 64x64 logical atlas or strict source palette count."
+      ]
+    },
+    {
+      "id": "environment-props-warm-pixel-v4",
+      "source": "native/client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "prompt": "native/client/assets/raster/prompts/environment-props-warm-pixel-v4.txt",
+      "generatedOriginal": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-ba195c45-d22c-418a-92d7-c79643b67536.png",
+      "width": 1448,
+      "height": 1086,
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "fullyTransparentPixels": 884216,
+      "totalPixels": 1572528,
+      "layout": {
+        "columns": 4,
+        "rows": 3,
+        "xBoundaries": [
+          0,
+          386,
+          728,
+          1060,
+          1448
+        ],
+        "yBoundaries": [
+          0,
+          422,
+          760,
+          1086
+        ],
+        "opaquePixelsOnEveryInteriorCutline": 0,
+        "opaqueThreshold": 128
+      },
+      "rowMajorNames": [
+        "tree-gnarled",
+        "tree-dead",
+        "rock-outcrop",
+        "grass-fern",
+        "hut-mudbrick",
+        "hut-store",
+        "column-ruined",
+        "altar",
+        "chest-closed",
+        "brazier-lit",
+        "storage",
+        "wall-broken"
+      ],
+      "requestedRuntimeSize": [
+        64,
+        96
+      ],
+      "largerBuildingRuntimeSize": [
+        96,
+        128
+      ],
+      "suggestedMaxColors": 32,
+      "observedSourcePixelPitchApprox": 5,
+      "visualInspection": "Warm bronze, clay, timber, straw and stone; vegetation is the only substantial green. Broader clusters than the rejected detailed raster drafts.",
+      "limitations": [
+        "Model did not honor equal cell geometry; use the verified explicit boundaries.",
+        "Runtime reconstruction and game-scale visual inspection are required before final acceptance."
+      ]
+    },
+    {
+      "id": "environment-gate-v1",
+      "source": "native/client/assets/raster/source/environment-gate-v1.png",
+      "prompt": "native/client/assets/raster/prompts/environment-gate-pixel.txt",
+      "generatedOriginal": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-8f7493a6-1845-44b3-9fab-e309fd57d43a.png",
+      "width": 1024,
+      "height": 1536,
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        254
+      ],
+      "fullyTransparentPixels": 959697,
+      "totalPixels": 1572864,
+      "layout": {
+        "columns": 1,
+        "rows": 1
+      },
+      "rowMajorNames": [
+        "gate"
+      ],
+      "requestedRuntimeSize": [
+        64,
+        96
+      ],
+      "suggestedMaxColors": 32,
+      "suggestedAlphaThreshold": 128,
+      "observedSourcePixelPitchApprox": 8,
+      "visualInspection": "Open warm stone and timber gateway with bronze brackets. Clear walkable passage and complete silhouette.",
+      "limitations": [
+        "Most solid object alpha is 253; normalize opaque output after thresholding.",
+        "Low-alpha halo requires binary alpha conversion and inspection against light and dark backgrounds."
+      ]
+    }
+  ],
+  "rejectedSources": [
+    {
+      "source": "native/client/assets/raster/source/environment-terrain.png",
+      "prompt": "native/client/assets/raster/prompts/environment-terrain.txt",
+      "reason": "Full-detail raster material texture and moss-heavy palette; superseded by warm low-resolution direction."
+    },
+    {
+      "source": "native/client/assets/raster/source/environment-props-v1.png",
+      "prompt": "native/client/assets/raster/prompts/environment-props.txt",
+      "reason": "Detailed painterly raster, pervasive patina, insufficient margins and unreliable equal cell boundaries."
+    },
+    {
+      "source": "native/client/assets/raster/source/environment-props-v2.png",
+      "prompt": "native/client/assets/raster/prompts/environment-props-layout-v2.txt",
+      "reason": "Layout improved but result is RGB with an opaque background pattern; no alpha."
+    },
+    {
+      "source": "native/client/assets/raster/source/environment-props-pixel-v3.png",
+      "prompt": "native/client/assets/raster/prompts/environment-props-pixel-v3.txt",
+      "reason": "Broader pixel clusters and actual alpha, but green bronze and moss art direction was rejected."
+    }
+  ],
+  "ungeneratedPromptFiles": [
+    "native/client/assets/raster/prompts/environment-terrain-pixel-v2.txt"
+  ],
+  "observedFailureModes": [
+    "Multi-object sheets did not reliably preserve requested equal cells or margins.",
+    "The image model produced detailed raster art when broad low-resolution pixel constraints were insufficiently explicit.",
+    "A layout edit lost alpha and generated a visible background pattern.",
+    "The project name and repeated patina terms biased unrelated materials toward green oxidation.",
+    "Requested logical pixel counts and strict palette counts were not reliably literal.",
+    "A seamless-tile prompt is not proof that the image tiles without seams."
+  ],
+  "workflowCorrection": "All future image calls are one asset per call, transparent background stated positively, no visual background-pattern term in prompts, followed by alpha/style inspection and code assembly. Selected completed sources may be iterated individually after runtime review.",
+  "ownership": "Only environment source and prompt files were written; no code changes or commits."
+}
