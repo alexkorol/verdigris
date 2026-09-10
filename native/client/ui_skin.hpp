@@ -7,10 +7,9 @@
 // sites keep their structure; only the pixels change. Windows-only, like
 // the rest of the Win32 shell.
 //
-// Palette: the Verdigris bronze-and-patina language — deep smoked bronze
-// panels, verdigris (oxidised copper) accents, ledger gold for value,
-// ember red for danger. Keep every HUD surface inside this table so the
-// client reads as one crafted object instead of debug rectangles.
+// Palette: warm bronze frames, neutral charcoal panels, linen-colored text,
+// ledger gold for value, and ember red for danger. Restrained teal accents
+// retain their existing state cues. Keep HUD colors in this shared table.
 
 #ifdef _WIN32
 
@@ -24,6 +23,8 @@
 #include <memory>
 #include <tuple>
 #include <vector>
+#include <array>
+#include "hud_chrome_layout.hpp"
 
 #include <objidl.h>
 namespace Gdiplus {
@@ -171,20 +172,17 @@ inline HFONT cached_font(HFONT (&cache)[5], int base_height, int weight,
 
 inline HFONT font_body() {
   static HFONT cache[5] = {};
-  return cached_font(cache, game_font_available() ? -12 : -15, FW_NORMAL,
-                     game_font_available() ? "Pixelmix" : "Segoe UI");
+  return cached_font(cache, -15, FW_NORMAL, "Segoe UI");
 }
 
 inline HFONT font_body_bold() {
   static HFONT cache[5] = {};
-  return cached_font(cache, game_font_available() ? -12 : -15, FW_SEMIBOLD,
-                     game_font_available() ? "Pixelmix" : "Segoe UI");
+  return cached_font(cache, -15, FW_SEMIBOLD, "Segoe UI");
 }
 
 inline HFONT font_small() {
   static HFONT cache[5] = {};
-  return cached_font(cache, game_font_available() ? -10 : -12, FW_NORMAL,
-                     game_font_available() ? "Pixelmix" : "Segoe UI");
+  return cached_font(cache, -12, FW_NORMAL, "Segoe UI");
 }
 
 inline HFONT font_title() {
@@ -276,7 +274,7 @@ inline void rounded_path(Gdiplus::GraphicsPath& path, const Gdiplus::RectF& r,
 }
 
 // Shared panel painter at an arbitrary origin: soft drop shadow, vertical
-// bronze gradient body, patina border, one-pixel top-highlight bevel.
+// bronze gradient body, restrained accent border, one-pixel top-highlight bevel.
 inline void paint_panel_into(Gdiplus::Graphics& g, const Gdiplus::RectF& r,
                              COLORREF accent, BYTE body_alpha, float radius) {
   // Web parity: near-square corners, the token panel-surface gradient with
@@ -771,6 +769,136 @@ inline void slot(HDC dc, const RECT& rect, COLORREF accent, bool armed) {
   g.TranslateTransform(static_cast<float>(rect.left),
                        static_cast<float>(rect.top));
   paint_slot(g, w, h);
+}
+
+// Detailed HUD chrome reuses the existing inventory frame. Its source and
+// scaled layers are bounded independently of the older generic panel cache.
+namespace hud_detail {
+using Layer=raster_orb_detail::Layer;
+using Key=std::tuple<int,int,int,BYTE>;
+inline constexpr std::size_t kMaxLayers=48,kMaxBytes=16u*1024u*1024u;
+struct Cache {
+  raster_orb_detail::Plate frame;
+  bool attempted=false,ready=false;
+  std::map<Key,std::unique_ptr<Layer>> layers;
+  std::size_t bytes=0;
+  std::uint64_t clock=0,builds=0,hits=0;
+};
+inline Cache& cache(){static Cache value;return value;}
+inline bool load_frame(){
+  auto& c=cache();if(c.attempted)return c.ready;c.attempted=true;ensure_started();
+  wchar_t path[32768]{};std::vector<std::wstring> starts;
+  if(GetCurrentDirectoryW(32768,path))starts.emplace_back(path);
+  if(GetModuleFileNameW(nullptr,path,32768)){
+    std::wstring exe(path);const auto slash=exe.find_last_of(L"\\/");
+    if(slash!=std::wstring::npos)starts.push_back(exe.substr(0,slash));
+  }
+  for(auto root:starts)for(int depth=0;depth<7&&!root.empty();++depth){
+    const auto file=root+L"\\src\\assets\\inventory\\frame_ornate.png";
+    if(GetFileAttributesW(file.c_str())!=INVALID_FILE_ATTRIBUTES){
+      c.ready=c.frame.load(file)&&c.frame.w>236&&c.frame.h>236;return c.ready;
+    }
+    const auto slash=root.find_last_of(L"\\/");
+    if(slash==std::wstring::npos)break;root.resize(slash);
+  }
+  return false;
+}
+inline const Layer* layer(int w,int h,int border,BYTE opacity){
+  if(w<8||h<8||w>4096||h>4096||border<0||!load_frame())return nullptr;
+  auto& c=cache();const Key key{w,h,border,opacity};
+  if(auto found=c.layers.find(key);found!=c.layers.end()){
+    found->second->used=++c.clock;++c.hits;return found->second.get();
+  }
+  const std::size_t bytes=static_cast<std::size_t>(w)*h*4;
+  if(bytes>kMaxBytes)return nullptr;
+  while(!c.layers.empty()&&(c.layers.size()>=kMaxLayers||c.bytes+bytes>kMaxBytes)){
+    auto oldest=std::min_element(c.layers.begin(),c.layers.end(),
+      [](const auto& a,const auto& b){return a.second->used<b.second->used;});
+    c.bytes-=oldest->second->bytes();c.layers.erase(oldest);
+  }
+  auto surface=std::make_unique<Layer>();if(!surface->create(w,h))return nullptr;
+  std::fill_n(static_cast<std::uint32_t*>(surface->pixels),static_cast<std::size_t>(w)*h,0u);
+  Gdiplus::Bitmap canvas(w,h,w*4,PixelFormat32bppPARGB,static_cast<BYTE*>(surface->pixels));
+  Gdiplus::Graphics g(&canvas);
+  g.SetCompositingMode(Gdiplus::CompositingModeSourceOver);
+  const float inset=border?2.f:0.f;
+  Gdiplus::RectF pit(inset,inset,float(w)-2*inset,float(h)-2*inset);
+  Gdiplus::LinearGradientBrush fill(pit,gp(kPanelTop,opacity),gp(kPanelBottom,opacity),
+                                  Gdiplus::LinearGradientModeVertical);
+  g.FillRectangle(&fill,pit);
+  Gdiplus::Bitmap frame(c.frame.w,c.frame.h,c.frame.w*4,PixelFormat32bppPARGB,
+                       reinterpret_cast<BYTE*>(c.frame.pixels.data()));
+  g.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
+  g.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
+  const int edge=std::min({border,w/2,h/2});
+  const int sx[]{0,118,c.frame.w-118,c.frame.w};
+  const int sy[]{0,118,c.frame.h-118,c.frame.h};
+  const int dx[]{0,edge,w-edge,w},dy[]{0,edge,h-edge,h};
+  for(int y=0;border>0&&y<3;++y)for(int x=0;x<3;++x){
+    if(x==1&&y==1)continue;
+    g.DrawImage(&frame,Gdiplus::Rect(dx[x],dy[y],dx[x+1]-dx[x],dy[y+1]-dy[y]),
+                sx[x],sy[y],sx[x+1]-sx[x],sy[y+1]-sy[y],Gdiplus::UnitPixel);
+  }
+  g.Flush(Gdiplus::FlushIntentionSync);
+  surface->used=++c.clock;c.bytes+=bytes;++c.builds;
+  auto* result=surface.get();c.layers.emplace(key,std::move(surface));return result;
+}
+} // namespace hud_detail
+
+inline bool hud_panel(HDC dc,const RECT& rect,BYTE opacity=240,int border=0){
+  if(!dc)return false;
+  if(border==0)border=10*ui_scale();
+  const auto* layer=hud_detail::layer(rect.right-rect.left,rect.bottom-rect.top,border,opacity);
+  if(!layer){panel(dc,rect,kPanelBorder,opacity);return false;}
+  blend_layer(dc,*layer,rect.left,rect.top);return true;
+}
+
+// Readable text over roofs and foliage, contained in the caller's existing
+// text bounds. Border zero is a fixed variant in the same bounded HUD cache.
+inline bool hud_text_backing(HDC dc,const RECT& rect){
+  if(!dc)return false;
+  const auto* layer=hud_detail::layer(rect.right-rect.left,rect.bottom-rect.top,0,224);
+  if(!layer)return false;
+  blend_layer(dc,*layer,rect.left,rect.top);return true;
+}
+
+struct HudTextLine { std::string text;COLORREF color=kInkDim; };
+using HudTextLines=std::vector<HudTextLine>;
+inline hud_chrome_layout::TextCard measure_hud_card(HDC dc,int width,
+                                                  const HudTextLines& lines){
+  const int s=ui_scale();
+  if(!dc||lines.empty()||lines.size()>8||width<=20*s)return {};
+  const int saved=SaveDC(dc);SelectObject(dc,font_small());
+  std::array<int,8> heights{};
+  for(std::size_t i=0;i<lines.size();++i){
+    RECT measured{0,0,width-20*s,0};
+    DrawTextA(dc,lines[i].text.c_str(),static_cast<int>(lines[i].text.size()),&measured,
+              DT_CALCRECT|DT_WORDBREAK|DT_NOPREFIX);
+    heights[i]=std::max(12*s,static_cast<int>(measured.bottom));
+  }
+  RestoreDC(dc,saved);
+  return hud_chrome_layout::text_card(width,s,heights,lines.size());
+}
+inline bool hud_text_card(HDC dc,const RECT& plate,
+                           const hud_chrome_layout::TextCard& plan,
+                           const HudTextLines& lines){
+  if(!dc||plan.count!=lines.size()||plan.count>plan.lines.size()||
+     plan.bounds.w<=0||plan.bounds.h<=0||plan.bounds.w>plate.right-plate.left||
+     plan.bounds.h>plate.bottom-plate.top||plan.count==0)return false;
+  for(std::size_t i=0;i<plan.count;++i)
+    if(!hud_chrome_layout::contains(plan.bounds,plan.lines[i]))return false;
+  hud_panel(dc,plate);
+  const int saved=SaveDC(dc);SelectObject(dc,font_small());SetBkMode(dc,TRANSPARENT);
+  IntersectClipRect(dc,plate.left,plate.top,plate.right,plate.bottom);
+  for(std::size_t i=0;i<plan.count;++i){
+    const auto& row=plan.lines[i];
+    RECT text{plate.left+row.x,plate.top+row.y,plate.left+row.x+row.w,
+              plate.top+row.y+row.h};
+    SetTextColor(dc,lines[i].color);
+    DrawTextA(dc,lines[i].text.c_str(),static_cast<int>(lines[i].text.size()),&text,
+              DT_WORDBREAK|DT_NOPREFIX);
+  }
+  RestoreDC(dc,saved);return true;
 }
 
 }  // namespace skin

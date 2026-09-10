@@ -1,0 +1,11 @@
+first: source 8x8 / cell 2 -> [4, 4] -> 4x6
+second: source 8x8 / cell 2 -> [4, 4] -> 4x6
+Imported 2 assets into C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\tools\raster\tmpxig_gxvk\out
+first: source 8x8 / cell 2 -> [4, 4] -> 4x6
+second: source 8x8 / cell 2 -> [4, 4] -> 4x6
+Imported 2 assets into C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\tools\raster\tmpxig_gxvk\out
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 0.581s
+
+OK

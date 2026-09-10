@@ -67,8 +67,32 @@ death timeout did not recur in the focused or final full run; bounded failure
 diagnostics were added, and the intermittent failure remains unexplained.
 Retained evidence: `native/client/assets/raster/reviews/2026-09-10/README.md`.
 
-The visual goal remains active. NW foot registration, clip identity/palette
-changes, NE attacks, enemy weapon continuity/motion, quieter ground, paths and
-HUD coherence are unfinished. Current NE/raider candidates remain unaccepted
-outside runtime. Original D2 walking and A1/A2 attack references remain external
-and private; no original D2 pixels are added to runtime or this commit.
+At that checkpoint, NW registration, NE attacks, enemy weapon/motion continuity,
+ground paths and HUD coherence remained unfinished. Original D2 walking and
+A1/A2 attack references remain external and private; none of their pixels are
+added to runtime or committed evidence.
+
+September 10 ground/HUD continuation: 127 active assets now include quiet earth
+and eight axe-preserving SW raider walk poses. NW walking feet and equipment
+receive exact +1/+5px registration corrections; walking begins on the first
+actual movement update. World-aligned paths follow the existing town/village
+landmarks, using a bounded ground cache. Common HUD chrome, measured label
+placement, equipment row spacing and XP placement pass production captures at
+3440x1440, 1366x768 and 960x600, including both panes with muted audio.
+
+Final supported build/all 66 scenarios pass: 23.258ms stationary and 24.715ms
+moving average (36.620ms peak), twenty 3440x1440 frames per condition with the
+unchanged 40ms average gates. Native suites, browser 32/32, importer 7/7 and
+equipment/ground/HUD checks pass. Root inspected the final live window and
+small dual-pane capture, then closed the local game cleanly. Evidence and
+initial failures are retained in
+`native/client/assets/raster/reviews/2026-09-10-ground-hud/README.md`.
+
+Raider motion verification is explicitly scripted through production drawing;
+native enemy AI remains stationary. The NE contact candidate improves limb
+continuity, but its next follow-through switched arms and its matte cleanup
+damaged foreground. It is rejected outside runtime. The real published
+reference recipe and both local failure stages are recorded in PROMPTING.md.
+The visual goal remains active: NE actions, native enemy locomotion, cross-clip
+identity, other monster directions, terrain repetition and further composition
+are unfinished. No push or merge.

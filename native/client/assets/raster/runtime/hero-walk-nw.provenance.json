@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "manifest_sha256": "1de36685323aa9447010299178fa64f38addd93ca747810b297f2476f1ab21c5",
+  "manifest_sha256": "b95b93a3f6260261b7609ced9ca6965feada0eba057c41a6194a73b98bf5d43c",
   "importer_sha256": "d59ef9d71a73740f15c8ef5ce5fad588273e2fb4856684985203b7501dfee7c2",
   "engine": {
     "project": "Pixel Respecter",
@@ -31,10 +31,10 @@
     }
   },
   "known_limitations": [
-    "Equal cell-local pivot retained, including apparent second-row vertical packing drift. No per-frame alignment.",
-    "Border-connected background removal only; any enclosed pockets remain review defects and must be inspected before promotion.",
-    "Root and pipeline inspected alternating thigh/support progression; production movement, body bob and equipment sockets remain review gates. Candidate PNGs are preserved separately.",
-    "Viewed production frame019: feet visibly sit above the ground ellipse; NW walk foot registration needs refinement despite successful runtime integration."
+    "Fixed shared sheet-row roots now correct vertical packing; no per-frame fitting or scale change. Residual sole travel0..2 native pixels remains.",
+    "Walk body65..69px versus idle63px, redder tunic and wider stance remain; this registration correction does not repair identity or body-scale drift.",
+    "Border-connected background removal only; enclosed pockets remain a visual review concern.",
+    "Baseline production frame019 used hero_walk6_nw with a 6px foot gap; corrected pixels have a 1px gap. Root viewed the corrected production frame019 and the shifted NW equipment probe passed. Residual 0..2px sole travel remains."
   ],
   "sources": [
     {
@@ -109,9 +109,9 @@
       ],
       "content_bounds": [
         23,
-        26,
+        27,
         59,
-        93
+        94
       ],
       "anchor_px": [
         40,
@@ -121,10 +121,10 @@
       "resampling": "nearest_neighbor",
       "anchor_source": [
         192,
-        486
+        480
       ],
       "palette_scope": "manifest_cycle",
-      "sha256": "53a74f17c73a51e9e8b47ed7bda137b178c9b079e1bf194996e9f310de4f2855"
+      "sha256": "ec99c0233bb2d8251697c365c5646b37e03035823c2b39a9012ba9f20caa7785"
     },
     {
       "name": "hero_walk1_nw",
@@ -177,9 +177,9 @@
       ],
       "content_bounds": [
         21,
-        26,
+        27,
         59,
-        95
+        96
       ],
       "anchor_px": [
         40,
@@ -189,10 +189,10 @@
       "resampling": "nearest_neighbor",
       "anchor_source": [
         192,
-        486
+        480
       ],
       "palette_scope": "manifest_cycle",
-      "sha256": "47617598cdc6ae6553a1774561e7282d6087f9ebbfecfa29c7130bc41e6f374c"
+      "sha256": "d73f0d8be95d222debe748b169b3fe78be80e192de3a3117ea7cf60b02583dbe"
     },
     {
       "name": "hero_walk2_nw",
@@ -245,9 +245,9 @@
       ],
       "content_bounds": [
         20,
-        27,
+        28,
         55,
-        95
+        96
       ],
       "anchor_px": [
         40,
@@ -257,10 +257,10 @@
       "resampling": "nearest_neighbor",
       "anchor_source": [
         192,
-        486
+        480
       ],
       "palette_scope": "manifest_cycle",
-      "sha256": "fce4570edd013d36fcc561868d78bc2bdce63f2b9d75251c8f5189d2e3bb248f"
+      "sha256": "742618bb8ae6b4bb6de92ff0db4aa2679d763aad365b7115b2c60858b3e62612"
     },
     {
       "name": "hero_walk3_nw",
@@ -313,9 +313,9 @@
       ],
       "content_bounds": [
         20,
-        27,
+        28,
         57,
-        95
+        96
       ],
       "anchor_px": [
         40,
@@ -325,10 +325,10 @@
       "resampling": "nearest_neighbor",
       "anchor_source": [
         192,
-        486
+        480
       ],
       "palette_scope": "manifest_cycle",
-      "sha256": "00857167d9849bad90eeb37b1681217df0194756313b7cb875491687a7c30cc6"
+      "sha256": "bbae2cb7b435fc4c8074a4bfc4192c37904e5eb3c50ea6061a93e5566beb399e"
     },
     {
       "name": "hero_walk4_nw",
@@ -381,9 +381,9 @@
       ],
       "content_bounds": [
         22,
-        24,
+        29,
         60,
-        89
+        94
       ],
       "anchor_px": [
         40,
@@ -393,10 +393,10 @@
       "resampling": "nearest_neighbor",
       "anchor_source": [
         192,
-        486
+        456
       ],
       "palette_scope": "manifest_cycle",
-      "sha256": "76327fe58b7ba0065b36cede5e630378f7f8c91ae69f4481d3951a2394e3bc7f"
+      "sha256": "c92b2ab6e5e5686f3898ad8c5dcb368fbc6afe84b4f205326b917f40e22862b0"
     },
     {
       "name": "hero_walk5_nw",
@@ -449,9 +449,9 @@
       ],
       "content_bounds": [
         24,
-        24,
+        29,
         59,
-        89
+        94
       ],
       "anchor_px": [
         40,
@@ -461,10 +461,10 @@
       "resampling": "nearest_neighbor",
       "anchor_source": [
         192,
-        486
+        456
       ],
       "palette_scope": "manifest_cycle",
-      "sha256": "2482d88161e37f975c7f9b8a8b6c2cb0baf76acdf71ad5a5d15908bd2985e88c"
+      "sha256": "2ad3c17350bbf2ee9eee24812edc8e41e94181c72cee2a79bc0b95ea305b70ea"
     },
     {
       "name": "hero_walk6_nw",
@@ -517,9 +517,9 @@
       ],
       "content_bounds": [
         22,
-        24,
+        29,
         61,
-        90
+        95
       ],
       "anchor_px": [
         40,
@@ -529,10 +529,10 @@
       "resampling": "nearest_neighbor",
       "anchor_source": [
         192,
-        486
+        456
       ],
       "palette_scope": "manifest_cycle",
-      "sha256": "3864bfba40fb20e68457674ab9cd6b109a32843c5b11b75e1d65ee5666c85745"
+      "sha256": "ffb1a9399220bd1552518c78cddeeddc05f02012d76a5b4bac121182c0ee4b98"
     },
     {
       "name": "hero_walk7_nw",
@@ -585,9 +585,9 @@
       ],
       "content_bounds": [
         22,
-        24,
+        29,
         59,
-        91
+        96
       ],
       "anchor_px": [
         40,
@@ -597,10 +597,10 @@
       "resampling": "nearest_neighbor",
       "anchor_source": [
         192,
-        486
+        456
       ],
       "palette_scope": "manifest_cycle",
-      "sha256": "0d2a39c077a2c360e65f0618886590514de7e1b01090b99894491ece843a55a6"
+      "sha256": "df4e3ada07ea120353cafb1e384f74acdf295e26f2ca7039c8e4987f6e40ec7d"
     }
   ],
   "shared_palette": {
@@ -773,6 +773,271 @@
     "dithering": "none",
     "scope": "all reconstructed frames in this manifest"
   },
+  "registration_review": {
+    "baseline_commit": "f3318b059",
+    "clip_canvas": [
+      80,
+      96
+    ],
+    "grid_pitch_source": 6,
+    "old_anchor_source": [
+      192,
+      486
+    ],
+    "new_anchor_source_by_sheet_row": [
+      [
+        192,
+        480
+      ],
+      [
+        192,
+        456
+      ]
+    ],
+    "translation_explanation": "Both rows receive1px clip root calibration; row1 receives4px additional sheet-packing correction. No individual pose fitting.",
+    "idle_bounds": [
+      27,
+      33,
+      52,
+      96
+    ],
+    "idle_sha256": "2fd7271f16f65eceefc583746d8373f1a81e25a74e505af7917e8ec722b0becc",
+    "runtime_formula": "top=base.y-height; native pixel edge y maps to base.y+(y-96)*height/96",
+    "frame019_asset": "hero_walk6_nw",
+    "frame019_old_gap_native": 6,
+    "frame019_new_gap_native": 1,
+    "review_scope": "Corrected NW registration and equipment reviewed in production capture; accepted for this iteration, not final identity or animation polish.",
+    "preserved_limitations": [
+      "Walk body65..69px versus idle63px; redder tunic, wider stance and body shape drift remain.",
+      "Head bob remains: corrected crown27..29px versus idle33px; no scaling or individual head alignment applied.",
+      "Residual sole travel0..2px is retained, including lifted/crossing feet."
+    ],
+    "frames": [
+      {
+        "name": "hero_walk0_nw",
+        "dy_native": 1,
+        "old_bounds": [
+          23,
+          26,
+          59,
+          93
+        ],
+        "new_bounds": [
+          23,
+          27,
+          59,
+          94
+        ],
+        "sole_gap_before": 3,
+        "sole_gap_after": 2,
+        "before_sha256": "53a74f17c73a51e9e8b47ed7bda137b178c9b079e1bf194996e9f310de4f2855",
+        "after_sha256": "ec99c0233bb2d8251697c365c5646b37e03035823c2b39a9012ba9f20caa7785",
+        "exact_rgba_translation_no_clipping": true
+      },
+      {
+        "name": "hero_walk1_nw",
+        "dy_native": 1,
+        "old_bounds": [
+          21,
+          26,
+          59,
+          95
+        ],
+        "new_bounds": [
+          21,
+          27,
+          59,
+          96
+        ],
+        "sole_gap_before": 1,
+        "sole_gap_after": 0,
+        "before_sha256": "47617598cdc6ae6553a1774561e7282d6087f9ebbfecfa29c7130bc41e6f374c",
+        "after_sha256": "d73f0d8be95d222debe748b169b3fe78be80e192de3a3117ea7cf60b02583dbe",
+        "exact_rgba_translation_no_clipping": true
+      },
+      {
+        "name": "hero_walk2_nw",
+        "dy_native": 1,
+        "old_bounds": [
+          20,
+          27,
+          55,
+          95
+        ],
+        "new_bounds": [
+          20,
+          28,
+          55,
+          96
+        ],
+        "sole_gap_before": 1,
+        "sole_gap_after": 0,
+        "before_sha256": "fce4570edd013d36fcc561868d78bc2bdce63f2b9d75251c8f5189d2e3bb248f",
+        "after_sha256": "742618bb8ae6b4bb6de92ff0db4aa2679d763aad365b7115b2c60858b3e62612",
+        "exact_rgba_translation_no_clipping": true
+      },
+      {
+        "name": "hero_walk3_nw",
+        "dy_native": 1,
+        "old_bounds": [
+          20,
+          27,
+          57,
+          95
+        ],
+        "new_bounds": [
+          20,
+          28,
+          57,
+          96
+        ],
+        "sole_gap_before": 1,
+        "sole_gap_after": 0,
+        "before_sha256": "00857167d9849bad90eeb37b1681217df0194756313b7cb875491687a7c30cc6",
+        "after_sha256": "bbae2cb7b435fc4c8074a4bfc4192c37904e5eb3c50ea6061a93e5566beb399e",
+        "exact_rgba_translation_no_clipping": true
+      },
+      {
+        "name": "hero_walk4_nw",
+        "dy_native": 5,
+        "old_bounds": [
+          22,
+          24,
+          60,
+          89
+        ],
+        "new_bounds": [
+          22,
+          29,
+          60,
+          94
+        ],
+        "sole_gap_before": 7,
+        "sole_gap_after": 2,
+        "before_sha256": "76327fe58b7ba0065b36cede5e630378f7f8c91ae69f4481d3951a2394e3bc7f",
+        "after_sha256": "c92b2ab6e5e5686f3898ad8c5dcb368fbc6afe84b4f205326b917f40e22862b0",
+        "exact_rgba_translation_no_clipping": true
+      },
+      {
+        "name": "hero_walk5_nw",
+        "dy_native": 5,
+        "old_bounds": [
+          24,
+          24,
+          59,
+          89
+        ],
+        "new_bounds": [
+          24,
+          29,
+          59,
+          94
+        ],
+        "sole_gap_before": 7,
+        "sole_gap_after": 2,
+        "before_sha256": "2482d88161e37f975c7f9b8a8b6c2cb0baf76acdf71ad5a5d15908bd2985e88c",
+        "after_sha256": "2ad3c17350bbf2ee9eee24812edc8e41e94181c72cee2a79bc0b95ea305b70ea",
+        "exact_rgba_translation_no_clipping": true
+      },
+      {
+        "name": "hero_walk6_nw",
+        "dy_native": 5,
+        "old_bounds": [
+          22,
+          24,
+          61,
+          90
+        ],
+        "new_bounds": [
+          22,
+          29,
+          61,
+          95
+        ],
+        "sole_gap_before": 6,
+        "sole_gap_after": 1,
+        "before_sha256": "3864bfba40fb20e68457674ab9cd6b109a32843c5b11b75e1d65ee5666c85745",
+        "after_sha256": "ffb1a9399220bd1552518c78cddeeddc05f02012d76a5b4bac121182c0ee4b98",
+        "exact_rgba_translation_no_clipping": true
+      },
+      {
+        "name": "hero_walk7_nw",
+        "dy_native": 5,
+        "old_bounds": [
+          22,
+          24,
+          59,
+          91
+        ],
+        "new_bounds": [
+          22,
+          29,
+          59,
+          96
+        ],
+        "sole_gap_before": 5,
+        "sole_gap_after": 0,
+        "before_sha256": "0d2a39c077a2c360e65f0618886590514de7e1b01090b99894491ece843a55a6",
+        "after_sha256": "df4e3ada07ea120353cafb1e384f74acdf295e26f2ca7039c8e4987f6e40ec7d",
+        "exact_rgba_translation_no_clipping": true
+      }
+    ],
+    "status": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+    "derivation": "A shared root at source grid edge480 for the first row and456 in the second cell row is supported by planted/crossing phases1..3 (sole edges479..480) and return contact7 (sole454, nearest grid edge456). Thus absolute row roots are480,968 (488px stride); equal512px slicing had introduced4native pixels of row packing drift. All poses retain their authored offsets within a row.",
+    "source_observations_before_correction": [
+      "Equal cell-local pivot retained, including apparent second-row vertical packing drift. No per-frame alignment.",
+      "Border-connected background removal only; any enclosed pockets remain review defects and must be inspected before promotion.",
+      "Root and pipeline inspected alternating thigh/support progression; production movement, body bob and equipment sockets remain review gates. Candidate PNGs are preserved separately.",
+      "Viewed production frame019: feet visibly sit above the ground ellipse; NW walk foot registration needs refinement despite successful runtime integration."
+    ],
+    "production_review": {
+      "date": "2026-09-10",
+      "reviewer": "root",
+      "scope": "Corrected NW registration and equipment reviewed in production capture; accepted for this iteration, not final identity or animation polish.",
+      "capture": {
+        "path": "native/client/assets/raster/reviews/2026-09-10-ground-hud/hero-nw-production-019.png",
+        "sha256": "00e89ab1d8541cc71b62edc9bef838370d6bcd2bac932d8623b4f47b2d6d8c1c",
+        "hash_policy": "sha256_raw_bytes",
+        "original_source_path": ".ci-artifacts/ground-hud-verified/raster-motion-nw-019.png",
+        "original_source_raw_sha256": "00e89ab1d8541cc71b62edc9bef838370d6bcd2bac932d8623b4f47b2d6d8c1c"
+      },
+      "motion_trace": {
+        "path": "native/client/assets/raster/reviews/2026-09-10-ground-hud/hero-motion-nw.csv",
+        "sha256": "17a353295f0c0be4bc6d586a1c66fd92add594cdee6621f014ffe71ff430f501",
+        "hash_policy": "sha256_canonical_lf",
+        "original_source_path": ".ci-artifacts/ground-hud-verified/raster-motion-nw.csv",
+        "original_source_raw_sha256": "2006dc401ed35f445f86baa8c1add47df7df7031f54cab14600b4d81aee29054"
+      },
+      "equipment_review": {
+        "path": "native/client/assets/raster/reviews/2026-09-10-ground-hud/nw-equipment-review.json",
+        "sha256": "b88a2c3faa42a0fbb3253871256cef11f2bc9393bf2d5e846a6b666642bfdaab",
+        "hash_policy": "sha256_canonical_lf",
+        "original_source_path": ".ci-artifacts/raster-equipment/nw-registration-correction/equipment-review.json",
+        "original_source_raw_sha256": "e83d2cc6fd68b4c2935bcbefdcb49c0a0b6fc8483b9881e7ca181c4ecab4ba44"
+      },
+      "reported_validation": {
+        "authority": "root handoff",
+        "input_motion_cycles": "All four directions passed first movement paint, all authored phases and settle checks.",
+        "nw_equipment_full_probe": "passed"
+      },
+      "visual_result": "The corrected walk6 foot position sits at the ground ellipse in the viewed production capture; residual 0..2 native pixel sole travel is retained.",
+      "limitations": "Wider/redder walk identity, 65..69 pixel bodies versus 63 pixel idle, and source pose/palette variation remain.",
+      "earlier_raw_review_evidence": {
+        "capture": {
+          "path": ".ci-artifacts/ground-hud-motion/raster-motion-nw-019.png",
+          "sha256": "0612cfe49bbe597e1ed43d3fd2731aa375b5effc614169da7a059f071f9dbd8e"
+        },
+        "motion_trace": {
+          "path": ".ci-artifacts/ground-hud-motion/raster-motion-nw.csv",
+          "sha256": "2006dc401ed35f445f86baa8c1add47df7df7031f54cab14600b4d81aee29054"
+        },
+        "equipment_review": {
+          "path": ".ci-artifacts/raster-equipment/nw-registration-correction/equipment-review.json",
+          "sha256": "e83d2cc6fd68b4c2935bcbefdcb49c0a0b6fc8483b9881e7ca181c4ecab4ba44"
+        }
+      }
+    }
+  },
   "integration_review": {
     "date": "2026-09-10",
     "reviewer": "root",
@@ -788,6 +1053,10 @@
       "total": 32
     },
     "capture_review": "Live3440x1440 window viewed and closed; actual SW/NW/NE walking frames and all three equipped strike contact captures viewed.",
-    "limitations_policy": "Existing identity,palette,registration and source-generation observations remain unchanged."
-  }
+    "limitations_policy": "Existing identity,palette,registration and source-generation observations remain unchanged.",
+    "applies_to_baseline_commit": "f3318b059",
+    "subsequent_registration_change": "The present PNGs differ from that reviewed capture by documented integer row translations. Current acceptance is in registration_review; prior production results do not validate the new registration."
+  },
+  "manifest_hash_policy": "sha256_canonical_lf; current manifest stored as UTF-8 LF",
+  "previous_manifest_raw_sha256_before_lf_policy": "f25f887e8d12bd50921d79864109ed67f72dab65e070e30a683cdd7b9f8f252f"
 }

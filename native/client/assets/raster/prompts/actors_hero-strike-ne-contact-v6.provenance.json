@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "status": "single-pose candidate for root/equipment target comparison; not runtime accepted",
+  "tool": "image_gen.imagegen",
+  "model": "tool default; model selection not exposed or identified",
+  "calls": 1,
+  "original_tool_output": "C:/Users/Alex/.codex/generated_images/01a0896d-2712-78b1-8ee3-5e362a202349/exec-95943d8b-b2e5-4cc9-a63b-c8e932409046.png",
+  "source": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-contact-v6.png",
+  "source_sha256": "5a9b30d1687906af04a3e9c6fa1ddada002f643e385982f0455a694e2928abd7",
+  "source_size": [
+    1145,
+    1374
+  ],
+  "source_mode": "RGBA",
+  "source_alpha": {
+    "extrema": [
+      0,
+      255
+    ],
+    "fully_transparent_pixels": 1414479,
+    "partial_alpha_pixels": 157313,
+    "note": "Actual transparent alpha supplied by imagegen. No checker removal or source alpha repaint performed. Existing Pixel Respecter crisp reconstruction removes faint specks."
+  },
+  "prompt_file": "native\\client\\assets\\raster\\prompts\\actors_hero-strike-ne-contact-v6.txt",
+  "prompt_sha256": "eef97885ca46047bc1131284ab9c49826110166b8125c923d7bb74afb50e64f7",
+  "reference_images": [
+    {
+      "supplied_path": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-candidate\\commit.png",
+      "preserved_snapshot": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-contact-v6-reference-commit.png",
+      "sha256": "e3a1b3c14472ea809af3dd592bdf582242252a56bbb77aed49d55c867cec17c3",
+      "role": "reference1, reviewed overhead left-arm commit pose to edit",
+      "inspected_before_generation": true
+    },
+    {
+      "path": "native\\client\\assets\\raster\\runtime\\hero_ne.png",
+      "sha256": "aafeeed5b41a4ee6cad27d6331b0dec4e121ba711c86380ca2a83228a322c0c5",
+      "role": "reference2, original accepted identity, palette, camera and physical sides",
+      "inspected_before_generation": true
+    }
+  ],
+  "workflow_basis": {
+    "url": "https://www.flixly.ai/blog/stop-motion-chatgpt-images-2-5",
+    "method": "Previous reviewed frame first plus original identity, one focused limb transition.",
+    "adaptation": "Root-directed NE overhead forearm arc toward upper-right; our single-frame experiment, not a published NE game-asset recipe."
+  },
+  "conversion_manifest": "native\\client\\assets\\raster\\prompts\\actors_hero-strike-ne-contact-v6-import.json",
+  "engine_provenance": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-contact-v6-candidate\\actors_hero-strike-ne-contact-v6-import.provenance.json",
+  "candidate_review": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-contact-v6-comparison-4x.png",
+  "native_candidates": [
+    {
+      "file": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-contact-v6-candidate\\contact-cell11.png",
+      "sha256": "a01d04feff3a6340d808c04b23ad8e289ef86f531b36052364e581ddb6d213e6",
+      "size": [
+        80,
+        96
+      ],
+      "visible_bounds": [
+        27,
+        20,
+        54,
+        96
+      ],
+      "visible_colors": 32,
+      "alpha_values": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-contact-v6-candidate\\contact-cell12.png",
+      "sha256": "b9811761a1c3791bc5a8f43c4171772d6b2dee5d2f348b7b50ed6115cbe073b2",
+      "size": [
+        80,
+        96
+      ],
+      "visible_bounds": [
+        29,
+        27,
+        53,
+        96
+      ],
+      "visible_colors": 32,
+      "alpha_values": [
+        0,
+        255
+      ]
+    }
+  ],
+  "visual_review": {
+    "inspected": [
+      "saved RGBA source",
+      "native cell11",
+      "native cell12",
+      "4x idle/commit/contact comparison"
+    ],
+    "positive": [
+      "One continuous unarmored left shoulder, raised elbow and forearm crosses above the head.",
+      "Left fist ends above and to screen-right of the forehead, correcting contact-v5 outward screen-left sweep.",
+      "Bronze physical-right guard remains on screen-right with arm down.",
+      "Head, boots, back-view NE direction and blue left-hip sash remain consistent.",
+      "Pale wrap is visible at the raised wrist; complete adult body remains visible."
+    ],
+    "limitations": [
+      "This is an overhead reach/contact candidate; equipment-to-target trajectory and whether it reads as impact still require root comparison.",
+      "Generated source framing reduced crown-to-sole scale. Fixed pitch11 is the closer native comparison; pitch12 is visibly small. Both are retained without independent image resizing.",
+      "Head/tunic shades and small body details still differ from the accepted idle. No full action, equipment socket or production game verification was performed."
+    ],
+    "recommendation": "Use contact-cell11.png for target comparison only; no runtime promotion and no other phases changed."
+  }
+}

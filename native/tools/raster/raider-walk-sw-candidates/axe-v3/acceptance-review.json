@@ -1,0 +1,51 @@
+{
+  "status": "candidate_suitable_for_integration_test",
+  "reviewedOn": "2026-09-10",
+  "runtimeAcceptance": false,
+  "reviewedArtifacts": [
+    "Full generated source",
+    "Complete eight-frame strip beside accepted idle at native80x96",
+    "Integer4x contact sheet on dark and light backgrounds",
+    "Browser idle-cycle-idle viewer at1x and4x, rendered phase snapshots and manual stepping through phase3, phase7 and return to idle"
+  ],
+  "reviewLimit": "No production-game capture or continuous animation recording was reviewed in this lane. Native candidate review does not replace gameplay acceptance and frame-budget checks.",
+  "weaponVerdict": "A broad curved bronze axe is visible in all eight phases, consistently attached to the same anatomical-right/screen-left grip. The opposite hand stays free. The blade no longer reads as the tiny square hatchet rejected in v2; its width and curved silhouette are closer to the idle reference. Some angle and size variation between idle and walking remains.",
+  "phaseVerdict": "F0/F1 narrow; F2 passing; F3 visibly opens into wide F4/F5; F6 narrows and F7 closes. All eight frames remain in their generated order. No frame duplication or independent pose recentering. Neighboring0/1 and4/5 are close phases. This audit does not independently certify anatomical support-leg mechanics.",
+  "identityVerdict": "Pale bone mask, tied dark hair, charcoal shoulders/trousers, ochre sash, leather bracers and brown boots remain recognizable; torn knee openings now match the idle design more closely. Body scale53\u00e2\u20ac\u201c57px is close to the57px idle.",
+  "registration": {
+    "sourceOrigin": [
+      197,
+      480
+    ],
+    "columnStride": 406,
+    "rowStride": 435,
+    "cellSize": 6,
+    "nativeAnchor": [
+      40,
+      96
+    ],
+    "headBandMeanX": [
+      36.92,
+      37.13,
+      36.94,
+      36.64,
+      37.07,
+      36.98,
+      36.89,
+      38.41
+    ],
+    "remainingOffset": "F7 retains approximately1.5px mean head offset versusF0; original pose offset retained."
+  },
+  "alphaVerdict": "Binary alpha, no partial pixels. Background removed by actual Pixel Respecter border fill plus inspected local hair-loop and axe/knee gaps. Final dark/light previews show no obvious checker residue or halo. No bright neutral pixel remains below row68.",
+  "paletteVerdict": "One32-color palette shared across the eight frames, with no dithering. Idle keeps its existing separate palette.",
+  "independentWeaponReview": {
+    "reviewer": "motion_references",
+    "verdict": "Usable for integration; no further asset repair required before root live motion review.",
+    "artifacts": "Source, native idle plus all8 strip,4x comparison and all8 contact frames.",
+    "observations": "Broad curved bronze blade reads as same equipment family as idle. No hand swap, floating grip, blade-size pop within cycle or body crossing defect observed. All8 keep anatomical-right/screen-left axe hand and free opposite hand. Minor blade contour/angle difference from idle remains. Ordinary whole monster sprite; no hero overlay."
+  },
+  "metrics": "cycle-review.json",
+  "conversionProvenance": "raider-walk-sw-axe-v3.provenance.json",
+  "integration": "integration-notes.json",
+  "runtimeChanged": false
+}

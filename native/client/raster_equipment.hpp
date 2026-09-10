@@ -63,14 +63,16 @@ inline constexpr PoseMetadata kPoses[] = {
     {"hero_walk5_sw", {80, 96}, {48.5, 66.5}, {46, 64, 50, 68}, true, true, false},
     {"hero_walk6_sw", {80, 96}, {44.5, 66.5}, {42, 64, 47, 69}, true, true, false},
     {"hero_walk7_sw", {80, 96}, {43.5, 65.5}, {41, 63, 46, 68}, true, true, false},
-    {"hero_walk0_nw", {80, 96}, {26.5, 60.5}, {25, 59, 28, 62}, true, false, false},
-    {"hero_walk1_nw", {80, 96}, {25.5, 60.5}, {23, 58, 26, 62}, true, false, false},
-    {"hero_walk2_nw", {80, 96}, {24.5, 62.5}, {23, 61, 27, 64}, true, false, false},
-    {"hero_walk3_nw", {80, 96}, {23.5, 60.5}, {22, 59, 25, 62}, true, false, false},
-    {"hero_walk4_nw", {80, 96}, {25.5, 58.5}, {24, 57, 27, 60}, true, false, false},
-    {"hero_walk5_nw", {80, 96}, {28.5, 59.5}, {27, 57, 29, 61}, true, false, false},
-    {"hero_walk6_nw", {80, 96}, {25.5, 58.5}, {24, 57, 27, 60}, true, false, false},
-    {"hero_walk7_nw", {80, 96}, {25.5, 58.5}, {25, 57, 27, 60}, true, false, false},
+    // NW registration correction preserves every texel: first sheet row +1y,
+    // second row +5y. These hand/replay coordinates follow the same pixels.
+    {"hero_walk0_nw", {80, 96}, {26.5, 61.5}, {25, 60, 28, 63}, true, false, false},
+    {"hero_walk1_nw", {80, 96}, {25.5, 61.5}, {23, 59, 26, 63}, true, false, false},
+    {"hero_walk2_nw", {80, 96}, {24.5, 63.5}, {23, 62, 27, 65}, true, false, false},
+    {"hero_walk3_nw", {80, 96}, {23.5, 61.5}, {22, 60, 25, 63}, true, false, false},
+    {"hero_walk4_nw", {80, 96}, {25.5, 63.5}, {24, 62, 27, 65}, true, false, false},
+    {"hero_walk5_nw", {80, 96}, {28.5, 64.5}, {27, 62, 29, 66}, true, false, false},
+    {"hero_walk6_nw", {80, 96}, {25.5, 63.5}, {24, 62, 27, 65}, true, false, false},
+    {"hero_walk7_nw", {80, 96}, {25.5, 63.5}, {25, 62, 27, 65}, true, false, false},
     // NE uses the screen-left far hand. Frames 6/7 expose only its narrow
     // skin edge below the bracer: anchor to that observed edge and let the
     // opaque body hide the rest of the grip, without inventing a visible fist.

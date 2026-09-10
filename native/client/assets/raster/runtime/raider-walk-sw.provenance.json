@@ -1,0 +1,1107 @@
+{
+  "version": 1,
+  "manifest_sha256": "8faba4e9e6391020b4eb1f005f40183df6d09afea66f6f3f5c69adaa9144adf5",
+  "importer_sha256": "d59ef9d71a73740f15c8ef5ce5fad588273e2fb4856684985203b7501dfee7c2",
+  "engine": {
+    "project": "Pixel Respecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "root": "Z:/Code/Python/pixel-perfecter",
+    "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+    "git_dirty": true,
+    "source_sha256": {
+      "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+      "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+      "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+      "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+      "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+      "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+      "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+      "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+      "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+      "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+      "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+      "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+      "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+    },
+    "dependencies": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    }
+  },
+  "known_limitations": [
+    "Source/native/4x and independent weapon review passed for axe-v3. Root viewed all eight native poses and selected SCRIPTED production frames; the scenario verified all eight production phases and settle. Native enemy AI remains stationary, so pursuit or autonomous gameplay is not accepted.",
+    "Frames preserve the reviewed axe-v3 pixels, including the small original frame7 head offset and close adjacent0/1 and4/5 phases. Minor blade contour/angle variation from idle remains.",
+    "Generated source has an opaque checker pattern. Actual Pixel Respecter cleanup includes only recorded border fill and visually inspected hair-loop and axe/knee gaps.",
+    "One common source origin197,480, column stride406,row stride435 and cell6; no per-frame fitting or centering.",
+    "Axe is embedded in the anatomical-right/screen-left hand in all8 SW frames. Use ordinary whole monster rendering, without hero weapon overlay."
+  ],
+  "sources": [
+    {
+      "source": "../../client/assets/raster/source/raider-walk-sw-axe-v3.png",
+      "sha256": "bde72da59c4ba79380728d99d9002ac5d4e7585351cc9ace4aaa988af468c72d",
+      "size": [
+        1575,
+        999
+      ],
+      "background_removal": {
+        "api": "pixel_perfecter.colors.make_border_connected_transparent",
+        "color": [
+          210,
+          210,
+          210
+        ],
+        "tolerance": 95,
+        "interior_windows": [
+          {
+            "source_box": [
+              214,
+              177,
+              217,
+              180
+            ],
+            "new_transparent_pixels": 5
+          },
+          {
+            "source_box": [
+              210,
+              189,
+              212,
+              191
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              214,
+              195,
+              217,
+              199
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              619,
+              164,
+              623,
+              167
+            ],
+            "new_transparent_pixels": 10
+          },
+          {
+            "source_box": [
+              620,
+              172,
+              623,
+              176
+            ],
+            "new_transparent_pixels": 8
+          },
+          {
+            "source_box": [
+              618,
+              189,
+              622,
+              193
+            ],
+            "new_transparent_pixels": 16
+          },
+          {
+            "source_box": [
+              1024,
+              166,
+              1027,
+              171
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              1025,
+              173,
+              1028,
+              176
+            ],
+            "new_transparent_pixels": 6
+          },
+          {
+            "source_box": [
+              1022,
+              189,
+              1027,
+              194
+            ],
+            "new_transparent_pixels": 18
+          },
+          {
+            "source_box": [
+              1427,
+              164,
+              1431,
+              170
+            ],
+            "new_transparent_pixels": 15
+          },
+          {
+            "source_box": [
+              1429,
+              174,
+              1431,
+              176
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              1426,
+              189,
+              1430,
+              194
+            ],
+            "new_transparent_pixels": 19
+          },
+          {
+            "source_box": [
+              213,
+              614,
+              215,
+              616
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              210,
+              629,
+              213,
+              632
+            ],
+            "new_transparent_pixels": 9
+          },
+          {
+            "source_box": [
+              214,
+              633,
+              217,
+              637
+            ],
+            "new_transparent_pixels": 9
+          },
+          {
+            "source_box": [
+              618,
+              613,
+              620,
+              616
+            ],
+            "new_transparent_pixels": 5
+          },
+          {
+            "source_box": [
+              620,
+              618,
+              623,
+              622
+            ],
+            "new_transparent_pixels": 9
+          },
+          {
+            "source_box": [
+              615,
+              629,
+              618,
+              633
+            ],
+            "new_transparent_pixels": 10
+          },
+          {
+            "source_box": [
+              618,
+              634,
+              621,
+              637
+            ],
+            "new_transparent_pixels": 7
+          },
+          {
+            "source_box": [
+              1023,
+              613,
+              1025,
+              617
+            ],
+            "new_transparent_pixels": 8
+          },
+          {
+            "source_box": [
+              1019,
+              631,
+              1023,
+              634
+            ],
+            "new_transparent_pixels": 8
+          },
+          {
+            "source_box": [
+              1023,
+              634,
+              1027,
+              638
+            ],
+            "new_transparent_pixels": 14
+          },
+          {
+            "source_box": [
+              1439,
+              608,
+              1442,
+              610
+            ],
+            "new_transparent_pixels": 6
+          },
+          {
+            "source_box": [
+              1437,
+              613,
+              1440,
+              616
+            ],
+            "new_transparent_pixels": 6
+          },
+          {
+            "source_box": [
+              1434,
+              629,
+              1437,
+              632
+            ],
+            "new_transparent_pixels": 7
+          },
+          {
+            "source_box": [
+              1438,
+              634,
+              1441,
+              637
+            ],
+            "new_transparent_pixels": 7
+          },
+          {
+            "source_box": [
+              110,
+              773,
+              132,
+              802
+            ],
+            "new_transparent_pixels": 271
+          },
+          {
+            "source_box": [
+              512,
+              777,
+              534,
+              801
+            ],
+            "new_transparent_pixels": 184
+          }
+        ],
+        "transparent_pixels_after": 1303951
+      }
+    }
+  ],
+  "assets": [
+    {
+      "name": "raider_walk0_sw",
+      "file": "raider_walk0_sw.png",
+      "source": "../../client/assets/raster/source/raider-walk-sw-axe-v3.png",
+      "acceptance": "scripted_production_renderer_asset_review_passed_2026-09-10",
+      "source_box": [
+        0,
+        0,
+        394,
+        520
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        65,
+        86
+      ],
+      "trim_box": [
+        13,
+        24,
+        42,
+        80
+      ],
+      "before_resize": [
+        29,
+        56
+      ],
+      "placed_size": [
+        29,
+        56
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        20,
+        40,
+        49,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        197,
+        480
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "d99d7679939d05b3ddc6097abd1104136233be6c943e4d6b112500d850049a70"
+    },
+    {
+      "name": "raider_walk1_sw",
+      "file": "raider_walk1_sw.png",
+      "source": "../../client/assets/raster/source/raider-walk-sw-axe-v3.png",
+      "acceptance": "scripted_production_renderer_asset_review_passed_2026-09-10",
+      "source_box": [
+        394,
+        0,
+        788,
+        520
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        65,
+        86
+      ],
+      "trim_box": [
+        14,
+        23,
+        45,
+        80
+      ],
+      "before_resize": [
+        31,
+        57
+      ],
+      "placed_size": [
+        31,
+        57
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        19,
+        39,
+        50,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        209,
+        480
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "473db8307a8d257e3300985f224c1a1533b70125dc4b175c7de3acadb9210ccb"
+    },
+    {
+      "name": "raider_walk2_sw",
+      "file": "raider_walk2_sw.png",
+      "source": "../../client/assets/raster/source/raider-walk-sw-axe-v3.png",
+      "acceptance": "scripted_production_renderer_asset_review_passed_2026-09-10",
+      "source_box": [
+        788,
+        0,
+        1181,
+        520
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        65,
+        86
+      ],
+      "trim_box": [
+        15,
+        23,
+        47,
+        78
+      ],
+      "before_resize": [
+        32,
+        55
+      ],
+      "placed_size": [
+        32,
+        55
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        18,
+        39,
+        50,
+        94
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        221,
+        480
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "006403d326037c48da1257d21c81c8ed9b2132bb88ab360da4cf28e9474367e2"
+    },
+    {
+      "name": "raider_walk3_sw",
+      "file": "raider_walk3_sw.png",
+      "source": "../../client/assets/raster/source/raider-walk-sw-axe-v3.png",
+      "acceptance": "scripted_production_renderer_asset_review_passed_2026-09-10",
+      "source_box": [
+        1181,
+        0,
+        1575,
+        520
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        65,
+        86
+      ],
+      "trim_box": [
+        14,
+        23,
+        54,
+        76
+      ],
+      "before_resize": [
+        40,
+        53
+      ],
+      "placed_size": [
+        40,
+        53
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        15,
+        39,
+        55,
+        92
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        234,
+        480
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "09924b685faad861a5c96a6956ea02579f4afaeffe9f380511e0f0960e17b755"
+    },
+    {
+      "name": "raider_walk4_sw",
+      "file": "raider_walk4_sw.png",
+      "source": "../../client/assets/raster/source/raider-walk-sw-axe-v3.png",
+      "acceptance": "scripted_production_renderer_asset_review_passed_2026-09-10",
+      "source_box": [
+        0,
+        520,
+        394,
+        999
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        65,
+        79
+      ],
+      "trim_box": [
+        11,
+        10,
+        46,
+        65
+      ],
+      "before_resize": [
+        35,
+        55
+      ],
+      "placed_size": [
+        35,
+        55
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        18,
+        40,
+        53,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        197,
+        395
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "1af64963d91301dd91f30c3b2880c329c04a67f817221f493be5bc1c3d4c72ad"
+    },
+    {
+      "name": "raider_walk5_sw",
+      "file": "raider_walk5_sw.png",
+      "source": "../../client/assets/raster/source/raider-walk-sw-axe-v3.png",
+      "acceptance": "scripted_production_renderer_asset_review_passed_2026-09-10",
+      "source_box": [
+        394,
+        520,
+        788,
+        999
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 30,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        65,
+        79
+      ],
+      "trim_box": [
+        12,
+        10,
+        48,
+        64
+      ],
+      "before_resize": [
+        36,
+        54
+      ],
+      "placed_size": [
+        36,
+        54
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        17,
+        40,
+        53,
+        94
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        209,
+        395
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "3e08a131d23e363bdbff6fadbcb1d1d084eec5eac85a1b6c48014bad8ae25881"
+    },
+    {
+      "name": "raider_walk6_sw",
+      "file": "raider_walk6_sw.png",
+      "source": "../../client/assets/raster/source/raider-walk-sw-axe-v3.png",
+      "acceptance": "scripted_production_renderer_asset_review_passed_2026-09-10",
+      "source_box": [
+        788,
+        520,
+        1181,
+        999
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 28,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        65,
+        79
+      ],
+      "trim_box": [
+        16,
+        10,
+        47,
+        64
+      ],
+      "before_resize": [
+        31,
+        54
+      ],
+      "placed_size": [
+        31,
+        54
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        19,
+        40,
+        50,
+        94
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        221,
+        395
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "64cfa3d4d5572c46258c7280a39b99975bd590bb4c75b13d2bed80e664d4108a"
+    },
+    {
+      "name": "raider_walk7_sw",
+      "file": "raider_walk7_sw.png",
+      "source": "../../client/assets/raster/source/raider-walk-sw-axe-v3.png",
+      "acceptance": "scripted_production_renderer_asset_review_passed_2026-09-10",
+      "source_box": [
+        1181,
+        520,
+        1575,
+        999
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 30,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        65,
+        79
+      ],
+      "trim_box": [
+        20,
+        10,
+        50,
+        66
+      ],
+      "before_resize": [
+        30,
+        56
+      ],
+      "placed_size": [
+        30,
+        56
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        21,
+        40,
+        51,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        234,
+        395
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "0dc4123f232d579ff3b69b12129ae45a87a02505c03f9fd0422bd15f812dcee6"
+    }
+  ],
+  "shared_palette": {
+    "api": "pixel_perfecter.palettes.reduce_colors",
+    "max_colors": 32,
+    "visible_colors_before": 1097,
+    "visible_colors_after": 32,
+    "palette_rgb": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        17,
+        16,
+        38
+      ],
+      [
+        45,
+        42,
+        60
+      ],
+      [
+        66,
+        22,
+        0
+      ],
+      [
+        67,
+        68,
+        86
+      ],
+      [
+        81,
+        67,
+        50
+      ],
+      [
+        97,
+        92,
+        85
+      ],
+      [
+        98,
+        43,
+        0
+      ],
+      [
+        103,
+        104,
+        120
+      ],
+      [
+        120,
+        53,
+        29
+      ],
+      [
+        123,
+        126,
+        143
+      ],
+      [
+        139,
+        97,
+        36
+      ],
+      [
+        145,
+        117,
+        91
+      ],
+      [
+        157,
+        72,
+        0
+      ],
+      [
+        157,
+        156,
+        152
+      ],
+      [
+        182,
+        88,
+        41
+      ],
+      [
+        182,
+        153,
+        121
+      ],
+      [
+        190,
+        149,
+        79
+      ],
+      [
+        190,
+        188,
+        186
+      ],
+      [
+        200,
+        92,
+        0
+      ],
+      [
+        206,
+        131,
+        36
+      ],
+      [
+        208,
+        184,
+        120
+      ],
+      [
+        223,
+        126,
+        75
+      ],
+      [
+        227,
+        208,
+        159
+      ],
+      [
+        236,
+        119,
+        0
+      ],
+      [
+        249,
+        154,
+        62
+      ],
+      [
+        252,
+        255,
+        225
+      ],
+      [
+        253,
+        245,
+        158
+      ],
+      [
+        254,
+        170,
+        108
+      ],
+      [
+        254,
+        194,
+        137
+      ],
+      [
+        255,
+        162,
+        6
+      ],
+      [
+        255,
+        213,
+        98
+      ]
+    ],
+    "dithering": "none",
+    "scope": "all reconstructed frames in this manifest"
+  },
+  "integration_review": {
+    "date": "2026-09-10",
+    "reviewer": "root",
+    "scope": "SCRIPTED asset review through the production renderer. Root viewed all eight native raider SW poses and selected production frames. The scenario verified all eight production phases and stop-to-idle settle. Root did not claim to watch every production frame or the full video. Native enemy AI remains stationary; this does not prove pursuit or autonomous gameplay.",
+    "mode": "scripted-asset-review",
+    "native_ai_pursuit_verified": false,
+    "captures": [
+      {
+        "path": "native/client/assets/raster/reviews/2026-09-10-ground-hud/raider-production-019.png",
+        "sha256": "5e7dfe3b8e42517d2ad4b94db4f2a2ac31a99e465e5caa0f04baa4d4e98ec743",
+        "hash_policy": "sha256_raw_bytes",
+        "original_source_path": ".ci-artifacts/ground-hud-verified/raider-scripted-motion-sw-019.png",
+        "original_source_raw_sha256": "5e7dfe3b8e42517d2ad4b94db4f2a2ac31a99e465e5caa0f04baa4d4e98ec743"
+      },
+      {
+        "path": "native/client/assets/raster/reviews/2026-09-10-ground-hud/live-3440x1440.png",
+        "sha256": "cd64fcf162e47a0a8d271999466b9a36865407d5d4ff7bdfdf38e81560e44339",
+        "hash_policy": "sha256_raw_bytes",
+        "original_source_path": ".ci-artifacts/ground-hud-verified/live-3440x1440.png",
+        "original_source_raw_sha256": "cd64fcf162e47a0a8d271999466b9a36865407d5d4ff7bdfdf38e81560e44339"
+      }
+    ],
+    "motion_trace": {
+      "path": "native/client/assets/raster/reviews/2026-09-10-ground-hud/raider-scripted-motion-sw.csv",
+      "sha256": "8dabf6bf07312e21b4313ed6925dbb7a39f3817ad60469f965b8be62e2cd8007",
+      "hash_policy": "sha256_canonical_lf",
+      "original_source_path": ".ci-artifacts/ground-hud-verified/raider-scripted-motion-sw.csv",
+      "original_source_raw_sha256": "c698ece546641a06c7dd41fe17de2a75b5fa32dc09e2048a6bdb83eab1ebb92b"
+    },
+    "validation": {
+      "supported_build_exit_code_reported_by_root": 0,
+      "native_scenarios": {
+        "passed": 66,
+        "total": 66
+      },
+      "browser_scenarios": {
+        "passed": 32,
+        "total": 32
+      },
+      "static_average_ms": 23.258,
+      "moving_average_ms": 24.715,
+      "moving_peak_ms": 36.62
+    },
+    "validation_logs": [
+      {
+        "path": "native/client/assets/raster/reviews/2026-09-10-ground-hud/native-final-66-of-66.log",
+        "sha256": "29f36974cfb4d74243d61f58da266febfc28234ea4822fe36a283d5964c2a8b6",
+        "hash_policy": "sha256_canonical_lf",
+        "original_source_path": ".ci-artifacts/ground-hud-verified-build-scenarios.log",
+        "original_source_raw_sha256": "702395c51ab4f17e8540cb47538d96e0d2ec6833287865f5805c403090f5de77"
+      },
+      {
+        "path": "native/client/assets/raster/reviews/2026-09-10-ground-hud/browser-32-of-32.log",
+        "sha256": "1b274edde79eabcdad867d545bf318c6459167ccdd281940e8d5137903eb879b",
+        "hash_policy": "sha256_canonical_lf",
+        "original_source_path": ".ci-artifacts/ground-hud-browser-playtest.log",
+        "original_source_raw_sha256": "212b700194f33c31d3fd8c6d51f623128781ebcec8a516e464e8469760e69f4d"
+      },
+      {
+        "path": "native/client/assets/raster/reviews/2026-09-10-ground-hud/frame-budget-report.txt",
+        "sha256": "52bf97d78d50552f67caa7e87243690a49ef1adaba8754df3c0240127ef47ccb",
+        "hash_policy": "sha256_canonical_lf",
+        "original_source_path": ".ci-artifacts/ground-hud-verified/frame-budget-report.txt",
+        "original_source_raw_sha256": "52bf97d78d50552f67caa7e87243690a49ef1adaba8754df3c0240127ef47ccb"
+      }
+    ],
+    "previous_native_review_observations": [
+      "Source/native/4x and independent weapon review passed for axe-v3. Actual production monster motion, gameplay gates and frame-budget acceptance remain pending.",
+      "Frames preserve the reviewed axe-v3 pixels, including the small original frame7 head offset and close adjacent0/1 and4/5 phases. Minor blade contour/angle variation from idle remains.",
+      "Generated source has an opaque checker pattern. Actual Pixel Respecter cleanup includes only recorded border fill and visually inspected hair-loop and axe/knee gaps.",
+      "One common source origin197,480, column stride406,row stride435 and cell6; no per-frame fitting or centering.",
+      "Axe is embedded in the anatomical-right/screen-left hand in all8 SW frames. Use ordinary whole monster rendering, without hero weapon overlay."
+    ],
+    "png_policy": "All source and runtime PNGs unchanged by this review metadata refresh."
+  },
+  "manifest_hash_policy": "sha256_canonical_lf; current manifest stored as UTF-8 LF",
+  "previous_manifest_raw_sha256_before_lf_policy": "cb1bd78ffc65972a57783fbc38cd4080cfe45fb0b9abe585269fdce92f0473e3"
+}

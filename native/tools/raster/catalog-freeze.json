@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "milestone": "Raster walk and strike production-trial freeze",
-  "status": "Metadata freeze after root production capture and integration review on2026-09-10; source and runtime PNG content unchanged.",
-  "catalog_sha256": "ffcd06536b882ccbc1f77a883d425e0dc23b3e8813c2853e96216aa2b0af7f1a",
+  "milestone": "Ground, HUD and raster motion integration, 127 assets",
+  "status": "Final metadata freeze after root supported-build, browser, live capture, corrected NW and scripted raider production-render review on 2026-09-10. This metadata refresh changes no source or runtime PNGs.",
+  "catalog_sha256": "4dddbce0b348cff3ecbc37abc934c4eab2bebbcabdc59763739f6c0060bc395e",
   "counts": {
-    "manifests": 20,
-    "import_records_including_overrides": 127,
-    "active_assets": 118,
-    "unique_sources": 39
+    "manifests": 22,
+    "import_records_including_overrides": 136,
+    "active_assets": 127,
+    "unique_sources": 41
   },
   "walk_counts": {
     "se": 4,
@@ -20,50 +20,61 @@
     "sw": 6,
     "nw": 6
   },
+  "monster_walk_counts": {
+    "raider": {
+      "sw": 8
+    }
+  },
   "unregistered_runtime_pngs": [],
+  "unaccepted_ne_strike_runtime_pngs": [],
+  "ne_scope": "Existing accepted eight-frame NE hero walk is preserved. No unaccepted NE strike candidate is registered or copied into runtime.",
   "manifest_sha256": {
     "native/tools/raster/inventory.json": "3a08f114d73923b43bb4bab36310ba93e8549d626b9114baac03d4f340be09a5",
     "native/tools/raster/terrain.json": "df7e4a702628b78607792d673c9c8e39ec1777ccae8901ab885d7f0539fbc05f",
     "native/tools/raster/props.json": "986b6ae2f34973073eed9379f2f83ef810ea8aad2d3f17763f20316801797f9c",
     "native/tools/raster/gate.json": "66e4f798d7be903d2e6c1269e5d7ffcbcdbf512d8bae5df79fbf95ac696d66dc",
-    "native/tools/raster/actors.json": "36fedf07c6b11fb091da8a3faf23eee4cb680b9c3adf071cc3860be8a2293a99",
-    "native/tools/raster/bestiary.json": "59c41c7fcb5228ea43e0c1c0c2b4fbdeaf830fee19305de751183e264591bc99",
+    "native/tools/raster/actors.json": "468dfd0715bbfdf6b4231fa66015a0c8cb292ab2631428cac3fc3dea3c54346f",
+    "native/tools/raster/bestiary.json": "8f0030ce35a39e5bebd877dce1c2e645c79c037f7997de2b2d7a66399b80b9db",
     "native/tools/raster/weapons.json": "d111bc92f4f53ba7a75a7e512f8015a99e76c48df2148a914a41243d47a196f5",
     "native/tools/raster/hero-single.json": "6a39fef873fee8e6eb44ce7c17c79c77fd2421e8a9d92c18d07447af8fbb6796",
-    "native/tools/raster/bestiary-singles.json": "d71d80a1b075c52c98c0fe03986ce8cd4b95a1cc24484f36430395b62d852c34",
-    "native/tools/raster/hero-walk.json": "b72cacf3b8cd7f98aadaff137e5296b5376406364242659a0b06545a8b12b1fa",
+    "native/tools/raster/bestiary-singles.json": "a93776cad4ac0bee79976cdb56735181ef9f4e02b09d7aa1808d0cc2951d484e",
+    "native/tools/raster/hero-walk.json": "24ef5436aae694acb721c523055990efa8cc672af0bb0347b6473fdc90256724",
     "native/tools/raster/hero-directions.json": "7c479e14ce6b08676b83705c64c97735f0d256121185d67c510c1f18b202ee63",
     "native/tools/raster/environment-singles.json": "3fabfc813a6b0e4eddc013a18939fb5f8b72132200abc27d70b7aa4c49126a16",
     "native/tools/raster/large-props.json": "ff8133523561468b27a7715ce6d00aefc10d275f6ddd6b2c1c788d60117a901c",
-    "native/tools/raster/hero-strike-se.json": "3e7d56908aa6e638574396f21f3f92e68d734f30d76a62df154c624dd89e7351",
-    "native/tools/raster/hit-spark.json": "b776071a2be7804efa59e6c2b9a3c415599dd4b5fc05abeda4d6e3c659767322",
-    "native/tools/raster/hero-walk-sw.json": "3b67f855bcc5cab32e1d0b9bbdc181c14fe9328606a71f9d4ea80896b79cc15f",
-    "native/tools/raster/hero-walk-nw.json": "1de36685323aa9447010299178fa64f38addd93ca747810b297f2476f1ab21c5",
-    "native/tools/raster/hero-walk-ne.json": "c7f4610a1123a58acb6a7e90819bdda738aa7799cbd57a89cf8df445fa32b61b",
-    "native/tools/raster/hero-strike-nw.json": "b93800542b563bee81dad76efc8ed7d581e0f50fa8f921ee3a4d58f7f523853e",
-    "native/tools/raster/hero-strike-sw.json": "22f787aca628e8d78509aa1f4a3b040b31c8d2ec4fbf0c9ba25e41d86ebc052c"
+    "native/tools/raster/hero-strike-se.json": "de98be0845de1a2dd3cce5ab1ac63aa707d3d74fd2372629b5479474509abfce",
+    "native/tools/raster/hit-spark.json": "78962a7565cb71d03d572ccfa4c838dfd4b6b4603870ffd16e5eaf8e4c58d093",
+    "native/tools/raster/hero-walk-sw.json": "7a3e9d6115de02ebf7a745019a520f1031ccd67303f8e3f20a934810942e9eff",
+    "native/tools/raster/hero-walk-nw.json": "b95b93a3f6260261b7609ced9ca6965feada0eba057c41a6194a73b98bf5d43c",
+    "native/tools/raster/hero-walk-ne.json": "6affe6b3983726e31b311e73ec240c329297ebfadf5479a0fa6bef31dad4e852",
+    "native/tools/raster/hero-strike-nw.json": "cb3ff2b75990a1c4a783593d912f83cfce68df81b2c72f4a0364d87afdad49ea",
+    "native/tools/raster/hero-strike-sw.json": "20430d272c5785d7c38a689ae43440a6c26e4b6bd9e5aec80b9ec78e2bdd12f3",
+    "native/tools/raster/terrain-quiet.json": "1da44108eb72f485cd4c39596f31fb23401c8cec77142092070b71683896c67c",
+    "native/tools/raster/raider-walk-sw.json": "8faba4e9e6391020b4eb1f005f40183df6d09afea66f6f3f5c69adaa9144adf5"
   },
   "provenance_sha256": {
-    "inventory.provenance.json": "b85f77f139f332663e011dc3589679334c9efbc329f50740721928cea5e769fe",
-    "terrain.provenance.json": "37e86f653f36d5a36b171dc51322693e550b51e5f3cfd0348cd71dc9e06efb3d",
-    "props.provenance.json": "bdc8dfda1ad93e644efaec733026f79d7bf3482d638e8c7acbac2d7f94322cf4",
-    "gate.provenance.json": "1465f11d289dc918c5fd91c92ce85cac7ff60055e08b2dcbb20050f9ae375b8a",
-    "actors.provenance.json": "eea2b8e2109c3f87168cfbd9c87799bf21d79621e1add20374985576544b5569",
-    "bestiary.provenance.json": "3d811437b4850a7fe962d43c6320aa0cfc8a8913369f0fb0cf1d510636fa5638",
-    "weapons.provenance.json": "d77938f02dbf848ecb5b06f216ed351729e3be47bc70e0ecdd156978499cbbb1",
-    "hero-single.provenance.json": "97b79afca5f5810e0cc1754b2f4bc97824e7fdb1b45ce693b674ba6c6b58a054",
-    "bestiary-singles.provenance.json": "a5cde94c2054c61b9026d561c6d450f3287dc642ce4dfb0a96b4c681e02c5115",
-    "hero-walk.provenance.json": "6e83e9d53fde256209aebe94bab5d06ba09291fd24986cd7e3c02c6503d82aa9",
-    "hero-directions.provenance.json": "e27bfa32e60d7ce449f40db259084d2fc6c3cb3099a9f2af1238dd73f6b8df9e",
-    "environment-singles.provenance.json": "7edab8a12eba53c17af7361c985c32021727693db23523206833709499c72c4e",
-    "large-props.provenance.json": "f9dee183fcd1efe53d262188925e977ebc995d4902d3cebb627ddfd7f281fddd",
-    "hero-strike-se.provenance.json": "ec79a6c3fdef86fb6a59a5ed8bf79f434e144f8e32f61c5cf6e94d3b1d43ddee",
-    "hit-spark.provenance.json": "c1ad459f4c72d948193cb10a73eae2ddbaf3ef40c6dbd7840fb452a3104d9efb",
-    "hero-walk-sw.provenance.json": "6aa19acd4833bbbd827e317dba39c7a07ebabf2f94c1b86a2cb3d7165ddf22e4",
-    "hero-walk-nw.provenance.json": "028464e1800b49b99c9af6a33e3df4f6c18e513a9dc1cedd08dd6d77c6a9e032",
-    "hero-walk-ne.provenance.json": "3df6e9f7a84f1d43c401cfe26687abfc407b561d7f7ab035131a6fede2089895",
-    "hero-strike-nw.provenance.json": "d3b0824299027a7a907a2b5b09a99a7009305761a10f11ec8d306d0efab4ff01",
-    "hero-strike-sw.provenance.json": "9d24e3c3c6439f4534f15e05d8ae70cc7e9a122030e43663ba421845f496af8f"
+    "inventory.provenance.json": "e6b237bb2a62f246495d5a4e0969829c7d330b2bee048144c142ad8579b2980d",
+    "terrain.provenance.json": "565b3a2cd273c3cda77959114c21f2105b24b023d0daaa5ca292f0b1feb72a92",
+    "props.provenance.json": "a02652b1c6523a43b26839aec6759dc81427d4831cbe2c48fa184f2addd5ffe5",
+    "gate.provenance.json": "4c9cdbba8aa5d69ab69a0d1b45fe1c0e154694a6aae1e68f0d2289127f1116fa",
+    "actors.provenance.json": "ea456a932ec3a14ef493ba80e8cb46a487cc768e1e93268c0e087e3381a33f1b",
+    "bestiary.provenance.json": "46102fe45b319ed39a889492121eca9c2ff4fa933ceaef7729dbfc85535e82e7",
+    "weapons.provenance.json": "9980f60a92d42afee8ffe2e5fd92e8557d11a2eedd8d46d9848432c06767ceed",
+    "hero-single.provenance.json": "0b325227688c91cc4d48d7f3484f1ec299626e4743c41f691c6c4145e2c5aefe",
+    "bestiary-singles.provenance.json": "1b7fedba27e5320140c6de2e0afe6c7c9f365816e692757e13be91e358bbc0b4",
+    "hero-walk.provenance.json": "ea7f48bae05e78542bd24fa35130e64180539aab639e33b366435282096c0f2e",
+    "hero-directions.provenance.json": "359bdac0b294f817e3ac1b9f705edb800b9bdae9a917d758bc54c971e25dc21c",
+    "environment-singles.provenance.json": "542366c2fe3114d0e7fa276265732d0c48bcdc12af42dfb63f5179cd52ac0a5f",
+    "large-props.provenance.json": "818b504ddc0b5a00763fca8cccd6c63b8e3b50e0f53825e9643df8ca14df0e50",
+    "hero-strike-se.provenance.json": "2730765138246811f8a15c028e1dfe3ae862b64983d1a19f39e8f622ceef925e",
+    "hit-spark.provenance.json": "5571f082ae1aee4e65e79b91faccff10f13ca908223b87b5f302c21b430b0815",
+    "hero-walk-sw.provenance.json": "f71ec61bf09a81c302c19820a31a07e8e230fa6623d94eb04e73ca21b740b231",
+    "hero-walk-nw.provenance.json": "bb65394c7590ec713df19347075ad1b253de9e302b022537eb71b37dad6818ae",
+    "hero-walk-ne.provenance.json": "e7011a937e1c79dd02075458de391f796d415552116ed5c8f4339367585a90d0",
+    "hero-strike-nw.provenance.json": "e4b77ff78e073ac654486635372abf81ae8f7ec75597a6366624c3866d82416a",
+    "hero-strike-sw.provenance.json": "7fd506cbc73b0eef376642dca5b2d45697c5f452ab337011713e6a52c89221d2",
+    "terrain-quiet.provenance.json": "b61e9013c2d05542757009fbb5b4db6d01e6f30b5f3f2be18834d2b69e8f1ba9",
+    "raider-walk-sw.provenance.json": "23d663534329169a7af8f83f3fb6991d2daa5d73c1904b7574570f55ddb543c9"
   },
   "source_sha256": {
     "native/client/assets/wizard/items/dagger_bronze.png": "a5fed373ddbbf2e17628294e50db7bbf6d07cce0688125513e671c805d9b2fa4",
@@ -104,7 +115,9 @@
     "native/client/assets/raster/source/actors_hero-strike-nw-v1.png": "963f33bc6228c95fe615e007df2dcf53e2552689088a26da844f8f308c252868",
     "native/client/assets/raster/source/actors_hero-strike-sw-v2.png": "0d03170686c984557043df20d56d9330d27f003897c38d341ae2ff0e3c0051cd",
     "native/client/assets/raster/source/actors_hero-strike-sw-contact3-v3.png": "8d0892f1ebaa609f956a4f08849cc30ad489fda9f795d304ae2fb75135990f41",
-    "native/client/assets/raster/source/actors_hero-strike-sw-follow4-v3.png": "8a33834548681b3253a5249316c9aecb62176cbf261ddfe599dff12e5cdeef80"
+    "native/client/assets/raster/source/actors_hero-strike-sw-follow4-v3.png": "8a33834548681b3253a5249316c9aecb62176cbf261ddfe599dff12e5cdeef80",
+    "native/client/assets/raster/source/terrain-quiet-v1.png": "4ea205fa67e7f4d4549728451f7d80b3ece6e0d07425d85d40338ef51f9924e5",
+    "native/client/assets/raster/source/raider-walk-sw-axe-v3.png": "bde72da59c4ba79380728d99d9002ac5d4e7585351cc9ace4aaa988af468c72d"
   },
   "active_png_sha256": {
     "item_dagger.png": "27e20ab8965efc8d28a32ef122bc7aa141ec6cf82f933be8c53a6eb595a83518",
@@ -197,14 +210,14 @@
     "hero_walk5_sw.png": "500618b960abc738dacb79215ea19cf1273a11dc3f1e54d9f755f3c1a0768275",
     "hero_walk6_sw.png": "f4b3a68a15bebc08f924a9ce5c8a908d53e013f6bbf4c904425927c3968834ef",
     "hero_walk7_sw.png": "380988958b83f7439e2edc18df87c04c8132106fce1325f5bd23d0cb47960412",
-    "hero_walk0_nw.png": "53a74f17c73a51e9e8b47ed7bda137b178c9b079e1bf194996e9f310de4f2855",
-    "hero_walk1_nw.png": "47617598cdc6ae6553a1774561e7282d6087f9ebbfecfa29c7130bc41e6f374c",
-    "hero_walk2_nw.png": "fce4570edd013d36fcc561868d78bc2bdce63f2b9d75251c8f5189d2e3bb248f",
-    "hero_walk3_nw.png": "00857167d9849bad90eeb37b1681217df0194756313b7cb875491687a7c30cc6",
-    "hero_walk4_nw.png": "76327fe58b7ba0065b36cede5e630378f7f8c91ae69f4481d3951a2394e3bc7f",
-    "hero_walk5_nw.png": "2482d88161e37f975c7f9b8a8b6c2cb0baf76acdf71ad5a5d15908bd2985e88c",
-    "hero_walk6_nw.png": "3864bfba40fb20e68457674ab9cd6b109a32843c5b11b75e1d65ee5666c85745",
-    "hero_walk7_nw.png": "0d2a39c077a2c360e65f0618886590514de7e1b01090b99894491ece843a55a6",
+    "hero_walk0_nw.png": "ec99c0233bb2d8251697c365c5646b37e03035823c2b39a9012ba9f20caa7785",
+    "hero_walk1_nw.png": "d73f0d8be95d222debe748b169b3fe78be80e192de3a3117ea7cf60b02583dbe",
+    "hero_walk2_nw.png": "742618bb8ae6b4bb6de92ff0db4aa2679d763aad365b7115b2c60858b3e62612",
+    "hero_walk3_nw.png": "bbae2cb7b435fc4c8074a4bfc4192c37904e5eb3c50ea6061a93e5566beb399e",
+    "hero_walk4_nw.png": "c92b2ab6e5e5686f3898ad8c5dcb368fbc6afe84b4f205326b917f40e22862b0",
+    "hero_walk5_nw.png": "2ad3c17350bbf2ee9eee24812edc8e41e94181c72cee2a79bc0b95ea305b70ea",
+    "hero_walk6_nw.png": "ffb1a9399220bd1552518c78cddeeddc05f02012d76a5b4bac121182c0ee4b98",
+    "hero_walk7_nw.png": "df4e3ada07ea120353cafb1e384f74acdf295e26f2ca7039c8e4987f6e40ec7d",
     "hero_walk0_ne.png": "7ff0a67c94b9f21a45a9ede2bab671d35a49a0a3736b9db8d4c07ea8b2fa04ef",
     "hero_walk1_ne.png": "ba6014c67882ce2a434adbb9401359d30e5677bd06ea3c9b5ef3266f8f4649b6",
     "hero_walk2_ne.png": "9051ad982c6aec73175309d810a042d5c370ea1072a267c882eb9e78c82558c4",
@@ -224,10 +237,252 @@
     "hero_strike2_sw.png": "a6c609e93135280adc2d24ec8019477f23084a6ce713db127259744194a35619",
     "hero_strike5_sw.png": "d3117ce02256fc83461a7f32b4627c3c9ece61d913c711726f53c3e31acd5124",
     "hero_strike3_sw.png": "7e69e501464ade7f467e08db9415ae5e391b8a5eeba3588d3603ea741e301a70",
-    "hero_strike4_sw.png": "8b4e062ce67462dc7890b5e8020ef03d26aa779958e407fa5807328fff15e8bc"
+    "hero_strike4_sw.png": "8b4e062ce67462dc7890b5e8020ef03d26aa779958e407fa5807328fff15e8bc",
+    "terrain_quiet_earth.png": "059b101504c96b84a3541f5021dfd1811a7bb1ddb81ebd40fd03be9dbad2af70",
+    "raider_walk0_sw.png": "d99d7679939d05b3ddc6097abd1104136233be6c943e4d6b112500d850049a70",
+    "raider_walk1_sw.png": "473db8307a8d257e3300985f224c1a1533b70125dc4b175c7de3acadb9210ccb",
+    "raider_walk2_sw.png": "006403d326037c48da1257d21c81c8ed9b2132bb88ab360da4cf28e9474367e2",
+    "raider_walk3_sw.png": "09924b685faad861a5c96a6956ea02579f4afaeffe9f380511e0f0960e17b755",
+    "raider_walk4_sw.png": "1af64963d91301dd91f30c3b2880c329c04a67f817221f493be5bc1c3d4c72ad",
+    "raider_walk5_sw.png": "3e08a131d23e363bdbff6fadbcb1d1d084eec5eac85a1b6c48014bad8ae25881",
+    "raider_walk6_sw.png": "64cfa3d4d5572c46258c7280a39b99975bd590bb4c75b13d2bed80e664d4108a",
+    "raider_walk7_sw.png": "0dc4123f232d579ff3b69b12129ae45a87a02505c03f9fd0422bd15f812dcee6"
   },
-  "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
-  "previous_catalog_sha256": "25808006b332f1c6e182d143119152deef00c2637ae1a4d2742a37b40d747b06",
-  "acceptance_scope": "Successful runtime integration for this iteration, not final visual polish; all known identity,palette and registration limitations retained.",
-  "nw_walk_production_caveat": "Viewed frame019 feet visibly sit above the ground ellipse; foot registration needs refinement."
+  "acceptance": "ground_hud_iteration_production_captures_reviewed_2026-09-10",
+  "previous_catalog_sha256": "ffcd06536b882ccbc1f77a883d425e0dc23b3e8813c2853e96216aa2b0af7f1a",
+  "acceptance_scope": "Successful integration for this iteration, not final visual polish. Raider acceptance is limited to SCRIPTED asset review through the production renderer; native AI remains stationary and pursuit is not verified.",
+  "nw_walk_production_caveat": "The former frame019 six-pixel foot gap is corrected to one pixel and the final production capture was viewed. Residual 0..2px sole travel, larger/redder walk body and identity differences remain.",
+  "terrain_production_caveat": "Quiet earth was viewed in initial, integrated and live captures and accepted for trial. Tile edges do not exactly match and broad repeat patterns remain perceptible.",
+  "raider_production_caveat": "Root viewed all eight native SW poses and selected production frames. The SCRIPTED production-render scenario verified all eight production phases and settle. Root did not claim to watch every production frame or a full video. Native AI remains stationary; pursuit is not verified. Close adjacent phases, slight frame7 head offset and minor axe contour variation remain.",
+  "final_validation": {
+    "reported_supported_build_exit_code": 0,
+    "native_scenarios": {
+      "passed": 66,
+      "total": 66
+    },
+    "browser_scenarios": {
+      "passed": 32,
+      "total": 32
+    },
+    "static_average_ms": 23.258,
+    "moving_average_ms": 24.715,
+    "moving_peak_ms": 36.62,
+    "frame_budget_bound_ms": 40,
+    "all_sources_resolve_and_match_hashes": true,
+    "manifest_and_import_all_orders_match": true,
+    "source_and_runtime_png_hashes_unchanged_during_metadata_refresh": 237,
+    "git_clean_text_normalization": {
+      "verified_files": 56,
+      "method": "For each current frozen text file, git hash-object --path --stdin matched the Git blob identity of canonical LF bytes. This checks the same .gitattributes clean conversion used by staging and a committed LF checkout without modifying the index.",
+      "result": "passed"
+    }
+  },
+  "review_evidence_sha256": {
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/native-final-66-of-66.log": "29f36974cfb4d74243d61f58da266febfc28234ea4822fe36a283d5964c2a8b6",
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/browser-32-of-32.log": "1b274edde79eabcdad867d545bf318c6459167ccdd281940e8d5137903eb879b",
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/frame-budget-report.txt": "52bf97d78d50552f67caa7e87243690a49ef1adaba8754df3c0240127ef47ccb",
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/live-3440x1440.png": "cd64fcf162e47a0a8d271999466b9a36865407d5d4ff7bdfdf38e81560e44339",
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/hero-nw-production-019.png": "00e89ab1d8541cc71b62edc9bef838370d6bcd2bac932d8623b4f47b2d6d8c1c",
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/hero-motion-nw.csv": "17a353295f0c0be4bc6d586a1c66fd92add594cdee6621f014ffe71ff430f501",
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/raider-production-019.png": "5e7dfe3b8e42517d2ad4b94db4f2a2ac31a99e465e5caa0f04baa4d4e98ec743",
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/raider-scripted-motion-sw.csv": "8dabf6bf07312e21b4313ed6925dbb7a39f3817ad60469f965b8be62e2cd8007",
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/nw-equipment-review.json": "b88a2c3faa42a0fbb3253871256cef11f2bc9393bf2d5e846a6b666642bfdaab",
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/retained-evidence.json": "974aa070b911ea107c5bfc973b9c498353e185b5e26b27b50f67a4378f7c71b9"
+  },
+  "untracked_import_dependencies_at_freeze": [
+    "native/client/assets/raster/runtime/raider-walk-sw.provenance.json",
+    "native/client/assets/raster/runtime/raider_walk0_sw.png",
+    "native/client/assets/raster/runtime/raider_walk1_sw.png",
+    "native/client/assets/raster/runtime/raider_walk2_sw.png",
+    "native/client/assets/raster/runtime/raider_walk3_sw.png",
+    "native/client/assets/raster/runtime/raider_walk4_sw.png",
+    "native/client/assets/raster/runtime/raider_walk5_sw.png",
+    "native/client/assets/raster/runtime/raider_walk6_sw.png",
+    "native/client/assets/raster/runtime/raider_walk7_sw.png",
+    "native/client/assets/raster/runtime/terrain-quiet.provenance.json",
+    "native/client/assets/raster/runtime/terrain_quiet_earth.png",
+    "native/client/assets/raster/source/raider-walk-sw-axe-v3.png",
+    "native/client/assets/raster/source/terrain-quiet-v1.png",
+    "native/tools/raster/raider-walk-sw.json",
+    "native/tools/raster/terrain-quiet.json"
+  ],
+  "untracked_source_provenance_records_at_freeze": [
+    "native/client/assets/raster/prompts/terrain-quiet-v1.json",
+    "native/client/assets/raster/prompts/terrain-quiet-v1.txt",
+    "native/client/assets/raster/prompts/raider-walk-sw-axe-v3.provenance.json",
+    "native/client/assets/raster/prompts/raider-walk-sw-axe-v3.txt"
+  ],
+  "untracked_review_evidence_at_freeze": [],
+  "untracked_source_reference_dependencies_at_freeze": [
+    "native/client/assets/raster/source/raider-walk-sw-axe-v2.png",
+    "native/tools/raster/raider-walk-sw-axe-v3-candidate.json",
+    "native/tools/raster/raider-walk-sw-candidates/axe-v3/raider-walk-sw-axe-v3.provenance.json",
+    "native/tools/raster/terrain-quiet-v1.json"
+  ],
+  "historical_raw_text_sha256_before_lf_policy": {
+    "native/tools/raster/inventory.json": "3a08f114d73923b43bb4bab36310ba93e8549d626b9114baac03d4f340be09a5",
+    "native/tools/raster/terrain.json": "df7e4a702628b78607792d673c9c8e39ec1777ccae8901ab885d7f0539fbc05f",
+    "native/tools/raster/props.json": "986b6ae2f34973073eed9379f2f83ef810ea8aad2d3f17763f20316801797f9c",
+    "native/tools/raster/gate.json": "66e4f798d7be903d2e6c1269e5d7ffcbcdbf512d8bae5df79fbf95ac696d66dc",
+    "native/tools/raster/actors.json": "36fedf07c6b11fb091da8a3faf23eee4cb680b9c3adf071cc3860be8a2293a99",
+    "native/tools/raster/bestiary.json": "59c41c7fcb5228ea43e0c1c0c2b4fbdeaf830fee19305de751183e264591bc99",
+    "native/tools/raster/weapons.json": "d111bc92f4f53ba7a75a7e512f8015a99e76c48df2148a914a41243d47a196f5",
+    "native/tools/raster/hero-single.json": "6a39fef873fee8e6eb44ce7c17c79c77fd2421e8a9d92c18d07447af8fbb6796",
+    "native/tools/raster/bestiary-singles.json": "d71d80a1b075c52c98c0fe03986ce8cd4b95a1cc24484f36430395b62d852c34",
+    "native/tools/raster/hero-walk.json": "b72cacf3b8cd7f98aadaff137e5296b5376406364242659a0b06545a8b12b1fa",
+    "native/tools/raster/hero-directions.json": "7c479e14ce6b08676b83705c64c97735f0d256121185d67c510c1f18b202ee63",
+    "native/tools/raster/environment-singles.json": "3fabfc813a6b0e4eddc013a18939fb5f8b72132200abc27d70b7aa4c49126a16",
+    "native/tools/raster/large-props.json": "ff8133523561468b27a7715ce6d00aefc10d275f6ddd6b2c1c788d60117a901c",
+    "native/tools/raster/hero-strike-se.json": "3e7d56908aa6e638574396f21f3f92e68d734f30d76a62df154c624dd89e7351",
+    "native/tools/raster/hit-spark.json": "b776071a2be7804efa59e6c2b9a3c415599dd4b5fc05abeda4d6e3c659767322",
+    "native/tools/raster/hero-walk-sw.json": "3b67f855bcc5cab32e1d0b9bbdc181c14fe9328606a71f9d4ea80896b79cc15f",
+    "native/tools/raster/hero-walk-nw.json": "f25f887e8d12bd50921d79864109ed67f72dab65e070e30a683cdd7b9f8f252f",
+    "native/tools/raster/hero-walk-ne.json": "c7f4610a1123a58acb6a7e90819bdda738aa7799cbd57a89cf8df445fa32b61b",
+    "native/tools/raster/hero-strike-nw.json": "b93800542b563bee81dad76efc8ed7d581e0f50fa8f921ee3a4d58f7f523853e",
+    "native/tools/raster/hero-strike-sw.json": "22f787aca628e8d78509aa1f4a3b040b31c8d2ec4fbf0c9ba25e41d86ebc052c",
+    "native/tools/raster/terrain-quiet.json": "3b757f69e7597a6330f963fe2dfd2030ba0df3fdcab7648b5091fbfb15aa8ba0",
+    "native/tools/raster/raider-walk-sw.json": "cb1bd78ffc65972a57783fbc38cd4080cfe45fb0b9abe585269fdce92f0473e3",
+    "native/client/assets/raster/runtime/inventory.provenance.json": "b85f77f139f332663e011dc3589679334c9efbc329f50740721928cea5e769fe",
+    "native/client/assets/raster/runtime/terrain.provenance.json": "37e86f653f36d5a36b171dc51322693e550b51e5f3cfd0348cd71dc9e06efb3d",
+    "native/client/assets/raster/runtime/props.provenance.json": "bdc8dfda1ad93e644efaec733026f79d7bf3482d638e8c7acbac2d7f94322cf4",
+    "native/client/assets/raster/runtime/gate.provenance.json": "1465f11d289dc918c5fd91c92ce85cac7ff60055e08b2dcbb20050f9ae375b8a",
+    "native/client/assets/raster/runtime/actors.provenance.json": "eea2b8e2109c3f87168cfbd9c87799bf21d79621e1add20374985576544b5569",
+    "native/client/assets/raster/runtime/bestiary.provenance.json": "3d811437b4850a7fe962d43c6320aa0cfc8a8913369f0fb0cf1d510636fa5638",
+    "native/client/assets/raster/runtime/weapons.provenance.json": "d77938f02dbf848ecb5b06f216ed351729e3be47bc70e0ecdd156978499cbbb1",
+    "native/client/assets/raster/runtime/hero-single.provenance.json": "97b79afca5f5810e0cc1754b2f4bc97824e7fdb1b45ce693b674ba6c6b58a054",
+    "native/client/assets/raster/runtime/bestiary-singles.provenance.json": "a5cde94c2054c61b9026d561c6d450f3287dc642ce4dfb0a96b4c681e02c5115",
+    "native/client/assets/raster/runtime/hero-walk.provenance.json": "6e83e9d53fde256209aebe94bab5d06ba09291fd24986cd7e3c02c6503d82aa9",
+    "native/client/assets/raster/runtime/hero-directions.provenance.json": "e27bfa32e60d7ce449f40db259084d2fc6c3cb3099a9f2af1238dd73f6b8df9e",
+    "native/client/assets/raster/runtime/environment-singles.provenance.json": "7edab8a12eba53c17af7361c985c32021727693db23523206833709499c72c4e",
+    "native/client/assets/raster/runtime/large-props.provenance.json": "f9dee183fcd1efe53d262188925e977ebc995d4902d3cebb627ddfd7f281fddd",
+    "native/client/assets/raster/runtime/hero-strike-se.provenance.json": "ec79a6c3fdef86fb6a59a5ed8bf79f434e144f8e32f61c5cf6e94d3b1d43ddee",
+    "native/client/assets/raster/runtime/hit-spark.provenance.json": "c1ad459f4c72d948193cb10a73eae2ddbaf3ef40c6dbd7840fb452a3104d9efb",
+    "native/client/assets/raster/runtime/hero-walk-sw.provenance.json": "6aa19acd4833bbbd827e317dba39c7a07ebabf2f94c1b86a2cb3d7165ddf22e4",
+    "native/client/assets/raster/runtime/hero-walk-nw.provenance.json": "2056b903206ce469b21492642e36db1717c9716bac7bbca4f027d9dee3ce9f7b",
+    "native/client/assets/raster/runtime/hero-walk-ne.provenance.json": "3df6e9f7a84f1d43c401cfe26687abfc407b561d7f7ab035131a6fede2089895",
+    "native/client/assets/raster/runtime/hero-strike-nw.provenance.json": "d3b0824299027a7a907a2b5b09a99a7009305761a10f11ec8d306d0efab4ff01",
+    "native/client/assets/raster/runtime/hero-strike-sw.provenance.json": "9d24e3c3c6439f4534f15e05d8ae70cc7e9a122030e43663ba421845f496af8f",
+    "native/client/assets/raster/runtime/terrain-quiet.provenance.json": "a8af1687a227126c1115811120f3d9fa55c1c5da729a09686c244c5b4a697910",
+    "native/client/assets/raster/runtime/raider-walk-sw.provenance.json": "c0aabe9f4e267fd32070d1343e06fd64331f90d8755bd8536d20d511819bac58",
+    "native/client/assets/raster/runtime/catalog.json": "e8049d7fa6d56bf0c7660b0b474454950d8c9abf8c4735ba248387577526da97"
+  },
+  "historical_raw_review_source_sha256": {
+    ".ci-artifacts/ground-hud-verified-build-scenarios.log": "702395c51ab4f17e8540cb47538d96e0d2ec6833287865f5805c403090f5de77",
+    ".ci-artifacts/ground-hud-browser-playtest.log": "212b700194f33c31d3fd8c6d51f623128781ebcec8a516e464e8469760e69f4d",
+    ".ci-artifacts/ground-hud-verified/frame-budget-report.txt": "52bf97d78d50552f67caa7e87243690a49ef1adaba8754df3c0240127ef47ccb",
+    ".ci-artifacts/ground-hud-verified/live-3440x1440.png": "cd64fcf162e47a0a8d271999466b9a36865407d5d4ff7bdfdf38e81560e44339",
+    ".ci-artifacts/ground-hud-verified/raster-motion-nw-019.png": "00e89ab1d8541cc71b62edc9bef838370d6bcd2bac932d8623b4f47b2d6d8c1c",
+    ".ci-artifacts/ground-hud-verified/raster-motion-nw.csv": "2006dc401ed35f445f86baa8c1add47df7df7031f54cab14600b4d81aee29054",
+    ".ci-artifacts/ground-hud-verified/raider-scripted-motion-sw-019.png": "5e7dfe3b8e42517d2ad4b94db4f2a2ac31a99e465e5caa0f04baa4d4e98ec743",
+    ".ci-artifacts/ground-hud-verified/raider-scripted-motion-sw.csv": "c698ece546641a06c7dd41fe17de2a75b5fa32dc09e2048a6bdb83eab1ebb92b",
+    ".ci-artifacts/raster-equipment/nw-registration-correction/equipment-review.json": "e83d2cc6fd68b4c2935bcbefdcb49c0a0b6fc8483b9881e7ca181c4ecab4ba44"
+  },
+  "hash_policy": {
+    "algorithm": "SHA-256",
+    "canonical_lf_definition": "Read exact bytes and replace each CRLF byte pair (0D 0A) with LF (0A). Preserve all other bytes, including any BOM; do not reserialize JSON for hashing.",
+    "current_canonical_lf_text_sections": [
+      "catalog_sha256",
+      "manifest_sha256",
+      "provenance_sha256",
+      "source_provenance_text_sha256"
+    ],
+    "current_raw_binary_sections": [
+      "source_sha256",
+      "active_png_sha256"
+    ],
+    "review_evidence_sha256": "Per-path policy in review_evidence_hash_policy: canonical LF for retained text, raw bytes for images/video.",
+    "historical_raw_sections": [
+      "historical_raw_text_sha256_before_lf_policy",
+      "historical_raw_review_source_sha256",
+      "historical_embedded_manifest_raw_sha256"
+    ],
+    "previous_catalog_sha256": "Historical raw-byte hash copied from the preceding freeze.",
+    "embedded_provenance": "Unchanged older provenance files retain raw-byte hashes recorded at their original import or metadata update. Current verification uses this freeze canonical-LF text maps. The three changed reports explicitly identify their current manifest hash policy and separately retain the prior raw hash.",
+    "submitted_prompts": "Historical prompt/source-generation records are untouched; their submitted-prompt hashes describe exact original bytes. Current canonical hashes for new retained prompt/record files are separately listed in source_provenance_text_sha256."
+  },
+  "historical_embedded_manifest_raw_sha256": {
+    "inventory.provenance.json": "3a08f114d73923b43bb4bab36310ba93e8549d626b9114baac03d4f340be09a5",
+    "terrain.provenance.json": "df7e4a702628b78607792d673c9c8e39ec1777ccae8901ab885d7f0539fbc05f",
+    "props.provenance.json": "986b6ae2f34973073eed9379f2f83ef810ea8aad2d3f17763f20316801797f9c",
+    "gate.provenance.json": "66e4f798d7be903d2e6c1269e5d7ffcbcdbf512d8bae5df79fbf95ac696d66dc",
+    "actors.provenance.json": "36fedf07c6b11fb091da8a3faf23eee4cb680b9c3adf071cc3860be8a2293a99",
+    "bestiary.provenance.json": "59c41c7fcb5228ea43e0c1c0c2b4fbdeaf830fee19305de751183e264591bc99",
+    "weapons.provenance.json": "d111bc92f4f53ba7a75a7e512f8015a99e76c48df2148a914a41243d47a196f5",
+    "hero-single.provenance.json": "6a39fef873fee8e6eb44ce7c17c79c77fd2421e8a9d92c18d07447af8fbb6796",
+    "bestiary-singles.provenance.json": "d71d80a1b075c52c98c0fe03986ce8cd4b95a1cc24484f36430395b62d852c34",
+    "hero-walk.provenance.json": "b72cacf3b8cd7f98aadaff137e5296b5376406364242659a0b06545a8b12b1fa",
+    "hero-directions.provenance.json": "7c479e14ce6b08676b83705c64c97735f0d256121185d67c510c1f18b202ee63",
+    "environment-singles.provenance.json": "3fabfc813a6b0e4eddc013a18939fb5f8b72132200abc27d70b7aa4c49126a16",
+    "large-props.provenance.json": "ff8133523561468b27a7715ce6d00aefc10d275f6ddd6b2c1c788d60117a901c",
+    "hero-strike-se.provenance.json": "3e7d56908aa6e638574396f21f3f92e68d734f30d76a62df154c624dd89e7351",
+    "hit-spark.provenance.json": "b776071a2be7804efa59e6c2b9a3c415599dd4b5fc05abeda4d6e3c659767322",
+    "hero-walk-sw.provenance.json": "3b67f855bcc5cab32e1d0b9bbdc181c14fe9328606a71f9d4ea80896b79cc15f",
+    "hero-walk-ne.provenance.json": "c7f4610a1123a58acb6a7e90819bdda738aa7799cbd57a89cf8df445fa32b61b",
+    "hero-strike-nw.provenance.json": "b93800542b563bee81dad76efc8ed7d581e0f50fa8f921ee3a4d58f7f523853e",
+    "hero-strike-sw.provenance.json": "22f787aca628e8d78509aa1f4a3b040b31c8d2ec4fbf0c9ba25e41d86ebc052c"
+  },
+  "source_provenance_text_sha256": {
+    "native/client/assets/raster/prompts/terrain-quiet-v1.json": "adbd34637def9ba173867c6755c75b43a39abaa25b412042ea706534d2236a64",
+    "native/client/assets/raster/prompts/terrain-quiet-v1.txt": "7df87745a44e3dccddc0ccbcaa950e9700ed0b4536433e96aaa8ab77e3379132",
+    "native/client/assets/raster/prompts/raider-walk-sw-axe-v3.provenance.json": "ae90703ea02e4b3f5744d61c0a4b6b9fee7dc5d2102c816e09bb679f2aa45260",
+    "native/client/assets/raster/prompts/raider-walk-sw-axe-v3.txt": "2666205d1d2fde26947a6e31c6b08119c345ca8cdbb554a037ce2716c15433ec"
+  },
+  "review_evidence_hash_policy": {
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/native-final-66-of-66.log": "sha256_canonical_lf",
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/browser-32-of-32.log": "sha256_canonical_lf",
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/frame-budget-report.txt": "sha256_canonical_lf",
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/live-3440x1440.png": "sha256_raw_bytes",
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/hero-nw-production-019.png": "sha256_raw_bytes",
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/hero-motion-nw.csv": "sha256_canonical_lf",
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/raider-production-019.png": "sha256_raw_bytes",
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/raider-scripted-motion-sw.csv": "sha256_canonical_lf",
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/nw-equipment-review.json": "sha256_canonical_lf",
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/retained-evidence.json": "sha256_canonical_lf"
+  },
+  "review_original_source_records": {
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/native-final-66-of-66.log": {
+      "original_source": ".ci-artifacts/ground-hud-verified-build-scenarios.log",
+      "original_source_raw_sha256": "702395c51ab4f17e8540cb47538d96e0d2ec6833287865f5805c403090f5de77"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/browser-32-of-32.log": {
+      "original_source": ".ci-artifacts/ground-hud-browser-playtest.log",
+      "original_source_raw_sha256": "212b700194f33c31d3fd8c6d51f623128781ebcec8a516e464e8469760e69f4d"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/frame-budget-report.txt": {
+      "original_source": ".ci-artifacts/ground-hud-verified/frame-budget-report.txt",
+      "original_source_raw_sha256": "52bf97d78d50552f67caa7e87243690a49ef1adaba8754df3c0240127ef47ccb"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/live-3440x1440.png": {
+      "original_source": ".ci-artifacts/ground-hud-verified/live-3440x1440.png",
+      "original_source_raw_sha256": "cd64fcf162e47a0a8d271999466b9a36865407d5d4ff7bdfdf38e81560e44339"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/hero-nw-production-019.png": {
+      "original_source": ".ci-artifacts/ground-hud-verified/raster-motion-nw-019.png",
+      "original_source_raw_sha256": "00e89ab1d8541cc71b62edc9bef838370d6bcd2bac932d8623b4f47b2d6d8c1c"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/hero-motion-nw.csv": {
+      "original_source": ".ci-artifacts/ground-hud-verified/raster-motion-nw.csv",
+      "original_source_raw_sha256": "2006dc401ed35f445f86baa8c1add47df7df7031f54cab14600b4d81aee29054"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/raider-production-019.png": {
+      "original_source": ".ci-artifacts/ground-hud-verified/raider-scripted-motion-sw-019.png",
+      "original_source_raw_sha256": "5e7dfe3b8e42517d2ad4b94db4f2a2ac31a99e465e5caa0f04baa4d4e98ec743"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/raider-scripted-motion-sw.csv": {
+      "original_source": ".ci-artifacts/ground-hud-verified/raider-scripted-motion-sw.csv",
+      "original_source_raw_sha256": "c698ece546641a06c7dd41fe17de2a75b5fa32dc09e2048a6bdb83eab1ebb92b"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-ground-hud/nw-equipment-review.json": {
+      "original_source": ".ci-artifacts/raster-equipment/nw-registration-correction/equipment-review.json",
+      "original_source_raw_sha256": "e83d2cc6fd68b4c2935bcbefdcb49c0a0b6fc8483b9881e7ca181c4ecab4ba44"
+    }
+  },
+  "nonretained_reference_aliases": [
+    {
+      "original_path": ".ci-artifacts/terrain-quiet-v1/terrain-quiet-v1.png",
+      "retained_equivalent": "native/client/assets/raster/runtime/terrain_quiet_earth.png",
+      "raw_sha256": "059b101504c96b84a3541f5021dfd1811a7bb1ddb81ebd40fd03be9dbad2af70",
+      "reason": "Byte-identical reviewed candidate and runtime image; no .ci staging required."
+    }
+  ]
 }

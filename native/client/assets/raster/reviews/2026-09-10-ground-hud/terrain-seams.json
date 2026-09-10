@@ -1,0 +1,50 @@
+{
+  "candidate": {
+    "size": [
+      64,
+      64
+    ],
+    "colors": 24,
+    "alpha_range": [
+      255,
+      255
+    ],
+    "mean_rgb": [
+      129.3,
+      97.3,
+      61.42
+    ],
+    "luma_std": 3.163,
+    "internal_horizontal_mean_abs_rgb": 1.414,
+    "internal_vertical_mean_abs_rgb": 1.443,
+    "opposite_lr_mean_abs_rgb": 3.469,
+    "opposite_tb_mean_abs_rgb": 0.807,
+    "opposite_lr_p95_abs_rgb": 8.0,
+    "opposite_tb_p95_abs_rgb": 4.0,
+    "edge_exact_equal": false
+  },
+  "current": {
+    "size": [
+      64,
+      64
+    ],
+    "colors": 11,
+    "alpha_range": [
+      255,
+      255
+    ],
+    "mean_rgb": [
+      128.93,
+      92.85,
+      58.33
+    ],
+    "luma_std": 6.739,
+    "internal_horizontal_mean_abs_rgb": 4.394,
+    "internal_vertical_mean_abs_rgb": 4.519,
+    "opposite_lr_mean_abs_rgb": 3.177,
+    "opposite_tb_mean_abs_rgb": 3.052,
+    "opposite_lr_p95_abs_rgb": 16.0,
+    "opposite_tb_p95_abs_rgb": 16.0,
+    "edge_exact_equal": false
+  }
+}

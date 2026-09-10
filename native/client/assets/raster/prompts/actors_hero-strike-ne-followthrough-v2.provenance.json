@@ -1,0 +1,158 @@
+{
+  "version": 1,
+  "status": "rejected: handedness failure; diagnostic reconstruction also loses exposed skin during matte cleanup",
+  "tool": "image_gen.imagegen",
+  "model": "tool default; model selector not exposed or identified",
+  "calls": 1,
+  "source": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-followthrough-v2.png",
+  "source_size": [
+    1145,
+    1374
+  ],
+  "source_mode": "RGB",
+  "source_sha256": "fe0fb386768707ae6a211d26aaf9690f85df339e673f5f64a72faec79d5764e0",
+  "original_tool_output": "C:/Users/Alex/.codex/generated_images/01a0896d-2712-78b1-8ee3-5e362a202349/exec-d336a3f4-488a-4cac-932a-ebf3805bde4a.png",
+  "prompt": "native\\client\\assets\\raster\\prompts\\actors_hero-strike-ne-followthrough-v2.txt",
+  "prompt_sha256": "5b11fb33376b6538ffd42609bc978331955b038601d7afc1b81871868f5759d6",
+  "reference_images": [
+    {
+      "path": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-contact-v6-candidate\\contact-cell11.png",
+      "snapshot": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-followthrough-v2-reference-contact.png",
+      "sha256": "a01d04feff3a6340d808c04b23ad8e289ef86f531b36052364e581ddb6d213e6",
+      "role": "reference1, reviewed physical-left overhead contact to edit",
+      "inspected_before_generation": true
+    },
+    {
+      "path": "native\\client\\assets\\raster\\runtime\\hero_ne.png",
+      "sha256": "aafeeed5b41a4ee6cad27d6331b0dec4e121ba711c86380ca2a83228a322c0c5",
+      "role": "reference2, original accepted identity, camera, palette and physical sides",
+      "inspected_before_generation": true
+    }
+  ],
+  "workflow_basis": {
+    "url": "https://www.flixly.ai/blog/stop-motion-chatgpt-images-2-5",
+    "method": "Previous reviewed frame first and original identity second; one focused physical change.",
+    "adaptation": "Root-directed decelerating NE follow-through from accepted contact; not a published game-asset recipe."
+  },
+  "conversion_manifest": "native\\client\\assets\\raster\\prompts\\actors_hero-strike-ne-followthrough-v2-import.json",
+  "engine_provenance": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-followthrough-v2-candidate\\actors_hero-strike-ne-followthrough-v2-import.provenance.json",
+  "visual_review": {
+    "inspected": [
+      "generated source",
+      "native reconstructed pose",
+      "contact-followthrough-recovery4x",
+      "native and2x transition strips"
+    ],
+    "source_failures": [
+      "Striking arm emerges from screen-right rather than continuing the raised anatomical left arm.",
+      "Bronze bands appear on the lowered screen-left arm, changing physical equipment assignment.",
+      "Requested alpha is absent: RGB painted checkerboard."
+    ],
+    "conversion_failure": "Broad grayscale connected fill also matches exposed flesh and pale wraps on the raised arm; this candidate must not be consumed as a usable reconstructed sprite.",
+    "conversion_samples": [
+      {
+        "xy": [
+          790,
+          490
+        ],
+        "source_rgba": [
+          249,
+          186,
+          129,
+          255
+        ],
+        "alpha_after_border_fill": 0
+      },
+      {
+        "xy": [
+          735,
+          520
+        ],
+        "source_rgba": [
+          234,
+          221,
+          171,
+          255
+        ],
+        "alpha_after_border_fill": 0
+      },
+      {
+        "xy": [
+          680,
+          542
+        ],
+        "source_rgba": [
+          247,
+          185,
+          128,
+          255
+        ],
+        "alpha_after_border_fill": 0
+      }
+    ],
+    "verdict": "Retain rejected source and diagnostic previews; do not repair other phases or promote runtime. One generation only."
+  },
+  "preview_scale_note": "Native1x and2x presentation-scale comparison are offline fixed-canvas reviews, not a live game capture.",
+  "frames": [
+    {
+      "label": "contact",
+      "path": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-followthrough-v2-candidate\\contact.png",
+      "sha256": "a01d04feff3a6340d808c04b23ad8e289ef86f531b36052364e581ddb6d213e6",
+      "canvas": [
+        80,
+        96
+      ],
+      "bounds": [
+        27,
+        20,
+        54,
+        96
+      ],
+      "alpha_values": [
+        0,
+        255
+      ],
+      "visible_colors": 32
+    },
+    {
+      "label": "REJECTED follow",
+      "path": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-followthrough-v2-candidate\\followthrough-rejected.png",
+      "sha256": "94024376d03ea2724ed018289b245c9086aa350e2dc7b152430d306febe086ab",
+      "canvas": [
+        80,
+        96
+      ],
+      "bounds": [
+        25,
+        26,
+        63,
+        96
+      ],
+      "alpha_values": [
+        0,
+        255
+      ],
+      "visible_colors": 32
+    },
+    {
+      "label": "existing recovery",
+      "path": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-followthrough-v2-candidate\\existing-recovery.png",
+      "sha256": "3439b11bb1e655f977724588ad26e980d83b5a88575b4dd163858284ab75c8ca",
+      "canvas": [
+        80,
+        96
+      ],
+      "bounds": [
+        24,
+        28,
+        53,
+        96
+      ],
+      "alpha_values": [
+        0,
+        255
+      ],
+      "visible_colors": 30
+    }
+  ]
+}

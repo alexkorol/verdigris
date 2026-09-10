@@ -8,7 +8,7 @@ visible content height; animation uses the shared full-canvas pivot and scale.
 `source/` retains generated candidates, including rejected ones. `prompts/`
 records the actual image requests, reference paths and observed failures.
 `runtime/catalog.json` resolves import order and records the active source,
-conversion settings, hashes and limitations for each of 118 PNGs. The importer
+conversion settings, hashes and limitations for each of 127 PNGs. The importer
 uses the owner's actual Pixel Respecter project at
 `Z:/Code/Python/pixel-perfecter`; it is not a substitute pixelation filter.
 
@@ -17,7 +17,37 @@ and critical feedback, and [PROMPTING.md](PROMPTING.md) for the resulting local
 workflow. Model variant names are recorded only where the source actually
 identifies them; our image tool has no model selector.
 
-## Verified integration milestone, September 10, 2026
+## Current milestone: ground, motion registration and HUD, September 10, 2026
+
+- Twenty-two manifests resolve 136 import records to 127 active PNGs from 41
+  source files. The added quiet earth and eight SW raider poses use the actual
+  Pixel Respecter pipeline. The raider retains its axe across the accepted cycle.
+- World-aligned paths and planting use the existing village/town landmarks and
+  solid footprints. The 512-tile ground cache is bounded and invalidates on
+  source reload. Ground detail is quieter, but the generated earth is not
+  certified seamless; repeat checks retain the measured edge mismatch.
+- NW walking frames move down by exactly one pixel in the first row and five
+  in the second, with matching equipment registration. No body pixels are
+  rescaled or repainted. Actual movement starts the walk immediately; the
+  existing stop smoothing still settles to idle.
+- Route, audio and quickbar chrome uses the shared ornate skin, measured text
+  and responsive placement. Equipment vital/stat rows no longer overlap, and
+  the XP caption clears character/gear panes at 960x600. Fullscreen and smaller
+  production captures, including both panes with audio muted, were reviewed.
+- Native suites and all 66 final scenarios pass. Twenty 3440x1440 paints average
+  23.258ms stationary; twenty measured moving paints average 24.715ms with a
+  36.620ms peak. Both retain the 40ms average gate. Browser playtest is 32/32,
+  importer 7/7, and equipment/ground/HUD probes pass.
+- The raider review moves a monster through the production presentation path
+  with scripted, collision-checked positions and verifies all eight phases and
+  return to idle. Native enemy AI remains stationary; this is not pursuit proof.
+- Reference-led NE contact repair improved the striking arm, but the next
+  generated phase switched arms and its matte cleanup damaged the forearm.
+  Both exact requests and diagnostic outputs are retained outside runtime.
+  These are local built-in-tool observations; no model variant was selectable.
+- [Viewed live window, phase captures, traces, clips, failures and final logs](reviews/2026-09-10-ground-hud/README.md).
+
+## Previous integration milestone, September 10, 2026
 
 - Hero walking now uses SE4, SW8, NW8 and NE8 frames. SE, SW and NW strikes
   each have six poses, with frame3 displayed at confirmed contact. Distance
@@ -49,9 +79,9 @@ identifies them; our image tool has no model selector.
   the orb, equipment and color checks pass.
 - [Retained live captures, actual motion traces, clips and verification](reviews/2026-09-10/README.md).
 
-This verifies integration for further iteration. It does not certify finished
-animation: NW walking has visibly elevated feet in some production frames,
-SW strike heads broaden, and palette/outline changes remain across clips.
+That milestone verified integration for further iteration. Its elevated NW
+feet are corrected above; SW strike heads and cross-clip palette/outline changes
+still need refinement.
 
 ## Verified milestone, September 9, 2026
 
@@ -100,13 +130,14 @@ The preceding initial milestone established these foundations:
 
 ## Still unfinished
 
-Walking and the three integrated strikes still need smoother identity, ground
-contact and timing. NE retains the legacy attack; its new preparation image
-is only a candidate. The raider walk remains outside runtime because it loses
-the idle's axe. Enemy motion, weapon-specific actions, motion onset smoothing,
-ground transitions and path composition remain unfinished. Uniform ground
-microtexture, some scenery overlap and HUD clipping/type/chrome inconsistency
-are visible in the live capture. Passing checks do not close these visual gaps.
+Walking and the three integrated strikes still need more consistent identity,
+palette and timing. NW foot registration is corrected, but its body/head bob
+differs from idle. NE retains the legacy attack because the replacement action
+is incomplete. Raider SW walking is available to moving presentation snapshots;
+native enemy pursuit and other monster directions/actions remain unfinished.
+Weapon-specific body mechanics, terrain repetition, some scenery overlap and
+further HUD composition need refinement. Arbitrarily long owner names still
+need a wrapping policy. Passing checks do not close these visual gaps.
 
 Local evidence is under `.ci-artifacts/` in the worktree:
 `raster-refined-live.png`, `raster-refined-scenarios.log`,

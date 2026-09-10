@@ -1,0 +1,154 @@
+{
+  "version": 1,
+  "manifest_sha256": "1da44108eb72f485cd4c39596f31fb23401c8cec77142092070b71683896c67c",
+  "importer_sha256": "d59ef9d71a73740f15c8ef5ce5fad588273e2fb4856684985203b7501dfee7c2",
+  "engine": {
+    "project": "Pixel Respecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "root": "Z:/Code/Python/pixel-perfecter",
+    "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+    "git_dirty": true,
+    "source_sha256": {
+      "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+      "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+      "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+      "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+      "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+      "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+      "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+      "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+      "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+      "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+      "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+      "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+      "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+    },
+    "dependencies": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    }
+  },
+  "known_limitations": [
+    "Root reviewed native, 3x3 repeated, initial integrated and live game captures; accepted for production trial. Opposite edges are not exact matches and broad repeated patterns remain perceptible.",
+    "Source is unchanged. Runtime uses identical actual Pixel Respecter auto-grid reconstruction and64x64 terrain normalization as the reviewed candidate.",
+    "Root integrated world placement, roads, shade and shared registration. This manifest imports only the quiet earth tile; broad repeat structure remains a visual limitation."
+  ],
+  "sources": [
+    {
+      "source": "../../client/assets/raster/source/terrain-quiet-v1.png",
+      "sha256": "4ea205fa67e7f4d4549728451f7d80b3ece6e0d07425d85d40338ef51f9924e5",
+      "size": [
+        1254,
+        1254
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "name": "terrain_quiet_earth",
+      "file": "terrain_quiet_earth.png",
+      "source": "../../client/assets/raster/source/terrain-quiet-v1.png",
+      "acceptance": "production_trial_live_captures_reviewed_2026-09-10",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 20,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "mesh",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 24,
+      "alpha_range": [
+        255,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        64,
+        65
+      ],
+      "trim_box": [
+        0,
+        0,
+        64,
+        65
+      ],
+      "before_resize": [
+        64,
+        65
+      ],
+      "placed_size": [
+        64,
+        64
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "content_bounds": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "anchor_px": [
+        32,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "059b101504c96b84a3541f5021dfd1811a7bb1ddb81ebd40fd03be9dbad2af70"
+    }
+  ],
+  "integration_review": {
+    "date": "2026-09-10",
+    "reviewer": "root",
+    "scope": "Quiet earth accepted for the integrated world trial after initial, integrated and live game capture review; not final terrain polish.",
+    "captures": [
+      {
+        "path": "native/client/assets/raster/reviews/2026-09-10-ground-hud/live-3440x1440.png",
+        "sha256": "cd64fcf162e47a0a8d271999466b9a36865407d5d4ff7bdfdf38e81560e44339",
+        "hash_policy": "sha256_raw_bytes",
+        "original_source_path": ".ci-artifacts/ground-hud-verified/live-3440x1440.png",
+        "original_source_raw_sha256": "cd64fcf162e47a0a8d271999466b9a36865407d5d4ff7bdfdf38e81560e44339"
+      },
+      {
+        "path": "native/client/assets/raster/reviews/2026-09-10-ground-hud/hero-nw-production-019.png",
+        "sha256": "00e89ab1d8541cc71b62edc9bef838370d6bcd2bac932d8623b4f47b2d6d8c1c",
+        "hash_policy": "sha256_raw_bytes",
+        "original_source_path": ".ci-artifacts/ground-hud-verified/raster-motion-nw-019.png",
+        "original_source_raw_sha256": "00e89ab1d8541cc71b62edc9bef838370d6bcd2bac932d8623b4f47b2d6d8c1c"
+      }
+    ],
+    "source_generation_observations": [
+      "Root reviewed native and3x3 repeated previews; accepted for production trial. Opposite edges are not exact matches and broad repeated patterns remain perceptible.",
+      "Source is unchanged. Runtime uses identical actual Pixel Respecter auto-grid reconstruction and64x64 terrain normalization as the reviewed candidate.",
+      "World placement, roads, shade, shared ordering and catalog registration remain root responsibilities; this manifest imports only the new earth tile."
+    ],
+    "visual_result": "Quiet warm ground replaces dense repeated speckle in the viewed game scene.",
+    "remaining_limitations": "Opposite tile edges are not exact matches, and broad repeated patterns remain perceptible. Ground placement and lighting are renderer behavior outside this texture import.",
+    "png_policy": "Review metadata only; the runtime tile remains byte-identical to the reviewed candidate.",
+    "earlier_raw_review_captures": [
+      {
+        "path": ".ci-artifacts/ground-hud-initial/live-ground-3440x1440.png",
+        "sha256": "544dc2a9ba5e9ad468d04473e2edc38f76e7964d2421e50d716eb68bd0152b50"
+      },
+      {
+        "path": ".ci-artifacts/ground-hud-motion/raster-motion-nw-019.png",
+        "sha256": "0612cfe49bbe597e1ed43d3fd2731aa375b5effc614169da7a059f071f9dbd8e"
+      }
+    ]
+  },
+  "manifest_hash_policy": "sha256_canonical_lf; current manifest stored as UTF-8 LF",
+  "previous_manifest_raw_sha256_before_lf_policy": "3b757f69e7597a6330f963fe2dfd2030ba0df3fdcab7648b5091fbfb15aa8ba0"
+}

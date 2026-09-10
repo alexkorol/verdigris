@@ -1,5 +1,34 @@
 # Native reconstitution handoff
 
+## 2026-09-10 — Quiet ground, registered walking and responsive HUD
+
+The catalog now has 127 active pixel assets, including quieter earth and an
+eight-pose SW raider walk that retains its axe. World-aligned paths use existing
+landmarks and collision footprints. NW feet and equipment move by exact integer
+offsets without repainting; the first actual position update now begins walking.
+Route/audio/quickbar chrome shares the existing skin, labels use measured
+placement, and equipment stats/XP clear both panes at 960x600.
+
+Final supported native build/all 66 scenarios pass: twenty fullscreen static
+frames average 23.258ms, and twenty moving frames average 24.715ms with a
+36.620ms peak. The 40ms average gates are unchanged. Native suites, browser
+32/32, importer 7/7 and equipment/ground/HUD probes pass. Root viewed the live
+3440x1440 window and final small dual-pane capture, then closed the local client
+with exit 0 and no orphan process. [Evidence, clips, traces and original failures](../../native/client/assets/raster/reviews/2026-09-10-ground-hud/README.md)
+are retained. The ground probe uses the native build's default compiler flags;
+an earlier optimized helper result is explicitly identified as such.
+
+Raider motion is verified by scripted, collision-checked positions through
+production presentation, not native pursuit AI. Native enemies still stand
+and face/attack. The reference-led NE contact candidate improved the arm, but
+the next phase switched limbs and its matte cleanup removed foreground. The
+exact source/reference/prompt packages remain outside runtime as bounded review
+history. The source-first guide records both stages of that failure.
+
+NE actions, native monster locomotion, other monster directions, identity across
+clips and terrain repetition remain open. This closes a tested integration
+milestone, not the active visual goal. Committed locally; no push or merge.
+
 ## 2026-09-10 — Directional pixel motion and readable contact HUD
 
 The runtime library now has 118 assets: four hero walk directions and six-pose

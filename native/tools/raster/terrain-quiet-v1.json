@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "output_dir": "../../../.ci-artifacts/terrain-quiet-v1",
+  "defaults": {
+    "alpha_mode": "crisp",
+    "max_colors": 24,
+    "acceptance": "native_and_repeat_reviewed_pending_root_live_scene"
+  },
+  "known_limitations": [
+    "This is a quieter material candidate, not a verified seamless terrain recipe. Source was generated from the current earth material with dense speckle explicitly replaced.",
+    "No runtime, catalog or world-placement changes are part of this candidate. Repeated-preview and opposite-edge checks determine suitability."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/terrain-quiet-v1.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "terrain-quiet-v1",
+          "cell": [
+            0,
+            0
+          ],
+          "cell_size": 0,
+          "max_colors": 24,
+          "canvas": [
+            64,
+            64
+          ],
+          "trim": false,
+          "fill": true,
+          "align": "top_left"
+        }
+      ]
+    }
+  ]
+}

@@ -172,6 +172,7 @@ struct Cache {
   std::map<ScaleKey, std::unique_ptr<Surface>> scales;
   CacheStats stats;
   std::uint64_t clock = 0;
+  std::uint64_t generation = 1;
 
   Cache() {
     Gdiplus::GdiplusStartupInput input;
@@ -469,6 +470,7 @@ inline bool composite(HDC dc, Surface& surface, int x, int y, bool opaque,
 // otherwise stay cached so missing assets never cause repeated disk probes.
 inline void reset_cache() {
   auto& c = detail::cache();
+  ++c.generation;
   c.scales.clear();
   c.assets.clear();
   c.stats = {};
@@ -477,6 +479,10 @@ inline void reset_cache() {
   c.root.clear();
   c.discovered_root = false;
 }
+
+// Derived presentation caches must discard copied pixels after an explicit
+// reload, even when the replacement art has the same path and dimensions.
+inline std::uint64_t asset_generation() { return detail::cache().generation; }
 
 inline void set_asset_root(const std::wstring& runtime_directory) {
   reset_cache();

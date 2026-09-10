@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "output_dir": "../source/actors_hero-strike-ne-contact-v6-candidate",
+  "defaults": {"cell_size": 12, "alpha_mode": "crisp", "max_colors": 32, "canvas": [80, 96], "preserve_scale": true, "require_transparency": true, "acceptance": "candidate-only single NE contact repair; no runtime promotion"},
+  "known_limitations": ["Generated framing reduces crown-to-sole size relative to the commit. Compare fixed integer source pitches11 and12 without post-resize; neither is silently accepted."],
+  "sheets": [
+    {"source": "../runtime/hero_ne.png", "grid": [1, 1], "assets": [{"name": "idle", "cell": [0, 0], "cell_size": 1, "anchor_source": [40, 96]}]},
+    {"source": "../source/actors_hero-strike-ne-contact-v6-reference-commit.png", "grid": [1, 1], "assets": [{"name": "commit", "cell": [0, 0], "cell_size": 1, "anchor_source": [40, 96]}]},
+    {"source": "../source/actors_hero-strike-ne-contact-v6.png", "grid": [1, 1], "assets": [
+      {"name": "contact-cell11", "cell": [0, 0], "cell_size": 11, "anchor_source": [600, 1265]},
+      {"name": "contact-cell12", "cell": [0, 0], "cell_size": 12, "anchor_source": [600, 1260]}
+    ]}
+  ]
+}

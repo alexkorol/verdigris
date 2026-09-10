@@ -49,6 +49,7 @@ namespace phase_a = verdigris::client::phase_a;
 #include "audio_out.hpp"
 #include "vector_art.hpp"
 #include "raster_art.hpp"
+#include "raster_ground.hpp"
 #include "raster_equipment.hpp"
 #include "framekit_renderer.hpp"
 #include "geometric_skill_tree.hpp"
@@ -373,9 +374,8 @@ HudRect minimap_rect(int height) {
 }
 
 HudRect route_card_rect(int height) {
-  const int s = hud_scale(height);
-  const HudRect map = minimap_rect(height);
-  return {map.x, map.y + map.h + 6 * s, map.w, 62 * s};
+  const auto card = hud_chrome_layout::route_card(height);
+  return {card.x, card.y, card.w, card.h};
 }
 
 constexpr int kVitalOrbRadius = 34;
@@ -2739,6 +2739,68 @@ void draw_ground_grid(HDC dc, const Camera& camera, const RECT& bounds) {
   }
 }
 
+raster_ground::Layout ground_layout(const std::string& route_id,
+                                    const std::string& theme,
+                                    const std::vector<SceneryItem>& scenery) {
+  raster_ground::Layout layout;
+  layout.tile_units = kTileUnits;
+  const bool town = route_id.rfind("town:", 0) == 0;
+  const bool village = route_id.find(":1:") != std::string::npos;
+  layout.active = town || (village && (theme == "town" || theme == "tin"));
+  if (!layout.active) return layout;
+  if (town) {
+    // Existing Crossroads landmark contract, in server tile coordinates.
+    // The material only describes the open square and roads already present.
+    const double t = kTileUnits;
+    layout.road(38*t, 115*t, 37*t, 94*t, 1.25*t);
+    layout.road(38*t, 115*t, 64*t, 114*t, 1.25*t);
+    layout.road(38*t, 115*t, 37*t, 138*t, 1.25*t);
+    layout.road(38*t, 115*t, 12*t, 115*t, 1.25*t);
+    layout.road(38*t, 115*t, 49*t, 104*t, t);
+    layout.road(38*t, 115*t, 31*t, 120*t, t);
+    layout.road(38*t, 115*t, 47*t, 119*t, t);
+    layout.road(38*t, 115*t, 38*t, 115*t, 3*t);
+  } else {
+    // Village approaches follow the fixed visual landmarks above. Door
+    // approaches finish outside solid footprints; the gate is non-solid.
+    layout.road(160, 850, 235, 420, 49);
+    layout.road(235, 420, 200, 180, 49);
+    layout.road(200, 180, 40, -40, 52);
+    layout.road(40, -40, -60, -105, 42);
+    layout.road(-60, -105, -290, -125, 42);
+    layout.road(40, -40, 190, -130, 42);
+    layout.road(190, -130, 340, -180, 42);
+    layout.road(40, -40, -20, 75, 38);
+    layout.road(-20, 75, -260, 70, 38);
+    layout.road(-260, 70, -330, 90, 38);
+    layout.road(15, -15, 15, -15, 80);
+  }
+  layout.key = scenery_seed(route_id + "|ground-material-v1");
+  for (const SceneryItem& item : scenery) {
+    const raster_ground::Point p{static_cast<double>(item.position.x),
+                                  static_cast<double>(item.position.y)};
+    if (item.solid && layout.solid_count < static_cast<int>(layout.solids.size()))
+      layout.solids[layout.solid_count++] = {p, item.radius};
+    if (item.kind == SceneryKind::Tree &&
+        layout.planting_count < static_cast<int>(layout.planting.size()))
+      layout.planting[layout.planting_count++] = {p, 125.0 * item.scale};
+    // Include the actual dressing in both cache keys; a layout version change
+    // cannot leave an old planting patch under a tree that moved elsewhere.
+    layout.key = verdigris::client::world::fnv1a(layout.key,
+        static_cast<std::uint64_t>(item.position.x));
+    layout.key = verdigris::client::world::fnv1a(layout.key,
+        static_cast<std::uint64_t>(item.position.y));
+    layout.key = verdigris::client::world::fnv1a(layout.key,
+        static_cast<std::uint64_t>(item.kind));
+    layout.key = verdigris::client::world::fnv1a(layout.key,
+        static_cast<std::uint64_t>(std::lround(item.radius * 100.0)));
+    layout.key = verdigris::client::world::fnv1a(layout.key,
+        static_cast<std::uint64_t>(std::lround(item.scale * 100.0)));
+    layout.key = verdigris::client::world::fnv1a(layout.key, item.solid ? 1 : 0);
+  }
+  return layout;
+}
+
 bool terrain_theme_prefers_alt(const std::string& route_id) {
   return route_id.find("marsh") != std::string::npos ||
          route_id.find("barrow") != std::string::npos ||
@@ -2777,10 +2839,16 @@ bool draw_terrain_tile(HDC dc, const SpriteBitmap& sprite, int dest_x, int dest_
 void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
                 const RECT& bounds, const std::string& route_id, render::List& rl,
                 FloorCache* cache = nullptr,
-                const std::string& theme = std::string("town")) {
+                const std::string& theme = std::string("town"),
+                const raster_ground::Layout& material_layout = {}) {
   (void)assets;
   // Texture coordinates follow world tiles, so grain stays fixed under movement.
   rl.push_back({render::Op::Floor, 0.0, 0.0, 0.0, 1, "tiled"});
+  if (material_layout.active)
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 1, "raster:ground:landmark-paths"});
+  const std::string cache_key = route_id + "|" + theme + "|" +
+                                std::to_string(material_layout.key) + "|" +
+                                std::to_string(raster_art::asset_generation());
 
   HBRUSH background = CreateSolidBrush(vector_art::dc_color(dc, RGB(23, 29, 32)));
   FillRect(dc, &bounds, background);
@@ -2840,6 +2908,8 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
             : theme == "marsh" ? "terrain_moss"
             : theme == "town" || theme == "tin" ? "terrain_packed_earth"
             : "terrain_dark";
+        if (raster_ground::draw(target, material_layout, tx, ty, cell,
+                               "terrain_quiet_earth")) continue;
         if (!raster_art::draw_ground(target, terrain, cell))
           vector_art::terrain_tile(target, cell, theme, terrain_tile_hash(tx, ty));
       }
@@ -2855,7 +2925,7 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
                              end_tx <= cache->tx1 && start_ty >= cache->ty0 &&
                              end_ty <= cache->ty1;
   if (!range_covered || cache->zoom != camera.zoom ||
-      cache->route != route_id + "|" + theme ||
+      cache->route != cache_key ||
       cache->view_w != static_cast<int>(bounds.right) ||
       cache->view_h != static_cast<int>(bounds.bottom)) {
     // Rebuild around the current view with a one-tile skirt so small camera
@@ -2899,7 +2969,7 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
     cache->tx1 = c_tx1;
     cache->ty1 = c_ty1;
     cache->zoom = camera.zoom;
-    cache->route = route_id + "|" + theme;
+    cache->route = cache_key;
     cache->view_w = static_cast<int>(bounds.right);
     cache->view_h = static_cast<int>(bounds.bottom);
     cache->valid = true;
@@ -3710,8 +3780,7 @@ int paint_status_chip(HDC dc, int x, int y, const std::string& text,
   return width;
 }
 
-void paint_audio_mixer_hud(ClientState& state, HDC dc, int x, int y,
-                           render::List& rl) {
+skin::HudTextLines audio_mixer_lines(const ClientState& state) {
   // VG-SOUND-006/008: mute cannot hide category volumes, and the theme name
   // is owner language. A mute chip alone cannot certify the mixer.
   const bool muted = state.audio_sink && state.audio_sink->muted();
@@ -3728,24 +3797,22 @@ void paint_audio_mixer_hud(ClientState& state, HDC dc, int x, int y,
           : (state.world.route_id.empty() ? std::string("surface")
                                           : state.world.route_id);
   const std::string loop = verdigris::client::ambience::owner_loop_label(route);
-  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
-  RECT plate{x, y, x + 168, y + 88};
-  skin::panel(dc, plate, skin::kGold, 240, 5.0f);
-  SetBkMode(dc, TRANSPARENT);
-  SetTextColor(dc, skin::kInk);
-  TextOutA(dc, x + 10, y + 6, mute.c_str(), static_cast<int>(mute.size()));
-  SetTextColor(dc, skin::kInkDim);
-  TextOutA(dc, x + 10, y + 22, sfx.c_str(), static_cast<int>(sfx.size()));
-  TextOutA(dc, x + 10, y + 36, music.c_str(), static_cast<int>(music.size()));
-  SetTextColor(dc, skin::kGold);
-  TextOutA(dc, x + 10, y + 50, theme, static_cast<int>(std::strlen(theme)));
-  SetTextColor(dc, skin::kVerdigris);
-  TextOutA(dc, x + 10, y + 66, loop.c_str(), static_cast<int>(loop.size()));
-  SelectObject(dc, old_font);
+  return {{mute, skin::kInk}, {sfx, skin::kInkDim},
+          {music, skin::kInkDim}, {theme, skin::kGold},
+          {loop, skin::kVerdigris}};
+}
+
+void paint_audio_mixer_hud(ClientState& state, HDC dc, int x, int y,
+                           const skin::HudTextLines& lines,
+                           const hud_chrome_layout::TextCard& plan,
+                           render::List& rl) {
+  const RECT plate{x, y, x + plan.bounds.w, y + plan.bounds.h};
+  skin::hud_text_card(dc, plate, plan, lines);
   rl.push_back({render::Op::Hud, static_cast<double>(x), static_cast<double>(y),
                 0.0, 0, "audio:mixer"});
   rl.push_back({render::Op::Hud, static_cast<double>(x),
-                static_cast<double>(y + 66), 0.0, 0, "ambience:owner"});
+                static_cast<double>(y + plan.lines[4].y), 0.0, 0,
+                "ambience:owner"});
   rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "audio:prefs"});
   rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, state.audio_prefs.sfx_permille,
                 std::string("audio:sfx:") +
@@ -3758,7 +3825,8 @@ void paint_audio_mixer_hud(ClientState& state, HDC dc, int x, int y,
                     (state.audio_music_want.rfind("music:", 0) == 0
                          ? state.audio_music_want.substr(6)
                          : state.audio_music_want)});
-  state.hud_rect_trace.push_back({"audio-mixer", {x, y, 168, 88}});
+  state.hud_rect_trace.push_back(
+      {"audio-mixer", {x, y, plan.bounds.w, plan.bounds.h}});
 }
 
 std::string loot_label(const ClientState& state, const std::string& id) {
@@ -4117,7 +4185,9 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
                         &combat_extent);
   const int stats_x = left + 14 * s;
   const int vitals_y = top + 34 * s;
-  const int combat_y = top + 48 * s;
+  // Segoe captions are 15/32 px tall at the shipped scales; the inherited
+  // 14s row step overlapped them. Place the next row from the measured box.
+  const int combat_y = vitals_y + static_cast<int>(vitals_extent.cy) + 3 * s;
   state.hud_rect_trace.push_back(
       {"pane-stats", {stats_x, vitals_y, vitals_extent.cx, vitals_extent.cy}});
   state.hud_rect_trace.push_back(
@@ -4630,7 +4700,7 @@ void paint_quickbar(ClientState& state, HDC dc, const RECT& bounds, render::List
       {"quickbar-strip",
        {strip.left, strip.top, strip.right - strip.left,
         strip.bottom - strip.top}});
-  skin::panel(dc, strip);
+  skin::hud_panel(dc, strip, 240, 8 * s);
 
   for (int i = 0; i < count; ++i) {
     const QuickbarSlotDef& slot = kQuickbarSlots[i];
@@ -4681,7 +4751,7 @@ void paint_quickbar(ClientState& state, HDC dc, const RECT& bounds, render::List
     TextOutA(dc, box.left + 6 * s, box.top + 4 * s, slot.key_label,
              static_cast<int>(strlen(slot.key_label)));
     SetTextColor(dc, available ? RGB(205, 221, 207) : RGB(112, 119, 115));
-    TextOutA(dc, box.left + 6 * s, box.top + 22 * s, slot.name,
+    TextOutA(dc, box.left + 6 * s, box.top + 26 * s, slot.name,
              static_cast<int>(strlen(slot.name)));
   }
 }
@@ -4838,8 +4908,19 @@ void paint_xp_bar(ClientState& state, HDC dc, const RECT& bounds,
   SetTextColor(dc, skin::kInk);
   SIZE extent{};
   GetTextExtentPoint32A(dc, cap.c_str(), static_cast<int>(cap.size()), &extent);
-  TextOutA(dc, left + 4 * s, top - extent.cy + 1, cap.c_str(),
-           static_cast<int>(cap.size()));
+  int caption_x = left + 4 * s;
+  const int caption_y = top - extent.cy + 1;
+  const HudRect caption_at{caption_x, caption_y, extent.cx, extent.cy};
+  if (state.character_pane && hud_rects_overlap(caption_at,
+      character_pane_rect(static_cast<int>(bounds.right),
+                          static_cast<int>(bounds.bottom),
+                          verdigris::client::ui::extra_source_rows(
+                              {0, 0, state.sheet_passive_atk, state.sheet_cond_atk,
+                               state.sheet_cond_active, state.stat_atk_expanded}))))
+    caption_x = (left + right - extent.cx) / 2;
+  TextOutA(dc, caption_x, caption_y, cap.c_str(), static_cast<int>(cap.size()));
+  state.hud_rect_trace.push_back(
+      {"xp-caption", {caption_x, caption_y, extent.cx, extent.cy}});
   SelectObject(dc, old_font);
   if (state.world.progression.present && state.world.progression.unspent_points > 0) {
     // A compact, persistent plus affordance is intentionally next to the XP
@@ -4855,6 +4936,9 @@ void paint_xp_bar(ClientState& state, HDC dc, const RECT& bounds,
                   static_cast<double>(badge.top), 0.0,
                   state.world.progression.unspent_points, "skill-points-plus"});
   }
+  const int caption_headroom = std::max(22 * s, static_cast<int>(extent.cy) - 1);
+  state.hud_rect_trace.push_back({"xp-strip",
+      {left, top - caption_headroom, right - left, meter_h + caption_headroom}});
   rl.push_back({render::Op::Hud, static_cast<double>(left),
                 static_cast<double>(top), 0.0,
                 static_cast<int>(world.xp_fraction * 100.0), "xp-bar"});
@@ -5004,7 +5088,6 @@ void paint_route_card(ClientState& state, HDC dc, const RECT& bounds,
   if (card.w <= 0 || card.h <= 0) return;
   RECT plate{card.x, card.y, card.x + card.w, card.y + card.h};
   state.hud_rect_trace.push_back({"route-card", card});
-  skin::panel(dc, plate, skin::kGold, 220, 4.0f);
   const WorldView& world = state.world;
   const std::string route =
       verdigris::client::ui::route_owner_title(world.route_id);
@@ -5019,27 +5102,16 @@ void paint_route_card(ClientState& state, HDC dc, const RECT& bounds,
     ret += "town";
   else
     ret += extraction_action_hint(is_remote(state));
-  // Negative control: no foe names, uuids, or off-snapshot targets.
-  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
-  SetBkMode(dc, TRANSPARENT);
-  SetTextColor(dc, skin::kInk);
-  const int s = hud_scale(static_cast<int>(bounds.bottom));
-  const int x = card.x + 6 * s;
-  int y = card.y + 4 * s;
-  const int step = 12 * s;
-  TextOutA(dc, x, y, route.c_str(), static_cast<int>(route.size()));
-  y += step;
-  SetTextColor(dc, skin::kInkDim);
-  TextOutA(dc, x, y, theme.c_str(), static_cast<int>(theme.size()));
-  y += step;
+  // The same production font measurement drives wrapping and the plate fit.
   const std::string risk_line =
       verdigris::client::ui::route_risk_owner_line(risk);
   const std::string ret_line =
       verdigris::client::ui::route_return_owner_line(ret);
-  TextOutA(dc, x, y, risk_line.c_str(), static_cast<int>(risk_line.size()));
-  y += step;
-  TextOutA(dc, x, y, ret_line.c_str(), static_cast<int>(ret_line.size()));
-  SelectObject(dc, old_font);
+  const skin::HudTextLines lines{{route, skin::kInk}, {theme, skin::kInkDim},
+                                 {risk_line, skin::kInkDim},
+                                 {ret_line, skin::kInkDim}};
+  const auto plan = skin::measure_hud_card(dc, card.w, lines);
+  skin::hud_text_card(dc, plate, plan, lines);
   rl.push_back({render::Op::Hud, static_cast<double>(card.x),
                 static_cast<double>(card.y), 0.0, 0, "route:" + route});
   rl.push_back({render::Op::Hud, static_cast<double>(card.x),
@@ -5625,8 +5697,6 @@ void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
 constexpr int kTopHudGutter = 12;      // screen-edge breathing room
 constexpr int kTopHudGap = 10;         // minimum clearance between regions
 constexpr int kTopHudRow0Y = 12;
-constexpr int kTopHudRowStep = 34;     // clears a chip's full height + margin
-constexpr int kTopHudRowCount = 6;     // headroom for pane-open fallback rows
 
 // TASK-0159: the planner's rectangle type is now the shared HudRect, so the
 // blocked fixed regions and the placed text regions are one geometry.
@@ -5636,7 +5706,8 @@ struct TopHudLayout {
   TopHudRect identity;
   TopHudRect objective;
   TopHudRect connection;
-  TopHudRect art;
+  hud_chrome_layout::AudioStack audio;
+  bool complete = false;
   TopHudRect controls;
   bool objective_placed = false;
   bool controls_placed = false;
@@ -5658,163 +5729,138 @@ TopHudLayout plan_top_hud(int width, int height, bool gear_open, bool tree_open,
                           bool character_open, int character_extra_rows,
                           const TopHudRect& identity_size,
                           const TopHudRect& objective_size,
-                          const TopHudRect& art_size,
+                          const hud_chrome_layout::AudioStack& audio_sizes,
+                          const TopHudRect& xp_keepout,
                           const TopHudRect& controls_size,
                           const TopHudRect& controls_size_a,
                           const TopHudRect& controls_size_b, bool session) {
-  TopHudLayout layout;
   std::vector<TopHudRect> blocked;
-  const auto keep_out = [&](const HudRect& r) {
-    blocked.push_back(TopHudRect{r.x, r.y, r.w, r.h});
-  };
-  keep_out(minimap_rect(height));
-  // Route card occupies the left column under the minimap. When the gear
-  // pane is open at 960, that column is the wrap ladder for controls; hide
-  // the card instead of colliding chips into the map.
+  blocked.push_back(minimap_rect(height));
   if (!gear_open && !tree_open && !character_open)
-    keep_out(route_card_rect(height));
-  keep_out(quickbar_strip_rect(width, height));
-  keep_out(vital_orb_rect(width, height, false));
-  keep_out(vital_orb_rect(width, height, true));
-  if (gear_open) keep_out(gear_pane_rect(width, height));
-  if (tree_open) keep_out(tree_pane_rect(width, height));
+    blocked.push_back(route_card_rect(height));
+  blocked.push_back(quickbar_strip_rect(width, height));
+  blocked.push_back(vital_orb_rect(width, height, false));
+  blocked.push_back(vital_orb_rect(width, height, true));
+  if (xp_keepout.w > 0) blocked.push_back(xp_keepout);
+  if (gear_open) blocked.push_back(gear_pane_rect(width, height));
+  if (tree_open) blocked.push_back(tree_pane_rect(width, height));
   if (character_open)
-    keep_out(character_pane_rect(width, height, character_extra_rows));
-
-  std::vector<TopHudRect> occupied[kTopHudRowCount];
-  const auto row_y = [&](int row) { return kTopHudRow0Y + row * kTopHudRowStep; };
-  const auto fits = [&](int row, const TopHudRect& cand) {
-    if (cand.x < kTopHudGutter) return false;
-    if (cand.x + cand.w > width - kTopHudGutter) return false;
-    for (const auto& taken : occupied[row])
-      if (!top_hud_clear(cand, taken, kTopHudGap)) return false;
-    for (const auto& keep_out_zone : blocked)
-      if (!top_hud_clear(cand, keep_out_zone, kTopHudGap)) return false;
-    return true;
-  };
-  const HudRect map = minimap_rect(height);
-  // The left lane beside the minimap: the deterministic second anchor for
-  // every region whose preferred pin is crowded or pane-blocked.
+    blocked.push_back(character_pane_rect(width, height, character_extra_rows));
+  const int s = hud_scale(height);
+  const auto map = minimap_rect(height);
   const int lane_x = map.x + map.w + kTopHudGap;
-  const auto try_rows_left = [&](const TopHudRect& size,
-                                 int x) -> TopHudRect {
-    for (int row = 0; row < kTopHudRowCount; ++row) {
-      TopHudRect cand{x, row_y(row), size.w, size.h};
-      if (fits(row, cand)) {
-        occupied[row].push_back(cand);
-        return cand;
-      }
-    }
-    return TopHudRect{};
+  const auto convert = [](const hud_chrome_layout::Rect& r) {
+    return TopHudRect{r.x, r.y, r.w, r.h};
   };
-  // Right-aligned chips keep their historical edge pin; if the right side is
-  // crowded or pane-blocked, the left lane takes them instead.
-  const auto place_right = [&](const TopHudRect& size) {
-    for (int row = 0; row < kTopHudRowCount; ++row) {
-      TopHudRect cand{std::max(kTopHudGutter, width - kTopHudGutter - size.w),
-                      row_y(row), size.w, size.h};
-      if (fits(row, cand)) {
-        occupied[row].push_back(cand);
-        return cand;
-      }
-    }
-    return try_rows_left(size, lane_x);
+  const auto required = [](const auto& size, const auto& placed) {
+    return size.w <= 0 || size.h <= 0 || (placed.w > 0 && placed.h > 0);
   };
-  const auto place_centered = [&](const TopHudRect& size, bool& placed) {
-    for (int row = 0; row < kTopHudRowCount; ++row) {
-      TopHudRect cand{std::max(kTopHudGutter, (width - size.w) / 2), row_y(row),
-                      size.w, size.h};
-      if (fits(row, cand)) {
-        occupied[row].push_back(cand);
-        placed = true;
-        return cand;
+  TopHudLayout result;
+  // Keep the normal right stack when it fits. When panes consume that lane,
+  // give the objective/controls priority, then split badge and mixer only if
+  // the measured stack cannot fit anywhere. Five bounded packing attempts.
+  for (int attempt = 0; attempt < 5; ++attempt) {
+    TopHudLayout layout;
+    std::vector<TopHudRect> occupied = blocked;
+    const auto fits = [&](const TopHudRect& candidate) {
+      if (candidate.w <= 0 || candidate.h <= 0 || candidate.x < kTopHudGutter ||
+          candidate.y < kTopHudRow0Y * s || candidate.x + candidate.w > width - kTopHudGutter ||
+          candidate.y + candidate.h > height - kTopHudGutter) return false;
+      for (const auto& obstacle : occupied)
+        if (!top_hud_clear(candidate, obstacle, kTopHudGap)) return false;
+      return true;
+    };
+    const auto place = [&](const TopHudRect& size, int preferred_x) -> TopHudRect {
+      if (size.w <= 0 || size.h <= 0) return {};
+      std::vector<int> xs{preferred_x, lane_x, kTopHudGutter,
+                          width - kTopHudGutter - size.w};
+      std::vector<int> ys{kTopHudRow0Y * s, height - kTopHudGutter - size.h};
+      // Candidates lie on actual rectangle edges. At most 16 obstacles here
+      // gives fewer than 40 candidates per axis; no viewport-sized pixel scan.
+      for (const auto& obstacle : occupied) {
+        xs.push_back(obstacle.x + obstacle.w + kTopHudGap);
+        xs.push_back(obstacle.x - size.w - kTopHudGap);
+        ys.push_back(obstacle.y + obstacle.h + kTopHudGap);
+        ys.push_back(obstacle.y - size.h - kTopHudGap);
       }
-    }
-    placed = false;
-    // Centered fallback ladder: the left lane beside the minimap, then the
-    // raw gutter once rows have cleared the map's height.
-    for (int pass = 0; pass < 2 && !placed; ++pass) {
-      const TopHudRect got =
-          try_rows_left(size, pass == 0 ? lane_x : kTopHudGutter + 6);
-      if (got.w > 0) {
-        placed = true;
-        return got;
+      std::sort(xs.begin(), xs.end());
+      xs.erase(std::unique(xs.begin(), xs.end()), xs.end());
+      std::stable_sort(xs.begin(), xs.end(), [&](int a, int b) {
+        return std::abs(a - preferred_x) < std::abs(b - preferred_x);
+      });
+      std::sort(ys.begin(), ys.end());
+      ys.erase(std::unique(ys.begin(), ys.end()), ys.end());
+      for (const int y : ys) for (const int x : xs) {
+        const TopHudRect candidate{x, y, size.w, size.h};
+        if (!fits(candidate)) continue;
+        occupied.push_back(candidate);
+        return candidate;
       }
-    }
-    return TopHudRect{};
-  };
-
-  // Identity leads the hierarchy: top row, in the lane beside the minimap so
-  // it can never paint across the map again; deeper rows only if contested.
-  layout.identity = try_rows_left(identity_size, lane_x);
-  if (layout.identity.w == 0)
-    layout.identity = try_rows_left(identity_size, kTopHudGutter + 6);
-  if (layout.identity.w == 0) {
-    layout.identity =
-        TopHudRect{kTopHudGutter + 6, row_y(0), identity_size.w, identity_size.h};
-    occupied[0].push_back(layout.identity);
-  }
-  if (session)
-    layout.connection =
-        place_right(TopHudRect{0, 0, connection_chip_w(height),
-                                connection_chip_h(height)});
-  // Art/mute chrome keeps the historical right-edge pin, but a zero-width
-  // slot (loaded art, unmuted) must not reserve a skeleton chip.
-  if (art_size.w > 0) layout.art = place_right(art_size);
-  // The objective outranks the controls hint when rows are contested.
-  layout.objective = place_centered(objective_size, layout.objective_placed);
-  layout.controls = place_centered(controls_size, layout.controls_placed);
-  // TASK-0159: if no single-line slot exists, wrap the hint into two stacked
-  // lines placed as one unit on the left ladders.
-  const auto try_rows_left_pair = [&](const TopHudRect& first,
-                                      const TopHudRect& second,
-                                      int x) -> TopHudRect {
-    for (int row = 0; row + 1 < kTopHudRowCount; ++row) {
-      TopHudRect cand_a{x, row_y(row), first.w, first.h};
-      TopHudRect cand_b{x, row_y(row + 1), second.w, second.h};
-      if (fits(row, cand_a) && fits(row + 1, cand_b)) {
-        occupied[row].push_back(cand_a);
-        occupied[row + 1].push_back(cand_b);
+      return {};
+    };
+    const auto place_right = [&](const TopHudRect& size) {
+      return place(size, width - kTopHudGutter - size.w);
+    };
+    const auto translate = [](hud_chrome_layout::Rect r, const TopHudRect& at) {
+      if (r.w > 0 && r.h > 0) { r.x += at.x; r.y += at.y; }
+      return r;
+    };
+    const auto place_stack = [&] {
+      const auto at = place_right(convert(audio_sizes.bounds));
+      if (at.w <= 0) return;
+      layout.audio.bounds = translate(audio_sizes.bounds, at);
+      layout.audio.art = translate(audio_sizes.art, at);
+      layout.audio.mute = translate(audio_sizes.mute, at);
+      layout.audio.mixer = translate(audio_sizes.mixer, at);
+      layout.audio.lost = translate(audio_sizes.lost, at);
+    };
+    const auto component = [&](const hud_chrome_layout::Rect& size) {
+      const auto at = place_right(convert(size));
+      return hud_chrome_layout::Rect{at.x, at.y, at.w, at.h};
+    };
+    layout.identity = place(identity_size, lane_x);
+    if (attempt == 4) layout.audio.mixer = component(audio_sizes.mixer);
+    if (session)
+      layout.connection = place_right({0, 0, connection_chip_w(height), connection_chip_h(height)});
+    if (attempt == 0) place_stack();
+    if (attempt == 2) layout.audio.mixer = component(audio_sizes.mixer);
+    layout.objective = place(objective_size, (width - objective_size.w) / 2);
+    layout.objective_placed = layout.objective.w > 0;
+    layout.controls = place(controls_size, (width - controls_size.w) / 2);
+    if (layout.controls.w == 0 && controls_size_b.w > 0) {
+      const int gap = 4 * s;
+      const TopHudRect pair_size{0, 0, std::max(controls_size_a.w, controls_size_b.w),
+                                  controls_size_a.h + gap + controls_size_b.h};
+      const auto pair = place(pair_size, lane_x);
+      if (pair.w > 0) {
+        layout.controls = {pair.x, pair.y, controls_size_a.w, controls_size_a.h};
+        layout.controls_second = {pair.x, pair.y + controls_size_a.h + gap,
+                                    controls_size_b.w, controls_size_b.h};
         layout.controls_wrapped = true;
-        layout.controls_second = cand_b;
-        return cand_a;
       }
     }
-    return TopHudRect{};
-  };
-  if (layout.controls.w == 0 && controls_size_b.w > 0) {
-    for (int pass = 0; pass < 2 && !layout.controls_wrapped; ++pass) {
-      const TopHudRect got = try_rows_left_pair(
-          controls_size_a, controls_size_b,
-          pass == 0 ? lane_x : kTopHudGutter + 6);
-      if (got.w > 0) {
-        layout.controls = got;
-        layout.controls_placed = true;
-      }
+    layout.controls_placed = layout.controls.w > 0;
+    if (attempt == 1) place_stack();
+    if (attempt >= 2) {
+      // Split only after testing the full stack. Every component also clears
+      // the XP readout; its lower-right space is not a free docking region.
+      if (attempt == 3) layout.audio.mixer = component(audio_sizes.mixer);
+      layout.audio.art = component(audio_sizes.art);
+      layout.audio.mute = component(audio_sizes.mute);
+      layout.audio.lost = component(audio_sizes.lost);
     }
+    layout.complete = layout.identity.w > 0 && layout.objective_placed &&
+        layout.controls_placed && (!session || layout.connection.w > 0) &&
+        required(audio_sizes.art, layout.audio.art) && required(audio_sizes.mute, layout.audio.mute) &&
+        required(audio_sizes.mixer, layout.audio.mixer) && required(audio_sizes.lost, layout.audio.lost);
+    result = layout;
+    if (layout.complete) return layout;
   }
-  // Character sheet owns the left column. Centered fallback would paint
-  // WASD onto it once row 0 is taken. The remaining lane is to the right
-  // of the sheet — never delete the hint, never overlay the pane.
-  if (!layout.controls_placed && character_open) {
-    const HudRect sheet =
-        character_pane_rect(width, height, character_extra_rows);
-    const int sheet_lane = sheet.x + sheet.w + kTopHudGap;
-    const TopHudRect single = try_rows_left(controls_size, sheet_lane);
-    if (single.w > 0) {
-      layout.controls = single;
-      layout.controls_placed = true;
-    } else if (controls_size_b.w > 0) {
-      const TopHudRect got =
-          try_rows_left_pair(controls_size_a, controls_size_b, sheet_lane);
-      if (got.w > 0) {
-        layout.controls = got;
-        layout.controls_placed = true;
-      }
-    }
-  }
-  return layout;
+  // No forced coordinates over a pane: callers and production scenarios can
+  // distinguish a viewport that cannot contain all requested HUD rectangles.
+  return result;
 }
+
 
 // -- Wall tiles -----------------------------------------------------------
 // Blocked cells of the authoritative walkable grid, drawn as chunky raised
@@ -9127,6 +9173,7 @@ constexpr RasterDirectionalClip kHeroStrikeClips[] = {
     {"se", 6, 1, 1}, {"sw", 6, -1, 1}, {"nw", 6, -1, -1}};
 
 int raster_walk_frames(const char* family, const std::string& direction) {
+  if (std::strcmp(family, "raider") == 0 && direction == "sw") return 8;
   if (std::strcmp(family, "hero") != 0) return 0;
   for (const auto& clip : kHeroWalkClips)
     if (direction == clip.direction) return clip.frames;
@@ -9150,8 +9197,14 @@ void advance_actor_motion(ClientState& state, double dt_ms) {
       const double moved = std::sqrt(dx * dx + dy * dy);
       motion.walk_phase =
           std::fmod(motion.walk_phase + moved / (kTileUnits * 0.9), 1.0);
-      const double target = moved > 0.5 ? 1.0 : 0.0;
-      motion.moving += (target - motion.moving) * std::min(1.0, dt_ms / 120.0);
+      // Authoritative positions advance at 50 ms, while presentation often
+      // paints every 15 ms. Smoothing each unchanged presentation sample
+      // toward zero delayed the first walk pose despite actual travel. Begin
+      // on confirmed movement immediately; smooth only the stopping tail.
+      if (moved > 0.5)
+        motion.moving = 1.0;
+      else
+        motion.moving *= 1.0 - std::min(1.0, dt_ms / 120.0);
     }
     motion.last_pos = pos;
     motion.has_last = true;
@@ -9279,7 +9332,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   }
 
   draw_floor(state.billboards, dc, state.camera, bounds, world.route_id, rl,
-             &state.floor_cache, world.theme);
+             &state.floor_cache, world.theme,
+             ground_layout(world.route_id, world.theme, state.scenery));
   draw_wall_tiles(world, dc, state.camera, bounds);
   QueryPerformanceCounter(&section_t1);
   state.paint_ms_floor = section_ms(section_t0, section_t1);
@@ -9543,6 +9597,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
             rl.push_back({render::Op::Hud, static_cast<double>(base.x),
                           static_cast<double>(base.y), 0.0, 0,
                           std::string("raster:monster:") + family});
+            rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                          static_cast<double>(base.y), 0.0, 0,
+                          "raster:monster-pose:" + monster.id + ":" + raster_pose});
             draw_raster_target_flash(dc, state, monster.id, raster_pose,
                                       base, rig_h, rl);
             const auto canvas = raster_art::dimensions(raster_pose.c_str());
@@ -9965,7 +10022,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                             static_cast<int>(controls_line_b.size()),
                             &controls_b_extent);
 
-    SIZE identity_extent{}, objective_extent{}, art_extent{}, controls_extent{};
+    SIZE identity_extent{}, objective_extent{}, art_extent{}, mute_extent{},
+        lost_extent{}, controls_extent{};
     GetTextExtentPoint32A(dc, identity.c_str(),
                           static_cast<int>(identity.size()), &identity_extent);
     GetTextExtentPoint32A(dc, objective_owner.c_str(),
@@ -9973,105 +10031,124 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     if (show_art_chip) {
       GetTextExtentPoint32A(dc, art_text.c_str(),
                             static_cast<int>(art_text.size()), &art_extent);
-    } else if (show_mute_chip) {
-      GetTextExtentPoint32A(dc, mute_text, static_cast<int>(strlen(mute_text)),
-                            &art_extent);
     }
+    if (show_mute_chip)
+      GetTextExtentPoint32A(dc, mute_text, static_cast<int>(strlen(mute_text)),
+                            &mute_extent);
+    if (state.link_lost) {
+      constexpr char lost_text[] = "extract uncommitted";
+      GetTextExtentPoint32A(dc, lost_text, sizeof(lost_text) - 1, &lost_extent);
+    }
+    const int audio_scale = hud_scale(static_cast<int>(bounds.bottom));
+    const skin::HudTextLines mixer_lines =
+        state.audio_sink ? audio_mixer_lines(state) : skin::HudTextLines{};
+    const auto mixer_plan = skin::measure_hud_card(dc, 180 * audio_scale,
+                                                  mixer_lines);
+    const auto chip_size = [](const SIZE& extent, bool visible) {
+      return visible ? hud_chrome_layout::Rect{0, 0, extent.cx + 20,
+                                               extent.cy + 10}
+                     : hud_chrome_layout::Rect{};
+    };
+    const auto audio_stack = hud_chrome_layout::audio_stack(
+        audio_scale, chip_size(art_extent, show_art_chip),
+        chip_size(mute_extent, show_mute_chip), mixer_plan.bounds,
+        chip_size(lost_extent, state.link_lost));
     GetTextExtentPoint32A(dc, kControls,
                           static_cast<int>(sizeof(kControls) - 1),
                           &controls_extent);
 
     const int width = static_cast<int>(bounds.right);
-    const TopHudRect identity_size{0, 0, identity_extent.cx + 6,
-                                   identity_extent.cy + 8};
-    const TopHudRect objective_size{0, 0, objective_extent.cx + 16,
-                                    objective_extent.cy + 8};
-    const TopHudRect art_size{0, 0, art_extent.cx + 16, art_extent.cy + 8};
-    const TopHudRect controls_size{0, 0, controls_extent.cx + 12,
-                                   controls_extent.cy + 6};
+    const TopHudRect identity_size{0, 0, identity_extent.cx, identity_extent.cy};
+    const TopHudRect objective_size{0, 0, objective_extent.cx + 20,
+                                    objective_extent.cy + 10};
+    const TopHudRect controls_size{0, 0, controls_extent.cx, controls_extent.cy};
     const TopHudRect controls_size_a{
-        0, 0, controls_line_b.empty() ? controls_extent.cx + 12
-                                      : controls_a_extent.cx + 12,
-        controls_line_b.empty() ? controls_extent.cy + 6
-                                : controls_a_extent.cy + 6};
+        0, 0, controls_line_b.empty() ? controls_extent.cx : controls_a_extent.cx,
+        controls_line_b.empty() ? controls_extent.cy : controls_a_extent.cy};
     const TopHudRect controls_size_b{
-        0, 0, controls_line_b.empty() ? 0 : controls_b_extent.cx + 12,
-        controls_line_b.empty() ? 0 : controls_b_extent.cy + 6};
+        0, 0, controls_line_b.empty() ? 0 : controls_b_extent.cx,
+        controls_line_b.empty() ? 0 : controls_b_extent.cy};
+    TopHudRect xp_keepout{};
+    for (const auto& entry : state.hud_rect_trace)
+      if (entry.first == "xp-strip") xp_keepout = entry.second;
     const TopHudLayout layout = plan_top_hud(
         width, static_cast<int>(bounds.bottom), state.gear_overlay,
         state.tree_pane, state.character_pane,
         verdigris::client::ui::extra_source_rows(
             {0, 0, state.sheet_passive_atk, state.sheet_cond_atk,
              state.sheet_cond_active, state.stat_atk_expanded}),
-        identity_size, objective_size, art_size, controls_size,
+        identity_size, objective_size, audio_stack, xp_keepout, controls_size,
         controls_size_a, controls_size_b, static_cast<bool>(state.session));
 
-    // Historical placements double as fallbacks for degenerate widths where
-    // the planner cannot fit a region in any row.
-    const auto placed_or = [](const TopHudRect& r, int fb_x, int fb_y) {
-      return r.w > 0 ? r : TopHudRect{fb_x, fb_y, 0, 0};
-    };
-    const TopHudRect objective_at = placed_or(
-        layout.objective,
-        std::max(12, (width - objective_size.w) / 2), kTopHudRow0Y);
-    const TopHudRect connection_at = placed_or(
-        layout.connection,
-        std::max(18, width - connection_chip_w(static_cast<int>(bounds.bottom)) - 18),
-        kTopHudRow0Y);
-    const TopHudRect art_at = placed_or(
-        layout.art, std::max(12, width - art_size.w - 18),
-        state.session ? 38 : 12);
-    const TopHudRect controls_at = placed_or(
-        layout.controls, std::max(12, (width - controls_size.w) / 2),
-        state.session ? 64 : 40);
+    const TopHudRect& objective_at = layout.objective;
+    const TopHudRect& connection_at = layout.connection;
+    const TopHudRect& controls_at = layout.controls;
+    const auto& placed_audio = layout.audio;
+    if (!layout.complete)
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "hud-layout:unplaced"});
 
     SetBkMode(dc, TRANSPARENT);
 
-    if (state.session)
+    if (state.session && connection_at.w > 0)
       paint_connection_chip(state, dc, bounds, rl, connection_at.x,
                             connection_at.y);
 
-    paint_status_chip(dc, objective_at.x, objective_at.y, objective_owner, accent,
-                      rl, objective);
-    state.hud_rect_trace.push_back(
-        {"objective",
-         {objective_at.x, objective_at.y, objective_size.w, objective_size.h}});
-
-    rl.push_back({render::Op::HouseChip, 0.0, 0.0, 0.0, 0, identity});
-    SetTextColor(dc, RGB(140, 208, 172));
-    TextOutA(dc, layout.identity.x, layout.identity.y, identity.c_str(),
-             static_cast<int>(identity.size()));
-    state.hud_rect_trace.push_back(
-        {"identity",
-         {layout.identity.x, layout.identity.y, identity_extent.cx,
-          identity_extent.cy}});
-
-    SetTextColor(dc, RGB(148, 160, 150));
-    if (layout.controls_wrapped) {
-      TextOutA(dc, controls_at.x, controls_at.y, controls_line_a.c_str(),
-               static_cast<int>(controls_line_a.size()));
+    if (objective_at.w > 0) {
+      paint_status_chip(dc, objective_at.x, objective_at.y, objective_owner, accent,
+                        rl, objective);
       state.hud_rect_trace.push_back(
-          {"controls",
-           {controls_at.x, controls_at.y, controls_a_extent.cx,
-            controls_a_extent.cy}});
-      TextOutA(dc, layout.controls_second.x, layout.controls_second.y,
-               controls_line_b.c_str(),
-               static_cast<int>(controls_line_b.size()));
-      state.hud_rect_trace.push_back(
-          {"controls-second",
-           {layout.controls_second.x, layout.controls_second.y,
-            controls_b_extent.cx, controls_b_extent.cy}});
-    } else {
-      TextOutA(dc, controls_at.x, controls_at.y, kControls,
-               static_cast<int>(sizeof(kControls) - 1));
-      state.hud_rect_trace.push_back(
-          {"controls",
-           {controls_at.x, controls_at.y, controls_extent.cx,
-            controls_extent.cy}});
+          {"objective",
+           {objective_at.x, objective_at.y, objective_size.w, objective_size.h}});
     }
-    rl.push_back({render::Op::Hud, static_cast<double>(controls_at.x),
-                  static_cast<double>(controls_at.y), 0.0, 0,
-                  std::string("controls: ") + controls_full});
+
+    const auto text_backing = [&](int x, int y, const SIZE& extent) {
+      skin::hud_text_backing(dc, {x, y, x + extent.cx, y + extent.cy});
+    };
+    if (layout.identity.w > 0) {
+      rl.push_back({render::Op::HouseChip, 0.0, 0.0, 0.0, 0, identity});
+      text_backing(layout.identity.x, layout.identity.y, identity_extent);
+      SetTextColor(dc, RGB(140, 208, 172));
+      TextOutA(dc, layout.identity.x, layout.identity.y, identity.c_str(),
+               static_cast<int>(identity.size()));
+      state.hud_rect_trace.push_back(
+          {"identity",
+           {layout.identity.x, layout.identity.y, identity_extent.cx,
+            identity_extent.cy}});
+    }
+
+    if (controls_at.w > 0) {
+      SetTextColor(dc, RGB(148, 160, 150));
+      if (layout.controls_wrapped) {
+        text_backing(controls_at.x, controls_at.y, controls_a_extent);
+        TextOutA(dc, controls_at.x, controls_at.y, controls_line_a.c_str(),
+                 static_cast<int>(controls_line_a.size()));
+        state.hud_rect_trace.push_back(
+            {"controls",
+             {controls_at.x, controls_at.y, controls_a_extent.cx,
+              controls_a_extent.cy}});
+        text_backing(layout.controls_second.x, layout.controls_second.y,
+                     controls_b_extent);
+        TextOutA(dc, layout.controls_second.x, layout.controls_second.y,
+                 controls_line_b.c_str(),
+                 static_cast<int>(controls_line_b.size()));
+        state.hud_rect_trace.push_back(
+            {"controls-second",
+             {layout.controls_second.x, layout.controls_second.y,
+              controls_b_extent.cx, controls_b_extent.cy}});
+      } else {
+        text_backing(controls_at.x, controls_at.y, controls_extent);
+        TextOutA(dc, controls_at.x, controls_at.y, kControls,
+                 static_cast<int>(sizeof(kControls) - 1));
+        state.hud_rect_trace.push_back(
+            {"controls",
+             {controls_at.x, controls_at.y, controls_extent.cx,
+              controls_extent.cy}});
+      }
+      rl.push_back({render::Op::Hud, static_cast<double>(controls_at.x),
+                    static_cast<double>(controls_at.y), 0.0, 0,
+                    std::string("controls: ") + controls_full});
+    }
+
     if (state.pad.connected) {
       rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "pad:connected"});
       rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "pad-glyph:LS"});
@@ -10191,34 +10268,27 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
 
     const COLORREF art_accent =
         plates_ready ? RGB(120, 214, 168) : RGB(239, 190, 78);
-    if (show_art_chip) {
-      paint_status_chip(dc, art_at.x, art_at.y, state.billboards.status,
-                        art_accent, rl);
-      state.hud_rect_trace.push_back(
-          {"art", {art_at.x, art_at.y, art_size.w, art_size.h}});
+    if (show_art_chip && placed_audio.art.w > 0) {
+      const auto& at = placed_audio.art;
+      paint_status_chip(dc, at.x, at.y, state.billboards.status, art_accent, rl);
+      state.hud_rect_trace.push_back({"art", {at.x, at.y, at.w, at.h}});
     }
-    if (show_mute_chip) {
-      const int mute_y =
-          show_art_chip ? art_at.y + std::max(art_size.h, 20) + 4 : art_at.y;
-      paint_status_chip(dc, art_at.x, mute_y, mute_text, RGB(238, 226, 197),
-                        rl);
-      rl.push_back({render::Op::Hud, static_cast<double>(art_at.x),
-                    static_cast<double>(mute_y), 0.0, 1, "audio:muted"});
-      state.hud_rect_trace.push_back(
-          {"audio-muted", {art_at.x, mute_y, 132, 24}});
+    if (show_mute_chip && placed_audio.mute.w > 0) {
+      const auto& at = placed_audio.mute;
+      paint_status_chip(dc, at.x, at.y, mute_text, RGB(238, 226, 197), rl);
+      rl.push_back({render::Op::Hud, static_cast<double>(at.x),
+                    static_cast<double>(at.y), 0.0, 1, "audio:muted"});
+      state.hud_rect_trace.push_back({"audio-muted", {at.x, at.y, at.w, at.h}});
       if (!show_art_chip)
-        state.hud_rect_trace.push_back(
-            {"art", {art_at.x, mute_y, art_size.w, art_size.h}});
-      paint_audio_mixer_hud(state, dc, art_at.x, mute_y + 28, rl);
-    } else if (state.audio_sink) {
-      paint_audio_mixer_hud(state, dc, art_at.x, art_at.y, rl);
+        state.hud_rect_trace.push_back({"art", {at.x, at.y, at.w, at.h}});
     }
-    if (state.link_lost) {
-      const int lost_y = art_at.y + std::max(art_size.h, 20) +
-                         (show_mute_chip || show_art_chip ? 32 : 0);
-      paint_status_chip(dc, art_at.x, lost_y, "extract uncommitted",
-                        RGB(255, 80, 70), rl);
-    }
+    if (state.audio_sink && placed_audio.mixer.w > 0)
+      paint_audio_mixer_hud(state, dc, placed_audio.mixer.x, placed_audio.mixer.y,
+                           mixer_lines, mixer_plan, rl);
+    if (state.link_lost && placed_audio.lost.w > 0)
+      paint_status_chip(dc, placed_audio.lost.x, placed_audio.lost.y,
+                        "extract uncommitted", RGB(255, 80, 70), rl);
+
   }
 
   // TASK-0145: relic-recovery toast — an authoritative crypt transition is
@@ -13322,11 +13392,11 @@ int scenario_hud_pane_readability() {
 
   const char* kClosedRegions[] = {"identity", "controls",     "objective",
                                   "art",      "minimap",      "route-card",
-                                  "quickbar-strip",
+                                  "quickbar-strip", "audio-mixer",
                                   "orb-life", "orb-resource"};
   const char* kOpenRegions[] = {"identity", "controls",     "objective",
                                 "art",      "minimap",      "quickbar-strip",
-                                "orb-life", "orb-resource"};
+                                "audio-mixer", "orb-life", "orb-resource"};
   const char* kPaneLines[] = {"pane-title",         "pane-stats",
                               "pane-stats-combat",  "pane-seat",
                               "pane-banked",        "pane-progression",
@@ -13824,6 +13894,57 @@ int scenario_hud_pane_readability() {
       server->stop();
       delete server;
     }
+  }
+  // Regression: both real panes open at960 left no legal fixed-row slot.
+  // Include the mixer itself, preserve mute, and inspect the actual PNG/trace.
+  for (const bool muted : {false, true}) {
+    ClientState dual;
+    scenario_begin(dual);
+    scenario_follow_camera(dual);
+    toggle_gear_overlay(dual);
+    dual.character_pane = true;
+    dual.audio_sink->set_muted(muted);
+    const std::string tag = muted ? "dual-muted" : "dual-unmuted";
+    scenario_check(reference_present(dual, 960, 600,
+        dir + "\\hud-pane-readability-" + tag + "-960x600.png"),
+        ("hud-pane-readability: " + tag + " capture written").c_str());
+    scenario_check(!render_list_has(dual, render::Op::Hud, "hud-layout:unplaced"),
+                   "hud-pane-readability: dual-pane HUD completely placed");
+    std::vector<std::pair<std::string, HudRect>> regions;
+    for (const char* label : {"pane-frame", "character-pane-frame", "minimap",
+                              "quickbar-strip", "orb-life", "orb-resource",
+                              "identity", "objective", "controls", "audio-mixer"}) {
+      const auto* at = trace_find(dual, label);
+      scenario_check(at != nullptr, (tag + ": " + label + " painted").c_str());
+      if (at) regions.push_back({label, *at});
+    }
+    if (const auto* at = trace_find(dual, "controls-second"))
+      regions.push_back({"controls-second", *at});
+    if (const auto* at = trace_find(dual, "audio-muted"))
+      regions.push_back({"audio-muted", *at});
+    scenario_check((trace_find(dual, "audio-muted") != nullptr) == muted,
+                   "hud-pane-readability: dual-pane mute remains truthful");
+    for (std::size_t a = 0; a < regions.size(); ++a) {
+      const auto& r = regions[a].second;
+      scenario_check(r.x >= 0 && r.y >= 0 && r.x + r.w <= 960 && r.y + r.h <= 600,
+                     (tag + ": " + regions[a].first + " inside viewport").c_str());
+      for (std::size_t b = a + 1; b < regions.size(); ++b)
+        scenario_check(!hud_rects_overlap(r, regions[b].second),
+            (tag + ": " + regions[a].first + " clears " + regions[b].first).c_str());
+    }
+    const auto* xp_caption = trace_find(dual, "xp-caption");
+    const auto* sheet = trace_find(dual, "character-pane-frame");
+    const auto* gear = trace_find(dual, "pane-frame");
+    scenario_check(xp_caption && sheet && gear &&
+                       !hud_rects_overlap(*xp_caption, *sheet) &&
+                       !hud_rects_overlap(*xp_caption, *gear),
+                   (tag + ": experience caption clears both panes").c_str());
+    const auto* xp = trace_find(dual, "xp-strip");
+    for (const char* label : {"audio-mixer", "audio-muted", "controls", "controls-second"})
+      if (const auto* at = trace_find(dual, label))
+        scenario_check(xp && !hud_rects_overlap(*xp, *at),
+                       (tag + ": " + label + " clears experience readout").c_str());
+    dual.audio_sink->set_muted(true);
   }
   return 0;
 }
@@ -18913,6 +19034,10 @@ int scenario_raster_world() {
 void capture_raster_walk(const RasterDirectionalClip& clip, const std::string& dir) {
   ClientState state;
   scenario_begin(state);
+  // Finish real route-entry presentation before relocating the review actor.
+  // Otherwise its pending entry event rebuilds spawn-relative dressing on the
+  // first movement tick and changes the supposedly fixed review scene.
+  ingest_events(state, RECT{0, 0, 960, 600});
   // Select a clear, contained review corridor. The ordinary SW spawn path
   // reaches the solid shrine before a complete sampled cycle can be seen.
   // Keep all scenery/collision intact and validate the whole intended route.
@@ -18947,10 +19072,12 @@ void capture_raster_walk(const RasterDirectionalClip& clip, const std::string& d
   std::unordered_set<std::string> walk_poses;
   std::string final_pose;
   int captured = 0;
+  int first_travel_frame = -1, first_walk_frame = -1;
   // Exercise production input consumption at 20 Hz and its separate 15 ms
   // presentation pump. The last 600 ms release both movement keys, exposing
   // smoothing tails and the transition back to the actual idle sprite.
   for (int frame = 0; frame < 160; ++frame) {
+    const auto previous_position = state.world.player.position;
     state.d = frame < 120 && clip.dx > 0;
     state.a = frame < 120 && clip.dx < 0;
     state.s = frame < 120 && clip.dy > 0;
@@ -18961,6 +19088,10 @@ void capture_raster_walk(const RasterDirectionalClip& clip, const std::string& d
       fixed_game_tick(state, bounds);
     }
     sync_world(state);
+    if (first_travel_frame < 0 &&
+        (state.world.player.position.x != previous_position.x ||
+         state.world.player.position.y != previous_position.y))
+      first_travel_frame = frame;
     advance_actor_motion(state, 15.0);
     const double keep = std::pow(0.8, 15.0 / 50.0);
     state.camera.x += (state.world.player.position.x - state.camera.x) * (1.0 - keep);
@@ -18981,7 +19112,10 @@ void capture_raster_walk(const RasterDirectionalClip& clip, const std::string& d
     for (const auto& item : state.render_list) {
       if (item.label.rfind("raster:pose:", 0) != 0) continue;
       final_pose = item.label.substr(std::strlen("raster:pose:"));
-      if (final_pose.rfind("hero_walk", 0) == 0) walk_poses.insert(final_pose);
+      if (final_pose.rfind("hero_walk", 0) == 0) {
+        walk_poses.insert(final_pose);
+        if (first_walk_frame < 0) first_walk_frame = frame;
+      }
     }
     const auto& motion = state.motions.at("player");
     trace << (frame + 1) * 15 << ',' << state.world.player.position.x << ','
@@ -18999,6 +19133,8 @@ void capture_raster_walk(const RasterDirectionalClip& clip, const std::string& d
   const std::string poses_label = std::string("raster-motion: actual ") +
       clip.direction + " travel paints every authored gait phase";
   scenario_check(all_frames, poses_label.c_str());
+  scenario_check(first_travel_frame >= 0 && first_walk_frame == first_travel_frame,
+                 "raster-motion: walking begins on the first confirmed movement paint");
   scenario_check(state.motions.at("player").moving < 0.20 &&
                      final_pose == std::string("hero_") + clip.direction,
                  "raster-motion: released input settles into the idle frame");
@@ -19009,6 +19145,141 @@ int scenario_raster_motion() {
   scenario_check(!dir.empty(), "raster-motion: capture root accepted");
   if (dir.empty()) return scenario_failures;
   for (const auto& clip : kHeroWalkClips) capture_raster_walk(clip, dir);
+  return scenario_failures;
+}
+
+int scenario_raider_motion() {
+  const std::string dir = art_wave_capture_dir();
+  scenario_check(!dir.empty(), "raider-motion: capture root accepted");
+  if (dir.empty()) return scenario_failures;
+  // Asset-review fixture only: Simulation::enemy_turn faces/attacks but does
+  // not pursue, and MoveIntent only addresses the scion. Preserve the original
+  // failed raider-motion-sw.csv/PNGs by writing separate scripted filenames.
+  std::printf("    raider-motion: SCRIPTED asset-review positions; this does not "
+              "verify enemy AI pursuit or navigation.\n");
+  ClientState state;
+  scenario_begin(state);
+  ingest_events(state, RECT{0, 0, 960, 600});
+  auto* player = state.simulation->actor(state.simulation->scion().actor_id);
+  scenario_check(player != nullptr, "raider-motion: authoritative player exists");
+  if (!player) return scenario_failures;
+  verdigris::Vec2 origin{};
+  bool corridor = false;
+  for (const verdigris::Vec2 candidate : {verdigris::Vec2{650, -300},
+                                          {300, 400}, {100, -700}, {700, 100}}) {
+    const verdigris::Vec2 destination{candidate.x - 400, candidate.y + 400};
+    if (!scenery_blocks_segment(state, candidate, destination)) {
+      origin = candidate;
+      player->position = destination;
+      corridor = true;
+      break;
+    }
+  }
+  scenario_check(corridor,
+                 "raider-motion: scripted review corridor clears unchanged scenery");
+  if (!corridor) return scenario_failures;
+  const std::string id = state.simulation->spawn_monster(origin, 1, false);
+  const auto* spawned = state.simulation->actor(id);
+  scenario_check(spawned != nullptr, "raider-motion: review raider exists");
+  if (!spawned) return scenario_failures;
+  // Match core.cpp's private movement_delta(-1,1,speed) and the existing
+  // movement_hits_scenery seam: shared 50ms cadence, Manhattan diagonal split.
+  // No core helper is exported, so this fixed SW fixture derives its two
+  // components from the public movement_step_per_tick actor-speed contract.
+  const int step = verdigris::movement_step_per_tick(spawned->stats.move_speed);
+  const verdigris::Vec2 delta{-step / 2, step / 2};
+  constexpr int kScriptedTicks = 36;
+  const verdigris::Vec2 stop{origin.x + delta.x * kScriptedTicks,
+                            origin.y + delta.y * kScriptedTicks};
+  scenario_check(delta.x < 0 && delta.y > 0 &&
+                     !scenery_blocks_segment(state, origin, stop),
+                 "raider-motion: actor-speed script has a clear complete path");
+  if (delta.x >= 0 || delta.y <= 0 || scenery_blocks_segment(state, origin, stop))
+    return scenario_failures;
+  scenario_follow_camera(state);
+  state.camera.x = origin.x - 200;
+  state.camera.y = origin.y + 200;
+  advance_actor_motion(state, 0.0);
+  const RECT bounds{0, 0, 960, 600};
+  std::ofstream trace(dir + "\\raider-scripted-motion-sw.csv");
+  scenario_check(trace.good(), "raider-motion: scripted asset-review trace opened");
+  if (!trace.good()) return scenario_failures;
+  trace << "mode,time_ms,x,y,moving,phase,pose,captured_frame\n";
+  const std::string prefix = "raster:monster-pose:" + id + ":";
+  std::unordered_set<std::string> walked, captured_poses;
+  bool idle_after_walk = false;
+  std::string pose;
+  int captured = 0, scripted_ticks = 0;
+  // 1.8s of collision-checked actor positions at the real 20Hz tick cadence,
+  // then 600ms stationary. Animation state is never assigned by this fixture:
+  // sync_world, advance_actor_motion and production painting infer each pose.
+  for (int frame = 0; frame < 160; ++frame) {
+    state.tick_accum_ms += 15.0;
+    while (state.tick_accum_ms >= verdigris::kSimulationTickMs) {
+      state.tick_accum_ms -= verdigris::kSimulationTickMs;
+      fixed_game_tick(state, bounds);
+      auto* actor = state.simulation->actor(id);
+      scenario_check(actor && actor->alive,
+                     "raider-motion: scripted actor survives the fixed tick");
+      if (!actor || !actor->alive) return scenario_failures;
+      if (scripted_ticks < kScriptedTicks) {
+        const verdigris::Vec2 next{actor->position.x + delta.x,
+                                  actor->position.y + delta.y};
+        const bool blocked = scenery_blocks_segment(state, actor->position, next);
+        scenario_check(!blocked, "raider-motion: scripted step respects scenery collision");
+        if (blocked) return scenario_failures;
+        actor->position = next;
+        ++scripted_ticks;
+      }
+    }
+    sync_world(state);
+    advance_actor_motion(state, 15.0);
+    int capture = -1;
+    if (frame % 5 == 4) {
+      capture = captured++;
+      char filename[80]{};
+      std::snprintf(filename, sizeof(filename), "\\raider-scripted-motion-sw-%03d.png", capture);
+      scenario_check(reference_present(state, 960, 600, dir + filename),
+                     "raider-motion: production render of scripted asset-review frame captured");
+    } else {
+      scenario_present(state);
+    }
+    pose.clear();
+    for (const auto& item : state.render_list) {
+      if (item.label.rfind(prefix, 0) != 0) continue;
+      pose = item.label.substr(prefix.size());
+      if (pose.rfind("raider_walk", 0) == 0) {
+        walked.insert(pose);
+        if (capture >= 0) captured_poses.insert(pose);
+      }
+      if (!walked.empty() && pose == "raider_sw") idle_after_walk = true;
+    }
+    const auto* actor = state.simulation->actor(id);
+    const auto found = state.motions.find(id);
+    if (!actor || found == state.motions.end()) break;
+    trace << "scripted-asset-review," << (frame + 1) * 15 << ','
+          << actor->position.x << ',' << actor->position.y << ','
+          << found->second.moving << ',' << found->second.walk_phase
+          << ',' << pose << ',' << capture << '\n';
+  }
+  const auto* actor = state.simulation->actor(id);
+  const auto motion = state.motions.find(id);
+  scenario_check(actor && scripted_ticks == kScriptedTicks &&
+                     actor->position.x == stop.x && actor->position.y == stop.y &&
+                     origin.x - stop.x > kTileUnits && stop.y - origin.y > kTileUnits,
+                 "raider-motion: scripted actor-speed positions complete southwest travel");
+  bool all_frames = walked.size() == 8 && captured_poses.size() == 8;
+  for (int frame = 0; frame < 8; ++frame) {
+    const std::string name = "raider_walk" + std::to_string(frame) + "_sw";
+    all_frames &= walked.count(name) > 0 && captured_poses.count(name) > 0;
+  }
+  scenario_check(all_frames,
+                 "raider-motion: scripted travel renders and captures all eight authored poses");
+  scenario_check(idle_after_walk && pose == "raider_sw" && motion != state.motions.end() &&
+                     motion->second.moving < 0.20,
+                 "raider-motion: stopped scripted positions settle through production smoothing to idle");
+  scenario_check(state.world.player.life > 0,
+                 "raider-motion: the player remains alive through the motion review");
   return scenario_failures;
 }
 
@@ -19035,6 +19306,10 @@ int scenario_frame_budget() {
   if (!bitmap) { DeleteDC(dc); return scenario_failures; }
   HGDIOBJ old = SelectObject(dc, bitmap);
   RECT bounds{0, 0, width, height};
+  // Complete scene entry before measuring steady rendering and first travel.
+  // A pending entry event regenerates spawn-relative dressing; that scene-load
+  // work must not be mislabeled as newly revealed tiles during walking.
+  ingest_events(state, bounds);
   SYSTEM_INFO sysinfo{};
   GetNativeSystemInfo(&sysinfo);
   std::printf("    frame-budget machine: display %dx%d | %u logical CPUs | "
@@ -19061,6 +19336,65 @@ int scenario_frame_budget() {
                  "frame-budget: fullscreen frame stays under 40 ms");
   scenario_check(state.last_paint_ms > 0.0,
                  "frame-budget: unnamed hardware cannot skip the paint fields");
+  // A warm stationary floor cannot expose newly revealed material-tile work.
+  // Drive real held input at the fixed simulation cadence and pan the camera
+  // through an intact clear corridor, timing the complete production paint.
+  auto* moving_player = state.simulation->actor(state.simulation->scion().actor_id);
+  bool pan_corridor = false;
+  if (moving_player) {
+    for (const verdigris::Vec2 origin : {verdigris::Vec2{0, -600}, {600, 0},
+                                        {0, 0}, {-600, 0}}) {
+      if (!scenery_blocks_segment(state, origin, {origin.x - 160, origin.y - 160})) {
+        moving_player->position = origin;
+        pan_corridor = true;
+        break;
+      }
+    }
+  }
+  scenario_check(pan_corridor, "frame-budget: movement corridor clears unchanged scenery");
+  double pan_avg_ms = 0.0, pan_peak_ms = 0.0;
+  if (pan_corridor) {
+    scenario_follow_camera(state);
+    advance_actor_motion(state, 0.0);
+    paint_scene(state, dc, bounds);
+    const auto pan_start = state.world.player.position;
+    const auto pan_layout_key = ground_layout(state.world.route_id, state.world.theme,
+                                               state.scenery).key;
+    bool fixed_layout = true;
+    state.a = true;
+    state.w = true;
+    for (int i = 0; i < kFrames; ++i) {
+      fixed_game_tick(state, bounds);
+      sync_world(state);
+      advance_actor_motion(state, verdigris::kSimulationTickMs);
+      state.camera.x = state.world.player.position.x;
+      state.camera.y = state.world.player.position.y;
+      fixed_layout &= ground_layout(state.world.route_id, state.world.theme,
+                                    state.scenery).key == pan_layout_key;
+      const auto tile_builds = raster_ground::detail::cache().builds;
+      QueryPerformanceCounter(&begin);
+      paint_scene(state, dc, bounds);
+      QueryPerformanceCounter(&end);
+      const double ms = 1000.0 * static_cast<double>(end.QuadPart - begin.QuadPart) /
+                        static_cast<double>(freq.QuadPart);
+      pan_avg_ms += ms / kFrames;
+      pan_peak_ms = std::max(pan_peak_ms, ms);
+      std::printf("    frame-budget moving[%02d]: %.1f ms | floor %.1f | world %.1f | "
+                  "hud %.1f | new ground tiles %llu\n", i, ms, state.paint_ms_floor,
+                  state.paint_ms_world, state.paint_ms_hud,
+                  static_cast<unsigned long long>(raster_ground::detail::cache().builds - tile_builds));
+    }
+    state.a = false;
+    state.w = false;
+    scenario_check(fixed_layout, "frame-budget: movement preserves the loaded scenery layout");
+    scenario_check(pan_start.x - state.world.player.position.x >= kTileUnits * 0.75 &&
+                       pan_start.y - state.world.player.position.y >= kTileUnits * 0.75,
+                   "frame-budget: measured paints follow actual authoritative travel");
+    std::printf("    frame-budget moving: %.1f ms average, %.1f ms peak over %d frames\n",
+                pan_avg_ms, pan_peak_ms, kFrames);
+    scenario_check(pan_avg_ms < 40.0,
+                   "frame-budget: moving fullscreen frame stays under 40 ms");
+  }
   const std::string dir = art_wave_capture_dir();
   if (dir.empty()) {
     scenario_check(false, "frame-budget: capture root rejected before any write");
@@ -19078,11 +19412,13 @@ int scenario_frame_budget() {
                  "machine_display=%dx%d\nlogical_cpus=%u\nos=Win32\n"
                  "present=GDI\navg_ms=%.3f\nframes=%d\nwidth=%d\nheight=%d\n"
                  "floor_ms=%.3f\nworld_ms=%.3f\nhud_ms=%.3f\nupload_ms=%.3f\n"
-                 "total_ms=%.3f\nnet=n/a\n",
+                 "total_ms=%.3f\nnet=n/a\n"
+                 "moving_avg_ms=%.3f\nmoving_peak_ms=%.3f\nmoving_frames=%d\n",
                  GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN),
                  static_cast<unsigned>(sysinfo.dwNumberOfProcessors), avg_ms,
                  kFrames, width, height, state.paint_ms_floor, state.paint_ms_world,
-                 state.paint_ms_hud, state.paint_ms_upload, state.last_paint_ms);
+                 state.paint_ms_hud, state.paint_ms_upload, state.last_paint_ms,
+                 pan_avg_ms, pan_peak_ms, kFrames);
     std::fclose(out);
   }
   SelectObject(dc, old);
@@ -19107,6 +19443,135 @@ int scenario_frame_budget() {
   return scenario_failures;
 }
 
+// Production regression for the top-right mixer clipping and route overflow.
+// PNGs and the geometry CSV come from the same paint_scene path as the window.
+int scenario_hud_chrome() {
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "hud-chrome: capture root rejected before any write");
+    return scenario_failures;
+  }
+  FILE* report = nullptr;
+  fopen_s(&report, (dir + "\\hud-chrome-bounds.csv").c_str(), "wb");
+  scenario_check(report != nullptr, "hud-chrome: production bounds report opened");
+  if (report)
+    std::fprintf(report, "width,height,muted,region,x,y,w,h,contained\n");
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  state.debug_overlay = false;
+  HDC measure_dc = CreateCompatibleDC(nullptr);
+  scenario_check(measure_dc != nullptr, "hud-chrome: text measurement DC created");
+  if (!measure_dc) {
+    if (report) std::fclose(report);
+    return scenario_failures;
+  }
+  const auto trace_find = [&](const char* label) -> const HudRect* {
+    for (const auto& entry : state.hud_rect_trace)
+      if (entry.first == label) return &entry.second;
+    return nullptr;
+  };
+  for (const auto dimensions : {std::pair{3440, 1440}, std::pair{1366, 768},
+                                 std::pair{960, 600}}) {
+    const auto [width, height] = dimensions;
+    const int s = hud_scale(height);
+    for (const bool muted : {false, true}) {
+      state.audio_sink->set_muted(muted);
+      const std::string stem = "hud-chrome-" + std::to_string(width) + "x" +
+          std::to_string(height) + (muted ? "-muted" : "-unmuted");
+      scenario_check(reference_present(state, width, height, dir + "\\" + stem + ".png"),
+                     (stem + ": production capture written").c_str());
+      scenario_check(!render_list_has(state, render::Op::Hud, "hud-layout:unplaced"),
+                     (stem + ": every requested HUD region was placed").c_str());
+      std::vector<std::pair<std::string, HudRect>> regions;
+      for (const char* label : {"minimap", "route-card", "quickbar-strip",
+                                "orb-life", "orb-resource", "identity",
+                                "objective", "controls", "audio-mixer"}) {
+        const auto* rect = trace_find(label);
+        scenario_check(rect != nullptr, (stem + ": " + label + " painted").c_str());
+        if (rect) regions.push_back({label, *rect});
+      }
+      if (const auto* second = trace_find("controls-second"))
+        regions.push_back({"controls-second", *second});
+      const auto* mute = trace_find("audio-muted");
+      scenario_check((mute != nullptr) == muted,
+                     (stem + ": mute chip follows actual mute state").c_str());
+      if (mute) regions.push_back({"audio-muted", *mute});
+      // "art" is an alias of the mute chip when no art-status chip is visible.
+      // A real art-status chip is still included if the source plates failed.
+      const auto* art = trace_find("art");
+      if (art && (!mute || art->x != mute->x || art->y != mute->y))
+        regions.push_back({"art", *art});
+      for (const auto& [name, rect] : regions) {
+        const bool contained = rect.w > 0 && rect.h > 0 && rect.x >= 0 && rect.y >= 0 &&
+            rect.x + rect.w <= width && rect.y + rect.h <= height;
+        scenario_check(contained, (stem + ": " + name + " inside viewport").c_str());
+        if (report)
+          std::fprintf(report, "%d,%d,%d,%s,%d,%d,%d,%d,%d\n", width, height,
+                       muted ? 1 : 0, name.c_str(), rect.x, rect.y, rect.w, rect.h,
+                       contained ? 1 : 0);
+      }
+      for (std::size_t a = 0; a < regions.size(); ++a)
+        for (std::size_t b = a + 1; b < regions.size(); ++b)
+          scenario_check(!hud_rects_overlap(regions[a].second, regions[b].second),
+              (stem + ": " + regions[a].first + " clears " + regions[b].first).c_str());
+
+      const auto mixer_lines = audio_mixer_lines(state);
+      const auto mixer_plan = skin::measure_hud_card(measure_dc, 180 * s, mixer_lines);
+      const auto* mixer = trace_find("audio-mixer");
+      scenario_check(mixer && mixer_plan.count == 5 && mixer_plan.bounds.w == mixer->w &&
+                         mixer_plan.bounds.h == mixer->h,
+                     (stem + ": mixer trace matches measured production text").c_str());
+      const auto& world = state.world;
+      const std::string risk = verdigris::client::ui::route_risk_fact(
+          world.expedition_phase == ExpeditionPhaseView::SlayWardens,
+          world.expedition_phase == ExpeditionPhaseView::ExtractCarriedValue);
+      const std::string ret = std::string("return ") +
+          (world.has_extraction ? extraction_action_hint(is_remote(state)) : "town");
+      const skin::HudTextLines route_lines{
+          {verdigris::client::ui::route_owner_title(world.route_id), skin::kInk},
+          {verdigris::client::ui::route_theme_label(world.theme), skin::kInkDim},
+          {verdigris::client::ui::route_risk_owner_line(risk), skin::kInkDim},
+          {verdigris::client::ui::route_return_owner_line(ret), skin::kInkDim}};
+      const auto* route = trace_find("route-card");
+      const auto route_plan = skin::measure_hud_card(measure_dc, route ? route->w : 0, route_lines);
+      scenario_check(route && route_plan.count == 4 && route_plan.bounds.h <= route->h,
+                     (stem + ": every route and return row fits without shrinking").c_str());
+      for (const auto* plan : {&mixer_plan, &route_plan})
+        for (std::size_t line = 0; line < plan->count; ++line)
+          scenario_check(hud_chrome_layout::contains(plan->bounds, plan->lines[line]),
+                         (stem + ": measured row is inside its text card").c_str());
+      LOGFONTA body{}, caption{};
+      GetObjectA(skin::font_body(), sizeof(body), &body);
+      GetObjectA(skin::font_small(), sizeof(caption), &caption);
+      scenario_check(std::strcmp(body.lfFaceName, "Segoe UI") == 0 && body.lfHeight == -15 * s &&
+                         std::strcmp(caption.lfFaceName, "Segoe UI") == 0 && caption.lfHeight == -12 * s,
+                     (stem + ": full HUD typography uses the authored Segoe sizes").c_str());
+      HGDIOBJ old_font = SelectObject(measure_dc, skin::font_body());
+      bool quickbar_fit = true;
+      for (const auto& slot : kQuickbarSlots) {
+        SIZE key{}, name{};
+        GetTextExtentPoint32A(measure_dc, slot.key_label,
+                             static_cast<int>(std::strlen(slot.key_label)), &key);
+        GetTextExtentPoint32A(measure_dc, slot.name,
+                             static_cast<int>(std::strlen(slot.name)), &name);
+        // Production has a6s left inset; leave at least2s inside the border.
+        quickbar_fit = quickbar_fit && key.cx + 6 * s <= 56 * s && name.cx + 6 * s <= 56 * s &&
+            key.cy + 4 * s <= 26 * s && name.cy + 26 * s <= 52 * s;
+      }
+      SelectObject(measure_dc, old_font);
+      scenario_check(quickbar_fit, (stem + ": action labels fit the unchanged slots").c_str());
+      scenario_check(render_list_has(state, render::Op::Hud, "audio:mixer") && render_list_has(state, render::Op::Hud, "route-return:"),
+                     (stem + ": original owner actions remain in the production HUD").c_str());
+    }
+  }
+  state.audio_sink->set_muted(true);
+  DeleteDC(measure_dc);
+  if (report) std::fclose(report);
+  return scenario_failures;
+}
+
+
 int run_scenarios(const std::string& which) {
   struct Entry {
     const char* name;
@@ -19117,9 +19582,11 @@ int run_scenarios(const std::string& which) {
       {"first-fight", scenario_first_fight},
       {"combat-audio", scenario_combat_audio},
       {"hud-scale-floor", scenario_hud_scale_floor},
+      {"hud-chrome", scenario_hud_chrome},
       {"xp-meter", scenario_xp_meter},
       {"raster-world", scenario_raster_world},
       {"raster-motion", scenario_raster_motion},
+      {"raider-motion", scenario_raider_motion},
       {"loot-to-bank", scenario_loot_to_bank},
       {"telegraph-dodge", scenario_telegraph_dodge},
       {"combat-juice", scenario_combat_juice},

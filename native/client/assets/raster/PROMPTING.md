@@ -25,6 +25,8 @@ control method, not a universal limitation of Image 2.5.
 | Referenced SE walk as four separate images | Opposite contact repeated the same leg in three candidates; a focused correction naming screen-left/right foot positions finally changed the silhouette | Use visible pose differences to resolve anatomical ambiguity; retain the identity reference and reject repeated phases |
 | Four reconstructed SE walk candidates at a shared pivot | Distinct contact/passing poses survive at native size; small color/body shifts remain | Keep preview acceptance separate from actual game motion acceptance |
 | Separate back-left wight and artisan edits | Missing direction slots filled; artisan brightness and staff handedness still need review | Fix the direction with a targeted reference edit, then review other properties across the full set |
+| NE overhead contact edited from a prior pose plus the original identity | The corrected left forearm supported an attached axe toward upper-right; the next follow-through attempt switched arms again | Accept individual transitions only after reviewing the actual held weapon; a successful reference edit does not validate the remaining cycle |
+| Gray-matte cleanup on a failed follow-through source | Pale wrap, fist and forearm pixels were also removed | Compare reconstructed anatomy with the original source; reject cleanup that erases foreground colors and request actual alpha instead of accepting a clean-looking silhouette |
 
 ## Workflow
 
@@ -142,6 +144,12 @@ Do not paste every failure into every prompt. Keep constraints short and
 target the current failure; repeated negative descriptions can contaminate
 the requested appearance. Save the actual prompt, references, output path,
 observed checks, acceptance state, and conversion provenance for each attempt.
+
+These NE observations are local built-in-tool results, not a claim that a
+particular Image 2.5 variant was selected. The source and conversion can fail
+independently: the rejected follow-through switched arms before cleanup, and
+its reconstructed foreground then suffered additional matte damage. Repairing
+alpha alone would not make that pose acceptable.
 
 ## Adapting the published combat workflow
 

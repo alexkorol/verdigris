@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "generationTool": "built-in image_gen",
+  "selectedModel": "Not exposed by tool",
+  "modelIdentityReturned": false,
+  "source": "native/client/assets/raster/source/raider-walk-sw-d2poses-v1.png",
+  "sourceSha256": "332bb266391052e28381cd8367c96849b0c48c663d341df4b6639e716c017f1c",
+  "prompt": "native/client/assets/raster/prompts/raider-walk-sw-d2poses-v1.txt",
+  "promptSha256": "966130d6de853b89db7dcc6b3c5f0b577068d71bd6787cafabfba8821cc427cf",
+  "generatedOriginal": "C:/Users/Alex/.codex/generated_images/01a0896f-29de-7452-bb4b-6fb64351c1eb/exec-bb137066-bc6b-40d1-9ca8-7022f1e04011.png",
+  "recipe": {
+    "directProjectExample": "native/client/assets/raster/prompts/actors_hero-walk-ne-d2poses-v2.txt",
+    "adaptation": "Reused the locally improved NE v2 edit-target prompt structure, changing appearance to the accepted raider and view to SW. Ordered motion sheet is the edit target first; original raider is appearance only second. The exact prompt is preserved unchanged, including its mistaken request for empty hands.",
+    "externalContext": [
+      {
+        "url": "https://12ui.com/gpt-image-2.5-vs-2",
+        "relevance": "Separate reference jobs in published UI examples, as documented in RESEARCH.md. This does not establish walking reliability."
+      },
+      {
+        "url": "https://www.flixly.ai/blog/stop-motion-chatgpt-images-2-5",
+        "relevance": "Edit target plus original appearance reference in a published clay-fox workflow; not evidence of adult isometric sprite gait transfer."
+      }
+    ],
+    "claimBoundary": "D2 pose-target transfer and this raider result are local project adaptations and observations. No external creator is claimed to have demonstrated this exact workflow."
+  },
+  "references": [
+    {
+      "order": 1,
+      "path": "C:/Users/Alex/Documents/ChatGPT/diablo-reference-cache/motion-study-20260909/body-corrected-cof/sw-ordered-4x2-3x.png",
+      "sha256": "228263b32535940dd7abffb382b6108ed02eb600c2e0f1e754ab51987512c567",
+      "role": "EDIT TARGET: eight chronological body and limb poses, contacts, camera and layout. Replace character appearance and remove labels/background.",
+      "inspectedBeforeCall": true,
+      "rawReferenceCopiedIntoRepository": false
+    },
+    {
+      "order": 2,
+      "path": "native/client/assets/raster/runtime/raider_sw.png",
+      "sha256": "13e515e678d001de0e764729048986d1d459c9df2de9c2b52d2d1c8538b3daf4",
+      "role": "APPEARANCE AND PIXEL STYLE ONLY. Dark tied hair, pale bone mask, charcoal linen, dark trousers, leather, brown boots and ochre sash. Standing pose excluded.",
+      "inspectedBeforeCall": true,
+      "lateReviewCorrection": "Native and enlarged idle comparison reveals an embedded axe in the screen-left hand. The exact generation prompt incorrectly requested empty hands, so the output loses this equipment and cannot be accepted as a continuous idle-to-walk identity."
+    }
+  ],
+  "observedOutput": {
+    "dimensions": [1575, 999],
+    "mode": "RGB",
+    "alpha": "Opaque drawn checker background. The generation request for actual transparency failed.",
+    "order": "Row-major, four columns by two rows, frames 0 through 7",
+    "facing": "All eight figures face lower-left with the mask visible, consistent with SW.",
+    "phaseReview": [
+      "F0: narrow legs, foreground boot down and other leg behind.",
+      "F1: close to F0; arm and knee positions vary, but this remains a small adjacent phase change.",
+      "F2: bent passing leg; boots begin to separate.",
+      "F3: visibly opens both legs on the way to the wider stance.",
+      "F4: widest stance, foreground leg extends toward screen-left.",
+      "F5: remains wide with changed knee and boot heights.",
+      "F6: legs narrow toward the passing configuration.",
+      "F7: closes toward F0; retains a small rightward head and body offset at the loop."
+    ],
+    "phaseClaimLimit": "Broad ordered opening and closing progression is visible. Unique hashes and this static phase audit do not certify anatomical support continuity or eight equally useful animation phases.",
+    "identityReview": "Mask, dark hair, charcoal shoulders and ochre sash remain recognizable. Walking trousers are warmer brown than the idle. Hands are empty despite the idle axe.",
+    "acceptance": "Candidate only; not promoted because equipment continuity fails."
+  },
+  "conversion": {
+    "engine": "Actual Pixel Respecter through existing native/tools/raster/import_assets.py",
+    "manifest": "native/tools/raster/raider-walk-sw-candidate.json",
+    "manifestSha256": "56fa4ea66ba430f9a3e9b20bebbc9219c160a40d140ffc1a5a9872e7eeff7e0d",
+    "report": "native/tools/raster/raider-walk-sw-candidates/raider-walk-sw-candidate.provenance.json",
+    "reportSha256": "27f04633614d03a922fdc17da953d8961cddeb410501cf58338919eb21dac6e5",
+    "review": "native/tools/raster/raider-walk-sw-candidates/acceptance-review.json",
+    "geometry": "Cell size 6, shared source origin [197,480], column stride 406 and row stride 435. One shared scale/pivot rule, with original phase offsets retained. No independent frame fitting or centering.",
+    "cleanup": "Border-connected checker removal plus one visually inspected enclosed F2 boot-gap window [992,428,1002,437]. No painted costume or pose correction.",
+    "nativeOutput": "Eight 80x96 RGBA PNGs, binary alpha, exactly 32 visible colors across the complete cycle, visible body height 52 to 56 pixels; idle body 57 pixels.",
+    "preservedFirstConversion": "native/tools/raster/raider-walk-sw-candidates/equal-cell-origins-v1"
+  },
+  "ownership": "Raider SW source, prompt/provenance, candidate manifest, candidate outputs and previews only. No runtime, shared order, equipment, main, header or shared importer changes. No raw D2 art copied into the repository. No further image call in this milestone."
+}

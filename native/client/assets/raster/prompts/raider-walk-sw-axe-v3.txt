@@ -1,0 +1,5 @@
+Edit Image 1, the eight-frame raider walk sheet. Change ONLY the eight axe heads to match the broad curved bronze axe blade in Image 2. The current little square heads are too small: make each blade about 1.7 times its current height and 1.5 times its current width, with Image 2's broad rounded cutting edge and bronze color. Keep the existing handle lengths, hand grips and axe-bearing anatomical right hand unchanged.
+
+Image 2 is the original raider's axe-shape and appearance reference ONLY. Preserve every body pixel arrangement and all eight walking poses from Image 1: same face, hair, clothing, torn knees, boots, camera, scale, locations and chronological order. Preserve the same gradual leg opening and closing and free opposite hand. Do not copy the idle stance.
+
+Return the same four-column by two-row walking sheet, with complete axe silhouettes clear of the cell edges. Keep deliberate crisp pixel clusters and use actual transparent alpha with no background pattern, labels or grid.

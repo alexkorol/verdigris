@@ -1,0 +1,285 @@
+{
+  "scopes": [
+    {
+      "kind": "hair loop background",
+      "frame": 0,
+      "box": [
+        205,
+        138,
+        240,
+        220
+      ],
+      "retained_background_pixels": 21
+    },
+    {
+      "kind": "hair loop background",
+      "frame": 1,
+      "box": [
+        611,
+        138,
+        646,
+        220
+      ],
+      "retained_background_pixels": 34
+    },
+    {
+      "kind": "hair loop background",
+      "frame": 2,
+      "box": [
+        1017,
+        138,
+        1052,
+        220
+      ],
+      "retained_background_pixels": 36
+    },
+    {
+      "kind": "hair loop background",
+      "frame": 3,
+      "box": [
+        1423,
+        138,
+        1458,
+        220
+      ],
+      "retained_background_pixels": 38
+    },
+    {
+      "kind": "hair loop background",
+      "frame": 4,
+      "box": [
+        205,
+        573,
+        240,
+        655
+      ],
+      "retained_background_pixels": 22
+    },
+    {
+      "kind": "hair loop background",
+      "frame": 5,
+      "box": [
+        611,
+        573,
+        646,
+        655
+      ],
+      "retained_background_pixels": 31
+    },
+    {
+      "kind": "hair loop background",
+      "frame": 6,
+      "box": [
+        1017,
+        573,
+        1052,
+        655
+      ],
+      "retained_background_pixels": 30
+    },
+    {
+      "kind": "hair loop background",
+      "frame": 7,
+      "box": [
+        1423,
+        573,
+        1458,
+        655
+      ],
+      "retained_background_pixels": 26
+    },
+    {
+      "kind": "axe/knee background",
+      "frame": 4,
+      "box": [
+        110,
+        770,
+        135,
+        805
+      ],
+      "retained_background_pixels": 271
+    },
+    {
+      "kind": "axe/knee background",
+      "frame": 5,
+      "box": [
+        510,
+        773,
+        538,
+        802
+      ],
+      "retained_background_pixels": 184
+    }
+  ],
+  "windows": [
+    [
+      214,
+      177,
+      217,
+      180
+    ],
+    [
+      210,
+      189,
+      212,
+      191
+    ],
+    [
+      214,
+      195,
+      217,
+      199
+    ],
+    [
+      619,
+      164,
+      623,
+      167
+    ],
+    [
+      620,
+      172,
+      623,
+      176
+    ],
+    [
+      618,
+      189,
+      622,
+      193
+    ],
+    [
+      1024,
+      166,
+      1027,
+      171
+    ],
+    [
+      1025,
+      173,
+      1028,
+      176
+    ],
+    [
+      1022,
+      189,
+      1027,
+      194
+    ],
+    [
+      1427,
+      164,
+      1431,
+      170
+    ],
+    [
+      1429,
+      174,
+      1431,
+      176
+    ],
+    [
+      1426,
+      189,
+      1430,
+      194
+    ],
+    [
+      213,
+      614,
+      215,
+      616
+    ],
+    [
+      210,
+      629,
+      213,
+      632
+    ],
+    [
+      214,
+      633,
+      217,
+      637
+    ],
+    [
+      618,
+      613,
+      620,
+      616
+    ],
+    [
+      620,
+      618,
+      623,
+      622
+    ],
+    [
+      615,
+      629,
+      618,
+      633
+    ],
+    [
+      618,
+      634,
+      621,
+      637
+    ],
+    [
+      1023,
+      613,
+      1025,
+      617
+    ],
+    [
+      1019,
+      631,
+      1023,
+      634
+    ],
+    [
+      1023,
+      634,
+      1027,
+      638
+    ],
+    [
+      1439,
+      608,
+      1442,
+      610
+    ],
+    [
+      1437,
+      613,
+      1440,
+      616
+    ],
+    [
+      1434,
+      629,
+      1437,
+      632
+    ],
+    [
+      1438,
+      634,
+      1441,
+      637
+    ],
+    [
+      110,
+      773,
+      132,
+      802
+    ],
+    [
+      512,
+      777,
+      534,
+      801
+    ]
+  ],
+  "selection": "Connected neutral components within visually reviewed hair-loop and axe/knee gaps only; used as explicit local fill windows by the existing importer."
+}

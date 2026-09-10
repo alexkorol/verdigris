@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "defaults": {
+    "alpha_mode": "crisp",
+    "max_colors": 24,
+    "acceptance": "production_trial_live_captures_reviewed_2026-09-10"
+  },
+  "known_limitations": [
+    "Root reviewed native, 3x3 repeated, initial integrated and live game captures; accepted for production trial. Opposite edges are not exact matches and broad repeated patterns remain perceptible.",
+    "Source is unchanged. Runtime uses identical actual Pixel Respecter auto-grid reconstruction and64x64 terrain normalization as the reviewed candidate.",
+    "Root integrated world placement, roads, shade and shared registration. This manifest imports only the quiet earth tile; broad repeat structure remains a visual limitation."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/terrain-quiet-v1.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "terrain_quiet_earth",
+          "cell": [
+            0,
+            0
+          ],
+          "cell_size": 0,
+          "max_colors": 24,
+          "canvas": [
+            64,
+            64
+          ],
+          "trim": false,
+          "fill": true,
+          "align": "top_left"
+        }
+      ]
+    }
+  ],
+  "integration_review": {
+    "date": "2026-09-10",
+    "reviewer": "root",
+    "scope": "Quiet earth accepted for the integrated world trial after initial, integrated and live game capture review; not final terrain polish.",
+    "captures": [
+      {
+        "path": "native/client/assets/raster/reviews/2026-09-10-ground-hud/live-3440x1440.png",
+        "sha256": "cd64fcf162e47a0a8d271999466b9a36865407d5d4ff7bdfdf38e81560e44339",
+        "hash_policy": "sha256_raw_bytes",
+        "original_source_path": ".ci-artifacts/ground-hud-verified/live-3440x1440.png",
+        "original_source_raw_sha256": "cd64fcf162e47a0a8d271999466b9a36865407d5d4ff7bdfdf38e81560e44339"
+      },
+      {
+        "path": "native/client/assets/raster/reviews/2026-09-10-ground-hud/hero-nw-production-019.png",
+        "sha256": "00e89ab1d8541cc71b62edc9bef838370d6bcd2bac932d8623b4f47b2d6d8c1c",
+        "hash_policy": "sha256_raw_bytes",
+        "original_source_path": ".ci-artifacts/ground-hud-verified/raster-motion-nw-019.png",
+        "original_source_raw_sha256": "00e89ab1d8541cc71b62edc9bef838370d6bcd2bac932d8623b4f47b2d6d8c1c"
+      }
+    ],
+    "source_generation_observations": [
+      "Root reviewed native and3x3 repeated previews; accepted for production trial. Opposite edges are not exact matches and broad repeated patterns remain perceptible.",
+      "Source is unchanged. Runtime uses identical actual Pixel Respecter auto-grid reconstruction and64x64 terrain normalization as the reviewed candidate.",
+      "World placement, roads, shade, shared ordering and catalog registration remain root responsibilities; this manifest imports only the new earth tile."
+    ],
+    "visual_result": "Quiet warm ground replaces dense repeated speckle in the viewed game scene.",
+    "remaining_limitations": "Opposite tile edges are not exact matches, and broad repeated patterns remain perceptible. Ground placement and lighting are renderer behavior outside this texture import.",
+    "png_policy": "Review metadata only; the runtime tile remains byte-identical to the reviewed candidate.",
+    "earlier_raw_review_captures": [
+      {
+        "path": ".ci-artifacts/ground-hud-initial/live-ground-3440x1440.png",
+        "sha256": "544dc2a9ba5e9ad468d04473e2edc38f76e7964d2421e50d716eb68bd0152b50"
+      },
+      {
+        "path": ".ci-artifacts/ground-hud-motion/raster-motion-nw-019.png",
+        "sha256": "0612cfe49bbe597e1ed43d3fd2731aa375b5effc614169da7a059f071f9dbd8e"
+      }
+    ]
+  }
+}

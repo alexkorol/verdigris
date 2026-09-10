@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "generationTool": "built-in image_gen",
+  "selectedModel": "Not exposed by tool",
+  "modelIdentityReturned": false,
+  "source": "native/client/assets/raster/source/raider-walk-sw-axe-v3.png",
+  "sourceSha256": "bde72da59c4ba79380728d99d9002ac5d4e7585351cc9ace4aaa988af468c72d",
+  "prompt": "native/client/assets/raster/prompts/raider-walk-sw-axe-v3.txt",
+  "promptSha256": "2666205d1d2fde26947a6e31c6b08119c345ca8cdbb554a037ce2716c15433ec",
+  "submittedPrompt": "Edit Image 1, the eight-frame raider walk sheet. Change ONLY the eight axe heads to match the broad curved bronze axe blade in Image 2. The current little square heads are too small: make each blade about 1.7 times its current height and 1.5 times its current width, with Image 2's broad rounded cutting edge and bronze color. Keep the existing handle lengths, hand grips and axe-bearing anatomical right hand unchanged.\n\nImage 2 is the original raider's axe-shape and appearance reference ONLY. Preserve every body pixel arrangement and all eight walking poses from Image 1: same face, hair, clothing, torn knees, boots, camera, scale, locations and chronological order. Preserve the same gradual leg opening and closing and free opposite hand. Do not copy the idle stance.\n\nReturn the same four-column by two-row walking sheet, with complete axe silhouettes clear of the cell edges. Keep deliberate crisp pixel clusters and use actual transparent alpha with no background pattern, labels or grid.",
+  "generatedOriginal": "C:/Users/Alex/.codex/generated_images/01a0896f-29de-7452-bb4b-6fb64351c1eb/exec-d0ab7248-b66c-480a-b40b-4a4548a41680.png",
+  "references": [
+    {
+      "order": 1,
+      "path": "native/client/assets/raster/source/raider-walk-sw-axe-v2.png",
+      "sha256": "697a3cb64ae0fb8c409d0ec29823d3599c5d8a648491293c4c6a629968ddc357",
+      "inspectedBeforeCall": true,
+      "role": "EDIT TARGET: keep ordered eight walking poses, body placement, camera and character. Repair only the specified equipment/clothing property."
+    },
+    {
+      "order": 2,
+      "path": "native/client/assets/raster/runtime/raider_sw.png",
+      "sha256": "13e515e678d001de0e764729048986d1d459c9df2de9c2b52d2d1c8538b3daf4",
+      "inspectedBeforeCall": true,
+      "role": "ORIGINAL APPEARANCE AND EQUIPMENT ONLY: same anatomical-right axe hand, bronze blade, wooden shaft, charcoal clothes and knee openings; do not copy the standing pose."
+    }
+  ],
+  "recipe": {
+    "directProjectExample": "native/client/assets/raster/prompts/actors_hero-walk-ne-d2poses-v2.txt",
+    "publishedContext": [
+      {
+        "url": "https://www.flixly.ai/blog/stop-motion-chatgpt-images-2-5",
+        "relevance": "Published previous-image edit target plus opening identity reference, one physical change. Its clay-fox output does not demonstrate our sprite or walk."
+      },
+      {
+        "url": "https://12ui.com/gpt-image-2.5-vs-2",
+        "relevance": "Explicit separate jobs for reference images in published UI tests, not a gait benchmark."
+      }
+    ],
+    "adaptation": "Preserve our actual motion candidate as edit target and restore identity from the accepted original. V2 repairs the mistakenly empty hand and trousers; V3 changes only the blade silhouette/size after independent review found a small hatchet.",
+    "claimBoundary": "These raider edits and their results are local observations, not published proof of this exact workflow or a claimed model variant."
+  },
+  "observedOutput": {
+    "dimensions": [
+      1575,
+      999
+    ],
+    "mode": "RGB",
+    "alpha": "The request for transparent output failed: the source contains an opaque checker pattern.",
+    "facing": "All eight frames remain lower-left SW with the bone mask visible.",
+    "phaseReview": "F0/F1 narrow; F2 passing; F3 opens into broad F4/F5; F6 narrows; F7 closes. No repeated half-cycle was inserted or reordered. Close adjacent phases remain.",
+    "handReview": "Axe remains attached to the anatomical-right hand, on screen-left in this view; opposite hand free in all eight frames.",
+    "appearance": "Charcoal trousers and exposed knee tears restored; natural bronze, ochre, leather and bone remain recognizable.",
+    "editLimit": "Broad body/pose silhouettes were retained, but an image edit does not preserve every body pixel or shading value exactly.",
+    "acceptance": "V2 superseded: its axe was a smaller square hatchet. V3 reviewed for integration as a whole monster sprite; final review stored beside the candidate."
+  },
+  "conversion": {
+    "engine": "Actual Pixel Respecter workspace.reconstruct and palettes.reduce_colors through existing import_assets.py",
+    "manifest": "native/tools/raster/raider-walk-sw-axe-v3-candidate.json",
+    "manifestSha256": "09661408a95e1d7218362baf4a7be1eadfa0d950e1cd5d8d106f8ba2aa69cee7",
+    "report": "native/tools/raster/raider-walk-sw-candidates/axe-v3/raider-walk-sw-axe-v3.provenance.json",
+    "reportSha256": "c8916fb16584803f81bf1c666b8eb9edfce2c359424291379ead80a538e4a0ee",
+    "nativeCanvas": [
+      80,
+      96
+    ],
+    "anchorPx": [
+      40,
+      96
+    ],
+    "cellSize": 6,
+    "sharedColors": 32,
+    "commonSourceOrigin": [
+      197,
+      480
+    ],
+    "commonColumnStride": 406,
+    "commonRowStride": 435,
+    "geometry": "No per-frame resizing or centering; measured shared placement retains original pose offsets.",
+    "alphaCleanup": "Border-connected background removal, followed only by explicit windows for visually inspected enclosed hair-loop and axe/knee background gaps. cleanup-inspection.json records the scopes and exact windows.",
+    "paletteScope": "All eight frames, one shared32-color palette; crisp binary alpha.",
+    "candidateFolder": "native/tools/raster/raider-walk-sw-candidates/axe-v3"
+  },
+  "ownership": "Sources, prompts, provenance and raider-only candidates/previews. No runtime, main, equipment, catalog, header or shared importer edits. No raw D2 art copied into the repository."
+}

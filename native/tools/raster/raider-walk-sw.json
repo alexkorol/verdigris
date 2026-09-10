@@ -1,0 +1,389 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "report_name": "raider-walk-sw.provenance.json",
+  "shared_palette_max_colors": 32,
+  "defaults": {
+    "cell_size": 6,
+    "alpha_mode": "crisp",
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "scripted_production_renderer_asset_review_passed_2026-09-10"
+  },
+  "known_limitations": [
+    "Source/native/4x and independent weapon review passed for axe-v3. Root viewed all eight native poses and selected SCRIPTED production frames; the scenario verified all eight production phases and settle. Native enemy AI remains stationary, so pursuit or autonomous gameplay is not accepted.",
+    "Frames preserve the reviewed axe-v3 pixels, including the small original frame7 head offset and close adjacent0/1 and4/5 phases. Minor blade contour/angle variation from idle remains.",
+    "Generated source has an opaque checker pattern. Actual Pixel Respecter cleanup includes only recorded border fill and visually inspected hair-loop and axe/knee gaps.",
+    "One common source origin197,480, column stride406,row stride435 and cell6; no per-frame fitting or centering.",
+    "Axe is embedded in the anatomical-right/screen-left hand in all8 SW frames. Use ordinary whole monster rendering, without hero weapon overlay."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/raider-walk-sw-axe-v3.png",
+      "border_background": {
+        "color": [
+          210,
+          210,
+          210
+        ],
+        "tolerance": 95,
+        "interior_windows": [
+          [
+            214,
+            177,
+            217,
+            180
+          ],
+          [
+            210,
+            189,
+            212,
+            191
+          ],
+          [
+            214,
+            195,
+            217,
+            199
+          ],
+          [
+            619,
+            164,
+            623,
+            167
+          ],
+          [
+            620,
+            172,
+            623,
+            176
+          ],
+          [
+            618,
+            189,
+            622,
+            193
+          ],
+          [
+            1024,
+            166,
+            1027,
+            171
+          ],
+          [
+            1025,
+            173,
+            1028,
+            176
+          ],
+          [
+            1022,
+            189,
+            1027,
+            194
+          ],
+          [
+            1427,
+            164,
+            1431,
+            170
+          ],
+          [
+            1429,
+            174,
+            1431,
+            176
+          ],
+          [
+            1426,
+            189,
+            1430,
+            194
+          ],
+          [
+            213,
+            614,
+            215,
+            616
+          ],
+          [
+            210,
+            629,
+            213,
+            632
+          ],
+          [
+            214,
+            633,
+            217,
+            637
+          ],
+          [
+            618,
+            613,
+            620,
+            616
+          ],
+          [
+            620,
+            618,
+            623,
+            622
+          ],
+          [
+            615,
+            629,
+            618,
+            633
+          ],
+          [
+            618,
+            634,
+            621,
+            637
+          ],
+          [
+            1023,
+            613,
+            1025,
+            617
+          ],
+          [
+            1019,
+            631,
+            1023,
+            634
+          ],
+          [
+            1023,
+            634,
+            1027,
+            638
+          ],
+          [
+            1439,
+            608,
+            1442,
+            610
+          ],
+          [
+            1437,
+            613,
+            1440,
+            616
+          ],
+          [
+            1434,
+            629,
+            1437,
+            632
+          ],
+          [
+            1438,
+            634,
+            1441,
+            637
+          ],
+          [
+            110,
+            773,
+            132,
+            802
+          ],
+          [
+            512,
+            777,
+            534,
+            801
+          ]
+        ]
+      },
+      "assets": [
+        {
+          "name": "raider_walk0_sw",
+          "source_box": [
+            0,
+            0,
+            394,
+            520
+          ],
+          "anchor_source": [
+            197,
+            480
+          ]
+        },
+        {
+          "name": "raider_walk1_sw",
+          "source_box": [
+            394,
+            0,
+            788,
+            520
+          ],
+          "anchor_source": [
+            209,
+            480
+          ]
+        },
+        {
+          "name": "raider_walk2_sw",
+          "source_box": [
+            788,
+            0,
+            1181,
+            520
+          ],
+          "anchor_source": [
+            221,
+            480
+          ]
+        },
+        {
+          "name": "raider_walk3_sw",
+          "source_box": [
+            1181,
+            0,
+            1575,
+            520
+          ],
+          "anchor_source": [
+            234,
+            480
+          ]
+        },
+        {
+          "name": "raider_walk4_sw",
+          "source_box": [
+            0,
+            520,
+            394,
+            999
+          ],
+          "anchor_source": [
+            197,
+            395
+          ]
+        },
+        {
+          "name": "raider_walk5_sw",
+          "source_box": [
+            394,
+            520,
+            788,
+            999
+          ],
+          "anchor_source": [
+            209,
+            395
+          ]
+        },
+        {
+          "name": "raider_walk6_sw",
+          "source_box": [
+            788,
+            520,
+            1181,
+            999
+          ],
+          "anchor_source": [
+            221,
+            395
+          ]
+        },
+        {
+          "name": "raider_walk7_sw",
+          "source_box": [
+            1181,
+            520,
+            1575,
+            999
+          ],
+          "anchor_source": [
+            234,
+            395
+          ]
+        }
+      ]
+    }
+  ],
+  "promoted_candidate": "raider-walk-sw-candidates/axe-v3",
+  "integration_review": {
+    "date": "2026-09-10",
+    "reviewer": "root",
+    "scope": "SCRIPTED asset review through the production renderer. Root viewed all eight native raider SW poses and selected production frames. The scenario verified all eight production phases and stop-to-idle settle. Root did not claim to watch every production frame or the full video. Native enemy AI remains stationary; this does not prove pursuit or autonomous gameplay.",
+    "mode": "scripted-asset-review",
+    "native_ai_pursuit_verified": false,
+    "captures": [
+      {
+        "path": "native/client/assets/raster/reviews/2026-09-10-ground-hud/raider-production-019.png",
+        "sha256": "5e7dfe3b8e42517d2ad4b94db4f2a2ac31a99e465e5caa0f04baa4d4e98ec743",
+        "hash_policy": "sha256_raw_bytes",
+        "original_source_path": ".ci-artifacts/ground-hud-verified/raider-scripted-motion-sw-019.png",
+        "original_source_raw_sha256": "5e7dfe3b8e42517d2ad4b94db4f2a2ac31a99e465e5caa0f04baa4d4e98ec743"
+      },
+      {
+        "path": "native/client/assets/raster/reviews/2026-09-10-ground-hud/live-3440x1440.png",
+        "sha256": "cd64fcf162e47a0a8d271999466b9a36865407d5d4ff7bdfdf38e81560e44339",
+        "hash_policy": "sha256_raw_bytes",
+        "original_source_path": ".ci-artifacts/ground-hud-verified/live-3440x1440.png",
+        "original_source_raw_sha256": "cd64fcf162e47a0a8d271999466b9a36865407d5d4ff7bdfdf38e81560e44339"
+      }
+    ],
+    "motion_trace": {
+      "path": "native/client/assets/raster/reviews/2026-09-10-ground-hud/raider-scripted-motion-sw.csv",
+      "sha256": "8dabf6bf07312e21b4313ed6925dbb7a39f3817ad60469f965b8be62e2cd8007",
+      "hash_policy": "sha256_canonical_lf",
+      "original_source_path": ".ci-artifacts/ground-hud-verified/raider-scripted-motion-sw.csv",
+      "original_source_raw_sha256": "c698ece546641a06c7dd41fe17de2a75b5fa32dc09e2048a6bdb83eab1ebb92b"
+    },
+    "validation": {
+      "supported_build_exit_code_reported_by_root": 0,
+      "native_scenarios": {
+        "passed": 66,
+        "total": 66
+      },
+      "browser_scenarios": {
+        "passed": 32,
+        "total": 32
+      },
+      "static_average_ms": 23.258,
+      "moving_average_ms": 24.715,
+      "moving_peak_ms": 36.62
+    },
+    "validation_logs": [
+      {
+        "path": "native/client/assets/raster/reviews/2026-09-10-ground-hud/native-final-66-of-66.log",
+        "sha256": "29f36974cfb4d74243d61f58da266febfc28234ea4822fe36a283d5964c2a8b6",
+        "hash_policy": "sha256_canonical_lf",
+        "original_source_path": ".ci-artifacts/ground-hud-verified-build-scenarios.log",
+        "original_source_raw_sha256": "702395c51ab4f17e8540cb47538d96e0d2ec6833287865f5805c403090f5de77"
+      },
+      {
+        "path": "native/client/assets/raster/reviews/2026-09-10-ground-hud/browser-32-of-32.log",
+        "sha256": "1b274edde79eabcdad867d545bf318c6459167ccdd281940e8d5137903eb879b",
+        "hash_policy": "sha256_canonical_lf",
+        "original_source_path": ".ci-artifacts/ground-hud-browser-playtest.log",
+        "original_source_raw_sha256": "212b700194f33c31d3fd8c6d51f623128781ebcec8a516e464e8469760e69f4d"
+      },
+      {
+        "path": "native/client/assets/raster/reviews/2026-09-10-ground-hud/frame-budget-report.txt",
+        "sha256": "52bf97d78d50552f67caa7e87243690a49ef1adaba8754df3c0240127ef47ccb",
+        "hash_policy": "sha256_canonical_lf",
+        "original_source_path": ".ci-artifacts/ground-hud-verified/frame-budget-report.txt",
+        "original_source_raw_sha256": "52bf97d78d50552f67caa7e87243690a49ef1adaba8754df3c0240127ef47ccb"
+      }
+    ],
+    "previous_native_review_observations": [
+      "Source/native/4x and independent weapon review passed for axe-v3. Actual production monster motion, gameplay gates and frame-budget acceptance remain pending.",
+      "Frames preserve the reviewed axe-v3 pixels, including the small original frame7 head offset and close adjacent0/1 and4/5 phases. Minor blade contour/angle variation from idle remains.",
+      "Generated source has an opaque checker pattern. Actual Pixel Respecter cleanup includes only recorded border fill and visually inspected hair-loop and axe/knee gaps.",
+      "One common source origin197,480, column stride406,row stride435 and cell6; no per-frame fitting or centering.",
+      "Axe is embedded in the anatomical-right/screen-left hand in all8 SW frames. Use ordinary whole monster rendering, without hero weapon overlay."
+    ],
+    "png_policy": "All source and runtime PNGs unchanged by this review metadata refresh."
+  }
+}

@@ -1,0 +1,133 @@
+{
+  "version": 1,
+  "tool": "builtin image_gen.imagegen",
+  "model": "Not exposed by this tool; no model selector supplied.",
+  "generation_calls": 1,
+  "prompt": {
+    "workspace_path": "native/client/assets/raster/prompts/terrain-quiet-v1.txt",
+    "sha256": "7df87745a44e3dccddc0ccbcaa950e9700ed0b4536433e96aaa8ab77e3379132"
+  },
+  "source": {
+    "workspace_path": "native/client/assets/raster/source/terrain-quiet-v1.png",
+    "sha256": "4ea205fa67e7f4d4549728451f7d80b3ece6e0d07425d85d40338ef51f9924e5",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGB",
+    "original_generated_path": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-80ca2e30-6936-4eb8-81a2-dc22f131b4ab.png"
+  },
+  "references": [
+    {
+      "workspace_path": "native/client/assets/raster/runtime/terrain_packed_earth.png",
+      "sha256": "b29a6e122529f4535cbb30b130a181bf03af9a7f3d06dd89516a4f3d7954e79f",
+      "submitted": true,
+      "role": "Only supplied reference; muted warm-brown clay material and straight-down view. Dense speckle was explicitly replaced."
+    },
+    {
+      "workspace_path": "native/client/assets/raster/reviews/2026-09-10/live-3440x1440.png",
+      "sha256": "179f419747ba885d87e6c49c8fb873f828495f925939b5e9133582d44f025241",
+      "submitted": false,
+      "role": "Viewed gameplay failure evidence: dense repeated grain across almost the whole visible floor."
+    }
+  ],
+  "research_adaptation": {
+    "source_url": "https://www.reddit.com/r/codex/comments/1waxfbk/comment/p8m88mg/",
+    "creator": "HaremVictoria",
+    "local_notes": "native/client/assets/raster/RESEARCH.md: game-room edits improved; persistent microtexture across walls and floors.",
+    "evidence_scope": "Firsthand failure report, no complete corrective prompt or verified seamless recipe. This task applies our own targeted reduction of microtexture; it does not claim the creator tested this terrain workflow.",
+    "specific_adaptation": "Edit the current material reference into broad low-contrast pixel clusters, calm packed soil and only sparse subdued chips/scuffs. Native reconstruction and repetition are checked separately."
+  },
+  "conversion": {
+    "manifest": "native/tools/raster/terrain-quiet-v1.json",
+    "candidate": ".ci-artifacts/terrain-quiet-v1/terrain-quiet-v1.png",
+    "candidate_sha256": "059b101504c96b84a3541f5021dfd1811a7bb1ddb81ebd40fd03be9dbad2af70",
+    "engine": "pixel_perfecter.workspace.reconstruct",
+    "grid_kind": "mesh",
+    "detected_cell_size": 20,
+    "reconstructed_size": [
+      64,
+      65
+    ],
+    "normalized_size": [
+      64,
+      64
+    ],
+    "palette_colors": 24,
+    "normalization": "Existing terrain trim=false/fill=true/top_left path globally normalizes the reconstructed 64x65 field to64x64 with nearest neighbor."
+  },
+  "native_repeat_review": {
+    "viewed": [
+      "native candidate64x64",
+      "3x3 repeated preview at4x",
+      "current versus candidate3x3 comparison at2x"
+    ],
+    "visual_verdict": "Substantial reduction in high-frequency speckle. Broad muted soil clusters and sparse chips/scuffs survive native reconstruction. Repeated broad patterns remain perceptible.",
+    "edge_verdict": "Opposite edges are not equal. Left/right join MAD3.469 exceeds internal horizontal1.414; top/bottom MAD0.807 is below internal vertical1.443. Absolute contrast is low, but no seamless claim is made.",
+    "metrics": {
+      "candidate": {
+        "size": [
+          64,
+          64
+        ],
+        "colors": 24,
+        "alpha_range": [
+          255,
+          255
+        ],
+        "mean_rgb": [
+          129.3,
+          97.3,
+          61.42
+        ],
+        "luma_std": 3.163,
+        "internal_horizontal_mean_abs_rgb": 1.414,
+        "internal_vertical_mean_abs_rgb": 1.443,
+        "opposite_lr_mean_abs_rgb": 3.469,
+        "opposite_tb_mean_abs_rgb": 0.807,
+        "opposite_lr_p95_abs_rgb": 8.0,
+        "opposite_tb_p95_abs_rgb": 4.0,
+        "edge_exact_equal": false
+      },
+      "current": {
+        "size": [
+          64,
+          64
+        ],
+        "colors": 11,
+        "alpha_range": [
+          255,
+          255
+        ],
+        "mean_rgb": [
+          128.93,
+          92.85,
+          58.33
+        ],
+        "luma_std": 6.739,
+        "internal_horizontal_mean_abs_rgb": 4.394,
+        "internal_vertical_mean_abs_rgb": 4.519,
+        "opposite_lr_mean_abs_rgb": 3.177,
+        "opposite_tb_mean_abs_rgb": 3.052,
+        "opposite_lr_p95_abs_rgb": 16.0,
+        "opposite_tb_p95_abs_rgb": 16.0,
+        "edge_exact_equal": false
+      }
+    },
+    "rejected_claims": [
+      "No verified seamless-tiling recipe.",
+      "No final gameplay acceptance from a texture preview."
+    ],
+    "root_review": "Root viewed comparison and repeated4x preview and accepted this source for a production trial, with the repeated-pattern/seam caveat."
+  },
+  "production_trial": {
+    "manifest": "native/tools/raster/terrain-quiet.json",
+    "manifest_sha256": "51425f37ce2701689d397e540da7adebe78e9c8bcb19c716da7e85c1310e09ea",
+    "runtime": "native/client/assets/raster/runtime/terrain_quiet_earth.png",
+    "runtime_sha256": "059b101504c96b84a3541f5021dfd1811a7bb1ddb81ebd40fd03be9dbad2af70",
+    "provenance": "native/client/assets/raster/runtime/terrain-quiet.provenance.json",
+    "provenance_sha256": "ecbbe5cdec4eda8fd2ddb915ab6b20f272f63570f3f624cc711fd8d4ac406828",
+    "identical_to_reviewed_candidate": true,
+    "registration": "Root handles shared ordering, catalog and live-scene checks."
+  }
+}
