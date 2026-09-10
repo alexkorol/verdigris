@@ -26,3 +26,13 @@ scenarios pass (18.7 ms fullscreen; 8.6 ms dense effects), alongside browser
 32/32 and the asset/equipment checks. The retained September 9 asset review
 includes the viewed live window and actual motion trace. Full animation and
 scene composition remain active work; this milestone does not close the goal.
+
+The owner's research correction is now reflected in a source-first recipe
+selection table: choose an actual published prompt and record the adaptation
+before generation. Original posts and critical comments were rechecked, with
+Kiki's separate combat recipe, additional 36/99-frame creator reports and a
+complete pose-sheet-to-H3 prompt recorded separately from sprite evidence.
+No verified seamless-terrain or
+complete adult isometric-walk recipe was found. The browser harness rerun is
+32/32; current native motion edits and six new strike poses remain pending
+production integration and are not covered by the prior native pass.

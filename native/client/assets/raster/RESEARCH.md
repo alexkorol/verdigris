@@ -50,7 +50,8 @@ commercial provider link is present; independence is unverified.
 September 8, explicitly Image 2.5 editing a reference originally made with
 Nano Banana Pro. The creator reports deformation in a 3x3 attempt, then two
 sets of nine individual variations, later assembled. The original post shows
-a pixel character GIF and the instruction screenshot. Its request emphasizes
+a nearly stationary pixel portrait/bouquet GIF and the instruction screenshot.
+This is not a demonstrated walking cycle. Its request emphasizes
 separate outputs based on the original pixel image, with consistent size and
 placement. This is a documented conditional fallback, not evidence that every
 sheet fails. Reuse an accepted pixel reference instead of re-describing the
@@ -70,6 +71,29 @@ that adaptation into this game's grounded adults**. Frame/layout constraints
 still require verification after generation.
 [Original result](https://x.com/Mayz1169/status/2097533706022056339),
 [full published prompt](https://x.com/Mayz1169/status/2097535082248671625).
+
+### Kiki: combat beats and variable holds, with a second character example
+
+The separate combat prompt explicitly sequences:
+
+> Ready stance → Anticipation → Attack → Impact peak → Effects dissipate → Recovery.
+
+It asks for body mechanics instead of moving a static sprite, different frame
+holds for preparation and a fast strike, a 1.5–2 second action, fixed ground
+registration, and enough cell margin for the weapon and effects. It leaves
+the distribution across sixteen frames unspecified. The prompt also includes
+GIF/PNG/ZIP assembly and transparency/disposal instructions; these describe
+the wider ChatGPT workflow, not outputs our image-only tool can produce.
+
+The creator posts Tanjiro and later Rengoku using the same approach. That is
+same-author reuse, not independent replication. A reply still reports blur
+and noise. Its chibi conversion is explicit and must be omitted for our adult
+actors. This supplies a better starting combat brief, not evidence of a
+weapon-consistent isometric animation set.
+[Original combat example](https://x.com/Mayz1169/status/2097539942985728162),
+[full combat prompt](https://x.com/Mayz1169/status/2097540160611287452),
+[second character](https://x.com/Mayz1169/status/2097900600105308347),
+[critical reply](https://x.com/JustLingonberry/status/2097717870251884833).
 
 ### SOTN mod: assets actually integrated into a game
 
@@ -169,6 +193,43 @@ access paths prevent a causal comparison with Guizang's PNG failure. For our
 pipeline, this supports measuring alpha and reviewing the full output after
 a focused edit. Our tool does not expose these API output parameters.
 [Original experiments and measurements](https://blog.segmind.com/gpt-image-2-5-api-the-ultimate-guide-to-flare-and-sunburst/).
+
+## Additional original reports checked during the follow-up
+
+The following originals were opened directly during the follow-up. X text
+was read through the browser when web fetch returned 403. The frame counts
+below are creator reports, not our frame-by-frame media audits.
+
+- **Ivana, September 8:** reports generating 36 Image 2.5 stills and assembling
+  them in Codex without a video model. The original has a video but no reusable
+  prompt or frame package. This expands the evidence beyond three-frame demos;
+  it does not establish a reliable sprite-production recipe.
+  [Original report](https://x.com/ivanainai/status/2097446105906553188).
+- **Gabriel Chua, September 8:** reports 99 Sunburst frames made through small
+  edits, preserving an otter, a person and a stall, with Astra assembling the
+  result and audio. A reply asks how continuity was checked; no answer was
+  visible in the inspected thread. No full prompts or rejection counts were
+  published there. Independence was not established.
+  [Workflow report](https://x.com/gabrielchua/status/2097512638704197681),
+  [linked film](https://x.com/gabrielchua/status/2097512144766128152).
+- **Fun_Walk_4965:** publishes a numbered dance sheet prompt, then uses that
+  whole sheet as MiniMax H3's only image reference. The original explicitly
+  separates the image and video stages and contains a commercial provider
+  link. Its exact image prompt is:
+
+  > Create a 4x4 numbered pose sheet, panels 1 to 16, of this one character performing a continuous dance. Plain white background, one full body pose per panel, small number in the top left corner of each panel, thin motion lines allowed, no text, keep hair accessory, sweater print, skirt pattern and socks identical in every panel. Square image.
+
+  Useful as a cutscene pose-reference workflow. Its numbers, motion lines and
+  opaque background are deliberate storyboard choices, not sprite-export
+  requirements. The phrase "no text" also conflicts with its requested panel
+  numbers; retain that distinction when adapting, rather than blindly copying.
+  [Original prompt and workflow](https://www.reddit.com/r/aivideos/comments/1wbgidh/one_16_panel_pose_sheet_from_gpt_image_25_was_the/).
+
+Search also surfaced older AutoSprite and Codex-sprite-skill discussions.
+Their dates predate this Image 2.5 release, so they were excluded from
+model-specific evidence. Prompt aggregators were used to locate original
+posts, not counted as independent successful tests. The follow-up still found
+no verified Image 2.5 terrain-seam recipe or complete adult isometric gait.
 
 ## Reusable published prompt excerpts
 

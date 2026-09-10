@@ -1,5 +1,19 @@
 # Native reconstitution handoff
 
+## 2026-09-09 — Original Image 2.5 user feedback and reusable recipes
+
+`native/client/assets/raster/RESEARCH.md` rechecks primary creator posts and
+critical comments, adds Kiki's combat beats/variable holds, reported 36/99-frame
+editing sequences and an exact pose-sheet-to-H3 prompt, and distinguishes still
+generation from video motion. Noel's successful example is explicitly scoped
+to nearly stationary portrait motion, rather than walking.
+`PROMPTING.md` now starts with selection of an actual published example and
+records the adaptation before generation. No reliable seamless-terrain or
+complete adult isometric-walk recipe was found. This is a documentation
+milestone; unfinished native directional motion and strike integration are
+separate pending work. The browser harness rerun passes 32/32 and does not
+establish acceptance of the current native changes.
+
 ## 2026-09-09 — Consistent hero references, readable ground and reliable captures
 
 - Runtime now has 75 assets. Corrected hero idles preserve trousers/wraps and

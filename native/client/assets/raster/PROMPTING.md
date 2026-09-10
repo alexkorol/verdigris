@@ -28,6 +28,29 @@ control method, not a universal limitation of Image 2.5.
 
 ## Workflow
 
+Before generating, choose the closest published example in `RESEARCH.md`.
+Record its original URL, the supplied reference images, the published prompt
+or available excerpt, and the changes made for our asset. A new prompt should
+answer a demonstrated gap in that recipe; do not replace it with an invented
+general-purpose brief merely because one is easy to write.
+
+| Need | Starting evidence | Preserve when adapting |
+|---|---|---|
+| Small idle motion | Kiki's reference-led idle sheet | Fixed feet, camera, scale and baseline; modest breathing/blink; shared margins |
+| First combat pose study | Practical_Low29's short 4x4 prompt | One reference character and simple motion request; independently audit anticipation, hand identity and recovery |
+| A planned combat cycle | Kiki's combat prompt and second character result | Explicit preparation/contact/recovery beats, full weapon clearance and variable frame holds; preserve our adult proportions |
+| A failed sheet or one bad phase | Noel's separate images; Flixly's focused next-frame edit | Accepted identity anchor plus a clearly assigned transition reference; one physical change |
+| Material-rich UI | 12ui's comparison prompts | Assign each reference an explicit job: requirements, composition or contrast |
+| Cutscene planning | Fun_Walk_4965's pose sheet and H3 workflow | Separate still-image generation from motion synthesis; do not import numbered storyboard panels as runtime sprites |
+
+For a reused recipe, first make a small reviewable example. Keep source quality,
+usable animation, and runtime readiness as separate decisions. Our repeated
+supporting-leg failures demonstrate why increasing the sheet size or adding
+more prose is not sufficient evidence of progress. Preserve the good poses,
+repair a specific bad transition, and consult an ordered motion reference when
+the same ambiguity recurs. This last choice is our production adaptation,
+not a published claim that Image 2.5 follows D2 motion references reliably.
+
 1. Establish one isolated anchor: one actor, neutral ready pose, one camera
    direction. For a human, begin around 64 logical pixels from crown to sole,
    with grounded adult proportions and about 24–32 purposeful colors.
@@ -52,6 +75,10 @@ control method, not a universal limitation of Image 2.5.
 7. For movement, request explicit leg/arm changes: left foot planted forward,
    right foot passing, right foot planted forward, left foot passing. Ensure
    contact points and frame timing form a cycle rather than a row of portraits.
+   For combat, retain the published preparation/contact/recovery structure.
+   Author playback timing separately from the image request; uniform frame
+   holds are not obligatory. Align the visible contact with the game's actual
+   confirmed strike event, rather than delaying damage to fit a showcase GIF.
 8. Assemble sheets in code with integer cell rectangles and stored pivots.
    Do not independently stretch each pose to fill its cell.
 9. Check terrain repetition in a 3x3 preview and the live camera. A texture
