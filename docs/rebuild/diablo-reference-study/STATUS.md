@@ -45,3 +45,8 @@ reference arrangement is explicit: previous frame first as edit target,
 opening frame additionally as identity anchor. New generation was paused
 while these source-backed corrections were applied; existing implementation
 and candidate WIP remain preserved and unaccepted where noted.
+
+The firsthand feedback audit also records a game-room developer's improved
+edit stability and persistent surface microtexture, with the original comment
+and evidence limits. The guide now explicitly checks quiet walls/ground at
+gameplay scale. This research checkpoint makes no new gameplay acceptance claim.

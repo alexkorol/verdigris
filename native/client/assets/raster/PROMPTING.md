@@ -47,6 +47,7 @@ separate its image request from file assembly and checks performed by Codex.
 | A planned combat cycle | Kiki's combat prompt and second character result | Explicit preparation/contact/recovery beats, full weapon clearance and variable frame holds; preserve our adult proportions |
 | A failed sheet or one bad phase | Noel's separate images; Flixly's focused next-frame edit | Accepted identity anchor plus a clearly assigned transition reference; one physical change |
 | Material-rich UI | 12ui's comparison prompts | Assign each reference an explicit job: requirements, composition or contrast |
+| Revising scenery | HaremVictoria's game-room editing report | Reuse an accepted image; inspect walls and ground for excess microtexture. The report supplies a failure example, not a verified corrective prompt |
 | Cutscene planning | Fun_Walk_4965's pose sheet and H3 workflow | Separate still-image generation from motion synthesis; do not import numbered storyboard panels as runtime sprites |
 
 For a reused recipe, first make a small reviewable example. Keep source quality,
@@ -94,6 +95,13 @@ not a published claim that Image 2.5 follows D2 motion references reliably.
 10. Run the asset inside the production renderer. Check movement, attacks,
     equipment changes, occlusion, contrasting ground, and performance. A contact
     sheet and a passing build do not prove gameplay visual acceptance.
+
+For scenery, reserve quiet areas so the player, monsters and paths remain
+readable. The firsthand game-room report in `RESEARCH.md` specifically flags
+microtexture across large surfaces even after editing improved. Compare the
+edited room or prop with its accepted reference at gameplay scale. Preserve
+the owner's natural material colors; do not reintroduce green patina through
+the game title or use added texture as a substitute for pixel construction.
 
 ## Single-frame prompt template
 

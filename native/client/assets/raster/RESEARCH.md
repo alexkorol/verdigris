@@ -217,6 +217,20 @@ pipeline, this supports measuring alpha and reviewing the full output after
 a focused edit. Our tool does not expose these API output parameters.
 [Original experiments and measurements](https://blog.segmind.com/gpt-image-2-5-api-the-ultimate-guide-to-flare-and-sunburst/).
 
+### HaremVictoria: game-room edits improved; surface noise persists
+
+This game-room creator reports less degradation during repeated ChatGPT edits,
+but persistent microtexture across walls and floors. Their reproduction subject
+is a post-apocalyptic brick basement. They still prefer Nano Banana for rooms.
+No complete prompt, comparison gallery, variant or settings are supplied;
+their reply confirms ChatGPT rather than API use. This is firsthand feedback,
+not a controlled comparison.
+[Original game developer comment and follow-up](https://www.reddit.com/r/codex/comments/1waxfbk/comment/p8m88mg/).
+
+Our inference: inspect quiet surfaces and character/background separation at
+gameplay size. The report supplies no proven corrective prompt. The owner's
+objection to excessive patina remains a separate art-direction constraint.
+
 ## Additional original reports checked during the follow-up
 
 The following originals were opened directly during the follow-up. X text
@@ -311,6 +325,10 @@ reproductions are separate kinds of evidence.
    treat a generated GIF or a grid of attractive poses as a finished animation.
 6. No verified primary terrain-seam recipe was found in this pass. Test any
    terrain repetition rather than claiming a prompt guarantees seamlessness.
+7. Reference-led editing is worth trying before restarting an accepted asset:
+   the game-room developer reports improved edit stability. Review the whole
+   image after each edit, especially large surfaces; better identity retention
+   does not guarantee quieter texture or correct animation.
 
 `PROMPTING.md` contains our adapted prompt template. Those adaptations are
 project decisions, not quotations or claims that the creators tested our game.

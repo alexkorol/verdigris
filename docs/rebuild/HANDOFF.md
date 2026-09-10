@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-09 — Game-room feedback on edits and texture
+
+The original room-asset developer comment adds a practical positive result
+(more stable repeated edits) and an unresolved weakness (noisy large surfaces).
+`RESEARCH.md` preserves its ChatGPT-only access and missing prompt/settings;
+`PROMPTING.md` adds scenery-scale review without claiming a proven corrective
+prompt. The sorted combat-sheet discussion was reopened to verify the actual
+limb, anticipation and timing criticism. Native implementation and candidate
+art remain a separate pending milestone; this checkpoint changes guidance only.
+
 ## 2026-09-09 — Prompt fidelity, reference roles and reader feedback
 
 Direct browser review of Kiki's original combat prompt/sheet and a reader's
