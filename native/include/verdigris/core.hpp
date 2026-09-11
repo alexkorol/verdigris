@@ -74,6 +74,9 @@ inline constexpr int kSceneryColliderRadius = kMeleeRange / 2;
 
 // A dash is a short, readable burst measured in ordinary movement ticks.
 inline constexpr int kDashMovementTicks = 10;
+// Provisional burst lockout: one shared dash-distance window. Dash does not
+// grant invulnerability or spend a resource in the current native rules.
+inline constexpr int kDashCooldownTicks = kDashMovementTicks;
 
 // Curated gameplay constants needed by presentation.  Mechanics and the
 // read-only catalog use these same definitions; clients must not mirror the
@@ -207,6 +210,12 @@ struct LegendEntry {
   bool operator==(const LegendEntry& other) const;
 };
 
+// Appearance selects art only. Normalize saved/wire values before using them
+// as asset keys; older saves and unsupported values use the original male art.
+inline const char* player_appearance_id(const std::string& value) {
+  return value == "female" ? "female" : "male";
+}
+
 struct Scion {
   std::string id;
   std::string name;
@@ -216,6 +225,7 @@ struct Scion {
   std::vector<Trophy> carried_trophies;
   std::vector<Item> carried_items;
   std::vector<std::string> deeds;
+  std::string appearance = "male";
 };
 
 enum class EventType {
@@ -329,7 +339,8 @@ bool navigation_segment_blocked(const std::vector<NavigationObstacle>& obstacles
 
 class Simulation {
  public:
-  explicit Simulation(std::uint64_t seed, const std::string& house_name = "House Verdigris");
+  explicit Simulation(std::uint64_t seed, const std::string& house_name = "House Verdigris",
+                      const std::string& appearance = "male");
 
   void dispatch(const Command& command);
   // One 50 ms authority step, including when commands is empty. Repeated
@@ -346,7 +357,7 @@ class Simulation {
   std::vector<Vec2> navigation_anchors() const;
   bool movement_blocked(Vec2 from, Vec2 to) const;
   void set_seasonal_mechanic(SeasonalMechanic* mechanic);
-  void create_successor(const std::string& name);
+  void create_successor(const std::string& name, const std::string& appearance = "male");
 
   const House& house() const;
   const Scion& scion() const;
@@ -898,6 +909,8 @@ struct MovementStepInfo {
   int duration_ms = 0;
   std::string direction;
   bool blocked = false;
+  std::string action;  // move or accepted dash; additive presentation metadata
+  WorldPosition from{};
 };
 
 struct ZoneDescriptor {
@@ -956,6 +969,7 @@ class WorldSimulation {
 
   // One player:move sample.  Returns true when the step was applied.
   bool apply_movement_sample(const std::string& direction, std::int64_t now_ms);
+  bool dash(const std::string& direction, std::int64_t now_ms);
   // dev:teleport: floors onto the target tile, then runs the portal check
   // (landing on the entry stairs returns to town, like the JS game loop).
   void teleport(int x, int y, std::int64_t now_ms);
@@ -1061,6 +1075,7 @@ public:
   const std::string& engaged_by() const { return engaged_by_; }
 private:
   std::uint64_t next_player_attack_ms_ = 0;
+  std::int64_t next_dash_ms_ = 0;
   std::uint64_t next_boss_telegraph_ms_ = 0;
   std::int64_t last_pursuit_tick_ms_ = -1;
   bool boss_warning_seen_ = false;

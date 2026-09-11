@@ -11,6 +11,7 @@
 #include <cstdio>
 #include <deque>
 #include <mutex>
+#include <limits>
 #include <thread>
 #include <utility>
 #include <vector>
@@ -2841,6 +2842,279 @@ void remote_authored_crypt_pursuit_reaches_world_view() {
   session.shutdown(); server->stop(); delete server;
 }
 
+void remote_player_motion_and_ground_events() {
+  using namespace verdigris::client;
+  using JV = verdigris::networking::JsonValue;
+  using verdigris::networking::Envelope;
+  ScriptedEnvelopeServer server;
+  server.script.push_back(R"({"event":"player:login","data":{"player":{"uuid":"player-motion","sceneId":"road:test","x":7,"y":7},"scene":{"id":"road:test","type":"instance"}}})");
+  auto add = [&](Envelope e, const char* marker) {
+    server.script.push_back(verdigris::networking::emit_envelope(e));
+    server.script.push_back(verdigris::networking::emit_envelope(
+        Envelope{"game:send:message", JV::Object{{"text", marker}}}));
+  };
+  auto move = [](const char* id, double seq, double from, double to, int duration, const char* action = "move") {
+    Envelope e{"player:movement", JV::Object{{"uuid", id}, {"sceneId", "road:test"}, {"x", to}, {"y", 7}}};
+    e.meta = JV::Object{{"sequence", seq}, {"duration", duration}, {"fromX", from}, {"fromY", 7}, {"action", action}};
+    return e;
+  };
+  add(move("player-motion", 1, 7, 7.333333, 50), "walk");
+  add(move("other-player", 99, 7, 99, 50), "foreign");
+  add(move("player-motion", 0, 7, 7, 50), "old");
+  add(move("player-motion", 1, 7, 7.333333, 50), "equal");
+  add(move("player-motion", 1.5, 7, 9, 50), "bad-sequence");
+  add(move("player-motion", 2, 7.333333, 10.666663, 5000, "dash"), "dash");
+  add(move("player-motion", 2, 7.333333, 10.666663, 50, "dash"), "duplicate-dash");
+  add(move("player-motion", 3, 10.666663, 16, 0), "teleport");
+  JV items = JV::Array{JV::Object{{"uuid", "real-drop-uuid"}, {"name", "Amber ring"}, {"x", 15}, {"y", 8}}};
+  Envelope ground{"world:itemDropped", JV::Object{{"data", items}}};
+  ground.meta = JV::Object{{"sceneId", "road:test"}};
+  add(ground, "ground"); ground.event = "item:change"; add(ground, "ground-pair");
+  add(Envelope{"combat:hit", JV::Object{{"attackerId", "player-motion"}, {"targetId", "foe"},
+      {"targetType", "monster"}, {"amount", 10}, {"died", true}, {"skillId", "melee"}}}, "death");
+  add(Envelope{"party:scene:transition", JV::Object{{"scene", JV::Object{{"id", "town"}, {"type", "town"}}},
+      {"playerState", JV::Object{{"uuid", "player-motion"}, {"sceneId", "town"}, {"x", 38}, {"y", 115}}}}}, "retired");
+  add(move("player-motion", 2, 7, 10, 50), "late-move"); add(ground, "late-ground");
+  std::string error;
+  check(server.start(&error), "player-motion: scripted real socket starts");
+  if (!server.port()) return;
+  RemoteProtocolSession session("127.0.0.1", server.port(), "player-motion", true);
+  check(session.start(&error) && wait_for_state(session, ConnectionState::Ready, 3000), "player-motion: real remote login");
+  session.drain_events();
+  auto deliver = [&](const char* marker) {
+    server.grant_next_frame(); server.grant_next_frame();
+    check(wait_until(session, 2000, [&] { return session.model().last_message == marker; }), marker);
+  };
+  deliver("walk");
+  const auto first = session.model().player;
+  check(first.x == 7.333333 && first.has_display_position && first.display_x >= 7 && first.display_x < first.x,
+        "player-motion: raw endpoint immediate, display remains in one-sample segment");
+  WorldView view; sync_world_from_model(view, session.model());
+  check(view.player.position.x == std::lround(protocol_to_world(first.x)) && view.player.has_display_position &&
+        view.player.displayed_position().x == std::lround(protocol_to_world(first.display_x)),
+        "player-motion: normal WorldView preserves exact raw/display separation");
+  auto fallback_model = session.model();
+  fallback_model.player.has_display_position = false;
+  sync_world_from_model(view, fallback_model);
+  check(!view.player.has_display_position && view.player.displayed_position().x == view.player.position.x,
+        "player-motion: display flag off falls back to raw authority");
+  fallback_model.player.has_display_position = true;
+  fallback_model.player.display_x = std::numeric_limits<double>::quiet_NaN();
+  sync_world_from_model(view, fallback_model);
+  check(!view.player.has_display_position && view.player.displayed_position().x == view.player.position.x,
+        "player-motion: nonfinite display cannot contaminate WorldView");
+  std::this_thread::sleep_for(std::chrono::milliseconds(20)); session.poll();
+  check(session.model().player.x == first.x && session.model().player.display_x > first.display_x,
+        "player-motion: render polls advance display without moving authority");
+  deliver("foreign"); deliver("old"); deliver("equal"); deliver("bad-sequence");
+  check(session.model().player.x == first.x && session.model().player.display_x == first.x,
+        "player-motion: foreign/stale/duplicate/malformed frames cannot rewind or extrapolate");
+  deliver("dash");
+  int dashed = 0;
+  for (const auto& e : session.drain_events()) if (e.type == PresentationEventType::PlayerDashed) {
+    ++dashed;
+    check(e.actor_id == "player-motion" && e.from_x == std::lround(protocol_to_world(7.333333)) &&
+          e.to_x == std::lround(protocol_to_world(10.666663)), "player-motion: accepted dash has actual world endpoints");
+  }
+  check(dashed == 1, "player-motion: exactly one accepted dash event");
+  std::this_thread::sleep_for(std::chrono::milliseconds(65)); session.poll();
+  check(session.model().player.display_x == 10.666663, "player-motion: oversized wire duration capped at 50ms");
+  deliver("duplicate-dash");
+  for (const auto& e : session.drain_events()) if (e.type == PresentationEventType::PlayerDashed) ++dashed;
+  check(dashed == 1, "player-motion: repeated movement never duplicates dash feedback");
+  deliver("teleport");
+  check(session.model().player.x == 16 && session.model().player.display_x == 16, "player-motion: zero-duration teleport snaps");
+  deliver("ground"); deliver("ground-pair");
+  int dropped = 0;
+  for (const auto& e : session.drain_events()) if (e.type == PresentationEventType::ItemDropped) {
+    ++dropped;
+    check(e.item_id == "real-drop-uuid" && e.actor_x == std::lround(protocol_to_world(15)) && e.actor_y == std::lround(protocol_to_world(8)),
+          "ground-events: server UUID and location retained");
+  }
+  check(dropped == 1 && session.model().ground.size() == 1, "ground-events: native pair admits one item immediately without snapshot");
+  deliver("death");
+  check(session.model().ground.size() == 1 && session.model().ground.front().uuid == "real-drop-uuid",
+        "ground-events: combat death does not invent an item or UUID");
+  deliver("retired"); deliver("late-move"); deliver("late-ground");
+  check(session.model().player.x == 38 && !session.model().player.has_display_position && session.model().ground.empty(),
+        "player-motion: retirement clears display and rejects stale movement/ground");
+  session.shutdown(); server.stop();
+}
+
+void appearance_choice_reaches_local_and_remote_play() {
+  using namespace verdigris::client;
+  LocalCoreSession local(812, "Local appearance", "female"); std::string error;
+  check(local.start(&error), "appearance-local: female session starts");
+  WorldView local_world; sync_world_from_model(local_world, local.model());
+  check(local.model().player.appearance == "female" && local_world.player.appearance == "female" &&
+        local.model().chronicle.houses.front().scions.front().appearance == "female",
+        "appearance-local: core identity reaches player, roster and renderer view");
+  sync_world_from_simulation(local_world, *local.simulation_for_scenarios());
+  check(local_world.player.appearance == "female", "appearance-local: direct simulation renderer view retains appearance");
+  local.shutdown();
+  verdigris::networking::WebSocketServer* server = nullptr; const auto port = start_server(server);
+  check(server != nullptr, "appearance-remote: real native server starts"); if (!server) return;
+  RemoteProtocolSession session("127.0.0.1", port, "appearance-player", false);
+  check(session.start(&error) && wait_until(session, 3000, [&] { return session.model().chronicles_pending; }),
+        "appearance-remote: real Chronicles admission starts");
+  session.submit(ClientCommand::found_house("Appearance House"));
+  check(wait_until(session, 3000, [&] { return !session.model().chronicle.houses.empty(); }),
+        "appearance-remote: created House appears in roster");
+  auto find = [&](const char* name) -> ClientScionEntry {
+    for (const auto& house : session.model().chronicle.houses) for (const auto& scion : house.scions)
+      if (scion.name == name) return scion;
+    return {};
+  };
+  session.submit(ClientCommand::create_scion("Iria", "female"));
+  check(wait_until(session, 3000, [&] { return find("Iria").appearance == "female"; }),
+        "appearance-remote: typed creation choice survives actual wire and roster preview");
+  const auto female = find("Iria");
+  session.submit(ClientCommand::create_scion("Tarin"));
+  check(wait_until(session, 3000, [&] { return !find("Tarin").id.empty(); }),
+        "appearance-remote: old one-argument creation keeps male default");
+  const auto male = find("Tarin");
+  check(male.appearance == "male", "appearance-remote: male preview has explicit saved identity");
+  session.submit(ClientCommand::set_out(female.id));
+  check(wait_until(session, 3000, [&] { return !session.model().chronicles_pending && session.model().player.appearance == "female"; }),
+        "appearance-remote: chosen female Scion actually enters play");
+  WorldView world; sync_world_from_model(world, session.model());
+  check(world.player.appearance == "female" && world.scion_name == "Iria",
+        "appearance-remote: active overview and renderer use selected record name and appearance");
+  const auto start = session.model().player.x;
+  session.submit(ClientCommand::move(1, 0));
+  check(wait_until(session, 2000, [&] { return session.model().player.x > start; }),
+        "appearance-remote: female player performs real authoritative movement");
+  sync_world_from_model(world, session.model());
+  check(world.player.appearance == "female", "appearance-remote: movement reconciliation preserves body choice");
+  session.submit(ClientCommand::select_scion(male.id, true));
+  check(wait_until(session, 3000, [&] { return session.model().player.appearance == "male"; }),
+        "appearance-remote: selecting saved male switches the renderer identity");
+  session.submit(ClientCommand::select_scion(female.id, true));
+  check(wait_until(session, 3000, [&] { return session.model().player.appearance == "female"; }),
+        "appearance-remote: reselecting saved female does not inherit the creation picker default");
+  session.send_raw("dev:kill", verdigris::networking::JsonValue::Object{});
+  check(wait_until(session, 3000, [&] {
+    for (const auto& house : session.model().chronicle.houses) for (const auto& fallen : house.crypt)
+      if (fallen.id == female.id && fallen.appearance == "female") return true;
+    return false;
+  }), "appearance-remote: fallen roster preserves the Scion's saved appearance");
+  session.shutdown(); server->stop(); delete server;
+}
+
+void remote_dash_return_retires_exit_and_preserves_banked_result() {
+  using namespace verdigris::client;
+  using JV = verdigris::networking::JsonValue;
+  verdigris::networking::WebSocketServer* server = nullptr;
+  const auto port = start_server(server);
+  check(server != nullptr, "dash-return: real native endpoint starts"); if (!server) return;
+  RemoteProtocolSession session("127.0.0.1", port, "dash-return-phase", true);
+  std::string error;
+  check(session.start(&error) && wait_for_state(session, ConnectionState::Ready, 3000), "dash-return: actual remote admission");
+  session.send_raw("dev:give", JV::Object{{"itemId", "garnet-amulet"}});
+  check(wait_until(session, 2000, [&] { for (const auto& item : session.model().inventory) if (item.id == "garnet-amulet") return true; return false; }),
+        "dash-return: real identifiable item available to bank");
+  const int carried = static_cast<int>(session.model().inventory.size() + session.model().worn.size());
+  session.send_raw("instance:enterSolo", JV::Object{{"template", "dungeon"}, {"layout", "warren"}});
+  check(wait_until(session, 3000, [&] { return session.model().scene.type == "instance" && session.model().scene.has_stairs_up; }),
+        "dash-return: authored entry publishes an exit");
+  WorldView world;
+  sync_world_from_model(world, session.model());
+  check(world.has_extraction && world.expedition_phase != ExpeditionPhaseView::Unknown,
+        "dash-return: active expedition actually has an exit phase before return");
+  const int level = session.model().player.level;
+  const auto progress = session.model().progression;
+  check(session.model().player.x == session.model().scene.stairs_up_x + 1 &&
+        session.model().player.y == session.model().scene.stairs_up_y,
+        "dash-return: real admission is east of upstairs, no test teleport needed");
+  session.drain_events();
+  session.submit(ClientCommand::aim(-1, 0));
+  session.submit(ClientCommand::use_action("dash"));
+  check(wait_until(session, 3000, [&] { return session.model().scene.type == "town"; }),
+        "dash-return: actual authoritative dash crosses upstairs and returns");
+  sync_world_from_model(world, session.model());
+  check(!session.model().scene.has_stairs_up && !world.has_extraction &&
+        world.expedition_phase == ExpeditionPhaseView::Unknown,
+        "dash-return: town clears dungeon stairs and expedition objective immediately");
+  check(session.model().scene.stairs_up_x == 0 && session.model().scene.stairs_up_y == 0,
+        "dash-return: retired exit coordinates are cleared too");
+  check(carried > 0 && session.model().stored_items == carried &&
+        world.stored_items == static_cast<std::size_t>(carried) && session.model().inventory.empty(),
+        "dash-return: real bank summary publishes exact stored total and emptied inventory");
+  bool extracted = false, banked_message = false;
+  for (const auto& event : session.drain_events()) {
+    extracted |= event.type == PresentationEventType::ExtractionCompleted;
+    banked_message |= event.type == PresentationEventType::Message && event.text.find("Banked ") == 0;
+  }
+  check(extracted && banked_message && session.model().extracted,
+        "dash-return: extraction confirmation and banked toast survive phase reset");
+  check(session.model().player.level == level &&
+        session.model().progression.present == progress.present &&
+        session.model().progression.earned_points == progress.earned_points,
+        "dash-return: town phase reset preserves level and progression");
+  session.send_raw("dev:state", JV::Object{{"requestId", "returned-store"}});
+  std::this_thread::sleep_for(std::chrono::milliseconds(70)); session.poll();
+  check(session.model().stored_items == carried && !session.model().scene.has_stairs_up,
+        "dash-return: authoritative store reconciliation does not double count or restore old exit");
+  session.send_raw("instance:enterSolo", JV::Object{{"template", "crypt"}, {"layout", "gauntlet"}});
+  check(wait_until(session, 3000, [&] { return session.model().scene.type == "instance" && session.model().scene.has_stairs_up; }),
+        "dash-return: next authored instance publishes its exit normally");
+  sync_world_from_model(world, session.model());
+  check(world.has_extraction && world.expedition_phase != ExpeditionPhaseView::Unknown &&
+        session.model().stored_items == carried,
+        "dash-return: new expedition restores its phase while House store persists");
+  session.shutdown(); server->stop(); delete server;
+}
+
+void remote_selected_pickup_dash_and_extract() {
+  using namespace verdigris::client;
+  using JV = verdigris::networking::JsonValue;
+  verdigris::networking::WebSocketServer* server = nullptr;
+  const auto port = start_server(server);
+  check(server != nullptr, "remote-controls: real native endpoint starts"); if (!server) return;
+  RemoteProtocolSession session("127.0.0.1", port, "remote-controls-guest", true);
+  std::string error;
+  check(session.start(&error) && wait_for_state(session, ConnectionState::Ready, 3000), "remote-controls: login ready");
+  session.send_raw("instance:enterSolo", JV::Object{{"template", "forest"}, {"layout", "clearings"}});
+  check(wait_until(session, 3000, [&] { return session.model().scene.type == "instance"; }), "remote-controls: actual authored instance");
+  session.send_raw("dev:clear-floor", JV::Object{}); // isolate input authority; no life/stat inflation
+  auto teleport = [&](int x, int y) {
+    session.send_raw("dev:teleport", JV::Object{{"x", x}, {"y", y}});
+    check(wait_until(session, 2000, [&] { return session.model().player.x == x && session.model().player.y == y; }), "remote-controls: setup placement acknowledged");
+  };
+  teleport(7, 7); session.drain_events();
+  session.submit(ClientCommand::aim(1, 0)); session.submit(ClientCommand::use_action("dash"));
+  check(wait_until(session, 2000, [&] { return session.model().player.x > 10.3; }), "remote-controls: dash travels through real client/server adapter");
+  int dashes = 0; for (const auto& e : session.drain_events()) if (e.type == PresentationEventType::PlayerDashed) ++dashes;
+  check(dashes == 1, "remote-controls: real server acceptance reaches PlayerDashed");
+  const double dash_x = session.model().player.x;
+  session.submit(ClientCommand::use_action("dash"));
+  std::this_thread::sleep_for(std::chrono::milliseconds(70)); session.poll();
+  for (const auto& e : session.drain_events()) if (e.type == PresentationEventType::PlayerDashed) ++dashes;
+  check(dashes == 1 && session.model().player.x == dash_x, "remote-controls: rejected repeat has neither travel nor dash effect");
+  teleport(7, 7);
+  session.send_raw("dev:drop", JV::Object{{"itemId", "garnet-amulet"}});
+  check(wait_until(session, 2000, [&] { for (const auto& i : session.model().ground) if (i.x == 7 && i.y == 7) return true; return false; }), "remote-controls: first server drop arrives");
+  std::string underfoot; for (const auto& i : session.model().ground) if (i.x == 7 && i.y == 7) underfoot = i.uuid;
+  teleport(8, 8);
+  session.send_raw("dev:drop", JV::Object{{"itemId", "garnet-amulet"}});
+  check(wait_until(session, 2000, [&] { for (const auto& i : session.model().ground) if (i.x == 8 && i.y == 8) return true; return false; }), "remote-controls: diagonal target drop arrives");
+  std::string selected; for (const auto& i : session.model().ground) if (i.x == 8 && i.y == 8) selected = i.uuid;
+  teleport(7, 7);
+  session.submit(ClientCommand::pick_up(selected));
+  check(wait_until(session, 2000, [&] { for (const auto& i : session.model().inventory) if (i.uuid == selected) return true; return false; }), "remote-controls: explicit UUID selects reachable diagonal drop");
+  bool underfoot_remains = false; for (const auto& i : session.model().ground) if (i.uuid == underfoot) underfoot_remains = true;
+  check(underfoot_remains, "remote-controls: targeted pickup does not substitute underfoot item");
+  session.submit(ClientCommand::extract()); session.poll();
+  check(session.model().scene.type == "instance", "remote-controls: distant extraction remains in instance");
+  const int ex = static_cast<int>(session.model().scene.stairs_up_x), ey = static_cast<int>(session.model().scene.stairs_up_y);
+  teleport(ex + 1, ey); session.drain_events();
+  session.submit(ClientCommand::extract());
+  check(wait_until(session, 2000, [&] { return session.model().scene.type == "town"; }), "remote-controls: contact Extract reaches real server return");
+  bool extracted = false; for (const auto& e : session.drain_events()) if (e.type == PresentationEventType::ExtractionCompleted) extracted = true;
+  check(extracted, "remote-controls: actual bank summary confirms extraction");
+  session.shutdown(); server->stop(); delete server;
+}
+
 void remote_monster_delta_preserves_authority_and_interpolates() {
   using namespace verdigris::client;
   using JV = verdigris::networking::JsonValue;
@@ -3347,6 +3621,10 @@ int main() {
   remote_session_replaced();
   remote_render_list_ops();
   remote_authored_crypt_pursuit_reaches_world_view();
+  remote_player_motion_and_ground_events();
+  appearance_choice_reaches_local_and_remote_play();
+  remote_dash_return_retires_exit_and_preserves_banked_result();
+  remote_selected_pickup_dash_and_extract();
   remote_monster_delta_preserves_authority_and_interpolates();
   remote_incoming_melee_actions_follow_wire_evidence();
   remote_passive_tree_absence_stays_absent();

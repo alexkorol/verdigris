@@ -1,0 +1,74 @@
+{
+  "verified_at_utc": "2026-09-10T23:35:25.665940+00:00",
+  "commands": [
+    "powershell -File docs/rebuild/fable-review/probes/run_terrain_bake_test.ps1",
+    "powershell -File docs/rebuild/fable-review/probes/run_gpu_test.ps1 -SkipBenchmark"
+  ],
+  "exit_codes": {
+    "terrain_bake": 0,
+    "gpu": 0
+  },
+  "compiler": "MSVC x64 /std:c++20 /EHsc /W4 /WX /O2",
+  "backend": {
+    "name": "NVIDIA GeForce GTX 1660 SUPER",
+    "vendor": "10de",
+    "device": "21c4",
+    "feature_level": "b000"
+  },
+  "terrain_renderer_prefix_sha256": "1c58d9e49a2ba808ca8165aab0de4ef9148a8847433f35fb0008b925183f229b",
+  "source_sha256": {
+    "native/client/fable_gpu.hpp": "3107055fa59a2095335449698c05a5b757d52ef9c22bf4dbda5224324d34ec2b",
+    "native/client/fable_camera.hpp": "4511651411823171a4b2105f2e491fd1d05c1478312be2b104d7e73f55e0d947",
+    "native/client/raster_ground.hpp": "d4d150f5927e71d5864dc286db79e46015d7f454039605d69cd6332f01bd624d",
+    "native/client/raster_art.hpp": "942bcc04b5ecb3ef6f65df0b28936858e50f160f99a025c70661bd4ff8a72220",
+    "docs/rebuild/fable-review/probes/test_gpu.cpp": "ceff5aa123f6c8d663e0b48710c60a1619675aa46810051bb4c7a438fcc5b649",
+    "docs/rebuild/fable-review/probes/test_terrain_bake.cpp": "011281470bdb975f5561a2610d6b05c5bedcef19733a627e3dcf21767ce57ad1",
+    "docs/rebuild/fable-review/probes/run_gpu_test.ps1": "80d409842301034e9d587fddcf6272ec7f56c31d8fceac57960aca9549175dc8",
+    "docs/rebuild/fable-review/probes/run_terrain_bake_test.ps1": "ed794619e0c1731eef0f47e191f66669ba3d55399d1137bb91f86b872b5286ef"
+  },
+  "report_sha256": {
+    "test_gpu.log": "ea9fe0dc2438b8bb1fa53f4679e3cc8b9494a27418e3854c9cb0e16a1f3628ae",
+    "test_terrain_bake.log": "1f5a8e41c1c8d52a63f77e3353f8de808631c2b554b9b7a26b597816754cbd11"
+  },
+  "terrain_checks": {
+    "started": 8,
+    "completed": 8,
+    "adopted": 5,
+    "discarded": 3,
+    "failed": 0,
+    "retained_bytes": 17867716,
+    "peak_bytes": 37343568,
+    "x_shared_texel_shift": 512,
+    "y_shared_texel_shift": 512,
+    "x_shared_vertex_shift": 44,
+    "y_shared_vertex_shift": 35,
+    "shared_rgba_exact": true,
+    "shared_geometry_exact": true
+  },
+  "ground_layer_pixel_checks": {
+    "foreground_ground_sprite_under_actor": true,
+    "foreground_normal_sprite_over_actor": true,
+    "transparent_hole_preserves_ground_sprite": true
+  },
+  "portable_runner_raw_pixel_parity": {
+    "actor.bgra": true,
+    "cloud-shadow.bgra": true,
+    "cutaway.bgra": true,
+    "dof.bgra": true,
+    "ground-decal.bgra": true,
+    "ground-layer.bgra": true,
+    "ground.bgra": true,
+    "lighting.bgra": true,
+    "near-clip.bgra": true,
+    "occlusion.bgra": true,
+    "rotation.bgra": true,
+    "standing-layer.bgra": true
+  },
+  "limitations": [
+    "Fixtures are isolated renderer evidence; production gameplay and full-scene frame budgets are covered separately.",
+    "The CPU probe uses the unchanged production Renderer with a minimal world/landmark fixture and an unused equipment-painter stub.",
+    "Initial scene/source loading may wait; same-scene movement polls one worker and retains the old patch.",
+    "Shared texture comparisons exclude the existing outer eight-texel interpolation clamp.",
+    "Fullscreen standalone benchmark deliberately skipped while a live client was open."
+  ]
+}

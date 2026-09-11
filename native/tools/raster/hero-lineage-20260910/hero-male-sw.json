@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "output_dir": "processed/male/sw",
+  "report_name": "hero-male-sw.provenance.json",
+  "shared_palette_max_colors": 96,
+  "defaults": {
+    "cell_size": 10,
+    "alpha_mode": "crisp",
+    "canvas": [
+      160,
+      192
+    ],
+    "padding": 32,
+    "fit": [
+      96,
+      128
+    ],
+    "trim": true,
+    "require_transparency": true,
+    "preserve_scale": true,
+    "anchor_source": [
+      627,
+      1131
+    ],
+    "acceptance": "staged_pending_visual_and_runtime_review"
+  },
+  "known_limitations": [
+    "Generated RGB checker mattes require explicitly recorded neutral removal.",
+    "One directional idle defines each clip pivot; source scale variations remain measurable.",
+    "Attack recovery reuses the accepted idle pose; two other poses are independently generated."
+  ],
+  "sheets": [
+    {
+      "source": "derived/male/sw/idle.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_male_sw",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "derived/male/sw/walk0.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_male_walk0_sw",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "derived/male/sw/walk1.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_male_walk1_sw",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "derived/male/sw/strike0.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_male_strike0_sw",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "derived/male/sw/strike1.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_male_strike1_sw",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -111,6 +111,7 @@ struct WorldActor {
   const verdigris::Vec2& displayed_position() const {
     return has_display_position ? display_position : position;
   }
+  std::string appearance = "male";
 };
 
 struct WorldCarriedItem {

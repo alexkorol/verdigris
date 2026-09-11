@@ -26,6 +26,7 @@ enum class PresentationEventType {
   Telegraph,
   Message,             // human-readable server/system line in `text`
   ProtocolError,       // malformed or unexpected envelope in `text`
+  PlayerDashed,        // accepted authority travel; from/to are world units
 };
 
 struct PresentationEvent {
@@ -60,6 +61,8 @@ struct PresentationEvent {
 namespace phase_a {
 
 inline constexpr int kTickMs = 50;
+inline constexpr int kDashDustPoints = 4;
+inline constexpr int kDashDustTtlTicks = 6;
 
 // Critical-hit treatment (consumes shipped combat:hit critical/attackStyle).
 inline constexpr int kCriticalNumberTtlTicks = 16;   // 800 ms, vs 600 ms normal

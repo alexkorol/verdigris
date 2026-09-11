@@ -23,6 +23,8 @@
 #include "verdigris/seasonal.hpp"
 #include "verdigris/networking.hpp"
 #include "camera2d.hpp"
+#include "fable_camera.hpp"
+#include <future>
 #include "render_list.hpp"
 #include "remote_play.hpp"
 #include "remote_session.hpp"
@@ -51,6 +53,7 @@ namespace phase_a = verdigris::client::phase_a;
 #include "audio_out.hpp"
 #include "vector_art.hpp"
 #include "raster_art.hpp"
+#include "fable_gpu.hpp"
 #include "raster_ground.hpp"
 #include "raster_walls.hpp"
 #include "raster_scenery.hpp"
@@ -149,6 +152,9 @@ struct Camera {
   double x = 0.0;
   double y = 0.0;
   double zoom = kCameraDefaultZoom;  // pixels per world unit (uniform, both axes)
+  bool perspective = false;
+  fable::HeightField elevation{};
+  double shake_x = 0.0, shake_y = 0.0;
 };
 
 struct ScreenPoint {
@@ -464,6 +470,7 @@ struct FloorCache {
 };
 
 struct ClientState {
+  HWND hwnd = nullptr;
   std::unique_ptr<verdigris::Simulation> simulation;
   std::unique_ptr<verdigris::client::IClientSession> session;
   std::vector<verdigris::Command> pending_local_commands;
@@ -475,6 +482,10 @@ struct ClientState {
   bool a = false;
   bool s = false;
   bool d = false;
+  bool move_tap_pending = false;
+  int move_tap_x = 0, move_tap_y = 0;
+  bool primary_down = false;
+  double primary_repeat_ms = 0;
   verdigris::client::input::Bindings bindings{};
   verdigris::client::input::BindStatus bind_status =
       verdigris::client::input::BindStatus::Ok;
@@ -699,8 +710,13 @@ struct ClientState {
   render::List render_list;
   Screen screen = Screen::Expedition;
   bool chronicles_mode = false;  // remote owner path launched at the front door
+  bool lineage_art = false;  // Normal play uses the reference-based eight-way actors.
   bool chronicles_oath = false;  // mortal-oath choice applied to the next admission
   std::vector<ChronicleAction> chronicles_menu;
+  std::string selected_appearance = "male";
+  struct ChronicleHit { RECT rect{}; ChronicleAction action; };
+  std::vector<ChronicleHit> chronicle_hits;
+  int chronicle_page = 0;
   std::string relic_toast;
   int relic_toast_ticks = 0;
   std::unordered_map<std::string, std::string> known_crypt_status;
@@ -1893,19 +1909,19 @@ void generate_scenery(ClientState& state) {
   SceneryRng rng(scenery_seed(route_id));
   if (route_id.rfind("town:", 0) == 0) {
     // The Crossroads: landmarks anchored on the server's own contract
-    // positions (fountain 38,115; Mara 49,103; Ludovicus 19,113; Rhea
-    // 31,121; the spawn wagon 47,119) so every interaction point is a
+    // positions (fountain38,115; Mara41,112; Ludovicus34,111; Rhea
+    //38,110; House wagon47,119) so every interaction point is a
     // visible thing. Non-solid: town collision is authoritatively open.
     const double t = kTileUnits;
     const double landmark_radius =
         static_cast<double>(verdigris::world_scale::kSceneryColliderRadius);
     add_scenery(state.scenery, SceneryKind::Shrine, 38.0 * t, 115.0 * t,
                 landmark_radius * 1.4, false, 1.1);  // the fountain
-    add_scenery(state.scenery, SceneryKind::Dwelling, 49.0 * t, 102.0 * t,
+    add_scenery(state.scenery, SceneryKind::Dwelling, 41.0 * t, 111.0 * t,
                 landmark_radius * 1.6, false, 0.95);  // Mara's general stall
-    add_scenery(state.scenery, SceneryKind::Dwelling, 19.0 * t, 112.0 * t,
+    add_scenery(state.scenery, SceneryKind::Dwelling, 34.0 * t, 110.0 * t,
                 landmark_radius * 1.6, false, 0.95);  // Ludovicus' boards
-    add_scenery(state.scenery, SceneryKind::Dwelling, 31.0 * t, 122.0 * t,
+    add_scenery(state.scenery, SceneryKind::Dwelling, 38.0 * t, 109.0 * t,
                 landmark_radius * 1.6, false, 0.95);  // Rhea's countinghouse
     add_scenery(state.scenery, SceneryKind::Ruin, 48.0 * t, 120.0 * t,
                 landmark_radius * 1.4, false, 0.9);  // the House wagon
@@ -1920,16 +1936,22 @@ void generate_scenery(ClientState& state) {
     add_scenery(state.scenery, SceneryKind::Gate, 12.0 * t, 115.0 * t,
                 landmark_radius * 1.5, false, 1.0);
     // A loose ring of trees frames the market square without crowding it.
-    add_scenery(state.scenery, SceneryKind::Tree, 26.0 * t, 108.0 * t,
+    add_scenery(state.scenery, SceneryKind::Tree, 31.0 * t, 112.0 * t,
                 landmark_radius, false, 1.1);
     add_scenery(state.scenery, SceneryKind::Tree, 44.0 * t, 111.0 * t,
                 landmark_radius, false, 0.9);
-    add_scenery(state.scenery, SceneryKind::Tree, 35.0 * t, 124.0 * t,
+    add_scenery(state.scenery, SceneryKind::Tree, 34.0 * t, 117.0 * t,
                 landmark_radius, false, 1.0);
-    add_scenery(state.scenery, SceneryKind::Tree, 52.0 * t, 116.0 * t,
+    add_scenery(state.scenery, SceneryKind::Tree, 43.0 * t, 117.0 * t,
                 landmark_radius, false, 1.05);
     add_scenery(state.scenery, SceneryKind::Tree, 22.0 * t, 119.0 * t,
                 landmark_radius, false, 0.85);
+    finish_scenery_layout(state);
+    return;
+  }
+  // Remote indoor routes can contain ':1:' too. Their theme decides the
+  // environment; a route number must not populate a dungeon with village trees.
+  if(state.session && (state.world.theme=="dungeon" || state.world.theme=="crypt")) {
     finish_scenery_layout(state);
     return;
   }
@@ -2201,8 +2223,15 @@ const SkillInfo* skill_for_key(const verdigris::client::input::Bindings& binding
   return nullptr;
 }
 
+void dispatch_aim_if_changed(ClientState& state, const RECT& bounds, bool force);
+
 void dispatch_skill(ClientState& state, const SkillInfo& skill) {
   if (!try_gameplay_intent(state, input_focus::Intent::Attack)) return;
+  // A click can arrive between fixed ticks. Send its current heading before
+  // the action so the server and the immediate strike use the same direction.
+  RECT aim_bounds{};
+  if (state.hwnd && GetClientRect(state.hwnd, &aim_bounds))
+    dispatch_aim_if_changed(state, aim_bounds, true);
   // Do not duplicate target/range/cooldown rules in the client.  A key press
   // is a presentation request; the core decides whether it resolves.
   const char* remote = "melee";
@@ -2226,10 +2255,12 @@ void dispatch_skill(ClientState& state, const SkillInfo& skill) {
     // enforced server-side either way.
     if (player.alive && state.world.tick != state.last_predicted_swing_tick) {
       state.last_predicted_swing_tick = state.world.tick;
+      // The wire reply has not arrived yet. Use the aim we just submitted,
+      // rather than animating the previous authoritative facing for a frame.
+      const auto facing=state.aim_direction_initialized?state.last_aim_direction:player.facing;
       verdigris::client::present_strike(
           state.effects, player.id, player.position,
-          std::atan2(static_cast<double>(player.facing.y),
-                     static_cast<double>(player.facing.x)),
+          std::atan2(static_cast<double>(facing.y),static_cast<double>(facing.x)),
           skill.action == verdigris::ActionType::Sweep, true);
     }
   }
@@ -2304,7 +2335,20 @@ COLORREF fade_to_background(COLORREF color, double remaining) {
              static_cast<int>(bg_b + (GetBValue(color) - bg_b) * t));
 }
 
+fable::Projection fable_projection(const Camera& camera, const RECT& bounds) {
+  const double user_zoom = camera.zoom /
+      (kCameraDefaultZoom * zoom_height_factor(static_cast<int>(bounds.bottom)));
+  return fable::make_projection({camera.x + camera.shake_x, camera.y + camera.shake_y,
+      fable::fit_zoom(bounds.right, bounds.bottom, user_zoom),
+      static_cast<double>(bounds.right), static_cast<double>(bounds.bottom)});
+}
+
 ScreenPoint project(const Camera& camera, const RECT& bounds, double wx, double wy) {
+  if (camera.perspective) {
+    const auto p = fable::project_ground(fable_projection(camera, bounds), camera.elevation, wx, wy);
+    if (!p.visible) return {-100000, -100000, 0.0};
+    return {static_cast<int>(std::lround(p.x)), static_cast<int>(std::lround(p.y)), p.scale};
+  }
   const camera2d::Camera cam{camera.x, camera.y, camera.zoom};
   const camera2d::Screen screen{bounds.right, bounds.bottom};
   const camera2d::Point point = camera2d::project(cam, screen, wx, wy);
@@ -2314,6 +2358,12 @@ ScreenPoint project(const Camera& camera, const RECT& bounds, double wx, double 
 // Inverse of project() on the ground plane, good enough for mouse aim.
 void unproject(const Camera& camera, const RECT& bounds, int sx, int sy, double& wx,
                double& wy) {
+  if (camera.perspective) {
+    if (const auto p = fable::pick_ground(fable_projection(camera, bounds), camera.elevation, sx, sy)) {
+      wx = p->x; wy = p->y;
+    }
+    return;
+  }
   const camera2d::Camera cam{camera.x, camera.y, camera.zoom};
   const camera2d::Screen screen{bounds.right, bounds.bottom};
   camera2d::unproject(cam, screen, sx, sy, wx, wy);
@@ -3016,8 +3066,9 @@ raster_ground::Layout ground_layout(const std::string& route_id,
     layout.road(38*t, 115*t, 64*t, 114*t, 1.25*t);
     layout.road(38*t, 115*t, 37*t, 138*t, 1.25*t);
     layout.road(38*t, 115*t, 12*t, 115*t, 1.25*t);
-    layout.road(38*t, 115*t, 49*t, 104*t, t);
-    layout.road(38*t, 115*t, 31*t, 120*t, t);
+    layout.road(38*t, 115*t, 41*t, 112*t, .65*t);
+    layout.road(38*t, 115*t, 34*t, 111*t, .65*t);
+    layout.road(38*t, 115*t, 38*t, 110*t, .65*t);
     layout.road(38*t, 115*t, 47*t, 119*t, t);
     layout.road(38*t, 115*t, 38*t, 115*t, 3*t);
   } else {
@@ -3688,9 +3739,9 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
                     static_cast<double>(base.y), 0.0, fx.value, damage_label});
       // Start above the pixel actor's head, leaving the hands, hit spark and
       // footing readable. Critical hits rise farther over their longer life.
-      const int lift = static_cast<int>(kTileUnits *
-                                        (1.45 + grow * (fx.critical ? 1.05 : 0.75)) *
-                                        base.scale);
+      const double world_lift=camera.perspective ? 110.0+grow*(fx.critical?65:45) :
+          kTileUnits*(1.45+grow*(fx.critical?1.05:.75));
+      const int lift=static_cast<int>(world_lift*base.scale);
       const COLORREF color = base_color;
       SetBkMode(dc, TRANSPARENT);
       // TASK-0142: bold numerals so the resolved damage reads instantly.
@@ -3855,8 +3906,11 @@ verdigris::Vec2 quantized_mouse_aim(const ClientState& state, const RECT& bounds
   unproject(state.camera, bounds, state.mouse.x, state.mouse.y, wx, wy);
   const double dx = wx - static_cast<double>(player.position.x);
   const double dy = wy - static_cast<double>(player.position.y);
-  const int qx = dx < 0.0 ? -1 : dx > 0.0 ? 1 : 0;
-  const int qy = dy < 0.0 ? -1 : dy > 0.0 ? 1 : 0;
+  // Eight equal angular sectors; sign-only quantization made cardinal aim
+  // almost impossible because a one-pixel vertical offset selected a diagonal.
+  constexpr double sector = 2.414213562373095;
+  const int qx = std::abs(dy) > std::abs(dx) * sector ? 0 : dx < 0 ? -1 : dx > 0 ? 1 : 0;
+  const int qy = std::abs(dx) > std::abs(dy) * sector ? 0 : dy < 0 ? -1 : dy > 0 ? 1 : 0;
   return {qx, qy};
 }
 
@@ -5349,6 +5403,8 @@ void paint_minimap(ClientState& state, HDC dc, const RECT& bounds, render::List&
   const int zoom_step = verdigris::client::ui::clamp_zoom(state.minimap_zoom);
   const int opacity = verdigris::client::ui::clamp_opacity(state.minimap_opacity);
   skin::panel(dc, panel, skin::kPanelBorder, static_cast<BYTE>(opacity));
+  const int map_clip=SaveDC(dc);
+  IntersectClipRect(dc,panel.left+2,panel.top+2,panel.right-2,panel.bottom-2);
 
   const WorldView& world = state.world;
   const double arena = static_cast<double>(verdigris::world_scale::kArenaHalfExtent);
@@ -5427,6 +5483,7 @@ void paint_minimap(ClientState& state, HDC dc, const RECT& bounds, render::List&
   Polygon(dc, arrow, 3);
   SelectObject(dc, old_arrow_brush);
   DeleteObject(player_brush);
+  RestoreDC(dc,map_clip);
 
   rl.push_back({render::Op::Minimap, static_cast<double>(panel.left),
                 static_cast<double>(panel.top), static_cast<double>(kSize), dots, "panel"});
@@ -5551,26 +5608,25 @@ std::vector<ChronicleAction> chronicle_actions(const ClientState& state) {
   for (const auto& house : model.chronicle.houses) {
     for (const auto& scion : house.scions) {
       ChronicleAction action;
-      action.key = std::to_string(std::min(slot, 9));
+      action.key = slot<=9?std::to_string(slot):std::string();
       // The mortal oath rides only on player:chronicles:select on the wire,
       // so an armed oath admits through select; a plain journey claims the
       // road purse via chronicles:scion:set-out.
       if (state.chronicles_oath || succession_pending) {
         action.command = "select-scion";
         action.arg = scion.id;
-        action.label = "Set out as " + scion.name;
+        action.label = "Set out as " + scion.name + (scion.appearance=="female"?" (female)":" (male)");
         if (succession_pending)
           action.label += ", heir of " + model.chronicle.fallen.name;
         if (state.chronicles_oath) action.label += " under the mortal oath";
       } else {
         action.command = "set-out";
         action.arg = scion.id;
-        action.label = "Set out as " + scion.name;
+        action.label = "Set out as " + scion.name + (scion.appearance=="female"?" (female)":" (male)");
       }
       menu.push_back(std::move(action));
-      if (++slot > 9) break;
+      ++slot;
     }
-    if (slot > 9) break;
   }
   menu.push_back({"C", "create-scion", "",
                   "Name a new Scion (" + next_scion_name(state) + ")"});
@@ -5624,7 +5680,7 @@ void submit_chronicle_action(ClientState& state, const ChronicleAction& action) 
     state.session->submit(ClientCommand::found_house(house_display_name(state)));
     show_hint(state, "Your House enters the chronicles");
   } else if (action.command == "create-scion") {
-    state.session->submit(ClientCommand::create_scion(next_scion_name(state)));
+    state.session->submit(ClientCommand::create_scion(next_scion_name(state),state.selected_appearance));
     show_hint(state, "A new Scion joins the lineage");
   } else if (action.command == "select-scion") {
     state.session->submit(
@@ -5636,7 +5692,20 @@ void submit_chronicle_action(ClientState& state, const ChronicleAction& action) 
     show_hint(state, "The wagon rolls out");
   } else if (action.command == "oath-toggle") {
     state.chronicles_oath = !state.chronicles_oath;
+  } else if (action.command == "appearance") {
+    state.selected_appearance=action.arg=="female"?"female":"male";
+  } else if (action.command == "roster-next") {
+    ++state.chronicle_page;
+  } else if (action.command == "roster-prev") {
+    state.chronicle_page=std::max(0,state.chronicle_page-1);
   }
+}
+
+bool handle_chronicles_click(ClientState& state,POINT point) {
+  for(const auto& hit:state.chronicle_hits) if(PtInRect(&hit.rect,point)) {
+    const auto action=hit.action;submit_chronicle_action(state,action);return true;
+  }
+  return false;
 }
 
 void handle_chronicles_key(ClientState& state, WPARAM wparam) {
@@ -5847,122 +5916,12 @@ std::string progression_capture_dir() {
   return "captures";
 }
 
+#include "chronicles_view.hpp"
+
 void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
                                  render::List& rl) {
-  const auto& model = state.session ? state.session->model() : verdigris::client::ClientModel{};
-  RECT panel{0, 0, bounds.right, bounds.bottom};
-  HBRUSH backdrop = CreateSolidBrush(RGB(10, 14, 12));
-  FillRect(dc, &panel, backdrop);
-  DeleteObject(backdrop);
-
-  struct Line {
-    std::string label;
-    std::string text;
-    COLORREF color;
-    bool accent;
-  };
-  std::vector<Line> lines;
-  lines.push_back({"title", "V E R D I G R I S   C H R O N I C L E S",
-                   RGB(120, 214, 168), true});
-  {
-    std::string status_line;
-    if (!state.session ||
-        state.session->connection_state() ==
-            verdigris::client::ConnectionState::Disconnected) {
-      status_line = "The chronicles lie closed - connection lost.";
-    } else if (!model.chronicle.present) {
-      status_line = "Opening the chronicles...";
-    } else {
-      status_line = "Account of " +
-                    (model.chronicle.account_name.empty() ? std::string("the guest")
-                                                          : model.chronicle.account_name);
-    }
-    lines.push_back({"account", status_line, RGB(185, 198, 188), false});
-  }
-
-  if (!model.chronicle.present || model.chronicle.houses.empty()) {
-    lines.push_back({"prompt", "No House stands in these pages yet.",
-                     RGB(230, 235, 220), false});
-  } else {
-    for (const auto& house : model.chronicle.houses) {
-      lines.push_back({"house " + house.name,
-                       painted_house_name(house.name), RGB(239, 208, 116), false});
-      for (const auto& scion : house.scions) {
-        std::string row = "  Scion " + scion.name + " - level " +
-                          std::to_string(scion.level) +
-                          (scion.mortal ? " (mortal)" : "");
-        lines.push_back({"scion " + scion.id, row, RGB(140, 208, 172), false});
-      }
-      for (const auto& entry : house.crypt) {
-        std::string relic = "rests unrecorded";
-        if (!entry.relic_status.empty()) {
-          relic = "heirloom " + entry.relic_status;
-          if (entry.relic_count > 0)
-            relic += " (" + std::to_string(entry.relic_count) + " to circulation)";
-        }
-        lines.push_back({"crypt " + entry.id,
-                         "  In the crypt: " + entry.name + " - " + relic,
-                         RGB(150, 160, 170), false});
-      }
-    }
-  }
-  if (!model.chronicle.fallen.name.empty()) {
-    lines.push_back(
-        {"fallen:" + model.chronicle.fallen.scion_id,
-         "The chronicle records the fall of " + model.chronicle.fallen.name +
-             " (level " + std::to_string(model.chronicle.fallen.level) + ").",
-         RGB(214, 92, 72), false});
-  }
-
-  state.chronicles_menu = chronicle_actions(state);
-  for (const auto& action : state.chronicles_menu) {
-    lines.push_back({"action:" + action.command +
-                         (action.arg.empty() ? "" : ":" + action.arg),
-                     "[" + action.key + "] " + action.label, RGB(239, 208, 116), false});
-  }
-  lines.push_back({state.chronicles_oath ? "oath:on" : "oath:off",
-                   std::string("Oath field: ") +
-                       (state.chronicles_oath ? "mortal - death is final"
-                                              : "soft - wounds can be recovered"),
-                   RGB(185, 198, 188), false});
-
-  SetBkMode(dc, TRANSPARENT);
-  const int door_scale = hud_scale(static_cast<int>(bounds.bottom));
-  skin::set_ui_scale(door_scale);
-  const int left =
-      std::max(24, (static_cast<int>(bounds.right) - 620 * door_scale) / 2);
-  int block_height = 24 * door_scale;
-  for (const auto& line : lines)
-    block_height += (line.accent ? 44 : 26) * door_scale;
-  // Vertically centred chronicle page: a framed panel behind the text block
-  // so the front door reads as a bound ledger, not text floating on black.
-  int y = std::max(64 * door_scale,
-                   (static_cast<int>(bounds.bottom) - block_height) / 2);
-  {
-    RECT page{left - 36 * door_scale, y - 28 * door_scale,
-              left + 656 * door_scale,
-              std::min(static_cast<int>(bounds.bottom) - 32, y + block_height)};
-    skin::panel(dc, page, skin::kPanelBorder, 250, 10.0f);
-  }
-  for (const auto& line : lines) {
-    rl.push_back({render::Op::Chronicles, static_cast<double>(left),
-                  static_cast<double>(y), 0.0, 0, line.label});
-    HGDIOBJ old_font = SelectObject(
-        dc, line.accent ? skin::font_title() : skin::font_heading());
-    SetTextColor(dc, line.color);
-    TextOutA(dc, left, y, line.text.c_str(), static_cast<int>(line.text.size()));
-    SelectObject(dc, old_font);
-    y += (line.accent ? 44 : 26) * door_scale;
-    if (y > bounds.bottom - 40) break;
-  }
-  if (state.relic_toast_ticks > 0 && !state.relic_toast.empty()) {
-    rl.push_back({render::Op::Chronicles, 0.0, 0.0, 0.0, 0, "relic-toast"});
-    SetTextColor(dc, RGB(239, 208, 116));
-    TextOutA(dc, 18, bounds.bottom - 28, state.relic_toast.c_str(),
-             static_cast<int>(state.relic_toast.size()));
-  }
+  paint_lineage_door(state,dc,bounds,rl);
 }
-
 // Shared owner-facing chrome: the visible connection state lives on both
 // screens — a failed connection is always explicit, never a silent fallback.
 // TASK-0153 rev2: the chip draws where the measured top-HUD planner puts it.
@@ -9441,6 +9400,24 @@ const char* raster_direction(double x, double y) {
   return y < 0.0 ? (x < 0.0 ? "nw" : "ne") : (x < 0.0 ? "sw" : "se");
 }
 
+bool lineage_family(const char* family) {
+  return std::strcmp(family,"hero_male")==0 || std::strcmp(family,"hero_female")==0;
+}
+
+const char* actor_raster_direction(const char* family,double x,double y) {
+  if(!lineage_family(family)) return raster_direction(x,y);
+  constexpr double sector=2.414213562373095;
+  if(std::abs(x)+std::abs(y)<.0001) return "s";
+  if(std::abs(x)>std::abs(y)*sector) return x<0?"w":"e";
+  if(std::abs(y)>std::abs(x)*sector) return y<0?"n":"s";
+  return raster_direction(x,y);
+}
+
+const char* player_raster_family(const ClientState& state) {
+  if(!state.lineage_art) return "hero";
+  return state.world.player.appearance=="female"?"hero_female":"hero_male";
+}
+
 struct RasterDirectionalClip {
   const char* direction;
   int frames;
@@ -9463,6 +9440,7 @@ constexpr RasterDirectionalClip kRaiderWalkClips[] = {
 constexpr RasterDirectionalClip kWightWalkClips[] = {{"sw", 8, -1, 1}};
 
 int raster_walk_frames(const char* family, const std::string& direction) {
+  if(lineage_family(family)) return 2;
   if (std::strcmp(family, "raider") == 0) {
     for (const auto& clip : kRaiderWalkClips)
       if (direction == clip.direction) return clip.frames;
@@ -9480,6 +9458,7 @@ int raster_walk_frames(const char* family, const std::string& direction) {
 }
 
 int raster_strike_frames(const char* family, const std::string& direction) {
+  if(lineage_family(family)) return 3;
   if (std::strcmp(family, "raider") == 0 && direction == "sw") return 6;
   if (std::strcmp(family, "hero") != 0) return 0;
   for (const auto& clip : kHeroStrikeClips)
@@ -9495,8 +9474,12 @@ void advance_actor_motion(ClientState& state, double dt_ms) {
       const double dx = static_cast<double>(pos.x - motion.last_pos.x);
       const double dy = static_cast<double>(pos.y - motion.last_pos.y);
       const double moved = std::sqrt(dx * dx + dy * dy);
-      motion.walk_phase =
-          std::fmod(motion.walk_phase + moved / (kTileUnits * 0.9), 1.0);
+      double stride=moved/(kTileUnits*.9);
+      // Two contact poses need readable holds at the remote road speed.
+      // Keep slow travel distance-driven, and cap rapid travel/dashes to a
+      // 280ms cycle without changing any authoritative movement distance.
+      if(state.lineage_art && id=="player") stride=std::min(stride,dt_ms/280.0);
+      motion.walk_phase=std::fmod(motion.walk_phase+stride,1.0);
       // Local authority advances at 50 ms; remote monster endpoints arrive
       // at 150 ms and supply interpolated display positions. Presentation
       // often paints every 15 ms. Smoothing each unchanged sample
@@ -9512,7 +9495,7 @@ void advance_actor_motion(ClientState& state, double dt_ms) {
     motion.last_pos = pos;
     motion.has_last = true;
   };
-  advance("player", state.world.player.position);
+  advance("player", state.world.player.displayed_position());
   for (const auto& monster : state.world.monsters)
     advance(monster.id, monster.displayed_position());
   if (state.motions.size() > 256) state.motions.clear();
@@ -9522,7 +9505,7 @@ bool draw_raster_actor(HDC dc, const char* family, const ScreenPoint& base,
                        int height, double facing_x, double facing_y,
                        double attack_phase, double moving, double walk_phase,
                        std::string* drawn_asset = nullptr) {
-  const std::string direction = raster_direction(facing_x, facing_y);
+  const std::string direction = actor_raster_direction(family,facing_x,facing_y);
   const int strike_frames = raster_strike_frames(family, direction);
   std::string pose;
   // A negative phase means no strike. The confirmed contact event starts at
@@ -9586,6 +9569,8 @@ void draw_raster_target_flash(HDC dc, const ClientState& state,
                   "raster:target-flash:" + actor_id});
 }
 
+#include "fable_world.hpp"
+
 void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   sync_world(state);
   if (state.session) {
@@ -9634,6 +9619,17 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     return;
   }
 
+  const WorldActor& player = world.player;
+  bool fable_painted = state.camera.perspective && fable_world::paint(state, dc, bounds, rl);
+  if (state.camera.perspective && !fable_painted) {
+    state.camera.perspective = false;
+    state.hint = "GPU renderer unavailable: " + fable_world::renderer().gpu.error();
+    state.hint_ticks = 200;
+  }
+  if (fable_painted) {
+    QueryPerformanceCounter(&section_t1);
+    state.paint_ms_floor = section_ms(section_t0, section_t1);
+  } else {
   draw_floor(state.billboards, dc, state.camera, bounds, world.route_id, rl,
              &state.floor_cache, world.theme,
              ground_layout(world.route_id, world.theme, state.scenery));
@@ -9684,8 +9680,6 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     if (fx.kind == EffectFx::Kind::ActorFall &&
         fx.age >= verdigris::client::kActorFallMotionTicks)
       draw_effect(dc, state.camera, bounds, fx, rl);
-
-  const WorldActor& player = world.player;
 
   // Collect every standing element, then draw back-to-front by the top-down
   // painter's key (world y first, then world x) so lower entities render in
@@ -9816,9 +9810,17 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
           pose.attack = std::max(0.0, attack_phase);
           pose.attack_stage = player_attack_stage(state);
           pose.mirror = player.facing.x < 0;
-          const int height = std::max(10, static_cast<int>(kTileUnits * 1.75 * base.scale));
+          const char* family=player_raster_family(state);
+          const int height = std::max(10, static_cast<int>((state.lineage_art?184:kTileUnits*1.75)*base.scale));
+          ScreenPoint art_base=base;
+          if(state.lineage_art) {
+            art_base.y+=height*32/192;
+            if(attack_phase<0 && motion.moving>.2) {
+              actor_facing_x=motion.travel_direction.x;actor_facing_y=motion.travel_direction.y;
+            }
+          }
           std::string raster_pose;
-          if (draw_raster_actor(dc, "hero", base, height, actor_facing_x,
+          if (draw_raster_actor(dc, family, art_base, height, actor_facing_x,
                                 actor_facing_y, attack_phase, motion.moving,
                                 motion.walk_phase, &raster_pose)) {
             rl.push_back({render::Op::Hud, static_cast<double>(base.x),
@@ -9827,9 +9829,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                           static_cast<double>(base.y), 0.0, 0,
                           "raster:pose:" + raster_pose});
             draw_raster_target_flash(dc, state, player.id, raster_pose,
-                                      base, height, rl);
-            draw_raster_equipment(dc, held, base, height, raster_pose);
-            wall_player_ink = raster_walls::sprite_ink(raster_pose.c_str(), base.x, base.y, height);
+                                      art_base, height, rl);
+            draw_raster_equipment(dc, held, art_base, height, raster_pose);
+            wall_player_ink = raster_walls::sprite_ink(raster_pose.c_str(), art_base.x, art_base.y, height);
           } else {
             vector_art::humanoid(dc, base.x, base.y, height,
                                  vector_art::player_style(), pose, held);
@@ -10254,6 +10256,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                   static_cast<double>(chip.top), 0.0, 0, "beat:" + entry.first});
   }
 
+  }
   QueryPerformanceCounter(&section_t2);
   state.paint_ms_world = section_ms(section_t1, section_t2);
   paint_minimap(state, dc, bounds, rl);
@@ -10336,7 +10339,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     const bool plates_ready =
         state.billboards.player.ready() && state.billboards.raider.ready() &&
         state.billboards.boss.ready();
-    const bool show_art_chip = state.debug_overlay || !plates_ready;
+    const bool show_art_chip = state.debug_overlay || (!state.camera.perspective && !plates_ready);
     const bool show_mute_chip =
         state.audio_sink && state.audio_sink->muted();
     const char* mute_text = "audio muted";
@@ -10390,8 +10393,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       GetTextExtentPoint32A(dc, lost_text, sizeof(lost_text) - 1, &lost_extent);
     }
     const int audio_scale = hud_scale(static_cast<int>(bounds.bottom));
+    const bool show_mixer = state.audio_sink && (!state.camera.perspective || state.debug_overlay);
     const skin::HudTextLines mixer_lines =
-        state.audio_sink ? audio_mixer_lines(state) : skin::HudTextLines{};
+        show_mixer ? audio_mixer_lines(state) : skin::HudTextLines{};
     const auto mixer_plan = skin::measure_hud_card(dc, 180 * audio_scale,
                                                   mixer_lines);
     const auto chip_size = [](const SIZE& extent, bool visible) {
@@ -10632,7 +10636,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       if (!show_art_chip)
         state.hud_rect_trace.push_back({"art", {at.x, at.y, at.w, at.h}});
     }
-    if (state.audio_sink && placed_audio.mixer.w > 0)
+    if (show_mixer && placed_audio.mixer.w > 0)
       paint_audio_mixer_hud(state, dc, placed_audio.mixer.x, placed_audio.mixer.y,
                            mixer_lines, mixer_plan, rl);
     if (state.link_lost && placed_audio.lost.w > 0)
@@ -10981,6 +10985,8 @@ void fixed_game_tick(ClientState& state, const RECT& bounds) {
       state.screen == Screen::Chronicles && state.session != nullptr;
   int dx = (state.d ? 1 : 0) - (state.a ? 1 : 0);
   int dy = (state.s ? 1 : 0) - (state.w ? 1 : 0);
+  if(dx==0 && dy==0 && state.move_tap_pending) {dx=state.move_tap_x;dy=state.move_tap_y;}
+  state.move_tap_pending=false;
   if (state.pad.connected) {
     dx = std::clamp(dx + state.pad.dx, -1, 1);
     dy = std::clamp(dy + state.pad.dy, -1, 1);
@@ -11057,6 +11063,15 @@ void timer_step(HWND window, ClientState& state) {
   state.last_frame_qpc = now.QuadPart;
 
   if (state.session) state.session->poll();
+  if(!gameplay_intent_passes(state,input_focus::Intent::Attack)) state.primary_down=false;
+  if(state.primary_down) {
+    state.primary_repeat_ms-=dt_ms;
+    if(state.primary_repeat_ms<=0) {
+      static constexpr SkillInfo primary{'\0',"Strike",verdigris::ActionType::Melee};
+      dispatch_skill(state,primary);
+      state.primary_repeat_ms=250;
+    }
+  }
   state.tick_accum_ms += dt_ms;
   while (state.tick_accum_ms >= 50.0) {
     state.tick_accum_ms -= 50.0;
@@ -11070,13 +11085,14 @@ void timer_step(HWND window, ClientState& state) {
     // Follow smoothing (dt-correct exponential, equal to the historical 0.2
     // per 50 ms). Across a scene load the camera starts continents away —
     // snap instead of panning the whole map past the player.
-    const double gap_x = state.world.player.position.x - state.camera.x;
-    const double gap_y = state.world.player.position.y - state.camera.y;
+    const auto& shown_player = state.world.player.displayed_position();
+    const double gap_x = shown_player.x - state.camera.x;
+    const double gap_y = shown_player.y - state.camera.y;
     const double snap_gap =
         static_cast<double>(verdigris::world_scale::kArenaHalfExtent);
     if (std::abs(gap_x) > snap_gap || std::abs(gap_y) > snap_gap) {
-      state.camera.x = static_cast<double>(state.world.player.position.x);
-      state.camera.y = static_cast<double>(state.world.player.position.y);
+      state.camera.x = static_cast<double>(shown_player.x);
+      state.camera.y = static_cast<double>(shown_player.y);
     } else {
       const double keep = std::pow(0.8, dt_ms / 50.0);
       state.camera.x += gap_x * (1.0 - keep);
@@ -11089,11 +11105,28 @@ void dispatch_dash(ClientState& state) {
   if (!try_gameplay_intent(state, input_focus::Intent::Attack)) return;
   sync_world(state);
   if (!state.world.player.alive) return;
-  if (movement_hits_scenery(state, state.world.player.facing.x,
-                            state.world.player.facing.y, 10)) {
+  verdigris::Vec2 direction{(state.d?1:0)-(state.a?1:0), (state.s?1:0)-(state.w?1:0)};
+  if(state.pad.connected) {
+    direction.x=std::clamp(direction.x+state.pad.dx,-1,1);
+    direction.y=std::clamp(direction.y+state.pad.dy,-1,1);
+  }
+  if(direction.x==0 && direction.y==0) {
+    direction=state.world.player.facing;
+    RECT bounds{};
+    if(state.hwnd && GetClientRect(state.hwnd,&bounds)) {
+      verdigris::Actor stand_in;stand_in.position=state.world.player.position;
+      direction=quantized_mouse_aim(state,bounds,stand_in);
+    }
+  }
+  if(direction.x==0 && direction.y==0) return;
+  if (movement_hits_scenery(state, direction.x,direction.y,10)) {
     show_hint(state, "Dash blocked by scenery");
     return;
   }
+  // Movement-led evasion takes precedence over an old mouse heading. Keep
+  // aim immediately before dash in the ordered command stream; the server
+  // still decides collision, cooldown and the accepted travel distance.
+  submit_aim(state,direction.x,direction.y);
   submit_action(state, verdigris::ActionType::Dash, "dash");
 }
 
@@ -11101,10 +11134,21 @@ void apply_bound_key_down(ClientState& state, WPARAM wparam) {
   using verdigris::client::input::Action;
   using verdigris::client::input::matches;
   const int code = static_cast<int>(wparam);
+  const bool fresh_move=(matches(state.bindings,Action::MoveN,code)&&!state.w) ||
+      (matches(state.bindings,Action::MoveW,code)&&!state.a) ||
+      (matches(state.bindings,Action::MoveS,code)&&!state.s) ||
+      (matches(state.bindings,Action::MoveE,code)&&!state.d);
   if (matches(state.bindings, Action::MoveN, code)) state.w = true;
   if (matches(state.bindings, Action::MoveW, code)) state.a = true;
   if (matches(state.bindings, Action::MoveS, code)) state.s = true;
   if (matches(state.bindings, Action::MoveE, code)) state.d = true;
+  if(fresh_move && state.screen!=Screen::Chronicles && gameplay_intent_passes(state,input_focus::Intent::Move)) {
+    // Retain one bounded sample when keydown and keyup both arrive before the
+    // next50ms authority tick. Held input still sends only one move per tick.
+    state.move_tap_x=(state.d?1:0)-(state.a?1:0);
+    state.move_tap_y=(state.s?1:0)-(state.w?1:0);
+    state.move_tap_pending=true;
+  }
   if (matches(state.bindings, Action::Dash, code)) dispatch_dash(state);
   if (const SkillInfo* skill = skill_for_key(state.bindings, wparam))
     dispatch_skill(state, *skill);
@@ -11269,6 +11313,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       auto* create = reinterpret_cast<CREATESTRUCT*>(lparam);
       SetWindowLongPtr(window, GWLP_USERDATA,
                        reinterpret_cast<LONG_PTR>(create->lpCreateParams));
+      static_cast<ClientState*>(create->lpCreateParams)->hwnd = window;
       // DefWindowProc must still run WM_NCCREATE: it stores the window title
       // passed to CreateWindowExA. Returning TRUE directly left every client
       // window nameless in the taskbar and to other tools.
@@ -11279,6 +11324,12 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       verdigris::client::input::note_input(state->input_latency);
       if (wparam == VK_F3) {
         state->debug_overlay = !state->debug_overlay;
+        break;
+      }
+      if (wparam == VK_F8) {
+        state->camera.perspective = !state->camera.perspective;
+        state->hint = state->camera.perspective ? "Perspective world" : "Legacy world";
+        state->hint_ticks = 60;
         break;
       }
       if (wparam == VK_F11) {
@@ -11463,6 +11514,13 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
             zoom_height_factor(static_cast<int>(home_bounds.bottom));
       }
       break;
+    case WM_KILLFOCUS:
+      if(state) {
+        state->w=state->a=state->s=state->d=false;
+        state->move_tap_pending=false;state->primary_down=false;
+        release_held_gameplay_attack(*state);
+      }
+      break;
     case WM_KEYUP:
       if (!state) break;
       apply_bound_key_up(*state, wparam);
@@ -11491,8 +11549,12 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       break;
     case WM_LBUTTONDOWN:
       if (state) {
+        state->mouse.x = GET_X_LPARAM(lparam);
+        state->mouse.y = GET_Y_LPARAM(lparam);
         verdigris::client::input::note_input(state->input_latency);
-        if (trade_pane_open(*state)) {
+        if (state->screen==Screen::Chronicles) {
+          handle_chronicles_click(*state,state->mouse);
+        } else if (trade_pane_open(*state)) {
           const int mx = GET_X_LPARAM(lparam);
           const int my = GET_Y_LPARAM(lparam);
           for (const auto& hit : state->trade_row_hits) {
@@ -11546,11 +11608,13 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
           static constexpr SkillInfo kPrimaryStrike{'\0', "Strike",
                                                     verdigris::ActionType::Melee};
           dispatch_skill(*state, kPrimaryStrike);
+          state->primary_down=gameplay_intent_passes(*state,input_focus::Intent::Attack);
+          state->primary_repeat_ms=250;
         }
       }
       break;
     case WM_LBUTTONUP:
-      if (state) release_held_gameplay_attack(*state);
+      if (state) {state->primary_down=false;release_held_gameplay_attack(*state);}
       if (state && state->gear_overlay && state->pack_drag_live) {
         RECT client{};
         GetClientRect(window, &client);
@@ -13026,6 +13090,16 @@ int scenario_remote_wight_motion() {
   // with the displayed sample still behind that newer authoritative endpoint.
   const ClientMonster start = *std::find_if(admission.monsters.begin(), admission.monsters.end(),
       [&](const ClientMonster& actor) { return actor.id == chase.id; });
+  // Warm route art and the target viewport before teleport starts the short
+  // live chase. Loading hundreds of PNGs after the acknowledgement used up
+  // the pursuit window and measured one late sample of an already settled
+  // actor, rather than the ordinary 15ms display updates under test.
+  sync_world(state);
+  generate_scenery(state);
+  state.camera.x=verdigris::client::protocol_to_world(chase.player_x)+kTileUnits;
+  state.camera.y=verdigris::client::protocol_to_world(chase.player_y)-kTileUnits;
+  load_billboards(state.billboards);
+  scenario_present(state);
   scenario_check(remote->send_raw("dev:teleport",
                      JsonValue::Object{{"x", chase.player_x}, {"y", chase.player_y}}),
                  "remote-wight-motion: one initial player-only setup command sent");
@@ -13037,10 +13111,8 @@ int scenario_remote_wight_motion() {
                  "remote-wight-motion: server confirms the requested player setup");
   if (!find_target()) return scenario_failures;
   sync_world(state);
-  generate_scenery(state);
   state.camera.x = state.world.player.position.x + kTileUnits;
   state.camera.y = state.world.player.position.y - kTileUnits;
-  load_billboards(state.billboards);
   if (state.audio_sink) state.audio_sink->set_muted(true);
   const int initial_life = remote->model().player.life;
   const ClientMonster initial_sample = *find_target();
@@ -13481,12 +13553,22 @@ int scenario_chronicles_gate_b() {
                  "front door: naming a Scion is offered");
 
   // 3) Create the first Scion; the oath field starts soft.
+  const auto female_card=std::find_if(state.chronicle_hits.begin(),state.chronicle_hits.end(),
+      [](const auto& hit){return hit.action.command=="appearance"&&hit.action.arg=="female";});
+  scenario_check(female_card!=state.chronicle_hits.end(),"appearance: rendered female card has a hit target");
+  if(female_card!=state.chronicle_hits.end()) {
+    const RECT card=female_card->rect;
+    scenario_check(handle_chronicles_click(state,{(card.left+card.right)/2,(card.top+card.bottom)/2})&&
+        state.selected_appearance=="female","appearance: real click handler selects female");
+  }
   fire_chronicle_action(state, "create-scion");
   const bool scion_ok = chronicles_pump(state, 250, [&] {
     const auto& houses = state.session->model().chronicle.houses;
     return !houses.empty() && houses.front().scions.size() == 1;
   });
   scenario_check(scion_ok, "front door: the first Scion joins the roster");
+  scenario_check(state.session->model().chronicle.houses.front().scions.front().appearance=="female",
+      "appearance: card choice travels through creation to the saved roster");
   scenario_present(state);
   scenario_check(render_list_has(state, render::Op::Chronicles, "action:set-out:"),
                  "front door: set-out is actionable for the new Scion");
@@ -13508,6 +13590,16 @@ int scenario_chronicles_gate_b() {
            state.screen == Screen::Expedition;
   });
   scenario_check(admitted, "admission: the mortal-oath select lands in the world");
+  scenario_check(state.session->model().player.appearance=="female","appearance: female Scion reaches the playable world");
+  sync_world(state);
+  const auto echoed_facing=state.world.player.facing;
+  const verdigris::Vec2 requested_facing=echoed_facing.y<0?verdigris::Vec2{0,1}:verdigris::Vec2{0,-1};
+  submit_aim(state,requested_facing.x,requested_facing.y);
+  state.last_aim_direction=requested_facing;state.aim_direction_initialized=true;
+  dispatch_skill(state,kStrike);
+  const auto* predicted=verdigris::client::actor_strike(state.effects,state.world.player.id);
+  scenario_check(predicted&&std::abs(std::sin(predicted->angle)-requested_facing.y)<.001,
+      "aim: immediate remote attack follows submitted direction before an echoed facing arrives");
   scenario_follow_camera(state);
   scenario_present(state);
   scenario_check(!render_list_has(state, render::Op::Chronicles, "title"),
@@ -13564,6 +13656,7 @@ int scenario_chronicles_gate_b() {
   // 8) Succession: the heir is admitted through the succession select path
   // (the only wire admission that resets a permadead lifecycle), with the
   // oath disarmed so the soft-heir journey is what ships.
+  submit_chronicle_action(state,{"","appearance","male",""});
   fire_chronicle_action(state, "create-scion");
   const bool successor_ok = chronicles_pump(state, 250, [&] {
     const auto& houses = state.session->model().chronicle.houses;
@@ -13589,6 +13682,7 @@ int scenario_chronicles_gate_b() {
   });
   scenario_check(admitted_heir,
                  "succession: the heirship select admits the successor");
+  scenario_check(state.session->model().player.appearance=="male","appearance: male successor has its own saved appearance");
   // RECORDED RED (TASK-0081 discipline): on the current tip
   // player:chronicles:select resets the lifecycle but not the Simulation
   // actor's life, so a successor inherits a zero-life seat until a fresh
@@ -21460,12 +21554,132 @@ int scenario_hud_chrome() {
 }
 
 
+int scenario_quick_movement_tap() {
+  ClientState state;
+  scenario_begin(state);
+  sync_world(state);
+  const RECT bounds{0,0,960,600};
+  const auto start=state.world.player.position;
+  apply_bound_key_down(state,'D');apply_bound_key_up(state,'D');
+  fixed_game_tick(state,bounds);sync_world(state);
+  const auto first=state.world.player.position;
+  scenario_check(first.x>start.x && first.y==start.y,"movement-tap: down/up before one tick moves once");
+  fixed_game_tick(state,bounds);sync_world(state);
+  scenario_check(state.world.player.position.x==first.x,"movement-tap: released tap does not keep walking");
+  apply_bound_key_down(state,'D');fixed_game_tick(state,bounds);sync_world(state);
+  const auto held=state.world.player.position;
+  scenario_check(held.x-first.x==first.x-start.x,"movement-tap: held input does not duplicate pending sample");
+  apply_bound_key_up(state,'D');
+  apply_bound_key_down(state,'A');apply_bound_key_up(state,'A');state.gear_overlay=true;
+  fixed_game_tick(state,bounds);state.gear_overlay=false;fixed_game_tick(state,bounds);sync_world(state);
+  scenario_check(state.world.player.position.x==held.x,"movement-tap: pane consumes pending movement without later replay");
+  // The last mouse-facing points east; a held south key must lead evasion.
+  state.scenery.clear();
+  state.simulation->dispatch(verdigris::Command::aim(1,0));sync_world(state);
+  const auto before_dash=state.world.player.position;
+  state.s=true;dispatch_dash(state);state.s=false;
+  state.simulation->dispatch_tick(state.pending_local_commands);state.pending_local_commands.clear();sync_world(state);
+  scenario_check(state.world.player.position.x==before_dash.x && state.world.player.position.y>before_dash.y,
+      "movement-tap: held movement leads dash over previous mouse facing");
+  return scenario_failures;
+}
+
+int scenario_fable_world() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) { scenario_check(false, "fable-world: contained capture root"); return scenario_failures; }
+  scenario_check(reference_present(state,1366,768,dir+"\\fable-before.png"), "fable-world: legacy comparison captured");
+  state.camera.perspective = true;
+  state.lineage_art = true;
+  state.camera.zoom = kCameraDefaultZoom * zoom_height_factor(768);
+  scenario_check(reference_present(state,1366,768,dir+"\\fable-after.png"), "fable-world: perspective frame captured");
+  scenario_check(state.camera.perspective && fable_world::renderer().gpu.stats().hardware,
+      "fable-world: actual hardware pass rendered native actors");
+  const auto tick = state.simulation->tick();
+  for (int n=0;n<12;++n) {
+    scenario_step(state,verdigris::Command::move(n<6?1:-1,0));
+    advance_actor_motion(state,50);
+  }
+  scenario_check(state.simulation->tick()>tick,"fable-world: authoritative movement loop advanced");
+  scenario_check(reference_present(state,1366,768,dir+"\\fable-movement.png"),"fable-world: movement frame captured");
+  state.camera.zoom=kCameraDefaultZoom*zoom_height_factor(1440);
+  raster_art::detail::Surface surface;
+  scenario_check(surface.create(3440,1440),"fable-world: fullscreen surface allocated");
+  if(surface.dc) {
+    const RECT bounds{0,0,3440,1440};
+    paint_scene(state,surface.dc,bounds);
+    LARGE_INTEGER frequency{},start{},end{};QueryPerformanceFrequency(&frequency);QueryPerformanceCounter(&start);
+    for(int n=0;n<20;++n) paint_scene(state,surface.dc,bounds);
+    QueryPerformanceCounter(&end);
+    const double ms=1000.0*(end.QuadPart-start.QuadPart)/frequency.QuadPart/20;
+    std::printf("    fable-world: %s | 3440x1440 | 20 native frames %.3fms average | %u draws\n",
+        fable_world::renderer().gpu.adapter_name().c_str(),ms,fable_world::renderer().gpu.stats().draw_calls);
+    scenario_check(ms<40,"fable-world: full native frame including HUD stays below40ms");
+    scenario_check(save_hbitmap_png(state.billboards,surface.bitmap,dir+"\\fable-fullscreen.png"),"fable-world: fullscreen pixels captured");
+    // Two contacts in one update must be one hold, not alternating keys that
+    // restart the55ms timer on every presentation frame.
+    EffectFx contact;contact.kind=EffectFx::Kind::Impact;contact.wx=state.world.player.position.x;
+    contact.wy=state.world.player.position.y;state.effects.push_back(contact);
+    contact.wx+=20;state.effects.push_back(contact);
+    paint_scene(state,surface.dc,bounds);
+    const auto held_until=fable_world::renderer().hitstop_until;
+    Sleep(2);paint_scene(state,surface.dc,bounds);
+    scenario_check(fable_world::renderer().hitstop_until==held_until,
+        "fable-world: simultaneous contacts do not repeatedly restart hitstop");
+    state.effects.clear();
+
+    // Exercise a real native movement path across both negative-origin patch
+    // boundaries, while measuring every full-resolution presentation frame.
+    // CPU terrain work may run in parallel; loading waits may not increase.
+    auto& renderer=fable_world::renderer();
+    const auto original_key=renderer.terrain_key;
+    const auto original_bakes=renderer.bake_stats;
+    double moving_ms=0,moving_peak=0;int moving_frames=0;
+    for(int n=0;n<200;++n) {
+      if(n<8) {
+        state.simulation->dispatch(verdigris::Command::move(-1,-1));
+        ingest_events(state,bounds);scenario_follow_camera(state);advance_actor_motion(state,50);
+      }
+      LARGE_INTEGER frame_start{},frame_end{};QueryPerformanceCounter(&frame_start);
+      paint_scene(state,surface.dc,bounds);QueryPerformanceCounter(&frame_end);
+      const double frame_ms=1000.0*(frame_end.QuadPart-frame_start.QuadPart)/frequency.QuadPart;
+      moving_ms+=frame_ms;moving_peak=std::max(moving_peak,frame_ms);++moving_frames;
+      if(n>=20 && !renderer.bake_stats.running && renderer.bake_stats.adopted>original_bakes.adopted) break;
+      Sleep(15);
+    }
+    std::printf("    fable-world: streamed %d fullscreen frames %.3fms average, %.3fms peak; CPU bake %.3fms, upload %.3fms; %llu reused; %zu CPU bytes peak\n",
+        moving_frames,moving_ms/moving_frames,moving_peak,renderer.bake_stats.last_cpu_ms,
+        renderer.bake_stats.last_upload_ms,
+        static_cast<unsigned long long>(renderer.bake_stats.reused_frames-original_bakes.reused_frames),renderer.bake_stats.peak_bytes);
+    scenario_check(renderer.terrain_key!=original_key && renderer.bake_stats.adopted>original_bakes.adopted,
+        "fable-world: actual movement adopts a new terrain patch");
+    scenario_check(renderer.bake_stats.reused_frames>original_bakes.reused_frames &&
+        renderer.bake_stats.loading_waits==original_bakes.loading_waits,
+        "fable-world: travel keeps presenting the old patch without waiting on CPU baking");
+    scenario_check(state.camera.perspective && renderer.bake_stats.failed==0 &&
+        renderer.bake_stats.peak_bytes<48ULL*1024*1024,
+        "fable-world: streamed renderer stays on hardware with bounded terrain memory");
+    scenario_check(moving_ms/moving_frames<40,
+        "fable-world: fullscreen travel including terrain adoption stays below40ms");
+    scenario_check(save_hbitmap_png(state.billboards,surface.bitmap,dir+"\\fable-streamed.png"),
+        "fable-world: adopted terrain pixels captured");
+  }
+  return scenario_failures;
+}
+
+#include "lineage_scenarios.hpp"
+
 int run_scenarios(const std::string& which) {
   struct Entry {
     const char* name;
     int (*fn)();
   };
   const Entry entries[] = {
+      {"quick-movement-tap", scenario_quick_movement_tap},
+      {"lineage-art", scenario_lineage_art},
+      {"fable-world", scenario_fable_world},
       {"move-and-camera", scenario_move_and_camera},
       {"first-fight", scenario_first_fight},
       {"combat-audio", scenario_combat_audio},
@@ -22262,6 +22476,8 @@ int run_reference_scenes(const std::string& which) {
 int run_remote_native_client(const char* host, unsigned short port, const char* guest_id,
                              bool chronicles_mode) {
   auto state = std::make_unique<ClientState>();
+  state->camera.perspective = true;
+  state->lineage_art = true;
   state->chronicles_mode = chronicles_mode;
   state->screen = chronicles_mode ? Screen::Chronicles : Screen::Expedition;
   state->session = std::make_unique<verdigris::client::RemoteProtocolSession>(

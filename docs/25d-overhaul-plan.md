@@ -289,3 +289,7 @@ Findings above were collected by direct reads of every cited file in the
 `codex/native-reconstitution` checkout at `2af6b2d` (plus the TASK-0012
 evidence report and the vendored reference docs). No code was changed; the
 working tree contains only this document.
+
+## Implementation follow-through — 2026-09-10
+
+The original reference plan above is preserved. See [native integration and acceptance](rebuild/fable-integration.md) for the resumed implementation.

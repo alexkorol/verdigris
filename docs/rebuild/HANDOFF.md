@@ -1,5 +1,47 @@
 # Native reconstitution handoff
 
+## 2026-09-10 — Fable renderer and selectable eight-direction Scions
+
+The resumed owner work is implemented in the isolated
+`verdigris-fable-renderer` worktree on `codex/fable-renderer-20260910`.
+The actual Fable demo archive and recent character-prompt chats were read.
+The normal client now uses the reference camera/terrain/lighting pipeline,
+bounded asynchronous terrain rebasing, nearest-sampled pixel actors, fresh
+mouse aim and responsive movement. Server authority retains collision,
+dash, loot, extraction and House/Scion state.
+
+The owner's two character references now supply selectable male/female
+appearances: eight directions, two walk contacts and three attack entries
+(anticipation/contact plus idle recovery),96 runtime PNGs and96 equipment
+sockets. Seven parallel workers handled generation, import and integration;
+exact prompts, selected/rejected sources, actual Pixel Respecter provenance
+and playback previews are retained. Appearance persists per Scion, survives
+restart, and is restored when selecting a saved roster entry. Creation IDs
+now avoid persisted living/crypt collisions after server restart. Town return
+clears stale upstairs and refreshes stored items.
+
+Final supported build and76/76 client scenarios pass, including fresh-aim
+prediction, all96 authored asset selectors and the real female creation/
+male successor path. Core/network/session/presentation/audio/camera suites
+and browser32/32 also passed. GTX1660SUPER Fable3440×1440 averages28.555ms;
+streamed travel averages24.530ms with44.126ms peak, below the unchanged40ms
+average gate. Root viewed all equipped poses and native-scale loops, created
+and played the female, restarted and played the saved male, and captured a
+live attack following a new opposite-facing click.
+
+The normal server/client is left at the1280×800 picker for owner testing;
+saved Secondborn(male) and Thirdborn(female) can set out directly. The
+animation review is open at `http://127.0.0.1:8873/global-playback.html`.
+Relaunch with `native/tools/play-native.ps1`; F11 toggles window mode.
+WASD moves, LMB strikes, Space dashes. Owner art acceptance remains pending:
+side/diagonal gait consistency, female NW hair variation, idle recovery and
+the visual mismatch with older scenery remain visible. This wave does not
+claim a manual completed expedition or full Fable art/UI parity.
+
+[Exact lineage evidence and captures](../../native/client/assets/raster/reviews/2026-09-10-lineage/README.md),
+[source/import record](hero-lineage-20260910.md), and
+[Fable implementation](fable-integration.md).
+
 ## 2026-09-10 — Terrain/wall integration; owner-requested ship and pause
 
 Quiet earth now serves dungeons; the new quiet stone serves crypts. Raster

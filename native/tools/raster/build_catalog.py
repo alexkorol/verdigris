@@ -13,7 +13,8 @@ ORDER = ("inventory", "terrain", "props", "gate", "actors", "bestiary", "weapons
 
 def collect_cycles(entries, action, family="hero"):
     cycles = {}
-    for direction in ("se", "sw", "nw", "ne"):
+    directions=("n","ne","e","se","s","sw","w","nw") if family in ("hero_male","hero_female") else ("se", "sw", "nw", "ne")
+    for direction in directions:
         numbered = sorted((int(match.group(1)), name) for name in entries
                           if (match := re.fullmatch(rf"{family}_{action}(\d+)_{direction}", name)))
         if not numbered:
@@ -38,7 +39,7 @@ def collect_cycles(entries, action, family="hero"):
 def main():
     runtime = ROOT / "../../client/assets/raster/runtime"
     entries, limitations = {}, []
-    for name in ORDER:
+    for name in (*ORDER,"hero-lineage-20260910"):
         report_name = name + ".provenance.json"
         report = json.loads((runtime / report_name).read_text(encoding="utf-8"))
         limitations.extend(report.get("known_limitations", []))
@@ -55,8 +56,9 @@ def main():
         if not np.isin(pixels[:, :, 3], [0, 255]).all():
             raise ValueError(f"World pixels have unintended partial alpha: {path}")
         visible = pixels[:, :, :3][pixels[:, :, 3] > 0]
-        if len(np.unique(visible, axis=0)) > 32:
-            raise ValueError(f"World sprite exceeds the current 32-color limit: {path}")
+        color_limit=96 if entry["provenance"]=="hero-lineage-20260910.provenance.json" else 32
+        if len(np.unique(visible, axis=0)) > color_limit:
+            raise ValueError(f"World sprite exceeds its {color_limit}-color limit: {path}")
     cycles = collect_cycles(entries, "walk")
     deaths = collect_cycles(entries, "death", "raider")
     for direction, sequence in deaths.items():
@@ -67,7 +69,14 @@ def main():
         sequence["playback"] = "one-shot; retain the final settled frame"
     if len(cycles) > 1:
         limitations = [note for note in limitations if note != "Only the SE walk direction has distinct walking frames."]
-    result = {"version": 1, "import_order": list(ORDER), "assets": list(entries.values()),
+    lineage={family:{action:collect_cycles(entries,action,family) for action in ("walk","strike")}
+             for family in ("hero_male","hero_female")}
+    for family,actions in lineage.items():
+        for action,clips in actions.items():
+            if len(clips)!=8 or any(clip["frame_count"]!=(2 if action=="walk" else 3) for clip in clips.values()):
+                raise ValueError(f"Incomplete eight-direction lineage cycle: {family} {action}")
+    result = {"version": 1, "import_order": [*ORDER,"hero-lineage-20260910"], "assets": list(entries.values()),
+              "lineage_sequences":lineage,
               "known_limitations": limitations,
               "missing_direction_assets": [name for name in ("wight_nw", "artisan_nw") if name not in entries],
               "walk_sequence": {"frames": [name for name in (f"hero_walk{i}_se" for i in range(4)) if name in entries],
@@ -80,7 +89,7 @@ def main():
               "monster_death_sequences": {"raider": deaths},
               "missing_walk_directions": [direction for direction in ("se", "sw", "nw", "ne") if direction not in cycles]}
     (runtime / "catalog.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
-    print(f"Verified {len(entries)} active RGBA sprites, native dimensions, binary alpha, <=32 colors, and provenance hashes.")
+    print(f"Verified {len(entries)} active RGBA sprites, native dimensions, binary alpha, scoped palette limits, complete lineage cycles, and provenance hashes.")
 
 
 if __name__ == "__main__":

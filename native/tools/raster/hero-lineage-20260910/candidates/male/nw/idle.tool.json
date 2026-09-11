@@ -1,0 +1,13 @@
+{
+  "tool": "built-in image_gen",
+  "arguments": {
+    "prompt": "Edit the supplied original character reference. Preserve this exact adult male identity, naturally proportioned anatomy, dark brown hair, skin colors, detailed rendered pixel texture, beige short-sleeved knee-length tunic, brown belt and brown leather sandals. Turn only the man to face NORTHWEST, 45 degrees diagonally away toward the upper-left of the image. This is a full BACK three-quarter view: show his back, back of his hair, left shoulder and left side; his chest and tunic neckline face away and are hidden. His head points upper-left with at most a narrow left profile. Keep the original fixed elevated frontal camera looking downward at a straight ground grid; do not rotate or tilt the camera.\nOne neutral idle, relaxed empty hands down, both sandals planted in a natural narrow stance. The anatomical LEFT arm is the near arm on the screen-left side. Preserve the source's adult rendering and palette, without simplification or new gear. One isolated full-body pose on a 1254x1254 canvas, same original body scale approximately 970 pixels crown to soles, crown about y=128, ground foot pivot about (627,1098). Center the hips near x=627; keep every extremity within generous margins. Actual transparent alpha background, no scenery, cast shadow, checkerboard, text or additional figures. Return one pose only.",
+    "referenced_image_paths": [
+      "C:/Users/Alex/Downloads/ChatGPT Image Sep 10, 2026, 05_22_21 PM.png"
+    ]
+  },
+  "result_metadata": {
+    "output_hint": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a089c3-5390-76a2-8353-a73d7b52eeb8 as C:\\Users\\Alex\\.codex\\generated_images\\01a089c3-5390-76a2-8353-a73d7b52eeb8\\exec-97de8dc7-0f90-4b54-bcb6-4ef2fcff071a.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  "state": "pending_visual_review"
+}

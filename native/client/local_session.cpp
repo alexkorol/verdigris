@@ -89,10 +89,11 @@ ClientCommand ClientCommand::found_house(std::string house_name) {
   command.target = std::move(house_name);
   return command;
 }
-ClientCommand ClientCommand::create_scion(std::string scion_name) {
+ClientCommand ClientCommand::create_scion(std::string scion_name, std::string appearance) {
   ClientCommand command;
   command.type = Type::CreateScion;
   command.target = std::move(scion_name);
+  command.extra = verdigris::player_appearance_id(appearance);
   return command;
 }
 ClientCommand ClientCommand::select_scion(std::string scion_id, bool mortal_oath) {
@@ -136,13 +137,13 @@ ClientCommand ClientCommand::allocate_node(std::string node_id) {
   return command;
 }
 
-LocalCoreSession::LocalCoreSession(std::uint64_t seed, std::string house_name)
-    : seed_(seed), house_name_(std::move(house_name)) {}
+LocalCoreSession::LocalCoreSession(std::uint64_t seed, std::string house_name, std::string appearance)
+    : seed_(seed), house_name_(std::move(house_name)), appearance_(verdigris::player_appearance_id(appearance)) {}
 
 LocalCoreSession::~LocalCoreSession() { shutdown(); }
 
 bool LocalCoreSession::start(std::string*) {
-  simulation_ = std::make_unique<verdigris::Simulation>(seed_, house_name_);
+  simulation_ = std::make_unique<verdigris::Simulation>(seed_, house_name_, appearance_);
   pending_commands_.clear();
   pending_events_.clear();
   ground_positions_.clear();
@@ -275,6 +276,7 @@ void LocalCoreSession::refresh_model() {
   // Rendering/event ownership follows the live actor. The persistent Scion
   // identity remains in the chronicle roster and active_scion_id below.
   model_.player.uuid = scion.actor_id;
+  model_.player.appearance = verdigris::player_appearance_id(scion.appearance);
   model_.player.display_name = scion.name;
   model_.player.level = scion.level;
   model_.player.alive = scion.alive;
@@ -347,7 +349,7 @@ void LocalCoreSession::refresh_model() {
   local_house.id = simulation_->house().id.empty() ? "local" : simulation_->house().id;
   local_house.name = model_.house_name;
   local_house.scions.clear();
-  local_house.scions.push_back({scion.id, scion.name, scion.level, false});
+  local_house.scions.push_back({scion.id, scion.name, scion.level, false, scion.appearance});
   local_house.crypt.clear();
   model_.chronicle.active_house_id = local_house.id;
   model_.chronicle.active_scion_id = scion.alive ? scion.id : std::string{};

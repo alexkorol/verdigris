@@ -1,0 +1,743 @@
+Final native build and client run: exit 0
+Scenarios: 76
+Passed: 76
+Failed: 0
+== scenario quick-movement-tap ==
+   PASS (0 failures)
+== scenario lineage-art ==
+   PASS (0 failures)
+== scenario fable-world ==
+    fable-world: NVIDIA GeForce GTX 1660 SUPER | 3440x1440 | 20 native frames 28.555ms average | 21 draws
+    fable-world: streamed 34 fullscreen frames 24.530ms average, 44.126ms peak; CPU bake 1500.814ms, upload 3.018ms; 33 reused; 37343568 CPU bytes peak
+    ok: fable-world: streamed renderer stays on hardware with bounded terrain memory
+   PASS (0 failures)
+== scenario move-and-camera ==
+   PASS (0 failures)
+== scenario first-fight ==
+   PASS (0 failures)
+== scenario combat-audio ==
+   PASS (0 failures)
+== scenario hud-scale-floor ==
+   PASS (0 failures)
+== scenario hud-chrome ==
+   PASS (0 failures)
+== scenario xp-meter ==
+   PASS (0 failures)
+== scenario raster-world ==
+   PASS (0 failures)
+== scenario raster-walls ==
+   PASS (0 failures)
+== scenario raster-loot ==
+   PASS (0 failures)
+== scenario raider-strike ==
+   PASS (0 failures)
+== scenario raster-feedback ==
+   PASS (0 failures)
+== scenario raster-motion ==
+   PASS (0 failures)
+== scenario raider-motion ==
+   PASS (0 failures)
+== scenario native-pursuit ==
+   PASS (0 failures)
+== scenario native-entry-clearance ==
+   PASS (0 failures)
+== scenario loot-to-bank ==
+   PASS (0 failures)
+== scenario telegraph-dodge ==
+   PASS (0 failures)
+== scenario combat-juice ==
+   PASS (0 failures)
+== scenario remote-render-list ==
+   PASS (0 failures)
+== scenario remote-wight-motion ==
+   PASS (0 failures)
+== scenario zoom-invariance ==
+   PASS (0 failures)
+== scenario chronicles-gate-b ==
+    ok: aim: immediate remote attack follows submitted direction before an echoed facing arrives
+   PASS (0 failures)
+== scenario first-session-clarity ==
+   PASS (0 failures)
+== scenario animation-vfx-phase-a ==
+   PASS (0 failures)
+== scenario progression-surface ==
+   PASS (0 failures)
+== scenario hud-pane-readability ==
+   PASS (0 failures)
+== scenario loot-label-budget ==
+   PASS (0 failures)
+== scenario effect-batch ==
+   PASS (0 failures)
+== scenario resource-envelope ==
+   PASS (0 failures)
+== scenario hitch-warmup ==
+   PASS (0 failures)
+== scenario attack-poses ==
+   PASS (0 failures)
+== scenario kit-chunk ==
+   PASS (0 failures)
+== scenario weave-vfx ==
+   PASS (0 failures)
+== scenario pad-path ==
+   PASS (0 failures)
+== scenario legal-sounds ==
+   PASS (0 failures)
+== scenario music-phase ==
+   PASS (0 failures)
+== scenario gpu-sample ==
+   PASS (0 failures)
+== scenario gpu-packets ==
+   PASS (0 failures)
+== scenario visual-target ==
+   PASS (0 failures)
+== scenario bronze-stone ==
+   PASS (0 failures)
+== scenario shader-bindings ==
+   PASS (0 failures)
+== scenario gpu-reference ==
+   PASS (0 failures)
+== scenario grounding ==
+   PASS (0 failures)
+== scenario material-light ==
+   PASS (0 failures)
+== scenario gpu-capture ==
+   PASS (0 failures)
+== scenario gpu-recover ==
+   PASS (0 failures)
+== scenario sound-adapter ==
+   PASS (0 failures)
+== scenario audio-prefs ==
+   PASS (0 failures)
+== scenario ambience-layer ==
+   PASS (0 failures)
+== scenario equipment ==
+   PASS (0 failures)
+== scenario memory-soak ==
+   PASS (0 failures)
+== scenario dense-mix ==
+   PASS (0 failures)
+== scenario pane-stack ==
+   PASS (0 failures)
+== scenario pane-focus ==
+   PASS (0 failures)
+== scenario remap-binds ==
+   PASS (0 failures)
+== scenario attack-beat ==
+   PASS (0 failures)
+== scenario strike-contact ==
+   PASS (0 failures)
+== scenario dressing-pass ==
+   PASS (0 failures)
+== scenario loot-filter ==
+   PASS (0 failures)
+== scenario build-fixtures ==
+   PASS (0 failures)
+== scenario telegraph-spec ==
+   PASS (0 failures)
+== scenario ranged-warning ==
+   PASS (0 failures)
+== scenario headless-contract ==
+   PASS (0 failures)
+== scenario input-latency ==
+   PASS (0 failures)
+== scenario eight-way ==
+   PASS (0 failures)
+== scenario aim-hold ==
+   PASS (0 failures)
+== scenario vital-orbs ==
+   PASS (0 failures)
+== scenario death-disconnect ==
+   PASS (0 failures)
+== scenario route-map ==
+   PASS (0 failures)
+== scenario stat-explain ==
+   PASS (0 failures)
+== scenario held-item ==
+   PASS (0 failures)
+== scenario pack-drag ==
+   PASS (0 failures)
+== scenario frame-budget ==
+    frame-budget moving: 25.8 ms average, 36.1 ms peak over 20 frames
+   PASS (0 failures)
+
+Browser playtest: exit 0
+
+32/32 scenarios passed
+Timing diagnostics: {"loadMode":false,"p99EventLoopLagMs":32.243711,"maxEventLoopLagMs":101.646335}
+
+Core/headless suite results (before final presentation-only corrections):
+PASS local: start succeeds
+PASS local: state is ready without a handshake
+PASS local: scion uuid published
+PASS local: house name published
+PASS local: movement commands reach the simulation through the seam
+PASS local: SessionReady presentation event emitted
+PASS local: shutdown reaches disconnected state
+PASS local-clock: session starts
+PASS local-clock: aim spam and polling advance neither pursuit nor timers
+PASS local-clock: interface step advances pursuit and timers exactly once
+PASS local-clock: empty input batch still advances idle enemies
+PASS local-clock: move and aim bursts consume one movement step and keep held aim
+PASS local-clock: next tick movement preserves prior held aim
+PASS local-clock: session restarts
+PASS local-clock: restart discards queued movement and old clock state
+PASS local-clock: queued attack remains unresolved before fixed step
+PASS local-clock: AimEast Attack AimWest hits east before final west aim
+PASS local-clock: one confirmed attack precedes damage and one cooldown tick
+PASS local-clock: rendered owned strike keeps event-time east pose after final west aim
+PASS local-clock: action spam cannot accelerate cooldown
+PASS local-clock: bounded attack batch cannot bypass active cooldown
+PASS local-clock: polling cannot shorten the buff duration
+PASS local-clock: buff remains active until its last explicit step
+PASS local-clock: idle steps publish buff expiry once at the authoritative tick
+PASS local-clock: batched player movement obeys local authority obstacles
+PASS local-clock: dash cannot tunnel through authority obstacles
+PASS local-clock: replacing local obstacles restores one ordinary movement step
+PASS local-mirror: signed player, monster, facing and extraction data round-trip world units
+PASS local-mirror: live actor ownership, persistent Scion identity and scene identity stay distinct
+PASS local-mirror: navigation keepouts expose current world coordinates
+PASS local-mirror: item and trophy anchors keep the defeated actor position after later movement
+PASS local-mirror: dropped item event carries its actor-owned world anchor
+PASS local-mirror: pickup removes the floor anchor from the mirror
+PASS local-mirror: retirement clears scene identity, navigation, extraction and old loot anchors
+PASS local-mirror: surface dressing cannot reinstall retired instance collision
+PASS local-mirror: next route publishes stationary geometry-install boundary
+PASS local-mirror: next route accepts its own world-space geometry
+PASS local-mirror: stopped session exposes no stale keepouts
+PASS local-mirror: real idle pursuit round-trips every detour position outside world-space circles
+PASS local-mirror: detour arrival produces owned strike and incoming player feedback at actual positions
+PASS remote-negative: dead endpoint fails start()
+PASS remote-negative: state is rejected, not a silent local fallback
+PASS remote-negative: hard error message supplied
+PASS remote: test server bound inside the TASK-0163 capsule
+PASS remote: connect + upgrade + login sent
+PASS remote: player:login acknowledged -> ready
+PASS remote: authoritative identity mirrored into the client model
+PASS remote: scene snapshot mirrored
+PASS remote: SessionReady presentation event emitted
+PASS remote: session survives a submitted command
+PASS remote: clean shutdown reaches disconnected
+PASS remote: server stopped cleanly
+PASS journey: test server bound inside the TASK-0163 capsule 7160-7179
+PASS journey: connect + upgrade + login sent
+PASS journey: handshake ready
+PASS journey: zone enter mirrors instance scene
+PASS journey: transition publishes exit stairs
+PASS journey: movement echo updates x
+PASS journey: aim updates facing
+PASS journey: outgoing combat:hit reached the client
+PASS journey: enemy death reached the client
+PASS journey: named item entered inventory (pickup)
+PASS journey: ItemPickedUp or inventory growth
+PASS journey: picked item is named
+PASS journey: equip removed the item from the backpack
+PASS journey: equipped slot mirrors the worn item
+PASS journey: incoming combat:hit reached the client
+PASS journey: monster:telegraph reached the client
+PASS journey: walking onto stairs-up returns to the surface (extract)
+PASS journey: ExtractionCompleted from surface message
+PASS journey: clean dual-side shutdown
+PASS reconnect: TASK-0163 capsule server bound
+PASS reconnect: connected
+PASS reconnect: ready before the drop
+PASS reconnect: unexpected drop enters Retrying
+PASS reconnect: ConnectionLost is visible (no silent local fallback)
+PASS reconnect: last_error explains the drop
+PASS reconnect: commands after the drop do not leave Retrying for a local sim
+PASS reconnect: position does not keep playing offline
+PASS reconnect: server restarted on the same port
+PASS reconnect: Retrying then Ready after server restart
+PASS reconnect: same guest identity re-logged in
+PASS reconnect: login snapshot is authoritative
+PASS replaced: cursor-capsule server bound
+PASS replaced: first login
+PASS replaced: first session ready
+PASS replaced: second login same guest
+PASS replaced: second session ready
+PASS replaced: first session is disconnected
+PASS replaced: ConnectionLost from player:session-replaced
+PASS replaced: session-replaced does not enter Retrying
+PASS replaced: stays terminal Disconnected (no retry)
+PASS render-list: cursor-capsule server bound
+PASS render-list: connect
+PASS render-list: ready
+PASS render-list: decoded server contact reconciles prediction to one active strike
+PASS render-list: decoded server contact reconciles prediction to one active strike
+PASS render-list: decoded server contact reconciles prediction to one active strike
+PASS render-list: decoded server contact reconciles prediction to one active strike
+PASS render-list: decoded server contact reconciles prediction to one active strike
+PASS render-list: decoded server contact reconciles prediction to one active strike
+PASS render-list: Monster op recorded from remote model
+PASS render-list: Swing op recorded from AttackStarted
+PASS render-list: actual server contact was reconciled
+PASS render-list: Drop op recorded from kill loot
+PASS render-list: decoded Sweep contact preserves one active SweepArc and no Swing
+PASS render-list: real remote Sweep skillId reaches presentation
+PASS crypt-remote: actual native server starts in test capsule
+PASS crypt-remote: normal RemoteProtocolSession handshake
+PASS crypt-remote: authored crypt roster and authoritative map arrive
+PASS crypt-remote: real roster provides an unobstructed SW approach
+PASS crypt-remote: ordinary ticks move real wight authority through deltas
+PASS crypt-remote: 15ms polls advance display between unchanged authority endpoints
+PASS crypt-remote: WorldView retains exact scaled authority and production wight resolver
+PASS crypt-remote: real pursuit reaches incoming contact without inflated life
+PASS crypt-remote: arrival display settles at authority endpoint
+PASS crypt-remote: actual SW facing survives incoming contact and stop
+PASS player-motion: scripted real socket starts
+PASS player-motion: real remote login
+PASS walk
+PASS player-motion: raw endpoint immediate, display remains in one-sample segment
+PASS player-motion: normal WorldView preserves exact raw/display separation
+PASS player-motion: display flag off falls back to raw authority
+PASS player-motion: nonfinite display cannot contaminate WorldView
+PASS player-motion: render polls advance display without moving authority
+PASS foreign
+PASS old
+PASS equal
+PASS bad-sequence
+PASS player-motion: foreign/stale/duplicate/malformed frames cannot rewind or extrapolate
+PASS dash
+PASS player-motion: accepted dash has actual world endpoints
+PASS player-motion: exactly one accepted dash event
+PASS player-motion: oversized wire duration capped at 50ms
+PASS duplicate-dash
+PASS player-motion: repeated movement never duplicates dash feedback
+PASS teleport
+PASS player-motion: zero-duration teleport snaps
+PASS ground
+PASS ground-pair
+PASS ground-events: server UUID and location retained
+PASS ground-events: native pair admits one item immediately without snapshot
+PASS death
+PASS ground-events: combat death does not invent an item or UUID
+PASS retired
+PASS late-move
+PASS late-ground
+PASS player-motion: retirement clears display and rejects stale movement/ground
+PASS appearance-local: female session starts
+PASS appearance-local: core identity reaches player, roster and renderer view
+PASS appearance-local: direct simulation renderer view retains appearance
+PASS appearance-remote: real native server starts
+PASS appearance-remote: real Chronicles admission starts
+PASS appearance-remote: created House appears in roster
+PASS appearance-remote: typed creation choice survives actual wire and roster preview
+PASS appearance-remote: old one-argument creation keeps male default
+PASS appearance-remote: male preview has explicit saved identity
+PASS appearance-remote: chosen female Scion actually enters play
+PASS appearance-remote: active overview and renderer use selected record name and appearance
+PASS appearance-remote: female player performs real authoritative movement
+PASS appearance-remote: movement reconciliation preserves body choice
+PASS appearance-remote: selecting saved male switches the renderer identity
+PASS appearance-remote: reselecting saved female does not inherit the creation picker default
+PASS appearance-remote: fallen roster preserves the Scion's saved appearance
+PASS dash-return: real native endpoint starts
+PASS dash-return: actual remote admission
+PASS dash-return: real identifiable item available to bank
+PASS dash-return: authored entry publishes an exit
+PASS dash-return: active expedition actually has an exit phase before return
+PASS dash-return: real admission is east of upstairs, no test teleport needed
+PASS dash-return: actual authoritative dash crosses upstairs and returns
+PASS dash-return: town clears dungeon stairs and expedition objective immediately
+PASS dash-return: retired exit coordinates are cleared too
+PASS dash-return: real bank summary publishes exact stored total and emptied inventory
+PASS dash-return: extraction confirmation and banked toast survive phase reset
+PASS dash-return: town phase reset preserves level and progression
+PASS dash-return: authoritative store reconciliation does not double count or restore old exit
+PASS dash-return: next authored instance publishes its exit normally
+PASS dash-return: new expedition restores its phase while House store persists
+PASS remote-controls: real native endpoint starts
+PASS remote-controls: login ready
+PASS remote-controls: actual authored instance
+PASS remote-controls: setup placement acknowledged
+PASS remote-controls: dash travels through real client/server adapter
+PASS remote-controls: real server acceptance reaches PlayerDashed
+PASS remote-controls: rejected repeat has neither travel nor dash effect
+PASS remote-controls: setup placement acknowledged
+PASS remote-controls: first server drop arrives
+PASS remote-controls: setup placement acknowledged
+PASS remote-controls: diagonal target drop arrives
+PASS remote-controls: setup placement acknowledged
+PASS remote-controls: explicit UUID selects reachable diagonal drop
+PASS remote-controls: targeted pickup does not substitute underfoot item
+PASS remote-controls: distant extraction remains in instance
+PASS remote-controls: setup placement acknowledged
+PASS remote-controls: contact Extract reaches real server return
+PASS remote-controls: actual bank summary confirms extraction
+PASS monster-delta: loopback endpoint starts
+PASS monster-delta: actual remote handshake
+PASS monster-delta: received admitted
+PASS monster-delta: snapshot admits real family facts
+PASS monster-delta: received moving
+PASS monster-delta: raw endpoint immediate, display inside accepted segment
+PASS monster-delta: polling advances display without advancing authority
+PASS monster-delta: received old-delta
+PASS monster-delta: received old-snapshot
+PASS monster-delta: received equal-sequence
+PASS monster-delta: stale reconciliation cannot rewind/restart; no extrapolation
+PASS monster-delta: older snapshot and equal sequence retain authoritative SW facing
+PASS monster-delta: received wrong-scene
+PASS monster-delta: received unknown-scene
+PASS monster-delta: received unknown-actor
+PASS monster-delta: wrong/unknown room and unknown actor rejected
+PASS monster-delta: received stopped
+PASS monster-delta: zero stop facing retains prior authoritative direction
+PASS monster-delta: received death
+PASS monster-delta: death clears display interpolation
+PASS monster-delta: received retired
+PASS monster-delta: received late-room
+PASS monster-delta: scene retirement rejects late actor data
+PASS incoming-action: scripted loopback server bound
+PASS incoming-action: real WebSocket handshake
+PASS incoming-action: login acknowledged
+PASS incoming-action: authoritative behaviour snapshot decoded
+PASS incoming-action: native common rarity stays ordinary
+PASS incoming-action: generic melee preserves exact actor/action/damage/death order
+PASS incoming-action: known ordinary attacker keeps its body scale at contact
+PASS incoming-action: generic melee preserves authoritative health and damage
+PASS incoming-action: generic melee enters confirmed contact only for identified melee
+PASS incoming-action: explicit melee preserves exact actor/action/damage/death order
+PASS incoming-action: explicit melee preserves authoritative health and damage
+PASS incoming-action: explicit melee enters confirmed contact only for identified melee
+PASS incoming-action: sweep preserves exact actor/action/damage/death order
+PASS incoming-action: sweep preserves authoritative health and damage
+PASS incoming-action: sweep enters confirmed contact only for identified melee
+PASS incoming-action: thrust preserves exact actor/action/damage/death order
+PASS incoming-action: thrust preserves authoritative health and damage
+PASS incoming-action: thrust enters confirmed contact only for identified melee
+PASS incoming-action: generic ranged preserves exact actor/action/damage/death order
+PASS incoming-action: generic ranged preserves authoritative health and damage
+PASS incoming-action: generic ranged enters confirmed contact only for identified melee
+PASS incoming-action: ranged skill preserves exact actor/action/damage/death order
+PASS incoming-action: ranged skill preserves authoritative health and damage
+PASS incoming-action: ranged skill enters confirmed contact only for identified melee
+PASS incoming-action: boss ground slam preserves exact actor/action/damage/death order
+PASS incoming-action: boss ground slam preserves authoritative health and damage
+PASS incoming-action: boss ground slam enters confirmed contact only for identified melee
+PASS incoming-action: unknown behaviour preserves exact actor/action/damage/death order
+PASS incoming-action: unknown behaviour preserves authoritative health and damage
+PASS incoming-action: unknown behaviour enters confirmed contact only for identified melee
+PASS incoming-action: unknown skill preserves exact actor/action/damage/death order
+PASS incoming-action: unknown skill preserves authoritative health and damage
+PASS incoming-action: unknown skill enters confirmed contact only for identified melee
+PASS incoming-action: missing skill preserves exact actor/action/damage/death order
+PASS incoming-action: missing skill preserves authoritative health and damage
+PASS incoming-action: missing skill enters confirmed contact only for identified melee
+PASS incoming-action: non-string skill preserves exact actor/action/damage/death order
+PASS incoming-action: non-string skill preserves authoritative health and damage
+PASS incoming-action: non-string skill enters confirmed contact only for identified melee
+PASS incoming-action: missing attacker preserves exact actor/action/damage/death order
+PASS incoming-action: missing attacker preserves authoritative health and damage
+PASS incoming-action: missing attacker enters confirmed contact only for identified melee
+PASS incoming-action: empty attacker preserves exact actor/action/damage/death order
+PASS incoming-action: empty attacker preserves authoritative health and damage
+PASS incoming-action: empty attacker enters confirmed contact only for identified melee
+PASS incoming-action: player attacker preserves exact actor/action/damage/death order
+PASS incoming-action: player attacker preserves authoritative health and damage
+PASS incoming-action: player attacker enters confirmed contact only for identified melee
+PASS incoming-action: lethal melee preserves exact actor/action/damage/death order
+PASS incoming-action: lethal melee preserves authoritative health and damage
+PASS ptree-absent: scripted loopback server bound in capsule
+PASS ptree-absent: connect + upgrade + login sent
+PASS ptree-absent: admission acknowledged
+PASS ptree-absent: no payload -> mirror stays absent, never rendered as zero
+PASS ptree-absent: absent payload raises no diagnostic
+PASS ptree: scripted loopback server bound in capsule
+PASS ptree: connect + upgrade + login sent
+PASS ptree: valid absent login reaches Ready
+PASS ptree: fresh admission starts absent (valid absent behavior)
+PASS ptree: VALID zero tree makes the mirror present
+PASS ptree: zero tree mirrors verbatim zeros (valid zero behavior)
+PASS ptree: valid payloads raise no diagnostic
+PASS ptree: VALID nonzero update mirrors verbatim (valid nonzero behavior)
+PASS ptree: valid nonzero update raises no diagnostic
+PASS ptree: missing points: diagnostic surfaced
+PASS ptree: missing points: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: missing earned: diagnostic surfaced
+PASS ptree: missing earned: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: missing conduits: diagnostic surfaced
+PASS ptree: missing conduits: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed schemaVersion: diagnostic surfaced
+PASS ptree: wrong-typed schemaVersion: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed points container: diagnostic surfaced
+PASS ptree: wrong-typed points container: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed points.skill: diagnostic surfaced
+PASS ptree: wrong-typed points.skill: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed earned: diagnostic surfaced
+PASS ptree: wrong-typed earned: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed nodes: diagnostic surfaced
+PASS ptree: wrong-typed nodes: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed conduits on login: diagnostic surfaced
+PASS ptree: wrong-typed conduits on login: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: fractional points.skill: diagnostic surfaced
+PASS ptree: fractional points.skill: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: fractional earned: diagnostic surfaced
+PASS ptree: fractional earned: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: negative points.skill: diagnostic surfaced
+PASS ptree: negative points.skill: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: negative earned: diagnostic surfaced
+PASS ptree: negative earned: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: bare-Infinity points.skill: diagnostic surfaced
+PASS ptree: bare-Infinity points.skill: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: exponent-overflow earned (inf): diagnostic surfaced
+PASS ptree: exponent-overflow earned (inf): deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: int-cast overflow earned: diagnostic surfaced
+PASS ptree: int-cast overflow earned: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: future schemaVersion on login: diagnostic surfaced
+PASS ptree: future schemaVersion on login: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: non-object passiveTree on login: diagnostic surfaced
+PASS ptree: non-object passiveTree on login: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: oversized nodes array: diagnostic surfaced
+PASS ptree: oversized nodes array: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: oversized conduits array: diagnostic surfaced
+PASS ptree: oversized conduits array: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: repeated invalid payload surfaces again
+PASS ptree: diagnostic text is byte-stable across repeats
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: valid refresh applies after rejects (session healthy)
+PASS ptree: valid recovery raises no diagnostic
+PASS gate-b-driver: serpentine plan matches its frozen contract
+PASS gate-b-driver: lane plan sweeps within one tile of every walkable column
+PASS gate-b-driver: silent steps re-issue before any wall rotation
+PASS gate-b-driver: every lane leg spans the full floor height
+PASS gate-b-driver: plan is strictly boustrophedon over its lanes
+PASS gate-b: worker-capsule server bound (7160-7179)
+PASS gate-b: first connect upgrades
+PASS gate-b: non-quick guest login admits chronicles:state
+PASS gate-b: chronicles:house:found emits chronicles:state
+PASS gate-b: House roster id captured
+PASS gate-b: chronicles:scion:create returns createdScionId
+PASS gate-b: chronicles:scion:set-out admits via player:login
+PASS gate-b: admission names the first Scion
+PASS gate-b: set-out admits the Scion under the mortal oath (player.chronicles.mortal)
+PASS gate-b: earned identifiable item carries an exact uuid
+PASS gate-b: delve enters the instance scene
+PASS gate-b: ordinary combat reached the scion (incoming hit)
+PASS gate-b: ordinary movement/combat death commits the fall (chronicles:scion-fallen)
+PASS gate-b: player:chronicles:return readies succession
+PASS gate-b: successor created through chronicles:scion:create
+PASS gate-b: heir admitted through player:chronicles:select
+PASS gate-b: heir buys a sword from the House wagon
+PASS gate-b: heir equips the fresh sword
+PASS gate-b: slain elite surfaces the circulating heirloom
+PASS gate-b: exact relic uuid recovered underfoot
+PASS gate-b: awaitChronicles restore reads the crypt
+PASS gate-b: crypt relic status is recovered
+PASS gate-b: reconnect upgrades same server
+PASS gate-b: reconnect restores the chronicle session
+PASS gate-b: reconnect payload carries chronicle
+PASS gate-b: identical House/Scion/relic record after reconnect
+PASS gate-b: House name survives reconnect
+PASS gate-b: heir's sworn oath recorded after reconnect
+PASS gate-b: living roster holds only the heir
+PASS gate-b: fallen Scion left the living roster
+PASS gate-b: same House present after reconnect
+PASS gate-b: crypt relic still recovered after reconnect
+PASS gate-b: active House continuity
+PASS gate-b: resumed set-out re-admits the heir
+PASS gate-b: exact heirloom still carried after reconnect
+PASS gate-b: mortal oath survives the reconnect
+PASS gate-b: journey server stopped cleanly
+session tests passed
+PASS dash FX: accepted travel produces only four dust positions
+PASS dash FX: dust follows actual server from/to segment
+PASS dash FX: presentation never moves the authoritative player
+PASS dash FX: trail expires at its named lifetime
+PASS dash FX: unrelated actor and zero movement add no dust
+PASS dash FX: repeated events obey shared effect cap
+PASS drop FX: explicit authority pose is not replaced by corpse position or scatter
+PASS drop FX: sparkle marks the real item location
+PASS fall event pose: final position and committed facing override stale prior geometry
+PASS fall event pose: known snapshot still supplies identity family and elite
+PASS fall event pose: dust and loot anchor share the immutable death position
+PASS fall event pose: presentation does not mutate the retained actor snapshot
+PASS fall event pose: duplicate metadata cannot relocate restart or duplicate a death
+PASS fall event pose: pose-only unknown actor still creates no body or dust
+PASS strike: monster slash faces the player as the living raster does
+PASS strike: overlapping monster uses its own facing fallback
+PASS strike: player slash preserves player aim rather than aiming at a monster
+PASS strike: a dodge cannot rotate the committed warning at contact
+PASS fall: snapshots ID, art family, elite, position and actual player-facing angle
+PASS fall: known deaths retain dust feedback even without authored family death art
+PASS fall: stale strikes, warnings, spawn and target tint no longer pose the dead monster
+PASS fall: presentation neither kills a live actor nor invents loot or rewards
+PASS fall: retained snapshot survives actor removal and later player/theme changes
+PASS fall: semantic recorder emits a labelled Death, never an extra live Monster
+PASS fall: duplicate death cannot restart the retained pose
+PASS fall: duplicate death neither restarts nor duplicates dust
+PASS fall: named eight-tick motion is independent of the eight-second hold
+PASS fall: settled pose stays fully opaque after motion ends
+PASS fall: fading begins only in the final twenty ticks
+PASS fall: fade changes opacity without replaying motion
+PASS fall: last visible tick is retained
+PASS fall: body expires at the named TTL
+PASS fall: more than32 deaths discard oldest bodies deterministically
+PASS fall: combat feedback and retained bodies share the128-effect cap
+PASS fall: monster family matches the living raster selection
+PASS fall: monster family matches the living raster selection
+PASS fall: monster family matches the living raster selection
+PASS fall: monster family matches the living raster selection
+PASS fall: ranged role takes precedence over theme
+PASS fall: overlapping actor falls back to its own facing
+PASS fall: unknown actor never borrows last death position for a fabricated corpse
+PASS fall: Scion death cannot masquerade as a raider body
+PASS fall: an unchanged scene does not clear a body
+PASS fall: snapshot route changes clear bodies even without a transition event
+PASS fall: extraction, connection and Scion-loss transitions clear retained bodies
+PASS fall: extraction, connection and Scion-loss transitions clear retained bodies
+PASS fall: extraction, connection and Scion-loss transitions clear retained bodies
+PASS fall: extraction, connection and Scion-loss transitions clear retained bodies
+PASS fall: extraction, connection and Scion-loss transitions clear retained bodies
+PASS fall: extraction, connection and Scion-loss transitions clear retained bodies
+PASS strike: input creates one speculative preparation
+PASS strike: repeated input cannot restart a live strike
+PASS strike: early, late, or expired preparation reconciles to one contact
+PASS strike: presentation alone cannot manufacture hit feedback
+PASS strike: authoritative damage supplies contact feedback once
+PASS strike: input during contact cannot revert to preparation
+PASS strike: input creates one speculative preparation
+PASS strike: repeated input cannot restart a live strike
+PASS strike: early, late, or expired preparation reconciles to one contact
+PASS strike: presentation alone cannot manufacture hit feedback
+PASS strike: authoritative damage supplies contact feedback once
+PASS strike: input during contact cannot revert to preparation
+PASS strike: input creates one speculative preparation
+PASS strike: repeated input cannot restart a live strike
+PASS strike: early, late, or expired preparation reconciles to one contact
+PASS strike: presentation alone cannot manufacture hit feedback
+PASS strike: authoritative damage supplies contact feedback once
+PASS strike: input during contact cannot revert to preparation
+PASS strike: input creates one speculative preparation
+PASS strike: early, late, or expired preparation reconciles to one contact
+PASS strike: presentation alone cannot manufacture hit feedback
+PASS strike: authoritative damage supplies contact feedback once
+PASS strike: input during contact cannot revert to preparation
+PASS strike: an enemy arc never becomes the player strike
+PASS strike: unconfirmed preparation expires without hit feedback
+PASS phase-a: table pins the 50ms presentation tick
+PASS phase-a: critical number outlives the ordinary 12-tick number
+PASS phase-a: beat lifetimes are distinct by construction
+PASS phase-a: loss pulse outlives the 3-tick damage pulse
+PASS phase-a: critical flag and style copy onto the damage number
+PASS phase-a: critical number ttl comes from the table and differs
+PASS phase-a: critical flash is longer than the ordinary flash
+PASS phase-a: render list labels critical hits with style
+PASS phase-a: ScionLost produces a loss beat
+PASS phase-a: loss beat lifetime comes from the table
+PASS phase-a: loss pulse comes from the table
+PASS phase-a: loss beat logs a readable line
+PASS phase-a: BuffExpired(war-cry) produces the fade beat with its ttl
+PASS phase-a: only war-cry expiry renders the fade beat
+PASS phase-a: local seam starts
+PASS phase-a: post-entry WarCry activates before checking expiry
+PASS phase-a: local seam maps BuffExpired through the presentation seam
+PASS phase-a: spawn detection is byte-deterministic across runs
+PASS phase-a: one materialization beat per unseen foe
+PASS phase-a: materialization ttl comes from the table
+PASS phase-a: re-sighting never re-triggers the beat
+PASS phase-a: player facing right no longer flips the monster west
+PASS phase-a: player facing left does not flip the monster east either
+PASS monster display: rendering can trail an unchanged authority endpoint
+PASS monster display: authority facing survives into contact presentation
+PASS monster display: hit anchors and the model retain authority coordinates
+PASS monster display: snapshots without movement metadata render authority
+PASS monster display: malformed display coordinates cannot contaminate world state
+PASS phase-a: local seam starts for the negative control
+PASS phase-a: applying every drained beat leaves the model untouched
+PASS facing: up-left resolves to (-1,-1)
+PASS facing: down-right resolves to (1,1)
+PASS facing: up-right resolves to (1,-1)
+PASS facing: plain left keeps its single axis
+PASS facing: unknown name falls back to down
+PASS message: server text becomes the HUD toast
+PASS message: toast outlives a key-echo hint
+PASS message: empty text never blanks a toast
+PASS 0108: JS payload shape is fromX/fromY/toX/toY/travelMs/kind=monster
+PASS 0108: missing travelMs is not a projectile payload
+PASS 0108: slam-shaped telegraph is not a projectile warning
+PASS 0108: world:projectile keys become a Telegraph event
+PASS 0108: travelMs uses the 50ms tick, not a catalog guess
+PASS 0108: ranged windup records a Telegraph op
+PASS 0108: Telegraph label stays the existing op, action projectile
+PASS 0108: ranged hit lands as attributed Damage/Impact
+PASS 0108: every ranged hit is preceded by its Telegraph op
+PASS 0108: incoming hit is attributed to the ranged attacker
+PASS 0108: a hit without a preceding warning cannot mint a Telegraph
+PASS 0108: negative — damage-only path never records the ranged warning
+PASS 0108: negative — slam telegraph never becomes a projectile warning
+PASS npc: roster entry survives the sync
+PASS npc: name survives the sync
+PASS npc: tile position converts to world units
+PASS npc: server verb list survives verbatim
+PASS npc: render list carries a labeled Npc op
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS discriminator: ActorDied "monster" maps to the kill cue
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: scion death ingests silently
+PASS discriminator: ScionLost still ingests
+PASS discriminator: one Scion death schedules exactly the Scion-loss cue
+PASS silence: no unknown event schedules a cue
+PASS silence: drained schedule is empty
+PASS silence: recording sink received nothing
+PASS ordering: every known cue is voiced once
+PASS ordering: voiced cues ascend by scheduled tick
+PASS ordering: ties resolve by mixer arrival sequence
+PASS bus: default is full volume, unmuted
+PASS bus: volume setter stores permille
+PASS bus: effective gain scales authored gain exactly
+PASS bus: muted bus is silenced while the other still voices
+PASS bus: zero volume silences without mute
+PASS bus: volume clamps above full
+PASS bus: volume clamps below zero
+PASS cap: voice cap bounds the drained schedule
+PASS cap: steal-oldest evicts the earliest same-priority voice
+PASS cap: higher-priority newcomer steals the oldest lower-priority voice
+PASS cap: a lower-priority newcomer never steals a higher-priority voice
+PASS cap: music bus cap is enforced independently of the sfx bus
+PASS byte-identical: ordinary hit ingests
+PASS byte-identical: critical hit ingests
+PASS byte-identical: enemy defeat ingests
+PASS byte-identical: Scion loss ingests
+PASS byte-identical: war-cry expiry ingests
+PASS byte-identical: ordinary hit ingests
+PASS byte-identical: critical hit ingests
+PASS byte-identical: enemy defeat ingests
+PASS byte-identical: Scion loss ingests
+PASS byte-identical: war-cry expiry ingests
+PASS serialization: two independent runs are byte-identical
+PASS serialization: schedule matches the pinned canonical form
+PASS serialization: sink recorded exactly the voiced schedule
+all audio mixer checks passed

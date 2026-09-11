@@ -241,7 +241,7 @@ class ProtocolSession {
   JsonValue chronicles_state_payload(const std::string& created_scion_id) const;
   void ensure_chronicle_house(const std::string& id, const std::string& name);
   void ensure_chronicle_scion(const std::string& house_id, const std::string& id,
-                              const std::string& name, bool mortal);
+                              const std::string& name, bool mortal, const std::string& appearance = "male");
   // N4: the real item pipeline state (12x7 backpack + wear seats); the forge
   // itself lives on the world (JS module singleton).
   PlayerInventory inventory_;

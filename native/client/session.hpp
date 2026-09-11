@@ -65,7 +65,7 @@ struct ClientCommand {
   int dy = 0;
   int value = 0;
   std::string target;
-  std::string extra;  // MenuAction: the item id/uuid riding queueItem.item
+  std::string extra;  // CreateScion: appearance; MenuAction: item id/uuid
 
   static ClientCommand login(std::string guest_id, bool quick_guest);
   static ClientCommand move(int dx, int dy);
@@ -76,7 +76,7 @@ struct ClientCommand {
   static ClientCommand enter_zone(std::string node_id);
   static ClientCommand extract();
   static ClientCommand found_house(std::string house_name);
-  static ClientCommand create_scion(std::string scion_name);
+  static ClientCommand create_scion(std::string scion_name, std::string appearance = "male");
   static ClientCommand select_scion(std::string scion_id, bool mortal_oath);
   static ClientCommand set_out(std::string scion_id);
   static ClientCommand npc_action(int npc_id, std::string action_id);

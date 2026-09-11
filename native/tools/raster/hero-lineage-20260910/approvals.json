@@ -1,0 +1,678 @@
+{
+  "version": 1,
+  "authorization": "Root authorized additive staging of all clear and weak-readability cycles for production gameplay review; final overlay acceptance remains pending.",
+  "assets": [
+    {
+      "sex": "male",
+      "direction": "n",
+      "pose": "idle",
+      "sha256": "a00fb2a6d0595263aa23e7eeebf7604dfdf6d88e21e9e5f682599d8c90eb9e85",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "n",
+      "pose": "walk0",
+      "sha256": "ba32c33cdbbb673e38b8e2a51a26c1ee5a16cd4fdaf755c146bebb25b50ddc0c",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "n",
+      "pose": "walk1",
+      "sha256": "c95c59d9e4ccee0876d55221c2caa7085fb08b8704cf24db3637c8817fa940fc",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "n",
+      "pose": "strike0",
+      "sha256": "7822dfdaa5934537cea09e17c6d01cfda8ac59dc4e4b027d04c38ae6c062bb33",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "n",
+      "pose": "strike1",
+      "sha256": "22e5075a73b326c0d1a33fac73c1a62bb083e2f188a227e5e665473500740456",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "n",
+      "pose": "strike2",
+      "sha256": "a00fb2a6d0595263aa23e7eeebf7604dfdf6d88e21e9e5f682599d8c90eb9e85",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "ne",
+      "pose": "idle",
+      "sha256": "e37d6717e594ddd45b409d646ce0aa1ba5515ce5d6a11a71025b926127426e77",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "ne",
+      "pose": "walk0",
+      "sha256": "57f89685d9034681c3efc274ca71fb8c62954a80f55e4fe5ac94c6996adc4a3e",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "ne",
+      "pose": "walk1",
+      "sha256": "ee969e331b71929686e7a493c9e888b9453849faea09b9d155403324bb9b5bb9",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "ne",
+      "pose": "strike0",
+      "sha256": "42adfd98c8431b6533cd9cd9e036b2929511c56f0e98540881db6dae1e3c6fe6",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "ne",
+      "pose": "strike1",
+      "sha256": "21a698be730688f49555f8bd2a60e3d6756b1767689c8da389f7de11f9d702c5",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "ne",
+      "pose": "strike2",
+      "sha256": "e37d6717e594ddd45b409d646ce0aa1ba5515ce5d6a11a71025b926127426e77",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "e",
+      "pose": "idle",
+      "sha256": "fbcc0716067727c1db69425fd7b0925288660abf7933a02d32e8281289f9546a",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "e",
+      "pose": "walk0",
+      "sha256": "ddc3ea687f790701e1697a0d3155355fd0c15328c35d4f82fe5073eee21c2b61",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "e",
+      "pose": "walk1",
+      "sha256": "469f909dfc91102558a38262a4f87f7a0215bcc8d86122fd449c8862a3d1c1d9",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "e",
+      "pose": "strike0",
+      "sha256": "ac86004d260248f81385bd7f0020dded05edb15e72d4c29684f23cc3444b2c41",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "e",
+      "pose": "strike1",
+      "sha256": "9f3ad33d67a31664ac8448e57b41f350931327840f6727ad889ff149ad8079ef",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "e",
+      "pose": "strike2",
+      "sha256": "fbcc0716067727c1db69425fd7b0925288660abf7933a02d32e8281289f9546a",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "se",
+      "pose": "idle",
+      "sha256": "7bf0e40eed15a220c20c3c1e8f08f9c16f2b110b1a2d2b08db368fe50415f94c",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "se",
+      "pose": "walk0",
+      "sha256": "a4ca88c05c753d00e52a4357f04574a1dd685daeaa61e5765fd29245a4fa3475",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "se",
+      "pose": "walk1",
+      "sha256": "a17d3ea3637f38ed647bfebc50a8b96bda0795b4fde7f9923a1b167186ed73f9",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "se",
+      "pose": "strike0",
+      "sha256": "f2515f2ecfb4d43f78602ee33d1eef4600afef4263d48afd5136073fbab379af",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "se",
+      "pose": "strike1",
+      "sha256": "11fcc86c49e0576265821bd93bd88b7bac2da597e37b45c43a7cab0137dce3b0",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "se",
+      "pose": "strike2",
+      "sha256": "7bf0e40eed15a220c20c3c1e8f08f9c16f2b110b1a2d2b08db368fe50415f94c",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "s",
+      "pose": "idle",
+      "sha256": "65237702db547f5cb5dddf393c2aa84a38d6804390a060b07d8f23da41374549",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "s",
+      "pose": "walk0",
+      "sha256": "7a396d11a81c15fbd586e069564f3680956fcbbc8161faf43fefa792d832363b",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "s",
+      "pose": "walk1",
+      "sha256": "d13a2832f6c83f15d196d2fbfb982739804688bd1fb3d66b1671626fb1891bbe",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "s",
+      "pose": "strike0",
+      "sha256": "770f71cb70abff8be20ff904b697185691c6f3847cf036ea28026357af79bf3b",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "s",
+      "pose": "strike1",
+      "sha256": "419391bd44c68b82beb737553a69b4c8030d138814e2b8c052439be25881732d",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "s",
+      "pose": "strike2",
+      "sha256": "65237702db547f5cb5dddf393c2aa84a38d6804390a060b07d8f23da41374549",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "sw",
+      "pose": "idle",
+      "sha256": "7d3e7643a73ff8de6126358c0712bf99bbd00680d576510b27a0664225093396",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "sw",
+      "pose": "walk0",
+      "sha256": "6c6a8e0ea5f45739835c7931bb62d82945a4e535b741a77d6ea7b6076262a55e",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "sw",
+      "pose": "walk1",
+      "sha256": "e27e55704a83d1162aa232072b019e0890c76aa872047ad2710f3b798ae82d2c",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "sw",
+      "pose": "strike0",
+      "sha256": "493f6f6bd56dd057565e547bece6381c5ef109401b06ac36ca7739f374d30af6",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "sw",
+      "pose": "strike1",
+      "sha256": "8cae0e268cbc6ab6eeb4a14b4b0e8f6056a62181e4454f34a667b60c3c08192e",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "sw",
+      "pose": "strike2",
+      "sha256": "7d3e7643a73ff8de6126358c0712bf99bbd00680d576510b27a0664225093396",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "w",
+      "pose": "idle",
+      "sha256": "565d5048b1f3c04e46f063fc60ed5e2f1b82eacb485877fca207fa8e440d3fb0",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "w",
+      "pose": "walk0",
+      "sha256": "cce2c3d7df1fe728293b73691148dff2df0afbff1776c9ef77e75bb22ee748c4",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "w",
+      "pose": "walk1",
+      "sha256": "a212d1523c8e27ff4adbccfd84c782058715419f228e7000fcdb1c9b47e204d1",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "w",
+      "pose": "strike0",
+      "sha256": "fe9ef7b4c6a32c5516b7b094dd13b3f1121b0ecec6bf0950dec736a6760245ba",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "w",
+      "pose": "strike1",
+      "sha256": "a00eccd325a168da95f962b8b51a655f3d6ef07935e3045f81335ab295724691",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "w",
+      "pose": "strike2",
+      "sha256": "565d5048b1f3c04e46f063fc60ed5e2f1b82eacb485877fca207fa8e440d3fb0",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "nw",
+      "pose": "idle",
+      "sha256": "a0329b6ee6ce99f247c055c484aee1241c59f5dde4bf9617e650c5beb849df34",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "nw",
+      "pose": "walk0",
+      "sha256": "39e7490823fd27100cca953df29b3c39b40ae762763effa5d0ee23fbdc593431",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "nw",
+      "pose": "walk1",
+      "sha256": "5d9121242a1236eb69d13b1177e94d781b6670af8cfb2de65f6ddeb51a736034",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "nw",
+      "pose": "strike0",
+      "sha256": "157184a7aedc89c5d57cd0cd42332d42bb6ebca804a3a78e062fe13545956399",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "nw",
+      "pose": "strike1",
+      "sha256": "0db546c1e8761793f9e1c0b091235543e48000df4f68c3bfa32e7180ab5ef1ef",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "male",
+      "direction": "nw",
+      "pose": "strike2",
+      "sha256": "a0329b6ee6ce99f247c055c484aee1241c59f5dde4bf9617e650c5beb849df34",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "n",
+      "pose": "idle",
+      "sha256": "1179c7cdfa98149f99d8adf790c8d5b9b33253e0f3671adc865ea0514805c728",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "n",
+      "pose": "walk0",
+      "sha256": "56766c847ce36b4ca8ed70836efa684c0e22b0eb956a209d6a37726758f3536a",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "n",
+      "pose": "walk1",
+      "sha256": "8e9e655a026f66a7abbeae0ee97c16a671bcfbf7368e07b4f4d6c280e7c65af4",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "n",
+      "pose": "strike0",
+      "sha256": "03e88ca20722406336988a43def99b26640bc2388d280f2f4a47c69e5609277c",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "n",
+      "pose": "strike1",
+      "sha256": "670882bb702437593e08f1bbf22b471da6057a9ed9478e86a13298980ba53024",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "n",
+      "pose": "strike2",
+      "sha256": "1179c7cdfa98149f99d8adf790c8d5b9b33253e0f3671adc865ea0514805c728",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "ne",
+      "pose": "idle",
+      "sha256": "06fd6a328f58384f634353279ad9816a9fed4e6ef1cf1c19d7d28e948458e33f",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "ne",
+      "pose": "walk0",
+      "sha256": "54a8faa993af016191d849557f1b1178a1f9b880536abbd2ad242099bd55605b",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "ne",
+      "pose": "walk1",
+      "sha256": "b9c096240f1f6d4e35bf384f9198991cc5a3df412ed18995d0f3a99568155975",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "ne",
+      "pose": "strike0",
+      "sha256": "b7fa9b55e08f34e51008a170466ce647862adc6c81d01d6409abe104b3f0d2b3",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "ne",
+      "pose": "strike1",
+      "sha256": "0df564a98efa9c2823c35677baf8cf35758b99690c2171c3c93178da3c75757d",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "ne",
+      "pose": "strike2",
+      "sha256": "06fd6a328f58384f634353279ad9816a9fed4e6ef1cf1c19d7d28e948458e33f",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "e",
+      "pose": "idle",
+      "sha256": "7ade33152c53ce0d776c5f68f3559dd1c84f44442db06f84d6a91476c85b85f1",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "e",
+      "pose": "walk0",
+      "sha256": "d44e640c9c20134fdbdaafb78b315a122a78cef947b1a98c342de50c54211c5b",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "e",
+      "pose": "walk1",
+      "sha256": "16639935600f9a2d8a98c2f4b6e9c837c139b744f3eeea02f1e0aeca8cea1d7b",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "e",
+      "pose": "strike0",
+      "sha256": "5449ccb951b70e4ec8c8216049e5ed865ee06e111ba061de153f93f2b75625e4",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "e",
+      "pose": "strike1",
+      "sha256": "dd2c9ad87786fe386df59d8fd6081e7b2245e5b554084f408a4addb61996d2bf",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "e",
+      "pose": "strike2",
+      "sha256": "7ade33152c53ce0d776c5f68f3559dd1c84f44442db06f84d6a91476c85b85f1",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "se",
+      "pose": "idle",
+      "sha256": "c23539b10cf0c0e659d1a80887c450df5269f41e1555636421c44ce717968390",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "se",
+      "pose": "walk0",
+      "sha256": "17a4a4d1e7e7bf5d2f2586b7f56a3d4714c3ddfcc75ee0575b0c85484a1ec072",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "se",
+      "pose": "walk1",
+      "sha256": "2243972d19542e125858989628eb5ff1b361e37a392b99a96865e0a709ca5b3f",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "se",
+      "pose": "strike0",
+      "sha256": "3b42a28cc77b7f39ddd3d2dcefa2e80b7d8820d0de785926ec26f24fb580f129",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "se",
+      "pose": "strike1",
+      "sha256": "1833a63efedb6de6661eb23b4ccb09cd66c1c38fcfc082bd41180bb0cbbe77fb",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "se",
+      "pose": "strike2",
+      "sha256": "c23539b10cf0c0e659d1a80887c450df5269f41e1555636421c44ce717968390",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "s",
+      "pose": "idle",
+      "sha256": "c6a1738dca5abf14e741d34746db21ce1db84e8f6f2037e8dd45df91300b5dad",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "s",
+      "pose": "walk0",
+      "sha256": "f58a4a278d2051714f6a95f400755a2537c77182852ca927a955ea1b1bdbc372",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "s",
+      "pose": "walk1",
+      "sha256": "e5ccb7e3faebf158001ed5b6d14c689163a3a67ff5b565da433b0d4204942980",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "s",
+      "pose": "strike0",
+      "sha256": "4cf5bae0343661b2dba121509ed4be90568376d1c25cc955bb66125f026a7de3",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "s",
+      "pose": "strike1",
+      "sha256": "8b8347ffbdc84e43d1df1e514acb1e3701fe2b862c21efdb219fb4ee81fca75c",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "s",
+      "pose": "strike2",
+      "sha256": "c6a1738dca5abf14e741d34746db21ce1db84e8f6f2037e8dd45df91300b5dad",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "sw",
+      "pose": "idle",
+      "sha256": "d0e8d44fe5f6779f3331e63751669c0f9599a2ef2430826693736ea547cc284d",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "sw",
+      "pose": "walk0",
+      "sha256": "7967565e94abe165f9c532d211ee804d2ee81489f082a3b2dd60fc237993633e",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "sw",
+      "pose": "walk1",
+      "sha256": "ed09d329b53164cd4398cadd4f06904bf79b2b1bae6d643f3ea66712a21fcd41",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "sw",
+      "pose": "strike0",
+      "sha256": "d4694609db5c4df3b63f48d9a57aea4a3b72c4054efbecd910da09f980ce4584",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "sw",
+      "pose": "strike1",
+      "sha256": "7d6c51a5da7cfe402e5095e1f0e40084f0e345dbe73704a8e351847e05a773c8",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "sw",
+      "pose": "strike2",
+      "sha256": "d0e8d44fe5f6779f3331e63751669c0f9599a2ef2430826693736ea547cc284d",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "w",
+      "pose": "idle",
+      "sha256": "4e6977b2ca6cb711aa5fb1bfbaf82e7a764ef75aacff53a78ecb17612654e48e",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "w",
+      "pose": "walk0",
+      "sha256": "98dc3df88cfc251c10894419f1cfbf26005ebbd42241fd864c20070deec3bb68",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "w",
+      "pose": "walk1",
+      "sha256": "0f74fbe6aeae0d7f3817625df9b343c648b12b11a7040f2dd0ac3e3f2fec4867",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "w",
+      "pose": "strike0",
+      "sha256": "f20667abc04304b37e6d2d7a8df162416706dd2f0251bd2168f706d7ea8d41b6",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "w",
+      "pose": "strike1",
+      "sha256": "e74459466e29607052abd900c0adfaf8fc85f35257d4cfd016adef8486b28a2a",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "w",
+      "pose": "strike2",
+      "sha256": "4e6977b2ca6cb711aa5fb1bfbaf82e7a764ef75aacff53a78ecb17612654e48e",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "nw",
+      "pose": "idle",
+      "sha256": "496f341e9137922b06c9b4a51d80bf34bbcd79f5f3550b782e626b2507ddaabf",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "nw",
+      "pose": "walk0",
+      "sha256": "d3cb6aaa67313a1d08cc8fd573ea39bda20f2b1d63c83941ac03ca60d979793f",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "nw",
+      "pose": "walk1",
+      "sha256": "c67be741c58dd0c6d30447fd0d058a5c4278b86c0c333c3ea379c736c426b864",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "nw",
+      "pose": "strike0",
+      "sha256": "6599ec3da2d1be05ee1d71e208258e8e8d39aec59b7160ad9ad8eb51ec428b5b",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "nw",
+      "pose": "strike1",
+      "sha256": "1e3daa5c0f06f40dc960c4a5b24c11765edf37e0af39495b9d43b4e1796464db",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    },
+    {
+      "sex": "female",
+      "direction": "nw",
+      "pose": "strike2",
+      "sha256": "496f341e9137922b06c9b4a51d80bf34bbcd79f5f3550b782e626b2507ddaabf",
+      "status": "root_authorized_gameplay_candidate_pending_production_overlay_review"
+    }
+  ]
+}

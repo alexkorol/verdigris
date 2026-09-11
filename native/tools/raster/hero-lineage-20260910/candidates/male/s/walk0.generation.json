@@ -1,0 +1,31 @@
+{
+  "tool": "image_gen.imagegen",
+  "model_selection": "not exposed",
+  "generated_path": "C:\\Users\\Alex\\.codex\\generated_images\\01a0896d-63f4-7432-b1cd-d54c4e9b5ee0\\exec-fb9394a6-6a15-455d-8da4-6fc0de2f5c10.png",
+  "output_hint": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a0896d-63f4-7432-b1cd-d54c4e9b5ee0 as C:\\Users\\Alex\\.codex\\generated_images\\01a0896d-63f4-7432-b1cd-d54c4e9b5ee0\\exec-fb9394a6-6a15-455d-8da4-6fc0de2f5c10.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "prompt": "Image1 is the original identity anchor; Image2 is the accepted direct-front direction idle. Change only his pose into contact A of an in-place walk toward the bottom of the image, directly facing us. His anatomical RIGHT leg (screen-left) steps forward toward us and bears weight with its sandal flat; his LEFT leg (screen-right) trails behind with heel lifted. His left arm swings gently forward, right arm back; small coordinated hip and shoulder rotation, head still directly forward. Keep the center of his ground stance at the original anchor. Preserve the original man's exact adult face, brown hair, plain beige belted short-sleeved tunic, bare lower legs, leather sandals, realistic body proportions and physically shaded fine raster rendering. Do not simplify into a cartoon or redesign him. Both hands remain empty. Keep the fixed elevated frontal camera, original apparent body size (about970 pixels crown-to-sole), original square1254 canvas, and central ground anchor at x627,y1098. Do not zoom or fit the pose to the frame. Actual transparent alpha, whole silhouette visible with ample margins, no floor, cast shadow, text or other objects. Output one isolated pose.",
+  "references": [
+    "C:/Users/Alex/Downloads/ChatGPT Image Sep 10, 2026, 05_22_21 PM.png",
+    "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/male/s/idle.png"
+  ],
+  "recipe": {
+    "source_url": "https://x.com/elle_elle_e/status/2097440118718316964",
+    "adaptation": "Separate reference-led images retaining original identity, size and placement; this new physical-form character request supersedes old raster style simplification rules. Pose beats are our explicit contact and anticipation/contact adaptation."
+  },
+  "reference_records": [
+    {
+      "index": 1,
+      "submitted_path": "C:\\Users\\Alex\\Downloads\\ChatGPT Image Sep 10, 2026, 05_22_21 PM.png",
+      "sha256": "fa6bb5a57dbb0791095abc6078920ae3e834782e3db8dd24b95e16c8f37b5e1f",
+      "retained_path": "C:\\Users\\Alex\\Downloads\\ChatGPT Image Sep 10, 2026, 05_22_21 PM.png",
+      "viewed_before_call": true
+    },
+    {
+      "index": 2,
+      "submitted_path": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\s\\idle.png",
+      "sha256": "fa6bb5a57dbb0791095abc6078920ae3e834782e3db8dd24b95e16c8f37b5e1f",
+      "retained_path": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\s\\idle.png",
+      "viewed_before_call": true
+    }
+  ]
+}

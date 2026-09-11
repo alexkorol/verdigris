@@ -25,6 +25,10 @@ struct ClientPlayer {
   int resource_max = 50;
   int attack = 12;
   bool alive = true;
+  bool has_display_position = false;
+  double display_x = 0.0;
+  double display_y = 0.0;
+  std::string appearance = "male";
 };
 
 struct ClientMonster {
@@ -175,6 +179,7 @@ struct ClientScionEntry {
   std::string name;
   int level = 1;
   bool mortal = false;
+  std::string appearance = "male";
 };
 
 struct ClientCryptEntry {
@@ -184,6 +189,7 @@ struct ClientCryptEntry {
   // "" (no relic record) | "lost" | "queued" | "recovered"
   std::string relic_status;
   int relic_count = 0;
+  std::string appearance = "male";
 };
 
 struct ClientHouseEntry {

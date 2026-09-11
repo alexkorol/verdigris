@@ -1,0 +1,21 @@
+{
+  "tool": "image_gen.imagegen",
+  "prompt": "Image 1 is the original character identity: preserve her exact adult face, anatomy, shoulder-length brown hair, plain beige knee-length linen tunic, narrow brown belt, brown strapped sandals, natural colors and physical rendered pixel-sprite style. Image 2 is the accepted direction idle: preserve its facing, elevated camera, body scale and placement. Change only the requested action; no new clothes, equipment, weapon, jewelry, cartoon rounding or green patina. Retain the 1254×1254 canvas and constant approximately 980px standing body scale, crown near y=120, ground anchor near x=627/y=1100; no independent pose fitting or zoom. Full silhouette, generous margins, one woman in one frame. Both hands empty. Request true transparent RGBA with alpha zero outside the woman; no checker, scene, floor or cast shadow. Direction SOUTH: keep the original front view, face and body straight toward the viewer and screen-bottom. WALK CONTACT A in place: anatomical RIGHT leg on screen-left forward and planted with its sandal near x=560,y=1120; anatomical LEFT leg on screen-right trails back with smaller sandal near x=690,y=1010. Show open alternating stride with a modest weight shift. Anatomical left arm on screen-right swings forward, right arm back. Keep camera and overall body scale unchanged; do not turn sideways.",
+  "references": [
+    "C:/Users/Alex/Downloads/ccd7ce15-5d1a-46c4-af49-f305bf7fad90 (1).png",
+    "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/female/s/idle.png"
+  ],
+  "source_path": "C:\\Users\\Alex\\.codex\\generated_images\\01a08b3d-0739-7b22-86a3-6475fe34a823\\exec-b435248f-97f7-47e0-be5f-7da42e61902d.png",
+  "output_hint": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a08b3d-0739-7b22-86a3-6475fe34a823 as C:\\Users\\Alex\\.codex\\generated_images\\01a08b3d-0739-7b22-86a3-6475fe34a823\\exec-b435248f-97f7-47e0-be5f-7da42e61902d.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "pose_selected_alpha_failed",
+  "review": "Anatomical RIGHT leg at screen-left leads; LEFT trails. Facing toward viewer preserved. Clear opposing arm balance.",
+  "backend_model_version": "not exposed by built-in tool",
+  "canvas_size": [
+    1254,
+    1254
+  ],
+  "png_mode": "RGB",
+  "sha256": "149ccdeae1a56a81fd1507b913f942eea7bbd4b9c9c6031d7a92d50292d61d16",
+  "alpha_review": "FAILED: RGB file, no alpha channel; checker pattern painted into pixels. Parent will review narrow neutral matte cleanup before Pixel Respecter import.",
+  "source_image_modified": false
+}

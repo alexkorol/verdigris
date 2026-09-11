@@ -42,6 +42,7 @@ namespace detail {
 // in rear views. These SE anchors were measured on the accepted 80x96 idle and
 // four common-canvas walk frames, then inspected with all five weapons at 1x/3x.
 inline constexpr PoseMetadata kPoses[] = {
+#include "lineage_equipment.inc"
     {"hero_se", {80, 96}, {50.5, 66.5}, {49, 65, 52, 69}, false, false, false},
     {"hero_walk0_se", {80, 96}, {50.5, 66.5}, {49, 65, 53, 69}, false, false, false},
     {"hero_walk1_se", {80, 96}, {50.5, 64.5}, {49, 63, 52, 67}, false, false, false},

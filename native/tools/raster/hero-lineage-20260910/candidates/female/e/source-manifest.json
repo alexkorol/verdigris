@@ -1,0 +1,342 @@
+{
+  "owner": "image25_game_feedback",
+  "sex": "female",
+  "direction": "e",
+  "created_utc": "2026-09-11",
+  "identity_reference": "C:/Users/Alex/Downloads/ccd7ce15-5d1a-46c4-af49-f305bf7fad90 (1).png",
+  "scope": "Raw isolated source images only; no runtime/import/code/Git changes",
+  "one_pose_per_call": true,
+  "frame_order": [
+    "idle",
+    "walk0",
+    "walk1",
+    "strike0",
+    "strike1"
+  ],
+  "attack_recovery": "idle reused at runtime; no third attack generation",
+  "general_caveats": [
+    "All final PNGs are RGB with painted neutral checker despite requested true RGBA; parent owns reviewed narrow matte cleanup.",
+    "Image tool output does not expose model/version; do not claim independently verified Image2.5.",
+    "No per-pose fitting, crop, scaling or pixel conversion performed here.",
+    "Detailed cloth texture becomes more decorative in some animation frames than the original plain tunic; final pixel-scale review required."
+  ],
+  "frames": [
+    {
+      "pose": "idle",
+      "file": "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/female/e/idle.png",
+      "prompt_file": "idle.prompt.txt",
+      "references": [
+        "C:/Users/Alex/Downloads/ccd7ce15-5d1a-46c4-af49-f305bf7fad90 (1).png"
+      ],
+      "tool": "image_gen.imagegen",
+      "tool_model_exposed": false,
+      "model_label": "not exposed by built-in tool",
+      "output_hint": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a08b3c-ead8-7530-9356-686d9988e85d as C:\\Users\\Alex\\.codex\\generated_images\\01a08b3c-ead8-7530-9356-686d9988e85d\\exec-f291be61-b9ae-4122-85bd-50bb33a22761.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "generated_source": "C:\\Users\\Alex\\.codex\\generated_images\\01a08b3c-ead8-7530-9356-686d9988e85d\\exec-f291be61-b9ae-4122-85bd-50bb33a22761.png",
+      "source_review_status": "visual source candidate; requires matte cleanup, Pixel Respecter and runtime review",
+      "canvas_px": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "alpha_status": "failed: neutral painted checker, no alpha channel",
+      "body_bounds_exclusive_chroma14": [
+        529,
+        105,
+        725,
+        1104
+      ],
+      "body_bounds_method": "Foreground RGB channel range>14 on neutral checker; inspected visually; no image edits or scaling",
+      "requested_common_pivot_px": [
+        627,
+        1105
+      ],
+      "requested_common_pivot_normalized": [
+        0.5,
+        0.8811802232854864
+      ],
+      "observed_lowest_foreground_y": 1103,
+      "pivot_note": "Nominal fixed source registration only. Generation drift exists; not a per-pose measured world origin. Do not silently per-pose fit.",
+      "left_wrist": {
+        "source_px": [
+          670,
+          630
+        ],
+        "normalized_xy": [
+          0.53429,
+          0.502392
+        ],
+        "behind_body": true,
+        "forearm_screen_angle_degrees": 85,
+        "angle_convention": "0 right,90 down,180 left,-90 up; approximate elbow-to-wrist direction, not equipment-local rotation",
+        "confidence": "low; far anatomical left wrist entirely occluded, inferred",
+        "attachment_kind": "anatomical LEFT empty wrist"
+      },
+      "notes": "Left-handed attack sources use same foot stance for anticipation/contact.",
+      "sha256": "1754479e9e8b9e14f942a879036d300eb7d2862ab72bed3e4b25c63db9b55ad6",
+      "actual_size": [
+        1254,
+        1254
+      ],
+      "actual_mode": "RGB",
+      "bytes": 1825782
+    },
+    {
+      "pose": "walk0",
+      "file": "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/female/e/walk0.png",
+      "prompt_file": "walk0.prompt.txt",
+      "references": [
+        "C:/Users/Alex/Downloads/ccd7ce15-5d1a-46c4-af49-f305bf7fad90 (1).png",
+        "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/female/e/idle.png"
+      ],
+      "tool": "image_gen.imagegen",
+      "tool_model_exposed": false,
+      "model_label": "not exposed by built-in tool",
+      "output_hint": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a08b3c-ead8-7530-9356-686d9988e85d as C:\\Users\\Alex\\.codex\\generated_images\\01a08b3c-ead8-7530-9356-686d9988e85d\\exec-57f46ef4-efa5-4976-b58f-8723183914b7.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "generated_source": "C:\\Users\\Alex\\.codex\\generated_images\\01a08b3c-ead8-7530-9356-686d9988e85d\\exec-57f46ef4-efa5-4976-b58f-8723183914b7.png",
+      "source_review_status": "visual source candidate; requires matte cleanup, Pixel Respecter and runtime review",
+      "canvas_px": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "alpha_status": "failed: neutral painted checker, no alpha channel",
+      "body_bounds_exclusive_chroma14": [
+        371,
+        107,
+        858,
+        1072
+      ],
+      "body_bounds_method": "Foreground RGB channel range>14 on neutral checker; inspected visually; no image edits or scaling",
+      "requested_common_pivot_px": [
+        627,
+        1105
+      ],
+      "requested_common_pivot_normalized": [
+        0.5,
+        0.8811802232854864
+      ],
+      "observed_lowest_foreground_y": 1071,
+      "pivot_note": "Nominal fixed source registration only. Generation drift exists; not a per-pose measured world origin. Do not silently per-pose fit.",
+      "left_wrist": {
+        "source_px": [
+          494,
+          573
+        ],
+        "normalized_xy": [
+          0.393939,
+          0.456938
+        ],
+        "behind_body": true,
+        "forearm_screen_angle_degrees": 110,
+        "angle_convention": "0 right,90 down,180 left,-90 up; approximate elbow-to-wrist direction, not equipment-local rotation",
+        "confidence": "approximate visual estimate; verify at runtime",
+        "attachment_kind": "anatomical LEFT empty wrist"
+      },
+      "notes": "Arms alternate visibly; true-profile tunic hides hip topology, so anatomical leg assignment is visually less certain.",
+      "sha256": "3c3eb1df9bc7cd495efa7c036be7460dd61286e4fc981fcd3abec571fe775ef5",
+      "actual_size": [
+        1254,
+        1254
+      ],
+      "actual_mode": "RGB",
+      "bytes": 1810842
+    },
+    {
+      "pose": "walk1",
+      "file": "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/female/e/walk1.png",
+      "prompt_file": "walk1.prompt.txt",
+      "references": [
+        "C:/Users/Alex/Downloads/ccd7ce15-5d1a-46c4-af49-f305bf7fad90 (1).png",
+        "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/female/e/idle.png",
+        "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/female/e/walk0.png"
+      ],
+      "tool": "image_gen.imagegen",
+      "tool_model_exposed": false,
+      "model_label": "not exposed by built-in tool",
+      "output_hint": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a08b3c-ead8-7530-9356-686d9988e85d as C:\\Users\\Alex\\.codex\\generated_images\\01a08b3c-ead8-7530-9356-686d9988e85d\\exec-1e4d82bc-302b-407f-865f-b4bfa25463eb.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "generated_source": "C:\\Users\\Alex\\.codex\\generated_images\\01a08b3c-ead8-7530-9356-686d9988e85d\\exec-1e4d82bc-302b-407f-865f-b4bfa25463eb.png",
+      "source_review_status": "visual source candidate; requires matte cleanup, Pixel Respecter and runtime review",
+      "canvas_px": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "alpha_status": "failed: neutral painted checker, no alpha channel",
+      "body_bounds_exclusive_chroma14": [
+        371,
+        108,
+        884,
+        1084
+      ],
+      "body_bounds_method": "Foreground RGB channel range>14 on neutral checker; inspected visually; no image edits or scaling",
+      "requested_common_pivot_px": [
+        627,
+        1105
+      ],
+      "requested_common_pivot_normalized": [
+        0.5,
+        0.8811802232854864
+      ],
+      "observed_lowest_foreground_y": 1083,
+      "pivot_note": "Nominal fixed source registration only. Generation drift exists; not a per-pose measured world origin. Do not silently per-pose fit.",
+      "left_wrist": {
+        "source_px": [
+          802,
+          566
+        ],
+        "normalized_xy": [
+          0.639553,
+          0.451356
+        ],
+        "behind_body": true,
+        "forearm_screen_angle_degrees": 38,
+        "angle_convention": "0 right,90 down,180 left,-90 up; approximate elbow-to-wrist direction, not equipment-local rotation",
+        "confidence": "approximate visual estimate; verify at runtime",
+        "attachment_kind": "anatomical LEFT empty wrist"
+      },
+      "notes": "Arms alternate visibly; true-profile tunic hides hip topology, so anatomical leg assignment is visually less certain.",
+      "sha256": "498e3cd53203201af1b5255ccf67c56a995b6adc611605658b99fb355d428537",
+      "actual_size": [
+        1254,
+        1254
+      ],
+      "actual_mode": "RGB",
+      "bytes": 1783355
+    },
+    {
+      "pose": "strike0",
+      "file": "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/female/e/strike0.png",
+      "prompt_file": "strike0.prompt.txt",
+      "references": [
+        "C:/Users/Alex/Downloads/ccd7ce15-5d1a-46c4-af49-f305bf7fad90 (1).png",
+        "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/female/e/idle.png"
+      ],
+      "tool": "image_gen.imagegen",
+      "tool_model_exposed": false,
+      "model_label": "not exposed by built-in tool",
+      "output_hint": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a08b3c-ead8-7530-9356-686d9988e85d as C:\\Users\\Alex\\.codex\\generated_images\\01a08b3c-ead8-7530-9356-686d9988e85d\\exec-39f4b842-0ad5-4edf-bbec-9952caf7254f.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "generated_source": "C:\\Users\\Alex\\.codex\\generated_images\\01a08b3c-ead8-7530-9356-686d9988e85d\\exec-39f4b842-0ad5-4edf-bbec-9952caf7254f.png",
+      "source_review_status": "visual source candidate; requires matte cleanup, Pixel Respecter and runtime review",
+      "canvas_px": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "alpha_status": "failed: neutral painted checker, no alpha channel",
+      "body_bounds_exclusive_chroma14": [
+        471,
+        114,
+        849,
+        1099
+      ],
+      "body_bounds_method": "Foreground RGB channel range>14 on neutral checker; inspected visually; no image edits or scaling",
+      "requested_common_pivot_px": [
+        627,
+        1105
+      ],
+      "requested_common_pivot_normalized": [
+        0.5,
+        0.8811802232854864
+      ],
+      "observed_lowest_foreground_y": 1098,
+      "pivot_note": "Nominal fixed source registration only. Generation drift exists; not a per-pose measured world origin. Do not silently per-pose fit.",
+      "left_wrist": {
+        "source_px": [
+          787,
+          299
+        ],
+        "normalized_xy": [
+          0.627592,
+          0.238437
+        ],
+        "behind_body": true,
+        "forearm_screen_angle_degrees": -104,
+        "angle_convention": "0 right,90 down,180 left,-90 up; approximate elbow-to-wrist direction, not equipment-local rotation",
+        "confidence": "approximate visual estimate; verify at runtime",
+        "attachment_kind": "anatomical LEFT empty wrist"
+      },
+      "notes": "Left-handed attack sources use same foot stance for anticipation/contact.",
+      "sha256": "ed16ad89142bd528a641d19727e2eef8e9c89390e4e32a6070f1485a77dbf22e",
+      "actual_size": [
+        1254,
+        1254
+      ],
+      "actual_mode": "RGB",
+      "bytes": 1813122
+    },
+    {
+      "pose": "strike1",
+      "file": "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/female/e/strike1.png",
+      "prompt_file": "strike1.prompt.txt",
+      "references": [
+        "C:/Users/Alex/Downloads/ccd7ce15-5d1a-46c4-af49-f305bf7fad90 (1).png",
+        "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/female/e/idle.png",
+        "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/female/e/strike0.png"
+      ],
+      "tool": "image_gen.imagegen",
+      "tool_model_exposed": false,
+      "model_label": "not exposed by built-in tool",
+      "output_hint": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a08b3c-ead8-7530-9356-686d9988e85d as C:\\Users\\Alex\\.codex\\generated_images\\01a08b3c-ead8-7530-9356-686d9988e85d\\exec-72fe2d87-3fbc-41da-8ccc-8bc6ed47d9b1.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "generated_source": "C:\\Users\\Alex\\.codex\\generated_images\\01a08b3c-ead8-7530-9356-686d9988e85d\\exec-72fe2d87-3fbc-41da-8ccc-8bc6ed47d9b1.png",
+      "source_review_status": "visual source candidate; requires matte cleanup, Pixel Respecter and runtime review",
+      "canvas_px": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "alpha_status": "failed: neutral painted checker, no alpha channel",
+      "body_bounds_exclusive_chroma14": [
+        459,
+        113,
+        1021,
+        1099
+      ],
+      "body_bounds_method": "Foreground RGB channel range>14 on neutral checker; inspected visually; no image edits or scaling",
+      "requested_common_pivot_px": [
+        627,
+        1105
+      ],
+      "requested_common_pivot_normalized": [
+        0.5,
+        0.8811802232854864
+      ],
+      "observed_lowest_foreground_y": 1098,
+      "pivot_note": "Nominal fixed source registration only. Generation drift exists; not a per-pose measured world origin. Do not silently per-pose fit.",
+      "left_wrist": {
+        "source_px": [
+          965,
+          305
+        ],
+        "normalized_xy": [
+          0.769537,
+          0.243222
+        ],
+        "behind_body": true,
+        "forearm_screen_angle_degrees": -1,
+        "angle_convention": "0 right,90 down,180 left,-90 up; approximate elbow-to-wrist direction, not equipment-local rotation",
+        "confidence": "approximate visual estimate; verify at runtime",
+        "attachment_kind": "anatomical LEFT empty wrist"
+      },
+      "notes": "Left-handed attack sources use same foot stance for anticipation/contact.",
+      "sha256": "4fa4d3e74726908bd25f71c4d21ade9a2e98433e810e1b924ce4a08c00bf310a",
+      "actual_size": [
+        1254,
+        1254
+      ],
+      "actual_mode": "RGB",
+      "bytes": 1784791
+    }
+  ],
+  "rejected_attempts": [
+    {
+      "pose": "idle",
+      "attempt": 2,
+      "file": "idle-attempt2.png",
+      "prompt_file": "idle-attempt2.prompt.txt",
+      "reason": "Focused alpha-only repair failed; returned RGB painted checker. Retained original attempt1 as idle.",
+      "output_hint": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a08b3c-ead8-7530-9356-686d9988e85d as C:\\Users\\Alex\\.codex\\generated_images\\01a08b3c-ead8-7530-9356-686d9988e85d\\exec-a6efd9f0-de34-4e0a-b271-08c6138c64ff.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "generated_source": "C:\\Users\\Alex\\.codex\\generated_images\\01a08b3c-ead8-7530-9356-686d9988e85d\\exec-a6efd9f0-de34-4e0a-b271-08c6138c64ff.png"
+    }
+  ]
+}

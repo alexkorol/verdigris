@@ -1,0 +1,4291 @@
+{
+  "canvas": [
+    160,
+    192
+  ],
+  "anchor_px": [
+    80,
+    160
+  ],
+  "angle_convention": "clockwise from vertical up; contact follows viewed heading unless source manifest overrides",
+  "measurement": "Artist approximate source wrist mapped using imported grid and normalization; nearest native pixel center, not inferred from prompt targets.",
+  "entries": [
+    {
+      "name": "hero_male_n",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        63.5,
+        113.5
+      ],
+      "hand_x": 63.5,
+      "hand_y": 113.5,
+      "source_wrist": [
+        464,
+        596
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/n/idle.png",
+      "source_sha256": "40b4bd96b3ea3320034c4eee21c5cadcb7b564a30ff6bc7f4a95dcb9aa0b8c36",
+      "processed_sha256": "a00fb2a6d0595263aa23e7eeebf7604dfdf6d88e21e9e5f682599d8c90eb9e85",
+      "source_manifest": "candidates/male/n/manifest.json",
+      "source_manifest_sha256": "f93912a172643487624c6c825cd538eee8a2f13ecda6e1e76e22b081e5e432d2",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        54
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        62,
+        112,
+        65,
+        115
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike2_n",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        63.5,
+        113.5
+      ],
+      "hand_x": 63.5,
+      "hand_y": 113.5,
+      "source_wrist": [
+        464,
+        596
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/n/idle.png",
+      "source_sha256": "40b4bd96b3ea3320034c4eee21c5cadcb7b564a30ff6bc7f4a95dcb9aa0b8c36",
+      "processed_sha256": "a00fb2a6d0595263aa23e7eeebf7604dfdf6d88e21e9e5f682599d8c90eb9e85",
+      "source_manifest": "candidates/male/n/manifest.json",
+      "source_manifest_sha256": "f93912a172643487624c6c825cd538eee8a2f13ecda6e1e76e22b081e5e432d2",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        54
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        62,
+        112,
+        65,
+        115
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review",
+      "recovery": "byte_identical_idle"
+    },
+    {
+      "name": "hero_male_walk0_n",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        63.5,
+        113.5
+      ],
+      "hand_x": 63.5,
+      "hand_y": 113.5,
+      "source_wrist": [
+        462,
+        595
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/n/walk0.png",
+      "source_sha256": "e686cb47c8eb85e622f5a3314afac009789a815e0f5f22f375dbfc04defb7adf",
+      "processed_sha256": "ba32c33cdbbb673e38b8e2a51a26c1ee5a16cd4fdaf755c146bebb25b50ddc0c",
+      "source_manifest": "candidates/male/n/manifest.json",
+      "source_manifest_sha256": "f93912a172643487624c6c825cd538eee8a2f13ecda6e1e76e22b081e5e432d2",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        54
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        62,
+        112,
+        65,
+        115
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_walk1_n",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        69.5,
+        96.5
+      ],
+      "hand_x": 69.5,
+      "hand_y": 96.5,
+      "source_wrist": [
+        520,
+        420
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/n/walk1.png",
+      "source_sha256": "f926eab787fd1995fdfe0e83bf5ce7c414626a3b1e423ec751eb2e5f9af24224",
+      "processed_sha256": "c95c59d9e4ccee0876d55221c2caa7085fb08b8704cf24db3637c8817fa940fc",
+      "source_manifest": "candidates/male/n/manifest.json",
+      "source_manifest_sha256": "f93912a172643487624c6c825cd538eee8a2f13ecda6e1e76e22b081e5e432d2",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        54
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        68,
+        95,
+        71,
+        98
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike0_n",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        60.5,
+        80.5
+      ],
+      "hand_x": 60.5,
+      "hand_y": 80.5,
+      "source_wrist": [
+        437,
+        265
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/n/strike0.png",
+      "source_sha256": "c78a39c03e48b4c065bdf9856aa65eb59bd1427120f571ee3ba7f19772059e5c",
+      "processed_sha256": "7822dfdaa5934537cea09e17c6d01cfda8ac59dc4e4b027d04c38ae6c062bb33",
+      "source_manifest": "candidates/male/n/manifest.json",
+      "source_manifest_sha256": "f93912a172643487624c6c825cd538eee8a2f13ecda6e1e76e22b081e5e432d2",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        54
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        59,
+        79,
+        62,
+        82
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike1_n",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        69.5,
+        69.5
+      ],
+      "hand_x": 69.5,
+      "hand_y": 69.5,
+      "source_wrist": [
+        521,
+        151
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/n/strike1.png",
+      "source_sha256": "54fc15ba4e367a3d539381279f311100c408ebbef5ab7aa2803495a0de94b810",
+      "processed_sha256": "22e5075a73b326c0d1a33fac73c1a62bb083e2f188a227e5e665473500740456",
+      "source_manifest": "candidates/male/n/manifest.json",
+      "source_manifest_sha256": "f93912a172643487624c6c825cd538eee8a2f13ecda6e1e76e22b081e5e432d2",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        54
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        68,
+        68,
+        71,
+        71
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_ne",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        67.5,
+        110.5
+      ],
+      "hand_x": 67.5,
+      "hand_y": 110.5,
+      "source_wrist": [
+        505,
+        565
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/ne/idle.png",
+      "source_sha256": "0118d58e139564f0ee83e5c7b27a1b07b45de1c33cbb0ba47ac64771c0e48ec9",
+      "processed_sha256": "e37d6717e594ddd45b409d646ce0aa1ba5515ce5d6a11a71025b926127426e77",
+      "source_manifest": "candidates/male/ne/manifest.json",
+      "source_manifest_sha256": "6ac0f280620073d9f366b034b833bdc7e593bad0296863aad7083c56f907f30c",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        54
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": true,
+      "fingers": [
+        66,
+        109,
+        69,
+        112
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike2_ne",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        67.5,
+        110.5
+      ],
+      "hand_x": 67.5,
+      "hand_y": 110.5,
+      "source_wrist": [
+        505,
+        565
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/ne/idle.png",
+      "source_sha256": "0118d58e139564f0ee83e5c7b27a1b07b45de1c33cbb0ba47ac64771c0e48ec9",
+      "processed_sha256": "e37d6717e594ddd45b409d646ce0aa1ba5515ce5d6a11a71025b926127426e77",
+      "source_manifest": "candidates/male/ne/manifest.json",
+      "source_manifest_sha256": "6ac0f280620073d9f366b034b833bdc7e593bad0296863aad7083c56f907f30c",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        54
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": true,
+      "fingers": [
+        66,
+        109,
+        69,
+        112
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review",
+      "recovery": "byte_identical_idle"
+    },
+    {
+      "name": "hero_male_walk0_ne",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        72.5,
+        93.5
+      ],
+      "hand_x": 72.5,
+      "hand_y": 93.5,
+      "source_wrist": [
+        550,
+        398
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/ne/walk0.png",
+      "source_sha256": "65d9203eac0a231432f6066c38c35dec7bdf143e961c0c399401f41e587ea92e",
+      "processed_sha256": "57f89685d9034681c3efc274ca71fb8c62954a80f55e4fe5ac94c6996adc4a3e",
+      "source_manifest": "candidates/male/ne/manifest.json",
+      "source_manifest_sha256": "6ac0f280620073d9f366b034b833bdc7e593bad0296863aad7083c56f907f30c",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        54
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": true,
+      "fingers": [
+        71,
+        92,
+        74,
+        95
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_walk1_ne",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        63.5,
+        111.5
+      ],
+      "hand_x": 63.5,
+      "hand_y": 111.5,
+      "source_wrist": [
+        469,
+        571
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/ne/walk1.png",
+      "source_sha256": "6ddf87ebd151196026f288383889ce6dfc45859e5056b10942c17d737c85bddf",
+      "processed_sha256": "ee969e331b71929686e7a493c9e888b9453849faea09b9d155403324bb9b5bb9",
+      "source_manifest": "candidates/male/ne/manifest.json",
+      "source_manifest_sha256": "6ac0f280620073d9f366b034b833bdc7e593bad0296863aad7083c56f907f30c",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        54
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": true,
+      "fingers": [
+        62,
+        110,
+        65,
+        113
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike0_ne",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        64.5,
+        80.5
+      ],
+      "hand_x": 64.5,
+      "hand_y": 80.5,
+      "source_wrist": [
+        479,
+        267
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/ne/strike0.png",
+      "source_sha256": "4a1480ee81f5d1507234e721fdffa2ba9b5a854e38121f3576cfae416091d2f2",
+      "processed_sha256": "42adfd98c8431b6533cd9cd9e036b2929511c56f0e98540881db6dae1e3c6fe6",
+      "source_manifest": "candidates/male/ne/manifest.json",
+      "source_manifest_sha256": "6ac0f280620073d9f366b034b833bdc7e593bad0296863aad7083c56f907f30c",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        54
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": true,
+      "fingers": [
+        63,
+        79,
+        66,
+        82
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike1_ne",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        74.5,
+        62.5
+      ],
+      "hand_x": 74.5,
+      "hand_y": 62.5,
+      "source_wrist": [
+        579,
+        89
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/ne/strike1.png",
+      "source_sha256": "e819ab907d1e3aae67f2c637e4f6848c692543a10cfff1313e595fc9531d2b12",
+      "processed_sha256": "21a698be730688f49555f8bd2a60e3d6756b1767689c8da389f7de11f9d702c5",
+      "source_manifest": "candidates/male/ne/manifest.json",
+      "source_manifest_sha256": "6ac0f280620073d9f366b034b833bdc7e593bad0296863aad7083c56f907f30c",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        54
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 45,
+      "melee_behind_actor": true,
+      "fingers": [
+        73,
+        61,
+        76,
+        64
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_e",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        84.5,
+        112.5
+      ],
+      "hand_x": 84.5,
+      "hand_y": 112.5,
+      "source_wrist": [
+        671,
+        632
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/e/idle.png",
+      "source_sha256": "aa077e8bda65b7888568b3d3369f023a604ae7aeb2040474decc1f0bf74eb8d1",
+      "processed_sha256": "fbcc0716067727c1db69425fd7b0925288660abf7933a02d32e8281289f9546a",
+      "source_manifest": "candidates/male/e/manifest.json",
+      "source_manifest_sha256": "8a11b332791d0bf0b42790cf64caf2b62c9d117e46c4029614b4c35cf7f3e249",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        49
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": true,
+      "fingers": [
+        83,
+        111,
+        86,
+        114
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike2_e",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        84.5,
+        112.5
+      ],
+      "hand_x": 84.5,
+      "hand_y": 112.5,
+      "source_wrist": [
+        671,
+        632
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/e/idle.png",
+      "source_sha256": "aa077e8bda65b7888568b3d3369f023a604ae7aeb2040474decc1f0bf74eb8d1",
+      "processed_sha256": "fbcc0716067727c1db69425fd7b0925288660abf7933a02d32e8281289f9546a",
+      "source_manifest": "candidates/male/e/manifest.json",
+      "source_manifest_sha256": "8a11b332791d0bf0b42790cf64caf2b62c9d117e46c4029614b4c35cf7f3e249",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        49
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": true,
+      "fingers": [
+        83,
+        111,
+        86,
+        114
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review",
+      "recovery": "byte_identical_idle"
+    },
+    {
+      "name": "hero_male_walk0_e",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        67.5,
+        107.5
+      ],
+      "hand_x": 67.5,
+      "hand_y": 107.5,
+      "source_wrist": [
+        501,
+        580
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/e/walk0.png",
+      "source_sha256": "7784a3d773b4e59d7266010fed60d72bf9ecc963cfc5f8627b86b92eaab39303",
+      "processed_sha256": "ddc3ea687f790701e1697a0d3155355fd0c15328c35d4f82fe5073eee21c2b61",
+      "source_manifest": "candidates/male/e/manifest.json",
+      "source_manifest_sha256": "8a11b332791d0bf0b42790cf64caf2b62c9d117e46c4029614b4c35cf7f3e249",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        49
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": true,
+      "fingers": [
+        66,
+        106,
+        69,
+        109
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_walk1_e",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        94.5,
+        97.5
+      ],
+      "hand_x": 94.5,
+      "hand_y": 97.5,
+      "source_wrist": [
+        778,
+        486
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/e/walk1.png",
+      "source_sha256": "e95377d8c6cb3a500c0b27b42e889fd6198e35433fbf490d870eaa0707103e9f",
+      "processed_sha256": "469f909dfc91102558a38262a4f87f7a0215bcc8d86122fd449c8862a3d1c1d9",
+      "source_manifest": "candidates/male/e/manifest.json",
+      "source_manifest_sha256": "8a11b332791d0bf0b42790cf64caf2b62c9d117e46c4029614b4c35cf7f3e249",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        49
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": true,
+      "fingers": [
+        93,
+        96,
+        96,
+        99
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike0_e",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        90.5,
+        85.5
+      ],
+      "hand_x": 90.5,
+      "hand_y": 85.5,
+      "source_wrist": [
+        730,
+        362
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/e/strike0.png",
+      "source_sha256": "4cb52ce6698c7113281ab4b91f6195079790c2fc28b6e77366d00fe5de4f375e",
+      "processed_sha256": "ac86004d260248f81385bd7f0020dded05edb15e72d4c29684f23cc3444b2c41",
+      "source_manifest": "candidates/male/e/manifest.json",
+      "source_manifest_sha256": "8a11b332791d0bf0b42790cf64caf2b62c9d117e46c4029614b4c35cf7f3e249",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        49
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": true,
+      "fingers": [
+        89,
+        84,
+        92,
+        87
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike1_e",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        112.5,
+        81.5
+      ],
+      "hand_x": 112.5,
+      "hand_y": 81.5,
+      "source_wrist": [
+        954,
+        322
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/e/strike1.png",
+      "source_sha256": "b0011aa9640049153e8fb0a1025c0f852fbd78de6be75a90f5459a2e59c02813",
+      "processed_sha256": "9f3ad33d67a31664ac8448e57b41f350931327840f6727ad889ff149ad8079ef",
+      "source_manifest": "candidates/male/e/manifest.json",
+      "source_manifest_sha256": "8a11b332791d0bf0b42790cf64caf2b62c9d117e46c4029614b4c35cf7f3e249",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        49
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 90,
+      "melee_behind_actor": true,
+      "fingers": [
+        111,
+        80,
+        114,
+        83
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_se",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        93.5,
+        105.5
+      ],
+      "hand_x": 93.5,
+      "hand_y": 105.5,
+      "source_wrist": [
+        762,
+        574
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/se/idle.png",
+      "source_sha256": "b1ffcbcdd06905b4c06f19e7eb772c8cedd523f5b25eb20a9b054fa46240770d",
+      "processed_sha256": "7bf0e40eed15a220c20c3c1e8f08f9c16f2b110b1a2d2b08db368fe50415f94c",
+      "source_manifest": "candidates/male/se/manifest.json",
+      "source_manifest_sha256": "f101ae860fd5162e79ecce9244a11db5e10d4a19e3da9c0a2c03bd9efce9f3c5",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        48
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": true,
+      "fingers": [
+        92,
+        104,
+        95,
+        107
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike2_se",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        93.5,
+        105.5
+      ],
+      "hand_x": 93.5,
+      "hand_y": 105.5,
+      "source_wrist": [
+        762,
+        574
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/se/idle.png",
+      "source_sha256": "b1ffcbcdd06905b4c06f19e7eb772c8cedd523f5b25eb20a9b054fa46240770d",
+      "processed_sha256": "7bf0e40eed15a220c20c3c1e8f08f9c16f2b110b1a2d2b08db368fe50415f94c",
+      "source_manifest": "candidates/male/se/manifest.json",
+      "source_manifest_sha256": "f101ae860fd5162e79ecce9244a11db5e10d4a19e3da9c0a2c03bd9efce9f3c5",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        48
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": true,
+      "fingers": [
+        92,
+        104,
+        95,
+        107
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review",
+      "recovery": "byte_identical_idle"
+    },
+    {
+      "name": "hero_male_walk0_se",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        98.5,
+        102.5
+      ],
+      "hand_x": 98.5,
+      "hand_y": 102.5,
+      "source_wrist": [
+        819,
+        542
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/se/walk0.png",
+      "source_sha256": "f90c085f4c716053ba3c4103272732bf1611366e141391110e30a87c27f5808a",
+      "processed_sha256": "a4ca88c05c753d00e52a4357f04574a1dd685daeaa61e5765fd29245a4fa3475",
+      "source_manifest": "candidates/male/se/manifest.json",
+      "source_manifest_sha256": "f101ae860fd5162e79ecce9244a11db5e10d4a19e3da9c0a2c03bd9efce9f3c5",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        48
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        97,
+        101,
+        100,
+        104
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_walk1_se",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        95.5,
+        104.5
+      ],
+      "hand_x": 95.5,
+      "hand_y": 104.5,
+      "source_wrist": [
+        780,
+        568
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/se/walk1.png",
+      "source_sha256": "5956d8fa9aef63c248449aed90631951e128632f790f6fb2b9fe12cc5dfac9fb",
+      "processed_sha256": "a17d3ea3637f38ed647bfebc50a8b96bda0795b4fde7f9923a1b167186ed73f9",
+      "source_manifest": "candidates/male/se/manifest.json",
+      "source_manifest_sha256": "f101ae860fd5162e79ecce9244a11db5e10d4a19e3da9c0a2c03bd9efce9f3c5",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        48
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": true,
+      "fingers": [
+        94,
+        103,
+        97,
+        106
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike0_se",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        95.5,
+        79.5
+      ],
+      "hand_x": 95.5,
+      "hand_y": 79.5,
+      "source_wrist": [
+        786,
+        316
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/se/strike0.png",
+      "source_sha256": "cc576c035ddb813ee40a7b3e19d16923f3f49e9e370fbde29b0126cfede87a52",
+      "processed_sha256": "f2515f2ecfb4d43f78602ee33d1eef4600afef4263d48afd5136073fbab379af",
+      "source_manifest": "candidates/male/se/manifest.json",
+      "source_manifest_sha256": "f101ae860fd5162e79ecce9244a11db5e10d4a19e3da9c0a2c03bd9efce9f3c5",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        48
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 320,
+      "melee_behind_actor": true,
+      "fingers": [
+        94,
+        78,
+        97,
+        81
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike1_se",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        111.5,
+        103.5
+      ],
+      "hand_x": 111.5,
+      "hand_y": 103.5,
+      "source_wrist": [
+        940,
+        558
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/se/strike1.png",
+      "source_sha256": "58b9935e45174fadf0e1f287e7634f3ee64036abfcd338d27d185ab5f30c5ae7",
+      "processed_sha256": "11fcc86c49e0576265821bd93bd88b7bac2da597e37b45c43a7cab0137dce3b0",
+      "source_manifest": "candidates/male/se/manifest.json",
+      "source_manifest_sha256": "f101ae860fd5162e79ecce9244a11db5e10d4a19e3da9c0a2c03bd9efce9f3c5",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        48
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 135,
+      "melee_behind_actor": false,
+      "fingers": [
+        110,
+        102,
+        113,
+        105
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_s",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        96.5,
+        112.5
+      ],
+      "hand_x": 96.5,
+      "hand_y": 112.5,
+      "source_wrist": [
+        790,
+        627
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/s/idle.png",
+      "source_sha256": "fa6bb5a57dbb0791095abc6078920ae3e834782e3db8dd24b95e16c8f37b5e1f",
+      "processed_sha256": "65237702db547f5cb5dddf393c2aa84a38d6804390a060b07d8f23da41374549",
+      "source_manifest": "candidates/male/s/manifest.json",
+      "source_manifest_sha256": "70685962ad24d2058d20baa5738c7f9bb4ed2f3377590d3fd95138ad287ff09a",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        50
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        95,
+        111,
+        98,
+        114
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike2_s",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        96.5,
+        112.5
+      ],
+      "hand_x": 96.5,
+      "hand_y": 112.5,
+      "source_wrist": [
+        790,
+        627
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/s/idle.png",
+      "source_sha256": "fa6bb5a57dbb0791095abc6078920ae3e834782e3db8dd24b95e16c8f37b5e1f",
+      "processed_sha256": "65237702db547f5cb5dddf393c2aa84a38d6804390a060b07d8f23da41374549",
+      "source_manifest": "candidates/male/s/manifest.json",
+      "source_manifest_sha256": "70685962ad24d2058d20baa5738c7f9bb4ed2f3377590d3fd95138ad287ff09a",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        50
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        95,
+        111,
+        98,
+        114
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review",
+      "recovery": "byte_identical_idle"
+    },
+    {
+      "name": "hero_male_walk0_s",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        94.5,
+        110.5
+      ],
+      "hand_x": 94.5,
+      "hand_y": 110.5,
+      "source_wrist": [
+        774,
+        601
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/s/walk0.png",
+      "source_sha256": "bd03fa8db82071e2df12897b05bd71c68e197c13053b8fd2c5cbe3d9894f0d7a",
+      "processed_sha256": "7a396d11a81c15fbd586e069564f3680956fcbbc8161faf43fefa792d832363b",
+      "source_manifest": "candidates/male/s/manifest.json",
+      "source_manifest_sha256": "70685962ad24d2058d20baa5738c7f9bb4ed2f3377590d3fd95138ad287ff09a",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        50
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        93,
+        109,
+        96,
+        112
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_walk1_s",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        96.5,
+        108.5
+      ],
+      "hand_x": 96.5,
+      "hand_y": 108.5,
+      "source_wrist": [
+        790,
+        584
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/s/walk1.png",
+      "source_sha256": "f9cc22295af3ad036c768bd79552cc5a8bcedb98d2a1a91c9a900e82c9333471",
+      "processed_sha256": "d13a2832f6c83f15d196d2fbfb982739804688bd1fb3d66b1671626fb1891bbe",
+      "source_manifest": "candidates/male/s/manifest.json",
+      "source_manifest_sha256": "70685962ad24d2058d20baa5738c7f9bb4ed2f3377590d3fd95138ad287ff09a",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        50
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        95,
+        107,
+        98,
+        110
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike0_s",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        94.5,
+        80.5
+      ],
+      "hand_x": 94.5,
+      "hand_y": 80.5,
+      "source_wrist": [
+        777,
+        306
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/s/strike0.png",
+      "source_sha256": "9190e353edd5bdf0bab6293992e30d03cb451f51a4c15640e5320bc10b53ba4c",
+      "processed_sha256": "770f71cb70abff8be20ff904b697185691c6f3847cf036ea28026357af79bf3b",
+      "source_manifest": "candidates/male/s/manifest.json",
+      "source_manifest_sha256": "70685962ad24d2058d20baa5738c7f9bb4ed2f3377590d3fd95138ad287ff09a",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        50
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 320,
+      "melee_behind_actor": false,
+      "fingers": [
+        93,
+        79,
+        96,
+        82
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike1_s",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        90.5,
+        87.5
+      ],
+      "hand_x": 90.5,
+      "hand_y": 87.5,
+      "source_wrist": [
+        732,
+        376
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/s/strike1.png",
+      "source_sha256": "0d8f20478e35e397efbdb7e9f67835427ecd74013945a735a9faf6afa0dcc288",
+      "processed_sha256": "419391bd44c68b82beb737553a69b4c8030d138814e2b8c052439be25881732d",
+      "source_manifest": "candidates/male/s/manifest.json",
+      "source_manifest_sha256": "70685962ad24d2058d20baa5738c7f9bb4ed2f3377590d3fd95138ad287ff09a",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        50
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 180,
+      "melee_behind_actor": false,
+      "fingers": [
+        89,
+        86,
+        92,
+        89
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_sw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        90.5,
+        110.5
+      ],
+      "hand_x": 90.5,
+      "hand_y": 110.5,
+      "source_wrist": [
+        732,
+        635
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/sw/idle.png",
+      "source_sha256": "ffe27ce8921c942cee361feddf20299ea8d1717c929ea3028ed7429c1bb68486",
+      "processed_sha256": "7d3e7643a73ff8de6126358c0712bf99bbd00680d576510b27a0664225093396",
+      "source_manifest": "candidates/male/sw/manifest.json",
+      "source_manifest_sha256": "57bfb19622a271913a71d374a95ec1a971d59ed986f31ec3ffc4ae19478ea445",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        47
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        89,
+        109,
+        92,
+        112
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike2_sw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        90.5,
+        110.5
+      ],
+      "hand_x": 90.5,
+      "hand_y": 110.5,
+      "source_wrist": [
+        732,
+        635
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/sw/idle.png",
+      "source_sha256": "ffe27ce8921c942cee361feddf20299ea8d1717c929ea3028ed7429c1bb68486",
+      "processed_sha256": "7d3e7643a73ff8de6126358c0712bf99bbd00680d576510b27a0664225093396",
+      "source_manifest": "candidates/male/sw/manifest.json",
+      "source_manifest_sha256": "57bfb19622a271913a71d374a95ec1a971d59ed986f31ec3ffc4ae19478ea445",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        47
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        89,
+        109,
+        92,
+        112
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review",
+      "recovery": "byte_identical_idle"
+    },
+    {
+      "name": "hero_male_walk0_sw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        96.5,
+        107.5
+      ],
+      "hand_x": 96.5,
+      "hand_y": 107.5,
+      "source_wrist": [
+        790,
+        601
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/sw/walk0.png",
+      "source_sha256": "a0c18d6fa60457350e8f59132666a75acbfe0c021cd09008ada90c55a1671013",
+      "processed_sha256": "6c6a8e0ea5f45739835c7931bb62d82945a4e535b741a77d6ea7b6076262a55e",
+      "source_manifest": "candidates/male/sw/manifest.json",
+      "source_manifest_sha256": "57bfb19622a271913a71d374a95ec1a971d59ed986f31ec3ffc4ae19478ea445",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        47
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        95,
+        106,
+        98,
+        109
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_walk1_sw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        94.5,
+        105.5
+      ],
+      "hand_x": 94.5,
+      "hand_y": 105.5,
+      "source_wrist": [
+        779,
+        581
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/sw/walk1.png",
+      "source_sha256": "63fece3490d059b71ab358eaa56ed6b8441e88e17ea9e024c30601536a57e1d3",
+      "processed_sha256": "e27e55704a83d1162aa232072b019e0890c76aa872047ad2710f3b798ae82d2c",
+      "source_manifest": "candidates/male/sw/manifest.json",
+      "source_manifest_sha256": "57bfb19622a271913a71d374a95ec1a971d59ed986f31ec3ffc4ae19478ea445",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        47
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        93,
+        104,
+        96,
+        107
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike0_sw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        93.5,
+        79.5
+      ],
+      "hand_x": 93.5,
+      "hand_y": 79.5,
+      "source_wrist": [
+        761,
+        324
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/sw/strike0.png",
+      "source_sha256": "caa24ecd9bd815daf5480a951f9c179e3029c886af42d6e124713fa33132e7fd",
+      "processed_sha256": "493f6f6bd56dd057565e547bece6381c5ef109401b06ac36ca7739f374d30af6",
+      "source_manifest": "candidates/male/sw/manifest.json",
+      "source_manifest_sha256": "57bfb19622a271913a71d374a95ec1a971d59ed986f31ec3ffc4ae19478ea445",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        47
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 305,
+      "melee_behind_actor": false,
+      "fingers": [
+        92,
+        78,
+        95,
+        81
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike1_sw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        80.5,
+        90.5
+      ],
+      "hand_x": 80.5,
+      "hand_y": 90.5,
+      "source_wrist": [
+        630,
+        439
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/sw/strike1.png",
+      "source_sha256": "969bdabeb0b6386f6a21488c0c6b70ebc4bc225a61f1a3fc810801029e1508ed",
+      "processed_sha256": "8cae0e268cbc6ab6eeb4a14b4b0e8f6056a62181e4454f34a667b60c3c08192e",
+      "source_manifest": "candidates/male/sw/manifest.json",
+      "source_manifest_sha256": "57bfb19622a271913a71d374a95ec1a971d59ed986f31ec3ffc4ae19478ea445",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        47
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 270,
+      "melee_behind_actor": false,
+      "fingers": [
+        79,
+        89,
+        82,
+        92
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_w",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        81.5,
+        113.5
+      ],
+      "hand_x": 81.5,
+      "hand_y": 113.5,
+      "source_wrist": [
+        640,
+        658
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/w/idle.png",
+      "source_sha256": "c749e8ab68ec3c7b3de1c51568f59e5167ba3ce33ec04ab92f479f81507ffc31",
+      "processed_sha256": "565d5048b1f3c04e46f063fc60ed5e2f1b82eacb485877fca207fa8e440d3fb0",
+      "source_manifest": "candidates/male/w/manifest.json",
+      "source_manifest_sha256": "aacf513ab5d172e41fba6ba6b3f937b52ed8241301fac300e52521d6df825e2e",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        48
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        80,
+        112,
+        83,
+        115
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike2_w",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        81.5,
+        113.5
+      ],
+      "hand_x": 81.5,
+      "hand_y": 113.5,
+      "source_wrist": [
+        640,
+        658
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/w/idle.png",
+      "source_sha256": "c749e8ab68ec3c7b3de1c51568f59e5167ba3ce33ec04ab92f479f81507ffc31",
+      "processed_sha256": "565d5048b1f3c04e46f063fc60ed5e2f1b82eacb485877fca207fa8e440d3fb0",
+      "source_manifest": "candidates/male/w/manifest.json",
+      "source_manifest_sha256": "aacf513ab5d172e41fba6ba6b3f937b52ed8241301fac300e52521d6df825e2e",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        48
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        80,
+        112,
+        83,
+        115
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review",
+      "recovery": "byte_identical_idle"
+    },
+    {
+      "name": "hero_male_walk0_w",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        97.5,
+        110.5
+      ],
+      "hand_x": 97.5,
+      "hand_y": 110.5,
+      "source_wrist": [
+        807,
+        622
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/w/walk0.png",
+      "source_sha256": "878eb6b73c4a94fc113aa494cc299adda53373f89a01a46b5a908d300ec89545",
+      "processed_sha256": "cce2c3d7df1fe728293b73691148dff2df0afbff1776c9ef77e75bb22ee748c4",
+      "source_manifest": "candidates/male/w/manifest.json",
+      "source_manifest_sha256": "aacf513ab5d172e41fba6ba6b3f937b52ed8241301fac300e52521d6df825e2e",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        48
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        96,
+        109,
+        99,
+        112
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_walk1_w",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        70.5,
+        103.5
+      ],
+      "hand_x": 70.5,
+      "hand_y": 103.5,
+      "source_wrist": [
+        530,
+        555
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/w/walk1.png",
+      "source_sha256": "2248a934341de91031ea60e517d30642ab1ce7ca4265bd5b20a9b763429f6514",
+      "processed_sha256": "a212d1523c8e27ff4adbccfd84c782058715419f228e7000fcdb1c9b47e204d1",
+      "source_manifest": "candidates/male/w/manifest.json",
+      "source_manifest_sha256": "aacf513ab5d172e41fba6ba6b3f937b52ed8241301fac300e52521d6df825e2e",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        48
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        69,
+        102,
+        72,
+        105
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike0_w",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        84.5,
+        82.5
+      ],
+      "hand_x": 84.5,
+      "hand_y": 82.5,
+      "source_wrist": [
+        679,
+        348
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/w/strike0.png",
+      "source_sha256": "ae9485026d48933b34ca2d51bc34834e9e5a3f89c3a71a1d47beb07ca35fd9e1",
+      "processed_sha256": "fe9ef7b4c6a32c5516b7b094dd13b3f1121b0ecec6bf0950dec736a6760245ba",
+      "source_manifest": "candidates/male/w/manifest.json",
+      "source_manifest_sha256": "aacf513ab5d172e41fba6ba6b3f937b52ed8241301fac300e52521d6df825e2e",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        48
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        83,
+        81,
+        86,
+        84
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike1_w",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        56.5,
+        81.5
+      ],
+      "hand_x": 56.5,
+      "hand_y": 81.5,
+      "source_wrist": [
+        391,
+        335
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/w/strike1.png",
+      "source_sha256": "36bc38f99290475c3a023acbd877cf6ecd9ff88bf12067464ac316d3331fd1bc",
+      "processed_sha256": "a00eccd325a168da95f962b8b51a655f3d6ef07935e3045f81335ab295724691",
+      "source_manifest": "candidates/male/w/manifest.json",
+      "source_manifest_sha256": "aacf513ab5d172e41fba6ba6b3f937b52ed8241301fac300e52521d6df825e2e",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        48
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 270,
+      "melee_behind_actor": false,
+      "fingers": [
+        55,
+        80,
+        58,
+        83
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_nw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        66.5,
+        115.5
+      ],
+      "hand_x": 66.5,
+      "hand_y": 115.5,
+      "source_wrist": [
+        494,
+        647
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/nw/idle.png",
+      "source_sha256": "b48af18d0ebc080798a1cb04d3cc15a9477c9092cf631e3703b20d6788658698",
+      "processed_sha256": "a0329b6ee6ce99f247c055c484aee1241c59f5dde4bf9617e650c5beb849df34",
+      "source_manifest": "candidates/male/nw/manifest.json",
+      "source_manifest_sha256": "d0b57df3f9cb766c16ab34d13509d311eb8be3bb99288e968d35fc28075d437e",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        51
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        65,
+        114,
+        68,
+        117
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike2_nw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        66.5,
+        115.5
+      ],
+      "hand_x": 66.5,
+      "hand_y": 115.5,
+      "source_wrist": [
+        494,
+        647
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/nw/idle.png",
+      "source_sha256": "b48af18d0ebc080798a1cb04d3cc15a9477c9092cf631e3703b20d6788658698",
+      "processed_sha256": "a0329b6ee6ce99f247c055c484aee1241c59f5dde4bf9617e650c5beb849df34",
+      "source_manifest": "candidates/male/nw/manifest.json",
+      "source_manifest_sha256": "d0b57df3f9cb766c16ab34d13509d311eb8be3bb99288e968d35fc28075d437e",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        51
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        65,
+        114,
+        68,
+        117
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review",
+      "recovery": "byte_identical_idle"
+    },
+    {
+      "name": "hero_male_walk0_nw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        69.5,
+        113.5
+      ],
+      "hand_x": 69.5,
+      "hand_y": 113.5,
+      "source_wrist": [
+        521,
+        629
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/nw/walk0.png",
+      "source_sha256": "8113745a16d7a2516fd94187425d2ab237065841adfe3cc3b71a0c705683a63f",
+      "processed_sha256": "39e7490823fd27100cca953df29b3c39b40ae762763effa5d0ee23fbdc593431",
+      "source_manifest": "candidates/male/nw/manifest.json",
+      "source_manifest_sha256": "d0b57df3f9cb766c16ab34d13509d311eb8be3bb99288e968d35fc28075d437e",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        51
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        68,
+        112,
+        71,
+        115
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_walk1_nw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        63.5,
+        98.5
+      ],
+      "hand_x": 63.5,
+      "hand_y": 98.5,
+      "source_wrist": [
+        465,
+        477
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/nw/walk1.png",
+      "source_sha256": "44ddc9d020685492544290a5c8f334f28e914c32e8c704431b7c8627404e1165",
+      "processed_sha256": "5d9121242a1236eb69d13b1177e94d781b6670af8cfb2de65f6ddeb51a736034",
+      "source_manifest": "candidates/male/nw/manifest.json",
+      "source_manifest_sha256": "d0b57df3f9cb766c16ab34d13509d311eb8be3bb99288e968d35fc28075d437e",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        51
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        62,
+        97,
+        65,
+        100
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike0_nw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        64.5,
+        80.5
+      ],
+      "hand_x": 64.5,
+      "hand_y": 80.5,
+      "source_wrist": [
+        475,
+        297
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/nw/strike0.png",
+      "source_sha256": "0974d91300ac7d000551faf07aa99dd2468c607762e20b8906567096137dbf55",
+      "processed_sha256": "157184a7aedc89c5d57cd0cd42332d42bb6ebca804a3a78e062fe13545956399",
+      "source_manifest": "candidates/male/nw/manifest.json",
+      "source_manifest_sha256": "d0b57df3f9cb766c16ab34d13509d311eb8be3bb99288e968d35fc28075d437e",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        51
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        63,
+        79,
+        66,
+        82
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_male_strike1_nw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        53.5,
+        74.5
+      ],
+      "hand_x": 53.5,
+      "hand_y": 74.5,
+      "source_wrist": [
+        363,
+        236
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/male/nw/strike1.png",
+      "source_sha256": "96360a10dc3f14bd896f3087216e19c13351d90cfa5091742f3961524d0d20ba",
+      "processed_sha256": "0db546c1e8761793f9e1c0b091235543e48000df4f68c3bfa32e7180ab5ef1ef",
+      "source_manifest": "candidates/male/nw/manifest.json",
+      "source_manifest_sha256": "d0b57df3f9cb766c16ab34d13509d311eb8be3bb99288e968d35fc28075d437e",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        51
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 315,
+      "melee_behind_actor": false,
+      "fingers": [
+        52,
+        73,
+        55,
+        76
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_n",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        64.5,
+        110.5
+      ],
+      "hand_x": 64.5,
+      "hand_y": 110.5,
+      "source_wrist": [
+        471,
+        581
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/n/idle.png",
+      "source_sha256": "58276a0966fca590674553779196256c892cbd9dacd7971910d0329de0d449d1",
+      "processed_sha256": "1179c7cdfa98149f99d8adf790c8d5b9b33253e0f3671adc865ea0514805c728",
+      "source_manifest": "candidates/female/n/source-manifest.json",
+      "source_manifest_sha256": "ce6b8488963f96c25080f6dbaec629be2ce7c9b3ed099d64c90c6396b2c34e07",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        52
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        63,
+        109,
+        66,
+        112
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike2_n",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        64.5,
+        110.5
+      ],
+      "hand_x": 64.5,
+      "hand_y": 110.5,
+      "source_wrist": [
+        471,
+        581
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/n/idle.png",
+      "source_sha256": "58276a0966fca590674553779196256c892cbd9dacd7971910d0329de0d449d1",
+      "processed_sha256": "1179c7cdfa98149f99d8adf790c8d5b9b33253e0f3671adc865ea0514805c728",
+      "source_manifest": "candidates/female/n/source-manifest.json",
+      "source_manifest_sha256": "ce6b8488963f96c25080f6dbaec629be2ce7c9b3ed099d64c90c6396b2c34e07",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        52
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        63,
+        109,
+        66,
+        112
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review",
+      "recovery": "byte_identical_idle"
+    },
+    {
+      "name": "hero_female_walk0_n",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        65.5,
+        112.5
+      ],
+      "hand_x": 65.5,
+      "hand_y": 112.5,
+      "source_wrist": [
+        480,
+        609
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/n/walk0.png",
+      "source_sha256": "f7f363e9c13560e8740eb0d0ebff4290a7c33d24d66cbc8f4f76fdf602d609ec",
+      "processed_sha256": "56766c847ce36b4ca8ed70836efa684c0e22b0eb956a209d6a37726758f3536a",
+      "source_manifest": "candidates/female/n/source-manifest.json",
+      "source_manifest_sha256": "ce6b8488963f96c25080f6dbaec629be2ce7c9b3ed099d64c90c6396b2c34e07",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        52
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        64,
+        111,
+        67,
+        114
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_walk1_n",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        69.5,
+        96.5
+      ],
+      "hand_x": 69.5,
+      "hand_y": 96.5,
+      "source_wrist": [
+        520,
+        442
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/n/walk1.png",
+      "source_sha256": "775530a83bcd5605b5b6ef112ae06dbadf151845217114407ec885c81490a9cd",
+      "processed_sha256": "8e9e655a026f66a7abbeae0ee97c16a671bcfbf7368e07b4f4d6c280e7c65af4",
+      "source_manifest": "candidates/female/n/source-manifest.json",
+      "source_manifest_sha256": "ce6b8488963f96c25080f6dbaec629be2ce7c9b3ed099d64c90c6396b2c34e07",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        52
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": true,
+      "fingers": [
+        68,
+        95,
+        71,
+        98
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike0_n",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        66.5,
+        77.5
+      ],
+      "hand_x": 66.5,
+      "hand_y": 77.5,
+      "source_wrist": [
+        493,
+        256
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/n/strike0.png",
+      "source_sha256": "ba0dde5b0400b877057f721e7f6edebfdd6b32a7bf9931ba33334b4711c5f603",
+      "processed_sha256": "03e88ca20722406336988a43def99b26640bc2388d280f2f4a47c69e5609277c",
+      "source_manifest": "candidates/female/n/source-manifest.json",
+      "source_manifest_sha256": "ce6b8488963f96c25080f6dbaec629be2ce7c9b3ed099d64c90c6396b2c34e07",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        52
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 25,
+      "melee_behind_actor": false,
+      "fingers": [
+        65,
+        76,
+        68,
+        79
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike1_n",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        62.5,
+        77.5
+      ],
+      "hand_x": 62.5,
+      "hand_y": 77.5,
+      "source_wrist": [
+        459,
+        250
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/n/strike1.png",
+      "source_sha256": "20cc13ae822f75876483bb093452126a1252e9704406d9490c94fcdc86cd2ce8",
+      "processed_sha256": "670882bb702437593e08f1bbf22b471da6057a9ed9478e86a13298980ba53024",
+      "source_manifest": "candidates/female/n/source-manifest.json",
+      "source_manifest_sha256": "ce6b8488963f96c25080f6dbaec629be2ce7c9b3ed099d64c90c6396b2c34e07",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        52
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 319,
+      "melee_behind_actor": true,
+      "fingers": [
+        61,
+        76,
+        64,
+        79
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_ne",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        70.5,
+        106.5
+      ],
+      "hand_x": 70.5,
+      "hand_y": 106.5,
+      "source_wrist": [
+        537,
+        547
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/ne/idle.png",
+      "source_sha256": "92397cc1c3aa5d61bb7e7ba3999533028425fb1c48a16350f918fe0f98895a3b",
+      "processed_sha256": "06fd6a328f58384f634353279ad9816a9fed4e6ef1cf1c19d7d28e948458e33f",
+      "source_manifest": "candidates/female/ne/source-manifest.json",
+      "source_manifest_sha256": "56c210909cb519f80a21dbec42e9a7c4e36f7aaf9e6e7a0b4ff6145f4792e305",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        52
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": true,
+      "fingers": [
+        69,
+        105,
+        72,
+        108
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike2_ne",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        70.5,
+        106.5
+      ],
+      "hand_x": 70.5,
+      "hand_y": 106.5,
+      "source_wrist": [
+        537,
+        547
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/ne/idle.png",
+      "source_sha256": "92397cc1c3aa5d61bb7e7ba3999533028425fb1c48a16350f918fe0f98895a3b",
+      "processed_sha256": "06fd6a328f58384f634353279ad9816a9fed4e6ef1cf1c19d7d28e948458e33f",
+      "source_manifest": "candidates/female/ne/source-manifest.json",
+      "source_manifest_sha256": "56c210909cb519f80a21dbec42e9a7c4e36f7aaf9e6e7a0b4ff6145f4792e305",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        52
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": true,
+      "fingers": [
+        69,
+        105,
+        72,
+        108
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review",
+      "recovery": "byte_identical_idle"
+    },
+    {
+      "name": "hero_female_walk0_ne",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        66.5,
+        109.5
+      ],
+      "hand_x": 66.5,
+      "hand_y": 109.5,
+      "source_wrist": [
+        499,
+        579
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/ne/walk0.png",
+      "source_sha256": "5bc93c5f2ff5fd4c2f2248042f1b0a8b55b350a8e2e981b422e3f46d15050995",
+      "processed_sha256": "54a8faa993af016191d849557f1b1178a1f9b880536abbd2ad242099bd55605b",
+      "source_manifest": "candidates/female/ne/source-manifest.json",
+      "source_manifest_sha256": "56c210909cb519f80a21dbec42e9a7c4e36f7aaf9e6e7a0b4ff6145f4792e305",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        52
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": true,
+      "fingers": [
+        65,
+        108,
+        68,
+        111
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_walk1_ne",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        65.5,
+        110.5
+      ],
+      "hand_x": 65.5,
+      "hand_y": 110.5,
+      "source_wrist": [
+        486,
+        584
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/ne/walk1.png",
+      "source_sha256": "49606a8a849b654b364659c6d10cc5ca323bba397e175ce1609df5acd70be018",
+      "processed_sha256": "b9c096240f1f6d4e35bf384f9198991cc5a3df412ed18995d0f3a99568155975",
+      "source_manifest": "candidates/female/ne/source-manifest.json",
+      "source_manifest_sha256": "56c210909cb519f80a21dbec42e9a7c4e36f7aaf9e6e7a0b4ff6145f4792e305",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        52
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": true,
+      "fingers": [
+        64,
+        109,
+        67,
+        112
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike0_ne",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        68.5,
+        77.5
+      ],
+      "hand_x": 68.5,
+      "hand_y": 77.5,
+      "source_wrist": [
+        511,
+        255
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/ne/strike0.png",
+      "source_sha256": "ea16e4b5dd7142817db43941843685b76b635c703f1ac102a28d32c99516f257",
+      "processed_sha256": "b7fa9b55e08f34e51008a170466ce647862adc6c81d01d6409abe104b3f0d2b3",
+      "source_manifest": "candidates/female/ne/source-manifest.json",
+      "source_manifest_sha256": "56c210909cb519f80a21dbec42e9a7c4e36f7aaf9e6e7a0b4ff6145f4792e305",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        52
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 49,
+      "melee_behind_actor": true,
+      "fingers": [
+        67,
+        76,
+        70,
+        79
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike1_ne",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        103.5,
+        75.5
+      ],
+      "hand_x": 103.5,
+      "hand_y": 75.5,
+      "source_wrist": [
+        865,
+        237
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/ne/strike1.png",
+      "source_sha256": "d81c96878f49bfd8a4bd56e9ba3307dc3d1927b8c9e6bef4569a4165088079f0",
+      "processed_sha256": "0df564a98efa9c2823c35677baf8cf35758b99690c2171c3c93178da3c75757d",
+      "source_manifest": "candidates/female/ne/source-manifest.json",
+      "source_manifest_sha256": "56c210909cb519f80a21dbec42e9a7c4e36f7aaf9e6e7a0b4ff6145f4792e305",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        52
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 74,
+      "melee_behind_actor": true,
+      "fingers": [
+        102,
+        74,
+        105,
+        77
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_e",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        84.5,
+        113.5
+      ],
+      "hand_x": 84.5,
+      "hand_y": 113.5,
+      "source_wrist": [
+        670,
+        630
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/e/idle.png",
+      "source_sha256": "1754479e9e8b9e14f942a879036d300eb7d2862ab72bed3e4b25c63db9b55ad6",
+      "processed_sha256": "7ade33152c53ce0d776c5f68f3559dd1c84f44442db06f84d6a91476c85b85f1",
+      "source_manifest": "candidates/female/e/source-manifest.json",
+      "source_manifest_sha256": "b8988f18a85af4ea8f9024756f330b7f1de1f792313e3ec426e8c91c58dec5de",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        50
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": true,
+      "fingers": [
+        83,
+        112,
+        86,
+        115
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike2_e",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        84.5,
+        113.5
+      ],
+      "hand_x": 84.5,
+      "hand_y": 113.5,
+      "source_wrist": [
+        670,
+        630
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/e/idle.png",
+      "source_sha256": "1754479e9e8b9e14f942a879036d300eb7d2862ab72bed3e4b25c63db9b55ad6",
+      "processed_sha256": "7ade33152c53ce0d776c5f68f3559dd1c84f44442db06f84d6a91476c85b85f1",
+      "source_manifest": "candidates/female/e/source-manifest.json",
+      "source_manifest_sha256": "b8988f18a85af4ea8f9024756f330b7f1de1f792313e3ec426e8c91c58dec5de",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        50
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": true,
+      "fingers": [
+        83,
+        112,
+        86,
+        115
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review",
+      "recovery": "byte_identical_idle"
+    },
+    {
+      "name": "hero_female_walk0_e",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        66.5,
+        107.5
+      ],
+      "hand_x": 66.5,
+      "hand_y": 107.5,
+      "source_wrist": [
+        494,
+        573
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/e/walk0.png",
+      "source_sha256": "3c3eb1df9bc7cd495efa7c036be7460dd61286e4fc981fcd3abec571fe775ef5",
+      "processed_sha256": "d44e640c9c20134fdbdaafb78b315a122a78cef947b1a98c342de50c54211c5b",
+      "source_manifest": "candidates/female/e/source-manifest.json",
+      "source_manifest_sha256": "b8988f18a85af4ea8f9024756f330b7f1de1f792313e3ec426e8c91c58dec5de",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        50
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": true,
+      "fingers": [
+        65,
+        106,
+        68,
+        109
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_walk1_e",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        97.5,
+        106.5
+      ],
+      "hand_x": 97.5,
+      "hand_y": 106.5,
+      "source_wrist": [
+        802,
+        566
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/e/walk1.png",
+      "source_sha256": "498e3cd53203201af1b5255ccf67c56a995b6adc611605658b99fb355d428537",
+      "processed_sha256": "16639935600f9a2d8a98c2f4b6e9c837c139b744f3eeea02f1e0aeca8cea1d7b",
+      "source_manifest": "candidates/female/e/source-manifest.json",
+      "source_manifest_sha256": "b8988f18a85af4ea8f9024756f330b7f1de1f792313e3ec426e8c91c58dec5de",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        50
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": true,
+      "fingers": [
+        96,
+        105,
+        99,
+        108
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike0_e",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        95.5,
+        79.5
+      ],
+      "hand_x": 95.5,
+      "hand_y": 79.5,
+      "source_wrist": [
+        787,
+        299
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/e/strike0.png",
+      "source_sha256": "ed16ad89142bd528a641d19727e2eef8e9c89390e4e32a6070f1485a77dbf22e",
+      "processed_sha256": "5449ccb951b70e4ec8c8216049e5ed865ee06e111ba061de153f93f2b75625e4",
+      "source_manifest": "candidates/female/e/source-manifest.json",
+      "source_manifest_sha256": "b8988f18a85af4ea8f9024756f330b7f1de1f792313e3ec426e8c91c58dec5de",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        50
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 346,
+      "melee_behind_actor": true,
+      "fingers": [
+        94,
+        78,
+        97,
+        81
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike1_e",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        113.5,
+        80.5
+      ],
+      "hand_x": 113.5,
+      "hand_y": 80.5,
+      "source_wrist": [
+        965,
+        305
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/e/strike1.png",
+      "source_sha256": "4fa4d3e74726908bd25f71c4d21ade9a2e98433e810e1b924ce4a08c00bf310a",
+      "processed_sha256": "dd2c9ad87786fe386df59d8fd6081e7b2245e5b554084f408a4addb61996d2bf",
+      "source_manifest": "candidates/female/e/source-manifest.json",
+      "source_manifest_sha256": "b8988f18a85af4ea8f9024756f330b7f1de1f792313e3ec426e8c91c58dec5de",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        50
+      ],
+      "faces_left": false,
+      "behind_actor": true,
+      "melee_clockwise_degrees": 89,
+      "melee_behind_actor": true,
+      "fingers": [
+        112,
+        79,
+        115,
+        82
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_se",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        93.5,
+        105.5
+      ],
+      "hand_x": 93.5,
+      "hand_y": 105.5,
+      "source_wrist": [
+        766,
+        574
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/se/idle.png",
+      "source_sha256": "110e0e0b950d01e47054e0f360ed8323a1d38ba338d8b99dbf3019ef5832bd69",
+      "processed_sha256": "c23539b10cf0c0e659d1a80887c450df5269f41e1555636421c44ce717968390",
+      "source_manifest": "candidates/female/se/manifest.json",
+      "source_manifest_sha256": "3fe2a3799e3670a3885460076c564bbdfc93040cbc5b312c1ae33c047821123c",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        48
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        92,
+        104,
+        95,
+        107
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike2_se",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        93.5,
+        105.5
+      ],
+      "hand_x": 93.5,
+      "hand_y": 105.5,
+      "source_wrist": [
+        766,
+        574
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/se/idle.png",
+      "source_sha256": "110e0e0b950d01e47054e0f360ed8323a1d38ba338d8b99dbf3019ef5832bd69",
+      "processed_sha256": "c23539b10cf0c0e659d1a80887c450df5269f41e1555636421c44ce717968390",
+      "source_manifest": "candidates/female/se/manifest.json",
+      "source_manifest_sha256": "3fe2a3799e3670a3885460076c564bbdfc93040cbc5b312c1ae33c047821123c",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        48
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        92,
+        104,
+        95,
+        107
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review",
+      "recovery": "byte_identical_idle"
+    },
+    {
+      "name": "hero_female_walk0_se",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        97.5,
+        104.5
+      ],
+      "hand_x": 97.5,
+      "hand_y": 104.5,
+      "source_wrist": [
+        800,
+        567
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/se/walk0.png",
+      "source_sha256": "de2cb8578f2f7dfc2d3dbfc71c0c998d1df27143631ae16a40dd60c1b045184c",
+      "processed_sha256": "17a4a4d1e7e7bf5d2f2586b7f56a3d4714c3ddfcc75ee0575b0c85484a1ec072",
+      "source_manifest": "candidates/female/se/manifest.json",
+      "source_manifest_sha256": "3fe2a3799e3670a3885460076c564bbdfc93040cbc5b312c1ae33c047821123c",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        48
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        96,
+        103,
+        99,
+        106
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_walk1_se",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        94.5,
+        102.5
+      ],
+      "hand_x": 94.5,
+      "hand_y": 102.5,
+      "source_wrist": [
+        772,
+        542
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/se/walk1.png",
+      "source_sha256": "b580d423a26802b0ad0d48963858d74cef26dbcb7b85df1428c59cebff363441",
+      "processed_sha256": "2243972d19542e125858989628eb5ff1b361e37a392b99a96865e0a709ca5b3f",
+      "source_manifest": "candidates/female/se/manifest.json",
+      "source_manifest_sha256": "3fe2a3799e3670a3885460076c564bbdfc93040cbc5b312c1ae33c047821123c",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        48
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        93,
+        101,
+        96,
+        104
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike0_se",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        97.5,
+        79.5
+      ],
+      "hand_x": 97.5,
+      "hand_y": 79.5,
+      "source_wrist": [
+        808,
+        316
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/se/strike0.png",
+      "source_sha256": "74e83c93bc99f6a202a52aa1bd305cbe885c8ea7ae76b6d6aaee73921fcfe5ab",
+      "processed_sha256": "3b42a28cc77b7f39ddd3d2dcefa2e80b7d8820d0de785926ec26f24fb580f129",
+      "source_manifest": "candidates/female/se/manifest.json",
+      "source_manifest_sha256": "3fe2a3799e3670a3885460076c564bbdfc93040cbc5b312c1ae33c047821123c",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        48
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        96,
+        78,
+        99,
+        81
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike1_se",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        105.5,
+        90.5
+      ],
+      "hand_x": 105.5,
+      "hand_y": 90.5,
+      "source_wrist": [
+        886,
+        425
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/se/strike1.png",
+      "source_sha256": "f66c3e0eb4193c549591caa100bc74832f9aef0dd167cd7a9398caf32b395d71",
+      "processed_sha256": "1833a63efedb6de6661eb23b4ccb09cd66c1c38fcfc082bd41180bb0cbbe77fb",
+      "source_manifest": "candidates/female/se/manifest.json",
+      "source_manifest_sha256": "3fe2a3799e3670a3885460076c564bbdfc93040cbc5b312c1ae33c047821123c",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        48
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 135,
+      "melee_behind_actor": false,
+      "fingers": [
+        104,
+        89,
+        107,
+        92
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_s",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        95.5,
+        108.5
+      ],
+      "hand_x": 95.5,
+      "hand_y": 108.5,
+      "source_wrist": [
+        786,
+        592
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/s/idle.png",
+      "source_sha256": "9693437c9b6d88674cf64e55749135979c8db8db5576353967b2fe8a57fba742",
+      "processed_sha256": "c6a1738dca5abf14e741d34746db21ce1db84e8f6f2037e8dd45df91300b5dad",
+      "source_manifest": "candidates/female/s/manifest.json",
+      "source_manifest_sha256": "fcffef33f90261f8b41e38e43d003274eeaa85506bf4c2682c6e4b145bb50bf1",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        49
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        94,
+        107,
+        97,
+        110
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike2_s",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        95.5,
+        108.5
+      ],
+      "hand_x": 95.5,
+      "hand_y": 108.5,
+      "source_wrist": [
+        786,
+        592
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/s/idle.png",
+      "source_sha256": "9693437c9b6d88674cf64e55749135979c8db8db5576353967b2fe8a57fba742",
+      "processed_sha256": "c6a1738dca5abf14e741d34746db21ce1db84e8f6f2037e8dd45df91300b5dad",
+      "source_manifest": "candidates/female/s/manifest.json",
+      "source_manifest_sha256": "fcffef33f90261f8b41e38e43d003274eeaa85506bf4c2682c6e4b145bb50bf1",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        49
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        94,
+        107,
+        97,
+        110
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review",
+      "recovery": "byte_identical_idle"
+    },
+    {
+      "name": "hero_female_walk0_s",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        95.5,
+        107.5
+      ],
+      "hand_x": 95.5,
+      "hand_y": 107.5,
+      "source_wrist": [
+        785,
+        581
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/s/walk0.png",
+      "source_sha256": "149ccdeae1a56a81fd1507b913f942eea7bbd4b9c9c6031d7a92d50292d61d16",
+      "processed_sha256": "f58a4a278d2051714f6a95f400755a2537c77182852ca927a955ea1b1bdbc372",
+      "source_manifest": "candidates/female/s/manifest.json",
+      "source_manifest_sha256": "fcffef33f90261f8b41e38e43d003274eeaa85506bf4c2682c6e4b145bb50bf1",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        49
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        94,
+        106,
+        97,
+        109
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_walk1_s",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        94.5,
+        104.5
+      ],
+      "hand_x": 94.5,
+      "hand_y": 104.5,
+      "source_wrist": [
+        779,
+        554
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/s/walk1.png",
+      "source_sha256": "f14b3d3cf60634c5413c3649d49c37fcfdeea9005073d45194d551b29882b1af",
+      "processed_sha256": "e5ccb7e3faebf158001ed5b6d14c689163a3a67ff5b565da433b0d4204942980",
+      "source_manifest": "candidates/female/s/manifest.json",
+      "source_manifest_sha256": "fcffef33f90261f8b41e38e43d003274eeaa85506bf4c2682c6e4b145bb50bf1",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        49
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        93,
+        103,
+        96,
+        106
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike0_s",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        94.5,
+        84.5
+      ],
+      "hand_x": 94.5,
+      "hand_y": 84.5,
+      "source_wrist": [
+        773,
+        350
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/s/strike0.png",
+      "source_sha256": "b77a3b5b9f16a1b942a1e54f54fa03530d49f9dbbe54796be3dc8bd8f36d363c",
+      "processed_sha256": "4cf5bae0343661b2dba121509ed4be90568376d1c25cc955bb66125f026a7de3",
+      "source_manifest": "candidates/female/s/manifest.json",
+      "source_manifest_sha256": "fcffef33f90261f8b41e38e43d003274eeaa85506bf4c2682c6e4b145bb50bf1",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        49
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        93,
+        83,
+        96,
+        86
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike1_s",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        87.5,
+        95.5
+      ],
+      "hand_x": 87.5,
+      "hand_y": 95.5,
+      "source_wrist": [
+        704,
+        465
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/s/strike1.png",
+      "source_sha256": "0fb697f53e2fee2352800dbc91a3263448226d22964116d4569658397628c08c",
+      "processed_sha256": "8b8347ffbdc84e43d1df1e514acb1e3701fe2b862c21efdb219fb4ee81fca75c",
+      "source_manifest": "candidates/female/s/manifest.json",
+      "source_manifest_sha256": "fcffef33f90261f8b41e38e43d003274eeaa85506bf4c2682c6e4b145bb50bf1",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        49
+      ],
+      "faces_left": false,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 180,
+      "melee_behind_actor": false,
+      "fingers": [
+        86,
+        94,
+        89,
+        97
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_sw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        92.5,
+        109.5
+      ],
+      "hand_x": 92.5,
+      "hand_y": 109.5,
+      "source_wrist": [
+        755,
+        627
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/sw/idle.png",
+      "source_sha256": "333b4774b8eed3b0ea98f577a9dab86eede831a1a61bdc831558266b604f8e0e",
+      "processed_sha256": "d0e8d44fe5f6779f3331e63751669c0f9599a2ef2430826693736ea547cc284d",
+      "source_manifest": "candidates/female/sw/manifest.json",
+      "source_manifest_sha256": "c51ab75ea4082cec6cef75e887b5ea95cc89ecf3bec91b977764d71cb9f14ab1",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        47
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        91,
+        108,
+        94,
+        111
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike2_sw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        92.5,
+        109.5
+      ],
+      "hand_x": 92.5,
+      "hand_y": 109.5,
+      "source_wrist": [
+        755,
+        627
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/sw/idle.png",
+      "source_sha256": "333b4774b8eed3b0ea98f577a9dab86eede831a1a61bdc831558266b604f8e0e",
+      "processed_sha256": "d0e8d44fe5f6779f3331e63751669c0f9599a2ef2430826693736ea547cc284d",
+      "source_manifest": "candidates/female/sw/manifest.json",
+      "source_manifest_sha256": "c51ab75ea4082cec6cef75e887b5ea95cc89ecf3bec91b977764d71cb9f14ab1",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        47
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        91,
+        108,
+        94,
+        111
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review",
+      "recovery": "byte_identical_idle"
+    },
+    {
+      "name": "hero_female_walk0_sw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        97.5,
+        105.5
+      ],
+      "hand_x": 97.5,
+      "hand_y": 105.5,
+      "source_wrist": [
+        805,
+        589
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/sw/walk0.png",
+      "source_sha256": "504761ab206b59a18833c59c884009320820359305f4ef79fbf118e65d772b62",
+      "processed_sha256": "7967565e94abe165f9c532d211ee804d2ee81489f082a3b2dd60fc237993633e",
+      "source_manifest": "candidates/female/sw/manifest.json",
+      "source_manifest_sha256": "c51ab75ea4082cec6cef75e887b5ea95cc89ecf3bec91b977764d71cb9f14ab1",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        47
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        96,
+        104,
+        99,
+        107
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_walk1_sw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        94.5,
+        109.5
+      ],
+      "hand_x": 94.5,
+      "hand_y": 109.5,
+      "source_wrist": [
+        772,
+        629
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/sw/walk1.png",
+      "source_sha256": "b521cfd7eb088586249c9412ec0112f23055deb7a60591016263cf08b298320c",
+      "processed_sha256": "ed09d329b53164cd4398cadd4f06904bf79b2b1bae6d643f3ea66712a21fcd41",
+      "source_manifest": "candidates/female/sw/manifest.json",
+      "source_manifest_sha256": "c51ab75ea4082cec6cef75e887b5ea95cc89ecf3bec91b977764d71cb9f14ab1",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        47
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        93,
+        108,
+        96,
+        111
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike0_sw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        87.5,
+        87.5
+      ],
+      "hand_x": 87.5,
+      "hand_y": 87.5,
+      "source_wrist": [
+        707,
+        401
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/sw/strike0.png",
+      "source_sha256": "d268de26e0df136e66c7f692b38e6e1d8e142121f839bb00df8fe5164f3056f0",
+      "processed_sha256": "d4694609db5c4df3b63f48d9a57aea4a3b72c4054efbecd910da09f980ce4584",
+      "source_manifest": "candidates/female/sw/manifest.json",
+      "source_manifest_sha256": "c51ab75ea4082cec6cef75e887b5ea95cc89ecf3bec91b977764d71cb9f14ab1",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        47
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        86,
+        86,
+        89,
+        89
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike1_sw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        68.5,
+        89.5
+      ],
+      "hand_x": 68.5,
+      "hand_y": 89.5,
+      "source_wrist": [
+        513,
+        423
+      ],
+      "source_grip": null,
+      "source_wrist_uncertainty_px": 15,
+      "source": "candidates/female/sw/strike1.png",
+      "source_sha256": "02011c117e3a958c07a6a796e5c27f78783fc25927f04e230fdcbb0b3ee31c93",
+      "processed_sha256": "7d6c51a5da7cfe402e5095e1f0e40084f0e345dbe73704a8e351847e05a773c8",
+      "source_manifest": "candidates/female/sw/manifest.json",
+      "source_manifest_sha256": "c51ab75ea4082cec6cef75e887b5ea95cc89ecf3bec91b977764d71cb9f14ab1",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        47
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 225,
+      "melee_behind_actor": false,
+      "fingers": [
+        67,
+        88,
+        70,
+        91
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_w",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        79.5,
+        113.5
+      ],
+      "hand_x": 79.5,
+      "hand_y": 113.5,
+      "source_wrist": [
+        637,
+        632
+      ],
+      "source_grip": [
+        623,
+        674
+      ],
+      "source_wrist_uncertainty_px": 12,
+      "source": "candidates/female/w/idle.png",
+      "source_sha256": "2f0f6a9ad9965783d1affbd4dcf2e6b047cdd925d431ee0151baa9c4b5420aac",
+      "processed_sha256": "4e6977b2ca6cb711aa5fb1bfbaf82e7a764ef75aacff53a78ecb17612654e48e",
+      "source_manifest": "candidates/female/w/manifest.json",
+      "source_manifest_sha256": "924ed033b92b3c96add938f606306c76fb5181dbe62787aef16b456b3ed4e195",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        46
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        78,
+        112,
+        81,
+        115
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike2_w",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        79.5,
+        113.5
+      ],
+      "hand_x": 79.5,
+      "hand_y": 113.5,
+      "source_wrist": [
+        637,
+        632
+      ],
+      "source_grip": [
+        623,
+        674
+      ],
+      "source_wrist_uncertainty_px": 12,
+      "source": "candidates/female/w/idle.png",
+      "source_sha256": "2f0f6a9ad9965783d1affbd4dcf2e6b047cdd925d431ee0151baa9c4b5420aac",
+      "processed_sha256": "4e6977b2ca6cb711aa5fb1bfbaf82e7a764ef75aacff53a78ecb17612654e48e",
+      "source_manifest": "candidates/female/w/manifest.json",
+      "source_manifest_sha256": "924ed033b92b3c96add938f606306c76fb5181dbe62787aef16b456b3ed4e195",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        46
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        78,
+        112,
+        81,
+        115
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review",
+      "recovery": "byte_identical_idle"
+    },
+    {
+      "name": "hero_female_walk0_w",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        94.5,
+        112.5
+      ],
+      "hand_x": 94.5,
+      "hand_y": 112.5,
+      "source_wrist": [
+        760,
+        617
+      ],
+      "source_grip": [
+        778,
+        663
+      ],
+      "source_wrist_uncertainty_px": 12,
+      "source": "candidates/female/w/walk0.png",
+      "source_sha256": "acf98f27e9ee13064a74dcecd3fb0363b04219da44d08730d4ad610d4045398f",
+      "processed_sha256": "98dc3df88cfc251c10894419f1cfbf26005ebbd42241fd864c20070deec3bb68",
+      "source_manifest": "candidates/female/w/manifest.json",
+      "source_manifest_sha256": "924ed033b92b3c96add938f606306c76fb5181dbe62787aef16b456b3ed4e195",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        46
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        93,
+        111,
+        96,
+        114
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_walk1_w",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        62.5,
+        107.5
+      ],
+      "hand_x": 62.5,
+      "hand_y": 107.5,
+      "source_wrist": [
+        496,
+        583
+      ],
+      "source_grip": [
+        457,
+        614
+      ],
+      "source_wrist_uncertainty_px": 12,
+      "source": "candidates/female/w/walk1.png",
+      "source_sha256": "15be590e509162b9e560c768d577706c84a2a11b5363429636cfc5ad12a84f11",
+      "processed_sha256": "0f74fbe6aeae0d7f3817625df9b343c648b12b11a7040f2dd0ac3e3f2fec4867",
+      "source_manifest": "candidates/female/w/manifest.json",
+      "source_manifest_sha256": "924ed033b92b3c96add938f606306c76fb5181dbe62787aef16b456b3ed4e195",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        46
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        61,
+        106,
+        64,
+        109
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike0_w",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        91.5,
+        74.5
+      ],
+      "hand_x": 91.5,
+      "hand_y": 74.5,
+      "source_wrist": [
+        777,
+        312
+      ],
+      "source_grip": [
+        747,
+        280
+      ],
+      "source_wrist_uncertainty_px": 12,
+      "source": "candidates/female/w/strike0.png",
+      "source_sha256": "75f28139df32489f9bb84f2d14200c69775771468f8d431d15bb6250f7be8033",
+      "processed_sha256": "f20667abc04304b37e6d2d7a8df162416706dd2f0251bd2168f706d7ea8d41b6",
+      "source_manifest": "candidates/female/w/manifest.json",
+      "source_manifest_sha256": "924ed033b92b3c96add938f606306c76fb5181dbe62787aef16b456b3ed4e195",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        46
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 45,
+      "melee_behind_actor": false,
+      "fingers": [
+        90,
+        73,
+        93,
+        76
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike1_w",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        50.5,
+        75.5
+      ],
+      "hand_x": 50.5,
+      "hand_y": 75.5,
+      "source_wrist": [
+        378,
+        295
+      ],
+      "source_grip": [
+        337,
+        292
+      ],
+      "source_wrist_uncertainty_px": 12,
+      "source": "candidates/female/w/strike1.png",
+      "source_sha256": "b2e0fdddc08b72e7b88d3c28bea52ebc9f041047458917b7a37b34ba77edba3d",
+      "processed_sha256": "e74459466e29607052abd900c0adfaf8fc85f35257d4cfd016adef8486b28a2a",
+      "source_manifest": "candidates/female/w/manifest.json",
+      "source_manifest_sha256": "924ed033b92b3c96add938f606306c76fb5181dbe62787aef16b456b3ed4e195",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        46
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": -85,
+      "melee_behind_actor": false,
+      "fingers": [
+        49,
+        74,
+        52,
+        77
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_nw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        67.5,
+        116.5
+      ],
+      "hand_x": 67.5,
+      "hand_y": 116.5,
+      "source_wrist": [
+        515,
+        635
+      ],
+      "source_grip": [
+        507,
+        666
+      ],
+      "source_wrist_uncertainty_px": 12,
+      "source": "candidates/female/nw/idle.png",
+      "source_sha256": "1bed666c5f8838d559971808957a00f2d3c83b40d5f6dd27417fac59f4a49062",
+      "processed_sha256": "496f341e9137922b06c9b4a51d80bf34bbcd79f5f3550b782e626b2507ddaabf",
+      "source_manifest": "candidates/female/nw/manifest.json",
+      "source_manifest_sha256": "23da5f15e53e278f9e52760cfdf0ed254bac6ded512c65625c93236777933af8",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        50
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        66,
+        115,
+        69,
+        118
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike2_nw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        67.5,
+        116.5
+      ],
+      "hand_x": 67.5,
+      "hand_y": 116.5,
+      "source_wrist": [
+        515,
+        635
+      ],
+      "source_grip": [
+        507,
+        666
+      ],
+      "source_wrist_uncertainty_px": 12,
+      "source": "candidates/female/nw/idle.png",
+      "source_sha256": "1bed666c5f8838d559971808957a00f2d3c83b40d5f6dd27417fac59f4a49062",
+      "processed_sha256": "496f341e9137922b06c9b4a51d80bf34bbcd79f5f3550b782e626b2507ddaabf",
+      "source_manifest": "candidates/female/nw/manifest.json",
+      "source_manifest_sha256": "23da5f15e53e278f9e52760cfdf0ed254bac6ded512c65625c93236777933af8",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        50
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        66,
+        115,
+        69,
+        118
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review",
+      "recovery": "byte_identical_idle"
+    },
+    {
+      "name": "hero_female_walk0_nw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        63.5,
+        107.5
+      ],
+      "hand_x": 63.5,
+      "hand_y": 107.5,
+      "source_wrist": [
+        464,
+        548
+      ],
+      "source_grip": [
+        462,
+        578
+      ],
+      "source_wrist_uncertainty_px": 12,
+      "source": "candidates/female/nw/walk0.png",
+      "source_sha256": "0e4924463f79e71cf4c644b08e3cc4b7195c55294aa2a8e7d7905545568fc941",
+      "processed_sha256": "d3cb6aaa67313a1d08cc8fd573ea39bda20f2b1d63c83941ac03ca60d979793f",
+      "source_manifest": "candidates/female/nw/manifest.json",
+      "source_manifest_sha256": "23da5f15e53e278f9e52760cfdf0ed254bac6ded512c65625c93236777933af8",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        50
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        62,
+        106,
+        65,
+        109
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_walk1_nw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        62.5,
+        95.5
+      ],
+      "hand_x": 62.5,
+      "hand_y": 95.5,
+      "source_wrist": [
+        477,
+        480
+      ],
+      "source_grip": [
+        450,
+        459
+      ],
+      "source_wrist_uncertainty_px": 12,
+      "source": "candidates/female/nw/walk1.png",
+      "source_sha256": "b119a8e56f1b431e16c65309b7198afd2e6647fde9cd65c6c8c5df67cbe5b8d9",
+      "processed_sha256": "c67be741c58dd0c6d30447fd0d058a5c4278b86c0c333c3ea379c736c426b864",
+      "source_manifest": "candidates/female/nw/manifest.json",
+      "source_manifest_sha256": "23da5f15e53e278f9e52760cfdf0ed254bac6ded512c65625c93236777933af8",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        50
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 0,
+      "melee_behind_actor": false,
+      "fingers": [
+        61,
+        94,
+        64,
+        97
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike0_nw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        65.5,
+        80.5
+      ],
+      "hand_x": 65.5,
+      "hand_y": 80.5,
+      "source_wrist": [
+        469,
+        331
+      ],
+      "source_grip": [
+        480,
+        302
+      ],
+      "source_wrist_uncertainty_px": 12,
+      "source": "candidates/female/nw/strike0.png",
+      "source_sha256": "3e11ee6618a4be54ecfc17360b83616a001371d310b12c87f48d9ef06e747f2d",
+      "processed_sha256": "6599ec3da2d1be05ee1d71e208258e8e8d39aec59b7160ad9ad8eb51ec428b5b",
+      "source_manifest": "candidates/female/nw/manifest.json",
+      "source_manifest_sha256": "23da5f15e53e278f9e52760cfdf0ed254bac6ded512c65625c93236777933af8",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        50
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": 20,
+      "melee_behind_actor": false,
+      "fingers": [
+        64,
+        79,
+        67,
+        82
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    },
+    {
+      "name": "hero_female_strike1_nw",
+      "canvas": [
+        160,
+        192
+      ],
+      "hand": [
+        52.5,
+        77.5
+      ],
+      "hand_x": 52.5,
+      "hand_y": 77.5,
+      "source_wrist": [
+        392,
+        290
+      ],
+      "source_grip": [
+        354,
+        278
+      ],
+      "source_wrist_uncertainty_px": 12,
+      "source": "candidates/female/nw/strike1.png",
+      "source_sha256": "474d0c4bf43ce49143d278b607c50be40469d9771134c0ee89b30ffc7753614d",
+      "processed_sha256": "1e3daa5c0f06f40dc960c4a5b24c11765edf37e0af39495b9d43b4e1796464db",
+      "source_manifest": "candidates/female/nw/manifest.json",
+      "source_manifest_sha256": "23da5f15e53e278f9e52760cfdf0ed254bac6ded512c65625c93236777933af8",
+      "grid_offset": [
+        0,
+        0
+      ],
+      "cell_size": 10,
+      "canvas_translation": [
+        17,
+        50
+      ],
+      "faces_left": true,
+      "behind_actor": false,
+      "melee_clockwise_degrees": -55,
+      "melee_behind_actor": false,
+      "fingers": [
+        51,
+        76,
+        54,
+        79
+      ],
+      "status": "source_wrist_mapped_candidate_pending_equipment_overlay_review"
+    }
+  ],
+  "pending": []
+}

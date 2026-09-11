@@ -1,0 +1,231 @@
+{
+  "version": 1,
+  "scope": "candidate sources only",
+  "sex": "male",
+  "direction": "s",
+  "original_identity_path": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\s\\idle.png",
+  "original_identity_sha256": "fa6bb5a57dbb0791095abc6078920ae3e834782e3db8dd24b95e16c8f37b5e1f",
+  "selected": [
+    {
+      "pose": "idle",
+      "file": "idle.png",
+      "sha256": "fa6bb5a57dbb0791095abc6078920ae3e834782e3db8dd24b95e16c8f37b5e1f",
+      "generation_record": "idle.generation.json",
+      "mode": "RGBA",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "actual_alpha_transparency": true,
+      "observed_foreground_bounds": [
+        432,
+        128,
+        822,
+        1098
+      ],
+      "bounds_method": "actual alpha>=128",
+      "foreground_height_estimate": 970,
+      "requested_common_anchor_px": [
+        627,
+        1098
+      ],
+      "left_wrist_normalized": [
+        0.63,
+        0.5
+      ],
+      "left_wrist_source_px": [
+        790,
+        627
+      ],
+      "left_wrist_estimate_tolerance_px": 20,
+      "held_item_behind_body_hint": false,
+      "held_item_angle_hint_degrees_clockwise_screen": 90,
+      "equipment_hint_scope": "approximate visual estimate; importer/equipment worker must inspect actual native grip and occlusion",
+      "acceptance": "source pose candidate; root native reconstruction and live review pending",
+      "lowest_visible_sole_y_estimate": 1098
+    },
+    {
+      "pose": "walk0",
+      "file": "walk0.png",
+      "sha256": "bd03fa8db82071e2df12897b05bd71c68e197c13053b8fd2c5cbe3d9894f0d7a",
+      "generation_record": "walk0.generation.json",
+      "mode": "RGB",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": [
+        255,
+        255
+      ],
+      "actual_alpha_transparency": false,
+      "observed_foreground_bounds": [
+        438,
+        128,
+        816,
+        1113
+      ],
+      "bounds_method": "approximate warm-chroma foreground bounds; not alpha/cleanup evidence",
+      "foreground_height_estimate": 985,
+      "requested_common_anchor_px": [
+        627,
+        1098
+      ],
+      "left_wrist_normalized": [
+        0.617,
+        0.479
+      ],
+      "left_wrist_source_px": [
+        774,
+        601
+      ],
+      "left_wrist_estimate_tolerance_px": 20,
+      "held_item_behind_body_hint": false,
+      "held_item_angle_hint_degrees_clockwise_screen": 90,
+      "equipment_hint_scope": "approximate visual estimate; importer/equipment worker must inspect actual native grip and occlusion",
+      "acceptance": "source pose candidate; root native reconstruction and live review pending",
+      "lowest_visible_sole_y_estimate": 1113
+    },
+    {
+      "pose": "walk1",
+      "file": "walk1.png",
+      "sha256": "f9cc22295af3ad036c768bd79552cc5a8bcedb98d2a1a91c9a900e82c9333471",
+      "generation_record": "walk1.generation.json",
+      "mode": "RGB",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": [
+        255,
+        255
+      ],
+      "actual_alpha_transparency": false,
+      "observed_foreground_bounds": [
+        427,
+        128,
+        819,
+        1131
+      ],
+      "bounds_method": "approximate warm-chroma foreground bounds; not alpha/cleanup evidence",
+      "foreground_height_estimate": 1003,
+      "requested_common_anchor_px": [
+        627,
+        1098
+      ],
+      "left_wrist_normalized": [
+        0.63,
+        0.466
+      ],
+      "left_wrist_source_px": [
+        790,
+        584
+      ],
+      "left_wrist_estimate_tolerance_px": 20,
+      "held_item_behind_body_hint": false,
+      "held_item_angle_hint_degrees_clockwise_screen": 90,
+      "equipment_hint_scope": "approximate visual estimate; importer/equipment worker must inspect actual native grip and occlusion",
+      "acceptance": "source pose candidate; root native reconstruction and live review pending",
+      "lowest_visible_sole_y_estimate": 1131
+    },
+    {
+      "pose": "strike0",
+      "file": "strike0.png",
+      "sha256": "9190e353edd5bdf0bab6293992e30d03cb451f51a4c15640e5320bc10b53ba4c",
+      "generation_record": "strike0.generation.json",
+      "mode": "RGB",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": [
+        255,
+        255
+      ],
+      "actual_alpha_transparency": false,
+      "observed_foreground_bounds": [
+        420,
+        147,
+        875,
+        1099
+      ],
+      "bounds_method": "approximate warm-chroma foreground bounds; not alpha/cleanup evidence",
+      "foreground_height_estimate": 952,
+      "requested_common_anchor_px": [
+        627,
+        1098
+      ],
+      "left_wrist_normalized": [
+        0.62,
+        0.244
+      ],
+      "left_wrist_source_px": [
+        777,
+        306
+      ],
+      "left_wrist_estimate_tolerance_px": 20,
+      "held_item_behind_body_hint": false,
+      "held_item_angle_hint_degrees_clockwise_screen": -130,
+      "equipment_hint_scope": "approximate visual estimate; importer/equipment worker must inspect actual native grip and occlusion",
+      "acceptance": "source pose candidate; root native reconstruction and live review pending",
+      "lowest_visible_sole_y_estimate": 1099
+    },
+    {
+      "pose": "strike1",
+      "file": "strike1.png",
+      "sha256": "0d8f20478e35e397efbdb7e9f67835427ecd74013945a735a9faf6afa0dcc288",
+      "generation_record": "strike1.generation.json",
+      "mode": "RGB",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": [
+        255,
+        255
+      ],
+      "actual_alpha_transparency": false,
+      "observed_foreground_bounds": [
+        417,
+        146,
+        791,
+        1101
+      ],
+      "bounds_method": "approximate warm-chroma foreground bounds; not alpha/cleanup evidence",
+      "foreground_height_estimate": 955,
+      "requested_common_anchor_px": [
+        627,
+        1098
+      ],
+      "left_wrist_normalized": [
+        0.584,
+        0.3
+      ],
+      "left_wrist_source_px": [
+        732,
+        376
+      ],
+      "left_wrist_estimate_tolerance_px": 20,
+      "held_item_behind_body_hint": false,
+      "held_item_angle_hint_degrees_clockwise_screen": 90,
+      "equipment_hint_scope": "approximate visual estimate; importer/equipment worker must inspect actual native grip and occlusion",
+      "acceptance": "source pose candidate; root native reconstruction and live review pending",
+      "lowest_visible_sole_y_estimate": 1101
+    }
+  ],
+  "recovery": "idle.png",
+  "review": "source-review.png",
+  "notes": [
+    "Original identity, natural beige tunic, belt and sandals retained; no new equipment, no mirroring, no per-pose resize/fit or local matte cleanup.",
+    "Generated sources returned opaque RGB painted light patterns despite transparent-alpha requests. Root explicitly owns connected matte cleanup through actual Pixel Respecter; inspect enclosed gaps and pale fabric separately.",
+    "Body bounds and wrist positions are approximate for RGB sources. Requested anchors are registration intent, not measured physical-foot guarantees.",
+    "Strike runtime recovery reuses idle; no third attack image generated.",
+    "Full raw canvases preserved byte-for-byte. Lowest-sole y varies1086..1131 and crouched strike height changes naturally; do not derive independent per-pose scaling from the bounding box."
+  ],
+  "retained_intermediates_and_rejections": {},
+  "frozen": true
+}

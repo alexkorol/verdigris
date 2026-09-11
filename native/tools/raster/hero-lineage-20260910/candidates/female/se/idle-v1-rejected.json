@@ -1,0 +1,12 @@
+{
+  "tool": "image_gen.imagegen",
+  "prompt": "Use case: identity-preserve. Edit the supplied image into ONE isolated full-body idle pose of exactly the same adult woman. Turn only her body and head 45 degrees toward screen lower-right (SE): front three-quarter view, face points lower-right, both eyes partly visible. Keep the same fixed elevated camera looking down, same realistic adult anatomy, face, shoulder-length brown hair, plain knee-length beige linen tunic, narrow brown belt, brown strapped sandals, natural colors and the reference's detailed physical rendered pixel-sprite style. Keep the tunic plain and unchanged. Arms rest naturally with both hands empty. Do not redesign, beautify, round into a cartoon, add gear, weapon, jewelry, green corrosion or scenery. Match the reference's body scale and framing: square canvas approximately 1280×1280, crown around y=130, soles around y=1120, central ground anchor x=640/y=1120. Preserve that scale without zooming or independently fitting the pose. Full silhouette with generous empty margins. Background must be actual transparent RGBA alpha zero, no painted checker, matte, floor or cast shadow. Return one image, one woman, one pose.",
+  "references": [
+    "C:/Users/Alex/Downloads/ccd7ce15-5d1a-46c4-af49-f305bf7fad90 (1).png"
+  ],
+  "source_path": "C:\\Users\\Alex\\.codex\\generated_images\\01a08b3d-0739-7b22-86a3-6475fe34a823\\exec-699df263-4ffc-467b-a3de-7775a30c40b2.png",
+  "output_hint": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a08b3d-0739-7b22-86a3-6475fe34a823 as C:\\Users\\Alex\\.codex\\generated_images\\01a08b3d-0739-7b22-86a3-6475fe34a823\\exec-699df263-4ffc-467b-a3de-7775a30c40b2.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "initial_alpha_rejection_later_selected_pose_source",
+  "review": "Original rejection concerned missing alpha only. Same bytes now selected as canonical idle.png for parent matte cleanup; filename retained to preserve history.",
+  "backend_model_version": "not exposed by built-in tool"
+}

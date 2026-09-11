@@ -1,0 +1,15 @@
+{
+  "tool": "built-in image_gen",
+  "arguments": {
+    "prompt": "Use case: precise-object-edit.\nImage 1 is the edit target; preserve its exact head, torso, belt, tunic, both arms and hands. Image 2 is the accepted northwest idle; image 3 anchors the original man's identity/detail.\nCorrect ONLY the legs to an unmistakable opposite walking contact. Stay back-left three-quarter, heading upper-left. The NEAR LEFT LEG must now be the LOWER-LEFT rear leg: it emerges from the LEFT edge of the hem, knee around(545,890), ankle around(510,1030), sandal around(490,1070), closest toe at y1098. This near leg trails behind the hips with heel rising. The FAR RIGHT LEG must now be the HIGHER-RIGHT front leg: it emerges under the RIGHT hem, knee around(700,810), ankle around(665,910), sandal around(625,945), planting forward toward upper-left. Keep a visible gap between shins; the lower-left rear sandal and higher-right front sandal exchange which anatomical leg bears each contact. Do not leave a huge trailing leg extending toward lower-right. The two knees/feet cannot simply reuse image1's placements.\nModerate natural in-place walking stride. Preserve all upper-body pixel positions, adult rendered detail, colors and original gear-free beige tunic/sandals.1254square, no zoom. One full body only, true alpha transparent background without painted checker, no text/shadow.",
+    "referenced_image_paths": [
+      "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/male/nw/walk1-rejected-leg-ambiguity.png",
+      "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/male/nw/idle.png",
+      "C:/Users/Alex/Downloads/ChatGPT Image Sep 10, 2026, 05_22_21 PM.png"
+    ]
+  },
+  "result_metadata": {
+    "output_hint": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a089c3-5390-76a2-8353-a73d7b52eeb8 as C:\\Users\\Alex\\.codex\\generated_images\\01a089c3-5390-76a2-8353-a73d7b52eeb8\\exec-f1809b60-811b-48bc-93f3-529defb80a39.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  "state": "pending_visual_review"
+}

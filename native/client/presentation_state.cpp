@@ -133,6 +133,7 @@ void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& s
   world.carried_trophies = sim.scion().carried_trophies.size();
   if (const auto* player = sim.actor(sim.scion().actor_id)) {
     world.player.id = player->id;
+    world.player.appearance = verdigris::player_appearance_id(sim.scion().appearance);
     world.player.position = player->position;
     world.player.facing = player->facing;
     world.player.life = player->stats.life;
@@ -215,8 +216,16 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
                                                 : model.player.uuid);
   world.route_id = model.scene.id;
   world.player.id = model.player.uuid;
+  world.player.appearance = verdigris::player_appearance_id(model.player.appearance);
   world.player.position = {static_cast<int>(std::lround(protocol_to_world(model.player.x))),
                            static_cast<int>(std::lround(protocol_to_world(model.player.y)))};
+  world.player.has_display_position = model.player.has_display_position &&
+      std::isfinite(model.player.display_x) && std::isfinite(model.player.display_y);
+  world.player.display_position = world.player.position;
+  if (world.player.has_display_position)
+    world.player.display_position = {
+        static_cast<int>(std::lround(protocol_to_world(model.player.display_x))),
+        static_cast<int>(std::lround(protocol_to_world(model.player.display_y)))};
   world.player.facing = facing_vector(model.player.facing);
   world.player.life = model.player.life;
   world.player.life_max = model.player.life_max;
@@ -398,6 +407,22 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
   const double ex = static_cast<double>(at.x);
   const double ey = static_cast<double>(at.y);
   switch (event.type) {
+    case PresentationEventType::PlayerDashed: {
+      if (event.actor_id != world.player.id || !world.player.alive) break;
+      const double dx = static_cast<double>(event.to_x) - event.from_x;
+      const double dy = static_cast<double>(event.to_y) - event.from_y;
+      const double distance = std::hypot(dx, dy);
+      if (distance <= 0.0 || distance > protocol_to_world(4.0)) break;
+      for (int i = 0; i < phase_a::kDashDustPoints; ++i) {
+        const double t = static_cast<double>(i) / (phase_a::kDashDustPoints - 1);
+        EffectFx dust{EffectFx::Kind::Dust, event.from_x + dx * t,
+                      event.from_y + dy * t, std::atan2(dy, dx), 0,
+                      phase_a::kDashDustTtlTicks};
+        dust.actor_id = event.actor_id;
+        fx.effects.push_back(std::move(dust));
+      }
+      break;
+    }
     case PresentationEventType::AttackStarted: {
       const auto warning = fx.telegraphs.find(event.actor_id);
       const bool committed = warning != fx.telegraphs.end();
@@ -535,10 +560,12 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
                               phase_a::kWarcryFadeTtlTicks});
       break;
     case PresentationEventType::ItemDropped: {
-      verdigris::Vec2 drop = fx.last_death_pos;
-      if (drop.x == 0 && drop.y == 0) drop = at;
-      drop.x += (fx.loot_scatter % 3 - 1) * 40;
-      drop.y += ((fx.loot_scatter / 3) % 3 - 1) * 40 + 30;
+      verdigris::Vec2 drop = event.has_actor_pose ? at : fx.last_death_pos;
+      if (!event.has_actor_pose) {
+        if (drop.x == 0 && drop.y == 0) drop = at;
+        drop.x += (fx.loot_scatter % 3 - 1) * 40;
+        drop.y += ((fx.loot_scatter / 3) % 3 - 1) * 40 + 30;
+      }
       ++fx.loot_scatter;
       const std::string id = event.item_id.empty() ? ("drop-" + std::to_string(fx.loot_scatter))
                                                    : event.item_id;

@@ -1,0 +1,21 @@
+{
+  "tool": "image_gen.imagegen",
+  "prompt": "Edit the supplied original identity reference. Return ONE full-body idle pose of exactly this adult woman, now turned 45 degrees toward screen lower-left (SW), front three-quarter view, face and toes point down-left. Same fixed elevated camera, natural adult anatomy, same face and shoulder-length brown hair, same plain beige knee-length linen tunic, narrow brown belt and brown strapped sandals. Preserve the reference's physical rendered pixel-sprite style and natural colors without smoothing into a rounded cartoon or adding equipment. Both hands empty, arms relaxed, feet planted. Retain the original 1254×1254 canvas, unchanged body scale about 980px crown-to-sole, crown around y=120, grounded feet around y=1100 and central floor anchor x=627. Do not zoom, fit the silhouette anew or change camera elevation. Full silhouette and margins. Actual transparent RGBA PNG, alpha zero outside the woman, no checker pattern, scenery, floor or cast shadow. One image, one pose.",
+  "references": [
+    "C:/Users/Alex/Downloads/ccd7ce15-5d1a-46c4-af49-f305bf7fad90 (1).png"
+  ],
+  "source_path": "C:\\Users\\Alex\\.codex\\generated_images\\01a08b3d-0739-7b22-86a3-6475fe34a823\\exec-cc51f0a8-2719-49f9-8708-d55eb00cf5e5.png",
+  "output_hint": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a08b3d-0739-7b22-86a3-6475fe34a823 as C:\\Users\\Alex\\.codex\\generated_images\\01a08b3d-0739-7b22-86a3-6475fe34a823\\exec-cc51f0a8-2719-49f9-8708-d55eb00cf5e5.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "pose_selected_alpha_failed",
+  "recipe": "Noel separate image; original identity retained; one direction change",
+  "review": "Adult identity, beige kit and SW front-three-quarter facing preserved. Relaxed empty hands.",
+  "backend_model_version": "not exposed by built-in tool",
+  "canvas_size": [
+    1254,
+    1254
+  ],
+  "png_mode": "RGB",
+  "sha256": "333b4774b8eed3b0ea98f577a9dab86eede831a1a61bdc831558266b604f8e0e",
+  "alpha_review": "FAILED: RGB file, no alpha channel; checker pattern painted into pixels. Parent will review narrow neutral matte cleanup before Pixel Respecter import.",
+  "source_image_modified": false
+}

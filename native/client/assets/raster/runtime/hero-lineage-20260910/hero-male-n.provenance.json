@@ -1,0 +1,912 @@
+{
+  "version": 1,
+  "manifest_sha256": "6d5582cfea1cfe32a63ba01fa021344c651504536b13f6dd570c59bc1f369768",
+  "importer_sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+  "engine": {
+    "project": "Pixel Respecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "root": "Z:/Code/Python/pixel-perfecter",
+    "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+    "git_dirty": true,
+    "source_sha256": {
+      "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+      "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+      "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+      "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+      "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+      "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+      "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+      "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+      "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+      "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+      "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+      "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+      "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+    },
+    "dependencies": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    }
+  },
+  "known_limitations": [
+    "Generated RGB checker mattes require explicitly recorded neutral removal.",
+    "One directional idle defines each clip pivot; source scale variations remain measurable.",
+    "Attack recovery reuses the accepted idle pose; two other poses are independently generated."
+  ],
+  "sources": [
+    {
+      "source": "derived/male/n/idle.png",
+      "sha256": "abc934605c78c3f533548bd8e8e15955f325bfe73a73d332e7aef407737c5837",
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "source": "derived/male/n/walk0.png",
+      "sha256": "8fa487522ed138f593b210f56fb3f39902222cb4550ac3c07556987a2a2864fd",
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "source": "derived/male/n/walk1.png",
+      "sha256": "196f4ef9cd9478e7b1b2c4d00d74a68099462b7b0e664cb52ae28871fab10ea8",
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "source": "derived/male/n/strike0.png",
+      "sha256": "3bdb81103d9d70843f06249a3e893ac8eea4066ee2a38214db473f01fcf15e1b",
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "source": "derived/male/n/strike1.png",
+      "sha256": "0cd6f486943c0e9c319ffacbce627dbbcd448b5d05c33b1c1aaa33ca25a78905",
+      "size": [
+        1254,
+        1254
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "name": "hero_male_n",
+      "file": "hero_male_n.png",
+      "source": "derived/male/n/idle.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 66,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        43,
+        12,
+        82,
+        106
+      ],
+      "before_resize": [
+        39,
+        94
+      ],
+      "placed_size": [
+        39,
+        94
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        60,
+        66,
+        99,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "a00fb2a6d0595263aa23e7eeebf7604dfdf6d88e21e9e5f682599d8c90eb9e85"
+    },
+    {
+      "name": "hero_male_walk0_n",
+      "file": "hero_male_walk0_n.png",
+      "source": "derived/male/n/walk0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 78,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        43,
+        12,
+        81,
+        107
+      ],
+      "before_resize": [
+        38,
+        95
+      ],
+      "placed_size": [
+        38,
+        95
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        60,
+        66,
+        98,
+        161
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "ba32c33cdbbb673e38b8e2a51a26c1ee5a16cd4fdaf755c146bebb25b50ddc0c"
+    },
+    {
+      "name": "hero_male_walk1_n",
+      "file": "hero_male_walk1_n.png",
+      "source": "derived/male/n/walk1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 77,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        45,
+        12,
+        83,
+        107
+      ],
+      "before_resize": [
+        38,
+        95
+      ],
+      "placed_size": [
+        38,
+        95
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        62,
+        66,
+        100,
+        161
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "c95c59d9e4ccee0876d55221c2caa7085fb08b8704cf24db3637c8817fa940fc"
+    },
+    {
+      "name": "hero_male_strike0_n",
+      "file": "hero_male_strike0_n.png",
+      "source": "derived/male/n/strike0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 80,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        36,
+        12,
+        82,
+        108
+      ],
+      "before_resize": [
+        46,
+        96
+      ],
+      "placed_size": [
+        46,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        53,
+        66,
+        99,
+        162
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "7822dfdaa5934537cea09e17c6d01cfda8ac59dc4e4b027d04c38ae6c062bb33"
+    },
+    {
+      "name": "hero_male_strike1_n",
+      "file": "hero_male_strike1_n.png",
+      "source": "derived/male/n/strike1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        48,
+        10,
+        82,
+        106
+      ],
+      "before_resize": [
+        34,
+        96
+      ],
+      "placed_size": [
+        34,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        65,
+        64,
+        99,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "22e5075a73b326c0d1a33fac73c1a62bb083e2f188a227e5e665473500740456"
+    }
+  ],
+  "shared_palette": {
+    "api": "pixel_perfecter.palettes.reduce_colors",
+    "max_colors": 96,
+    "visible_colors_before": 545,
+    "visible_colors_after": 96,
+    "palette_rgb": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        10,
+        9,
+        6
+      ],
+      [
+        22,
+        0,
+        0
+      ],
+      [
+        23,
+        19,
+        11
+      ],
+      [
+        37,
+        21,
+        8
+      ],
+      [
+        38,
+        23,
+        23
+      ],
+      [
+        41,
+        38,
+        34
+      ],
+      [
+        42,
+        9,
+        0
+      ],
+      [
+        45,
+        29,
+        13
+      ],
+      [
+        49,
+        18,
+        7
+      ],
+      [
+        50,
+        30,
+        26
+      ],
+      [
+        54,
+        49,
+        45
+      ],
+      [
+        57,
+        23,
+        15
+      ],
+      [
+        57,
+        47,
+        31
+      ],
+      [
+        62,
+        36,
+        20
+      ],
+      [
+        67,
+        55,
+        42
+      ],
+      [
+        70,
+        26,
+        9
+      ],
+      [
+        74,
+        47,
+        27
+      ],
+      [
+        77,
+        40,
+        13
+      ],
+      [
+        79,
+        62,
+        39
+      ],
+      [
+        83,
+        47,
+        37
+      ],
+      [
+        83,
+        67,
+        52
+      ],
+      [
+        87,
+        33,
+        15
+      ],
+      [
+        90,
+        82,
+        69
+      ],
+      [
+        92,
+        48,
+        21
+      ],
+      [
+        93,
+        56,
+        36
+      ],
+      [
+        101,
+        90,
+        86
+      ],
+      [
+        102,
+        42,
+        13
+      ],
+      [
+        102,
+        75,
+        51
+      ],
+      [
+        104,
+        47,
+        28
+      ],
+      [
+        106,
+        64,
+        46
+      ],
+      [
+        108,
+        55,
+        37
+      ],
+      [
+        109,
+        87,
+        66
+      ],
+      [
+        110,
+        67,
+        35
+      ],
+      [
+        115,
+        73,
+        47
+      ],
+      [
+        117,
+        96,
+        70
+      ],
+      [
+        119,
+        52,
+        25
+      ],
+      [
+        119,
+        86,
+        54
+      ],
+      [
+        120,
+        97,
+        83
+      ],
+      [
+        122,
+        109,
+        85
+      ],
+      [
+        127,
+        59,
+        37
+      ],
+      [
+        129,
+        71,
+        45
+      ],
+      [
+        129,
+        92,
+        66
+      ],
+      [
+        130,
+        64,
+        26
+      ],
+      [
+        132,
+        106,
+        78
+      ],
+      [
+        136,
+        77,
+        54
+      ],
+      [
+        137,
+        116,
+        86
+      ],
+      [
+        141,
+        66,
+        31
+      ],
+      [
+        141,
+        88,
+        48
+      ],
+      [
+        146,
+        96,
+        58
+      ],
+      [
+        147,
+        74,
+        41
+      ],
+      [
+        147,
+        119,
+        95
+      ],
+      [
+        147,
+        135,
+        128
+      ],
+      [
+        151,
+        136,
+        111
+      ],
+      [
+        154,
+        132,
+        98
+      ],
+      [
+        155,
+        99,
+        69
+      ],
+      [
+        157,
+        81,
+        43
+      ],
+      [
+        159,
+        89,
+        57
+      ],
+      [
+        162,
+        116,
+        76
+      ],
+      [
+        163,
+        136,
+        108
+      ],
+      [
+        169,
+        85,
+        47
+      ],
+      [
+        171,
+        146,
+        119
+      ],
+      [
+        173,
+        145,
+        105
+      ],
+      [
+        175,
+        100,
+        67
+      ],
+      [
+        178,
+        157,
+        126
+      ],
+      [
+        181,
+        95,
+        54
+      ],
+      [
+        181,
+        117,
+        75
+      ],
+      [
+        187,
+        153,
+        109
+      ],
+      [
+        190,
+        107,
+        70
+      ],
+      [
+        191,
+        166,
+        136
+      ],
+      [
+        196,
+        129,
+        89
+      ],
+      [
+        196,
+        175,
+        144
+      ],
+      [
+        199,
+        121,
+        80
+      ],
+      [
+        200,
+        109,
+        59
+      ],
+      [
+        200,
+        167,
+        125
+      ],
+      [
+        203,
+        135,
+        99
+      ],
+      [
+        207,
+        121,
+        70
+      ],
+      [
+        208,
+        189,
+        158
+      ],
+      [
+        210,
+        178,
+        133
+      ],
+      [
+        211,
+        128,
+        87
+      ],
+      [
+        213,
+        186,
+        146
+      ],
+      [
+        215,
+        142,
+        102
+      ],
+      [
+        218,
+        129,
+        72
+      ],
+      [
+        218,
+        141,
+        90
+      ],
+      [
+        223,
+        192,
+        153
+      ],
+      [
+        225,
+        153,
+        106
+      ],
+      [
+        229,
+        130,
+        81
+      ],
+      [
+        231,
+        143,
+        98
+      ],
+      [
+        233,
+        146,
+        86
+      ],
+      [
+        237,
+        161,
+        115
+      ],
+      [
+        240,
+        176,
+        132
+      ],
+      [
+        243,
+        149,
+        93
+      ],
+      [
+        251,
+        164,
+        106
+      ],
+      [
+        251,
+        193,
+        151
+      ],
+      [
+        252,
+        176,
+        119
+      ],
+      [
+        255,
+        188,
+        132
+      ]
+    ],
+    "dithering": "none",
+    "scope": "all reconstructed frames in this manifest"
+  }
+}

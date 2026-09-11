@@ -768,7 +768,46 @@ void actor_fall_uses_immutable_pose_with_known_identity() {
         "fall event pose: pose-only unknown actor still creates no body or dust");
 }
 
+void accepted_dash_dust_and_authoritative_drop_pose() {
+  using namespace verdigris::client;
+  auto world = world_with_player_and_foe("right");
+  const auto original = world.player.position;
+  PresentationFx fx;
+  PresentationEvent dash{PresentationEventType::PlayerDashed, world.player.id, "", "dash", 0};
+  dash.from_x = 100; dash.from_y = 200; dash.to_x = 220; dash.to_y = 260;
+  apply_presentation_event(fx, world, dash, 1);
+  check(fx.effects.size() == phase_a::kDashDustPoints &&
+        count_kind(fx, EffectFx::Kind::Dust) == phase_a::kDashDustPoints &&
+        count_kind(fx, EffectFx::Kind::Swing) == 0 && count_kind(fx, EffectFx::Kind::Impact) == 0,
+        "dash FX: accepted travel produces only four dust positions");
+  check(fx.effects.front().wx == 100 && fx.effects.front().wy == 200 &&
+        fx.effects.back().wx == 220 && fx.effects.back().wy == 260 &&
+        fx.effects[1].wx == 140 && fx.effects[1].wy == 220,
+        "dash FX: dust follows actual server from/to segment");
+  check(world.player.position.x == original.x && world.player.position.y == original.y,
+        "dash FX: presentation never moves the authoritative player");
+  for (int i = 0; i < phase_a::kDashDustTtlTicks; ++i) age_presentation_fx(fx);
+  check(fx.effects.empty(), "dash FX: trail expires at its named lifetime");
+  dash.actor_id = "foreign"; apply_presentation_event(fx, world, dash, 2);
+  dash.actor_id = world.player.id; dash.to_x = dash.from_x; dash.to_y = dash.from_y;
+  apply_presentation_event(fx, world, dash, 3);
+  check(fx.effects.empty(), "dash FX: unrelated actor and zero movement add no dust");
+  dash.to_x = 220; dash.to_y = 260;
+  for (int i = 0; i < 160; ++i) apply_presentation_event(fx, world, dash, 4);
+  check(fx.effects.size() <= kMaxPresentationEffects, "dash FX: repeated events obey shared effect cap");
+  fx.last_death_pos = {900, 900};
+  PresentationEvent drop{PresentationEventType::ItemDropped, "", "authority-item", "Ring", 0};
+  drop.has_actor_pose = true; drop.actor_x = 321; drop.actor_y = 654;
+  apply_presentation_event(fx, world, drop, 5);
+  check(fx.loot_positions.at("authority-item").x == 321 && fx.loot_positions.at("authority-item").y == 654,
+        "drop FX: explicit authority pose is not replaced by corpse position or scatter");
+  const auto& sparkle = fx.effects.back();
+  check(sparkle.kind == EffectFx::Kind::Sparkle && sparkle.wx == 321 && sparkle.wy == 654,
+        "drop FX: sparkle marks the real item location");
+}
+
 int main() {
+  accepted_dash_dust_and_authoritative_drop_pose();
   actor_fall_uses_immutable_pose_with_known_identity();
   strike_angle_matches_rendered_actor_direction();
   actor_fall_retains_snapshot_without_live_actor_or_reward();

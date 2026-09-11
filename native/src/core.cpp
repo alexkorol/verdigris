@@ -213,7 +213,8 @@ Command Command::extract() {
   return {CommandType::ExtractToHouse, 0, 0, ActionType::Wait, {}};
 }
 
-Simulation::Simulation(std::uint64_t seed, const std::string& house_name) : rng_(seed) {
+Simulation::Simulation(std::uint64_t seed, const std::string& house_name,
+                       const std::string& appearance) : rng_(seed) {
   house_.id = rng_.token("house");
   house_.name = house_name;
   house_.routes = {
@@ -224,6 +225,7 @@ Simulation::Simulation(std::uint64_t seed, const std::string& house_name) : rng_
   house_.unlocked_routes.push_back("route:tin:1:0");
   scion_.id = rng_.token("scion");
   scion_.name = "First Scion";
+  scion_.appearance = player_appearance_id(appearance);
   scion_.actor_id = rng_.token("actor");
   Actor player{scion_.actor_id, ActorKind::Player, player_stats(), {0, 0}, true, 0, std::nullopt};
   actors_.push_back(player);
@@ -1149,12 +1151,13 @@ void Simulation::grant_seasonal_reward(const std::string& reward) {
   emit(EventType::SeasonalRewardGranted, {}, {}, {}, reward);
 }
 
-void Simulation::create_successor(const std::string& name) {
+void Simulation::create_successor(const std::string& name, const std::string& appearance) {
   if (scion_.alive) return;
   fallen_scions_.push_back(scion_);
   scion_ = {};
   scion_.id = rng_.token("scion");
   scion_.name = name;
+  scion_.appearance = player_appearance_id(appearance);
   scion_.actor_id = rng_.token("actor");
   Actor player{scion_.actor_id, ActorKind::Player, player_stats(), {0, 0}, true, 0, std::nullopt};
   actors_.clear();
@@ -1268,6 +1271,7 @@ void put_trophies(std::ostringstream& output, const std::string& key,
 void put_scion(std::ostringstream& output, const std::string& key, const Scion& scion) {
   put_text(output, key + ".id", scion.id);
   put_text(output, key + ".name", scion.name);
+  put_text(output, key + ".appearance", player_appearance_id(scion.appearance));
   put_number(output, key + ".level", scion.level);
   put_bool(output, key + ".alive", scion.alive);
   put_text(output, key + ".actorId", scion.actor_id);
@@ -1410,6 +1414,8 @@ Scion read_scion(const SnapshotFields& fields, const std::string& key) {
   Scion scion;
   scion.id = required_text(fields, key + ".id");
   scion.name = required_text(fields, key + ".name");
+  if (fields.find(key + ".appearance") != fields.end())
+    scion.appearance = player_appearance_id(required_text(fields, key + ".appearance"));
   scion.level = required_number<int>(fields, key + ".level");
   scion.alive = required_bool(fields, key + ".alive");
   scion.actor_id = required_text(fields, key + ".actorId");
@@ -1743,6 +1749,8 @@ void WorldSimulation::register_step(const std::string& direction, int duration_m
   last_step_.duration_ms = duration_ms;
   last_step_.direction = direction;
   last_step_.blocked = blocked;
+  last_step_.action = "move";
+  last_step_.from = position_;
 }
 
 bool WorldSimulation::apply_movement_sample(const std::string& direction, std::int64_t now_ms) {
@@ -1760,15 +1768,43 @@ bool WorldSimulation::apply_movement_sample(const std::string& direction, std::i
     return false;
   }
 
+  const WorldPosition from = position_;
   const Vec2 previous_tile = tile_movement::occupied_tile(position_);
   position_.x = tile_movement::round_position(position_.x + delta->x);
   position_.y = tile_movement::round_position(position_.y + delta->y);
   register_step(direction, static_cast<int>(tile_movement::kSampleMs), false, now_ms);
+  last_step_.from = from;
 
   const Vec2 current_tile = tile_movement::occupied_tile(position_);
   if (current_tile.x != previous_tile.x || current_tile.y != previous_tile.y) {
     check_stair_transition();
   }
+  return true;
+}
+
+bool WorldSimulation::dash(const std::string& direction, std::int64_t now_ms) {
+  now_ms = std::max<std::int64_t>(0, now_ms);
+  const auto delta = tile_movement::movement_delta(direction);
+  if (!in_instance() || !delta || now_ms < next_dash_ms_) return false;
+  // Validate the whole swept route before moving: blocked dashes never
+  // consume distance or cooldown. A portal is the end of this scene's path.
+  const WorldPosition from = position_;
+  WorldPosition destination = position_;
+  for (int step = 0; step < kDashMovementTicks; ++step) {
+    if (is_blocked(destination, *delta)) return false;
+    destination.x = tile_movement::round_position(destination.x + delta->x);
+    destination.y = tile_movement::round_position(destination.y + delta->y);
+    const auto tile = tile_movement::occupied_tile(destination);
+    if ((tile.x == metadata_.stairs_up.x && tile.y == metadata_.stairs_up.y) ||
+        (tile.x == metadata_.stairs_down.x && tile.y == metadata_.stairs_down.y)) break;
+  }
+  position_ = destination;
+  facing_ = direction;
+  next_dash_ms_ = now_ms + kDashCooldownTicks * kSimulationTickMs;
+  register_step(direction, static_cast<int>(tile_movement::kSampleMs), false, now_ms);
+  last_step_.action = "dash";
+  last_step_.from = from;
+  check_stair_transition();
   return true;
 }
 
@@ -1814,6 +1850,7 @@ void WorldSimulation::reset_to_town() {
 }
 
 void WorldSimulation::return_to_town() {
+  next_dash_ms_ = 0;
   last_pursuit_tick_ms_ = -1;
   scene_type_ = "town";
   scene_id_ = "town:verdigris";
@@ -1867,6 +1904,7 @@ std::string WorldSimulation::zone_display_name(const std::string& template_id,
 }
 
 void WorldSimulation::generate_instance() {
+  next_dash_ms_ = 0;
   last_pursuit_tick_ms_ = -1;
   const std::string& layout = metadata_.layout;
   const std::string effective = layout.empty() ? "warren" : layout;

@@ -1,0 +1,14 @@
+{
+  "tool": "built-in image_gen",
+  "arguments": {
+    "prompt": "Use case: identity-preserve.\nEdit image1 into a single walking pose. Image2 is the original identity reference. Keep the exact adult man, detailed rendering, beige belted tunic and sandals.\nKeep image1's BACK-LEFT camera view and upper-left heading. We see his back, never his chest. Keep head and torso exactly the same size and position, crown at128 on the1254square canvas.\nA clear opposite contact pose: his anatomical LEFT leg, on the LEFT side of the image, is BACK and NEAR us. That left thigh and calf remain on screen-left and stretch down toward the LOWER LEFT corner, with the left sandal near the bottom-left of the body. His anatomical RIGHT leg, on the RIGHT side of the image, steps FORWARD and AWAY from us, so its knee bends slightly and its sandal is noticeably HIGHER and to the RIGHT of the left sandal. The lower-left trailing foot is the large close foot; the upper-right forward foot is the smaller far foot. Keep a gap between the two legs. No leg crossing. Feet stay near the same common baseline1098, no body zoom.\nHis LEFT arm counter-swings FORWARD, bent near his left shoulder; his RIGHT arm swings BACK and hangs behind the right hip. This is one modest walking step, not a run or jump. Preserve the original identity, original head scale, clothing/material palette and detailed adult anatomy. Empty hands, one full-body sprite only, no text or equipment. Transparent alpha background with no painted checker or ground shadow.",
+    "referenced_image_paths": [
+      "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/male/nw/idle.png",
+      "C:/Users/Alex/Downloads/ChatGPT Image Sep 10, 2026, 05_22_21 PM.png"
+    ]
+  },
+  "result_metadata": {
+    "output_hint": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a089c3-5390-76a2-8353-a73d7b52eeb8 as C:\\Users\\Alex\\.codex\\generated_images\\01a089c3-5390-76a2-8353-a73d7b52eeb8\\exec-805170a1-ffe1-4e38-b62e-db398226c07a.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  "state": "pending_visual_review"
+}

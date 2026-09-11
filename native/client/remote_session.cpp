@@ -1,4 +1,5 @@
 #include "remote_session.hpp"
+#include "presentation_state.hpp"
 #include "input/preserve-diagonal-remote-input.hpp"
 #include "input/make-aim-independent-of-motion.hpp"
 
@@ -224,6 +225,8 @@ void apply_passive_tree(const JsonValue& tree, ClientModel& model,
 }
 
 void apply_player_fields(ClientPlayer& player, const JsonValue& source) {
+  if (const auto* appearance = source.get("appearance"))
+    player.appearance = verdigris::player_appearance_id(appearance->string() ? *appearance->string() : "");
   if (const auto* uuid = json_string(source.get("uuid"))) player.uuid = *uuid;
   if (const auto* scene = json_string(source.get("sceneId"))) player.scene_id = *scene;
   if (source.get("x") && source.get("x")->number()) player.x = *source.get("x")->number();
@@ -280,9 +283,14 @@ ClientMonster& upsert_monster(ClientModel& model, const std::string& id, const s
 }
 
 void apply_scene_fields(ClientScene& scene, const JsonValue& source) {
+  if (!source.object()) return;
+  // Login/transition scene objects replace the previous scene. Omitted town
+  // stairs must retire the dungeon exit and its derived expedition phase.
+  scene = ClientScene{};
   if (const auto* id = json_string(source.get("id"))) scene.id = *id;
   if (const auto* type = json_string(source.get("type"))) scene.type = *type;
   if (const auto* name = json_string(source.get("name"))) scene.name = *name;
+  if (scene.type != "instance") return;
   if (const auto* metadata = source.get("metadata")) {
     if (const auto* stairs = metadata->get("stairsUp")) {
       if (stairs->get("x") && stairs->get("x")->number() && stairs->get("y") &&
@@ -311,6 +319,8 @@ void apply_chronicle_object(ClientChronicle& chronicle, const JsonValue& source)
     if (const auto* scions = entry.get("scions"); scions && scions->array()) {
       for (const auto& scion_entry : *scions->array()) {
         ClientScionEntry parsed_scion;
+        if (const auto* appearance = json_string(scion_entry.get("appearance")))
+          parsed_scion.appearance = verdigris::player_appearance_id(*appearance);
         if (const auto* id = json_string(scion_entry.get("id"))) parsed_scion.id = *id;
         if (const auto* name = json_string(scion_entry.get("name"))) parsed_scion.name = *name;
         parsed_scion.level = static_cast<int>(json_number(scion_entry.get("level"), 1));
@@ -322,6 +332,8 @@ void apply_chronicle_object(ClientChronicle& chronicle, const JsonValue& source)
     if (const auto* crypt = entry.get("crypt"); crypt && crypt->array()) {
       for (const auto& crypt_entry : *crypt->array()) {
         ClientCryptEntry parsed_crypt;
+        if (const auto* appearance = json_string(crypt_entry.get("appearance")))
+          parsed_crypt.appearance = verdigris::player_appearance_id(*appearance);
         if (const auto* id = json_string(crypt_entry.get("id"))) parsed_crypt.id = *id;
         if (const auto* name = json_string(crypt_entry.get("name"))) parsed_crypt.name = *name;
         parsed_crypt.level = static_cast<int>(json_number(crypt_entry.get("level"), 1));
@@ -427,7 +439,9 @@ bool RemoteProtocolSession::connect_transport(std::string* error) {
 }
 
 void RemoteProtocolSession::close_transport() {
+  has_player_sequence_ = false;
   clear_monster_display();
+  clear_player_display();
   running_.store(false);
   if (socket_ != -1) {
     send_frame(0x8, "");
@@ -555,7 +569,13 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
       break;
     }
     case ClientCommand::Type::PickUp:
-      envelope.event = "player:take:underfoot";
+      if (command.target.empty()) envelope.event = "player:take:underfoot";
+      else {
+        envelope.event = "player:context-menu:action";
+        envelope.data = JsonValue::Object{{"queueItem", JsonValue::Object{
+            {"action", JsonValue::Object{{"actionId", "player:take"}}},
+            {"item", JsonValue::Object{{"uuid", command.target}}}}}};
+      }
       break;
     case ClientCommand::Type::Equip:
       pending_equip_uuid_ = command.target;
@@ -568,12 +588,18 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
       envelope.event = "world:zone:enter";
       envelope.data = JsonValue::Object{{"nodeId", JsonValue(command.target)}};
       break;
-    case ClientCommand::Type::Extract:
-      // No player:extract handler exists on the native server. The owner
-      // extracts by walking onto stairs-up (existing player:move surface).
-      pending_events_.push_back({PresentationEventType::Message, "", "",
-                                 "Reach the exit stairs to return to the surface.", 0});
-      return;
+    case ClientCommand::Type::Extract: {
+      const auto& scene = model_.scene;
+      if (!model_.player.alive || scene.type != "instance" || !scene.has_stairs_up ||
+          (std::max)(std::abs(std::round(model_.player.x) - scene.stairs_up_x),
+                   std::abs(std::round(model_.player.y) - scene.stairs_up_y)) > 1.0) {
+        pending_events_.push_back({PresentationEventType::Message, "", "",
+                                   "Reach the exit stairs to return to the surface.", 0});
+        return;
+      }
+      envelope.event = "player:extract";
+      break;
+    }
     case ClientCommand::Type::FoundHouse:
       envelope.event = "chronicles:house:found";
       envelope.data = JsonValue::Object{{"name", JsonValue(command.target)}};
@@ -585,7 +611,8 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
         house_id = model_.chronicle.houses.front().id;
       envelope.event = "chronicles:scion:create";
       envelope.data = JsonValue::Object{{"houseId", JsonValue(house_id)},
-                                        {"name", JsonValue(command.target)}};
+                                        {"name", JsonValue(command.target)},
+                                        {"appearance", verdigris::player_appearance_id(command.extra)}};
       break;
     }
     case ClientCommand::Type::SelectScion: {
@@ -724,6 +751,7 @@ void RemoteProtocolSession::poll() {
   }
   pump_retry();
   sample_monster_display();
+  sample_player_display();
 }
 
 std::vector<PresentationEvent> RemoteProtocolSession::drain_events() {
@@ -813,6 +841,110 @@ void RemoteProtocolSession::reader_loop() {
     peer_dropped_.store(true);
     running_.store(false);
   }
+}
+
+void RemoteProtocolSession::clear_player_display() {
+  has_player_movement_ = false;
+  model_.player.has_display_position = false;
+}
+
+void RemoteProtocolSession::apply_player_movement(const Envelope& envelope) {
+  const auto* id = json_string(envelope.data.get("uuid"));
+  if (!id || *id != model_.player.uuid) return;
+  const auto* x = envelope.data.get("x");
+  const auto* y = envelope.data.get("y");
+  if (!x || !x->number() || !y || !y->number() ||
+      !std::isfinite(*x->number()) || !std::isfinite(*y->number())) return;
+  const auto* scene = json_string(envelope.data.get("sceneId"));
+  const bool changed_scene = scene && *scene != model_.player.scene_id;
+  const auto* meta = envelope.meta ? &*envelope.meta : nullptr;
+  const double sequence = meta ? json_number(meta->get("sequence"), -1.0) : -1.0;
+  const double duration = meta ? json_number(meta->get("duration"), 0.0) : 0.0;
+  const bool valid = std::isfinite(sequence) && sequence >= 0.0 &&
+      sequence <= 9007199254740991.0 && std::floor(sequence) == sequence &&
+      std::isfinite(duration) && duration >= 0.0;
+  if (has_player_sequence_ && (!valid || sequence <= last_player_sequence_)) return;
+  if (changed_scene) clear_player_display();
+  const double from_x = model_.player.x, from_y = model_.player.y;
+  apply_player_fields(model_.player, envelope.data);
+  if (aim_held_) model_.player.facing = last_facing_;
+  else if (!model_.player.facing.empty()) last_facing_ = model_.player.facing;
+  if (!valid) { clear_player_display(); return; }
+  last_player_sequence_ = static_cast<std::uint64_t>(sequence);
+  has_player_sequence_ = true;
+  player_movement_.sequence = last_player_sequence_;
+  const double wire_from_x = json_number(meta->get("fromX"), from_x);
+  const double wire_from_y = json_number(meta->get("fromY"), from_y);
+  const bool valid_from = std::isfinite(wire_from_x) && std::isfinite(wire_from_y) &&
+      std::hypot(model_.player.x - wire_from_x, model_.player.y - wire_from_y) <= 4.0;
+  player_movement_.from_x = valid_from ? wire_from_x : from_x;
+  player_movement_.from_y = valid_from ? wire_from_y : from_y;
+  player_movement_.to_x = model_.player.x; player_movement_.to_y = model_.player.y;
+  player_movement_.duration_ms = static_cast<int>(std::clamp(duration, 0.0, tile_movement::kSampleMs));
+  if (changed_scene || json_bool(meta->get("blocked")) || !scene ||
+      std::hypot(model_.player.x - from_x, model_.player.y - from_y) > 4.0)
+    player_movement_.duration_ms = 0;
+  player_movement_.received_at = std::chrono::steady_clock::now();
+  has_player_movement_ = true;
+  const auto* action = json_string(meta->get("action"));
+  if (action && *action == "dash" && !changed_scene && valid_from &&
+      !json_bool(meta->get("blocked")) && meta->get("fromX") && meta->get("fromY") &&
+      std::hypot(model_.player.x - wire_from_x, model_.player.y - wire_from_y) > 1e-6) {
+    PresentationEvent event{PresentationEventType::PlayerDashed, model_.player.uuid, "", "dash", 0};
+    event.from_x = static_cast<int>(std::lround(protocol_to_world(wire_from_x)));
+    event.from_y = static_cast<int>(std::lround(protocol_to_world(wire_from_y)));
+    event.to_x = static_cast<int>(std::lround(protocol_to_world(model_.player.x)));
+    event.to_y = static_cast<int>(std::lround(protocol_to_world(model_.player.y)));
+    event.has_actor_pose = true; event.actor_x = event.to_x; event.actor_y = event.to_y;
+    pending_events_.push_back(std::move(event));
+  }
+}
+
+void RemoteProtocolSession::sample_player_display() {
+  if (!has_player_movement_ || !model_.player.alive) {
+    model_.player.has_display_position = false;
+    return;
+  }
+  const double elapsed = std::chrono::duration<double, std::milli>(
+      std::chrono::steady_clock::now() - player_movement_.received_at).count();
+  const double t = player_movement_.duration_ms > 0
+      ? std::clamp(elapsed / player_movement_.duration_ms, 0.0, 1.0) : 1.0;
+  model_.player.display_x = player_movement_.from_x +
+      (player_movement_.to_x - player_movement_.from_x) * t;
+  model_.player.display_y = player_movement_.from_y +
+      (player_movement_.to_y - player_movement_.from_y) * t;
+  model_.player.has_display_position = true;
+}
+
+void RemoteProtocolSession::apply_ground_items(const JsonValue& items, bool announce) {
+  const auto* list = items.array();
+  if (!list || list->size() > 1024) return;
+  std::vector<ClientGroundItem> ground;
+  for (const auto& entry : *list) {
+    const auto* uuid = json_string(entry.get("uuid"));
+    const auto* x = entry.get("x"); const auto* y = entry.get("y");
+    if (!uuid || uuid->empty() || !x || !x->number() || !y || !y->number() ||
+        !std::isfinite(*x->number()) || !std::isfinite(*y->number())) continue;
+    ClientGroundItem item;
+    item.uuid = *uuid; item.x = *x->number(); item.y = *y->number();
+    if (const auto* name = json_string(entry.get("name"))) item.name = *name;
+    if (const auto* relic = entry.get("chroniclesRelic"); relic && relic->object()) {
+      item.relic = true;
+      if (const auto* name = json_string(relic->get("scionName"))) item.relic_of = *name;
+    }
+    if (std::any_of(ground.begin(), ground.end(), [&](const ClientGroundItem& old) { return old.uuid == item.uuid; })) continue;
+    const bool known = std::any_of(model_.ground.begin(), model_.ground.end(),
+        [&](const ClientGroundItem& old) { return old.uuid == item.uuid; });
+    if (announce && !known) {
+      PresentationEvent event{PresentationEventType::ItemDropped, "", item.uuid, item.name, 0};
+      event.has_actor_pose = true;
+      event.actor_x = static_cast<int>(std::lround(protocol_to_world(item.x)));
+      event.actor_y = static_cast<int>(std::lround(protocol_to_world(item.y)));
+      pending_events_.push_back(std::move(event));
+    }
+    ground.push_back(std::move(item));
+  }
+  model_.ground = std::move(ground);
 }
 
 void RemoteProtocolSession::clear_monster_display() {
@@ -906,7 +1038,10 @@ void RemoteProtocolSession::sample_monster_display() {
 
 void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
   if (envelope.event == "player:login") {
+    model_.player.appearance = "male";
+    has_player_sequence_ = false;
     clear_monster_display();
+    clear_player_display();
     if (const auto* player = envelope.data.get("player")) {
       apply_player_fields(model_.player, *player);
       if (const auto* username = json_string(player->get("username")))
@@ -936,6 +1071,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         apply_passive_tree(*tree, model_, pending_events_);
     }
     if (const auto* scene = envelope.data.get("scene")) apply_scene_fields(model_.scene, *scene);
+    if (const auto* ground = envelope.data.get("droppedItems")) apply_ground_items(*ground, false);
     // A full player:login is a world admission on the Gate-B journey: the
     // owner has left the front door with a living Scion.
     model_.chronicles_pending = false;
@@ -1092,10 +1228,17 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     }
     return;
   }
+  if (envelope.event == "player:extract") {
+    // Full authority lists are totals, never deltas; duplicate summaries and
+    // later dev:state reconciliation must not count the same item twice.
+    if (const auto* items = envelope.data.get("storedItems"); items && items->array())
+      model_.stored_items = static_cast<int>(items->array()->size());
+    if (const auto* trophies = envelope.data.get("storedTrophies"); trophies && trophies->array())
+      model_.stored_trophies = static_cast<int>(trophies->array()->size());
+    return;
+  }
   if (envelope.event == "player:movement") {
-    apply_player_fields(model_.player, envelope.data);
-    if (!aim_held_ && !model_.player.facing.empty())
-      last_facing_ = model_.player.facing;
+    apply_player_movement(envelope);
     return;
   }
   if (envelope.event == "world:scene:transition" ||
@@ -1106,9 +1249,18 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     }
     if (!model_.scene.id.empty()) model_.player.scene_id = model_.scene.id;
     clear_monster_display();
+    clear_player_display();
     model_.monsters.clear();
     model_.npcs.clear();
     model_.ground.clear();
+    if (const auto* scene = envelope.data.get("scene"))
+      if (const auto* items = scene->get("droppedItems")) apply_ground_items(*items, false);
+    return;
+  }
+  if (envelope.event == "world:itemDropped" || envelope.event == "item:change") {
+    const auto* scene = envelope.meta ? json_string(envelope.meta->get("sceneId")) : nullptr;
+    if (!scene || model_.player.scene_id.empty() || *scene != model_.player.scene_id) return;
+    if (const auto* items = envelope.data.get("data")) apply_ground_items(*items, true);
     return;
   }
   if (envelope.event == "monster:state") {
@@ -1246,13 +1398,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
                                        ? *json_string(envelope.data.get("targetName"))
                                        : "",
                                    amount});
-        // The native server drops loot in-world but does not emit a ground
-        // envelope. Sparkle at the last known player tile so the kill is a
-        // visible reward beat until pickup names the item.
-        const std::string drop_id = "drop-" + std::to_string(model_.kills);
-        model_.ground.push_back({drop_id, "kill reward", foe.x, foe.y});
-        pending_events_.push_back({PresentationEventType::ItemDropped,
-                                   target ? *target : "", drop_id, "kill reward", 0});
+
       }
     }
     return;
@@ -1260,6 +1406,10 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
   if (envelope.event == "dev:state") {
     const auto* state = envelope.data.get("state");
     if (!state) return;
+    if (const auto* appearance = json_string(state->get("appearance")))
+      model_.player.appearance = verdigris::player_appearance_id(*appearance);
+    if (const auto* items = state->get("houseStoredItems"); items && items->array())
+      model_.stored_items = static_cast<int>(items->array()->size());
     // Authoritative lifecycle + oath visibility (snapshot puts these at the
     // top of dev:state). Keeps death/successor states honest between
     // chronicle payloads.
@@ -1361,22 +1511,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         model_.npcs.push_back(std::move(npc));
       }
     }
-    if (const auto* ground = state->get("groundItems"); ground && ground->array()) {
-      model_.ground.clear();
-      for (const auto& entry : *ground->array()) {
-        ClientGroundItem item;
-        if (const auto* uuid = json_string(entry.get("uuid"))) item.uuid = *uuid;
-        if (const auto* name = json_string(entry.get("name"))) item.name = *name;
-        item.x = json_number(entry.get("x"), 0.0);
-        item.y = json_number(entry.get("y"), 0.0);
-        if (const auto* relic = entry.get("chroniclesRelic"); relic && relic->object()) {
-          item.relic = true;
-          if (const auto* scion_name = json_string(relic->get("scionName")))
-            item.relic_of = *scion_name;
-        }
-        model_.ground.push_back(std::move(item));
-      }
-    }
+    if (const auto* ground = state->get("groundItems")) apply_ground_items(*ground, false);
+
     return;
   }
   if (envelope.event == "player:skilltree:update") {

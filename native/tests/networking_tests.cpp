@@ -4,6 +4,8 @@
 #include <chrono>
 #include <cmath>
 #include <iostream>
+#include <fstream>
+#include <filesystem>
 #include <optional>
 #include <stdexcept>
 #include <vector>
@@ -86,6 +88,240 @@ JsonValue request_state(ProtocolSession& session, const std::string& request_id)
   return response.data;
 }
 
+void test_town_services_share_real_chronicles_arrival() {
+  ProtocolSession session("town-service-arrival", "socket-court", 47, false);
+  std::string house, scion;
+  session.handle(Envelope{"chronicles:house:found", JsonValue::Object{{"name", "House of the Court"}}}, [&](const Envelope& e) {
+    if (const auto* houses = e.data["chronicle"]["houses"].array(); houses && !houses->empty())
+      if (const auto* id = houses->front()["id"].string()) house = *id;
+  });
+  check(!house.empty(), "town cluster fixture founds a real House");
+  session.handle(Envelope{"chronicles:scion:create", JsonValue::Object{{"houseId", house}, {"name", "Court Walker"}}}, [&](const Envelope& e) {
+    if (const auto* id = e.data["createdScionId"].string()) scion = *id;
+  });
+  check(!scion.empty(), "town cluster fixture creates a real Scion");
+  auto set_out = [&]() {
+    bool login = false;
+    session.handle(Envelope{"chronicles:scion:set-out", JsonValue::Object{{"scionId", scion}}}, [&](const Envelope& e) {
+      if (e.event != "player:login") return;
+      login = e.data["player"]["x"].number().value_or(-1) == 38 &&
+              e.data["player"]["y"].number().value_or(-1) == 116 &&
+              e.data["player"]["chronicles"]["mortal"].boolean().value_or(false);
+    });
+    check(login, "real mortal set-out admits beside the fountain, independent of House wagon pitch");
+  };
+  set_out();
+  const auto initial = request_state(session, "court-initial");
+  const auto* npcs = initial["state"]["npcs"].array();
+  check(npcs && npcs->size() == 4, "court retains the four existing services");
+  const auto carried_before = initial["state"]["inventory"].stringify();
+  set_out();
+  check(request_state(session, "court-repeat")["state"]["inventory"].stringify() == carried_before,
+        "central re-admission does not duplicate the Scion's kit or purse");
+  session.handle(Envelope{"instance:enterSolo", JsonValue::Object{{"template", "dungeon"}, {"layout", "warren"}}}, [](const Envelope&) {});
+  session.handle(Envelope{"player:extract", JsonValue::Object{}}, [](const Envelope&) {});
+  check(!session.shared_world()->in_instance() && session.shared_world()->position().x == 38 &&
+        session.shared_world()->position().y == 116, "entry-stairs extraction returns to the actual central admission origin");
+
+  bool far_talk = false;
+  const Envelope talk{"player:npc:talk", JsonValue::Object{{"item", JsonValue::Object{{"id", 1}}}}};
+  session.handle(talk, [&](const Envelope& e) { if (e.event == "quest:update") far_talk = true; });
+  check(!far_talk, "guide still requires contact; visibility is not interaction range");
+  auto walk_to = [&](int x, int y) {
+    const auto at = verdigris::tile_movement::occupied_tile(session.shared_world()->position());
+    const int dx = x - at.x, dy = y - at.y;
+    for (int step = 0; step < std::abs(dx) * 3; ++step)
+      session.handle(Envelope{"player:move", JsonValue::Object{{"direction", dx < 0 ? "left" : "right"}}}, [](const Envelope&) {});
+    for (int step = 0; step < std::abs(dy) * 3; ++step)
+      session.handle(Envelope{"player:move", JsonValue::Object{{"direction", dy < 0 ? "up" : "down"}}}, [](const Envelope&) {});
+    const auto arrived = verdigris::tile_movement::occupied_tile(session.shared_world()->position());
+    check(arrived.x == x && arrived.y == y && !session.shared_world()->in_instance(),
+          "existing movement rules reach each compact service on walkable town ground");
+  };
+  for (const auto& npc : *npcs) {
+    const int id = static_cast<int>(npc["id"].number().value_or(0));
+    const int x = static_cast<int>(npc["x"].number().value_or(0));
+    const int y = static_cast<int>(npc["y"].number().value_or(0));
+    const int distance = (std::max)(std::abs(x - 38), std::abs(y - 116));
+    check(distance >= 3 && distance <= 6 && y <= 114 && session.shared_world()->grid().walkable_at(x, y),
+          "services are north/side biased, walkable and three-to-six tiles from the open fountain-side arrival");
+    walk_to(x, y + 1);
+    JsonValue action;
+    session.handle(Envelope{"player:context-menu:build", JsonValue::Object{
+        {"miscData", JsonValue::Object{{"clickedOn", JsonValue::Object{{"0", "gameMap"}}}}},
+        {"tile", JsonValue::Object{{"world", JsonValue::Object{{"x", x}, {"y", y}}}}}}}, [&](const Envelope& e) {
+      if (const auto* entries = e.data["data"].array()) for (const auto& entry : *entries) {
+        const auto* verb = entry["action"]["actionId"].string();
+        if (entry["item"]["id"].number().value_or(-1) == id && verb && *verb != "player:npc:examine") action = entry;
+      }
+    });
+    check(action.is_object(), "authoritative context menu uses the new service tile and original NPC ID");
+    bool service_open = false;
+    session.handle(Envelope{"player:context-menu:action", JsonValue::Object{{"queueItem", action}}}, [&](const Envelope& e) {
+      if (id == 1) service_open |= e.event == "quest:update";
+      else if (e.event == "open:screen") {
+        const auto* screen = e.data["screen"].string();
+        service_open |= screen && *screen == (id == 4 ? "bank" : "shop");
+      }
+    });
+    check(service_open, "guide progression, both traders and storage retain their actual service behavior");
+  }
+}
+
+void test_scion_appearance_survives_selection_and_account_save() {
+  const auto file = std::filesystem::temp_directory_path() /
+      ("verdigris-appearance-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()) + ".json");
+  ProtocolSession session("appearance-account", "appearance-socket", 19, false);
+  session.attach_persistence(file);
+  std::string house;
+  session.handle(Envelope{"chronicles:house:found", JsonValue::Object{{"name", "Appearance House"}}}, [&](const Envelope& e) {
+    if (const auto* list = e.data["chronicle"]["houses"].array(); list && !list->empty()) house = *list->front()["id"].string();
+  });
+  auto create = [&](const char* name, const char* appearance) {
+    std::string id;
+    JsonValue::Object payload{{"houseId", house}, {"name", name}};
+    if (appearance) payload["appearance"] = JsonValue(appearance);
+    session.handle(Envelope{"chronicles:scion:create", std::move(payload)}, [&](const Envelope& e) {
+      if (const auto* value = e.data["createdScionId"].string()) id = *value;
+    });
+    return id;
+  };
+  const auto female = create("Female scion", "female");
+  const auto male = create("Original default", nullptr);
+  check(!female.empty() && !male.empty(), "appearance creation uses real unique Scion records");
+  auto select = [&](const std::string& id, const char* expected) {
+    bool seen = false;
+    session.handle(Envelope{"player:chronicles:select", JsonValue::Object{{"houseId", house}, {"scionId", id},
+        {"scionName", "Selected"}, {"mortal", true}, {"appearance", "malicious-override"}}}, [&](const Envelope& e) {
+      if (e.event == "player:login") seen = e.data["player"]["appearance"].string() && *e.data["player"]["appearance"].string() == expected;
+    });
+    check(seen, "selection publishes the saved appearance and ignores a new creation override");
+  };
+  select(male, "male");
+  const auto baseline = request_state(session, "male");
+  select(female, "female");
+  const auto chosen = request_state(session, "female");
+  check(chosen["state"]["appearance"].string() && *chosen["state"]["appearance"].string() == "female" &&
+        chosen["state"]["hp"].stringify() == baseline["state"]["hp"].stringify() &&
+        chosen["state"]["combat"].stringify() == baseline["state"]["combat"].stringify(),
+        "authority snapshot exposes appearance without changing health/combat stats");
+  bool moved = false, transitioned = false;
+  session.handle(Envelope{"player:move", JsonValue::Object{{"direction", "down"}}}, [&](const Envelope& e) {
+    if (e.event == "player:movement") moved = e.data["appearance"].string() && *e.data["appearance"].string() == "female";
+  });
+  session.handle(Envelope{"instance:enterSolo", JsonValue::Object{{"template", "dungeon"}, {"layout", "warren"}}}, [&](const Envelope& e) {
+    if (e.event == "party:scene:transition") transitioned = e.data["playerState"]["appearance"].string() && *e.data["playerState"]["appearance"].string() == "female";
+  });
+  check(moved && transitioned, "movement and scene transition preserve selected appearance");
+  session.persist();
+  ProtocolSession loaded("appearance-account", "new-socket", 19, false);
+  loaded.attach_persistence(file);
+  JsonValue login;
+  check(verdigris::networking::parse_json(loaded.login_payload(), login) &&
+        login["player"]["appearance"].string() && *login["player"]["appearance"].string() == "female",
+        "appearance survives a real durable account file and fresh ProtocolSession");
+  std::ifstream in(file); const std::string text((std::istreambuf_iterator<char>(in)), {}); in.close();
+  JsonValue legacy; check(verdigris::networking::parse_json(text, legacy), "saved appearance account is valid JSON");
+  if (auto* chronicle = legacy.get("chronicle")) if (auto* houses_value = chronicle->get("houses"))
+    if (auto* houses = houses_value->array()) for (auto& entry : *houses)
+      if (auto* value = entry.get("scions")) if (auto* scions = value->array())
+        for (auto& scion : *scions) if (scion.object()) scion.object()->erase("appearance");
+  { std::ofstream old(file, std::ios::trunc); old << legacy.stringify(); }
+  ProtocolSession old("appearance-account", "legacy-socket", 19, false); old.attach_persistence(file);
+  check(verdigris::networking::parse_json(old.login_payload(), login) && *login["player"]["appearance"].string() == "male",
+        "legacy persisted Scions without appearance default male");
+  std::filesystem::remove(file);
+}
+
+void test_scion_creation_skips_persisted_living_and_crypt_ids() {
+  const auto file = std::filesystem::temp_directory_path() /
+      ("verdigris-scion-ids-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()) + ".json");
+  ProtocolSession seed("saved-lineage", "seed-socket", 23, false);
+  seed.attach_persistence(file);
+  std::string house, probe;
+  seed.handle(Envelope{"chronicles:house:found", JsonValue::Object{{"name", "Saved House"}}}, [&](const Envelope& e) {
+    if (const auto* list = e.data["chronicle"]["houses"].array(); list && !list->empty()) house = *list->front()["id"].string();
+  });
+  seed.handle(Envelope{"chronicles:scion:create", JsonValue::Object{{"houseId", house}, {"name", "Counter probe"}}}, [&](const Envelope& e) {
+    if (const auto* id = e.data["createdScionId"].string()) probe = *id;
+  });
+  check(probe.rfind("scion-", 0) == 0, "ID fixture obtains a real generated Scion ID");
+  const auto next = std::stoull(probe.substr(6)) + 1;
+  const std::string living_id = "scion-" + std::to_string(next);
+  const std::string fallen_id = "scion-" + std::to_string(next + 1);
+  const JsonValue living = JsonValue::Object{{"id", living_id}, {"name", "Existing male"}, {"appearance", "male"}};
+  const JsonValue fallen = JsonValue::Object{{"id", fallen_id}, {"name", "Remembered female"}, {"appearance", "female"}};
+  const JsonValue saved = JsonValue::Object{{"version", 3}, {"houses", JsonValue::Array{
+      JsonValue::Object{{"id", house}, {"name", "Saved House"}, {"scions", JsonValue::Array{living}}, {"crypt", JsonValue::Array{}}},
+      JsonValue::Object{{"id", "other-saved-house"}, {"name", "Other House"}, {"scions", JsonValue::Array{}}, {"crypt", JsonValue::Array{fallen}}}}}};
+  seed.handle(Envelope{"player:chronicles:save", JsonValue::Object{{"state", saved}}}, [](const Envelope&) {});
+  seed.persist();
+
+  // Loading IDs ahead of the live counter reproduces the restart collision
+  // without relying on this test's position or resetting production globals.
+  ProtocolSession loaded("saved-lineage", "loaded-socket", 23, false);
+  loaded.attach_persistence(file);
+  std::string created;
+  JsonValue updated;
+  loaded.handle(Envelope{"chronicles:scion:create", JsonValue::Object{
+      {"houseId", house}, {"name", "New female"}, {"appearance", "female"}}}, [&](const Envelope& e) {
+    if (const auto* id = e.data["createdScionId"].string()) { created = *id; updated = e.data["chronicle"]; }
+  });
+  check(!created.empty() && created != living_id && created != fallen_id,
+        "creation skips IDs in every persisted living and crypt roster");
+  const auto* houses = updated["houses"].array();
+  check(houses && houses->size() == 2, "creation preserves both saved Houses");
+  const auto* scions = (*houses)[0]["scions"].array();
+  const auto* crypt = (*houses)[1]["crypt"].array();
+  check(scions && scions->size() == 2 && scions->front().stringify() == living.stringify() &&
+        crypt && crypt->size() == 1 && crypt->front().stringify() == fallen.stringify(),
+        "new creation neither overwrites a living identity nor reuses a fallen identity");
+  check(scions->back()["id"].string() && *scions->back()["id"].string() == created &&
+        scions->back()["appearance"].string() && *scions->back()["appearance"].string() == "female",
+        "the returned ID identifies the newly requested female Scion");
+  loaded.persist();
+  std::filesystem::remove(file);
+}
+
+void test_set_out_resolves_the_saved_living_house() {
+  ProtocolSession session("multi-house", "house-socket", 29, false);
+  const JsonValue chronicle = JsonValue::Object{{"version", 3}, {"houses", JsonValue::Array{
+      JsonValue::Object{{"id", "house-first"}, {"name", "First House"},
+          {"scions", JsonValue::Array{JsonValue::Object{{"id", "first-female"}, {"name", "Iria"}, {"appearance", "female"}}}},
+          {"crypt", JsonValue::Array{JsonValue::Object{{"id", "fallen-female"}, {"name", "Ancestor"}, {"appearance", "female"}}}}},
+      JsonValue::Object{{"id", "house-second"}, {"name", "Second House"},
+          {"scions", JsonValue::Array{JsonValue::Object{{"id", "second-male"}, {"name", "Taran"}, {"appearance", "male"}}}},
+          {"crypt", JsonValue::Array{}}}}}};
+  session.handle(Envelope{"player:chronicles:save", JsonValue::Object{{"state", chronicle}}}, [](const Envelope&) {});
+  auto set_out = [&](const char* id, const char* expected_house, const char* appearance) {
+    bool admitted = false;
+    session.handle(Envelope{"chronicles:scion:set-out", JsonValue::Object{
+        {"scionId", id}, {"houseId", "untrusted-house"}, {"appearance", "untrusted-appearance"}}}, [&](const Envelope& e) {
+      if (e.event != "player:login") return;
+      const auto& player = e.data["player"];
+      admitted = player["chronicles"]["houseId"].string() && *player["chronicles"]["houseId"].string() == expected_house &&
+          player["chronicles"]["scionId"].string() && *player["chronicles"]["scionId"].string() == id &&
+          player["appearance"].string() && *player["appearance"].string() == appearance;
+    });
+    check(admitted, "set-out resolves the living Scion's saved House and appearance on the server");
+  };
+  set_out("second-male", "house-second", "male");
+  set_out("first-female", "house-first", "female");
+  const auto before = request_state(session, "before-invalid-admission");
+  for (const char* id : {"fallen-female", "missing-scion", ""}) {
+    bool admitted = false, explained = false;
+    session.handle(Envelope{"chronicles:scion:set-out", JsonValue::Object{{"scionId", id}}}, [&](const Envelope& e) {
+      admitted |= e.event == "player:login";
+      explained |= e.event == "game:send:message";
+    });
+    const auto after = request_state(session, "after-invalid-admission");
+    check(!admitted && explained && after["state"]["chronicles"].stringify() == before["state"]["chronicles"].stringify() &&
+          after["state"]["appearance"].stringify() == before["state"]["appearance"].stringify() &&
+          after["state"]["inventory"].stringify() == before["state"]["inventory"].stringify(),
+          "fallen, missing and empty IDs cannot change admission, appearance or grant a new kit");
+  }
+}
+
 void test_continuous_movement() {
   ProtocolSession session("guest-movement", "socket-m", 11, false);
   const auto start = request_state(session, "m-0");
@@ -122,6 +358,64 @@ void test_continuous_movement() {
   const auto after_bad = request_state(session, "m-5");
   check(state_axis(after_bad, "x") == state_axis(before_bad, "x")
         && state_axis(after_bad, "y") == state_axis(before_bad, "y"), "unknown direction is a no-op");
+}
+
+void test_authoritative_dash_and_remote_controls() {
+  using namespace verdigris;
+  WorldSimulation world(42, "dash-core");
+  world.set_spawn_suppressed(true);
+  world.enter_solo_instance("forest", "clearings");
+  world.teleport(7, 7, 900);
+  const auto from = world.position();
+  check(world.dash("right", 1000), "dash travels an open authority route");
+  const auto first = world.position();
+  check(std::abs(first.x - from.x - kDashMovementTicks * tile_movement::kMoveDistance) < 0.00001 &&
+        first.y == from.y, "dash distance is exactly ten rounded normal samples");
+  check(world.last_step().action == "dash" && world.last_step().from.x == from.x &&
+        world.last_step().duration_ms == 50, "dash publishes its real origin and one-sample display duration");
+  const auto sequence = world.last_step().sequence;
+  check(!world.dash("right", 1499) && world.position().x == first.x &&
+        world.last_step().sequence == sequence, "dash cooldown rejection does not move or publish an action");
+  check(world.dash("down", 1500), "dash cooldown opens at the exact shared 500ms boundary");
+  world.teleport(7, 7, 2000);
+  check(world.dash("down-right", 2000) &&
+        std::abs(std::hypot(world.position().x - 7, world.position().y - 7) -
+                 kDashMovementTicks * tile_movement::kMoveDistance) < 0.00001,
+        "diagonal dash preserves normalized distance");
+  WorldSimulation walls(43, "dash-walls");
+  walls.set_spawn_suppressed(true);
+  walls.enter_solo_instance("dungeon", "warren");
+  walls.teleport(10, 14, 0); // rib x12 is between two open endpoints
+  check(walls.grid().walkable_at(10, 14) && walls.grid().walkable_at(13, 14) &&
+        !walls.grid().walkable_at(12, 14), "wall fixture has an interior blocker with open endpoints");
+  const auto before = walls.last_step().sequence;
+  check(!walls.dash("right", 1000) && walls.position().x == 10 &&
+        walls.last_step().sequence == before, "swept dash cannot skip an interior wall");
+  check(walls.dash("down", 1000), "blocked dash consumes neither cooldown nor distance");
+
+  ProtocolSession session("dash-wire", "socket-dash", 42, false);
+  session.shared_world()->set_spawn_suppressed(true);
+  session.handle(Envelope{"instance:enterSolo", JsonValue::Object{{"template", "forest"}, {"layout", "clearings"}}}, [](const Envelope&) {});
+  session.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", 7}, {"y", 7}}}, [](const Envelope&) {});
+  const auto stats_before = request_state(session, "dash-before");
+  int moves = 0, hits = 0;
+  Envelope movement;
+  auto capture = [&](const Envelope& event) {
+    if (event.event == "player:movement") { ++moves; movement = event; }
+    if (event.event == "combat:hit") ++hits;
+  };
+  const Envelope dash{"player:skill:trigger", JsonValue::Object{{"skillId", "dash"}, {"direction", "right"}}};
+  session.handle(dash, capture);
+  check(moves == 1 && hits == 0 && movement.meta &&
+        (*movement.meta)["action"].string() && *(*movement.meta)["action"].string() == "dash" &&
+        (*movement.meta)["fromX"].number().value_or(-1) == 7 &&
+        movement.data["x"].number().value_or(0) > 10.3,
+        "skill dash emits accepted travel metadata and never an attack hit");
+  session.handle(dash, capture);
+  check(moves == 1 && hits == 0, "repeat wire dash in cooldown emits no accepted action");
+  const auto stats_after = request_state(session, "dash-after");
+  check(stats_before["state"]["hp"]["current"].number() == stats_after["state"]["hp"]["current"].number(),
+        "dash adds no life or invulnerability substitution");
 }
 
 void test_instance_entry_and_stairs() {
@@ -443,6 +737,15 @@ void test_gate_a_extract_and_stairs() {
   check(!inventory_uuid_for(request_state(extract_session, "ex-0"), "garnet-amulet").empty(),
         "amulet is carried before extract");
 
+  const auto exit = extract_session.shared_world()->metadata().stairs_up;
+  extract_session.shared_world()->teleport(20, 20, 0);
+  bool far_summary = false;
+  extract_session.handle(Envelope{"player:extract", JsonValue::Object{}}, [&](const Envelope& e) {
+    if (e.event == "player:extract") far_summary = true;
+  });
+  check(!far_summary && extract_session.shared_world()->in_instance(),
+        "server rejects extraction away from exit stairs");
+  extract_session.shared_world()->teleport(exit.x + 1, exit.y, 0);
   std::optional<Envelope> summary;
   extract_session.handle(Envelope{"player:extract", JsonValue::Object{}}, [&](const Envelope& event) {
     if (event.event == "player:extract") summary = event;
@@ -538,7 +841,12 @@ int main() {
   try {
     test_envelope_round_trip();
     test_session_lifecycle();
+    test_town_services_share_real_chronicles_arrival();
+    test_scion_appearance_survives_selection_and_account_save();
+    test_scion_creation_skips_persisted_living_and_crypt_ids();
+    test_set_out_resolves_the_saved_living_house();
     test_continuous_movement();
+    test_authoritative_dash_and_remote_controls();
     test_instance_entry_and_stairs();
     test_crypt_pursuit_publishes_exact_authority();
     test_n3_combat_rules_and_wire_events();

@@ -1,0 +1,271 @@
+{
+  "schema_version": 1,
+  "owner": "bestiary_assets",
+  "character": "male",
+  "direction": "ne",
+  "status": "source candidates selected; pending parent native reconstruction and game review",
+  "original_identity": {
+    "path": "C:\\Users\\Alex\\Downloads\\ChatGPT Image Sep 10, 2026, 05_22_21 PM.png",
+    "sha256": "fa6bb5a57dbb0791095abc6078920ae3e834782e3db8dd24b95e16c8f37b5e1f",
+    "size": [
+      1254,
+      1254
+    ],
+    "alpha128_bbox": [
+      432,
+      128,
+      822,
+      1098
+    ],
+    "standing_height_px": 970
+  },
+  "canvas_authority": "Original1254square source; raw generation never fitted/rescaled/repainted.",
+  "requested_common_source_pivot": [
+    627,
+    1098
+  ],
+  "source_pivot_caveat": "Requested anchor is not proof of registration. Body and foot offsets in review require common-scale parent reconstruction; do not independently fit each silhouette.",
+  "left_wrist_convention": "Anatomical LEFT. Source x right and y down. Normalized by1254. Forearm direction is elbow-to-wrist screen angle (0right,+90down), NOT a verified weapon angle; hands are empty. Occluded wrists are estimates.",
+  "workflow": {
+    "type": "Reference-preserving isolated single-pose built-in edits; original identity always retained. Idle direction normally added; successful opposite-pose geometry used for targeted repairs.",
+    "sources": [
+      "https://x.com/elle_elle_e/status/2097439673308389840",
+      "https://www.flixly.ai/blog/stop-motion-chatgpt-images-2-5",
+      "https://x.com/higgsfield/status/2097514684811554911"
+    ],
+    "adaptation": "Our controlled one-character direction/motion adaptation of separate-frame and explicit-reference-role workflows; not a claim these creators tested this character or produced these outputs. Tool exposes no selectable model variant."
+  },
+  "frames": [
+    {
+      "pose": "idle",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\idle.png",
+      "sha256": "0118d58e139564f0ee83e5c7b27a1b07b45de1c33cbb0ba47ac64771c0e48ec9",
+      "selected_raw_stem": "idle",
+      "prompt": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\idle.prompt.txt",
+      "tool_output": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\idle.tool-output.json",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "alpha": {
+        "has_channel": false,
+        "min": 255,
+        "max": 255,
+        "zero_pixels": 0,
+        "partial_pixels": 0,
+        "verdict": "FAIL: opaque painted checkerboard; raw unchanged"
+      },
+      "estimated_foreground_bbox": [
+        471,
+        124,
+        802,
+        1058
+      ],
+      "bbox_method": "Warm/saturated foreground mask: RGB max-min>15 and mean<225; diagnostic estimate, NOT alpha and not used to edit pixels",
+      "estimated_body_extent_px": 934,
+      "left_wrist": {
+        "source_xy": [
+          505,
+          565
+        ],
+        "normalized_xy": [
+          0.40271,
+          0.45056
+        ],
+        "visible": true,
+        "confidence": "medium approximate visual measurement",
+        "forearm_direction_deg": 80
+      },
+      "visual_review": "Back three-quarter upper-right; right arm near screen-right and left arm far screen-left."
+    },
+    {
+      "pose": "walk0",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk0.png",
+      "sha256": "65d9203eac0a231432f6066c38c35dec7bdf143e961c0c399401f41e587ea92e",
+      "selected_raw_stem": "walk1-geometry-repair",
+      "prompt": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk0.prompt.txt",
+      "tool_output": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk0.tool-output.json",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "alpha": {
+        "has_channel": false,
+        "min": 255,
+        "max": 255,
+        "zero_pixels": 0,
+        "partial_pixels": 0,
+        "verdict": "FAIL: opaque painted checkerboard; raw unchanged"
+      },
+      "estimated_foreground_bbox": [
+        465,
+        136,
+        803,
+        1058
+      ],
+      "bbox_method": "Warm/saturated foreground mask: RGB max-min>15 and mean<225; diagnostic estimate, NOT alpha and not used to edit pixels",
+      "estimated_body_extent_px": 922,
+      "left_wrist": {
+        "source_xy": [
+          550,
+          398
+        ],
+        "normalized_xy": [
+          0.4386,
+          0.31738
+        ],
+        "visible": false,
+        "confidence": "low; occluded and inferred",
+        "forearm_direction_deg": null
+      },
+      "visual_review": "Selected geometry repair initially named walk1. Short forward right knee at screen-right and long trailing left calf lower-left; left arm forward/occluded, right arm down."
+    },
+    {
+      "pose": "walk1",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk1.png",
+      "sha256": "6ddf87ebd151196026f288383889ce6dfc45859e5056b10942c17d737c85bddf",
+      "selected_raw_stem": "walk1-female-geometry-repair",
+      "prompt": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk1.prompt.txt",
+      "tool_output": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk1.tool-output.json",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "alpha": {
+        "has_channel": false,
+        "min": 255,
+        "max": 255,
+        "zero_pixels": 0,
+        "partial_pixels": 0,
+        "verdict": "FAIL: opaque painted checkerboard; raw unchanged"
+      },
+      "estimated_foreground_bbox": [
+        437,
+        147,
+        848,
+        1116
+      ],
+      "bbox_method": "Warm/saturated foreground mask: RGB max-min>15 and mean<225; diagnostic estimate, NOT alpha and not used to edit pixels",
+      "estimated_body_extent_px": 969,
+      "left_wrist": {
+        "source_xy": [
+          469,
+          571
+        ],
+        "normalized_xy": [
+          0.374,
+          0.45534
+        ],
+        "visible": true,
+        "confidence": "medium approximate visual measurement",
+        "forearm_direction_deg": 101
+      },
+      "visual_review": "Cross-character geometry edit now produces short forward far foot upper-left and long trailing right calf/sole lower-right, with right arm forward and left arm down. Clear opposite silhouette to selected walk0. Male short hair/build restored; somewhat longer tunic/belt ends and cloth texture remain from guide. Head size similar; body extent differs due stride/foreshortening. Parent should review native cycle."
+    },
+    {
+      "pose": "strike0",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike0.png",
+      "sha256": "4a1480ee81f5d1507234e721fdffa2ba9b5a854e38121f3576cfae416091d2f2",
+      "selected_raw_stem": "strike0-repair",
+      "prompt": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike0.prompt.txt",
+      "tool_output": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike0.tool-output.json",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "alpha": {
+        "has_channel": false,
+        "min": 255,
+        "max": 255,
+        "zero_pixels": 0,
+        "partial_pixels": 0,
+        "verdict": "FAIL: opaque painted checkerboard; raw unchanged"
+      },
+      "estimated_foreground_bbox": [
+        400,
+        123,
+        804,
+        1062
+      ],
+      "bbox_method": "Warm/saturated foreground mask: RGB max-min>15 and mean<225; diagnostic estimate, NOT alpha and not used to edit pixels",
+      "estimated_body_extent_px": 939,
+      "left_wrist": {
+        "source_xy": [
+          479,
+          267
+        ],
+        "normalized_xy": [
+          0.38198,
+          0.21292
+        ],
+        "visible": true,
+        "confidence": "medium approximate visual measurement",
+        "forearm_direction_deg": -56
+      },
+      "visual_review": "Focused scale repair: correct far left bent arm; near right arm down; body939px vs idle934 (+0.5%)."
+    },
+    {
+      "pose": "strike1",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike1.png",
+      "sha256": "e819ab907d1e3aae67f2c637e4f6848c692543a10cfff1313e595fc9531d2b12",
+      "selected_raw_stem": "strike1-left-repair",
+      "prompt": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike1.prompt.txt",
+      "tool_output": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike1.tool-output.json",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "alpha": {
+        "has_channel": false,
+        "min": 255,
+        "max": 255,
+        "zero_pixels": 0,
+        "partial_pixels": 0,
+        "verdict": "FAIL: opaque painted checkerboard; raw unchanged"
+      },
+      "estimated_foreground_bbox": [
+        487,
+        30,
+        804,
+        1062
+      ],
+      "bbox_method": "Warm/saturated foreground mask: RGB max-min>15 and mean<225; diagnostic estimate, NOT alpha and not used to edit pixels",
+      "estimated_body_extent_px": 1032,
+      "left_wrist": {
+        "source_xy": [
+          579,
+          89
+        ],
+        "normalized_xy": [
+          0.46172,
+          0.07097
+        ],
+        "visible": true,
+        "confidence": "medium approximate visual measurement",
+        "forearm_direction_deg": -62
+      },
+      "visual_review": "Selected second correction retains left shoulder attachment with arm extended high above head. Right arm down. Contact is a high reach, more overhead than a low forward swing; equipment review caveat. Head/feet match idle, raised fist extends above head."
+    }
+  ],
+  "retained_attempts": [
+    "reference-female-ne-walk1.png",
+    "strike0-rejected-scale.png",
+    "strike0-repair.png",
+    "strike1-left-repair.png",
+    "strike1-rejected-repeated-anticipation.png",
+    "strike1-repair.png",
+    "walk0-geometry-repair.png",
+    "walk0-rejected-counter-swing.png",
+    "walk0-rejected-initial.png",
+    "walk0-repair.png",
+    "walk1-female-geometry-repair.png",
+    "walk1-geometry-repair.png",
+    "walk1-rejected-extra-arm.png"
+  ],
+  "production_changes": "None: no runtime/catalog/code/build/Git edits."
+}

@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "package": "hero-lineage-20260910",
+  "sex": "male",
+  "direction": "w",
+  "status": "pose_reviewed_raw_sources_pending_matte_PixelRespecter_and_gameplay_review",
+  "tool": "built-in image_gen",
+  "tool_model_variant": "Not exposed by built-in tool; no CLI/API fallback used.",
+  "original_reference": {
+    "path": "C:\\Users\\Alex\\Downloads\\ChatGPT Image Sep 10, 2026, 05_22_21 PM.png",
+    "sha256": "fa6bb5a57dbb0791095abc6078920ae3e834782e3db8dd24b95e16c8f37b5e1f",
+    "canvas": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "reference_body_alpha128_bounds": [
+      432,
+      128,
+      822,
+      1098
+    ],
+    "reference_body_height": 970
+  },
+  "generation_policy": "One isolated pose per call. Original identity referenced every call; directional idle also referenced for animation. Selected raw PNGs copied byte-for-byte from built-in output; no resizing, matte operation, recoloring or pixel reconstruction by this worker.",
+  "prompt_source_method": {
+    "source": "https://www.flixly.ai/blog/stop-motion-chatgpt-images-2-5",
+    "reused": "Original identity plus directional/previous accepted frame, narrow pose edits and visual rejection of limb failures, as documented in repository RESEARCH.md.",
+    "evidence_limit": "Original workflow was documented by prior repository audit. Direct re-open this turn returned non-retryable safe-open error; no retry or new verification claimed."
+  },
+  "requested_common_pivot_pixels": [
+    627,
+    1098
+  ],
+  "requested_common_pivot_normalized": [
+    0.5,
+    0.8755980861244019
+  ],
+  "pivot_note": "Requested common ground anchor, not extracted engine-ready pivot. Keep common original/head scale; review fixed-canvas registration and floor contact after matte extraction. Do not independently stretch poses to match bbox height.",
+  "bounds_method": "Estimated warm foreground bounds from original RGB: R-B>12 and max(R,G,B)-min(R,G,B)>14; x1/y1 exclusive. This detects colored body against painted neutral checker. These are NOT alpha bounds and may omit dark outline pixels.",
+  "hand_method": "Approximate anatomical LEFT wrist centers manually inspected in raw1254square source, normalized x/width,y/height. These are review guides, not final PixelRespecter/runtime grips.",
+  "alpha_review": "All five outputs RGB without alpha. Opaque checker is a known rejected delivery property. Source pose approval does not approve direct runtime use.",
+  "recovery": "Use idle.png as the third attack/recovery pose; no additional recovery generated.",
+  "assets": [
+    {
+      "direction": "w",
+      "pose": "idle",
+      "file": "idle.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "has_alpha": false,
+      "sha256": "c749e8ab68ec3c7b3de1c51568f59e5167ba3ce33ec04ab92f479f81507ffc31",
+      "estimated_warm_foreground_bounds": [
+        518,
+        126,
+        733,
+        1118
+      ],
+      "exact_prompt": "idle.prompt.txt",
+      "tool_metadata": "idle-attempt1.tool.json",
+      "approximate_anatomical_left_wrist_pixels": [
+        640,
+        658
+      ],
+      "approximate_anatomical_left_wrist_normalized": [
+        0.510367,
+        0.524721
+      ],
+      "visual_review": "True left profile. Near anatomical left arm hangs down. Source sole near1117 is20px below requested1098; head/crown remains near126."
+    },
+    {
+      "direction": "w",
+      "pose": "walk0",
+      "file": "walk0.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "has_alpha": false,
+      "sha256": "878eb6b73c4a94fc113aa494cc299adda53373f89a01a46b5a908d300ec89545",
+      "estimated_warm_foreground_bounds": [
+        388,
+        127,
+        883,
+        1103
+      ],
+      "exact_prompt": "walk0.prompt.txt",
+      "tool_metadata": "walk0.tool.json",
+      "approximate_anatomical_left_wrist_pixels": [
+        807,
+        622
+      ],
+      "approximate_anatomical_left_wrist_normalized": [
+        0.643541,
+        0.496013
+      ],
+      "visual_review": "Contact A: near anatomical left leg forward/screen-left; far right leg trailing/screen-right. Near left arm back/screen-right and far right arm forward. Torso opens more toward viewer than idle; wider tunic is residual counter-rotation, review after import."
+    },
+    {
+      "direction": "w",
+      "pose": "walk1",
+      "file": "walk1.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "has_alpha": false,
+      "sha256": "2248a934341de91031ea60e517d30642ab1ce7ca4265bd5b20a9b763429f6514",
+      "estimated_warm_foreground_bounds": [
+        436,
+        126,
+        861,
+        1096
+      ],
+      "exact_prompt": "walk1.prompt.txt",
+      "tool_metadata": "walk1.tool.json",
+      "approximate_anatomical_left_wrist_pixels": [
+        530,
+        555
+      ],
+      "approximate_anatomical_left_wrist_normalized": [
+        0.422648,
+        0.442584
+      ],
+      "visual_review": "Contact B after two repairs: near left thigh crosses in foreground to trailing lower-right foot; far right leg forward/screen-left. Near left arm forward and right arm back. Stride width smaller than contact A; no temporal smoothing claim."
+    },
+    {
+      "direction": "w",
+      "pose": "strike0",
+      "file": "strike0.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "has_alpha": false,
+      "sha256": "ae9485026d48933b34ca2d51bc34834e9e5a3f89c3a71a1d47beb07ca35fd9e1",
+      "estimated_warm_foreground_bounds": [
+        519,
+        126,
+        806,
+        1117
+      ],
+      "exact_prompt": "strike0.prompt.txt",
+      "tool_metadata": "strike0.tool.json",
+      "approximate_anatomical_left_wrist_pixels": [
+        679,
+        348
+      ],
+      "approximate_anatomical_left_wrist_normalized": [
+        0.541467,
+        0.277512
+      ],
+      "visual_review": "Near anatomical left fist cocked at shoulder, elbow back/right. Far right hand low. Feet and head closely preserve idle."
+    },
+    {
+      "direction": "w",
+      "pose": "strike1",
+      "file": "strike1.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "has_alpha": false,
+      "sha256": "36bc38f99290475c3a023acbd877cf6ecd9ff88bf12067464ac316d3331fd1bc",
+      "estimated_warm_foreground_bounds": [
+        320,
+        125,
+        750,
+        1117
+      ],
+      "exact_prompt": "strike1.prompt.txt",
+      "tool_metadata": "strike1.tool.json",
+      "approximate_anatomical_left_wrist_pixels": [
+        391,
+        335
+      ],
+      "approximate_anatomical_left_wrist_normalized": [
+        0.311802,
+        0.267145
+      ],
+      "visual_review": "Same near anatomical left arm extended left, empty fist. Far right hand low. Planted feet and head preserve strike0/idle; modest torso turn."
+    }
+  ],
+  "rejected_attempts": [
+    {
+      "file": "walk1-rejected-repeated-legs.png",
+      "prompt": "walk1-rejected-repeated-legs.prompt.txt",
+      "tool_metadata": "walk1-rejected-repeated-legs.tool.json",
+      "reason": "Arms switched but same leading leg as walk0; no opposite contact."
+    },
+    {
+      "file": "walk1-rejected-arms.png",
+      "prompt": "walk1-repair.prompt.txt",
+      "tool_metadata": "walk1-repair.tool.json",
+      "reason": "Correct opposite legs, but near left arm stayed back beside its trailing left leg. Repaired arms only for selected walk1."
+    }
+  ],
+  "validation_scope": "All selected full-resolution outputs visually inspected. PNG size/mode/hash and warm-body bounds measured using Pillow/Numpy without modifying images. No runtime import, animation playback, equipment composite or final gameplay-size visual acceptance performed."
+}

@@ -1,0 +1,6216 @@
+{
+  "native_canvas": [
+    160,
+    192
+  ],
+  "anchor_px": [
+    80,
+    160
+  ],
+  "pixel_pitch": 10,
+  "palette": "96 colors shared per direction",
+  "assets": [
+    {
+      "name": "hero_male_n",
+      "file": "hero_male_n.png",
+      "source": "derived/male/n/idle.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 66,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        43,
+        12,
+        82,
+        106
+      ],
+      "before_resize": [
+        39,
+        94
+      ],
+      "placed_size": [
+        39,
+        94
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        60,
+        66,
+        99,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "a00fb2a6d0595263aa23e7eeebf7604dfdf6d88e21e9e5f682599d8c90eb9e85",
+      "sex": "male",
+      "direction": "n",
+      "processed": "processed/male/n/hero_male_n.png"
+    },
+    {
+      "name": "hero_male_walk0_n",
+      "file": "hero_male_walk0_n.png",
+      "source": "derived/male/n/walk0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 78,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        43,
+        12,
+        81,
+        107
+      ],
+      "before_resize": [
+        38,
+        95
+      ],
+      "placed_size": [
+        38,
+        95
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        60,
+        66,
+        98,
+        161
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "ba32c33cdbbb673e38b8e2a51a26c1ee5a16cd4fdaf755c146bebb25b50ddc0c",
+      "sex": "male",
+      "direction": "n",
+      "processed": "processed/male/n/hero_male_walk0_n.png"
+    },
+    {
+      "name": "hero_male_walk1_n",
+      "file": "hero_male_walk1_n.png",
+      "source": "derived/male/n/walk1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 77,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        45,
+        12,
+        83,
+        107
+      ],
+      "before_resize": [
+        38,
+        95
+      ],
+      "placed_size": [
+        38,
+        95
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        62,
+        66,
+        100,
+        161
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "c95c59d9e4ccee0876d55221c2caa7085fb08b8704cf24db3637c8817fa940fc",
+      "sex": "male",
+      "direction": "n",
+      "processed": "processed/male/n/hero_male_walk1_n.png"
+    },
+    {
+      "name": "hero_male_strike0_n",
+      "file": "hero_male_strike0_n.png",
+      "source": "derived/male/n/strike0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 80,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        36,
+        12,
+        82,
+        108
+      ],
+      "before_resize": [
+        46,
+        96
+      ],
+      "placed_size": [
+        46,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        53,
+        66,
+        99,
+        162
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "7822dfdaa5934537cea09e17c6d01cfda8ac59dc4e4b027d04c38ae6c062bb33",
+      "sex": "male",
+      "direction": "n",
+      "processed": "processed/male/n/hero_male_strike0_n.png"
+    },
+    {
+      "name": "hero_male_strike1_n",
+      "file": "hero_male_strike1_n.png",
+      "source": "derived/male/n/strike1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        48,
+        10,
+        82,
+        106
+      ],
+      "before_resize": [
+        34,
+        96
+      ],
+      "placed_size": [
+        34,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        65,
+        64,
+        99,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "22e5075a73b326c0d1a33fac73c1a62bb083e2f188a227e5e665473500740456",
+      "sex": "male",
+      "direction": "n",
+      "processed": "processed/male/n/hero_male_strike1_n.png"
+    },
+    {
+      "name": "hero_male_ne",
+      "file": "hero_male_ne.png",
+      "source": "derived/male/ne/idle.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 66,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        47,
+        12,
+        80,
+        106
+      ],
+      "before_resize": [
+        33,
+        94
+      ],
+      "placed_size": [
+        33,
+        94
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        64,
+        66,
+        97,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "e37d6717e594ddd45b409d646ce0aa1ba5515ce5d6a11a71025b926127426e77",
+      "sex": "male",
+      "direction": "ne",
+      "processed": "processed/male/ne/hero_male_ne.png"
+    },
+    {
+      "name": "hero_male_walk0_ne",
+      "file": "hero_male_walk0_ne.png",
+      "source": "derived/male/ne/walk0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 71,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        46,
+        14,
+        80,
+        106
+      ],
+      "before_resize": [
+        34,
+        92
+      ],
+      "placed_size": [
+        34,
+        92
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        63,
+        68,
+        97,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "57f89685d9034681c3efc274ca71fb8c62954a80f55e4fe5ac94c6996adc4a3e",
+      "sex": "male",
+      "direction": "ne",
+      "processed": "processed/male/ne/hero_male_walk0_ne.png"
+    },
+    {
+      "name": "hero_male_walk1_ne",
+      "file": "hero_male_walk1_ne.png",
+      "source": "derived/male/ne/walk1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 63,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        15,
+        85,
+        112
+      ],
+      "before_resize": [
+        41,
+        97
+      ],
+      "placed_size": [
+        41,
+        97
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        69,
+        102,
+        166
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "ee969e331b71929686e7a493c9e888b9453849faea09b9d155403324bb9b5bb9",
+      "sex": "male",
+      "direction": "ne",
+      "processed": "processed/male/ne/hero_male_walk1_ne.png"
+    },
+    {
+      "name": "hero_male_strike0_ne",
+      "file": "hero_male_strike0_ne.png",
+      "source": "derived/male/ne/strike0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 70,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        40,
+        12,
+        80,
+        106
+      ],
+      "before_resize": [
+        40,
+        94
+      ],
+      "placed_size": [
+        40,
+        94
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        57,
+        66,
+        97,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "42adfd98c8431b6533cd9cd9e036b2929511c56f0e98540881db6dae1e3c6fe6",
+      "sex": "male",
+      "direction": "ne",
+      "processed": "processed/male/ne/hero_male_strike0_ne.png"
+    },
+    {
+      "name": "hero_male_strike1_ne",
+      "file": "hero_male_strike1_ne.png",
+      "source": "derived/male/ne/strike1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 68,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        49,
+        3,
+        80,
+        106
+      ],
+      "before_resize": [
+        31,
+        103
+      ],
+      "placed_size": [
+        31,
+        103
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        66,
+        57,
+        97,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "21a698be730688f49555f8bd2a60e3d6756b1767689c8da389f7de11f9d702c5",
+      "sex": "male",
+      "direction": "ne",
+      "processed": "processed/male/ne/hero_male_strike1_ne.png"
+    },
+    {
+      "name": "hero_male_e",
+      "file": "hero_male_e.png",
+      "source": "derived/male/e/idle.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 61,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        53,
+        12,
+        73,
+        111
+      ],
+      "before_resize": [
+        20,
+        99
+      ],
+      "placed_size": [
+        20,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        70,
+        61,
+        90,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1106
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "fbcc0716067727c1db69425fd7b0925288660abf7933a02d32e8281289f9546a",
+      "sex": "male",
+      "direction": "e",
+      "processed": "processed/male/e/hero_male_e.png"
+    },
+    {
+      "name": "hero_male_walk0_e",
+      "file": "hero_male_walk0_e.png",
+      "source": "derived/male/e/walk0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 67,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        36,
+        12,
+        89,
+        108
+      ],
+      "before_resize": [
+        53,
+        96
+      ],
+      "placed_size": [
+        53,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        53,
+        61,
+        106,
+        157
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1106
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "ddc3ea687f790701e1697a0d3155355fd0c15328c35d4f82fe5073eee21c2b61",
+      "sex": "male",
+      "direction": "e",
+      "processed": "processed/male/e/hero_male_walk0_e.png"
+    },
+    {
+      "name": "hero_male_walk1_e",
+      "file": "hero_male_walk1_e.png",
+      "source": "derived/male/e/walk1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 68,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        37,
+        13,
+        91,
+        108
+      ],
+      "before_resize": [
+        54,
+        95
+      ],
+      "placed_size": [
+        54,
+        95
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        54,
+        62,
+        108,
+        157
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1106
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "469f909dfc91102558a38262a4f87f7a0215bcc8d86122fd449c8862a3d1c1d9",
+      "sex": "male",
+      "direction": "e",
+      "processed": "processed/male/e/hero_male_walk1_e.png"
+    },
+    {
+      "name": "hero_male_strike0_e",
+      "file": "hero_male_strike0_e.png",
+      "source": "derived/male/e/strike0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        52,
+        12,
+        76,
+        111
+      ],
+      "before_resize": [
+        24,
+        99
+      ],
+      "placed_size": [
+        24,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        69,
+        61,
+        93,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1106
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "ac86004d260248f81385bd7f0020dded05edb15e72d4c29684f23cc3444b2c41",
+      "sex": "male",
+      "direction": "e",
+      "processed": "processed/male/e/hero_male_strike0_e.png"
+    },
+    {
+      "name": "hero_male_strike1_e",
+      "file": "hero_male_strike1_e.png",
+      "source": "derived/male/e/strike1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 77,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        52,
+        12,
+        102,
+        111
+      ],
+      "before_resize": [
+        50,
+        99
+      ],
+      "placed_size": [
+        50,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        69,
+        61,
+        119,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1106
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "9f3ad33d67a31664ac8448e57b41f350931327840f6727ad889ff149ad8079ef",
+      "sex": "male",
+      "direction": "e",
+      "processed": "processed/male/e/hero_male_strike1_e.png"
+    },
+    {
+      "name": "hero_male_se",
+      "file": "hero_male_se.png",
+      "source": "derived/male/se/idle.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        12,
+        80,
+        112
+      ],
+      "before_resize": [
+        36,
+        100
+      ],
+      "placed_size": [
+        36,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        60,
+        97,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1123
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "7bf0e40eed15a220c20c3c1e8f08f9c16f2b110b1a2d2b08db368fe50415f94c",
+      "sex": "male",
+      "direction": "se",
+      "processed": "processed/male/se/hero_male_se.png"
+    },
+    {
+      "name": "hero_male_walk0_se",
+      "file": "hero_male_walk0_se.png",
+      "source": "derived/male/se/walk0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 79,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        40,
+        12,
+        86,
+        112
+      ],
+      "before_resize": [
+        46,
+        100
+      ],
+      "placed_size": [
+        46,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        57,
+        60,
+        103,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1123
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "a4ca88c05c753d00e52a4357f04574a1dd685daeaa61e5765fd29245a4fa3475",
+      "sex": "male",
+      "direction": "se",
+      "processed": "processed/male/se/hero_male_walk0_se.png"
+    },
+    {
+      "name": "hero_male_walk1_se",
+      "file": "hero_male_walk1_se.png",
+      "source": "derived/male/se/walk1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 76,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        13,
+        81,
+        111
+      ],
+      "before_resize": [
+        37,
+        98
+      ],
+      "placed_size": [
+        37,
+        98
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        61,
+        98,
+        159
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1123
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "a17d3ea3637f38ed647bfebc50a8b96bda0795b4fde7f9923a1b167186ed73f9",
+      "sex": "male",
+      "direction": "se",
+      "processed": "processed/male/se/hero_male_walk1_se.png"
+    },
+    {
+      "name": "hero_male_strike0_se",
+      "file": "hero_male_strike0_se.png",
+      "source": "derived/male/se/strike0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 71,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        41,
+        16,
+        88,
+        110
+      ],
+      "before_resize": [
+        47,
+        94
+      ],
+      "placed_size": [
+        47,
+        94
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        58,
+        64,
+        105,
+        158
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1123
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "f2515f2ecfb4d43f78602ee33d1eef4600afef4263d48afd5136073fbab379af",
+      "sex": "male",
+      "direction": "se",
+      "processed": "processed/male/se/hero_male_strike0_se.png"
+    },
+    {
+      "name": "hero_male_strike1_se",
+      "file": "hero_male_strike1_se.png",
+      "source": "derived/male/se/strike1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 75,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        38,
+        19,
+        101,
+        110
+      ],
+      "before_resize": [
+        63,
+        91
+      ],
+      "placed_size": [
+        63,
+        91
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        55,
+        67,
+        118,
+        158
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1123
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "11fcc86c49e0576265821bd93bd88b7bac2da597e37b45c43a7cab0137dce3b0",
+      "sex": "male",
+      "direction": "se",
+      "processed": "processed/male/se/hero_male_strike1_se.png"
+    },
+    {
+      "name": "hero_male_s",
+      "file": "hero_male_s.png",
+      "source": "derived/male/s/idle.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 66,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        43,
+        13,
+        82,
+        110
+      ],
+      "before_resize": [
+        39,
+        97
+      ],
+      "placed_size": [
+        39,
+        97
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        60,
+        63,
+        99,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1098
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "65237702db547f5cb5dddf393c2aa84a38d6804390a060b07d8f23da41374549",
+      "sex": "male",
+      "direction": "s",
+      "processed": "processed/male/s/hero_male_s.png"
+    },
+    {
+      "name": "hero_male_walk0_s",
+      "file": "hero_male_walk0_s.png",
+      "source": "derived/male/s/walk0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 74,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        13,
+        82,
+        111
+      ],
+      "before_resize": [
+        38,
+        98
+      ],
+      "placed_size": [
+        38,
+        98
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        63,
+        99,
+        161
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1098
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "7a396d11a81c15fbd586e069564f3680956fcbbc8161faf43fefa792d832363b",
+      "sex": "male",
+      "direction": "s",
+      "processed": "processed/male/s/hero_male_walk0_s.png"
+    },
+    {
+      "name": "hero_male_walk1_s",
+      "file": "hero_male_walk1_s.png",
+      "source": "derived/male/s/walk1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 78,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        43,
+        13,
+        82,
+        113
+      ],
+      "before_resize": [
+        39,
+        100
+      ],
+      "placed_size": [
+        39,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        60,
+        63,
+        99,
+        163
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1098
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "d13a2832f6c83f15d196d2fbfb982739804688bd1fb3d66b1671626fb1891bbe",
+      "sex": "male",
+      "direction": "s",
+      "processed": "processed/male/s/hero_male_walk1_s.png"
+    },
+    {
+      "name": "hero_male_strike0_s",
+      "file": "hero_male_strike0_s.png",
+      "source": "derived/male/s/strike0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 66,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        42,
+        15,
+        87,
+        110
+      ],
+      "before_resize": [
+        45,
+        95
+      ],
+      "placed_size": [
+        45,
+        95
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        59,
+        65,
+        104,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1098
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "770f71cb70abff8be20ff904b697185691c6f3847cf036ea28026357af79bf3b",
+      "sex": "male",
+      "direction": "s",
+      "processed": "processed/male/s/hero_male_strike0_s.png"
+    },
+    {
+      "name": "hero_male_strike1_s",
+      "file": "hero_male_strike1_s.png",
+      "source": "derived/male/s/strike1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 71,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        42,
+        14,
+        79,
+        110
+      ],
+      "before_resize": [
+        37,
+        96
+      ],
+      "placed_size": [
+        37,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        59,
+        64,
+        96,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1098
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "419391bd44c68b82beb737553a69b4c8030d138814e2b8c052439be25881732d",
+      "sex": "male",
+      "direction": "s",
+      "processed": "processed/male/s/hero_male_strike1_s.png"
+    },
+    {
+      "name": "hero_male_sw",
+      "file": "hero_male_sw.png",
+      "source": "derived/male/sw/idle.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 72,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        45,
+        12,
+        79,
+        113
+      ],
+      "before_resize": [
+        34,
+        101
+      ],
+      "placed_size": [
+        34,
+        101
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        62,
+        59,
+        96,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1131
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "7d3e7643a73ff8de6126358c0712bf99bbd00680d576510b27a0664225093396",
+      "sex": "male",
+      "direction": "sw",
+      "processed": "processed/male/sw/hero_male_sw.png"
+    },
+    {
+      "name": "hero_male_walk0_sw",
+      "file": "hero_male_walk0_sw.png",
+      "source": "derived/male/sw/walk0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 71,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        41,
+        14,
+        82,
+        112
+      ],
+      "before_resize": [
+        41,
+        98
+      ],
+      "placed_size": [
+        41,
+        98
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        58,
+        61,
+        99,
+        159
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1131
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "6c6a8e0ea5f45739835c7931bb62d82945a4e535b741a77d6ea7b6076262a55e",
+      "sex": "male",
+      "direction": "sw",
+      "processed": "processed/male/sw/hero_male_walk0_sw.png"
+    },
+    {
+      "name": "hero_male_walk1_sw",
+      "file": "hero_male_walk1_sw.png",
+      "source": "derived/male/sw/walk1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 76,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        42,
+        14,
+        82,
+        113
+      ],
+      "before_resize": [
+        40,
+        99
+      ],
+      "placed_size": [
+        40,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        59,
+        61,
+        99,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1131
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "e27e55704a83d1162aa232072b019e0890c76aa872047ad2710f3b798ae82d2c",
+      "sex": "male",
+      "direction": "sw",
+      "processed": "processed/male/sw/hero_male_walk1_sw.png"
+    },
+    {
+      "name": "hero_male_strike0_sw",
+      "file": "hero_male_strike0_sw.png",
+      "source": "derived/male/sw/strike0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 69,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        39,
+        13,
+        86,
+        109
+      ],
+      "before_resize": [
+        47,
+        96
+      ],
+      "placed_size": [
+        47,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        56,
+        60,
+        103,
+        156
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1131
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "493f6f6bd56dd057565e547bece6381c5ef109401b06ac36ca7739f374d30af6",
+      "sex": "male",
+      "direction": "sw",
+      "processed": "processed/male/sw/hero_male_strike0_sw.png"
+    },
+    {
+      "name": "hero_male_strike1_sw",
+      "file": "hero_male_strike1_sw.png",
+      "source": "derived/male/sw/strike1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 75,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        39,
+        13,
+        84,
+        109
+      ],
+      "before_resize": [
+        45,
+        96
+      ],
+      "placed_size": [
+        45,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        56,
+        60,
+        101,
+        156
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1131
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "8cae0e268cbc6ab6eeb4a14b4b0e8f6056a62181e4454f34a667b60c3c08192e",
+      "sex": "male",
+      "direction": "sw",
+      "processed": "processed/male/sw/hero_male_strike1_sw.png"
+    },
+    {
+      "name": "hero_male_w",
+      "file": "hero_male_w.png",
+      "source": "derived/male/w/idle.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 66,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        52,
+        13,
+        73,
+        112
+      ],
+      "before_resize": [
+        21,
+        99
+      ],
+      "placed_size": [
+        21,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        69,
+        61,
+        90,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1119
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "565d5048b1f3c04e46f063fc60ed5e2f1b82eacb485877fca207fa8e440d3fb0",
+      "sex": "male",
+      "direction": "w",
+      "processed": "processed/male/w/hero_male_w.png"
+    },
+    {
+      "name": "hero_male_walk0_w",
+      "file": "hero_male_walk0_w.png",
+      "source": "derived/male/w/walk0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 77,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        39,
+        13,
+        88,
+        110
+      ],
+      "before_resize": [
+        49,
+        97
+      ],
+      "placed_size": [
+        49,
+        97
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        56,
+        61,
+        105,
+        158
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1119
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "cce2c3d7df1fe728293b73691148dff2df0afbff1776c9ef77e75bb22ee748c4",
+      "sex": "male",
+      "direction": "w",
+      "processed": "processed/male/w/hero_male_walk0_w.png"
+    },
+    {
+      "name": "hero_male_walk1_w",
+      "file": "hero_male_walk1_w.png",
+      "source": "derived/male/w/walk1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 68,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        12,
+        86,
+        110
+      ],
+      "before_resize": [
+        42,
+        98
+      ],
+      "placed_size": [
+        42,
+        98
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        60,
+        103,
+        158
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1119
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "a212d1523c8e27ff4adbccfd84c782058715419f228e7000fcdb1c9b47e204d1",
+      "sex": "male",
+      "direction": "w",
+      "processed": "processed/male/w/hero_male_walk1_w.png"
+    },
+    {
+      "name": "hero_male_strike0_w",
+      "file": "hero_male_strike0_w.png",
+      "source": "derived/male/w/strike0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 65,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        52,
+        12,
+        81,
+        112
+      ],
+      "before_resize": [
+        29,
+        100
+      ],
+      "placed_size": [
+        29,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        69,
+        60,
+        98,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1119
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "fe9ef7b4c6a32c5516b7b094dd13b3f1121b0ecec6bf0950dec736a6760245ba",
+      "sex": "male",
+      "direction": "w",
+      "processed": "processed/male/w/hero_male_strike0_w.png"
+    },
+    {
+      "name": "hero_male_strike1_w",
+      "file": "hero_male_strike1_w.png",
+      "source": "derived/male/w/strike1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        32,
+        12,
+        75,
+        112
+      ],
+      "before_resize": [
+        43,
+        100
+      ],
+      "placed_size": [
+        43,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        49,
+        60,
+        92,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1119
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "a00eccd325a168da95f962b8b51a655f3d6ef07935e3045f81335ab295724691",
+      "sex": "male",
+      "direction": "w",
+      "processed": "processed/male/w/hero_male_strike1_w.png"
+    },
+    {
+      "name": "hero_male_nw",
+      "file": "hero_male_nw.png",
+      "source": "derived/male/nw/idle.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 71,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        46,
+        13,
+        78,
+        109
+      ],
+      "before_resize": [
+        32,
+        96
+      ],
+      "placed_size": [
+        32,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        63,
+        64,
+        95,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1094
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "a0329b6ee6ce99f247c055c484aee1241c59f5dde4bf9617e650c5beb849df34",
+      "sex": "male",
+      "direction": "nw",
+      "processed": "processed/male/nw/hero_male_nw.png"
+    },
+    {
+      "name": "hero_male_walk0_nw",
+      "file": "hero_male_walk0_nw.png",
+      "source": "derived/male/nw/walk0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        45,
+        13,
+        81,
+        109
+      ],
+      "before_resize": [
+        36,
+        96
+      ],
+      "placed_size": [
+        36,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        62,
+        64,
+        98,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1094
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "39e7490823fd27100cca953df29b3c39b40ae762763effa5d0ee23fbdc593431",
+      "sex": "male",
+      "direction": "nw",
+      "processed": "processed/male/nw/hero_male_walk0_nw.png"
+    },
+    {
+      "name": "hero_male_walk1_nw",
+      "file": "hero_male_walk1_nw.png",
+      "source": "derived/male/nw/walk1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 76,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        42,
+        13,
+        83,
+        111
+      ],
+      "before_resize": [
+        41,
+        98
+      ],
+      "placed_size": [
+        41,
+        98
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        59,
+        64,
+        100,
+        162
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1094
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "5d9121242a1236eb69d13b1177e94d781b6670af8cfb2de65f6ddeb51a736034",
+      "sex": "male",
+      "direction": "nw",
+      "processed": "processed/male/nw/hero_male_walk1_nw.png"
+    },
+    {
+      "name": "hero_male_strike0_nw",
+      "file": "hero_male_strike0_nw.png",
+      "source": "derived/male/nw/strike0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 72,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        42,
+        13,
+        78,
+        109
+      ],
+      "before_resize": [
+        36,
+        96
+      ],
+      "placed_size": [
+        36,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        59,
+        64,
+        95,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1094
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "157184a7aedc89c5d57cd0cd42332d42bb6ebca804a3a78e062fe13545956399",
+      "sex": "male",
+      "direction": "nw",
+      "processed": "processed/male/nw/hero_male_strike0_nw.png"
+    },
+    {
+      "name": "hero_male_strike1_nw",
+      "file": "hero_male_strike1_nw.png",
+      "source": "derived/male/nw/strike1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        31,
+        13,
+        78,
+        109
+      ],
+      "before_resize": [
+        47,
+        96
+      ],
+      "placed_size": [
+        47,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        48,
+        64,
+        95,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1094
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "0db546c1e8761793f9e1c0b091235543e48000df4f68c3bfa32e7180ab5ef1ef",
+      "sex": "male",
+      "direction": "nw",
+      "processed": "processed/male/nw/hero_male_strike1_nw.png"
+    },
+    {
+      "name": "hero_female_n",
+      "file": "hero_female_n.png",
+      "source": "derived/female/n/idle.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 67,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        45,
+        12,
+        81,
+        108
+      ],
+      "before_resize": [
+        36,
+        96
+      ],
+      "placed_size": [
+        36,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        62,
+        64,
+        98,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1082
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "1179c7cdfa98149f99d8adf790c8d5b9b33253e0f3671adc865ea0514805c728",
+      "sex": "female",
+      "direction": "n",
+      "processed": "processed/female/n/hero_female_n.png"
+    },
+    {
+      "name": "hero_female_walk0_n",
+      "file": "hero_female_walk0_n.png",
+      "source": "derived/female/n/walk0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 80,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        45,
+        12,
+        78,
+        110
+      ],
+      "before_resize": [
+        33,
+        98
+      ],
+      "placed_size": [
+        33,
+        98
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        62,
+        64,
+        95,
+        162
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1082
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "56766c847ce36b4ca8ed70836efa684c0e22b0eb956a209d6a37726758f3536a",
+      "sex": "female",
+      "direction": "n",
+      "processed": "processed/female/n/hero_female_walk0_n.png"
+    },
+    {
+      "name": "hero_female_walk1_n",
+      "file": "hero_female_walk1_n.png",
+      "source": "derived/female/n/walk1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 78,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        47,
+        12,
+        82,
+        110
+      ],
+      "before_resize": [
+        35,
+        98
+      ],
+      "placed_size": [
+        35,
+        98
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        64,
+        64,
+        99,
+        162
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1082
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "8e9e655a026f66a7abbeae0ee97c16a671bcfbf7368e07b4f4d6c280e7c65af4",
+      "sex": "female",
+      "direction": "n",
+      "processed": "processed/female/n/hero_female_walk1_n.png"
+    },
+    {
+      "name": "hero_female_strike0_n",
+      "file": "hero_female_strike0_n.png",
+      "source": "derived/female/n/strike0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 77,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        43,
+        13,
+        85,
+        107
+      ],
+      "before_resize": [
+        42,
+        94
+      ],
+      "placed_size": [
+        42,
+        94
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        60,
+        65,
+        102,
+        159
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1082
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "03e88ca20722406336988a43def99b26640bc2388d280f2f4a47c69e5609277c",
+      "sex": "female",
+      "direction": "n",
+      "processed": "processed/female/n/hero_female_strike0_n.png"
+    },
+    {
+      "name": "hero_female_strike1_n",
+      "file": "hero_female_strike1_n.png",
+      "source": "derived/female/n/strike1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        42,
+        13,
+        85,
+        107
+      ],
+      "before_resize": [
+        43,
+        94
+      ],
+      "placed_size": [
+        43,
+        94
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        59,
+        65,
+        102,
+        159
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1082
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "670882bb702437593e08f1bbf22b471da6057a9ed9478e86a13298980ba53024",
+      "sex": "female",
+      "direction": "n",
+      "processed": "processed/female/n/hero_female_strike1_n.png"
+    },
+    {
+      "name": "hero_female_ne",
+      "file": "hero_female_ne.png",
+      "source": "derived/female/ne/idle.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 72,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        52,
+        12,
+        80,
+        108
+      ],
+      "before_resize": [
+        28,
+        96
+      ],
+      "placed_size": [
+        28,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        69,
+        64,
+        97,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1085
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "06fd6a328f58384f634353279ad9816a9fed4e6ef1cf1c19d7d28e948458e33f",
+      "sex": "female",
+      "direction": "ne",
+      "processed": "processed/female/ne/hero_female_ne.png"
+    },
+    {
+      "name": "hero_female_walk0_ne",
+      "file": "hero_female_walk0_ne.png",
+      "source": "derived/female/ne/walk0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 74,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        47,
+        11,
+        87,
+        114
+      ],
+      "before_resize": [
+        40,
+        103
+      ],
+      "placed_size": [
+        40,
+        103
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        64,
+        63,
+        104,
+        166
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1085
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "54a8faa993af016191d849557f1b1178a1f9b880536abbd2ad242099bd55605b",
+      "sex": "female",
+      "direction": "ne",
+      "processed": "processed/female/ne/hero_female_walk0_ne.png"
+    },
+    {
+      "name": "hero_female_walk1_ne",
+      "file": "hero_female_walk1_ne.png",
+      "source": "derived/female/ne/walk1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 75,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        46,
+        15,
+        84,
+        112
+      ],
+      "before_resize": [
+        38,
+        97
+      ],
+      "placed_size": [
+        38,
+        97
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        63,
+        67,
+        101,
+        164
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1085
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "b9c096240f1f6d4e35bf384f9198991cc5a3df412ed18995d0f3a99568155975",
+      "sex": "female",
+      "direction": "ne",
+      "processed": "processed/female/ne/hero_female_walk1_ne.png"
+    },
+    {
+      "name": "hero_female_strike0_ne",
+      "file": "hero_female_strike0_ne.png",
+      "source": "derived/female/ne/strike0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 75,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        41,
+        13,
+        87,
+        109
+      ],
+      "before_resize": [
+        46,
+        96
+      ],
+      "placed_size": [
+        46,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        58,
+        65,
+        104,
+        161
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1085
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "b7fa9b55e08f34e51008a170466ce647862adc6c81d01d6409abe104b3f0d2b3",
+      "sex": "female",
+      "direction": "ne",
+      "processed": "processed/female/ne/hero_female_strike0_ne.png"
+    },
+    {
+      "name": "hero_female_strike1_ne",
+      "file": "hero_female_strike1_ne.png",
+      "source": "derived/female/ne/strike1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 78,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        49,
+        13,
+        92,
+        109
+      ],
+      "before_resize": [
+        43,
+        96
+      ],
+      "placed_size": [
+        43,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        66,
+        65,
+        109,
+        161
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1085
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "0df564a98efa9c2823c35677baf8cf35758b99690c2171c3c93178da3c75757d",
+      "sex": "female",
+      "direction": "ne",
+      "processed": "processed/female/ne/hero_female_strike1_ne.png"
+    },
+    {
+      "name": "hero_female_e",
+      "file": "hero_female_e.png",
+      "source": "derived/female/e/idle.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 64,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        53,
+        11,
+        73,
+        110
+      ],
+      "before_resize": [
+        20,
+        99
+      ],
+      "placed_size": [
+        20,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        70,
+        61,
+        90,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1104
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "7ade33152c53ce0d776c5f68f3559dd1c84f44442db06f84d6a91476c85b85f1",
+      "sex": "female",
+      "direction": "e",
+      "processed": "processed/female/e/hero_female_e.png"
+    },
+    {
+      "name": "hero_female_walk0_e",
+      "file": "hero_female_walk0_e.png",
+      "source": "derived/female/e/walk0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 67,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        37,
+        11,
+        86,
+        107
+      ],
+      "before_resize": [
+        49,
+        96
+      ],
+      "placed_size": [
+        49,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        54,
+        61,
+        103,
+        157
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1104
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "d44e640c9c20134fdbdaafb78b315a122a78cef947b1a98c342de50c54211c5b",
+      "sex": "female",
+      "direction": "e",
+      "processed": "processed/female/e/hero_female_walk0_e.png"
+    },
+    {
+      "name": "hero_female_walk1_e",
+      "file": "hero_female_walk1_e.png",
+      "source": "derived/female/e/walk1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 71,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        37,
+        11,
+        88,
+        108
+      ],
+      "before_resize": [
+        51,
+        97
+      ],
+      "placed_size": [
+        51,
+        97
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        54,
+        61,
+        105,
+        158
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1104
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "16639935600f9a2d8a98c2f4b6e9c837c139b744f3eeea02f1e0aeca8cea1d7b",
+      "sex": "female",
+      "direction": "e",
+      "processed": "processed/female/e/hero_female_walk1_e.png"
+    },
+    {
+      "name": "hero_female_strike0_e",
+      "file": "hero_female_strike0_e.png",
+      "source": "derived/female/e/strike0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        47,
+        11,
+        85,
+        110
+      ],
+      "before_resize": [
+        38,
+        99
+      ],
+      "placed_size": [
+        38,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        64,
+        61,
+        102,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1104
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "5449ccb951b70e4ec8c8216049e5ed865ee06e111ba061de153f93f2b75625e4",
+      "sex": "female",
+      "direction": "e",
+      "processed": "processed/female/e/hero_female_strike0_e.png"
+    },
+    {
+      "name": "hero_female_strike1_e",
+      "file": "hero_female_strike1_e.png",
+      "source": "derived/female/e/strike1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 68,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        46,
+        11,
+        102,
+        110
+      ],
+      "before_resize": [
+        56,
+        99
+      ],
+      "placed_size": [
+        56,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        63,
+        61,
+        119,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1104
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "dd2c9ad87786fe386df59d8fd6081e7b2245e5b554084f408a4addb61996d2bf",
+      "sex": "female",
+      "direction": "e",
+      "processed": "processed/female/e/hero_female_strike1_e.png"
+    },
+    {
+      "name": "hero_female_se",
+      "file": "hero_female_se.png",
+      "source": "derived/female/se/idle.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 65,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        48,
+        12,
+        79,
+        112
+      ],
+      "before_resize": [
+        31,
+        100
+      ],
+      "placed_size": [
+        31,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        65,
+        60,
+        96,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1125
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "c23539b10cf0c0e659d1a80887c450df5269f41e1555636421c44ce717968390",
+      "sex": "female",
+      "direction": "se",
+      "processed": "processed/female/se/hero_female_se.png"
+    },
+    {
+      "name": "hero_female_walk0_se",
+      "file": "hero_female_walk0_se.png",
+      "source": "derived/female/se/walk0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 67,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        12,
+        83,
+        113
+      ],
+      "before_resize": [
+        39,
+        101
+      ],
+      "placed_size": [
+        39,
+        101
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        60,
+        100,
+        161
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1125
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "17a4a4d1e7e7bf5d2f2586b7f56a3d4714c3ddfcc75ee0575b0c85484a1ec072",
+      "sex": "female",
+      "direction": "se",
+      "processed": "processed/female/se/hero_female_walk0_se.png"
+    },
+    {
+      "name": "hero_female_walk1_se",
+      "file": "hero_female_walk1_se.png",
+      "source": "derived/female/se/walk1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 64,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        49,
+        12,
+        80,
+        114
+      ],
+      "before_resize": [
+        31,
+        102
+      ],
+      "placed_size": [
+        31,
+        102
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        66,
+        60,
+        97,
+        162
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1125
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "2243972d19542e125858989628eb5ff1b361e37a392b99a96865e0a709ca5b3f",
+      "sex": "female",
+      "direction": "se",
+      "processed": "processed/female/se/hero_female_walk1_se.png"
+    },
+    {
+      "name": "hero_female_strike0_se",
+      "file": "hero_female_strike0_se.png",
+      "source": "derived/female/se/strike0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        46,
+        12,
+        84,
+        112
+      ],
+      "before_resize": [
+        38,
+        100
+      ],
+      "placed_size": [
+        38,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        63,
+        60,
+        101,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1125
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "3b42a28cc77b7f39ddd3d2dcefa2e80b7d8820d0de785926ec26f24fb580f129",
+      "sex": "female",
+      "direction": "se",
+      "processed": "processed/female/se/hero_female_strike0_se.png"
+    },
+    {
+      "name": "hero_female_strike1_se",
+      "file": "hero_female_strike1_se.png",
+      "source": "derived/female/se/strike1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        41,
+        12,
+        95,
+        113
+      ],
+      "before_resize": [
+        54,
+        101
+      ],
+      "placed_size": [
+        54,
+        101
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        58,
+        60,
+        112,
+        161
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1125
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "1833a63efedb6de6661eb23b4ccb09cd66c1c38fcfc082bd41180bb0cbbe77fb",
+      "sex": "female",
+      "direction": "se",
+      "processed": "processed/female/se/hero_female_strike1_se.png"
+    },
+    {
+      "name": "hero_female_s",
+      "file": "hero_female_s.png",
+      "source": "derived/female/s/idle.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        45,
+        12,
+        81,
+        111
+      ],
+      "before_resize": [
+        36,
+        99
+      ],
+      "placed_size": [
+        36,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        62,
+        61,
+        98,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1107
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "c6a1738dca5abf14e741d34746db21ce1db84e8f6f2037e8dd45df91300b5dad",
+      "sex": "female",
+      "direction": "s",
+      "processed": "processed/female/s/hero_female_s.png"
+    },
+    {
+      "name": "hero_female_walk0_s",
+      "file": "hero_female_walk0_s.png",
+      "source": "derived/female/s/walk0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 82,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        45,
+        11,
+        81,
+        113
+      ],
+      "before_resize": [
+        36,
+        102
+      ],
+      "placed_size": [
+        36,
+        102
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        62,
+        60,
+        98,
+        162
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1107
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "f58a4a278d2051714f6a95f400755a2537c77182852ca927a955ea1b1bdbc372",
+      "sex": "female",
+      "direction": "s",
+      "processed": "processed/female/s/hero_female_walk0_s.png"
+    },
+    {
+      "name": "hero_female_walk1_s",
+      "file": "hero_female_walk1_s.png",
+      "source": "derived/female/s/walk1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 80,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        47,
+        11,
+        80,
+        115
+      ],
+      "before_resize": [
+        33,
+        104
+      ],
+      "placed_size": [
+        33,
+        104
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        64,
+        60,
+        97,
+        164
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1107
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "e5ccb7e3faebf158001ed5b6d14c689163a3a67ff5b565da433b0d4204942980",
+      "sex": "female",
+      "direction": "s",
+      "processed": "processed/female/s/hero_female_walk1_s.png"
+    },
+    {
+      "name": "hero_female_strike0_s",
+      "file": "hero_female_strike0_s.png",
+      "source": "derived/female/s/strike0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 70,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        12,
+        82,
+        111
+      ],
+      "before_resize": [
+        38,
+        99
+      ],
+      "placed_size": [
+        38,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        61,
+        99,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1107
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "4cf5bae0343661b2dba121509ed4be90568376d1c25cc955bb66125f026a7de3",
+      "sex": "female",
+      "direction": "s",
+      "processed": "processed/female/s/hero_female_strike0_s.png"
+    },
+    {
+      "name": "hero_female_strike1_s",
+      "file": "hero_female_strike1_s.png",
+      "source": "derived/female/s/strike1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 80,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        11,
+        76,
+        111
+      ],
+      "before_resize": [
+        32,
+        100
+      ],
+      "placed_size": [
+        32,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        60,
+        93,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1107
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "8b8347ffbdc84e43d1df1e514acb1e3701fe2b862c21efdb219fb4ee81fca75c",
+      "sex": "female",
+      "direction": "s",
+      "processed": "processed/female/s/hero_female_strike1_s.png"
+    },
+    {
+      "name": "hero_female_sw",
+      "file": "hero_female_sw.png",
+      "source": "derived/female/sw/idle.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 65,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        48,
+        13,
+        78,
+        113
+      ],
+      "before_resize": [
+        30,
+        100
+      ],
+      "placed_size": [
+        30,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        65,
+        60,
+        95,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1127
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "d0e8d44fe5f6779f3331e63751669c0f9599a2ef2430826693736ea547cc284d",
+      "sex": "female",
+      "direction": "sw",
+      "processed": "processed/female/sw/hero_female_sw.png"
+    },
+    {
+      "name": "hero_female_walk0_sw",
+      "file": "hero_female_walk0_sw.png",
+      "source": "derived/female/sw/walk0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 69,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        43,
+        13,
+        83,
+        113
+      ],
+      "before_resize": [
+        40,
+        100
+      ],
+      "placed_size": [
+        40,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        60,
+        60,
+        100,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1127
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "7967565e94abe165f9c532d211ee804d2ee81489f082a3b2dd60fc237993633e",
+      "sex": "female",
+      "direction": "sw",
+      "processed": "processed/female/sw/hero_female_walk0_sw.png"
+    },
+    {
+      "name": "hero_female_walk1_sw",
+      "file": "hero_female_walk1_sw.png",
+      "source": "derived/female/sw/walk1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 71,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        48,
+        13,
+        80,
+        113
+      ],
+      "before_resize": [
+        32,
+        100
+      ],
+      "placed_size": [
+        32,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        65,
+        60,
+        97,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1127
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "ed09d329b53164cd4398cadd4f06904bf79b2b1bae6d643f3ea66712a21fcd41",
+      "sex": "female",
+      "direction": "sw",
+      "processed": "processed/female/sw/hero_female_walk1_sw.png"
+    },
+    {
+      "name": "hero_female_strike0_sw",
+      "file": "hero_female_strike0_sw.png",
+      "source": "derived/female/sw/strike0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        48,
+        13,
+        77,
+        113
+      ],
+      "before_resize": [
+        29,
+        100
+      ],
+      "placed_size": [
+        29,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        65,
+        60,
+        94,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1127
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "d4694609db5c4df3b63f48d9a57aea4a3b72c4054efbecd910da09f980ce4584",
+      "sex": "female",
+      "direction": "sw",
+      "processed": "processed/female/sw/hero_female_strike0_sw.png"
+    },
+    {
+      "name": "hero_female_strike1_sw",
+      "file": "hero_female_strike1_sw.png",
+      "source": "derived/female/sw/strike1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 74,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        13,
+        78,
+        113
+      ],
+      "before_resize": [
+        34,
+        100
+      ],
+      "placed_size": [
+        34,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        60,
+        95,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1127
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "7d6c51a5da7cfe402e5095e1f0e40084f0e345dbe73704a8e351847e05a773c8",
+      "sex": "female",
+      "direction": "sw",
+      "processed": "processed/female/sw/hero_female_strike1_sw.png"
+    },
+    {
+      "name": "hero_female_w",
+      "file": "hero_female_w.png",
+      "source": "derived/female/w/idle.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 65,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        52,
+        8,
+        73,
+        114
+      ],
+      "before_resize": [
+        21,
+        106
+      ],
+      "placed_size": [
+        21,
+        106
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        69,
+        54,
+        90,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1141
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "4e6977b2ca6cb711aa5fb1bfbaf82e7a764ef75aacff53a78ecb17612654e48e",
+      "sex": "female",
+      "direction": "w",
+      "processed": "processed/female/w/hero_female_w.png"
+    },
+    {
+      "name": "hero_female_walk0_w",
+      "file": "hero_female_walk0_w.png",
+      "source": "derived/female/w/walk0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 72,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        39,
+        9,
+        89,
+        112
+      ],
+      "before_resize": [
+        50,
+        103
+      ],
+      "placed_size": [
+        50,
+        103
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        56,
+        55,
+        106,
+        158
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1141
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "98dc3df88cfc251c10894419f1cfbf26005ebbd42241fd864c20070deec3bb68",
+      "sex": "female",
+      "direction": "w",
+      "processed": "processed/female/w/hero_female_walk0_w.png"
+    },
+    {
+      "name": "hero_female_walk1_w",
+      "file": "hero_female_walk1_w.png",
+      "source": "derived/female/w/walk1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        37,
+        8,
+        92,
+        111
+      ],
+      "before_resize": [
+        55,
+        103
+      ],
+      "placed_size": [
+        55,
+        103
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        54,
+        54,
+        109,
+        157
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1141
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "0f74fbe6aeae0d7f3817625df9b343c648b12b11a7040f2dd0ac3e3f2fec4867",
+      "sex": "female",
+      "direction": "w",
+      "processed": "processed/female/w/hero_female_walk1_w.png"
+    },
+    {
+      "name": "hero_female_strike0_w",
+      "file": "hero_female_strike0_w.png",
+      "source": "derived/female/w/strike0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 71,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        8,
+        85,
+        113
+      ],
+      "before_resize": [
+        41,
+        105
+      ],
+      "placed_size": [
+        41,
+        105
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        54,
+        102,
+        159
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1141
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "f20667abc04304b37e6d2d7a8df162416706dd2f0251bd2168f706d7ea8d41b6",
+      "sex": "female",
+      "direction": "w",
+      "processed": "processed/female/w/hero_female_strike0_w.png"
+    },
+    {
+      "name": "hero_female_strike1_w",
+      "file": "hero_female_strike1_w.png",
+      "source": "derived/female/w/strike1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 68,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        31,
+        9,
+        83,
+        113
+      ],
+      "before_resize": [
+        52,
+        104
+      ],
+      "placed_size": [
+        52,
+        104
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        48,
+        55,
+        100,
+        159
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1141
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "e74459466e29607052abd900c0adfaf8fc85f35257d4cfd016adef8486b28a2a",
+      "sex": "female",
+      "direction": "w",
+      "processed": "processed/female/w/hero_female_strike1_w.png"
+    },
+    {
+      "name": "hero_female_nw",
+      "file": "hero_female_nw.png",
+      "source": "derived/female/nw/idle.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 59,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        49,
+        12,
+        78,
+        110
+      ],
+      "before_resize": [
+        29,
+        98
+      ],
+      "placed_size": [
+        29,
+        98
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        66,
+        62,
+        95,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1102
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "496f341e9137922b06c9b4a51d80bf34bbcd79f5f3550b782e626b2507ddaabf",
+      "sex": "female",
+      "direction": "nw",
+      "processed": "processed/female/nw/hero_female_nw.png"
+    },
+    {
+      "name": "hero_female_walk0_nw",
+      "file": "hero_female_walk0_nw.png",
+      "source": "derived/female/nw/walk0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 70,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        12,
+        82,
+        110
+      ],
+      "before_resize": [
+        38,
+        98
+      ],
+      "placed_size": [
+        38,
+        98
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        62,
+        99,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1102
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "d3cb6aaa67313a1d08cc8fd573ea39bda20f2b1d63c83941ac03ca60d979793f",
+      "sex": "female",
+      "direction": "nw",
+      "processed": "processed/female/nw/hero_female_walk0_nw.png"
+    },
+    {
+      "name": "hero_female_walk1_nw",
+      "file": "hero_female_walk1_nw.png",
+      "source": "derived/female/nw/walk1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 74,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        43,
+        13,
+        82,
+        111
+      ],
+      "before_resize": [
+        39,
+        98
+      ],
+      "placed_size": [
+        39,
+        98
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        60,
+        63,
+        99,
+        161
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1102
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "c67be741c58dd0c6d30447fd0d058a5c4278b86c0c333c3ea379c736c426b864",
+      "sex": "female",
+      "direction": "nw",
+      "processed": "processed/female/nw/hero_female_walk1_nw.png"
+    },
+    {
+      "name": "hero_female_strike0_nw",
+      "file": "hero_female_strike0_nw.png",
+      "source": "derived/female/nw/strike0.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 69,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        45,
+        13,
+        85,
+        108
+      ],
+      "before_resize": [
+        40,
+        95
+      ],
+      "placed_size": [
+        40,
+        95
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        62,
+        63,
+        102,
+        158
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1102
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "6599ec3da2d1be05ee1d71e208258e8e8d39aec59b7160ad9ad8eb51ec428b5b",
+      "sex": "female",
+      "direction": "nw",
+      "processed": "processed/female/nw/hero_female_strike0_nw.png"
+    },
+    {
+      "name": "hero_female_strike1_nw",
+      "file": "hero_female_strike1_nw.png",
+      "source": "derived/female/nw/strike1.png",
+      "acceptance": "staged_pending_visual_and_runtime_review",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 66,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        33,
+        13,
+        85,
+        108
+      ],
+      "before_resize": [
+        52,
+        95
+      ],
+      "placed_size": [
+        52,
+        95
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        50,
+        63,
+        102,
+        158
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1102
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "1e3daa5c0f06f40dc960c4a5b24c11765edf37e0af39495b9d43b4e1796464db",
+      "sex": "female",
+      "direction": "nw",
+      "processed": "processed/female/nw/hero_female_strike1_nw.png"
+    }
+  ],
+  "loops": [
+    {
+      "sex": "male",
+      "direction": "n",
+      "action": "walk",
+      "frames": [
+        "hero_male_walk0_n",
+        "hero_male_walk1_n"
+      ],
+      "durations_ms": [
+        140,
+        140
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "male",
+      "direction": "n",
+      "action": "attack",
+      "frames": [
+        "hero_male_strike0_n",
+        "hero_male_strike1_n",
+        "hero_male_strike2_n"
+      ],
+      "durations_ms": [
+        80,
+        100,
+        160
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "male",
+      "direction": "ne",
+      "action": "walk",
+      "frames": [
+        "hero_male_walk0_ne",
+        "hero_male_walk1_ne"
+      ],
+      "durations_ms": [
+        140,
+        140
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "male",
+      "direction": "ne",
+      "action": "attack",
+      "frames": [
+        "hero_male_strike0_ne",
+        "hero_male_strike1_ne",
+        "hero_male_strike2_ne"
+      ],
+      "durations_ms": [
+        80,
+        100,
+        160
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "male",
+      "direction": "e",
+      "action": "walk",
+      "frames": [
+        "hero_male_walk0_e",
+        "hero_male_walk1_e"
+      ],
+      "durations_ms": [
+        140,
+        140
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "male",
+      "direction": "e",
+      "action": "attack",
+      "frames": [
+        "hero_male_strike0_e",
+        "hero_male_strike1_e",
+        "hero_male_strike2_e"
+      ],
+      "durations_ms": [
+        80,
+        100,
+        160
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "male",
+      "direction": "se",
+      "action": "walk",
+      "frames": [
+        "hero_male_walk0_se",
+        "hero_male_walk1_se"
+      ],
+      "durations_ms": [
+        140,
+        140
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "male",
+      "direction": "se",
+      "action": "attack",
+      "frames": [
+        "hero_male_strike0_se",
+        "hero_male_strike1_se",
+        "hero_male_strike2_se"
+      ],
+      "durations_ms": [
+        80,
+        100,
+        160
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "male",
+      "direction": "s",
+      "action": "walk",
+      "frames": [
+        "hero_male_walk0_s",
+        "hero_male_walk1_s"
+      ],
+      "durations_ms": [
+        140,
+        140
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "male",
+      "direction": "s",
+      "action": "attack",
+      "frames": [
+        "hero_male_strike0_s",
+        "hero_male_strike1_s",
+        "hero_male_strike2_s"
+      ],
+      "durations_ms": [
+        80,
+        100,
+        160
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "male",
+      "direction": "sw",
+      "action": "walk",
+      "frames": [
+        "hero_male_walk0_sw",
+        "hero_male_walk1_sw"
+      ],
+      "durations_ms": [
+        140,
+        140
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "male",
+      "direction": "sw",
+      "action": "attack",
+      "frames": [
+        "hero_male_strike0_sw",
+        "hero_male_strike1_sw",
+        "hero_male_strike2_sw"
+      ],
+      "durations_ms": [
+        80,
+        100,
+        160
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "male",
+      "direction": "w",
+      "action": "walk",
+      "frames": [
+        "hero_male_walk0_w",
+        "hero_male_walk1_w"
+      ],
+      "durations_ms": [
+        140,
+        140
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "male",
+      "direction": "w",
+      "action": "attack",
+      "frames": [
+        "hero_male_strike0_w",
+        "hero_male_strike1_w",
+        "hero_male_strike2_w"
+      ],
+      "durations_ms": [
+        80,
+        100,
+        160
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "male",
+      "direction": "nw",
+      "action": "walk",
+      "frames": [
+        "hero_male_walk0_nw",
+        "hero_male_walk1_nw"
+      ],
+      "durations_ms": [
+        140,
+        140
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "male",
+      "direction": "nw",
+      "action": "attack",
+      "frames": [
+        "hero_male_strike0_nw",
+        "hero_male_strike1_nw",
+        "hero_male_strike2_nw"
+      ],
+      "durations_ms": [
+        80,
+        100,
+        160
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "female",
+      "direction": "n",
+      "action": "walk",
+      "frames": [
+        "hero_female_walk0_n",
+        "hero_female_walk1_n"
+      ],
+      "durations_ms": [
+        140,
+        140
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "female",
+      "direction": "n",
+      "action": "attack",
+      "frames": [
+        "hero_female_strike0_n",
+        "hero_female_strike1_n",
+        "hero_female_strike2_n"
+      ],
+      "durations_ms": [
+        80,
+        100,
+        160
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "female",
+      "direction": "ne",
+      "action": "walk",
+      "frames": [
+        "hero_female_walk0_ne",
+        "hero_female_walk1_ne"
+      ],
+      "durations_ms": [
+        140,
+        140
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "female",
+      "direction": "ne",
+      "action": "attack",
+      "frames": [
+        "hero_female_strike0_ne",
+        "hero_female_strike1_ne",
+        "hero_female_strike2_ne"
+      ],
+      "durations_ms": [
+        80,
+        100,
+        160
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "female",
+      "direction": "e",
+      "action": "walk",
+      "frames": [
+        "hero_female_walk0_e",
+        "hero_female_walk1_e"
+      ],
+      "durations_ms": [
+        140,
+        140
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "female",
+      "direction": "e",
+      "action": "attack",
+      "frames": [
+        "hero_female_strike0_e",
+        "hero_female_strike1_e",
+        "hero_female_strike2_e"
+      ],
+      "durations_ms": [
+        80,
+        100,
+        160
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "female",
+      "direction": "se",
+      "action": "walk",
+      "frames": [
+        "hero_female_walk0_se",
+        "hero_female_walk1_se"
+      ],
+      "durations_ms": [
+        140,
+        140
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "female",
+      "direction": "se",
+      "action": "attack",
+      "frames": [
+        "hero_female_strike0_se",
+        "hero_female_strike1_se",
+        "hero_female_strike2_se"
+      ],
+      "durations_ms": [
+        80,
+        100,
+        160
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "female",
+      "direction": "s",
+      "action": "walk",
+      "frames": [
+        "hero_female_walk0_s",
+        "hero_female_walk1_s"
+      ],
+      "durations_ms": [
+        140,
+        140
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "female",
+      "direction": "s",
+      "action": "attack",
+      "frames": [
+        "hero_female_strike0_s",
+        "hero_female_strike1_s",
+        "hero_female_strike2_s"
+      ],
+      "durations_ms": [
+        80,
+        100,
+        160
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "female",
+      "direction": "sw",
+      "action": "walk",
+      "frames": [
+        "hero_female_walk0_sw",
+        "hero_female_walk1_sw"
+      ],
+      "durations_ms": [
+        140,
+        140
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "female",
+      "direction": "sw",
+      "action": "attack",
+      "frames": [
+        "hero_female_strike0_sw",
+        "hero_female_strike1_sw",
+        "hero_female_strike2_sw"
+      ],
+      "durations_ms": [
+        80,
+        100,
+        160
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "female",
+      "direction": "w",
+      "action": "walk",
+      "frames": [
+        "hero_female_walk0_w",
+        "hero_female_walk1_w"
+      ],
+      "durations_ms": [
+        140,
+        140
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "female",
+      "direction": "w",
+      "action": "attack",
+      "frames": [
+        "hero_female_strike0_w",
+        "hero_female_strike1_w",
+        "hero_female_strike2_w"
+      ],
+      "durations_ms": [
+        80,
+        100,
+        160
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "female",
+      "direction": "nw",
+      "action": "walk",
+      "frames": [
+        "hero_female_walk0_nw",
+        "hero_female_walk1_nw"
+      ],
+      "durations_ms": [
+        140,
+        140
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    },
+    {
+      "sex": "female",
+      "direction": "nw",
+      "action": "attack",
+      "frames": [
+        "hero_female_strike0_nw",
+        "hero_female_strike1_nw",
+        "hero_female_strike2_nw"
+      ],
+      "durations_ms": [
+        80,
+        100,
+        160
+      ],
+      "status": "played_as_final_combined_browser_loop_and_inspected_strip; provisional_gameplay_candidate",
+      "acceptance_boundary": "No claim of final weapon overlay or production movement quality; root game review owns this gate."
+    }
+  ],
+  "runtime_staged_count": 96,
+  "review_notes": [
+    "All16 facings and32 clips staged for root-authorized gameplay candidate review.",
+    "Final repaired maleNE/femaleNE/femaleNW/maleSE/maleSW loops included.",
+    "E/W side-view support ownership is less legible than front/back or diagonal views.",
+    "Two contact walk poses omit passing phase; idle recovery is explicit reused source.",
+    "Source body/hair/cloth drift remains; no per-pose fitting was applied to conceal it."
+  ]
+}

@@ -1,0 +1,261 @@
+{
+  "direction": "ne",
+  "selected_files_frozen": true,
+  "files": [
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\idle.png",
+      "sha256": "0118d58e139564f0ee83e5c7b27a1b07b45de1c33cbb0ba47ac64771c0e48ec9",
+      "bytes": 2059930
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\idle.prompt.txt",
+      "sha256": "4f066c8ac6793d4f7c124a6ada1d2f6769b046d453befb985825a8717bb98d40",
+      "bytes": 867
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\idle.tool-output.json",
+      "sha256": "8c3a997fa21b495e68c35efc993299350b90826369668e4c41d8a710ac1d57a3",
+      "bytes": 1357
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\manifest.json",
+      "sha256": "6ac0f280620073d9f366b034b833bdc7e593bad0296863aad7083c56f907f30c",
+      "bytes": 11509
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\reference-female-ne-walk1.png",
+      "sha256": "49606a8a849b654b364659c6d10cc5ca323bba397e175ce1609df5acd70be018",
+      "bytes": 2079725
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike0-rejected-scale.png",
+      "sha256": "f402bbe56a41a9f3ded71b97279b59ad35cf9b772da112a052954d0cb8aca906",
+      "bytes": 1869702
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike0-rejected-scale.prompt.txt",
+      "sha256": "2d8f85f75f4ecc04f8a066bcb88ff24eca1779d261611ea14c4421afcca86c71",
+      "bytes": 966
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike0-rejected-scale.tool-output.json",
+      "sha256": "49c75e89f22ca6a48b0b70738e10f05519569988d84544192a991016528cd8e2",
+      "bytes": 1756
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike0-repair.png",
+      "sha256": "4a1480ee81f5d1507234e721fdffa2ba9b5a854e38121f3576cfae416091d2f2",
+      "bytes": 2024757
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike0-repair.prompt.txt",
+      "sha256": "5ea3c936b7511ac12f79cb458c1b385c7da7393b851df68a71f7eae08ccc3905",
+      "bytes": 867
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike0-repair.tool-output.json",
+      "sha256": "3f0d7780d160f3644ec20e9b7a1c544eda4cf8b17d64f3b13d71654bbf43a51b",
+      "bytes": 2141
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike0.png",
+      "sha256": "4a1480ee81f5d1507234e721fdffa2ba9b5a854e38121f3576cfae416091d2f2",
+      "bytes": 2024757
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike0.prompt.txt",
+      "sha256": "5ea3c936b7511ac12f79cb458c1b385c7da7393b851df68a71f7eae08ccc3905",
+      "bytes": 867
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike0.tool-output.json",
+      "sha256": "3f0d7780d160f3644ec20e9b7a1c544eda4cf8b17d64f3b13d71654bbf43a51b",
+      "bytes": 2141
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike1-left-repair.png",
+      "sha256": "e819ab907d1e3aae67f2c637e4f6848c692543a10cfff1313e595fc9531d2b12",
+      "bytes": 1962025
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike1-left-repair.prompt.txt",
+      "sha256": "5513bba57d782914c39995c4407a7a1b5d4f691700aa660a628481d064fc0507",
+      "bytes": 880
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike1-left-repair.tool-output.json",
+      "sha256": "051cc9a1fe58e5ce2be660b778e711786dea44eae714d40b5ca039d852cb5dc0",
+      "bytes": 2155
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike1-rejected-repeated-anticipation.png",
+      "sha256": "0d327868af5561077f8dde0ad651c802137472f68370c182300c9fd84d510d6f",
+      "bytes": 1895237
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike1-rejected-repeated-anticipation.prompt.txt",
+      "sha256": "a6b3041523bb4c55c28bfd37e7cdd738ba4ad6fd5ba5e2030b26d63766c68fe3",
+      "bytes": 999
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike1-rejected-repeated-anticipation.tool-output.json",
+      "sha256": "de435280fc281e7b10f9866ccc789a1e0b55ab1f64f803fed87a072353270dc3",
+      "bytes": 2155
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike1-repair.png",
+      "sha256": "e218c94ea3b53d395180f2a4c13ada0162f5c307c766275c6918014ef8cbbd97",
+      "bytes": 1862441
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike1-repair.prompt.txt",
+      "sha256": "3bc5061d352e8ad594665926fb18c4cbbb814786e2b9e1bd47e7219da34b3b0d",
+      "bytes": 1019
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike1-repair.tool-output.json",
+      "sha256": "c50420424626d6c276de497b9296e6158a63c64f7565d01fd428f3a2582be373",
+      "bytes": 2139
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike1.png",
+      "sha256": "e819ab907d1e3aae67f2c637e4f6848c692543a10cfff1313e595fc9531d2b12",
+      "bytes": 1962025
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike1.prompt.txt",
+      "sha256": "5513bba57d782914c39995c4407a7a1b5d4f691700aa660a628481d064fc0507",
+      "bytes": 880
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\strike1.tool-output.json",
+      "sha256": "051cc9a1fe58e5ce2be660b778e711786dea44eae714d40b5ca039d852cb5dc0",
+      "bytes": 2155
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk0-geometry-repair.png",
+      "sha256": "b45e58f42d7d6dd00cb34722f49d648a16141625d27ca24db28b6aea488fb10c",
+      "bytes": 2046716
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk0-geometry-repair.prompt.txt",
+      "sha256": "7e55a7d677947a2780e2afb8a028b2aa5b65e7cbdfccca4b10a4ef439512a276",
+      "bytes": 1119
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk0-geometry-repair.tool-output.json",
+      "sha256": "689b54ec6a8a76ce4d2026aa4ca46ebf519def8a600e44a3b352f2510c6da6de",
+      "bytes": 2135
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk0-rejected-counter-swing.png",
+      "sha256": "ac19406b92724e5faeffad6f0cef89790bf3b44523b97fd49e9dd8966882e206",
+      "bytes": 2017387
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk0-rejected-initial.png",
+      "sha256": "ac19406b92724e5faeffad6f0cef89790bf3b44523b97fd49e9dd8966882e206",
+      "bytes": 2017387
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk0-rejected-initial.prompt.txt",
+      "sha256": "a34592f6488921986cabd0e6b5b102a44dddefd6db04833eb5de3b58a8511a65",
+      "bytes": 1071
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk0-rejected-initial.tool-output.json",
+      "sha256": "4011a8801bdc09b82a1af9d137281b09934314400042d5f4eaef628b05bd796a",
+      "bytes": 1756
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk0-repair.png",
+      "sha256": "581d1f56a048ba4d73e5cf93bc22ebd70b92ab5e3983630fa3c8240d1e880143",
+      "bytes": 1985276
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk0-repair.prompt.txt",
+      "sha256": "a6a833172a1833409449361fa6b1299100e083459490959da0cc0027d8582937",
+      "bytes": 971
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk0-repair.tool-output.json",
+      "sha256": "6b3db2fd569a589dbcfb805e4accd8afba005f0579e37a68968447ff6dde6e3c",
+      "bytes": 2183
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk0.png",
+      "sha256": "65d9203eac0a231432f6066c38c35dec7bdf143e961c0c399401f41e587ea92e",
+      "bytes": 1956016
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk0.prompt.txt",
+      "sha256": "2d1d8ae3dfde8b19619696a2f007c52dec3e507b1cb6a5c43f206cb0c731a339",
+      "bytes": 1109
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk0.tool-output.json",
+      "sha256": "bff2d72c525a1749669d0e5cfa3043b608ed6af31d9db79055110924525dd6dd",
+      "bytes": 2135
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk1-female-geometry-repair.png",
+      "sha256": "6ddf87ebd151196026f288383889ce6dfc45859e5056b10942c17d737c85bddf",
+      "bytes": 2014607
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk1-female-geometry-repair.prompt.txt",
+      "sha256": "6969ee769f73b81601790bf6259657e0c26534695034af4f4da5fed9da5af543",
+      "bytes": 971
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk1-female-geometry-repair.tool-output.json",
+      "sha256": "b503caef818319388d00c8fa25c443f7c2e7b7081b0f8e45b484c0232bb7ea0d",
+      "bytes": 1762
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk1-geometry-repair.png",
+      "sha256": "65d9203eac0a231432f6066c38c35dec7bdf143e961c0c399401f41e587ea92e",
+      "bytes": 1956016
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk1-geometry-repair.prompt.txt",
+      "sha256": "2d1d8ae3dfde8b19619696a2f007c52dec3e507b1cb6a5c43f206cb0c731a339",
+      "bytes": 1109
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk1-geometry-repair.tool-output.json",
+      "sha256": "bff2d72c525a1749669d0e5cfa3043b608ed6af31d9db79055110924525dd6dd",
+      "bytes": 2135
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk1-rejected-extra-arm.png",
+      "sha256": "3bfe3fddc15e9db2f315bb48027ad24c56ec00fe9a792ebd70d9ffb968cef7f9",
+      "bytes": 1789609
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk1-rejected-extra-arm.prompt.txt",
+      "sha256": "3e6110ed690fc979279012660c22ee6aee20742bf4b3e963b32e31bcdd189b72",
+      "bytes": 1120
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk1-rejected-extra-arm.tool-output.json",
+      "sha256": "69fcda3d42ac94e086020c266597d6bbda97d74e4227d5eaa6cca1cf8f382818",
+      "bytes": 2137
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk1.png",
+      "sha256": "6ddf87ebd151196026f288383889ce6dfc45859e5056b10942c17d737c85bddf",
+      "bytes": 2014607
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk1.prompt.txt",
+      "sha256": "6969ee769f73b81601790bf6259657e0c26534695034af4f4da5fed9da5af543",
+      "bytes": 971
+    },
+    {
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\ne\\walk1.tool-output.json",
+      "sha256": "b503caef818319388d00c8fa25c443f7c2e7b7081b0f8e45b484c0232bb7ea0d",
+      "bytes": 1762
+    }
+  ]
+}

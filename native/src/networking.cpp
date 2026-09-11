@@ -291,6 +291,42 @@ bool scion_record_mortal(const JsonValue& chronicle, const std::string& house_id
 
 // ── N4 item wire shapes (server/player/handlers/dev.js buildStateSnapshot) ──
 
+const JsonValue* find_scion_record(const JsonValue& chronicle, const std::string& house_id,
+                                    const std::string& scion_id) {
+  const auto* houses = chronicle["houses"].array();
+  if (!houses) return nullptr;
+  for (const auto& house : *houses) {
+    if (as_string(house.get("id")) != house_id) continue;
+    for (const char* roster : {"scions", "crypt"}) {
+      const auto* entries = house[roster].array();
+      if (!entries) continue;
+      for (const auto& entry : *entries)
+        if (as_string(entry.get("id")) == scion_id) return &entry;
+    }
+  }
+  return nullptr;
+}
+const JsonValue* find_scion_house(const JsonValue& chronicle, const std::string& scion_id,
+                                bool include_crypt = false) {
+  const auto* houses = chronicle["houses"].array();
+  if (!houses || scion_id.empty()) return nullptr;
+  for (const auto& house : *houses) {
+    for (const char* roster : {"scions", "crypt"}) {
+      if (!include_crypt && std::string(roster) == "crypt") continue;
+      const auto* entries = house[roster].array();
+      if (!entries) continue;
+      for (const auto& entry : *entries)
+        if (as_string(entry.get("id")) == scion_id) return &house;
+    }
+  }
+  return nullptr;
+}
+std::string scion_record_appearance(const JsonValue& chronicle, const std::string& house_id,
+                                    const std::string& scion_id) {
+  const auto* record = find_scion_record(chronicle, house_id, scion_id);
+  return player_appearance_id(record ? as_string(record->get("appearance")) : "");
+}
+
 JsonValue ratings_json(const ChannelRatings& ratings) {
   JsonValue::Object out;
   put(out, "stab", ratings.stab);
@@ -735,6 +771,7 @@ void ProtocolSession::set_broadcast(std::function<void(const Envelope&)> broadca
 std::int64_t ProtocolSession::now_ms() { return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count(); }
 std::string ProtocolSession::player_payload() const {
   JsonValue::Object player; const auto position=world_->position();
+  put(player,"appearance",scion_record_appearance(chronicle_,active_house_id_,active_scion_id_));
   put(player,"uuid",identity_); put(player,"username",!username_.empty()?username_:(active_scion_name_.empty()?identity_:active_scion_name_)); put(player,"socket_id",socket_id_); put(player,"sceneId",world_->scene_id()); put(player,"x",position.x); put(player,"y",position.y); put(player,"facing",world_->facing());
   { const auto* actor=simulation_->actor(simulation_->scion().actor_id); put(player,"level",actor?actor->stats.level:1); }
   put(player,"passiveTree",passive_tree_json());
@@ -910,12 +947,14 @@ const int kWagonPitches[8][2] = {{47,112},{42,109},{34,109},{29,112},{29,118},{3
 }  // namespace
 namespace {
 struct TownNpc { int id; const char* name; const char* examine; int x; int y; const char* actions[2]; int action_count; };
-// server/core/data/npcs.js - the Crossroads roster.
+// The existing Crossroads services share a compact north-facing arrival court.
+// IDs and verbs retain their authority; context menus and range checks use
+// these same positions around the fountain and its adjacent arrival tile.
 const TownNpc kTownNpcs[] = {
-    {1, "Aldwyn the Guide", "A weathered wayfinder who watches over the Crossroads' newest scions.", 34, 116, {"talk", "examine"}, 2},
-    {2, "Mara, General Trader", "Keeps the general stall at the Crossroads bazaar. Buys most things, sells the rest.", 49, 103, {"trade", "examine"}, 2},
-    {3, "Ludovicus, Weapons Trader", "Sells iron for the road. Claims every axe on his boards outlived its first three owners.", 19, 113, {"examine", "trade"}, 2},
-    {4, "Rhea of the Countinghouse", "Keeps the countinghouse tent: personal storage, honest scales, no questions.", 31, 121, {"examine", "bank"}, 2},
+    {1, "Aldwyn the Guide", "A weathered wayfinder who watches over the Crossroads' newest scions.", 35, 114, {"talk", "examine"}, 2},
+    {2, "Mara, General Trader", "Keeps the general stall at the Crossroads bazaar. Buys most things, sells the rest.", 41, 112, {"trade", "examine"}, 2},
+    {3, "Ludovicus, Weapons Trader", "Sells iron for the road. Claims every axe on his boards outlived its first three owners.", 34, 111, {"examine", "trade"}, 2},
+    {4, "Rhea of the Countinghouse", "Keeps the countinghouse tent: personal storage, honest scales, no questions.", 38, 110, {"examine", "bank"}, 2},
 };
 }  // namespace
 
@@ -956,7 +995,7 @@ JsonValue ProtocolSession::scene_payload() const {
   return JsonValue(std::move(scene));
 }
 JsonValue ProtocolSession::movement_step_payload() const {
-  const auto& step=world_->last_step(); JsonValue::Object value; put(value,"sequence",static_cast<double>(step.sequence)); put(value,"startedAt",static_cast<double>(step.started_at_ms)); put(value,"duration",step.duration_ms); if(step.direction.empty()) put(value,"direction",nullptr); else put(value,"direction",step.direction); put(value,"blocked",step.blocked); return JsonValue(std::move(value));
+  const auto& step=world_->last_step(); JsonValue::Object value; put(value,"sequence",static_cast<double>(step.sequence)); put(value,"startedAt",static_cast<double>(step.started_at_ms)); put(value,"duration",step.duration_ms); if(step.direction.empty()) put(value,"direction",nullptr); else put(value,"direction",step.direction); put(value,"blocked",step.blocked); put(value,"action",step.action); put(value,"fromX",step.from.x); put(value,"fromY",step.from.y); return JsonValue(std::move(value));
 }
 namespace {
 long long xp_for_level(int level);
@@ -1104,6 +1143,7 @@ JsonValue ProtocolSession::snapshot() const {
     put(state,"sceneMetadata",std::move(town_meta));
   }
   // N4: the real item pipeline snapshot (dev.js buildStateSnapshot).
+  put(state,"appearance",scion_record_appearance(chronicle_,active_house_id_,active_scion_id_));
   put(state,"level",actor?actor->stats.level:1);
   JsonValue::Array items; for (const auto& item:inventory_.items()) items.emplace_back(snapshot_item_json(item)); put(state,"inventory",std::move(items));
   JsonValue::Array details; for (const auto& item:inventory_.items()) details.emplace_back(item_identity_json(item)); put(state,"inventoryDetails",std::move(details));
@@ -1164,8 +1204,11 @@ void ProtocolSession::emit_ground_change(const std::function<void(const Envelope
   // `data`, so wrap the array at data.data like core:refresh:inventory.
   const JsonValue items = dropped_items_json();
   JsonValue::Object body; put(body, "data", items);
-  emit_world(Envelope{"world:itemDropped", JsonValue(body)}, emit);
-  emit_world(Envelope{"item:change", JsonValue(std::move(body))}, emit);
+  Envelope dropped{"world:itemDropped", JsonValue(body)};
+  dropped.meta = JsonValue::Object{{"sceneId", world_->scene_id()}};
+  emit_world(dropped, emit);
+  dropped.event = "item:change";
+  emit_world(dropped, emit);
 }
 void ProtocolSession::emit_equip_state(const std::function<void(const Envelope&)>& emit) const {
   // JS player:equippedAnItem carries the public projection (wear). Native
@@ -1792,7 +1835,8 @@ void ProtocolSession::handle_npc_talk(const JsonValue& payload, const std::funct
   const int npc_id = as_int(item ? item->get("id") : nullptr, -1);
   if (npc_id != 1 || world_->in_instance()) return;
   const Vec2 tile = tile_movement::occupied_tile(world_->position());
-  if ((std::max)(std::abs(tile.x - 34), std::abs(tile.y - 116)) > 1) return;
+  const auto& guide = kTownNpcs[0];
+  if ((std::max)(std::abs(tile.x - guide.x), std::abs(tile.y - guide.y)) > 1) return;
   if (first_goal_stage_ == "available") {
     first_goal_stage_ = "clear-floor";
     first_goal_started_ms_ = now_ms();
@@ -2363,6 +2407,14 @@ void ProtocolSession::handle_extract(const std::function<void(const Envelope&)>&
     emit_message(emit, "There is no extraction here.");
     return;
   }
+  const auto* actor = simulation_->actor(simulation_->scion().actor_id);
+  const Vec2 at = tile_movement::occupied_tile(world_->position());
+  const auto exit = world_->metadata().stairs_up;
+  if (!actor || actor->stats.life <= 0 ||
+      (std::max)(std::abs(at.x - exit.x), std::abs(at.y - exit.y)) > 1) {
+    emit_message(emit, "Reach the exit stairs to return to the surface.");
+    return;
+  }
   world_->return_to_surface();
   emit_movement(emit);
   emit_message(emit, "The party returns to the surface.");
@@ -2516,7 +2568,7 @@ void ProtocolSession::ensure_chronicle_house(const std::string& id, const std::s
   (*root)["activeHouseId"] = JsonValue(id);
 }
 void ProtocolSession::ensure_chronicle_scion(const std::string& house_id, const std::string& id,
-                                             const std::string& name, bool mortal) {
+                                             const std::string& name, bool mortal, const std::string& appearance) {
   JsonValue::Object* root = chronicle_.object();
   if (!root) return;
   auto houses_it = root->find("houses");
@@ -2537,6 +2589,7 @@ void ProtocolSession::ensure_chronicle_scion(const std::string& house_id, const 
     JsonValue::Object scion;
     put(scion, "id", id);
     put(scion, "name", name);
+    put(scion, "appearance", player_appearance_id(appearance));
     put(scion, "level", 1);
     put(scion, "mortal", mortal);
     put(scion, "deeds", JsonValue::Array{});
@@ -2546,7 +2599,7 @@ void ProtocolSession::ensure_chronicle_scion(const std::string& house_id, const 
 }
 void ProtocolSession::emit_login(const std::function<void(const Envelope&)>& emit) const { Envelope response{"player:login",JsonValue::Object{}}; parse_json(login_payload(),response.data); emit(response); }
 void ProtocolSession::emit_world(const Envelope& envelope, const std::function<void(const Envelope&)>& emit) const { if (broadcast_) broadcast_(envelope); else emit(envelope); }
-void ProtocolSession::emit_transition(const std::function<void(const Envelope&)>& emit, const char* event) const { JsonValue::Object data; put(data,"player",JsonValue::Object{{"socket_id",socket_id_}}); put(data,"scene",scene_payload()); JsonValue player_state; parse_json(player_payload(),player_state); JsonValue::Object state_fields; if (const auto* fields=player_state.object()) { for (const auto& key:{"uuid","x","y","sceneId"}) if (const auto* field=player_state.get(key)) put(state_fields,key,*field); } put(data,"playerState",std::move(state_fields)); emit_world(Envelope{event,JsonValue(std::move(data))},emit); }
+void ProtocolSession::emit_transition(const std::function<void(const Envelope&)>& emit, const char* event) const { JsonValue::Object data; put(data,"player",JsonValue::Object{{"socket_id",socket_id_}}); put(data,"scene",scene_payload()); JsonValue player_state; parse_json(player_payload(),player_state); JsonValue::Object state_fields; if (const auto* fields=player_state.object()) { for (const auto& key:{"uuid","x","y","sceneId","appearance"}) if (const auto* field=player_state.get(key)) put(state_fields,key,*field); } put(data,"playerState",std::move(state_fields)); emit_world(Envelope{event,JsonValue(std::move(data))},emit); }
 void ProtocolSession::emit_movement(const std::function<void(const Envelope&)>& emit) const { JsonValue data; parse_json(player_payload(),data); Envelope movement{"player:movement",std::move(data)}; movement.meta=movement_step_payload(); emit_world(movement,emit); }
 void ProtocolSession::emit_message(const std::function<void(const Envelope&)>& emit, const std::string& text) const { emit(Envelope{"game:send:message",JsonValue::Object{{"text",text}}}); }
 void ProtocolSession::handle(const Envelope& envelope, const std::function<void(const Envelope&)>& emit) {
@@ -2677,6 +2730,41 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     }
     return;
   }
+  if (envelope.event == "player:skill:trigger" &&
+      as_string(payload ? payload->get("skillId") : nullptr) == "dash") {
+    auto* actor = simulation_->actor(simulation_->scion().actor_id);
+    if (!actor || actor->stats.life <= 0 || !world_->in_instance()) return;
+    const std::string scene_before = world_->scene_id();
+    const int depth_before = world_->metadata().depth;
+    const std::string direction = as_string(payload ? payload->get("direction") : nullptr);
+    if (!world_->dash(direction, now_ms())) return;
+    emit_movement(emit);
+    auto_pickup_gold(emit);
+    quest_trigger("move", emit);
+    check_road_gates(emit);
+    if (world_->scene_id() != scene_before) {
+      if (!world_->in_instance()) {
+        emit_message(emit, "The party returns to the surface.");
+        finish_extraction(emit);
+        maybe_complete_first_goal(emit);
+        quest_trigger("return-surface", emit, zone_id_for_instance(last_instance_theme_, last_instance_layout_), last_instance_theme_);
+      } else if (world_->metadata().depth != depth_before) {
+        emit_ground_change(emit);
+        quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth);
+      }
+      if (world_->in_instance() && world_->metadata().depth != depth_before &&
+          !current_node_id_.empty() && !current_child_id_.empty()) {
+        current_node_id_ = current_child_id_;
+        current_node_tier_ += 1;
+        if (!current_child_name_.empty()) current_node_name_ = current_child_name_;
+        current_child_id_.clear();
+        world_->set_block_stairs_down(true);
+      }
+      emit_transition(emit, "party:scene:transition");
+      if (world_->in_instance()) emit_ground_change(emit);
+    }
+    return;
+  }
   if (envelope.event=="player:skill:trigger") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor&&world_->in_instance()){ if (respawn_protection_until_ms_ > 0) respawn_protection_until_ms_ = 0; active_skill_id_=as_string(payload?payload->get("skillId"):nullptr,"primary-attack"); if (active_skill_id_ == "war-cry") { if (actor->stats.resource < presentation_constants::kWarCryResourceCost) { emit_message(emit,"Not enough resource for War Cry."); return; } actor->stats.resource -= presentation_constants::kWarCryResourceCost; actor->war_cry_attack_bonus = presentation_constants::kWarCryAttackBonus; actor->war_cry_ticks_remaining = presentation_constants::kWarCryDurationTicks; emit_message(emit,"War Cry: attack empowered."); return; } world_->set_engaged_by(identity_); const auto direction=as_string(payload?payload->get("direction"):nullptr,"down"); const auto wear_totals=wear_.totals(); const int wear_bonus=(std::max)((std::max)(wear_totals.attack.stab,wear_totals.attack.slash),(std::max)(wear_totals.attack.crush,wear_totals.attack.range)); world_->start_player_attack(actor->stats.level,actor->stats.attack+(std::max)(0,wear_bonus),now_ms(),direction); process_combat(now_ms(),emit); /* real-clock cadence: polls advance combat */ } return; }
   if (envelope.event=="dev:give") { if (payload) handle_give(*payload,emit); return; }
   if (envelope.event=="dev:drop") { if (payload) handle_drop(*payload,emit); return; }
@@ -2755,15 +2843,25 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     static std::atomic<std::uint64_t> scion_serial{1};
     const std::string house_id=as_string(payload?payload->get("houseId"):nullptr);
     const std::string name=as_string(payload?payload->get("name"):nullptr,"Scion");
-    const std::string scion_id="scion-"+std::to_string(scion_serial++);
-    ensure_chronicle_scion(house_id,scion_id,name,false);
+    // A process restart resets the counter, while saved living/crypt IDs remain.
+    std::string scion_id;
+    do { scion_id="scion-"+std::to_string(scion_serial++); }
+    while (find_scion_house(chronicle_,scion_id,true));
+    ensure_chronicle_scion(house_id,scion_id,name,false,as_string(payload?payload->get("appearance"):nullptr));
     active_scion_name_=name;
     chronicles_revision_+=1;
     emit(Envelope{"chronicles:state",chronicles_state_payload(scion_id)});
     return;
   }
   if (envelope.event=="chronicles:scion:set-out") {
-    active_scion_id_=as_string(payload?payload->get("scionId"):nullptr);
+    const std::string scion_id=as_string(payload?payload->get("scionId"):nullptr);
+    const auto* house=find_scion_house(chronicle_,scion_id);
+    if (!house) { emit_message(emit,"Choose a living Scion from your House roster."); return; }
+    active_house_id_=as_string(house->get("id"));
+    active_house_name_=as_string(house->get("name"));
+    active_scion_id_=scion_id;
+    if (const auto* record = find_scion_record(chronicle_, active_house_id_, active_scion_id_))
+      active_scion_name_ = as_string(record->get("name"), active_scion_name_);
     pending_chronicles_=false;
     // JS beginScionSession parity (server/core/services/chronicles.js:210-219):
     // EVERY Chronicles set-out admits the scion under the hard lifecycle -
@@ -2779,8 +2877,8 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     respawn_protection_until_ms_=0;
     prepare_final_death_=false;
     set_scion_record_mortal(chronicle_, active_house_id_, active_scion_id_, true);
-    // crossroads: the scion spawns beside their House wagon pitch, and the
-    // first set-out of the day claims the road purse into the ledger.
+    // Keep the House wagon pitch and daily road purse. Admission itself
+    // uses the open tile just south of the fountain, clear of its bowl.
     {
       std::uint32_t hash = 5381;
       for (unsigned char c : active_house_id_) hash = hash * 33 + c;
@@ -2801,7 +2899,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
       if (coins<100) { CreateItemOptions o; o.quantity=100-coins; auto purse=create_game_item("coins",o); if (purse) inventory_.add(std::move(*purse)); }
     }
     world_->reset_to_town();
-    world_->teleport(kWagonPitches[home_pitch_index_][0], kWagonPitches[home_pitch_index_][1] + 1, now_ms());
+    world_->teleport(38, 116, now_ms());
     emit_login(emit);
     return;
   }
@@ -2892,6 +2990,8 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     active_scion_id_=as_string(payload?payload->get("scionId"):nullptr);
     active_house_id_=as_string(payload?payload->get("houseId"):nullptr);
     active_scion_name_=as_string(payload?payload->get("scionName"):nullptr);
+    if (const auto* record = find_scion_record(chronicle_, active_house_id_, active_scion_id_))
+      active_scion_name_ = as_string(record->get("name"), active_scion_name_);
     mortal_oath_=as_bool(payload?payload->get("mortal"):nullptr,false);
     lifecycle_mode_=mortal_oath_?"hard":"soft";
     lifecycle_="alive"; lifecycle_deaths_=0; respawn_at_ms_=0; respawn_protection_until_ms_=0; prepare_final_death_=false;

@@ -1190,6 +1190,49 @@ void test_relic_resurface_replay_is_deterministic() {
         "replay resurfaces the same stable item identity");
 }
 
+void test_scion_appearance_is_saved_cosmetic_identity() {
+  Simulation male(0xA99, "Appearance House", "male");
+  Simulation female(0xA99, "Appearance House", "female");
+  check(male.scion().appearance == "male" && female.scion().appearance == "female",
+        "Scion creation records the requested appearance");
+  const auto* a = male.actor(male.scion().actor_id);
+  const auto* b = female.actor(female.scion().actor_id);
+  check(a->id == b->id && a->stats.life == b->stats.life && a->stats.resource == b->stats.resource &&
+        a->stats.attack == b->stats.attack && a->stats.defense == b->stats.defense &&
+        a->stats.move_speed == b->stats.move_speed && a->stats.attack_speed_ticks == b->stats.attack_speed_ticks,
+        "appearance neither changes actor stats nor consumes identity RNG");
+  for (auto* sim : {&male, &female}) {
+    sim->dispatch(Command::enter("route:tin:1:0"));
+    for (int i = 0; i < 12; ++i) sim->dispatch(Command::move(1, 0));
+    for (int i = 0; i < 4; ++i) sim->dispatch(Command::action_use(ActionType::Melee));
+  }
+  a = male.actor(male.scion().actor_id); b = female.actor(female.scion().actor_id);
+  check(a->position.x == b->position.x && a->position.y == b->position.y &&
+        a->stats.life == b->stats.life && a->stats.resource == b->stats.resource &&
+        a->cooldown_ticks == b->cooldown_ticks,
+        "identical movement/combat commands resolve identically for both appearances");
+  const auto bytes = snapshot(female);
+  check(restore(bytes).scion().appearance == "female", "female appearance survives native snapshot restore");
+  std::string legacy(bytes.begin(), bytes.end());
+  const auto key = legacy.find("scion.appearance=");
+  check(key != std::string::npos, "snapshot contains explicit Scion appearance");
+  legacy.erase(key, legacy.find('\n', key) - key + 1);
+  check(restore(std::vector<std::uint8_t>(legacy.begin(), legacy.end())).scion().appearance == "male",
+        "old snapshots without appearance retain the original male default");
+  Simulation invalid(0xA99, "Appearance House", "../../unexpected");
+  check(invalid.scion().appearance == "male", "unsupported appearance never becomes an asset path");
+  female.actor(female.scion().actor_id)->stats.life = 1;
+  female.spawn_monster(female.actor(female.scion().actor_id)->position);
+  for (int i = 0; i < 40 && female.scion().alive; ++i) female.dispatch_tick({});
+  check(!female.scion().alive, "appearance succession fixture reaches actual authoritative death");
+  female.create_successor("Male heir", "male");
+  check(female.scion().appearance == "male" && female.fallen_scions().back().appearance == "female",
+        "a successor chooses independently while the fallen Scion retains appearance");
+  const auto family = restore(snapshot(female));
+  check(family.scion().appearance == "male" && family.fallen_scions().back().appearance == "female",
+        "living and fallen appearance identities both persist");
+}
+
 void test_persistence_round_trip_and_unknown_fields() {
   Simulation original(0x0030ULL, "House of Round-Trip");
   original.dispatch(Command::enter("route:tin:1:0"));
@@ -2807,6 +2850,7 @@ void test_n4_depth_chaining_and_treasure() {
 }  // namespace
 
 int main() {
+  test_scion_appearance_is_saved_cosmetic_identity();
   test_persistence_round_trip_and_unknown_fields();
   test_persistence_d109_mid_instance_and_rng_continuation();
   test_persistence_recovery_pools();

@@ -33,7 +33,8 @@
     "raider-walk-se",
     "wight-walk-sw",
     "terrain-quiet-stone",
-    "wall-stone-cutaway"
+    "wall-stone-cutaway",
+    "hero-lineage-20260910"
   ],
   "assets": [
     {
@@ -11791,8 +11792,7542 @@
       "palette_scope": "manifest_reference",
       "sha256": "69d9bd08e777a9a17f45d11e09836fa81b6918fd076fd5e202a936a56c859e0b",
       "provenance": "wall-stone-cutaway.provenance.json"
+    },
+    {
+      "name": "hero_male_n",
+      "file": "hero_male_n.png",
+      "source": "../source/hero-lineage-20260910/derived/male/n/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 66,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        43,
+        12,
+        82,
+        106
+      ],
+      "before_resize": [
+        39,
+        94
+      ],
+      "placed_size": [
+        39,
+        94
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        60,
+        66,
+        99,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "a00fb2a6d0595263aa23e7eeebf7604dfdf6d88e21e9e5f682599d8c90eb9e85",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/n/idle.png",
+      "original_source_sha256": "40b4bd96b3ea3320034c4eee21c5cadcb7b564a30ff6bc7f4a95dcb9aa0b8c36",
+      "derived_source_sha256": "abc934605c78c3f533548bd8e8e15955f325bfe73a73d332e7aef407737c5837",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-n.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_walk0_n",
+      "file": "hero_male_walk0_n.png",
+      "source": "../source/hero-lineage-20260910/derived/male/n/walk0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 78,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        43,
+        12,
+        81,
+        107
+      ],
+      "before_resize": [
+        38,
+        95
+      ],
+      "placed_size": [
+        38,
+        95
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        60,
+        66,
+        98,
+        161
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "ba32c33cdbbb673e38b8e2a51a26c1ee5a16cd4fdaf755c146bebb25b50ddc0c",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/n/walk0.png",
+      "original_source_sha256": "e686cb47c8eb85e622f5a3314afac009789a815e0f5f22f375dbfc04defb7adf",
+      "derived_source_sha256": "8fa487522ed138f593b210f56fb3f39902222cb4550ac3c07556987a2a2864fd",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-n.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_walk1_n",
+      "file": "hero_male_walk1_n.png",
+      "source": "../source/hero-lineage-20260910/derived/male/n/walk1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 77,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        45,
+        12,
+        83,
+        107
+      ],
+      "before_resize": [
+        38,
+        95
+      ],
+      "placed_size": [
+        38,
+        95
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        62,
+        66,
+        100,
+        161
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "c95c59d9e4ccee0876d55221c2caa7085fb08b8704cf24db3637c8817fa940fc",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/n/walk1.png",
+      "original_source_sha256": "f926eab787fd1995fdfe0e83bf5ce7c414626a3b1e423ec751eb2e5f9af24224",
+      "derived_source_sha256": "196f4ef9cd9478e7b1b2c4d00d74a68099462b7b0e664cb52ae28871fab10ea8",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-n.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike0_n",
+      "file": "hero_male_strike0_n.png",
+      "source": "../source/hero-lineage-20260910/derived/male/n/strike0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 80,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        36,
+        12,
+        82,
+        108
+      ],
+      "before_resize": [
+        46,
+        96
+      ],
+      "placed_size": [
+        46,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        53,
+        66,
+        99,
+        162
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "7822dfdaa5934537cea09e17c6d01cfda8ac59dc4e4b027d04c38ae6c062bb33",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/n/strike0.png",
+      "original_source_sha256": "c78a39c03e48b4c065bdf9856aa65eb59bd1427120f571ee3ba7f19772059e5c",
+      "derived_source_sha256": "3bdb81103d9d70843f06249a3e893ac8eea4066ee2a38214db473f01fcf15e1b",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-n.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike1_n",
+      "file": "hero_male_strike1_n.png",
+      "source": "../source/hero-lineage-20260910/derived/male/n/strike1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        48,
+        10,
+        82,
+        106
+      ],
+      "before_resize": [
+        34,
+        96
+      ],
+      "placed_size": [
+        34,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        65,
+        64,
+        99,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "22e5075a73b326c0d1a33fac73c1a62bb083e2f188a227e5e665473500740456",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/n/strike1.png",
+      "original_source_sha256": "54fc15ba4e367a3d539381279f311100c408ebbef5ab7aa2803495a0de94b810",
+      "derived_source_sha256": "0cd6f486943c0e9c319ffacbce627dbbcd448b5d05c33b1c1aaa33ca25a78905",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-n.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike2_n",
+      "file": "hero_male_strike2_n.png",
+      "source": "../source/hero-lineage-20260910/derived/male/n/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 66,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        43,
+        12,
+        82,
+        106
+      ],
+      "before_resize": [
+        39,
+        94
+      ],
+      "placed_size": [
+        39,
+        94
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        60,
+        66,
+        99,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "a00fb2a6d0595263aa23e7eeebf7604dfdf6d88e21e9e5f682599d8c90eb9e85",
+      "recovery_method": "byte_identical_idle_recovery",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/n/idle.png",
+      "original_source_sha256": "40b4bd96b3ea3320034c4eee21c5cadcb7b564a30ff6bc7f4a95dcb9aa0b8c36",
+      "derived_source_sha256": "abc934605c78c3f533548bd8e8e15955f325bfe73a73d332e7aef407737c5837",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-n.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_ne",
+      "file": "hero_male_ne.png",
+      "source": "../source/hero-lineage-20260910/derived/male/ne/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 66,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        47,
+        12,
+        80,
+        106
+      ],
+      "before_resize": [
+        33,
+        94
+      ],
+      "placed_size": [
+        33,
+        94
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        64,
+        66,
+        97,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "e37d6717e594ddd45b409d646ce0aa1ba5515ce5d6a11a71025b926127426e77",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/ne/idle.png",
+      "original_source_sha256": "0118d58e139564f0ee83e5c7b27a1b07b45de1c33cbb0ba47ac64771c0e48ec9",
+      "derived_source_sha256": "a64cd5708d59ab9f2836f94e3f27f31149391088f3886127dab5545c02a61fe0",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-ne.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_walk0_ne",
+      "file": "hero_male_walk0_ne.png",
+      "source": "../source/hero-lineage-20260910/derived/male/ne/walk0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 71,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        46,
+        14,
+        80,
+        106
+      ],
+      "before_resize": [
+        34,
+        92
+      ],
+      "placed_size": [
+        34,
+        92
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        63,
+        68,
+        97,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "57f89685d9034681c3efc274ca71fb8c62954a80f55e4fe5ac94c6996adc4a3e",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/ne/walk0.png",
+      "original_source_sha256": "65d9203eac0a231432f6066c38c35dec7bdf143e961c0c399401f41e587ea92e",
+      "derived_source_sha256": "37cc72178376b976717e28ef2b400ffff3d20969ad2f4be16fede15e7b7e3adf",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-ne.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_walk1_ne",
+      "file": "hero_male_walk1_ne.png",
+      "source": "../source/hero-lineage-20260910/derived/male/ne/walk1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 63,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        15,
+        85,
+        112
+      ],
+      "before_resize": [
+        41,
+        97
+      ],
+      "placed_size": [
+        41,
+        97
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        69,
+        102,
+        166
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "ee969e331b71929686e7a493c9e888b9453849faea09b9d155403324bb9b5bb9",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/ne/walk1.png",
+      "original_source_sha256": "6ddf87ebd151196026f288383889ce6dfc45859e5056b10942c17d737c85bddf",
+      "derived_source_sha256": "8fe4ac8766a42cb109ef14ac8df1409778a0ed903c4cbd2cbce476977730f528",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-ne.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike0_ne",
+      "file": "hero_male_strike0_ne.png",
+      "source": "../source/hero-lineage-20260910/derived/male/ne/strike0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 70,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        40,
+        12,
+        80,
+        106
+      ],
+      "before_resize": [
+        40,
+        94
+      ],
+      "placed_size": [
+        40,
+        94
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        57,
+        66,
+        97,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "42adfd98c8431b6533cd9cd9e036b2929511c56f0e98540881db6dae1e3c6fe6",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/ne/strike0.png",
+      "original_source_sha256": "4a1480ee81f5d1507234e721fdffa2ba9b5a854e38121f3576cfae416091d2f2",
+      "derived_source_sha256": "546160904256af15b58afa5b117476b61c1b68f69dfebfc5444dd24ad3e9d423",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-ne.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike1_ne",
+      "file": "hero_male_strike1_ne.png",
+      "source": "../source/hero-lineage-20260910/derived/male/ne/strike1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 68,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        49,
+        3,
+        80,
+        106
+      ],
+      "before_resize": [
+        31,
+        103
+      ],
+      "placed_size": [
+        31,
+        103
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        66,
+        57,
+        97,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "21a698be730688f49555f8bd2a60e3d6756b1767689c8da389f7de11f9d702c5",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/ne/strike1.png",
+      "original_source_sha256": "e819ab907d1e3aae67f2c637e4f6848c692543a10cfff1313e595fc9531d2b12",
+      "derived_source_sha256": "6b875cc9ad4d2debae926341253a7ba64d5a17185bd2f9671d5cf29a1eb74e5a",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-ne.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike2_ne",
+      "file": "hero_male_strike2_ne.png",
+      "source": "../source/hero-lineage-20260910/derived/male/ne/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 66,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        47,
+        12,
+        80,
+        106
+      ],
+      "before_resize": [
+        33,
+        94
+      ],
+      "placed_size": [
+        33,
+        94
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        64,
+        66,
+        97,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1060
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "e37d6717e594ddd45b409d646ce0aa1ba5515ce5d6a11a71025b926127426e77",
+      "recovery_method": "byte_identical_idle_recovery",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/ne/idle.png",
+      "original_source_sha256": "0118d58e139564f0ee83e5c7b27a1b07b45de1c33cbb0ba47ac64771c0e48ec9",
+      "derived_source_sha256": "a64cd5708d59ab9f2836f94e3f27f31149391088f3886127dab5545c02a61fe0",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-ne.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_e",
+      "file": "hero_male_e.png",
+      "source": "../source/hero-lineage-20260910/derived/male/e/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 61,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        53,
+        12,
+        73,
+        111
+      ],
+      "before_resize": [
+        20,
+        99
+      ],
+      "placed_size": [
+        20,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        70,
+        61,
+        90,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1106
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "fbcc0716067727c1db69425fd7b0925288660abf7933a02d32e8281289f9546a",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/e/idle.png",
+      "original_source_sha256": "aa077e8bda65b7888568b3d3369f023a604ae7aeb2040474decc1f0bf74eb8d1",
+      "derived_source_sha256": "4e45f6c2937656553c6f52ffd569a61d8c46ed0f53191728dc9771e0fdc17bba",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-e.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_walk0_e",
+      "file": "hero_male_walk0_e.png",
+      "source": "../source/hero-lineage-20260910/derived/male/e/walk0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 67,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        36,
+        12,
+        89,
+        108
+      ],
+      "before_resize": [
+        53,
+        96
+      ],
+      "placed_size": [
+        53,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        53,
+        61,
+        106,
+        157
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1106
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "ddc3ea687f790701e1697a0d3155355fd0c15328c35d4f82fe5073eee21c2b61",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/e/walk0.png",
+      "original_source_sha256": "7784a3d773b4e59d7266010fed60d72bf9ecc963cfc5f8627b86b92eaab39303",
+      "derived_source_sha256": "e26c843d15ff44a595a403384ed4e97dc65ef4aaec22858befb6a6fb07c18358",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-e.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_walk1_e",
+      "file": "hero_male_walk1_e.png",
+      "source": "../source/hero-lineage-20260910/derived/male/e/walk1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 68,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        37,
+        13,
+        91,
+        108
+      ],
+      "before_resize": [
+        54,
+        95
+      ],
+      "placed_size": [
+        54,
+        95
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        54,
+        62,
+        108,
+        157
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1106
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "469f909dfc91102558a38262a4f87f7a0215bcc8d86122fd449c8862a3d1c1d9",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/e/walk1.png",
+      "original_source_sha256": "e95377d8c6cb3a500c0b27b42e889fd6198e35433fbf490d870eaa0707103e9f",
+      "derived_source_sha256": "ca616b2a94925c6a66fba8287eb392eca108d64ce01c0d48dc5284ed86023d99",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-e.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike0_e",
+      "file": "hero_male_strike0_e.png",
+      "source": "../source/hero-lineage-20260910/derived/male/e/strike0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        52,
+        12,
+        76,
+        111
+      ],
+      "before_resize": [
+        24,
+        99
+      ],
+      "placed_size": [
+        24,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        69,
+        61,
+        93,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1106
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "ac86004d260248f81385bd7f0020dded05edb15e72d4c29684f23cc3444b2c41",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/e/strike0.png",
+      "original_source_sha256": "4cb52ce6698c7113281ab4b91f6195079790c2fc28b6e77366d00fe5de4f375e",
+      "derived_source_sha256": "eafd48393646666ee45abcffcf51de9b435dd788719440bc869243b5f902a831",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-e.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike1_e",
+      "file": "hero_male_strike1_e.png",
+      "source": "../source/hero-lineage-20260910/derived/male/e/strike1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 77,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        52,
+        12,
+        102,
+        111
+      ],
+      "before_resize": [
+        50,
+        99
+      ],
+      "placed_size": [
+        50,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        69,
+        61,
+        119,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1106
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "9f3ad33d67a31664ac8448e57b41f350931327840f6727ad889ff149ad8079ef",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/e/strike1.png",
+      "original_source_sha256": "b0011aa9640049153e8fb0a1025c0f852fbd78de6be75a90f5459a2e59c02813",
+      "derived_source_sha256": "2f9623d5094415fc7a90f290f381477661998171f9473668860d924d7012acf0",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-e.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike2_e",
+      "file": "hero_male_strike2_e.png",
+      "source": "../source/hero-lineage-20260910/derived/male/e/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 61,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        53,
+        12,
+        73,
+        111
+      ],
+      "before_resize": [
+        20,
+        99
+      ],
+      "placed_size": [
+        20,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        70,
+        61,
+        90,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1106
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "fbcc0716067727c1db69425fd7b0925288660abf7933a02d32e8281289f9546a",
+      "recovery_method": "byte_identical_idle_recovery",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/e/idle.png",
+      "original_source_sha256": "aa077e8bda65b7888568b3d3369f023a604ae7aeb2040474decc1f0bf74eb8d1",
+      "derived_source_sha256": "4e45f6c2937656553c6f52ffd569a61d8c46ed0f53191728dc9771e0fdc17bba",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-e.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_se",
+      "file": "hero_male_se.png",
+      "source": "../source/hero-lineage-20260910/derived/male/se/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        12,
+        80,
+        112
+      ],
+      "before_resize": [
+        36,
+        100
+      ],
+      "placed_size": [
+        36,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        60,
+        97,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1123
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "7bf0e40eed15a220c20c3c1e8f08f9c16f2b110b1a2d2b08db368fe50415f94c",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/se/idle.png",
+      "original_source_sha256": "b1ffcbcdd06905b4c06f19e7eb772c8cedd523f5b25eb20a9b054fa46240770d",
+      "derived_source_sha256": "4a43ca4e31785ba1b9698133237a2868ea0929a879878f540e9abfae0a8e6329",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-se.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_walk0_se",
+      "file": "hero_male_walk0_se.png",
+      "source": "../source/hero-lineage-20260910/derived/male/se/walk0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 79,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        40,
+        12,
+        86,
+        112
+      ],
+      "before_resize": [
+        46,
+        100
+      ],
+      "placed_size": [
+        46,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        57,
+        60,
+        103,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1123
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "a4ca88c05c753d00e52a4357f04574a1dd685daeaa61e5765fd29245a4fa3475",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/se/walk0.png",
+      "original_source_sha256": "f90c085f4c716053ba3c4103272732bf1611366e141391110e30a87c27f5808a",
+      "derived_source_sha256": "8a54214d0667b72eb8aae9ab7f606466e113646c9785a799c74f15a982165290",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-se.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_walk1_se",
+      "file": "hero_male_walk1_se.png",
+      "source": "../source/hero-lineage-20260910/derived/male/se/walk1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 76,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        13,
+        81,
+        111
+      ],
+      "before_resize": [
+        37,
+        98
+      ],
+      "placed_size": [
+        37,
+        98
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        61,
+        98,
+        159
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1123
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "a17d3ea3637f38ed647bfebc50a8b96bda0795b4fde7f9923a1b167186ed73f9",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/se/walk1.png",
+      "original_source_sha256": "5956d8fa9aef63c248449aed90631951e128632f790f6fb2b9fe12cc5dfac9fb",
+      "derived_source_sha256": "a35f339ebb22e5d422e9097dfe40415517ea3967bda7521e4c864e9310bfb6f8",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-se.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike0_se",
+      "file": "hero_male_strike0_se.png",
+      "source": "../source/hero-lineage-20260910/derived/male/se/strike0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 71,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        41,
+        16,
+        88,
+        110
+      ],
+      "before_resize": [
+        47,
+        94
+      ],
+      "placed_size": [
+        47,
+        94
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        58,
+        64,
+        105,
+        158
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1123
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "f2515f2ecfb4d43f78602ee33d1eef4600afef4263d48afd5136073fbab379af",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/se/strike0.png",
+      "original_source_sha256": "cc576c035ddb813ee40a7b3e19d16923f3f49e9e370fbde29b0126cfede87a52",
+      "derived_source_sha256": "551e8980e95657dde182c411440c8040e950d7e0e75f5d7d8841e2d8f1ed482e",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-se.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike1_se",
+      "file": "hero_male_strike1_se.png",
+      "source": "../source/hero-lineage-20260910/derived/male/se/strike1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 75,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        38,
+        19,
+        101,
+        110
+      ],
+      "before_resize": [
+        63,
+        91
+      ],
+      "placed_size": [
+        63,
+        91
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        55,
+        67,
+        118,
+        158
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1123
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "11fcc86c49e0576265821bd93bd88b7bac2da597e37b45c43a7cab0137dce3b0",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/se/strike1.png",
+      "original_source_sha256": "58b9935e45174fadf0e1f287e7634f3ee64036abfcd338d27d185ab5f30c5ae7",
+      "derived_source_sha256": "7ee655a2fc9bf97ade45e8d7092bb0f3aa49fae6374ba21c2b6c15c9256ea0da",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-se.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike2_se",
+      "file": "hero_male_strike2_se.png",
+      "source": "../source/hero-lineage-20260910/derived/male/se/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        12,
+        80,
+        112
+      ],
+      "before_resize": [
+        36,
+        100
+      ],
+      "placed_size": [
+        36,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        60,
+        97,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1123
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "7bf0e40eed15a220c20c3c1e8f08f9c16f2b110b1a2d2b08db368fe50415f94c",
+      "recovery_method": "byte_identical_idle_recovery",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/se/idle.png",
+      "original_source_sha256": "b1ffcbcdd06905b4c06f19e7eb772c8cedd523f5b25eb20a9b054fa46240770d",
+      "derived_source_sha256": "4a43ca4e31785ba1b9698133237a2868ea0929a879878f540e9abfae0a8e6329",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-se.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_s",
+      "file": "hero_male_s.png",
+      "source": "../source/hero-lineage-20260910/derived/male/s/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 66,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        43,
+        13,
+        82,
+        110
+      ],
+      "before_resize": [
+        39,
+        97
+      ],
+      "placed_size": [
+        39,
+        97
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        60,
+        63,
+        99,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1098
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "65237702db547f5cb5dddf393c2aa84a38d6804390a060b07d8f23da41374549",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/s/idle.png",
+      "original_source_sha256": "fa6bb5a57dbb0791095abc6078920ae3e834782e3db8dd24b95e16c8f37b5e1f",
+      "derived_source_sha256": "d6d87ce4d68ced0a1159fe41ef45ea50c45bbb875442f930505e355f06c45bf2",
+      "matte_repair": "original_alpha_threshold80_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-s.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_walk0_s",
+      "file": "hero_male_walk0_s.png",
+      "source": "../source/hero-lineage-20260910/derived/male/s/walk0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 74,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        13,
+        82,
+        111
+      ],
+      "before_resize": [
+        38,
+        98
+      ],
+      "placed_size": [
+        38,
+        98
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        63,
+        99,
+        161
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1098
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "7a396d11a81c15fbd586e069564f3680956fcbbc8161faf43fefa792d832363b",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/s/walk0.png",
+      "original_source_sha256": "bd03fa8db82071e2df12897b05bd71c68e197c13053b8fd2c5cbe3d9894f0d7a",
+      "derived_source_sha256": "ce3e60d40acc073de9ab35a9db8cf138cf721573dd599098358de3030f5a3a98",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-s.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_walk1_s",
+      "file": "hero_male_walk1_s.png",
+      "source": "../source/hero-lineage-20260910/derived/male/s/walk1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 78,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        43,
+        13,
+        82,
+        113
+      ],
+      "before_resize": [
+        39,
+        100
+      ],
+      "placed_size": [
+        39,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        60,
+        63,
+        99,
+        163
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1098
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "d13a2832f6c83f15d196d2fbfb982739804688bd1fb3d66b1671626fb1891bbe",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/s/walk1.png",
+      "original_source_sha256": "f9cc22295af3ad036c768bd79552cc5a8bcedb98d2a1a91c9a900e82c9333471",
+      "derived_source_sha256": "3e0844f14de4e930bd56e2dd0b00eec762347f284758a0c5d57c0d541993d295",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-s.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike0_s",
+      "file": "hero_male_strike0_s.png",
+      "source": "../source/hero-lineage-20260910/derived/male/s/strike0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 66,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        42,
+        15,
+        87,
+        110
+      ],
+      "before_resize": [
+        45,
+        95
+      ],
+      "placed_size": [
+        45,
+        95
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        59,
+        65,
+        104,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1098
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "770f71cb70abff8be20ff904b697185691c6f3847cf036ea28026357af79bf3b",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/s/strike0.png",
+      "original_source_sha256": "9190e353edd5bdf0bab6293992e30d03cb451f51a4c15640e5320bc10b53ba4c",
+      "derived_source_sha256": "399e84316d914d8aa0dce9c9127d5924553a10ebafca7facf8babdc65cb1b404",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-s.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike1_s",
+      "file": "hero_male_strike1_s.png",
+      "source": "../source/hero-lineage-20260910/derived/male/s/strike1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 71,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        42,
+        14,
+        79,
+        110
+      ],
+      "before_resize": [
+        37,
+        96
+      ],
+      "placed_size": [
+        37,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        59,
+        64,
+        96,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1098
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "419391bd44c68b82beb737553a69b4c8030d138814e2b8c052439be25881732d",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/s/strike1.png",
+      "original_source_sha256": "0d8f20478e35e397efbdb7e9f67835427ecd74013945a735a9faf6afa0dcc288",
+      "derived_source_sha256": "3a7b34416567a5244477c6b14cf0f4eda4d76ebcaf2759659723d983ba8fafe0",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-s.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike2_s",
+      "file": "hero_male_strike2_s.png",
+      "source": "../source/hero-lineage-20260910/derived/male/s/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 66,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        43,
+        13,
+        82,
+        110
+      ],
+      "before_resize": [
+        39,
+        97
+      ],
+      "placed_size": [
+        39,
+        97
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        60,
+        63,
+        99,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1098
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "65237702db547f5cb5dddf393c2aa84a38d6804390a060b07d8f23da41374549",
+      "recovery_method": "byte_identical_idle_recovery",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/s/idle.png",
+      "original_source_sha256": "fa6bb5a57dbb0791095abc6078920ae3e834782e3db8dd24b95e16c8f37b5e1f",
+      "derived_source_sha256": "d6d87ce4d68ced0a1159fe41ef45ea50c45bbb875442f930505e355f06c45bf2",
+      "matte_repair": "original_alpha_threshold80_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-s.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_sw",
+      "file": "hero_male_sw.png",
+      "source": "../source/hero-lineage-20260910/derived/male/sw/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 72,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        45,
+        12,
+        79,
+        113
+      ],
+      "before_resize": [
+        34,
+        101
+      ],
+      "placed_size": [
+        34,
+        101
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        62,
+        59,
+        96,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1131
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "7d3e7643a73ff8de6126358c0712bf99bbd00680d576510b27a0664225093396",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/sw/idle.png",
+      "original_source_sha256": "ffe27ce8921c942cee361feddf20299ea8d1717c929ea3028ed7429c1bb68486",
+      "derived_source_sha256": "6ef439db8d6a353bdc397929ee9e6aaad25946b281d1ad464987ce924384bee3",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-sw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_walk0_sw",
+      "file": "hero_male_walk0_sw.png",
+      "source": "../source/hero-lineage-20260910/derived/male/sw/walk0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 71,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        41,
+        14,
+        82,
+        112
+      ],
+      "before_resize": [
+        41,
+        98
+      ],
+      "placed_size": [
+        41,
+        98
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        58,
+        61,
+        99,
+        159
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1131
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "6c6a8e0ea5f45739835c7931bb62d82945a4e535b741a77d6ea7b6076262a55e",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/sw/walk0.png",
+      "original_source_sha256": "a0c18d6fa60457350e8f59132666a75acbfe0c021cd09008ada90c55a1671013",
+      "derived_source_sha256": "bcd0894dbbbb516d6d76475a0da91866db8edd84dabd157b87c32b45f6cfd176",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-sw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_walk1_sw",
+      "file": "hero_male_walk1_sw.png",
+      "source": "../source/hero-lineage-20260910/derived/male/sw/walk1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 76,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        42,
+        14,
+        82,
+        113
+      ],
+      "before_resize": [
+        40,
+        99
+      ],
+      "placed_size": [
+        40,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        59,
+        61,
+        99,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1131
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "e27e55704a83d1162aa232072b019e0890c76aa872047ad2710f3b798ae82d2c",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/sw/walk1.png",
+      "original_source_sha256": "63fece3490d059b71ab358eaa56ed6b8441e88e17ea9e024c30601536a57e1d3",
+      "derived_source_sha256": "9cc70b90e5fa2ebf6c7e80bf133c1e64ff1bb8b736c43d266479acd1199236a4",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-sw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike0_sw",
+      "file": "hero_male_strike0_sw.png",
+      "source": "../source/hero-lineage-20260910/derived/male/sw/strike0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 69,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        39,
+        13,
+        86,
+        109
+      ],
+      "before_resize": [
+        47,
+        96
+      ],
+      "placed_size": [
+        47,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        56,
+        60,
+        103,
+        156
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1131
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "493f6f6bd56dd057565e547bece6381c5ef109401b06ac36ca7739f374d30af6",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/sw/strike0.png",
+      "original_source_sha256": "caa24ecd9bd815daf5480a951f9c179e3029c886af42d6e124713fa33132e7fd",
+      "derived_source_sha256": "9ce1241dff0e9824ee1135ad365d6329056072f1dce4a892c96b7cc405ce7a63",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-sw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike1_sw",
+      "file": "hero_male_strike1_sw.png",
+      "source": "../source/hero-lineage-20260910/derived/male/sw/strike1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 75,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        39,
+        13,
+        84,
+        109
+      ],
+      "before_resize": [
+        45,
+        96
+      ],
+      "placed_size": [
+        45,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        56,
+        60,
+        101,
+        156
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1131
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "8cae0e268cbc6ab6eeb4a14b4b0e8f6056a62181e4454f34a667b60c3c08192e",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/sw/strike1.png",
+      "original_source_sha256": "969bdabeb0b6386f6a21488c0c6b70ebc4bc225a61f1a3fc810801029e1508ed",
+      "derived_source_sha256": "cf111bd41fc29cb414d12ad3ae7d4b339d8cb5b1c1863b1ceda4389e336bf086",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-sw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike2_sw",
+      "file": "hero_male_strike2_sw.png",
+      "source": "../source/hero-lineage-20260910/derived/male/sw/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 72,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        45,
+        12,
+        79,
+        113
+      ],
+      "before_resize": [
+        34,
+        101
+      ],
+      "placed_size": [
+        34,
+        101
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        62,
+        59,
+        96,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1131
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "7d3e7643a73ff8de6126358c0712bf99bbd00680d576510b27a0664225093396",
+      "recovery_method": "byte_identical_idle_recovery",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/sw/idle.png",
+      "original_source_sha256": "ffe27ce8921c942cee361feddf20299ea8d1717c929ea3028ed7429c1bb68486",
+      "derived_source_sha256": "6ef439db8d6a353bdc397929ee9e6aaad25946b281d1ad464987ce924384bee3",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-sw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_w",
+      "file": "hero_male_w.png",
+      "source": "../source/hero-lineage-20260910/derived/male/w/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 66,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        52,
+        13,
+        73,
+        112
+      ],
+      "before_resize": [
+        21,
+        99
+      ],
+      "placed_size": [
+        21,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        69,
+        61,
+        90,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1119
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "565d5048b1f3c04e46f063fc60ed5e2f1b82eacb485877fca207fa8e440d3fb0",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/w/idle.png",
+      "original_source_sha256": "c749e8ab68ec3c7b3de1c51568f59e5167ba3ce33ec04ab92f479f81507ffc31",
+      "derived_source_sha256": "2651ac0bdcda123734c43cecec0f9fcc6ebbe7c4cbe6080a236933948c02c6f7",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-w.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_walk0_w",
+      "file": "hero_male_walk0_w.png",
+      "source": "../source/hero-lineage-20260910/derived/male/w/walk0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 77,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        39,
+        13,
+        88,
+        110
+      ],
+      "before_resize": [
+        49,
+        97
+      ],
+      "placed_size": [
+        49,
+        97
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        56,
+        61,
+        105,
+        158
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1119
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "cce2c3d7df1fe728293b73691148dff2df0afbff1776c9ef77e75bb22ee748c4",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/w/walk0.png",
+      "original_source_sha256": "878eb6b73c4a94fc113aa494cc299adda53373f89a01a46b5a908d300ec89545",
+      "derived_source_sha256": "ca3a413452e0d248a4599acfaba6d43379136317fb7b0b461d25cb82f9f61416",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-w.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_walk1_w",
+      "file": "hero_male_walk1_w.png",
+      "source": "../source/hero-lineage-20260910/derived/male/w/walk1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 68,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        12,
+        86,
+        110
+      ],
+      "before_resize": [
+        42,
+        98
+      ],
+      "placed_size": [
+        42,
+        98
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        60,
+        103,
+        158
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1119
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "a212d1523c8e27ff4adbccfd84c782058715419f228e7000fcdb1c9b47e204d1",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/w/walk1.png",
+      "original_source_sha256": "2248a934341de91031ea60e517d30642ab1ce7ca4265bd5b20a9b763429f6514",
+      "derived_source_sha256": "ba442c0a7aa09bbeae5f5d9be3411123c44a481fdd9a956f0cc2f06985ca9bbe",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-w.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike0_w",
+      "file": "hero_male_strike0_w.png",
+      "source": "../source/hero-lineage-20260910/derived/male/w/strike0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 65,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        52,
+        12,
+        81,
+        112
+      ],
+      "before_resize": [
+        29,
+        100
+      ],
+      "placed_size": [
+        29,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        69,
+        60,
+        98,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1119
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "fe9ef7b4c6a32c5516b7b094dd13b3f1121b0ecec6bf0950dec736a6760245ba",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/w/strike0.png",
+      "original_source_sha256": "ae9485026d48933b34ca2d51bc34834e9e5a3f89c3a71a1d47beb07ca35fd9e1",
+      "derived_source_sha256": "a210c83e8f3cacab0d03e4ec4778f30d3b0cbebc0b67c8e99722c17663f3a884",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-w.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike1_w",
+      "file": "hero_male_strike1_w.png",
+      "source": "../source/hero-lineage-20260910/derived/male/w/strike1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        32,
+        12,
+        75,
+        112
+      ],
+      "before_resize": [
+        43,
+        100
+      ],
+      "placed_size": [
+        43,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        49,
+        60,
+        92,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1119
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "a00eccd325a168da95f962b8b51a655f3d6ef07935e3045f81335ab295724691",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/w/strike1.png",
+      "original_source_sha256": "36bc38f99290475c3a023acbd877cf6ecd9ff88bf12067464ac316d3331fd1bc",
+      "derived_source_sha256": "67898c8ce5dead9d9cf40b6f7ed8dbc7685c5f620f1e48d177c009f72588f4be",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-w.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike2_w",
+      "file": "hero_male_strike2_w.png",
+      "source": "../source/hero-lineage-20260910/derived/male/w/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 66,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        52,
+        13,
+        73,
+        112
+      ],
+      "before_resize": [
+        21,
+        99
+      ],
+      "placed_size": [
+        21,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        69,
+        61,
+        90,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1119
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "565d5048b1f3c04e46f063fc60ed5e2f1b82eacb485877fca207fa8e440d3fb0",
+      "recovery_method": "byte_identical_idle_recovery",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/w/idle.png",
+      "original_source_sha256": "c749e8ab68ec3c7b3de1c51568f59e5167ba3ce33ec04ab92f479f81507ffc31",
+      "derived_source_sha256": "2651ac0bdcda123734c43cecec0f9fcc6ebbe7c4cbe6080a236933948c02c6f7",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-w.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_nw",
+      "file": "hero_male_nw.png",
+      "source": "../source/hero-lineage-20260910/derived/male/nw/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 71,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        46,
+        13,
+        78,
+        109
+      ],
+      "before_resize": [
+        32,
+        96
+      ],
+      "placed_size": [
+        32,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        63,
+        64,
+        95,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1094
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "a0329b6ee6ce99f247c055c484aee1241c59f5dde4bf9617e650c5beb849df34",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/nw/idle.png",
+      "original_source_sha256": "b48af18d0ebc080798a1cb04d3cc15a9477c9092cf631e3703b20d6788658698",
+      "derived_source_sha256": "4de8ef49ac6d483abcf1e50f30aa862124938f79aab3ac99ca190a3a58d34e10",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-nw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_walk0_nw",
+      "file": "hero_male_walk0_nw.png",
+      "source": "../source/hero-lineage-20260910/derived/male/nw/walk0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        45,
+        13,
+        81,
+        109
+      ],
+      "before_resize": [
+        36,
+        96
+      ],
+      "placed_size": [
+        36,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        62,
+        64,
+        98,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1094
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "39e7490823fd27100cca953df29b3c39b40ae762763effa5d0ee23fbdc593431",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/nw/walk0.png",
+      "original_source_sha256": "8113745a16d7a2516fd94187425d2ab237065841adfe3cc3b71a0c705683a63f",
+      "derived_source_sha256": "0ce49e300e78196ce8440e1e3301d898b9e449b08182516b7ba99a1caec2e797",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-nw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_walk1_nw",
+      "file": "hero_male_walk1_nw.png",
+      "source": "../source/hero-lineage-20260910/derived/male/nw/walk1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 76,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        42,
+        13,
+        83,
+        111
+      ],
+      "before_resize": [
+        41,
+        98
+      ],
+      "placed_size": [
+        41,
+        98
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        59,
+        64,
+        100,
+        162
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1094
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "5d9121242a1236eb69d13b1177e94d781b6670af8cfb2de65f6ddeb51a736034",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/nw/walk1.png",
+      "original_source_sha256": "44ddc9d020685492544290a5c8f334f28e914c32e8c704431b7c8627404e1165",
+      "derived_source_sha256": "062534bcff3ea3856c9e377c0b400b58cf3f4705a6de0eee248e48572527e53e",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-nw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike0_nw",
+      "file": "hero_male_strike0_nw.png",
+      "source": "../source/hero-lineage-20260910/derived/male/nw/strike0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 72,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        42,
+        13,
+        78,
+        109
+      ],
+      "before_resize": [
+        36,
+        96
+      ],
+      "placed_size": [
+        36,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        59,
+        64,
+        95,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1094
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "157184a7aedc89c5d57cd0cd42332d42bb6ebca804a3a78e062fe13545956399",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/nw/strike0.png",
+      "original_source_sha256": "0974d91300ac7d000551faf07aa99dd2468c607762e20b8906567096137dbf55",
+      "derived_source_sha256": "50c402be10fab2260f81663c8b82d6ac3d3f36bc4dcc394f3827cc4d9b19f497",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-nw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike1_nw",
+      "file": "hero_male_strike1_nw.png",
+      "source": "../source/hero-lineage-20260910/derived/male/nw/strike1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        31,
+        13,
+        78,
+        109
+      ],
+      "before_resize": [
+        47,
+        96
+      ],
+      "placed_size": [
+        47,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        48,
+        64,
+        95,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1094
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "0db546c1e8761793f9e1c0b091235543e48000df4f68c3bfa32e7180ab5ef1ef",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/nw/strike1.png",
+      "original_source_sha256": "96360a10dc3f14bd896f3087216e19c13351d90cfa5091742f3961524d0d20ba",
+      "derived_source_sha256": "548b007acf025f2eec4bc0af6d7dd17a66ac3002f86720ce605d389937985293",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-nw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_male_strike2_nw",
+      "file": "hero_male_strike2_nw.png",
+      "source": "../source/hero-lineage-20260910/derived/male/nw/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 71,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        46,
+        13,
+        78,
+        109
+      ],
+      "before_resize": [
+        32,
+        96
+      ],
+      "placed_size": [
+        32,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        63,
+        64,
+        95,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1094
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "a0329b6ee6ce99f247c055c484aee1241c59f5dde4bf9617e650c5beb849df34",
+      "recovery_method": "byte_identical_idle_recovery",
+      "original_source": "../source/hero-lineage-20260910/candidates/male/nw/idle.png",
+      "original_source_sha256": "b48af18d0ebc080798a1cb04d3cc15a9477c9092cf631e3703b20d6788658698",
+      "derived_source_sha256": "4de8ef49ac6d483abcf1e50f30aa862124938f79aab3ac99ca190a3a58d34e10",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-male-nw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_n",
+      "file": "hero_female_n.png",
+      "source": "../source/hero-lineage-20260910/derived/female/n/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 67,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        45,
+        12,
+        81,
+        108
+      ],
+      "before_resize": [
+        36,
+        96
+      ],
+      "placed_size": [
+        36,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        62,
+        64,
+        98,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1082
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "1179c7cdfa98149f99d8adf790c8d5b9b33253e0f3671adc865ea0514805c728",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/n/idle.png",
+      "original_source_sha256": "58276a0966fca590674553779196256c892cbd9dacd7971910d0329de0d449d1",
+      "derived_source_sha256": "58960de8d932757325922741e790896a6fdb61b26792afdf038844a8c768cf66",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-n.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_walk0_n",
+      "file": "hero_female_walk0_n.png",
+      "source": "../source/hero-lineage-20260910/derived/female/n/walk0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 80,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        45,
+        12,
+        78,
+        110
+      ],
+      "before_resize": [
+        33,
+        98
+      ],
+      "placed_size": [
+        33,
+        98
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        62,
+        64,
+        95,
+        162
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1082
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "56766c847ce36b4ca8ed70836efa684c0e22b0eb956a209d6a37726758f3536a",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/n/walk0.png",
+      "original_source_sha256": "f7f363e9c13560e8740eb0d0ebff4290a7c33d24d66cbc8f4f76fdf602d609ec",
+      "derived_source_sha256": "e74d3258ff33b38c6c7c860f3a6dcec609642aaf82cb4c4bb9262e086293e9b6",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-n.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_walk1_n",
+      "file": "hero_female_walk1_n.png",
+      "source": "../source/hero-lineage-20260910/derived/female/n/walk1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 78,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        47,
+        12,
+        82,
+        110
+      ],
+      "before_resize": [
+        35,
+        98
+      ],
+      "placed_size": [
+        35,
+        98
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        64,
+        64,
+        99,
+        162
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1082
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "8e9e655a026f66a7abbeae0ee97c16a671bcfbf7368e07b4f4d6c280e7c65af4",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/n/walk1.png",
+      "original_source_sha256": "775530a83bcd5605b5b6ef112ae06dbadf151845217114407ec885c81490a9cd",
+      "derived_source_sha256": "6875cfd4bbed72c3a94e919162acc1fbbc9302b91537ee71b6ca8de2d0bf7f9c",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-n.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike0_n",
+      "file": "hero_female_strike0_n.png",
+      "source": "../source/hero-lineage-20260910/derived/female/n/strike0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 77,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        43,
+        13,
+        85,
+        107
+      ],
+      "before_resize": [
+        42,
+        94
+      ],
+      "placed_size": [
+        42,
+        94
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        60,
+        65,
+        102,
+        159
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1082
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "03e88ca20722406336988a43def99b26640bc2388d280f2f4a47c69e5609277c",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/n/strike0.png",
+      "original_source_sha256": "ba0dde5b0400b877057f721e7f6edebfdd6b32a7bf9931ba33334b4711c5f603",
+      "derived_source_sha256": "b72790642f08b2bb9bfde06a904f2b6d3ecf31ba7f1453a6e53e52250f1c6306",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-n.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike1_n",
+      "file": "hero_female_strike1_n.png",
+      "source": "../source/hero-lineage-20260910/derived/female/n/strike1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        42,
+        13,
+        85,
+        107
+      ],
+      "before_resize": [
+        43,
+        94
+      ],
+      "placed_size": [
+        43,
+        94
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        59,
+        65,
+        102,
+        159
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1082
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "670882bb702437593e08f1bbf22b471da6057a9ed9478e86a13298980ba53024",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/n/strike1.png",
+      "original_source_sha256": "20cc13ae822f75876483bb093452126a1252e9704406d9490c94fcdc86cd2ce8",
+      "derived_source_sha256": "863e348af3c676d766b2492dc16405d056f6c4c13917cc81755a4e0bde4d024c",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-n.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike2_n",
+      "file": "hero_female_strike2_n.png",
+      "source": "../source/hero-lineage-20260910/derived/female/n/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 67,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        45,
+        12,
+        81,
+        108
+      ],
+      "before_resize": [
+        36,
+        96
+      ],
+      "placed_size": [
+        36,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        62,
+        64,
+        98,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1082
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "1179c7cdfa98149f99d8adf790c8d5b9b33253e0f3671adc865ea0514805c728",
+      "recovery_method": "byte_identical_idle_recovery",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/n/idle.png",
+      "original_source_sha256": "58276a0966fca590674553779196256c892cbd9dacd7971910d0329de0d449d1",
+      "derived_source_sha256": "58960de8d932757325922741e790896a6fdb61b26792afdf038844a8c768cf66",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-n.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_ne",
+      "file": "hero_female_ne.png",
+      "source": "../source/hero-lineage-20260910/derived/female/ne/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 72,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        52,
+        12,
+        80,
+        108
+      ],
+      "before_resize": [
+        28,
+        96
+      ],
+      "placed_size": [
+        28,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        69,
+        64,
+        97,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1085
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "06fd6a328f58384f634353279ad9816a9fed4e6ef1cf1c19d7d28e948458e33f",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/ne/idle.png",
+      "original_source_sha256": "92397cc1c3aa5d61bb7e7ba3999533028425fb1c48a16350f918fe0f98895a3b",
+      "derived_source_sha256": "af49a37fdb3475ec24f9dcb8127a19ed25f41d387c34d74cd1e492a38210b5ae",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-ne.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_walk0_ne",
+      "file": "hero_female_walk0_ne.png",
+      "source": "../source/hero-lineage-20260910/derived/female/ne/walk0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 74,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        47,
+        11,
+        87,
+        114
+      ],
+      "before_resize": [
+        40,
+        103
+      ],
+      "placed_size": [
+        40,
+        103
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        64,
+        63,
+        104,
+        166
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1085
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "54a8faa993af016191d849557f1b1178a1f9b880536abbd2ad242099bd55605b",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/ne/walk0.png",
+      "original_source_sha256": "5bc93c5f2ff5fd4c2f2248042f1b0a8b55b350a8e2e981b422e3f46d15050995",
+      "derived_source_sha256": "d2337b388d24222120aedc02175b826e2bbccb53666d5937bc3f60420b589093",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-ne.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_walk1_ne",
+      "file": "hero_female_walk1_ne.png",
+      "source": "../source/hero-lineage-20260910/derived/female/ne/walk1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 75,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        46,
+        15,
+        84,
+        112
+      ],
+      "before_resize": [
+        38,
+        97
+      ],
+      "placed_size": [
+        38,
+        97
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        63,
+        67,
+        101,
+        164
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1085
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "b9c096240f1f6d4e35bf384f9198991cc5a3df412ed18995d0f3a99568155975",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/ne/walk1.png",
+      "original_source_sha256": "49606a8a849b654b364659c6d10cc5ca323bba397e175ce1609df5acd70be018",
+      "derived_source_sha256": "b39a68c6f7ab8741e2510f6886b5a6f365ba548fd2c672de88d739cd7b5a82c4",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-ne.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike0_ne",
+      "file": "hero_female_strike0_ne.png",
+      "source": "../source/hero-lineage-20260910/derived/female/ne/strike0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 75,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        41,
+        13,
+        87,
+        109
+      ],
+      "before_resize": [
+        46,
+        96
+      ],
+      "placed_size": [
+        46,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        58,
+        65,
+        104,
+        161
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1085
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "b7fa9b55e08f34e51008a170466ce647862adc6c81d01d6409abe104b3f0d2b3",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/ne/strike0.png",
+      "original_source_sha256": "ea16e4b5dd7142817db43941843685b76b635c703f1ac102a28d32c99516f257",
+      "derived_source_sha256": "3c6f9090a6be0a3be57118e621b412b4524b48c6bf24692813391be44bab5afe",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-ne.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike1_ne",
+      "file": "hero_female_strike1_ne.png",
+      "source": "../source/hero-lineage-20260910/derived/female/ne/strike1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 78,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        49,
+        13,
+        92,
+        109
+      ],
+      "before_resize": [
+        43,
+        96
+      ],
+      "placed_size": [
+        43,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        66,
+        65,
+        109,
+        161
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1085
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "0df564a98efa9c2823c35677baf8cf35758b99690c2171c3c93178da3c75757d",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/ne/strike1.png",
+      "original_source_sha256": "d81c96878f49bfd8a4bd56e9ba3307dc3d1927b8c9e6bef4569a4165088079f0",
+      "derived_source_sha256": "6ef950736d26e01f81c3b6ff61d0a4213b358cf22ac3baad95d20331caac417f",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-ne.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike2_ne",
+      "file": "hero_female_strike2_ne.png",
+      "source": "../source/hero-lineage-20260910/derived/female/ne/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 72,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        52,
+        12,
+        80,
+        108
+      ],
+      "before_resize": [
+        28,
+        96
+      ],
+      "placed_size": [
+        28,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        69,
+        64,
+        97,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1085
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "06fd6a328f58384f634353279ad9816a9fed4e6ef1cf1c19d7d28e948458e33f",
+      "recovery_method": "byte_identical_idle_recovery",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/ne/idle.png",
+      "original_source_sha256": "92397cc1c3aa5d61bb7e7ba3999533028425fb1c48a16350f918fe0f98895a3b",
+      "derived_source_sha256": "af49a37fdb3475ec24f9dcb8127a19ed25f41d387c34d74cd1e492a38210b5ae",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-ne.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_e",
+      "file": "hero_female_e.png",
+      "source": "../source/hero-lineage-20260910/derived/female/e/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 64,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        53,
+        11,
+        73,
+        110
+      ],
+      "before_resize": [
+        20,
+        99
+      ],
+      "placed_size": [
+        20,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        70,
+        61,
+        90,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1104
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "7ade33152c53ce0d776c5f68f3559dd1c84f44442db06f84d6a91476c85b85f1",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/e/idle.png",
+      "original_source_sha256": "1754479e9e8b9e14f942a879036d300eb7d2862ab72bed3e4b25c63db9b55ad6",
+      "derived_source_sha256": "6f41dc75bc81f32473acb5f3aaae769ea0bd3d1826b8c020e51ab312f94604f6",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-e.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_walk0_e",
+      "file": "hero_female_walk0_e.png",
+      "source": "../source/hero-lineage-20260910/derived/female/e/walk0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 67,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        37,
+        11,
+        86,
+        107
+      ],
+      "before_resize": [
+        49,
+        96
+      ],
+      "placed_size": [
+        49,
+        96
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        54,
+        61,
+        103,
+        157
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1104
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "d44e640c9c20134fdbdaafb78b315a122a78cef947b1a98c342de50c54211c5b",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/e/walk0.png",
+      "original_source_sha256": "3c3eb1df9bc7cd495efa7c036be7460dd61286e4fc981fcd3abec571fe775ef5",
+      "derived_source_sha256": "b87c5eca10d204dd46fd09230f9c5e07e131b12a96f4940da8d1726b6bf7d3e0",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-e.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_walk1_e",
+      "file": "hero_female_walk1_e.png",
+      "source": "../source/hero-lineage-20260910/derived/female/e/walk1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 71,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        37,
+        11,
+        88,
+        108
+      ],
+      "before_resize": [
+        51,
+        97
+      ],
+      "placed_size": [
+        51,
+        97
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        54,
+        61,
+        105,
+        158
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1104
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "16639935600f9a2d8a98c2f4b6e9c837c139b744f3eeea02f1e0aeca8cea1d7b",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/e/walk1.png",
+      "original_source_sha256": "498e3cd53203201af1b5255ccf67c56a995b6adc611605658b99fb355d428537",
+      "derived_source_sha256": "7429a19c8f6940907e90807befebd2ddf5c9d849b4333abf559f3e72d5e65658",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-e.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike0_e",
+      "file": "hero_female_strike0_e.png",
+      "source": "../source/hero-lineage-20260910/derived/female/e/strike0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        47,
+        11,
+        85,
+        110
+      ],
+      "before_resize": [
+        38,
+        99
+      ],
+      "placed_size": [
+        38,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        64,
+        61,
+        102,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1104
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "5449ccb951b70e4ec8c8216049e5ed865ee06e111ba061de153f93f2b75625e4",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/e/strike0.png",
+      "original_source_sha256": "ed16ad89142bd528a641d19727e2eef8e9c89390e4e32a6070f1485a77dbf22e",
+      "derived_source_sha256": "288f259912132578771c9b98f10978768ea1ed86db1742eb205612411b260c0d",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-e.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike1_e",
+      "file": "hero_female_strike1_e.png",
+      "source": "../source/hero-lineage-20260910/derived/female/e/strike1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 68,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        46,
+        11,
+        102,
+        110
+      ],
+      "before_resize": [
+        56,
+        99
+      ],
+      "placed_size": [
+        56,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        63,
+        61,
+        119,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1104
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "dd2c9ad87786fe386df59d8fd6081e7b2245e5b554084f408a4addb61996d2bf",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/e/strike1.png",
+      "original_source_sha256": "4fa4d3e74726908bd25f71c4d21ade9a2e98433e810e1b924ce4a08c00bf310a",
+      "derived_source_sha256": "e14245bcd47008fada63b5810f5d7a5777ad87b44d88253edcd51453025448b5",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-e.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike2_e",
+      "file": "hero_female_strike2_e.png",
+      "source": "../source/hero-lineage-20260910/derived/female/e/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 64,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        53,
+        11,
+        73,
+        110
+      ],
+      "before_resize": [
+        20,
+        99
+      ],
+      "placed_size": [
+        20,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        70,
+        61,
+        90,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1104
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "7ade33152c53ce0d776c5f68f3559dd1c84f44442db06f84d6a91476c85b85f1",
+      "recovery_method": "byte_identical_idle_recovery",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/e/idle.png",
+      "original_source_sha256": "1754479e9e8b9e14f942a879036d300eb7d2862ab72bed3e4b25c63db9b55ad6",
+      "derived_source_sha256": "6f41dc75bc81f32473acb5f3aaae769ea0bd3d1826b8c020e51ab312f94604f6",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-e.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_se",
+      "file": "hero_female_se.png",
+      "source": "../source/hero-lineage-20260910/derived/female/se/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 65,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        48,
+        12,
+        79,
+        112
+      ],
+      "before_resize": [
+        31,
+        100
+      ],
+      "placed_size": [
+        31,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        65,
+        60,
+        96,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1125
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "c23539b10cf0c0e659d1a80887c450df5269f41e1555636421c44ce717968390",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/se/idle.png",
+      "original_source_sha256": "110e0e0b950d01e47054e0f360ed8323a1d38ba338d8b99dbf3019ef5832bd69",
+      "derived_source_sha256": "a67850893d314eee58e608d7c82507c2505ecceb1a10c8b1becbec1847eb5155",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-se.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_walk0_se",
+      "file": "hero_female_walk0_se.png",
+      "source": "../source/hero-lineage-20260910/derived/female/se/walk0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 67,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        12,
+        83,
+        113
+      ],
+      "before_resize": [
+        39,
+        101
+      ],
+      "placed_size": [
+        39,
+        101
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        60,
+        100,
+        161
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1125
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "17a4a4d1e7e7bf5d2f2586b7f56a3d4714c3ddfcc75ee0575b0c85484a1ec072",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/se/walk0.png",
+      "original_source_sha256": "de2cb8578f2f7dfc2d3dbfc71c0c998d1df27143631ae16a40dd60c1b045184c",
+      "derived_source_sha256": "5b06b9e62f767c71566f87d32b95f618bcc07e23c859add933dee4ebc8c8f9a0",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-se.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_walk1_se",
+      "file": "hero_female_walk1_se.png",
+      "source": "../source/hero-lineage-20260910/derived/female/se/walk1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 64,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        49,
+        12,
+        80,
+        114
+      ],
+      "before_resize": [
+        31,
+        102
+      ],
+      "placed_size": [
+        31,
+        102
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        66,
+        60,
+        97,
+        162
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1125
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "2243972d19542e125858989628eb5ff1b361e37a392b99a96865e0a709ca5b3f",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/se/walk1.png",
+      "original_source_sha256": "b580d423a26802b0ad0d48963858d74cef26dbcb7b85df1428c59cebff363441",
+      "derived_source_sha256": "6b9a8cb03cfea4d7b4c8d90f44418f055d436a0df07acc0531c26f905e9817e1",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-se.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike0_se",
+      "file": "hero_female_strike0_se.png",
+      "source": "../source/hero-lineage-20260910/derived/female/se/strike0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        46,
+        12,
+        84,
+        112
+      ],
+      "before_resize": [
+        38,
+        100
+      ],
+      "placed_size": [
+        38,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        63,
+        60,
+        101,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1125
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "3b42a28cc77b7f39ddd3d2dcefa2e80b7d8820d0de785926ec26f24fb580f129",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/se/strike0.png",
+      "original_source_sha256": "74e83c93bc99f6a202a52aa1bd305cbe885c8ea7ae76b6d6aaee73921fcfe5ab",
+      "derived_source_sha256": "e775c82e390c696a2f8663453fe2b3cc7ad3704d34369815ba3bb34fc858283e",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-se.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike1_se",
+      "file": "hero_female_strike1_se.png",
+      "source": "../source/hero-lineage-20260910/derived/female/se/strike1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        41,
+        12,
+        95,
+        113
+      ],
+      "before_resize": [
+        54,
+        101
+      ],
+      "placed_size": [
+        54,
+        101
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        58,
+        60,
+        112,
+        161
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1125
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "1833a63efedb6de6661eb23b4ccb09cd66c1c38fcfc082bd41180bb0cbbe77fb",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/se/strike1.png",
+      "original_source_sha256": "f66c3e0eb4193c549591caa100bc74832f9aef0dd167cd7a9398caf32b395d71",
+      "derived_source_sha256": "4f0c4f0b0f8eda23b8b9f60ad3fd6d7934077ba0be4601d6e814a71bd8a90ec5",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-se.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike2_se",
+      "file": "hero_female_strike2_se.png",
+      "source": "../source/hero-lineage-20260910/derived/female/se/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 65,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        48,
+        12,
+        79,
+        112
+      ],
+      "before_resize": [
+        31,
+        100
+      ],
+      "placed_size": [
+        31,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        65,
+        60,
+        96,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1125
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "c23539b10cf0c0e659d1a80887c450df5269f41e1555636421c44ce717968390",
+      "recovery_method": "byte_identical_idle_recovery",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/se/idle.png",
+      "original_source_sha256": "110e0e0b950d01e47054e0f360ed8323a1d38ba338d8b99dbf3019ef5832bd69",
+      "derived_source_sha256": "a67850893d314eee58e608d7c82507c2505ecceb1a10c8b1becbec1847eb5155",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-se.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_s",
+      "file": "hero_female_s.png",
+      "source": "../source/hero-lineage-20260910/derived/female/s/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        45,
+        12,
+        81,
+        111
+      ],
+      "before_resize": [
+        36,
+        99
+      ],
+      "placed_size": [
+        36,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        62,
+        61,
+        98,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1107
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "c6a1738dca5abf14e741d34746db21ce1db84e8f6f2037e8dd45df91300b5dad",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/s/idle.png",
+      "original_source_sha256": "9693437c9b6d88674cf64e55749135979c8db8db5576353967b2fe8a57fba742",
+      "derived_source_sha256": "ec54b1376bcefdafc6b45b7f4e60cd8f3f840dd8e462945c636087997d3d75c3",
+      "matte_repair": "original_alpha_threshold80_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-s.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_walk0_s",
+      "file": "hero_female_walk0_s.png",
+      "source": "../source/hero-lineage-20260910/derived/female/s/walk0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 82,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        45,
+        11,
+        81,
+        113
+      ],
+      "before_resize": [
+        36,
+        102
+      ],
+      "placed_size": [
+        36,
+        102
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        62,
+        60,
+        98,
+        162
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1107
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "f58a4a278d2051714f6a95f400755a2537c77182852ca927a955ea1b1bdbc372",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/s/walk0.png",
+      "original_source_sha256": "149ccdeae1a56a81fd1507b913f942eea7bbd4b9c9c6031d7a92d50292d61d16",
+      "derived_source_sha256": "daad637aa02f6037838adfd6f7d03a95820716a222491a4559c9d24db52970df",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-s.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_walk1_s",
+      "file": "hero_female_walk1_s.png",
+      "source": "../source/hero-lineage-20260910/derived/female/s/walk1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 80,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        47,
+        11,
+        80,
+        115
+      ],
+      "before_resize": [
+        33,
+        104
+      ],
+      "placed_size": [
+        33,
+        104
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        64,
+        60,
+        97,
+        164
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1107
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "e5ccb7e3faebf158001ed5b6d14c689163a3a67ff5b565da433b0d4204942980",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/s/walk1.png",
+      "original_source_sha256": "f14b3d3cf60634c5413c3649d49c37fcfdeea9005073d45194d551b29882b1af",
+      "derived_source_sha256": "7e3116e8d2971bc4aabc580ed425f076050a2c6f466f84c370ef8836bbd1c8e3",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-s.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike0_s",
+      "file": "hero_female_strike0_s.png",
+      "source": "../source/hero-lineage-20260910/derived/female/s/strike0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 70,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        12,
+        82,
+        111
+      ],
+      "before_resize": [
+        38,
+        99
+      ],
+      "placed_size": [
+        38,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        61,
+        99,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1107
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "4cf5bae0343661b2dba121509ed4be90568376d1c25cc955bb66125f026a7de3",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/s/strike0.png",
+      "original_source_sha256": "b77a3b5b9f16a1b942a1e54f54fa03530d49f9dbbe54796be3dc8bd8f36d363c",
+      "derived_source_sha256": "53bd48b9f2330411da3c872067c1d397af25948c4b6bcce2253c47c7e895b766",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-s.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike1_s",
+      "file": "hero_female_strike1_s.png",
+      "source": "../source/hero-lineage-20260910/derived/female/s/strike1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 80,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        11,
+        76,
+        111
+      ],
+      "before_resize": [
+        32,
+        100
+      ],
+      "placed_size": [
+        32,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        60,
+        93,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1107
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "8b8347ffbdc84e43d1df1e514acb1e3701fe2b862c21efdb219fb4ee81fca75c",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/s/strike1.png",
+      "original_source_sha256": "0fb697f53e2fee2352800dbc91a3263448226d22964116d4569658397628c08c",
+      "derived_source_sha256": "1961ca917b2a5cf18a73f03f7f73710093ecb46bbb87a928c25412443ca9a060",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-s.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike2_s",
+      "file": "hero_female_strike2_s.png",
+      "source": "../source/hero-lineage-20260910/derived/female/s/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        45,
+        12,
+        81,
+        111
+      ],
+      "before_resize": [
+        36,
+        99
+      ],
+      "placed_size": [
+        36,
+        99
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        62,
+        61,
+        98,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1107
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "c6a1738dca5abf14e741d34746db21ce1db84e8f6f2037e8dd45df91300b5dad",
+      "recovery_method": "byte_identical_idle_recovery",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/s/idle.png",
+      "original_source_sha256": "9693437c9b6d88674cf64e55749135979c8db8db5576353967b2fe8a57fba742",
+      "derived_source_sha256": "ec54b1376bcefdafc6b45b7f4e60cd8f3f840dd8e462945c636087997d3d75c3",
+      "matte_repair": "original_alpha_threshold80_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-s.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_sw",
+      "file": "hero_female_sw.png",
+      "source": "../source/hero-lineage-20260910/derived/female/sw/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 65,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        48,
+        13,
+        78,
+        113
+      ],
+      "before_resize": [
+        30,
+        100
+      ],
+      "placed_size": [
+        30,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        65,
+        60,
+        95,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1127
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "d0e8d44fe5f6779f3331e63751669c0f9599a2ef2430826693736ea547cc284d",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/sw/idle.png",
+      "original_source_sha256": "333b4774b8eed3b0ea98f577a9dab86eede831a1a61bdc831558266b604f8e0e",
+      "derived_source_sha256": "74c57e55aa09c39fa0a8d01f1b1ba6d177dd3c53cd9b03b0769ed6465ca53663",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-sw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_walk0_sw",
+      "file": "hero_female_walk0_sw.png",
+      "source": "../source/hero-lineage-20260910/derived/female/sw/walk0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 69,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        43,
+        13,
+        83,
+        113
+      ],
+      "before_resize": [
+        40,
+        100
+      ],
+      "placed_size": [
+        40,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        60,
+        60,
+        100,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1127
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "7967565e94abe165f9c532d211ee804d2ee81489f082a3b2dd60fc237993633e",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/sw/walk0.png",
+      "original_source_sha256": "504761ab206b59a18833c59c884009320820359305f4ef79fbf118e65d772b62",
+      "derived_source_sha256": "ed4737a5ad8e6a469a8651cd17f4dc8246f133142b16e203adfffc6101b6a9c9",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-sw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_walk1_sw",
+      "file": "hero_female_walk1_sw.png",
+      "source": "../source/hero-lineage-20260910/derived/female/sw/walk1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 71,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        48,
+        13,
+        80,
+        113
+      ],
+      "before_resize": [
+        32,
+        100
+      ],
+      "placed_size": [
+        32,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        65,
+        60,
+        97,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1127
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "ed09d329b53164cd4398cadd4f06904bf79b2b1bae6d643f3ea66712a21fcd41",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/sw/walk1.png",
+      "original_source_sha256": "b521cfd7eb088586249c9412ec0112f23055deb7a60591016263cf08b298320c",
+      "derived_source_sha256": "af0d36c4afa30ddd97b2e69f31965a587c2f7007812284847b826ae45e2da5c5",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-sw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike0_sw",
+      "file": "hero_female_strike0_sw.png",
+      "source": "../source/hero-lineage-20260910/derived/female/sw/strike0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        48,
+        13,
+        77,
+        113
+      ],
+      "before_resize": [
+        29,
+        100
+      ],
+      "placed_size": [
+        29,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        65,
+        60,
+        94,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1127
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "d4694609db5c4df3b63f48d9a57aea4a3b72c4054efbecd910da09f980ce4584",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/sw/strike0.png",
+      "original_source_sha256": "d268de26e0df136e66c7f692b38e6e1d8e142121f839bb00df8fe5164f3056f0",
+      "derived_source_sha256": "b6c8f0e505b5a0b64157f955282f5745416a959ed74eb2cae442a83d961a5f0e",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-sw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike1_sw",
+      "file": "hero_female_strike1_sw.png",
+      "source": "../source/hero-lineage-20260910/derived/female/sw/strike1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 74,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        13,
+        78,
+        113
+      ],
+      "before_resize": [
+        34,
+        100
+      ],
+      "placed_size": [
+        34,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        60,
+        95,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1127
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "7d6c51a5da7cfe402e5095e1f0e40084f0e345dbe73704a8e351847e05a773c8",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/sw/strike1.png",
+      "original_source_sha256": "02011c117e3a958c07a6a796e5c27f78783fc25927f04e230fdcbb0b3ee31c93",
+      "derived_source_sha256": "d93dc05eb2c5af17cdaa3dfc3a5abbeefb58ddf2ff01fd252e2b6b27cca09233",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-sw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike2_sw",
+      "file": "hero_female_strike2_sw.png",
+      "source": "../source/hero-lineage-20260910/derived/female/sw/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 65,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        48,
+        13,
+        78,
+        113
+      ],
+      "before_resize": [
+        30,
+        100
+      ],
+      "placed_size": [
+        30,
+        100
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        65,
+        60,
+        95,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1127
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "d0e8d44fe5f6779f3331e63751669c0f9599a2ef2430826693736ea547cc284d",
+      "recovery_method": "byte_identical_idle_recovery",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/sw/idle.png",
+      "original_source_sha256": "333b4774b8eed3b0ea98f577a9dab86eede831a1a61bdc831558266b604f8e0e",
+      "derived_source_sha256": "74c57e55aa09c39fa0a8d01f1b1ba6d177dd3c53cd9b03b0769ed6465ca53663",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-sw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_w",
+      "file": "hero_female_w.png",
+      "source": "../source/hero-lineage-20260910/derived/female/w/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 65,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        52,
+        8,
+        73,
+        114
+      ],
+      "before_resize": [
+        21,
+        106
+      ],
+      "placed_size": [
+        21,
+        106
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        69,
+        54,
+        90,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1141
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "4e6977b2ca6cb711aa5fb1bfbaf82e7a764ef75aacff53a78ecb17612654e48e",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/w/idle.png",
+      "original_source_sha256": "2f0f6a9ad9965783d1affbd4dcf2e6b047cdd925d431ee0151baa9c4b5420aac",
+      "derived_source_sha256": "3a1faad114474d1674f001e81226f4bfceebb4318a87a8e51ac9738cd44dca51",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-w.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_walk0_w",
+      "file": "hero_female_walk0_w.png",
+      "source": "../source/hero-lineage-20260910/derived/female/w/walk0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 72,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        39,
+        9,
+        89,
+        112
+      ],
+      "before_resize": [
+        50,
+        103
+      ],
+      "placed_size": [
+        50,
+        103
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        56,
+        55,
+        106,
+        158
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1141
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "98dc3df88cfc251c10894419f1cfbf26005ebbd42241fd864c20070deec3bb68",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/w/walk0.png",
+      "original_source_sha256": "acf98f27e9ee13064a74dcecd3fb0363b04219da44d08730d4ad610d4045398f",
+      "derived_source_sha256": "17adaa6e6090c27917281176e1f0b43229b9cf49104269ca13e9d0ed1c945cb2",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-w.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_walk1_w",
+      "file": "hero_female_walk1_w.png",
+      "source": "../source/hero-lineage-20260910/derived/female/w/walk1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 73,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        37,
+        8,
+        92,
+        111
+      ],
+      "before_resize": [
+        55,
+        103
+      ],
+      "placed_size": [
+        55,
+        103
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        54,
+        54,
+        109,
+        157
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1141
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "0f74fbe6aeae0d7f3817625df9b343c648b12b11a7040f2dd0ac3e3f2fec4867",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/w/walk1.png",
+      "original_source_sha256": "15be590e509162b9e560c768d577706c84a2a11b5363429636cfc5ad12a84f11",
+      "derived_source_sha256": "0949a37842e44dbc720f850df9d5d5acc755be74bb6c2022f8c4d519f5886317",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-w.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike0_w",
+      "file": "hero_female_strike0_w.png",
+      "source": "../source/hero-lineage-20260910/derived/female/w/strike0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 71,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        8,
+        85,
+        113
+      ],
+      "before_resize": [
+        41,
+        105
+      ],
+      "placed_size": [
+        41,
+        105
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        54,
+        102,
+        159
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1141
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "f20667abc04304b37e6d2d7a8df162416706dd2f0251bd2168f706d7ea8d41b6",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/w/strike0.png",
+      "original_source_sha256": "75f28139df32489f9bb84f2d14200c69775771468f8d431d15bb6250f7be8033",
+      "derived_source_sha256": "89b46b11a712ae6beb25dac72ea11d03c0355c62d7f9f6aa3853c151d9952cfe",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-w.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike1_w",
+      "file": "hero_female_strike1_w.png",
+      "source": "../source/hero-lineage-20260910/derived/female/w/strike1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 68,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        31,
+        9,
+        83,
+        113
+      ],
+      "before_resize": [
+        52,
+        104
+      ],
+      "placed_size": [
+        52,
+        104
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        48,
+        55,
+        100,
+        159
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1141
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "e74459466e29607052abd900c0adfaf8fc85f35257d4cfd016adef8486b28a2a",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/w/strike1.png",
+      "original_source_sha256": "b2e0fdddc08b72e7b88d3c28bea52ebc9f041047458917b7a37b34ba77edba3d",
+      "derived_source_sha256": "9cc7da3feeba220356c0a69346e4ca7b9969c5bf1c247c65d143c991a8ffe42b",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-w.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike2_w",
+      "file": "hero_female_strike2_w.png",
+      "source": "../source/hero-lineage-20260910/derived/female/w/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 65,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        52,
+        8,
+        73,
+        114
+      ],
+      "before_resize": [
+        21,
+        106
+      ],
+      "placed_size": [
+        21,
+        106
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        69,
+        54,
+        90,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1141
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "4e6977b2ca6cb711aa5fb1bfbaf82e7a764ef75aacff53a78ecb17612654e48e",
+      "recovery_method": "byte_identical_idle_recovery",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/w/idle.png",
+      "original_source_sha256": "2f0f6a9ad9965783d1affbd4dcf2e6b047cdd925d431ee0151baa9c4b5420aac",
+      "derived_source_sha256": "3a1faad114474d1674f001e81226f4bfceebb4318a87a8e51ac9738cd44dca51",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-w.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_nw",
+      "file": "hero_female_nw.png",
+      "source": "../source/hero-lineage-20260910/derived/female/nw/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 59,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        49,
+        12,
+        78,
+        110
+      ],
+      "before_resize": [
+        29,
+        98
+      ],
+      "placed_size": [
+        29,
+        98
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        66,
+        62,
+        95,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1102
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "496f341e9137922b06c9b4a51d80bf34bbcd79f5f3550b782e626b2507ddaabf",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/nw/idle.png",
+      "original_source_sha256": "1bed666c5f8838d559971808957a00f2d3c83b40d5f6dd27417fac59f4a49062",
+      "derived_source_sha256": "8fe32d226d09f1bd2c1bd7870fc5398cfdfea087dee214f5af2f2571714439ac",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-nw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_walk0_nw",
+      "file": "hero_female_walk0_nw.png",
+      "source": "../source/hero-lineage-20260910/derived/female/nw/walk0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 70,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        44,
+        12,
+        82,
+        110
+      ],
+      "before_resize": [
+        38,
+        98
+      ],
+      "placed_size": [
+        38,
+        98
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        61,
+        62,
+        99,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1102
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "d3cb6aaa67313a1d08cc8fd573ea39bda20f2b1d63c83941ac03ca60d979793f",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/nw/walk0.png",
+      "original_source_sha256": "0e4924463f79e71cf4c644b08e3cc4b7195c55294aa2a8e7d7905545568fc941",
+      "derived_source_sha256": "d301131c5a1285254999610443d2a0bc58b09d360602fcb8b8ade4cdba1ea89e",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-nw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_walk1_nw",
+      "file": "hero_female_walk1_nw.png",
+      "source": "../source/hero-lineage-20260910/derived/female/nw/walk1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 74,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        43,
+        13,
+        82,
+        111
+      ],
+      "before_resize": [
+        39,
+        98
+      ],
+      "placed_size": [
+        39,
+        98
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        60,
+        63,
+        99,
+        161
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1102
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "c67be741c58dd0c6d30447fd0d058a5c4278b86c0c333c3ea379c736c426b864",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/nw/walk1.png",
+      "original_source_sha256": "b119a8e56f1b431e16c65309b7198afd2e6647fde9cd65c6c8c5df67cbe5b8d9",
+      "derived_source_sha256": "29093e560237a4f2e6fa70537e9b14aab5a2e34e95fcee680ce6dffcdc61dc2f",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-nw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike0_nw",
+      "file": "hero_female_strike0_nw.png",
+      "source": "../source/hero-lineage-20260910/derived/female/nw/strike0.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 69,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        45,
+        13,
+        85,
+        108
+      ],
+      "before_resize": [
+        40,
+        95
+      ],
+      "placed_size": [
+        40,
+        95
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        62,
+        63,
+        102,
+        158
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1102
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "6599ec3da2d1be05ee1d71e208258e8e8d39aec59b7160ad9ad8eb51ec428b5b",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/nw/strike0.png",
+      "original_source_sha256": "3e11ee6618a4be54ecfc17360b83616a001371d310b12c87f48d9ef06e747f2d",
+      "derived_source_sha256": "5e8d4393ad2592807be90be2a8e66fb7a85a9527f8247f89381665560404f5a1",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-nw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike1_nw",
+      "file": "hero_female_strike1_nw.png",
+      "source": "../source/hero-lineage-20260910/derived/female/nw/strike1.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 66,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        33,
+        13,
+        85,
+        108
+      ],
+      "before_resize": [
+        52,
+        95
+      ],
+      "placed_size": [
+        52,
+        95
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        50,
+        63,
+        102,
+        158
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1102
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "1e3daa5c0f06f40dc960c4a5b24c11765edf37e0af39495b9d43b4e1796464db",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/nw/strike1.png",
+      "original_source_sha256": "474d0c4bf43ce49143d278b607c50be40469d9771134c0ee89b30ffc7753614d",
+      "derived_source_sha256": "82050426509f086e8b5ce89d19da325911b3baba511a562764060bd15534a567",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-nw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "hero_female_strike2_nw",
+      "file": "hero_female_strike2_nw.png",
+      "source": "../source/hero-lineage-20260910/derived/female/nw/idle.png",
+      "acceptance": "root_visual_approved_pending_production_capture",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 10,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 96,
+      "visible_colors": 59,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        125,
+        125
+      ],
+      "trim_box": [
+        49,
+        12,
+        78,
+        110
+      ],
+      "before_resize": [
+        29,
+        98
+      ],
+      "placed_size": [
+        29,
+        98
+      ],
+      "canvas": [
+        160,
+        192
+      ],
+      "content_bounds": [
+        66,
+        62,
+        95,
+        160
+      ],
+      "anchor_px": [
+        80,
+        160
+      ],
+      "baseline_offset_px": 32,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        627,
+        1102
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "496f341e9137922b06c9b4a51d80bf34bbcd79f5f3550b782e626b2507ddaabf",
+      "recovery_method": "byte_identical_idle_recovery",
+      "original_source": "../source/hero-lineage-20260910/candidates/female/nw/idle.png",
+      "original_source_sha256": "1bed666c5f8838d559971808957a00f2d3c83b40d5f6dd27417fac59f4a49062",
+      "derived_source_sha256": "8fe32d226d09f1bd2c1bd7870fc5398cfdfea087dee214f5af2f2571714439ac",
+      "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "directional_provenance": "hero-lineage-20260910/hero-female-nw.provenance.json",
+      "provenance": "hero-lineage-20260910.provenance.json"
     }
   ],
+  "lineage_sequences": {
+    "hero_male": {
+      "walk": {
+        "n": {
+          "frames": [
+            "hero_male_walk0_n",
+            "hero_male_walk1_n"
+          ],
+          "frame_count": 2,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "ne": {
+          "frames": [
+            "hero_male_walk0_ne",
+            "hero_male_walk1_ne"
+          ],
+          "frame_count": 2,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "e": {
+          "frames": [
+            "hero_male_walk0_e",
+            "hero_male_walk1_e"
+          ],
+          "frame_count": 2,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "se": {
+          "frames": [
+            "hero_male_walk0_se",
+            "hero_male_walk1_se"
+          ],
+          "frame_count": 2,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "s": {
+          "frames": [
+            "hero_male_walk0_s",
+            "hero_male_walk1_s"
+          ],
+          "frame_count": 2,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "sw": {
+          "frames": [
+            "hero_male_walk0_sw",
+            "hero_male_walk1_sw"
+          ],
+          "frame_count": 2,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "w": {
+          "frames": [
+            "hero_male_walk0_w",
+            "hero_male_walk1_w"
+          ],
+          "frame_count": 2,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "nw": {
+          "frames": [
+            "hero_male_walk0_nw",
+            "hero_male_walk1_nw"
+          ],
+          "frame_count": 2,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        }
+      },
+      "strike": {
+        "n": {
+          "frames": [
+            "hero_male_strike0_n",
+            "hero_male_strike1_n",
+            "hero_male_strike2_n"
+          ],
+          "frame_count": 3,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "ne": {
+          "frames": [
+            "hero_male_strike0_ne",
+            "hero_male_strike1_ne",
+            "hero_male_strike2_ne"
+          ],
+          "frame_count": 3,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "e": {
+          "frames": [
+            "hero_male_strike0_e",
+            "hero_male_strike1_e",
+            "hero_male_strike2_e"
+          ],
+          "frame_count": 3,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "se": {
+          "frames": [
+            "hero_male_strike0_se",
+            "hero_male_strike1_se",
+            "hero_male_strike2_se"
+          ],
+          "frame_count": 3,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "s": {
+          "frames": [
+            "hero_male_strike0_s",
+            "hero_male_strike1_s",
+            "hero_male_strike2_s"
+          ],
+          "frame_count": 3,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "sw": {
+          "frames": [
+            "hero_male_strike0_sw",
+            "hero_male_strike1_sw",
+            "hero_male_strike2_sw"
+          ],
+          "frame_count": 3,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "w": {
+          "frames": [
+            "hero_male_strike0_w",
+            "hero_male_strike1_w",
+            "hero_male_strike2_w"
+          ],
+          "frame_count": 3,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "nw": {
+          "frames": [
+            "hero_male_strike0_nw",
+            "hero_male_strike1_nw",
+            "hero_male_strike2_nw"
+          ],
+          "frame_count": 3,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        }
+      }
+    },
+    "hero_female": {
+      "walk": {
+        "n": {
+          "frames": [
+            "hero_female_walk0_n",
+            "hero_female_walk1_n"
+          ],
+          "frame_count": 2,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "ne": {
+          "frames": [
+            "hero_female_walk0_ne",
+            "hero_female_walk1_ne"
+          ],
+          "frame_count": 2,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "e": {
+          "frames": [
+            "hero_female_walk0_e",
+            "hero_female_walk1_e"
+          ],
+          "frame_count": 2,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "se": {
+          "frames": [
+            "hero_female_walk0_se",
+            "hero_female_walk1_se"
+          ],
+          "frame_count": 2,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "s": {
+          "frames": [
+            "hero_female_walk0_s",
+            "hero_female_walk1_s"
+          ],
+          "frame_count": 2,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "sw": {
+          "frames": [
+            "hero_female_walk0_sw",
+            "hero_female_walk1_sw"
+          ],
+          "frame_count": 2,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "w": {
+          "frames": [
+            "hero_female_walk0_w",
+            "hero_female_walk1_w"
+          ],
+          "frame_count": 2,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "nw": {
+          "frames": [
+            "hero_female_walk0_nw",
+            "hero_female_walk1_nw"
+          ],
+          "frame_count": 2,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        }
+      },
+      "strike": {
+        "n": {
+          "frames": [
+            "hero_female_strike0_n",
+            "hero_female_strike1_n",
+            "hero_female_strike2_n"
+          ],
+          "frame_count": 3,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "ne": {
+          "frames": [
+            "hero_female_strike0_ne",
+            "hero_female_strike1_ne",
+            "hero_female_strike2_ne"
+          ],
+          "frame_count": 3,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "e": {
+          "frames": [
+            "hero_female_strike0_e",
+            "hero_female_strike1_e",
+            "hero_female_strike2_e"
+          ],
+          "frame_count": 3,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "se": {
+          "frames": [
+            "hero_female_strike0_se",
+            "hero_female_strike1_se",
+            "hero_female_strike2_se"
+          ],
+          "frame_count": 3,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "s": {
+          "frames": [
+            "hero_female_strike0_s",
+            "hero_female_strike1_s",
+            "hero_female_strike2_s"
+          ],
+          "frame_count": 3,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "sw": {
+          "frames": [
+            "hero_female_strike0_sw",
+            "hero_female_strike1_sw",
+            "hero_female_strike2_sw"
+          ],
+          "frame_count": 3,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "w": {
+          "frames": [
+            "hero_female_strike0_w",
+            "hero_female_strike1_w",
+            "hero_female_strike2_w"
+          ],
+          "frame_count": 3,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        },
+        "nw": {
+          "frames": [
+            "hero_female_strike0_nw",
+            "hero_female_strike1_nw",
+            "hero_female_strike2_nw"
+          ],
+          "frame_count": 3,
+          "canvas": [
+            160,
+            192
+          ],
+          "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+        }
+      }
+    }
+  },
   "known_limitations": [
     "Archer rear diagonals require live-game directional review.",
     "Artisan NW is slightly brighter ochre than other directions; anatomical staff handedness remains uncertain.",
@@ -11881,7 +19416,12 @@
     "The imagegen offset repair and wider eight-pixel blend were rejected. Normal-game floor shading, wall composition and visual acceptance are recorded separately.",
     "Imagegen source painted its background and stretched the cap. Actual Pixel Respecter reconstruction uses measured cap/face crops, explicit64x64/64x32 plane normalization and exact row64 assembly; the source remains unchanged.",
     "Root reviewed native module, literal3x3wall and offline actor-context comparisons. Recurring cap motifs and mismatched masonry at module joins remain; this is not a seamless-wall claim.",
-    "Runtime uses the entire opaque64x96 module over a64x64 authoritative footprint with32px lift. Pivot[32,96], depth, exposure, player cutaway and final game acceptance are renderer responsibilities."
+    "Runtime uses the entire opaque64x96 module over a64x64 authoritative footprint with32px lift. Pivot[32,96], depth, exposure, player cutaway and final game acceptance are renderer responsibilities.",
+    "Two walk contacts only; no passing phase.",
+    "Attack recovery is byte-identical idle.",
+    "Generated checker backgrounds were removed by documented source-preserving staging.",
+    "Per-direction source scale is preserved; cross-direction height variation remains.",
+    "Root production capture and equipment overlay acceptance remain separate."
   ],
   "missing_direction_assets": [],
   "walk_sequence": {
