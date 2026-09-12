@@ -393,7 +393,7 @@ try {
   } else {
     Write-Host "play-native: local mode (no server); starting client with in-process simulation"
   }
-  Write-Host "play-native: close the window or press Esc to quit"
+  Write-Host "play-native: Esc opens the session menu; choose Quit or close the window"
   if ($Local) {
     $client = Start-Process -FilePath $clientExe -PassThru
   } else {
