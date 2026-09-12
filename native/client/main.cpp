@@ -13289,8 +13289,27 @@ int scenario_remote_render_list() {
 
   bool saw_monster = false, saw_swing = false, saw_drop = false;
   for (int step = 0; step < 240; ++step) {
-    state.session->submit(verdigris::client::ClientCommand::use_action("melee"));
-    if (step % 4 == 0) state.session->submit(verdigris::client::ClientCommand::move(1, 0));
+    const auto& model = state.session->model();
+    const verdigris::client::ClientMonster* nearest = nullptr;
+    double distance = 1e9;
+    for (const auto& monster : model.monsters) {
+      if (!monster.alive) continue;
+      const double candidate = std::hypot(monster.x - model.player.x, monster.y - model.player.y);
+      if (candidate < distance) { distance = candidate; nearest = &monster; }
+    }
+    if (nearest && distance > 1.15) {
+      // This render fixture uses the existing scene-placement seam, then
+      // waits for its echo. A distant swing no longer proves physical contact.
+      auto* remote = static_cast<verdigris::client::RemoteProtocolSession*>(state.session.get());
+      remote->send_raw("dev:teleport", verdigris::networking::JsonValue::Object{
+          {"x", static_cast<int>(std::lround(nearest->x))},
+          {"y", static_cast<int>(std::lround(nearest->y))}});
+    } else if (nearest) {
+      const int dx = nearest->x > model.player.x + 0.05 ? 1 : nearest->x < model.player.x - 0.05 ? -1 : 0;
+      const int dy = nearest->y > model.player.y + 0.05 ? 1 : nearest->y < model.player.y - 0.05 ? -1 : 0;
+      if (dx || dy) state.session->submit(verdigris::client::ClientCommand::aim(dx, dy));
+      state.session->submit(verdigris::client::ClientCommand::use_action("melee"));
+    }
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
     state.session->poll();
     ingest_session_events(state);

@@ -794,11 +794,14 @@ struct WorldPosition {
 };
 
 namespace tile_movement {
-// Browser feel constants (post-0037): one tile takes 150 ms, a held key
-// samples every 50 ms, so each sample moves exactly 1/3 tile.
-inline constexpr double kTileTravelMs = 150.0;
+// A starting Scion walks four tiles per second. Keep the responsive 50 ms
+// input cadence; later movement bonuses should increase distance, not tick rate.
+inline constexpr double kTileTravelMs = 250.0;
 inline constexpr double kSampleMs = 50.0;
 inline constexpr double kMoveDistance = kSampleMs / kTileTravelMs;
+// Enemy pursuit has its own baseline; tuning starting player speed must not
+// silently slow the opposition by the same percentage.
+inline constexpr double kPursuitMoveDistance = kSampleMs / 150.0;
 inline constexpr int kPositionPrecision = 6;
 
 // Normalised 8-way sample delta (PLAYER_MOVE_DISTANCE along the vector).
@@ -963,7 +966,7 @@ class WorldSimulation {
     }
     return false;
   }
-  void kill_all_monsters() { for (auto& monster : monsters_) { monster.alive = false; monster.life = 0; } active_target_.clear(); }
+  void kill_all_monsters() { for (auto& monster : monsters_) { monster.alive = false; monster.life = 0; } active_target_.clear(); player_attack_active_ = false; }
   const TileGrid& grid() const { return grid_; }
   bool in_instance() const { return scene_type_ == "instance"; }
 
@@ -1075,6 +1078,8 @@ public:
   const std::string& engaged_by() const { return engaged_by_; }
 private:
   std::uint64_t next_player_attack_ms_ = 0;
+  bool player_attack_active_ = false;
+  Vec2 player_attack_facing_{0, 1};
   std::int64_t next_dash_ms_ = 0;
   std::uint64_t next_boss_telegraph_ms_ = 0;
   std::int64_t last_pursuit_tick_ms_ = -1;

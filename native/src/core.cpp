@@ -1686,7 +1686,10 @@ constexpr int kInstanceMonsterCount = 20;
 constexpr int kN3TrashLife = 30;
 constexpr int kN3PlayerDamage = 18;
 constexpr int kN3PlayerAttackIntervalMs = 350;
-constexpr int kN3MonsterDamage = 5;
+constexpr int kN3PlayerWindupMs = 100;
+// Actor centres are one tile apart at ordinary adjacent contact. The extra
+// quarter tile allows a short blade to connect without requiring overlap.
+constexpr double kN3MeleeReachTiles = 1.25;
 constexpr int kN3BossLife = 120;
 constexpr int kN3BossDamage = 12;
 constexpr int kN3BossTelegraphRadius = 2;
@@ -1863,6 +1866,7 @@ void WorldSimulation::return_to_town() {
   ground_items_ = std::move(town_ground_items_);
   town_ground_items_.clear();
   active_target_.clear();
+  player_attack_active_ = false;
   grid_.width = kTownSize;
   grid_.height = kTownSize;
   grid_.walkable.assign(static_cast<std::size_t>(kTownSize) * kTownSize, 1);
@@ -2094,6 +2098,7 @@ void WorldSimulation::enter_solo_instance(const std::string& template_id, const 
   }
   active_target_.clear();
   boss_warning_seen_ = false;
+  player_attack_active_ = false;
   next_boss_telegraph_ms_ = 0;
   generate_instance();
 
@@ -2138,6 +2143,19 @@ bool grid_line_clear(const TileGrid& grid, Vec2 from, Vec2 to) {
 namespace {
 double world_tile_distance(WorldPosition a, WorldPosition b) {
   return std::max(std::abs(a.x - b.x), std::abs(a.y - b.y));
+}
+
+bool world_melee_contact(WorldPosition from, WorldPosition to) {
+  return std::hypot(to.x - from.x, to.y - from.y) <= kN3MeleeReachTiles + 1e-6;
+}
+
+bool world_melee_aim(WorldPosition from, WorldPosition to, Vec2 facing) {
+  const double dx = to.x - from.x, dy = to.y - from.y;
+  const double dot = dx * facing.x + dy * facing.y;
+  // A 90-degree forward cone; overlapping centres remain hittable.
+  return dx * dx + dy * dy < 1e-9 ||
+      (dot > 0 && dot * dot * 2 + 1e-9 >=
+          (dx * dx + dy * dy) * (facing.x * facing.x + facing.y * facing.y));
 }
 
 bool world_grid_step_clear(const TileGrid& grid, Vec2 from, Vec2 to) {
@@ -2266,19 +2284,17 @@ void WorldSimulation::advance_monster_movement(std::int64_t now_ms, bool player_
       if (!monster.pursuit_active && distance <= world_pursuit::kAcquireTiles && visible)
         monster.pursuit_active = true;
       if (!monster.pursuit_active) continue;
-      const int contact = active_target_ == monster.uuid ? 2 : 1;
-      if (visible && std::abs(monster.x - player_tile.x) <= contact &&
-          std::abs(monster.y - player_tile.y) <= contact) continue;
+      if (visible && world_melee_contact(from, position_)) continue;
       const auto waypoint = monster_waypoint(index);
       if (!waypoint) continue;
       const double dx = waypoint->x - from.x, dy = waypoint->y - from.y;
       const double length = std::hypot(dx, dy);
       if (length <= 1e-6) continue;
-      double amount = tile_movement::kMoveDistance * enemy_stats(monster.level).move_speed /
+      double amount = tile_movement::kPursuitMoveDistance * enemy_stats(monster.level).move_speed /
                       world_scale::kPlayerMoveSpeed;
       amount = std::min(amount, length);
       if (waypoint->x == position_.x && waypoint->y == position_.y)
-        amount = std::min(amount, std::max(0.0, distance - contact) * length / distance);
+        amount = std::min(amount, std::max(0.0, length - kN3MeleeReachTiles));
       const WorldPosition to{tile_movement::round_position(from.x + dx / length * amount),
                              tile_movement::round_position(from.y + dy / length * amount)};
       if (world_tile_distance(monster.pursuit_home, to) > world_pursuit::kHomeLeashTiles ||
@@ -2308,57 +2324,35 @@ std::vector<WorldCombatEvent> WorldSimulation::start_player_attack(int player_le
   player_level_ = std::max(1, player_level);
   const Vec2 here = tile_movement::occupied_tile(position_);
   WorldMonster* chosen = nullptr;
-  int best = std::numeric_limits<int>::max();
-  // A boss telegraph is an authored encounter contract; when the player is
-  // standing on its doorstep, prefer the named boss over incidental pack
-  // members sharing the tile ring.
+  double best = std::numeric_limits<double>::max();
+  Vec2 aim{};
+  if (direction.find("left") != std::string::npos) aim.x = -1;
+  if (direction.find("right") != std::string::npos) aim.x = 1;
+  if (direction.find("up") != std::string::npos) aim.y = -1;
+  if (direction.find("down") != std::string::npos) aim.y = 1;
+  if (aim.x == 0 && aim.y == 0) aim.y = 1;
   for (auto& monster : monsters_) {
-    if (!monster.alive || !monster.boss) continue;
-    const int distance = std::abs(monster.x - here.x) + std::abs(monster.y - here.y);
-    if (distance <= 2 && grid_line_clear(grid_, here, {monster.x, monster.y})) {
-      chosen = &monster; best = distance; break;
-    }
+    const WorldPosition target = monster.world_position();
+    if (!monster.alive || !world_melee_contact(position_, target) ||
+        !world_melee_aim(position_, target, aim) ||
+        !grid_line_clear(grid_, here, tile_movement::occupied_tile(target))) continue;
+    const double distance = std::hypot(target.x - position_.x, target.y - position_.y);
+    if (distance < best) { best = distance; chosen = &monster; }
   }
   if (!chosen) {
-    for (auto& monster : monsters_) {
-      if (!monster.alive || !monster.empowered) continue;
-      const int distance = std::abs(monster.x - here.x) + std::abs(monster.y - here.y);
-      if (distance <= 2 && grid_line_clear(grid_, here, {monster.x, monster.y})) {
-        chosen = &monster; best = distance; break;
-      }
-    }
+    player_attack_active_ = false;
+    active_target_.clear();
+    return {};
   }
-  if (!chosen) {
-    // Nearest alive monster wins (combat/index.js nearest-target aim). The
-    // scan must keep improving `best` — an early-out here silently locks the
-    // aim onto the first spawn in the pack list. Among equally-near monsters
-    // the aimed direction breaks the tie (the browser swings where the
-    // player faces), so repeated aimed swings hold focus on one target
-    // instead of drifting across a pack (healer-race focus).
-    int aim_dx = 0, aim_dy = 0;
-    if (direction.find("left") != std::string::npos) aim_dx = -1;
-    if (direction.find("right") != std::string::npos) aim_dx = 1;
-    if (direction.find("up") != std::string::npos) aim_dy = -1;
-    if (direction.find("down") != std::string::npos) aim_dy = 1;
-    int best_aim = std::numeric_limits<int>::min();
-    for (auto& monster : monsters_) {
-      if (!monster.alive) continue;
-      const int distance = std::abs(monster.x - here.x) + std::abs(monster.y - here.y);
-      if (!grid_line_clear(grid_, here, {monster.x, monster.y})) continue;
-      const int aim = aim_dx * (monster.x - here.x) + aim_dy * (monster.y - here.y);
-      if (distance < best || (distance == best && aim > best_aim)) {
-        best = distance; best_aim = aim; chosen = &monster;
-      }
-    }
-  }
-  if (!chosen) return {};
+  const bool fresh_swing = !player_attack_active_;
   active_target_ = chosen->uuid;
-  // Input selects a target; only resolved contact advances the attack clock.
-  // Retriggers, target switches, and disengaging/re-engaging must not shorten
-  // the recovery already owed by the previous hit. A fresh attack is immediate.
-  next_player_attack_ms_ = std::max(
-      next_player_attack_ms_,
-      static_cast<std::uint64_t>(std::max<std::int64_t>(0, now_ms)));
+  player_attack_facing_ = aim;
+  player_attack_active_ = true;
+  // Fresh contact has a visible windup. Held/repeated inputs must neither
+  // restart that windup nor bypass recovery from an earlier hit or miss.
+  if (fresh_swing) next_player_attack_ms_ = std::max(
+      next_player_attack_ms_, static_cast<std::uint64_t>(
+          std::max<std::int64_t>(0, now_ms)) + kN3PlayerWindupMs);
   (void)player_attack;
   return {};
 }
@@ -2389,7 +2383,7 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
     const Vec2 here = tile_movement::occupied_tile(position_);
     for (auto& monster : monsters_) {
       if (!monster.alive || monster.boss) continue;
-      if (std::abs(monster.x - here.x) > 1 || std::abs(monster.y - here.y) > 1) continue;
+      if (!world_melee_contact(position_, monster.world_position())) continue;
       if (!grid_line_clear(grid_, here, {monster.x, monster.y})) continue;
       if (monster.next_attack_ms == 0) {
         // First contact: a short, per-monster staggered windup instead of
@@ -2426,22 +2420,29 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
   if (active_target_.empty()) return events;
   WorldMonster* target = nullptr;
   for (auto& monster : monsters_) if (monster.uuid == active_target_ && monster.alive) { target = &monster; break; }
-  if (!target) { active_target_.clear(); return events; }
-  { // JS combat: walking out of melee reach disengages - the swing loop must
-    // not chase a target across the map (build-comparison parking relies on it).
+  if (!target) { active_target_.clear(); player_attack_active_ = false; return events; }
+  { // The engagement radius belongs to boss mechanics, never player damage.
     const Vec2 here = tile_movement::occupied_tile(position_);
     if (std::abs(target->x - here.x) > 4 || std::abs(target->y - here.y) > 4) {
       active_target_.clear();
+      player_attack_active_ = false;
       return events;
     }
     if (!grid_line_clear(grid_, here, {target->x, target->y})) {
       active_target_.clear();
+      player_attack_active_ = false;
       return events;
     }
   }
   if (player_attack <= 0) return events;  // another session owns the swing
-  fprintf(stderr,"[swing] tgt=%s now=%llu next=%llu range-ok\n",active_target_.c_str(),(unsigned long long)now,(unsigned long long)next_player_attack_ms_);
-  if (now >= next_player_attack_ms_) {
+  if (player_attack_active_ &&
+      (!world_melee_contact(position_, target->world_position()) ||
+       !world_melee_aim(position_, target->world_position(), player_attack_facing_))) {
+    player_attack_active_ = false;
+    // Keep an announced boss mechanic alive; ordinary targets disengage.
+    if (!target->boss) { active_target_.clear(); return events; }
+  }
+  if (player_attack_active_ && now >= next_player_attack_ms_) {
     // N4 hit pipeline (server/core/combat/index.js applyHitToMonster):
     // base roll -> Beastbane vs 'beast'-tagged targets -> critical multiplier
     // on the beastbane-adjusted figure (force-critical consumed first).
@@ -2479,6 +2480,7 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       // dropMonsterLoot) — coins always, rarity-gated gear roll.
       drop_monster_loot(*target, player_mods_.goods_found);
       active_target_.clear();
+      player_attack_active_ = false;
       return events;
     }
   }
@@ -2511,15 +2513,6 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       // resolved dodge/hit rather than relying on a hidden wall-clock thread.
       next_boss_telegraph_ms_ = now;
     }
-  } else if (now >= target->next_attack_ms && std::abs(target->x - tile_movement::occupied_tile(position_).x) <= 2
-             && std::abs(target->y - tile_movement::occupied_tile(position_).y) <= 2 &&
-             grid_line_clear(grid_, tile_movement::occupied_tile(position_), {target->x, target->y})) {
-    const int damage = target->empowered ? kN3MonsterDamage + 2 : kN3MonsterDamage;
-    player_life = std::max(0, player_life - damage);
-    WorldCombatEvent impact; impact.type = "hit"; impact.attacker_id = target->uuid; impact.attacker_name = target->name;
-    impact.target_id = player_uuid_; impact.target_name = "Adventurer"; impact.skill_id = "monster:attack";
-    impact.amount = damage; impact.health = player_life; impact.health_max = player_life_max; impact.died = player_life == 0;
-    events.push_back(impact); target->next_attack_ms = now + 1500;
   }
   return events;
 }
@@ -3728,6 +3721,7 @@ void WorldSimulation::transition_floor(int depth) {
   metadata_.depth = clamped_depth;
   ground_items_.clear();
   active_target_.clear();
+  player_attack_active_ = false;
   boss_warning_seen_ = false;
   next_boss_telegraph_ms_ = 0;
   generate_instance();

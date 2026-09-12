@@ -2198,9 +2198,11 @@ void test_d114_world_scale_table() {
 }
 
 void test_n2_movement_constants_mirror_browser() {
-  // server/shared/movement.js: 50 ms samples of a 150 ms tile crossing.
+  // Starting movement is deliberately slower than the old browser baseline.
   check(tile_movement::kMoveDistance == tile_movement::kSampleMs / tile_movement::kTileTravelMs,
-        "N2 sample distance derives from the browser cadence");
+        "N2 sample distance derives from the starting-character cadence");
+  check(std::abs(tile_movement::kMoveDistance * 20 - 4.0) < 1e-9,
+        "starting character travels four tiles per second before earned modifiers");
   const auto diagonal = tile_movement::movement_delta("down-right");
   check(diagonal.has_value(), "N2 diagonal direction resolves");
   check(std::abs(std::hypot(diagonal->x, diagonal->y) - tile_movement::kMoveDistance) < 1e-12,
@@ -2378,14 +2380,15 @@ void test_world_pursuit_contact_recovery_and_retirement() {
   lethal.advance_monster_movement(300);
   lethal.start_player_attack(1, 20, 300, "down");
   lethal.advance_combat(1, 20, normal_life, 100, 300);
+  lethal.advance_combat(1, 20, normal_life, 100, 400);
   lethal.advance_monster_movement(450);
   lethal.advance_monster_movement(600);
-  const auto lethal_events = lethal.advance_combat(1, 20, normal_life, 100, 650);
+  const auto lethal_events = lethal.advance_combat(1, 20, normal_life, 100, 750);
   check(!lethal.monsters()[14].alive && normal_life > 0 &&
         std::any_of(lethal_events.begin(), lethal_events.end(), [](const WorldCombatEvent& event) { return event.type == "death"; }),
         "ordinary player attacks kill the pursuing wight at its original40life");
   const auto dead_position = lethal.monsters()[14].world_position();
-  lethal.teleport(25, 28, 650);
+  lethal.teleport(25, 28, 750);
   for (int now = 750; now <= 2250; now += 150) lethal.advance_monster_movement(now);
   check(world_distance(lethal.monsters()[14].world_position(), dead_position) == 0,
         "dead enemies never resume pursuit after their former recovery");
@@ -2515,31 +2518,85 @@ void test_world_attack_cadence_survives_retrigger_and_reengagement() {
   };
 
   world.teleport(targets[0].x, targets[0].y, 1000);
-  auto hits = trigger_at(1000);
+  check(trigger_at(1000).empty(), "fresh attack waits for its contact frame");
+  check(trigger_at(1099).empty(), "retriggering cannot skip or restart the windup");
+  auto hits = hits_at(1100);
   check(hits.size() == 1 && hits.front().target_id == targets[0].uuid,
-        "first attack lands immediately on the selected target");
-  check(trigger_at(1001).empty(), "repeat input cannot bypass attack recovery");
-  check(trigger_at(1349).empty(), "repeat input remains gated until 350 ms");
-  check(hits_at(1350).size() == 1, "held attack repeats at its original deadline");
+        "first attack lands after100ms on the selected target");
+  check(trigger_at(1101).empty(), "repeat input cannot bypass attack recovery");
+  check(trigger_at(1449).empty(), "repeat input remains gated until350ms after contact");
+  check(hits_at(1450).size() == 1, "held attack repeats at its original deadline");
 
-  world.teleport(targets[1].x, targets[1].y, 1351);
-  check(trigger_at(1351).empty(), "changing target cannot bypass attack recovery");
-  check(hits_at(1699).empty(), "changed target remains gated before the deadline");
-  hits = hits_at(1700);
+  world.teleport(targets[1].x, targets[1].y, 1451);
+  check(trigger_at(1451).empty(), "changing target cannot bypass attack recovery");
+  check(hits_at(1799).empty(), "changed target remains gated before the deadline");
+  hits = hits_at(1800);
   check(hits.size() == 1 && hits.front().target_id == targets[1].uuid,
         "changed target receives the next scheduled hit");
 
   // The production disengagement gate clears the target when the player
   // leaves reach. Return before recovery ends and start again.
-  world.teleport(targets[1].x + 10, targets[1].y, 1701);
-  check(hits_at(1701).empty(), "leaving reach stops player contact");
-  world.teleport(targets[1].x, targets[1].y, 1702);
-  check(hits_at(1702).empty(), "returning to an ordinary target does not auto-attack");
-  check(trigger_at(1702).empty(), "restarting after disengagement preserves recovery");
-  check(trigger_at(2049).empty(), "restarted attack remains gated before its deadline");
-  check(hits_at(2050).size() == 1, "restarted attack lands at the preserved deadline");
-  check(trigger_at(3000).size() == 1, "an attack after idle recovery lands immediately");
+  world.teleport(targets[1].x + 10, targets[1].y, 1801);
+  check(hits_at(1801).empty(), "leaving reach stops player contact");
+  world.teleport(targets[1].x, targets[1].y, 1802);
+  check(hits_at(1802).empty(), "returning to an ordinary target does not auto-attack");
+  check(trigger_at(1802).empty(), "restarting after disengagement preserves recovery");
+  check(trigger_at(2149).empty(), "restarted attack remains gated before its deadline");
+  check(hits_at(2150).size() == 1, "restarted attack lands at the preserved deadline");
+  check(trigger_at(3000).size() == 1, "an existing held attack resumes after elapsed recovery");
   check(hits_at(3000).empty(), "polling twice at one timestamp cannot duplicate contact");
+}
+
+void test_world_melee_requires_aimed_continuous_contact() {
+  const std::string player_id = "guest-short-contact";
+  WorldSimulation world(42, player_id);
+  world.enter_solo_instance("crypt", "gauntlet");
+  WorldMonster target;
+  for (const auto& monster : world.monsters()) {
+    if (!monster.boss && !monster.empowered && monster.x > 4 &&
+        world.grid().walkable_at(monster.x - 2, monster.y) &&
+        world.grid().walkable_at(monster.x - 1, monster.y) &&
+        world.grid().walkable_at(monster.x - 1, monster.y - 1)) { target = monster; break; }
+  }
+  check(!target.uuid.empty(), "contact fixture has an unobstructed ordinary target");
+  world.kill_all_monsters();
+  check(world.reset_monster(target.uuid, 10000), "contact fixture isolates one durable target");
+  int life = 10000;
+  auto hits_at = [&](std::int64_t now) {
+    std::vector<WorldCombatEvent> hits;
+    for (const auto& event : world.advance_combat(1, 10, life, 10000, now))
+      if (event.type == "hit" && event.attacker_id == player_id) hits.push_back(event);
+    return hits;
+  };
+  world.teleport(target.x - 2, target.y, 0);
+  world.start_player_attack(1, 10, 0, "right");
+  check(hits_at(100).empty(), "a target two tiles away cannot receive melee damage");
+  world.teleport(target.x - 1, target.y, 150);
+  check(hits_at(200).empty(), "walking into reach does not revive a distant rejected swing");
+  world.start_player_attack(1, 10, 200, "left");
+  check(hits_at(300).empty(), "aiming away from a nearby target cannot select it");
+  world.teleport(target.x - 1, target.y - 1, 350);
+  world.start_player_attack(1, 10, 350, "down-right");
+  check(hits_at(450).empty(), "diagonal tile adjacency does not extend circular contact reach");
+  world.teleport(target.x - 1, target.y, 500);
+  world.start_player_attack(1, 10, 500, "right");
+  check(hits_at(599).empty(), "close aimed swing does not damage before its100ms windup");
+  check(hits_at(600).size() == 1, "close aimed swing lands at its contact frame");
+  check(world.apply_movement_sample("left", 650), "real movement leaves the contact position");
+  check(world.apply_movement_sample("left", 700), "second movement sample passes short reach");
+  check(std::hypot(world.position().x - target.x, world.position().y - target.y) > 1.25,
+        "fractional position is out of reach while its occupied tile is still adjacent");
+  check(hits_at(950).empty(), "held melee rechecks continuous reach before the next impact");
+  world.teleport(target.x - 1, target.y, 1000);
+  world.start_player_attack(1, 10, 1000, "right");
+  world.apply_movement_sample("left", 1050);
+  world.apply_movement_sample("left", 1100);
+  check(hits_at(1100).empty(), "leaving reach during windup cancels the pending impact");
+  world.teleport(target.x - 1, target.y, 1200);
+  check(hits_at(1300).empty(), "return after a missed swing requires a new attack input");
+  world.start_player_attack(1, 10, 1300, "right");
+  check(hits_at(1399).empty() && hits_at(1400).size() == 1,
+        "new aimed input after a miss can connect with a fresh windup");
 }
 
 void test_n2_diagonal_blocking_rule() {
@@ -2906,6 +2963,7 @@ int main() {
   test_n2_movement_constants_mirror_browser();
   test_n2_world_simulation_rules();
   test_world_attack_cadence_survives_retrigger_and_reengagement();
+  test_world_melee_requires_aimed_continuous_contact();
   test_world_pursuit_clock_is_authoritative_and_bounded();
   test_world_pursuit_contact_recovery_and_retirement();
   test_world_pursuit_nearby_bounds_and_wall_route();

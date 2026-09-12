@@ -4,6 +4,7 @@
 #include <array>
 #include <atomic>
 #include <chrono>
+#include <cmath>
 #include <cctype>
 #include <cstdlib>
 #include <cstring>
@@ -31,6 +32,9 @@ constexpr socket_t invalid_socket = -1;
 
 namespace verdigris::networking {
 namespace {
+
+long long xp_for_level(int level);
+int level_from_xp(long long exp);
 
 void close_socket(socket_t socket) {
   if (socket == invalid_socket) return;
@@ -668,6 +672,60 @@ void ProtocolSession::attach_persistence(const std::filesystem::path& path) {
   active_scion_name_ = as_string(saved.get("activeScionName"));
   username_ = as_string(saved.get("username"));
   house_treasury_ = as_int(saved.get("houseTreasury"), 0);
+  scion_combat_xp_.clear();
+  if (const auto* progression = saved.get("scionCombatXp"); progression && progression->object()) {
+    for (const auto& [id, value] : *progression->object()) {
+      const double xp = value.number().value_or(0);
+      if (std::isfinite(xp) && xp >= 0 && xp <= 1.0e12)
+        scion_combat_xp_[id] = static_cast<long long>(xp);
+    }
+  }
+  // Older disk saves retained a roster level but no XP. Preserve that level
+  // at its XP floor; never migrate client-submitted Chronicle level fields.
+  if (const auto* houses = chronicle_.get("houses"); houses && houses->array()) {
+    for (const auto& house : *houses->array()) {
+      for (const char* roster : {"scions", "crypt"}) {
+        const auto* records = house.get(roster);
+        if (!records || !records->array()) continue;
+        for (const auto& record : *records->array()) {
+          const std::string key = as_string(house.get("id")) + ":" + as_string(record.get("id"));
+          const double level = record["level"].number().value_or(1);
+          if (!scion_combat_xp_.count(key) && std::isfinite(level) && level > 1 && level <= 200)
+            scion_combat_xp_[key] = xp_for_level(static_cast<int>(level));
+        }
+      }
+    }
+  }
+  restore_scion_progression();
+}
+
+void ProtocolSession::checkpoint_scion_progression() {
+  scion_combat_xp_[active_house_id_ + ":" + active_scion_id_] = combat_xp_;
+  auto* house = find_chronicle_house_object(chronicle_, active_house_id_);
+  if (!house) return;
+  for (const char* roster : {"scions", "crypt"}) {
+    auto it = house->find(roster);
+    if (it == house->end() || !it->second.array()) continue;
+    for (auto& entry : *it->second.array()) {
+      if (as_string(entry.get("id")) != active_scion_id_ || !entry.object()) continue;
+      (*entry.object())["level"] = level_from_xp(combat_xp_);
+      return;
+    }
+  }
+}
+
+void ProtocolSession::restore_scion_progression() {
+  const auto saved = scion_combat_xp_.find(active_house_id_ + ":" + active_scion_id_);
+  combat_xp_ = saved == scion_combat_xp_.end() ? 0 : saved->second;
+  const int level = level_from_xp(combat_xp_);
+  if (auto* actor = simulation_->actor(simulation_->scion().actor_id)) {
+    actor->stats.level = level;
+    actor->stats.attack = level == 1 ? 12 : 12 + level * 3;
+    actor->stats.life_max = level == 1 ? 100 : 100 + level * 10;
+    actor->stats.life = actor->stats.life_max;
+  }
+  world_->set_level(level);
+  checkpoint_scion_progression();
 }
 
 void ProtocolSession::persist() const {
@@ -687,6 +745,10 @@ void ProtocolSession::persist() const {
   put(saved, "activeScionId", active_scion_id_);
   put(saved, "activeScionName", active_scion_name_);
   put(saved, "houseTreasury", house_treasury_);
+  JsonValue::Object progression;
+  for (const auto& [id, xp] : scion_combat_xp_) put(progression, id, static_cast<double>(xp));
+  put(progression, active_house_id_ + ":" + active_scion_id_, static_cast<double>(combat_xp_));
+  put(saved, "scionCombatXp", std::move(progression));
   const auto temp = persistence_path_.wstring() + L".tmp";
   std::ofstream output(temp, std::ios::binary | std::ios::trunc);
   if (!output) return;
@@ -2347,6 +2409,8 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
           world_->set_level(derived);
           emit_message(emit, "You are now level " + std::to_string(derived) + "!");
         }
+        checkpoint_scion_progression();
+        persist();
       }
       // world-web: the node Warden falls - dead stays dead, the road opens.
       if (!current_node_id_.empty()) {
@@ -2857,9 +2921,11 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     const std::string scion_id=as_string(payload?payload->get("scionId"):nullptr);
     const auto* house=find_scion_house(chronicle_,scion_id);
     if (!house) { emit_message(emit,"Choose a living Scion from your House roster."); return; }
+    checkpoint_scion_progression();
     active_house_id_=as_string(house->get("id"));
     active_house_name_=as_string(house->get("name"));
     active_scion_id_=scion_id;
+    restore_scion_progression();
     if (const auto* record = find_scion_record(chronicle_, active_house_id_, active_scion_id_))
       active_scion_name_ = as_string(record->get("name"), active_scion_name_);
     pending_chronicles_=false;
@@ -2987,8 +3053,10 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     return;
   }
   if (envelope.event=="player:chronicles:select") {
+    checkpoint_scion_progression();
     active_scion_id_=as_string(payload?payload->get("scionId"):nullptr);
     active_house_id_=as_string(payload?payload->get("houseId"):nullptr);
+    restore_scion_progression();
     active_scion_name_=as_string(payload?payload->get("scionName"):nullptr);
     if (const auto* record = find_scion_record(chronicle_, active_house_id_, active_scion_id_))
       active_scion_name_ = as_string(record->get("name"), active_scion_name_);

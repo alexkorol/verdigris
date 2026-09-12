@@ -411,9 +411,8 @@ void local_session_pursuit_mirror_obeys_world_obstacles() {
 }
 
 void hunt_step(verdigris::client::IClientSession& session, const char* action = "melee") {
-  // The swing range gate (JS parity) means the driver must close distance:
-  // walk toward the nearest live monster in the authoritative model, then
-  // strike once adjacent-ish.
+  // Close actual circular contact distance and aim at the authoritative
+  // target before swinging; an old two-tile test tether is not a melee fight.
   const auto& model = session.model();
   const verdigris::client::ClientMonster* nearest = nullptr;
   double best = 1e9;
@@ -421,13 +420,13 @@ void hunt_step(verdigris::client::IClientSession& session, const char* action = 
     if (!monster.alive) continue;
     const double dx = monster.x - model.player.x;
     const double dy = monster.y - model.player.y;
-    const double d = std::abs(dx) + std::abs(dy);
+    const double d = std::hypot(dx, dy);
     if (d < best) { best = d; nearest = &monster; }
   }
   if (!nearest) { session.submit(verdigris::client::ClientCommand::move(1, 0)); return; }
   const int step_x = nearest->x > model.player.x + 0.5 ? 1 : (nearest->x < model.player.x - 0.5 ? -1 : 0);
   const int step_y = nearest->y > model.player.y + 0.5 ? 1 : (nearest->y < model.player.y - 0.5 ? -1 : 0);
-  if (best > 2.0) {
+  if (best > 1.15) {
     // Warren layouts are mazes; approach exactly the way the browser
     // scenarios do - through the served dev:teleport control surface.
     auto* remote = dynamic_cast<verdigris::client::RemoteProtocolSession*>(&session);
@@ -441,7 +440,11 @@ void hunt_step(verdigris::client::IClientSession& session, const char* action = 
     } else if (step_y != 0) {
       session.submit(verdigris::client::ClientCommand::move(0, step_y));
     }
+    return; // Wait for the movement echo before choosing the swing's aim.
   }
+  const int aim_x = nearest->x > model.player.x + 0.05 ? 1 : nearest->x < model.player.x - 0.05 ? -1 : 0;
+  const int aim_y = nearest->y > model.player.y + 0.05 ? 1 : nearest->y < model.player.y - 0.05 ? -1 : 0;
+  if (aim_x || aim_y) session.submit(verdigris::client::ClientCommand::aim(aim_x, aim_y));
   session.submit(verdigris::client::ClientCommand::use_action(action));
 }
 std::uint16_t start_server(verdigris::networking::WebSocketServer*& out) {
@@ -613,9 +616,8 @@ void remote_guest_journey() {
       double camp_best = 1e9;
       for (const auto& monster : camp_model.monsters) {
         if (!monster.alive) continue;
-        const double reach =
-            (std::max)(std::abs(monster.x - camp_model.player.x),
-                       std::abs(monster.y - camp_model.player.y));
+        const double reach = std::hypot(monster.x - camp_model.player.x,
+                                         monster.y - camp_model.player.y);
         if (reach < camp_best) { camp_best = reach; camp_target = &monster; }
       }
       if (camp_target && camp_best > 0.8) {
@@ -711,8 +713,7 @@ void remote_guest_journey() {
       double best = 1e9;
       for (const auto& monster : monsters) {
         if (!monster.alive) continue;
-        const double reach =
-            (std::max)(std::abs(monster.x - px), std::abs(monster.y - py));
+        const double reach = std::hypot(monster.x - px, monster.y - py);
         if (reach < best) { best = reach; nearest = &monster; }
       }
       if (nearest && best > 0.8) {
@@ -721,6 +722,9 @@ void remote_guest_journey() {
         if (dx != 0 || dy != 0)
           session.submit(verdigris::client::ClientCommand::move(dx, dy));
       }
+      if (nearest) session.submit(verdigris::client::ClientCommand::aim(
+          nearest->x > px + 0.05 ? 1 : nearest->x < px - 0.05 ? -1 : 0,
+          nearest->y > py + 0.05 ? 1 : nearest->y < py - 0.05 ? -1 : 0));
       // Within reach: hold ground so the windup resolves into a hit.
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
@@ -1042,8 +1046,14 @@ struct GateBGroundItem {
 };
 
 // The world visibility a NORMAL client has without dev:state: its own
-// position echoes, scene transitions, combat health fields, ground-change
-// item lists, and game messages.
+// position echoes, scene transitions, monster deltas, combat health fields,
+// ground-change item lists, and game messages.
+struct GateBMonster {
+  std::string uuid;
+  double x = 0, y = 0;
+  bool alive = true;
+};
+
 struct GateBView {
   double px = 0.0;
   double py = 0.0;
@@ -1053,6 +1063,8 @@ struct GateBView {
   std::vector<GateBGroundItem> ground;
   std::string last_message;
   std::string scene_type;
+  std::string scene_id;
+  std::vector<GateBMonster> monsters;
   // Stair tiles are normal scene-metadata knowledge; the driver avoids
   // stepping on them so a blind sweep cannot fall through or exit.
   bool has_stairs = false;
@@ -1078,8 +1090,10 @@ void gateb_apply_to_view(GateBView& view, const WBEnvelope& envelope) {
   }
   if (envelope.event == "party:scene:transition" ||
       envelope.event == "world:scene:transition") {
+    view.monsters.clear();
     if (const JV* scene = data.get("scene")) {
       view.scene_type = gateb_str(*scene, "type");
+      view.scene_id = gateb_str(*scene, "id");
       if (const JV* metadata = scene->get("metadata"); metadata && metadata->object()) {
         view.has_stairs = true;
         if (const JV* up = metadata->get("stairsUp")) {
@@ -1099,9 +1113,34 @@ void gateb_apply_to_view(GateBView& view, const WBEnvelope& envelope) {
     }
     return;
   }
+  if (envelope.event == "monster:state") {
+    const auto* actors = data.array();
+    if (!actors || actors->size() > 256) return;
+    if (envelope.meta && gateb_str(*envelope.meta, "sceneId") != view.scene_id) return;
+    for (const auto& actor : *actors) {
+      const auto id = gateb_str(actor, "uuid");
+      if (id.empty()) continue;
+      auto found = std::find_if(view.monsters.begin(), view.monsters.end(),
+          [&](const GateBMonster& monster) { return monster.uuid == id; });
+      if (found == view.monsters.end()) {
+        if (view.monsters.size() >= 256) continue;
+        view.monsters.push_back({id});
+        found = view.monsters.end() - 1;
+      }
+      found->x = gateb_num(actor, "x", found->x);
+      found->y = gateb_num(actor, "y", found->y);
+      if (const JV* hp = actor.get("hp")) found->alive = gateb_num(*hp, "current", 0) > 0;
+    }
+    return;
+  }
   if (envelope.event == "combat:hit") {
     const std::string target_type = gateb_str(data, "targetType");
-    if (target_type != "player") return;
+    if (target_type != "player") {
+      if (const auto* died = data.get("died"); died && died->boolean() && *died->boolean())
+        for (auto& monster : view.monsters)
+          if (monster.uuid == gateb_str(data, "targetId")) monster.alive = false;
+      return;
+    }
     if (const JV* health = data.get("health")) {
       view.hp = static_cast<int>(gateb_num(*health, "current",
                                            static_cast<double>(view.hp)));
@@ -1642,7 +1681,23 @@ void gateb_ensure_instance(LoopbackClient& client) {
 void gateb_swing(LoopbackClient& client, int heading) {
   JV::Object trigger;
   trigger.emplace("skillId", JV("primary-attack"));
-  trigger.emplace("direction", JV(gateb_dir(heading)));
+  const auto& view = client.view();
+  const GateBMonster* nearest = nullptr;
+  double best = 1.25;
+  for (const auto& monster : view.monsters) {
+    const double distance = std::hypot(monster.x - view.px, monster.y - view.py);
+    if (monster.alive && distance <= best) { best = distance; nearest = &monster; }
+  }
+  std::string direction = gateb_dir(heading);
+  if (nearest) {
+    direction.clear();
+    if (nearest->y < view.py - 0.05) direction = "up";
+    else if (nearest->y > view.py + 0.05) direction = "down";
+    if (nearest->x < view.px - 0.05) direction += direction.empty() ? "left" : "-left";
+    else if (nearest->x > view.px + 0.05) direction += direction.empty() ? "right" : "-right";
+    if (direction.empty()) direction = gateb_dir(heading);
+  }
+  trigger.emplace("direction", JV(direction));
   client.send("player:skill:trigger", JV(std::move(trigger)));
 }
 
@@ -1770,8 +1825,6 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
   // with exactly what a normal player sees on screen.
   bool elite_known = false;
   int elite_x = -1, elite_y = -1;
-  auto slam_clear_at = never;
-  int slam_x = 0, slam_y = 0, slam_radius = 0;
   // Approach-phase state for the revealed-elite beeline.
   auto approach_phase_until = now();
   int approach_best_dist = 1 << 30;
@@ -1820,13 +1873,6 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
         elite_known = true;
         elite_x = static_cast<int>(gateb_num(line.env.data, "x"));
         elite_y = static_cast<int>(gateb_num(line.env.data, "y"));
-        slam_x = elite_x;
-        slam_y = elite_y;
-        slam_radius = static_cast<int>(gateb_num(line.env.data, "radius", 2));
-        // Small clock-skew buffer so a re-entry never beats the resolve.
-        slam_clear_at = line.at +
-                        std::chrono::milliseconds(static_cast<int>(
-                            gateb_num(line.env.data, "durationMs", 1000)) + 120);
       }
       if (line.env.event == "chronicles:scion-fallen") {
         std::printf("note: hunt aborted - successor fall observed\n");
@@ -1850,7 +1896,6 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
       }
       index = client.mark();
       elite_known = false;
-      slam_clear_at = never;
       approach_phase_until = now();
       approach_best_dist = 1 << 30;
       approach_escape = false;
@@ -1872,26 +1917,10 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
     }
     const int tile_x = gateb_tile_of(view.px);
     const int tile_y = gateb_tile_of(view.py);
-    bool acted = false;
-    if (now() < slam_clear_at && chebyshev(tile_x, tile_y, slam_x, slam_y) <= slam_radius) {
-      // A normal player steps out of the marked circle before it resolves.
-      int best_heading = -1;
-      int best_dist = chebyshev(tile_x, tile_y, slam_x, slam_y);
-      for (int candidate = 0; candidate < 4; ++candidate) {
-        const int nx = tile_x + (candidate == 0 ? 1 : candidate == 2 ? -1 : 0);
-        const int ny = tile_y + (candidate == 1 ? 1 : candidate == 3 ? -1 : 0);
-        if (gateb_on_stairs(view, nx, ny)) continue;
-        const int dist = chebyshev(nx, ny, slam_x, slam_y);
-        if (dist > best_dist) { best_dist = dist; best_heading = candidate; }
-      }
-      if (best_heading >= 0) {
-        gateb_step(client, best_heading);
-      } else {
-        gateb_swing(client, fight_heading);  // cornered: keep fighting
-      }
-      acted = true;
-    }
-    if (!acted) {
+    { // This relic-recovery driver commits to close contact at normal stats.
+      // The45HP retreat above remains its safety decision; perpetual two-tile
+      // warning kiting can never land a short melee strike. Other tests own
+      // boss dodge timing.
       const auto since_incoming = last_incoming == never
                                       ? std::chrono::hours(24)
                                       : now() - last_incoming;
@@ -1900,16 +1929,15 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
                                       : now() - last_outgoing;
       if ((since_incoming < std::chrono::seconds(2) ||
            since_outgoing < std::chrono::seconds(1))) {
-        // In reach of something alive: stand ground and trade swings. The
-        // server aims at the nearest live monster, so direction only breaks
-        // ties.
+        // Stand ground and aim at the nearest visible contact target using
+        // normal monster deltas; the server no longer corrects a wrong aim.
         gateb_swing(client, fight_heading);
       } else if (elite_known) {
         const int dx = elite_x - tile_x;
         const int dy = elite_y - tile_y;
         fight_heading = gateb_heading_for(dx > 0 ? 1 : (dx < 0 ? -1 : 0),
                                           dy > 0 ? 1 : (dy < 0 ? -1 : 0));
-        if (chebyshev(tile_x, tile_y, elite_x, elite_y) <= 1) {
+        if (std::hypot(view.px - elite_x, view.py - elite_y) <= 1.15) {
           gateb_swing(client, gateb_heading_for(dx > 0 ? 1 : (dx < 0 ? -1 : 0), 0));
         } else {
           // Approach in bounded phases: greedy toward the wider axis for a
@@ -1921,8 +1949,8 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
             const int dist = chebyshev(tile_x, tile_y, elite_x, elite_y);
             if (dist < approach_best_dist) {
               approach_escape = false;  // progress: keep the greedy lane
-            } else if (!approach_escape) {
-              approach_escape = true;   // stalled: try the perpendicular lane
+            } else {
+              approach_escape = !approach_escape; // alternate detour and retry
             }
             approach_best_dist = dist;
             approach_phase_until = now() + phase_len;
@@ -1948,8 +1976,6 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
         gateb_waypoint_nudge(client, sweep);
       }
       std::this_thread::sleep_for(std::chrono::milliseconds(12));
-    } else {
-      std::this_thread::sleep_for(std::chrono::milliseconds(8));
     }
     client.service();
   }
@@ -2941,6 +2967,67 @@ void remote_player_motion_and_ground_events() {
   session.shutdown(); server.stop();
 }
 
+void remote_level_follows_authority_across_admissions() {
+  using namespace verdigris::client;
+  using JV = verdigris::networking::JsonValue;
+  using verdigris::networking::Envelope;
+  ScriptedEnvelopeServer server;
+  auto login = [](int level) {
+    return Envelope{"player:login", JV::Object{
+        {"player", JV::Object{{"uuid", "level-player"}, {"sceneId", "town"}, {"level", level}}},
+        {"scene", JV::Object{{"id", "town"}, {"type", "town"}}}}};
+  };
+  server.script.push_back(verdigris::networking::emit_envelope(login(3)));
+  auto add = [&](Envelope e, const char* marker) {
+    server.script.push_back(verdigris::networking::emit_envelope(e));
+    server.script.push_back(verdigris::networking::emit_envelope(
+        Envelope{"game:send:message", JV::Object{{"text", marker}}}));
+  };
+  add(login(1), "new-scion");
+  add(Envelope{"dev:state", JV::Object{{"state", JV::Object{{"level", 2},
+      {"xp", JV::Object{{"current", 96}, {"floor", 83}, {"next", 174}}}}}}}, "earned-two");
+  add(Envelope{"player:movement", JV::Object{{"uuid", "level-player"},
+      {"sceneId", "town"}, {"x", 4}, {"y", 5}}}, "movement-delta");
+  add(Envelope{"dev:state", JV::Object{{"state", JV::Object{
+      {"xp", JV::Object{{"current", 100}, {"level", 9}}}}}}}, "partial-state");
+  add(Envelope{"dev:state", JV::Object{{"state", JV::Object{{"level", 0}}}}}, "invalid-zero");
+  add(Envelope{"dev:state", JV::Object{{"state", JV::Object{{"level", 2.5}}}}}, "invalid-fraction");
+  add(Envelope{"dev:state", JV::Object{{"state", JV::Object{{"level", "9"}}}}}, "invalid-string");
+  add(Envelope{"world:scene:transition", JV::Object{
+      {"playerState", JV::Object{{"level", 4}}},
+      {"scene", JV::Object{{"id", "road"}, {"type", "instance"}}}}}, "scene-level");
+  add(login(2), "readmitted-two");
+  std::string error;
+  check(server.start(&error), "level-sync: scripted socket starts");
+  if (!server.port()) return;
+  RemoteProtocolSession session("127.0.0.1", server.port(), "level-player", true);
+  check(session.start(&error) && wait_for_state(session, ConnectionState::Ready, 3000),
+        "level-sync: real client admission");
+  auto verify = [&](int expected, const char* label) {
+    WorldView view;
+    sync_world_from_model(view, session.model());
+    check(session.model().player.level == expected && view.player.level == expected, label);
+  };
+  verify(3, "level-sync: saved login level reaches character and HUD model immediately");
+  auto deliver = [&](const char* marker, int level) {
+    server.grant_next_frame(); server.grant_next_frame();
+    check(wait_until(session, 2000, [&] { return session.model().last_message == marker; }), marker);
+    verify(level, marker);
+  };
+  deliver("new-scion", 1);
+  deliver("earned-two", 2);
+  check(session.model().xp_current == 96 && session.model().xp_floor == 83,
+        "level-sync: XP bar and actor level update from the same snapshot");
+  deliver("movement-delta", 2);
+  deliver("partial-state", 2);
+  deliver("invalid-zero", 2);
+  deliver("invalid-fraction", 2);
+  deliver("invalid-string", 2);
+  deliver("scene-level", 4);
+  deliver("readmitted-two", 2);
+  session.shutdown(); server.stop();
+}
+
 void appearance_choice_reaches_local_and_remote_play() {
   using namespace verdigris::client;
   LocalCoreSession local(812, "Local appearance", "female"); std::string error;
@@ -3083,7 +3170,8 @@ void remote_selected_pickup_dash_and_extract() {
   };
   teleport(7, 7); session.drain_events();
   session.submit(ClientCommand::aim(1, 0)); session.submit(ClientCommand::use_action("dash"));
-  check(wait_until(session, 2000, [&] { return session.model().player.x > 10.3; }), "remote-controls: dash travels through real client/server adapter");
+  const double dash_end = 7 + verdigris::kDashMovementTicks * verdigris::tile_movement::kMoveDistance;
+  check(wait_until(session, 2000, [&] { return std::abs(session.model().player.x - dash_end) < 1e-5; }), "remote-controls: dash travels through real client/server adapter");
   int dashes = 0; for (const auto& e : session.drain_events()) if (e.type == PresentationEventType::PlayerDashed) ++dashes;
   check(dashes == 1, "remote-controls: real server acceptance reaches PlayerDashed");
   const double dash_x = session.model().player.x;
@@ -3622,6 +3710,7 @@ int main() {
   remote_render_list_ops();
   remote_authored_crypt_pursuit_reaches_world_view();
   remote_player_motion_and_ground_events();
+  remote_level_follows_authority_across_admissions();
   appearance_choice_reaches_local_and_remote_play();
   remote_dash_return_retires_exit_and_preserves_banked_result();
   remote_selected_pickup_dash_and_extract();

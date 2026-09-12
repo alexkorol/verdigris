@@ -224,7 +224,17 @@ void apply_passive_tree(const JsonValue& tree, ClientModel& model,
     model.progression.selected_node = *selected->string();
 }
 
+void apply_player_level(ClientPlayer& player, const JsonValue& source) {
+  // Login, scene admission and state snapshots all carry the actor's level.
+  // Missing fields in movement deltas must retain the last authoritative value.
+  const double level = json_number(source.get("level"), player.level);
+  if (std::isfinite(level) && level >= 1 && level <= 2147483647.0 &&
+      std::floor(level) == level)
+    player.level = static_cast<int>(level);
+}
+
 void apply_player_fields(ClientPlayer& player, const JsonValue& source) {
+  apply_player_level(player, source);
   if (const auto* appearance = source.get("appearance"))
     player.appearance = verdigris::player_appearance_id(appearance->string() ? *appearance->string() : "");
   if (const auto* uuid = json_string(source.get("uuid"))) player.uuid = *uuid;
@@ -1406,6 +1416,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
   if (envelope.event == "dev:state") {
     const auto* state = envelope.data.get("state");
     if (!state) return;
+    apply_player_level(model_.player, *state);
     if (const auto* appearance = json_string(state->get("appearance")))
       model_.player.appearance = verdigris::player_appearance_id(*appearance);
     if (const auto* items = state->get("houseStoredItems"); items && items->array())

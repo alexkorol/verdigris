@@ -44,6 +44,11 @@ on the remote owner path you extract by walking onto the EXIT stairs. A
 compact controls line is always on the HUD (no F3 needed). Esc closes an
 open gear pane first; a bare Esc requests quit.
 
+On the normal remote path, a starting Scion walks four tiles per second.
+Short melee requires close contact in the aimed direction, with a 100 ms
+initial wind-up; leaving reach cancels contact. Character level and XP persist
+per Scion, and the HUD uses the level supplied by the server.
+
 ## Owner play (one command)
 
 `native/tools/play-native.ps1` builds if the exes are missing or stale, starts

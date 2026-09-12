@@ -219,6 +219,10 @@ class ProtocolSession {
   std::string active_skill_id_ = "primary-attack";
   // N6 combat experience (experience.js / shared/ui.js curve).
   long long combat_xp_ = 0;
+  // Server-owned progression, separate from client-authored Chronicle metadata.
+  std::map<std::string, long long> scion_combat_xp_;
+  void checkpoint_scion_progression();
+  void restore_scion_progression();
   void maybe_respawn(std::int64_t now_ms);
   void handle_final_death(const std::function<void(const Envelope&)>& emit);
   // N5: Chronicles auth (server/core/services/chronicles.js + chronicles store).

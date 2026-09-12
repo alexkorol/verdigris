@@ -1,5 +1,36 @@
 # Native reconstitution handoff
 
+## 2026-09-11 — Level, close melee, and starting movement
+
+Owner-authorized narrow fixes in `verdigris-fable-renderer`:
+
+- The remote client now mirrors authoritative level on login, scene admission,
+  and state refresh. Partial movement/state updates retain the last valid level.
+- Exact combat XP persists per House/Scion, including kills resolved by the
+  server timer. Selecting another Scion restores that character's progression;
+  a new Scion starts at level 1. Legacy recorded levels migrate at their XP floor.
+  Older XP that was never recorded cannot be recovered.
+- Remote short melee now uses continuous circular reach (1.25 tiles), a forward
+  aiming cone, line of sight, and a 100 ms initial wind-up. Leaving contact
+  cancels damage; recovery remains 350 ms. Ordinary enemy contact uses the same
+  close boundary. Boss area attacks retain their separate geometry.
+- Starting remote movement is four tiles/second (40% below the previous
+  baseline); 50 ms input sampling and enemy pursuit speed are preserved. Dash
+  distance follows the reduced movement distance. No new movement bonuses yet.
+
+An isolated save earned level 2 through real combat, was reconstructed from
+disk, and displayed level 2 in both the live HUD and character panel. The owner
+played that review session; its normal exit was followed by review-server cleanup.
+Evidence is under `.ci-artifacts/level-contact-20260912/` (UTC date).
+
+Validation: supported MSVC build, core/network/camera/presentation/audio suites,
+all 76 client scenarios (one repaired contact fixture rerun), and browser
+playtest 32/32 pass. The complete session suite also passes, including ordinary
+combat/death/succession, exact heirloom recovery and reconnect. Its test driver
+now aims at observed enemies and fights bosses at close range. No art changed.
+Larger priorities and the
+sprite-generation hold are recorded in [narrow-passes.md](narrow-passes.md).
+
 ## 2026-09-10 — Fable renderer and selectable eight-direction Scions
 
 The resumed owner work is implemented in the isolated
