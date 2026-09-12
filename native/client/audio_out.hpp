@@ -40,7 +40,16 @@ class WaveOutSink final : public Sink {
     }
   }
 
-  void set_muted(bool muted) { muted_ = muted; }
+  void set_muted(bool muted) {
+    muted_ = muted;
+    if (!muted) return;
+    // Stop buffers already handed to the device, not just future cues.
+    for (auto& lane : lanes_) {
+      if (!lane.handle) continue;
+      waveOutReset(lane.handle);
+      reclaim(lane, true);
+    }
+  }
   bool muted() const { return muted_; }
   bool device_ok() const { return device_ok_; }
 
