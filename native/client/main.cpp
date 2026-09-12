@@ -234,6 +234,7 @@ struct BillboardAssets {
   // panel/slot plates and the item-art sprites for inventory cells.
   SpriteBitmap fk_panel;
   SpriteBitmap fk_slot;
+  SpriteBitmap splash;
   std::unordered_map<std::string, SpriteBitmap> item_art;
   // Web-client UI assets (src/assets): the wizard orb statue plate with its
   // alpha matte, its orb-disc mask, and the ornate nine-slice pane frame.
@@ -278,6 +279,7 @@ struct BillboardAssets {
     terrain4.reset();
     fk_panel.reset();
     fk_slot.reset();
+    splash.reset();
     orb_art.reset();
     orb_mask.reset();
     ornate_frame.reset();
@@ -308,6 +310,13 @@ struct SceneryItem {
 // TASK-0142 presentation, untouched. Chronicles is the pre-game front door
 // (House/Scion/oath/admission) plus the post-fall succession view.
 enum class Screen { Expedition, Chronicles };
+enum class Frontend { None, Title, Pause, Settings, ConfirmQuit };
+
+struct MenuHit {
+  RECT rect{};
+  std::size_t index = 0;
+  int direction = 0;
+};
 
 // One actionable front-door control, rebuilt deterministically from the
 // authoritative chronicle model every frame. `key` is the keyboard binding
@@ -464,6 +473,15 @@ struct FloorCache {
 };
 
 struct ClientState {
+  Frontend frontend = Frontend::None;
+  Frontend settings_parent = Frontend::Title;
+  Frontend quit_parent = Frontend::Title;
+  std::size_t menu_selected = 0;
+  std::size_t chronicles_selected = 0;
+  std::vector<MenuHit> menu_hits;
+  std::vector<MenuHit> chronicles_hits;
+  std::string settings_message;
+  int pad_menu_dy_was = 0;
   std::unique_ptr<verdigris::Simulation> simulation;
   std::unique_ptr<verdigris::client::IClientSession> session;
   std::vector<verdigris::Command> pending_local_commands;
@@ -729,47 +747,26 @@ std::string executable_directory() {
   return slash == std::string::npos ? std::string{} : value.substr(0, slash);
 }
 
-std::string audio_mute_path() {
-  const std::string dir = executable_directory();
-  if (dir.empty()) return {};
-  return dir + "\\verdigris-audio-mute";
-}
-
-bool load_audio_mute() {
-  const std::string path = audio_mute_path();
-  if (path.empty()) return false;
-  const DWORD attributes = GetFileAttributesA(path.c_str());
-  return attributes != INVALID_FILE_ATTRIBUTES &&
-         (attributes & FILE_ATTRIBUTE_DIRECTORY) == 0;
-}
-
-std::string audio_prefs_path() {
-  const std::string dir = executable_directory();
-  if (dir.empty()) return {};
-  return dir + "\\verdigris-audio-prefs";
-}
-
-void persist_audio_mute(bool muted) {
-  const std::string path = audio_prefs_path();
-  if (path.empty()) return;
-  verdigris::audio::AudioPrefs prefs = verdigris::audio::load_audio_prefs(path);
-  prefs = verdigris::audio::apply_mute_only(prefs, muted);
-  verdigris::audio::save_audio_prefs(path, prefs);
-}
-
 void ensure_audio(ClientState& state) {
   if (state.audio_mixer) return;
   state.audio_sink = std::make_unique<verdigris::audio::WaveOutSink>();
-  state.audio_sink->set_muted(load_audio_mute());
   state.audio_tape = std::make_unique<verdigris::audio::RecordingSink>();
   state.audio_tee = std::make_unique<verdigris::audio::TeeSink>(
       *state.audio_sink, *state.audio_tape);
   state.audio_mixer =
       std::make_unique<verdigris::audio::AudioMixer>(*state.audio_tee);
-  state.audio_prefs = verdigris::audio::load_audio_prefs(audio_prefs_path());
-  if (load_audio_mute()) state.audio_prefs.muted = true;
+  const auto loaded = verdigris::audio::load_user_settings();
+  state.audio_prefs = loaded.prefs;
+  state.settings_message = loaded.message;
   state.audio_sink->set_muted(state.audio_prefs.muted);
   verdigris::audio::apply_audio_prefs(*state.audio_mixer, state.audio_prefs);
+}
+
+void save_runtime_settings(ClientState& state) {
+  state.audio_sink->set_muted(state.audio_prefs.muted);
+  verdigris::audio::apply_audio_prefs(*state.audio_mixer, state.audio_prefs);
+  const auto saved = verdigris::audio::save_user_settings(state.audio_prefs);
+  state.settings_message = saved.message;
 }
 
 std::string audio_event_key(const verdigris::client::PresentationEvent& event,
@@ -1288,6 +1285,7 @@ void load_framekit_assets(BillboardAssets& assets) {
   }
   for (const auto& root : candidates) {
     if (!directory_exists(root)) continue;
+    load_sprite(assets, root + "/splash/background_fallback.png", assets.splash);
     const bool chrome_loaded =
         load_sprite(assets, root + "/framekit/textures/panel.png",
                     assets.fk_panel) &&
@@ -5641,19 +5639,179 @@ void submit_chronicle_action(ClientState& state, const ChronicleAction& action) 
 
 void handle_chronicles_key(ClientState& state, WPARAM wparam) {
   state.chronicles_menu = chronicle_actions(state);
+  const auto count = state.chronicles_menu.size() + 1;
+  state.chronicles_selected = std::min(state.chronicles_selected, count - 1);
+  if (wparam == VK_UP) {
+    state.chronicles_selected = (state.chronicles_selected + count - 1) % count;
+    return;
+  }
+  if (wparam == VK_DOWN || wparam == VK_TAB) {
+    state.chronicles_selected = (state.chronicles_selected + 1) % count;
+    return;
+  }
+  if (wparam == VK_RETURN || wparam == VK_SPACE) {
+    if (state.chronicles_selected < state.chronicles_menu.size())
+      submit_chronicle_action(state, state.chronicles_menu[state.chronicles_selected]);
+    else {
+      state.frontend = Frontend::Title;
+      state.menu_selected = 0;
+    }
+    return;
+  }
   for (const auto& action : state.chronicles_menu) {
     if (action.key.size() == 1 && wparam == static_cast<WPARAM>(action.key[0])) {
       submit_chronicle_action(state, action);
       return;
     }
   }
-  if (wparam == VK_RETURN && !state.chronicles_menu.empty()) {
-    for (const auto& action : state.chronicles_menu)
-      if (action.command == "set-out" || action.command == "select-scion") {
-        submit_chronicle_action(state, action);
-        return;
-      }
+}
+
+void open_frontend(ClientState& state, Frontend next) {
+  state.frontend = next;
+  state.menu_selected = 0;
+  state.menu_hits.clear();
+  state.w = state.a = state.s = state.d = false;
+  state.was_moving = false;
+  state.attack_held_blocked = true;
+}
+
+std::vector<std::string> frontend_rows(const ClientState& state) {
+  switch (state.frontend) {
+    case Frontend::Title:
+      return {state.screen == Screen::Chronicles ? "House & Scion" : "Continue Scion",
+              "Settings", "Quit"};
+    case Frontend::Pause:
+      return {"Resume", "Settings", "Return to title", "Quit"};
+    case Frontend::Settings:
+      return {state.audio_prefs.muted ? "Sound: Muted" : "Sound: On",
+              "Effects: " + std::to_string(state.audio_prefs.sfx_permille / 10) + "%",
+              "Music: " + std::to_string(state.audio_prefs.music_permille / 10) + "%",
+              "Back"};
+    case Frontend::ConfirmQuit: return {"Stay", "Quit Verdigris"};
+    case Frontend::None: return {};
   }
+  return {};
+}
+
+void activate_frontend_row(ClientState& state, int direction = 0) {
+  const auto row = state.menu_selected;
+  if (state.frontend == Frontend::Settings) {
+    if (row == 3) { open_frontend(state, state.settings_parent); return; }
+    ensure_audio(state);
+    if (row == 0) state.audio_prefs.muted = !state.audio_prefs.muted;
+    const auto adjust = [direction](int value) {
+      return direction == 0 ? (value >= 1000 ? 0 : std::min(1000, value + 100))
+                            : std::clamp(value + direction * 100, 0, 1000);
+    };
+    if (row == 1) state.audio_prefs.sfx_permille = adjust(state.audio_prefs.sfx_permille);
+    if (row == 2) state.audio_prefs.music_permille = adjust(state.audio_prefs.music_permille);
+    save_runtime_settings(state);
+    return;
+  }
+  if (state.frontend == Frontend::ConfirmQuit) {
+    if (row == 1) state.quit_requested = true;
+    else open_frontend(state, state.quit_parent);
+    return;
+  }
+  if (row == 0) { open_frontend(state, Frontend::None); return; }
+  if (row == 1) {
+    ensure_audio(state);
+    state.settings_parent = state.frontend;
+    open_frontend(state, Frontend::Settings);
+    return;
+  }
+  if (state.frontend == Frontend::Pause && row == 2) {
+    open_frontend(state, Frontend::Title);
+    return;
+  }
+  state.quit_parent = state.frontend;
+  open_frontend(state, Frontend::ConfirmQuit);
+}
+
+bool handle_frontend_key(ClientState& state, WPARAM key) {
+  if (state.frontend == Frontend::None) return false;
+  const auto rows = frontend_rows(state);
+  if (rows.empty()) return true;
+  state.menu_selected = std::min(state.menu_selected, rows.size() - 1);
+  if (key == VK_UP || (key == VK_TAB && (GetKeyState(VK_SHIFT) & 0x8000)))
+    state.menu_selected = (state.menu_selected + rows.size() - 1) % rows.size();
+  else if (key == VK_DOWN || key == VK_TAB)
+    state.menu_selected = (state.menu_selected + 1) % rows.size();
+  else if (key == VK_RETURN || key == VK_SPACE)
+    activate_frontend_row(state);
+  else if (state.frontend == Frontend::Settings && (key == VK_LEFT || key == VK_RIGHT))
+    activate_frontend_row(state, key == VK_LEFT ? -1 : 1);
+  else if (key == VK_ESCAPE) {
+    if (state.frontend == Frontend::Settings) open_frontend(state, state.settings_parent);
+    else if (state.frontend == Frontend::ConfirmQuit) open_frontend(state, state.quit_parent);
+    else if (state.frontend == Frontend::Pause) open_frontend(state, Frontend::None);
+  }
+  return true;
+}
+
+void paint_frontend(ClientState& state, HDC dc, const RECT& bounds, render::List& rl) {
+  FillRect(dc, &bounds, cached_brush(RGB(10, 14, 12)));
+  const auto& splash = state.billboards.splash;
+  if (splash.ready()) {
+    SetStretchBltMode(dc, HALFTONE);
+    StretchBlt(dc, 0, 0, bounds.right, bounds.bottom, splash.dc, 0, 0,
+               splash.width, splash.height, SRCCOPY);
+  }
+  const int scale = hud_scale(bounds.bottom);
+  const int width = std::min<int>(bounds.right - 32, 540 * scale);
+  const int left = (bounds.right - width) / 2;
+  const int top = std::max<int>(16, (bounds.bottom - 410 * scale) / 2);
+  RECT panel{left, top, left + width, std::min<LONG>(bounds.bottom - 16, top + 410 * scale)};
+  skin::panel(dc, panel, skin::kPanelBorder, 248, 10.0f);
+  if (state.billboards.fk_panel.ready())
+    draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, panel);
+  const char* heading = state.frontend == Frontend::Title ? "VERDIGRIS"
+      : state.frontend == Frontend::Settings ? "Settings"
+      : state.frontend == Frontend::ConfirmQuit ? "Leave Verdigris?" : "Session menu";
+  SetBkMode(dc, TRANSPARENT);
+  SelectObject(dc, skin::font_title());
+  SetTextColor(dc, skin::kInk);
+  TextOutA(dc, left + 28 * scale, top + 24 * scale, heading, static_cast<int>(std::strlen(heading)));
+  rl.push_back({render::Op::Hud, double(left), double(top), 0, 0, std::string("frontend:") + heading});
+  const auto rows = frontend_rows(state);
+  state.menu_hits.clear();
+  state.menu_selected = std::min(state.menu_selected, rows.size() - 1);
+  SelectObject(dc, skin::font_heading());
+  for (std::size_t i = 0; i < rows.size(); ++i) {
+    const int y = top + (86 + static_cast<int>(i) * 52) * scale;
+    RECT button{left + 24 * scale, y, left + width - 24 * scale, y + 42 * scale};
+    const bool selected = i == state.menu_selected;
+    skin::panel(dc, button, selected ? skin::kInk : skin::kPanelBorder, 245, 4.0f);
+    SetTextColor(dc, selected ? skin::kInk : RGB(180, 192, 181));
+    const std::string text = (selected ? "> " : "  ") + rows[i];
+    TextOutA(dc, button.left + 12 * scale, y + 9 * scale, text.c_str(), static_cast<int>(text.size()));
+    if (state.frontend == Frontend::Settings && (i == 1 || i == 2)) {
+      for (int step : {-1, 1}) {
+        const int offset = step < 0 ? 100 : 48;
+        RECT adjust{button.right - offset * scale, button.top + 4 * scale,
+                    button.right - (offset - 40) * scale, button.bottom - 4 * scale};
+        skin::panel(dc, adjust, skin::kInk, 250, 3.0f);
+        const char* label = step < 0 ? "-" : "+";
+        TextOutA(dc, adjust.left + 14 * scale, adjust.top + 5 * scale, label, 1);
+        state.menu_hits.push_back({adjust, i, step});
+      }
+    }
+    state.menu_hits.push_back({button, i, 0});
+    rl.push_back({render::Op::Hud, double(button.left), double(y), 0, 0, "menu:" + rows[i]});
+  }
+  SelectObject(dc, skin::font_body());
+  SetTextColor(dc, RGB(190, 203, 193));
+  const std::string help = state.frontend == Frontend::Settings
+      ? "Left / Right adjust  |  Enter select  |  Esc back"
+      : "Arrows / Tab focus  |  Enter select  |  Esc back";
+  RECT help_box{left + 24 * scale, top + 306 * scale,
+                 left + width - 24 * scale, panel.bottom - 12 * scale};
+  std::string detail = help;
+  if (state.frontend == Frontend::Settings && !state.settings_message.empty())
+    detail += "\n" + state.settings_message;
+  else if (state.session && state.screen == Screen::Expedition)
+    detail += "\nOnline world continues while menus are open.";
+  DrawTextA(dc, detail.c_str(), static_cast<int>(detail.size()), &help_box, DT_WORDBREAK | DT_NOPREFIX);
 }
 
 // ── TASK-0161: contained capture-root isolation ─────────────────────────
@@ -5860,6 +6018,7 @@ void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
     std::string text;
     COLORREF color;
     bool accent;
+    int action = -1;
   };
   std::vector<Line> lines;
   lines.push_back({"title", "V E R D I G R I S   C H R O N I C L E S",
@@ -5915,11 +6074,16 @@ void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
   }
 
   state.chronicles_menu = chronicle_actions(state);
-  for (const auto& action : state.chronicles_menu) {
+  state.chronicles_hits.clear();
+  state.chronicles_selected = std::min(state.chronicles_selected, state.chronicles_menu.size());
+  for (std::size_t i = 0; i < state.chronicles_menu.size(); ++i) {
+    const auto& action = state.chronicles_menu[i];
     lines.push_back({"action:" + action.command +
                          (action.arg.empty() ? "" : ":" + action.arg),
-                     "[" + action.key + "] " + action.label, RGB(239, 208, 116), false});
+                     "[" + action.key + "] " + action.label, RGB(239, 208, 116), false, static_cast<int>(i)});
   }
+  lines.push_back({"back:title", "Back to title", RGB(185, 198, 188), false,
+                   static_cast<int>(state.chronicles_menu.size())});
   lines.push_back({state.chronicles_oath ? "oath:on" : "oath:off",
                    std::string("Oath field: ") +
                        (state.chronicles_oath ? "mortal - death is final"
@@ -5949,6 +6113,14 @@ void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
                   static_cast<double>(y), 0.0, 0, line.label});
     HGDIOBJ old_font = SelectObject(
         dc, line.accent ? skin::font_title() : skin::font_heading());
+    if (line.action >= 0) {
+      RECT button{left - 8 * door_scale, y - 2 * door_scale,
+                  left + 636 * door_scale, y + 24 * door_scale};
+      skin::panel(dc, button,
+          static_cast<std::size_t>(line.action) == state.chronicles_selected
+              ? skin::kInk : skin::kPanelBorder, 240, 3.0f);
+      state.chronicles_hits.push_back({button, static_cast<std::size_t>(line.action)});
+    }
     SetTextColor(dc, line.color);
     TextOutA(dc, left, y, line.text.c_str(), static_cast<int>(line.text.size()));
     SelectObject(dc, old_font);
@@ -9618,6 +9790,12 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                : 0.0;
   };
 
+  if (state.frontend != Frontend::None) {
+    paint_frontend(state, dc, bounds, rl);
+    state.render_list = std::move(rl);
+    return;
+  }
+
   // TASK-0145: the Chronicles front door replaces the abrupt game-window
   // entry for the remote owner path. Expedition painting is skipped
   // entirely; the door renders from the authoritative chronicle model.
@@ -10978,7 +11156,28 @@ void fixed_game_tick(ClientState& state, const RECT& bounds) {
 
   poll_pad(state);
   const bool at_front_door =
-      state.screen == Screen::Chronicles && state.session != nullptr;
+      state.frontend != Frontend::None ||
+      (state.screen == Screen::Chronicles && state.session != nullptr);
+  if (at_front_door) {
+    const auto menu_key = [&](WPARAM key) {
+      if (state.frontend != Frontend::None) handle_frontend_key(state, key);
+      else if (key == VK_ESCAPE) handle_escape_key(state);
+      else handle_chronicles_key(state, key);
+    };
+    if (state.pad.connected) {
+      if (state.pad.dy != 0 && state.pad.dy != state.pad_menu_dy_was)
+        menu_key(state.pad.dy < 0 ? VK_UP : VK_DOWN);
+      if (state.pad.a && !state.pad_a_was) menu_key(VK_RETURN);
+      if ((state.pad.b && !state.pad_b_was) ||
+          (state.pad.start && !state.pad_start_was)) menu_key(VK_ESCAPE);
+    }
+    state.pad_menu_dy_was = state.pad.dy;
+    state.pad_a_was = state.pad.a;
+    state.pad_b_was = state.pad.b;
+    state.pad_start_was = state.pad.start;
+    state.pad_x_was = state.pad.x;
+    state.pad_y_was = state.pad.y;
+  } else state.pad_menu_dy_was = 0;
   int dx = (state.d ? 1 : 0) - (state.a ? 1 : 0);
   int dy = (state.s ? 1 : 0) - (state.w ? 1 : 0);
   if (state.pad.connected) {
@@ -11167,6 +11366,7 @@ verdigris::client::ui::PaneFocusView client_pane_focus(const ClientState& state)
 }
 
 bool gameplay_intent_passes(const ClientState& state, input_focus::Intent intent) {
+  if (state.frontend != Frontend::None || state.screen == Screen::Chronicles) return false;
   return verdigris::client::ui::passes_gameplay(client_pane_focus(state), intent);
 }
 
@@ -11186,6 +11386,11 @@ void release_held_gameplay_attack(ClientState& state) {
 }
 
 void handle_escape_key(ClientState& state) {
+  if (handle_frontend_key(state, VK_ESCAPE)) return;
+  if (state.screen == Screen::Chronicles) {
+    open_frontend(state, Frontend::Title);
+    return;
+  }
   if (trade_pane_open(state)) {
     state.session->submit(verdigris::client::ClientCommand::close_screen());
     state.trade_selected = 0;
@@ -11207,7 +11412,7 @@ void handle_escape_key(ClientState& state) {
     toggle_gear_overlay(state);
     return;
   }
-  state.quit_requested = true;
+  open_frontend(state, Frontend::Pause);
 }
 
 // Apply the current window mode: borderless fullscreen on the primary
@@ -11289,6 +11494,10 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         state->camera.zoom =
             kCameraDefaultZoom *
             zoom_height_factor(static_cast<int>(mode_bounds.bottom));
+        break;
+      }
+      if (handle_frontend_key(*state, wparam)) {
+        if (state->quit_requested) PostQuitMessage(0);
         break;
       }
       if (wparam == VK_ESCAPE) {
@@ -11412,7 +11621,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         state->audio_sink->set_muted(!state->audio_sink->muted());
         state->audio_prefs = verdigris::audio::apply_mute_only(
             state->audio_prefs, state->audio_sink->muted());
-        persist_audio_mute(state->audio_sink->muted());
+        save_runtime_settings(*state);
         show_hint(*state, state->audio_sink->muted() ? "Sound muted"
                                                      : "Sound on");
       }
@@ -11479,7 +11688,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       }
       break;
     case WM_MOUSEWHEEL:
-      if (state) {
+      if (state && state->frontend == Frontend::None && state->screen == Screen::Expedition) {
         const int delta = GET_WHEEL_DELTA_WPARAM(wparam);
         const double factor = delta > 0 ? 1.1 : 1.0 / 1.1;
         RECT zoom_bounds;
@@ -11492,6 +11701,30 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
     case WM_LBUTTONDOWN:
       if (state) {
         verdigris::client::input::note_input(state->input_latency);
+        if (state->frontend != Frontend::None) {
+          const POINT point{GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam)};
+          for (const auto& hit : state->menu_hits) {
+            if (PtInRect(&hit.rect, point)) {
+              state->menu_selected = hit.index;
+              activate_frontend_row(*state, hit.direction);
+              if (state->quit_requested) PostQuitMessage(0);
+              break;
+            }
+          }
+          break;
+        }
+        if (state->screen == Screen::Chronicles) {
+          const POINT point{GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam)};
+          for (const auto& hit : state->chronicles_hits) {
+            if (!PtInRect(&hit.rect, point)) continue;
+            state->chronicles_selected = hit.index;
+            if (hit.index < state->chronicles_menu.size())
+              submit_chronicle_action(*state, state->chronicles_menu[hit.index]);
+            else open_frontend(*state, Frontend::Title);
+            break;
+          }
+          break;
+        }
         if (trade_pane_open(*state)) {
           const int mx = GET_X_LPARAM(lparam);
           const int my = GET_Y_LPARAM(lparam);
@@ -11580,6 +11813,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
     case WM_TIMER:
       if (state) {
         timer_step(window, *state);
+        if (state->quit_requested) PostQuitMessage(0);
         InvalidateRect(window, nullptr, FALSE);
       }
       break;
@@ -13812,8 +14046,8 @@ int scenario_first_session_clarity() {
                        !render::any(state.render_list, render::Op::PaneStat),
                    "first-session-clarity: dismissed pane leaves the render list");
     handle_escape_key(state);
-    scenario_check(state.quit_requested,
-                   "first-session-clarity: bare Escape requests application exit");
+    scenario_check(!state.quit_requested && state.frontend == Frontend::Pause,
+                   "first-session-clarity: bare Escape opens session menu");
   }
 
   // ── Remote owner path on the shared 6580-6599 test capsule.
@@ -14366,8 +14600,8 @@ int scenario_hud_pane_readability() {
                    "hud-pane-readability: dismissed pane leaves the render "
                    "list");
     handle_escape_key(state);
-    scenario_check(state.quit_requested,
-                   "hud-pane-readability: bare Escape requests exit");
+    scenario_check(!state.quit_requested && state.frontend == Frontend::Pause,
+                   "hud-pane-readability: bare Escape opens session menu");
 
     // Capture integrity for this resolution.
     for (const std::string& path : {png_closed, png_open}) {
@@ -17378,8 +17612,8 @@ int scenario_pane_stack() {
   scenario_check(!state.gear_overlay && !state.quit_requested,
                  "pane-stack: second Escape closes gear without quitting");
   handle_escape_key(state);
-  scenario_check(state.quit_requested,
-                 "pane-stack: bare Escape requests application exit");
+  scenario_check(!state.quit_requested && state.frontend == Frontend::Pause,
+                 "pane-stack: bare Escape opens session menu");
 
   ClientState tree;
   scenario_begin(tree);
@@ -21460,12 +21694,92 @@ int scenario_hud_chrome() {
 }
 
 
+int scenario_frontend_flow() {
+  ClientState state;
+  scenario_begin(state);
+  open_frontend(state, Frontend::Title);
+  WNDCLASSA klass{};
+  klass.hInstance = GetModuleHandle(nullptr);
+  klass.lpfnWndProc = window_proc;
+  klass.lpszClassName = "VerdigrisFrontendScenario";
+  RegisterClassA(&klass);
+  HWND window = CreateWindowExA(0, klass.lpszClassName, "Frontend test",
+      WS_OVERLAPPEDWINDOW, 0, 0, 960, 600, nullptr, nullptr, klass.hInstance, &state);
+  scenario_check(window != nullptr, "frontend: real window input target created");
+  if (!window) return scenario_failures;
+  const auto key = [&](WPARAM value) { SendMessage(window, WM_KEYDOWN, value, 0); };
+  const auto click = [&](std::size_t index) {
+    scenario_present(state);
+    const auto hits = state.menu_hits;
+    if (index >= hits.size()) {
+      scenario_check(false, "frontend: requested button has a painted hit target");
+      return;
+    }
+    const auto r = hits[index].rect;
+    SendMessage(window, WM_LBUTTONDOWN, 0,
+        MAKELPARAM((r.left + r.right) / 2, (r.top + r.bottom) / 2));
+    SendMessage(window, WM_LBUTTONUP, 0, 0);
+  };
+  scenario_present(state);
+  scenario_check(render_list_has(state, render::Op::Hud, "frontend:VERDIGRIS"),
+                 "frontend: title paints before play");
+  key(VK_ESCAPE);
+  scenario_check(state.frontend == Frontend::Title && !state.quit_requested,
+                 "frontend: Escape on title cannot quit");
+  click(1);
+  scenario_check(state.frontend == Frontend::Settings,
+                 "frontend: Settings is a real clickable pre-play control");
+  key('W');
+  const RECT bounds{0, 0, 960, 600};
+  const auto position = state.simulation->actor(state.simulation->scion().actor_id)->position;
+  fixed_game_tick(state, bounds);
+  const auto after = state.simulation->actor(state.simulation->scion().actor_id)->position;
+  scenario_check(after.x == position.x && after.y == position.y && !state.w &&
+                     !gameplay_intent_passes(state, input_focus::Intent::Attack),
+                 "frontend: menu blocks movement and combat");
+  key(VK_ESCAPE);
+  key(VK_RETURN);
+  scenario_check(state.frontend == Frontend::None && !state.quit_requested,
+                 "frontend: back returns to title and confirm enters play");
+  state.gear_overlay = true;
+  key(VK_ESCAPE);
+  scenario_check(!state.gear_overlay && state.frontend == Frontend::None,
+                 "frontend: first Escape dismisses gameplay pane");
+  key(VK_ESCAPE);
+  scenario_check(state.frontend == Frontend::Pause,
+                 "frontend: second Escape opens session menu");
+  click(2);
+  scenario_check(state.frontend == Frontend::Title,
+                 "frontend: Return to title is clickable");
+  click(2);
+  scenario_check(state.frontend == Frontend::ConfirmQuit && !state.quit_requested,
+                 "frontend: Quit requires an explicit second choice");
+  key(VK_ESCAPE);
+  scenario_check(state.frontend == Frontend::Title && !state.quit_requested,
+                 "frontend: backing out of Quit preserves the session");
+  open_frontend(state, Frontend::None);
+  state.pad.inject = true;
+  state.pad.connected = true;
+  state.pad.start = true;
+  fixed_game_tick(state, bounds);
+  scenario_check(state.frontend == Frontend::Pause,
+                 "frontend: controller Start opens session menu");
+  state.pad.start = false;
+  state.pad.b = true;
+  fixed_game_tick(state, bounds);
+  scenario_check(state.frontend == Frontend::None,
+                 "frontend: controller Back resumes without a dash");
+  DestroyWindow(window);
+  return scenario_failures;
+}
+
 int run_scenarios(const std::string& which) {
   struct Entry {
     const char* name;
     int (*fn)();
   };
   const Entry entries[] = {
+      {"frontend-flow", scenario_frontend_flow},
       {"move-and-camera", scenario_move_and_camera},
       {"first-fight", scenario_first_fight},
       {"combat-audio", scenario_combat_audio},
@@ -22263,6 +22577,7 @@ int run_remote_native_client(const char* host, unsigned short port, const char* 
                              bool chronicles_mode) {
   auto state = std::make_unique<ClientState>();
   state->chronicles_mode = chronicles_mode;
+  if (chronicles_mode) state->frontend = Frontend::Title;
   state->screen = chronicles_mode ? Screen::Chronicles : Screen::Expedition;
   state->session = std::make_unique<verdigris::client::RemoteProtocolSession>(
       host ? host : "127.0.0.1", port, guest_id ? guest_id : "cursor-guest",
@@ -22361,6 +22676,7 @@ int main(int argc, char** argv) {
   }
   HINSTANCE instance = GetModuleHandle(nullptr);
   auto state = std::make_unique<ClientState>();
+  state->frontend = Frontend::Title;
   state->simulation = std::make_unique<verdigris::Simulation>(0xC011AB1EULL, "House Verdigris");
   verdigris::EmberHunt seasonal;
   state->simulation->set_seasonal_mechanic(&seasonal);
