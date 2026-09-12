@@ -10891,11 +10891,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
-    SetBkMode(dc, TRANSPARENT);
-    SetTextColor(dc, RGB(230, 235, 220));
     const int life = player.life;
     const std::string status =
-        "House " + world.house_name + " | Scion " + world.scion_name + " | Life " +
+        world.house_name + " | Scion " + world.scion_name + " | Life " +
         std::to_string(life) + " | Resource " +
         std::to_string(player.resource) + " | Stored trophies " +
         std::to_string(world.stored_trophies) + " | Stored items " +
@@ -10952,9 +10950,56 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                   "envelope floor %d bitmap %dx%d | gdi pens %d brushes %d | "
                   "fx %d/%d",
                   res.floor_bitmaps, res.floor_w, res.floor_h, res.gdi_pens,
-                  res.gdi_brushes, res.effects,
-                  static_cast<int>(kMaxPresentationEffects));
-    TextOutA(dc, 18, 212, resource_line, static_cast<int>(strlen(resource_line)));
+                   res.gdi_brushes, res.effects,
+                   static_cast<int>(kMaxPresentationEffects));
+
+    // F3 is a diagnostic aid, not a second HUD. Keep it in a bounded panel in
+    // the lower-right diagnostic lane so it never paints over the authored
+    // identity, objective, route card, or audio chips. DrawText's ellipsis
+    // also keeps long telemetry readable at the smallest supported window.
+    const std::vector<std::string> debug_lines{
+        "F3 diagnostic overlay", status, help, help2, camera_help, debug_line,
+        asset_line, machine_line, resource_line};
+    const int debug_scale = std::max(1, hud_scale(static_cast<int>(bounds.bottom)));
+    const int debug_margin = 18 * debug_scale;
+    const int debug_pad = 12 * debug_scale;
+    const int debug_gap = 4 * debug_scale;
+    int max_debug_width = 0;
+    int debug_line_height = 18 * debug_scale;
+    for (const auto& line : debug_lines) {
+      SIZE extent{};
+      GetTextExtentPoint32A(dc, line.c_str(), static_cast<int>(line.size()), &extent);
+      max_debug_width = std::max(max_debug_width, static_cast<int>(extent.cx));
+      debug_line_height = std::max(debug_line_height, static_cast<int>(extent.cy));
+    }
+    debug_line_height += debug_gap;
+    const int available_debug_width =
+        std::max(1, static_cast<int>(bounds.right) - debug_margin * 2);
+    const int debug_width = std::min(available_debug_width,
+                                     max_debug_width + debug_pad * 2);
+    const int debug_height = debug_pad * 2 +
+                             debug_line_height * static_cast<int>(debug_lines.size());
+    const int debug_right = bounds.right - debug_margin;
+    const int debug_bottom = bounds.bottom - debug_margin;
+    const int debug_left = debug_right - debug_width;
+    const int debug_top = std::max(debug_margin, debug_bottom - debug_height);
+    skin::panel(dc, {debug_left, debug_top, debug_right, debug_bottom},
+                skin::kGold, 226, 7.0f);
+    state.render_list.push_back({render::Op::Hud, static_cast<double>(debug_left),
+                                 static_cast<double>(debug_top), 0.0, 0,
+                                 "debug-overlay:panel"});
+    SetBkMode(dc, TRANSPARENT);
+    for (std::size_t i = 0; i < debug_lines.size(); ++i) {
+      RECT line_rect{debug_left + debug_pad, debug_top + debug_pad +
+                                      static_cast<int>(i) * debug_line_height,
+                     debug_right - debug_pad,
+                     debug_top + debug_pad +
+                         static_cast<int>(i + 1) * debug_line_height};
+      SetTextColor(dc, i == 0 ? RGB(239, 208, 116) :
+                               (i < 5 ? RGB(230, 235, 220) : RGB(150, 160, 150)));
+      DrawTextA(dc, debug_lines[i].c_str(), -1, &line_rect,
+                DT_SINGLELINE | DT_VCENTER | DT_END_ELLIPSIS | DT_NOPREFIX);
+    }
     int log_y = bounds.bottom - 24;
     for (auto it = state.event_log.rbegin(); it != state.event_log.rend(); ++it) {
       TextOutA(dc, 18, log_y, it->c_str(), static_cast<int>(it->size()));
@@ -13213,6 +13258,18 @@ int scenario_remote_wight_motion() {
   for (int i = 0; i < 400 && !map_ready(); ++i) frame(false);
   scenario_check(map_ready(), "remote-wight-motion: normal snapshot supplies crypt members and real map");
   if (!map_ready()) return scenario_failures;
+
+  // Warm the production raster/GDI surface before timing the live chase. The
+  // first off-screen paint performs one-time font/bitmap setup and can take
+  // longer than the 150 ms server cadence, which would coalesce otherwise
+  // valid movement packets before the review starts. This paint is outside
+  // the measured chase and does not alter authority or the selected fixture.
+  sync_world(state);
+  generate_scenery(state);
+  state.camera.x = state.world.player.position.x + kTileUnits;
+  state.camera.y = state.world.player.position.y - kTileUnits;
+  load_billboards(state.billboards);
+  scenario_present(state);
 
   struct Chase { std::string id; int player_x = 0, player_y = 0; double isolation = -1; } chase;
   const ClientModel admission = remote->model();

@@ -97,4 +97,8 @@ ACCEPTED / REVISE / BLOCKED / SUPERSEDED and numbered, testable corrections.
   overlapping foundational files always force sequential ordering via
   dependencies. When in doubt, fewer.
 - Browser-game changes still require the repo's `npm run playtest` gate;
-  native changes require the commands in `native/README.md`.
+  native changes require the native-only acceptance command in
+  `native/README.md`. For a native-only task, do not run `npm run playtest` as
+  an acceptance gate: it starts the historical JavaScript/browser protocol
+  harness. Run it only when browser files or an explicitly named browser/parity
+  task is in scope.

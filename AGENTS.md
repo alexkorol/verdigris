@@ -78,10 +78,22 @@ fully green suite. These rules close that hole:
 
 ## Historical browser reference
 
-The Vue/Node game remains a playable reference and design laboratory. Do not
-mechanically port it or restore Delaford defaults merely to satisfy a legacy
-test. Browser changes still require the existing `npm run playtest` gate; native
-changes require the commands documented in `native/README.md`.
+The Vue/Node game remains a historical playable reference and design
+laboratory. Do not mechanically port it or restore Delaford defaults merely to
+satisfy a legacy test. Browser changes still require the existing
+`npm run playtest` gate; native changes require the commands documented in
+`native/README.md`.
+
+For a native-only task, the acceptance product is the native package and its
+actual client. The default `npm run verify` now delegates to
+`powershell -NoProfile -ExecutionPolicy Bypass -File
+native/tools/verify-native.ps1` (also available as `npm run verify:native`). It
+builds the native executables, runs native tests and the client scenario suite,
+and keeps scenario evidence in a contained native build folder. Do not run
+`npm run playtest` as a native acceptance gate: it is the historical
+JavaScript/browser protocol harness. Run it only when browser files or an
+explicit browser/parity task are in scope. The former browser chain remains
+available only as the opt-in `npm run verify:legacy` workflow.
 
 Before claiming a browser gameplay change works, run the real protocol harness
 (`npm run playtest`) and, for client/UI changes, the browser gate

@@ -33,6 +33,25 @@ Studio Build Tools:
 ./native/build.ps1 -RunClient
 ~~~
 
+For native-only acceptance, use the single gate below. It builds the Windows
+client/server, runs the native unit/session/presentation/audio/settings tests,
+checks the legacy denylist, and runs the real client `--scenario all` suite.
+The scenario capture root is contained under `native/build/` by default.
+
+~~~powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File native/tools/verify-native.ps1
+# equivalent npm entry point:
+npm run verify:native
+~~~
+
+The root `npm run verify` points at this native-only gate. The former
+browser/reference chain is available only as the explicit `npm run
+verify:legacy` workflow.
+
+`npm run playtest` is intentionally not part of this gate. That command starts
+the historical JavaScript/browser protocol harness; use it only for browser or
+explicit parity work.
+
 The client window is interactive: WASD moves, the mouse aims, left mouse
 attacks, right mouse/Space dashes (the answer to an enemy telegraph), Q/E/R
 cast Thrust/Sweep/WarCry, X takes the nearest/underfoot drop, Z toggles loot
