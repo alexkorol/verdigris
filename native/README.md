@@ -42,7 +42,8 @@ zooms and Home resets zoom, and F3 toggles the debug overlay. The objective
 strip is mode-aware about extraction: in local play F extracts at the EXIT;
 on the remote owner path you extract by walking onto the EXIT stairs. A
 compact controls line is always on the HUD (no F3 needed). Esc closes an
-open gear pane first; a bare Esc requests quit.
+open pane first; otherwise it opens the session menu. Quit requires a second
+explicit choice. The title screen includes Play, Settings, and Quit.
 
 ## Owner play (one command)
 
@@ -63,9 +64,42 @@ Windows desktop shortcut Target (one line):
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File <clone>\native\tools\play-native.ps1
 ~~~
 
-Replace the path with this clone. Start in the repository root. Esc or closing
-the window quits; the script prints a no-orphan process check and the server log
-path.
+Replace the path with this clone. Start in the repository root. Choose Quit
+from the session menu or close the window; the script prints a no-orphan process
+check and the server log path.
+
+## Local Windows review package
+
+Create a new, self-contained folder (the destination must not already exist):
+
+~~~powershell
+powershell -NoProfile -File native/tools/package-native.ps1 -OutputDirectory 'C:\Reviews\Verdigris'
+powershell -NoProfile -File native/tools/test-player-package.ps1 -PackageDirectory 'C:\Reviews\Verdigris'
+~~~
+
+Double-click `Verdigris.exe` at the package root. This Windows GUI launcher
+opens the normal title/Chronicles path with its own loopback server and no
+developer console. It sets the working directory itself, carries all native
+art and shared fonts/UI plates, and stops its child processes when the game
+exits. A Windows job also cleans up children if the launcher is terminated.
+No checkout, Python, Node, or compiler is required to play the package.
+
+Review saves live in `profile/saves` inside the extracted writable folder.
+Settings normally use `%LOCALAPPDATA%\Verdigris\settings.ini`. For QA, launch
+`Verdigris.exe --profile 'C:\Reviews\isolated-profile'` from PowerShell to
+isolate both saves and settings. The optional `--quick` flag enters a review
+guest directly. One launcher can own a profile at a time; session logs are
+retained in its `logs` directory. No existing owner saves are imported.
+
+The package includes a SHA-256 file manifest and source commit/status. The
+validation command checks those hashes and exercises the actual launcher
+profile lock, including simultaneous trailing-separator aliases and reopening
+after close. `-SkipBuild` packages binaries already built by a coordinated
+native gate; it does not establish that those binaries match pending source
+changes. This is an unsigned Windows x64 local review artifact, with Windows
+.NET Framework 4.x required for the launcher. It is not an installer or public
+release; signing, public distribution, and clean-machine certification remain
+separate work.
 
 ## Build on macOS/Linux
 
