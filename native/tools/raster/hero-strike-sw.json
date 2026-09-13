@@ -1,0 +1,179 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "shared_palette_max_colors": 32,
+  "native_scale_group": "hero-sw-strike-v2-sheet5px-isolated12px",
+  "scale_review": "V2 source334px standingbody uses common5px grid (about67nativepx; accepted SWidle65). Isolated1254px canvases derive from512px phase2 crop, scale2.4492; common12px isolated grid approximates5px*2.4492=12.2461 with about2percent pitch difference. Crouch height and source stance are retained; no per-pose fitting/resizing. Authored roots compensate demonstrated sheet packing offsets; both singles share the scaled phase2 root. Ground contact roots measured on planted feet: phase2[195,450], singles[478,1104] at the nearest12px grid boundary to its scaled root. This retains a common ground pivot, not a per-pose scale fit.",
+  "defaults": {
+    "cell_size": 5,
+    "alpha_mode": "crisp",
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10"
+  },
+  "known_limitations": [
+    "Root inspected the final native and4x idle-to-strike0..5-to-idle comparison. Physical-left strike,contact and retraction remain consistent; common native scale and pivot are retained. Production timing/equipped motion remains a review gate.",
+    "Remaining visual differences: heads are14\u201315px wide versus idle12; standing body is67\u201368px versus idle65; dark outline and tunic colors shift. This is production-trial acceptance, not final visual polish.",
+    "Explicit source roots compensate sheet packing translations; no pose is independently fitted or resized.",
+    "Mixed-source integer grid pitches differ by about2percent from the measured1254/512 canvas ratio. That residual scale approximation is preserved in provenance.",
+    "All sources use recorded connected checker cleanup, including the individually inspected enclosed window. Final source and runtime candidates remain preserved."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/actors_hero-strike-sw-v2.png",
+      "border_background": {
+        "color": [
+          225,
+          225,
+          225
+        ],
+        "tolerance": 75,
+        "interior_windows": [
+          [
+            719,
+            252,
+            730,
+            267
+          ]
+        ]
+      },
+      "assets": [
+        {
+          "name": "hero_strike0_sw",
+          "source_box": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "anchor_source": [
+            330,
+            456
+          ]
+        },
+        {
+          "name": "hero_strike1_sw",
+          "source_box": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "anchor_source": [
+            252,
+            456
+          ]
+        },
+        {
+          "name": "hero_strike2_sw",
+          "source_box": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "anchor_source": [
+            195,
+            450
+          ]
+        },
+        {
+          "name": "hero_strike5_sw",
+          "source_box": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "anchor_source": [
+            190,
+            400
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/actors_hero-strike-sw-contact3-v3.png",
+      "grid": [
+        1,
+        1
+      ],
+      "defaults": {
+        "cell_size": 12
+      },
+      "border_background": {
+        "color": [
+          230,
+          230,
+          230
+        ],
+        "tolerance": 90
+      },
+      "assets": [
+        {
+          "name": "hero_strike3_sw",
+          "cell": [
+            0,
+            0
+          ],
+          "anchor_source": [
+            478,
+            1104
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/actors_hero-strike-sw-follow4-v3.png",
+      "grid": [
+        1,
+        1
+      ],
+      "defaults": {
+        "cell_size": 12
+      },
+      "border_background": {
+        "color": [
+          230,
+          230,
+          230
+        ],
+        "tolerance": 90
+      },
+      "assets": [
+        {
+          "name": "hero_strike4_sw",
+          "cell": [
+            0,
+            0
+          ],
+          "anchor_source": [
+            478,
+            1104
+          ]
+        }
+      ]
+    }
+  ],
+  "integration_review": {
+    "date": "2026-09-10",
+    "reviewer": "root",
+    "scope": "Runtime integration and production captures reviewed for this iteration; not final visual polish.",
+    "native_build_and_core_suites": "passed",
+    "production_scenarios": {
+      "passed": 64,
+      "fullscreen_average_ms": 18.7,
+      "dense_average_ms": 9.4
+    },
+    "browser_checks": {
+      "passed": 32,
+      "total": 32
+    },
+    "capture_review": "Live3440x1440 window viewed and closed; actual SW/NW/NE walking frames and all three equipped strike contact captures viewed.",
+    "limitations_policy": "Existing identity,palette,registration and source-generation observations remain unchanged."
+  }
+}

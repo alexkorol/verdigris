@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "status": "candidate-only; native anatomy review completed; not runtime accepted",
+  "generation": {
+    "tool": "image_gen.imagegen",
+    "model": "tool default; model selection was not exposed",
+    "calls": 1,
+    "prompt_file": "actors_hero-strike-ne-windup-v2.txt",
+    "prompt_sha256": "dd447d1fc069fb9775f29e349054ee6abff7dd9292001c7b25e61cf2dc42df9c",
+    "references": [
+      {
+        "path": "../runtime/hero_ne.png",
+        "sha256": "aafeeed5b41a4ee6cad27d6331b0dec4e121ba711c86380ca2a83228a322c0c5",
+        "role": "sole edit target and accepted identity, clothing, palette, camera, feet and scale anchor",
+        "inspected_before_generation": true
+      }
+    ],
+    "workflow_basis": {
+      "url": "https://www.flixly.ai/blog/stop-motion-chatgpt-images-2-5",
+      "observed_method": "Focused change to one limb with other anatomy and framing fixed; an opening identity image is retained when producing later frames.",
+      "adaptation": "Starting directly from the accepted idle uses only that one reference. This NE arm edit is our experiment, not the article's published fox prompt."
+    },
+    "original_tool_output": "C:/Users/Alex/.codex/generated_images/01a0896d-2712-78b1-8ee3-5e362a202349/exec-00eb09ec-81c7-4258-9d03-7d5d6cc97483.png",
+    "source": "../source/actors_hero-strike-ne-windup-v2.png",
+    "source_sha256": "157f44650116a0683996d9deb85f3332225e496363744c3e5d9f507670b4116b",
+    "source_size": [1145, 1374],
+    "source_mode": "RGB",
+    "source_alpha": "failed requested transparency; painted checkerboard"
+  },
+  "reconstruction": {
+    "manifest": "actors_hero-strike-ne-windup-v2-import.json",
+    "engine_provenance": "../source/actors_hero-strike-ne-windup-v2-import.provenance.json",
+    "method": "Existing import_assets.py calling actual Pixel Respecter workspace.reconstruct and make_border_connected_transparent; no importer changes, no post-resize, no runtime writes.",
+    "background_removal": {"color": [220, 220, 220], "tolerance": 80, "interior_windows": []},
+    "canvas": [80, 96],
+    "anchor_source": [600, 1220],
+    "anchor_px": [40, 96],
+    "candidates": [
+      {"file": "../source/actors_hero-strike-ne-windup-v2-cell12.png", "cell_size": 12, "body_height": 67, "visible_colors": 32, "alpha_values": [0, 255], "sha256": "6f43247be0aec45c1bf276f2053a25760efe3c56b074f9782653307f2df32da1"},
+      {"file": "../source/actors_hero-strike-ne-windup-v2-cell13.png", "cell_size": 13, "body_height": 62, "visible_colors": 32, "alpha_values": [0, 255], "sha256": "96a28b1e303cea33fb43794a2edfd1c993909a4a87358c8b0eaa919f2d6bcf06"}
+    ],
+    "comparison": "../source/actors_hero-strike-ne-windup-v2-comparison-4x.png"
+  },
+  "visual_review": {
+    "inspected": ["original saved source", "native cell12", "native cell13", "4x comparison against accepted idle"],
+    "positive": [
+      "The unarmored screen-left shoulder, bent elbow and upright fist form one readable arm.",
+      "The bronze screen-right arm remains down at guard with no obvious extra limb.",
+      "Blue sash remains on screen-left, full trousers remain present, and the rear upper-right view is retained.",
+      "Reconstruction has crisp binary alpha with no visible checker remnants at native or 4x review."
+    ],
+    "limitations": [
+      "The accepted idle body is 65 pixels tall; cell12 is 67 and cell13 is 62. Cell12 is the closer comparison candidate, not an exact scale match.",
+      "The source introduces a warmer orange-brown tunic and slight head/body shape differences from the accepted idle.",
+      "Only a modest preparation pose exists. Commit, contact, follow-through, recovery and continuous left-hand action are unverified."
+    ],
+    "verdict": "Readable left-arm preparation candidate; retain outside runtime pending parent review. Do not call the NE strike animation accepted or complete."
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "palette_reference": {
+    "source": "../../client/assets/raster/runtime/hero_ne.png",
+    "max_colors": 32
+  },
+  "defaults": {
+    "cell_size": 1,
+    "alpha_mode": "preserve",
+    "canvas": [
+      80,
+      96
+    ],
+    "trim": false,
+    "preserve_scale": true,
+    "require_transparency": true,
+    "anchor_source": [
+      40,
+      96
+    ],
+    "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10"
+  },
+  "known_limitations": [
+    "Root viewed fixed-origin native/3x palette comparison, native equipped NE grids and actual equipped NE hit. Production contact is reviewed for provisional integration; this is not final visual polish.",
+    "Each selected input is an immutable native 80x96 reconstruction. Actual Pixel Respecter cell1 reconstruction and palette snap preserve every alpha value, pixel position and common pivot[40,96]; no individual pose fitting or rescaling.",
+    "CIELAB nearest-color matching pins RGB to the accepted NE idle palette. Followthrough remains wider, the return to recovery is fast, and anatomical/material differences remain despite successful production contact integration.",
+    "Ready uses the actual accepted runtime hero_ne.png and remains pixel-identical; the obsolete candidate idle is excluded.",
+    "The selected windup, commit and recovery native inputs retain their earlier batch palette. The original batch report is historical provenance; exact active reproduction starts from these preserved native PNGs and does not rerun superseded candidate poses.",
+    "Bow/staff checks verify attachment and sampling only; they do not establish a bow draw/release or staff casting animation."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/runtime/hero_ne.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_strike0_ne",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/actors_hero-strike-ne-candidate/windup.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_strike1_ne",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/actors_hero-strike-ne-candidate/commit.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_strike2_ne",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/actors_hero-strike-ne-contact-v6-candidate/contact-cell11.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_strike3_ne",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/actors_hero-strike-ne-followthrough-v3-candidate/followthrough.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_strike4_ne",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/actors_hero-strike-ne-candidate/recovery.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_strike5_ne",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  ],
+  "reproduction_dependencies": "hero-strike-ne-dependencies.json",
+  "production_review": {
+    "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+    "evidence": "native/client/assets/raster/reviews/2026-09-10-actions/retained-evidence.json",
+    "scope": "Root-reported supported production captures and gates; successful integration for this iteration, not final visual polish."
+  }
+}

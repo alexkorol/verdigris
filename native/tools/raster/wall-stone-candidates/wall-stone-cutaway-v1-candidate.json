@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "output_dir": "v1",
+  "defaults": {
+    "alpha_mode": "crisp",
+    "max_colors": 24,
+    "canvas": [
+      64,
+      96
+    ],
+    "trim": false,
+    "fill": true,
+    "align": "top_left",
+    "acceptance": "candidate_source_failures_review"
+  },
+  "known_limitations": [
+    "Source painted its background, so the measured complete rectangular module is cropped; no background-removal claims.",
+    "Full-source image has excessive microtexture and a cap rim; native output is diagnostic only.",
+    "Native plane join must be reviewed against the contractual row64."
+  ],
+  "sheets": [
+    {
+      "source": "../../../client/assets/raster/source/wall-stone-cutaway-v1.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "wall_stone_cutaway",
+          "source_box": [
+            238,
+            298,
+            849,
+            1173
+          ],
+          "cell_size": 9
+        }
+      ]
+    }
+  ]
+}

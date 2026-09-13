@@ -1,0 +1,7 @@
+Make a simplified64px pixel-art WALKING motion sprite sheet of the character in IMAGE1, actual transparent background, arranged4columns by2rows.
+
+IMAGE1 supplies ONLY the character design, pixel style, clothing, palette and camera: our adult hero in a brown tunic, full dark trousers and wraps, ordinary bronze guard on the physical RIGHT shoulder, sash on the physical LEFT hip, empty hands. Preserve that design and actual upper-right/NORTHEAST BACK view in every frame.
+
+IMAGE2 supplies ONLY the EIGHT CHRONOLOGICAL WALK POSES. Match each output cell to the corresponding pose cell: top row frames0,1,2,3; bottom row frames4,5,6,7. Follow the changing knees, ankles, supporting foot, raised foot, stride width, body weight and opposite arm swing in those exact poses. The second half must use the opposite supporting leg, as shown. Transfer the motion to IMAGE1's body; do not transfer IMAGE2's costume, character, colors, labels or background.
+
+One character, one NE direction, one continuous in-place walk cycle. Keep IMAGE1's grounded adult proportions, small square pixel clusters,24–32 purposeful colors, consistent camera and apparent scale. Use identical cell alignment and fixed row baselines, allowing the small vertical walking movement shown in IMAGE2. Complete isolated silhouettes with generous empty margins and actual transparent alpha. Output only the eight hero sprites, without text.

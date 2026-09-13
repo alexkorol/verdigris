@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-10",
+  "baseline_supplied_by_parent": "e0e1beaa9",
+  "tool": "built-in image_gen.imagegen",
+  "use_case": "stylized-concept",
+  "call_count": 1,
+  "model_selection": "No image model or variant selector was exposed or claimed.",
+  "exact_prompt": {
+    "path": "native/client/assets/raster/prompts/terrain-quiet-stone-v1.txt",
+    "sha256": "75a1215428c5fda6b28aa76700ee4834d8912d93f8265c3d25fa88243c02a7ab",
+    "role": "Unchanged exact submitted prompt."
+  },
+  "references": [
+    {
+      "index": 1,
+      "viewed_before_generation": true,
+      "path": "native/client/assets/raster/runtime/terrain_quiet_earth.png",
+      "sha256": "059b101504c96b84a3541f5021dfd1811a7bb1ddb81ebd40fd03be9dbad2af70",
+      "role": "Image1: quiet detail density, broad value masses, restrained contrast only."
+    },
+    {
+      "index": 2,
+      "viewed_before_generation": true,
+      "path": "native/client/assets/raster/runtime/gate.png",
+      "sha256": "701eabbd5156205e808243195c0ad5543cf7608a3588807721f3d532d10e8e4a",
+      "role": "Image2: limestone upright color/material only; no gate geometry, wood or perspective."
+    }
+  ],
+  "viewed_context": [
+    {
+      "path": "native/client/assets/raster/runtime/terrain_stone.png",
+      "sha256": "7cd4b45eefa6b6acfed7f718f16ca108daee933102e2ecb3f2a4067021b25342",
+      "role": "Viewed noisy-floor comparison only; not submitted."
+    },
+    {
+      "path": "native/client/assets/raster/reviews/2026-09-10-monster-motion/remote-wight-arrived.png",
+      "sha256": "3bf189e6d1c2d1f6bb9c6f76de6ebcc74356cc6a7e9a91b33366b6f7175883b2",
+      "role": "Viewed production scene/context only; not submitted."
+    }
+  ],
+  "original_output": "C:/Users/Alex/.codex/generated_images/01a0896f-29de-7452-bb4b-6fb64351c1eb/exec-aeb032d5-737a-4b1c-9785-ce1968a1aa5b.png",
+  "original_output_sha256": "f6141a97b2cb8e0685d99fea8a8fae24c94bd0cc539e6e06723ee0837e771903",
+  "saved_source": {
+    "path": "native/client/assets/raster/source/terrain-quiet-stone-v1.png",
+    "sha256": "f6141a97b2cb8e0685d99fea8a8fae24c94bd0cc539e6e06723ee0837e771903",
+    "role": "Unmodified generated output copied to project."
+  },
+  "source_dimensions": [
+    1254,
+    1254
+  ],
+  "source_mode": "RGB",
+  "published_workflow": [
+    {
+      "url": "https://12ui.com/gpt-image-2.5-vs-2",
+      "access": "Opened original comparison in browser and expanded P12 Film Portfolio Collision prompt and reference roles.",
+      "excerpt": "Treat Image 1 as a functional specification, not a design reference",
+      "adaptation": "Use explicit reference roles: density/value masses and stone material. Original is interface design; this is our floor adaptation, not creator-tested terrain."
+    },
+    {
+      "url": "https://x.com/higgsfield/status/2097514684811554911",
+      "access": "Original expanded geometry-guide prompt read during the preceding wight task in the same conversation.",
+      "scope": "Adjacent reference-role evidence: geometry and appearance constraints are separate. Published helix turntable does not validate tile seams."
+    },
+    {
+      "url": "https://www.reddit.com/r/codex/comments/1waxfbk/comment/p8m88mg/",
+      "access": "Original game-room comment and API follow-up read directly with web tool before generation.",
+      "scope": "Creator reports more stable editing but persistent repetitive microtexture on large surfaces. This is feedback, not a verified corrective prompt."
+    }
+  ],
+  "local_observation": {
+    "style": "Broad warm-gray limestone slabs; much less dense outline texture than current stone. Bright value and mottled surfaces remain.",
+    "repetition": "Visibly periodic and not seamless; opposite-edge metrics recorded in v1/metrics.json.",
+    "actor_review": "Unchanged hero/wight are clearer at native scale; previews are mechanical compositions, not gameplay captures.",
+    "alpha": "Requested opaque floor; reconstructed alpha255 throughout.",
+    "processing": "Actual external Pixel Respecter mesh auto-grid and24-color reduction;114×121 to64×64 nearest-neighbor terrain fill. No procedural repaint."
+  },
+  "root_review": {
+    "viewed": [
+      "v1/actors-comparison-1x.png",
+      "v1/repeat-3x3-3x.png"
+    ],
+    "verdict": "Noise is reduced, but square repetition and inconsistent seam joints remain obvious. Hold as candidate; no production acceptance.",
+    "workflow_limit": "Terrain prompt is our unverified adaptation of reference-role workflows, not a demonstrated seamless terrain recipe.",
+    "instruction": "No second image call."
+  },
+  "acceptance": "Held candidate after root visual review; square repeat and inconsistent seam joints prevent production acceptance. No second call, production import or staging.",
+  "conversion": {
+    "path": "native/tools/raster/quiet-stone-candidates/v1/import.json",
+    "sha256": "78c130658c830592c39e76a5ae0387f4b434a056512f3423755d292ac9b37f70",
+    "role": "Exact candidate-only importer manifest."
+  },
+  "conversion_report": {
+    "path": "native/tools/raster/quiet-stone-candidates/v1/import.provenance.json",
+    "sha256": "df408028aab73b1524e4d025f7ac9c969075c5de32212f2170bd92307a3f195d",
+    "role": "Actual engine, package, source and pixel hashes."
+  }
+}

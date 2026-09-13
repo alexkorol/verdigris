@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-UI-007",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "380d9eb5",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "hud-pane-readability",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario hud-pane-readability", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario vital-orbs", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario hud-scale-floor", "exit_code": 0}
+  ],
+  "assertions": [
+    "scale 0 is rejected; shrinking type is not the contrast fix",
+    "HUD regions stay pairwise disjoint at 960x600, 1366x768, and 3440x1440",
+    "open gear pane never intersects identity/controls/objective/art/minimap/quickbar/orbs at those sizes",
+    "open tree pane never intersects identity/controls/objective/minimap/quickbar/orbs",
+    "open character pane never intersects identity/controls/objective; WASD remains",
+    "open character pane never covers the minimap or life orb at 960",
+    "character sheet close hint C or Esc closes stays inside the slot",
+    "compact Sources on the character sheet uses Base/Gear, not lowercase src jargon",
+    "open gear pane footer I or Esc closes stays inside the pane at 960/1366/3440",
+    "open gear pane DEF and LVL stay inside the pane at 960/1366/3440",
+    "first Escape closes the pane; bare Escape requests quit",
+    "life orb is left of mana; live 3440x1440 window matches that layout",
+    "Life left stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Life left is the anti-pattern",
+    "pack captures write under docs/execution/captures/art-wave, not the TASK-0159 folder",
+    "live HUD names Life left and Mana right",
+    "live HUD names Type floor and Ink contrast",
+    "Type floor stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Type floor is the anti-pattern",
+    "open gear pane owner paint uses Skill tree: no data yet while PaneStat keeps TREE no authoritative data"
+  ],
+  "negative_control": {
+    "name": "TASK-0159 folder capture alone, overlapping pane, WASD on the open tree or character sheet, a sheet covering the minimap or Life, a clipped C or Esc closes footer, a clipped I or Esc closes gear footer, clipped DEF/LVL on the gear pane, shrinking fonts below the floor, Life left covering WASD/objective/Tin village/Life, Type floor covering WASD/objective/Tin village/Life, or an X on the mana globe as the mute cue",
+    "observed_result": "REJECTED as a passing journey"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/hud-pane-readability-open-3440x1440.png",
+      "sha256": "8fbddeffbe3c763fe1e4102011733e62b6387d22b69dff1c452e2aa691d08da7",
+      "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/hud-pane-readability-closed-3440x1440.png",
+      "sha256": "c559aa98c84f3ef64ed99cd504b3d69c4db03f9de0aecb350a56e1542dd3430b",
+      "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/hud-pane-readability-open-960x600.png",
+      "sha256": "f5ccfcb1bbfa13753f4dcc90f7e194c75ebba78f1bae15d305484cdd9da2d9ff",
+      "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/hud-pane-readability-closed-960x600.png",
+      "sha256": "6c9cb9a7abfd93a9253fc5218f2b43aa5ea4eb4a487b0f6ccf9ef0d69490d928",
+      "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/hud-pane-readability-open-1366x768.png",
+      "sha256": "589615fac91daa2dce8ba2ffa2088f08f6bd1c0725de687fa489313ae80983dd",
+      "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/hud-pane-readability-closed-1366x768.png",
+      "sha256": "2cd5a737448f4142e8e9be492047a67d858b41c96946bdfd5e5b9acf008dbde3",
+      "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/hud-scale-floor-960x600.png",
+      "sha256": "c3cfe1dd81e6d73630adc3b4535b608365e9d9d1df2bf2228df05e26ba31b85f",
+      "produced_by": "native/build/verdigris_client.exe --scenario hud-scale-floor"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/live-hud-owner.png",
+      "sha256": "0caaad08d9b52ec2fad7c7d9a2bd3d57acd11ee08f5dbb8a1cd65bdcf8acd214",
+      "produced_by": "native/tools/capture-window.ps1 on live verdigris_client.exe at 3440x1440"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/vital-orbs-960x600.png",
+      "sha256": "8514af872314cde29f73c2ffe55e1e99b98a8d31b38b44ca7a4a0b9e382e6e0c",
+      "produced_by": "native/build/verdigris_client.exe --scenario vital-orbs"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/hud-pane-readability-tree-960x600.png",
+      "sha256": "228fa265c4254c77d96312cae05f7b61eb99de3396af55fe318eb1c197acce4a",
+      "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/hud-pane-readability-character-960x600.png",
+      "sha256": "d567d17fb0cb2ce1e71a63307ae667ac67293fd50dc83e17143c5891f174f80a",
+      "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Extends TASK-0159; that packet's STATUS.md and historical captures were not rewritten.",
+    "Owner strip paints Life left / Mana right and parks off WASD, the objective, Tin village, and Life. X on mana cannot certify a non-color cue. Covering those combat surfaces cannot certify.",
+    "hud-scale-floor owner strip paints Type floor / Ink contrast and parks off WASD, the objective, Tin village, and Life. Shrink type cannot certify overflow. Covering those combat surfaces cannot certify. Sibling pane/vital captures are prior evidence; not recaptured in this packet.",
+    "hud-pane-readability recapture has no owner review strip so pairwise HUD regions stay disjoint.",
+    "Open P-key tree keep-out is the VG-UI-007 extra; overlaying WASD on the tree cannot certify.",
+    "Open C-key character keep-out relocates WASD to the right of the sheet. Deleting the hint cannot certify. The sheet slot sits below the minimap and above Life; covering those cannot certify. A clipped C or Esc closes footer cannot certify. A clipped I or Esc closes gear footer cannot certify. Clipped DEF/LVL on the gear pane cannot certify. Compact Sources uses Base/Gear with ASCII |; lowercase base/gear cannot certify.",
+    "VG-UI-006 Owner Demo navigation is not this packet and was not duplicated.",
+    "Remote pane check remains 960x600; owner ultrawide proof is the local present path.",
+    "No TASK numbers minted."
+  ]
+}

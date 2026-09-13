@@ -1,0 +1,5 @@
+play-native: local mode (no server); starting client with in-process simulation
+play-native: close the window or press Esc to quit
+play-native: client pid 3792
+play-native: client exit code 0
+play-native: local session left no orphan verdigris processes (verified by pid)

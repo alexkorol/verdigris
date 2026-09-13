@@ -1,0 +1,4 @@
+PASS 3440x1440 route text=186 <= 216; audio=360x224; repeated paints add0 layers
+PASS 1366x768 route text=89 <= 108; audio=180x107; repeated paints add0 layers
+PASS 960x600 route text=89 <= 108; audio=180x107; repeated paints add0 layers
+PASS bounded cache: 48 layers/14131616 bytes; invalid dimensions rejected

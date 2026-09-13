@@ -1,0 +1,244 @@
+{
+  "version": 1,
+  "status": "candidate sent to root/motion reviewer for held-axe comparison; no runtime promotion",
+  "tool": "image_gen.imagegen",
+  "model": "tool default; model selector not exposed or identified",
+  "generation_calls": 1,
+  "targeted_repair_calls": 0,
+  "source": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-followthrough-v3.png",
+  "source_size": [
+    1145,
+    1374
+  ],
+  "source_mode": "RGB",
+  "source_alpha": "failed request; RGB painted checkerboard",
+  "source_sha256": "e88608cf5073110741d0832db327e226c3e7592f233ee3b12a6816abac2f492d",
+  "original_tool_output": "C:/Users/Alex/.codex/generated_images/01a0896d-2712-78b1-8ee3-5e362a202349/exec-1ea33e37-9a19-40e1-9519-b9a0e26fa30b.png",
+  "prompt_file": "native\\client\\assets\\raster\\prompts\\actors_hero-strike-ne-followthrough-v3.txt",
+  "prompt_sha256": "d0017dd7f0ee785e72c84664e940d596de68a4b782a76126a7d2704b4f70e529",
+  "reference_images": [
+    {
+      "path": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-contact-v6-candidate\\contact-cell11.png",
+      "snapshot": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-followthrough-v3-reference-contact.png",
+      "sha256": "a01d04feff3a6340d808c04b23ad8e289ef86f531b36052364e581ddb6d213e6",
+      "role": "reference1 edit target, reviewed physical-left overhead contact",
+      "inspected_before_generation": true
+    },
+    {
+      "path": "native\\client\\assets\\raster\\runtime\\hero_ne.png",
+      "sha256": "aafeeed5b41a4ee6cad27d6331b0dec4e121ba711c86380ca2a83228a322c0c5",
+      "role": "reference2 original accepted identity, camera, palette and physical sides",
+      "inspected_before_generation": true
+    }
+  ],
+  "workflow_basis": {
+    "url": "https://www.flixly.ai/blog/stop-motion-chatgpt-images-2-5",
+    "method": "Previous reviewed frame first and original identity second; one focused physical change.",
+    "adaptation": "Root-directed small fist lowering with left elbow retained above the screen-left shoulder; our single-frame experiment, not a published game-asset recipe."
+  },
+  "conversion_manifest": "native\\client\\assets\\raster\\prompts\\actors_hero-strike-ne-followthrough-v3-import.json",
+  "engine_provenance": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-followthrough-v3-candidate\\actors_hero-strike-ne-followthrough-v3-import.provenance.json",
+  "conversion_review": {
+    "actual_api": "pixel_perfecter.workspace.reconstruct and pixel_perfecter.colors.make_border_connected_transparent",
+    "manual_source_pitch": 11,
+    "canvas": [
+      80,
+      96
+    ],
+    "output_pivot": [
+      40,
+      96
+    ],
+    "source_pivot": [
+      600,
+      1254
+    ],
+    "resampling": "none for sprite normalization; exact nearest-neighbor only for review enlargement",
+    "matte_color": [
+      229,
+      229,
+      229
+    ],
+    "matte_tolerance": 71,
+    "interior_windows": [
+      [
+        658,
+        818,
+        690,
+        850
+      ],
+      [
+        663,
+        850,
+        693,
+        880
+      ]
+    ],
+    "foreground_checks": [
+      {
+        "xy": [
+          619,
+          444
+        ],
+        "source_rgba": [
+          247,
+          211,
+          139,
+          255
+        ],
+        "alpha_after_full_cleanup": 255
+      },
+      {
+        "xy": [
+          584,
+          453
+        ],
+        "source_rgba": [
+          253,
+          230,
+          177,
+          255
+        ],
+        "alpha_after_full_cleanup": 255
+      },
+      {
+        "xy": [
+          524,
+          477
+        ],
+        "source_rgba": [
+          231,
+          139,
+          86,
+          255
+        ],
+        "alpha_after_full_cleanup": 255
+      },
+      {
+        "xy": [
+          690,
+          775
+        ],
+        "source_rgba": [
+          252,
+          224,
+          160,
+          255
+        ],
+        "alpha_after_full_cleanup": 255
+      },
+      {
+        "xy": [
+          707,
+          862
+        ],
+        "source_rgba": [
+          205,
+          165,
+          105,
+          255
+        ],
+        "alpha_after_full_cleanup": 255
+      },
+      {
+        "xy": [
+          616,
+          1111
+        ],
+        "source_rgba": [
+          228,
+          229,
+          228,
+          255
+        ],
+        "alpha_after_full_cleanup": 0
+      }
+    ],
+    "iterations": "Initial235/60 matte exposed enclosed underarm checker and a gray leg-gap speck. Source inspection and foreground probes informed229/71 plus two narrow gap windows; no image generation repair was needed for these conversion changes."
+  },
+  "visual_review": {
+    "inspected": [
+      "generated source before cleanup",
+      "saved source gap detail",
+      "native reconstructed frame",
+      "contact-followthrough-recovery4x",
+      "native and2x transition strips"
+    ],
+    "positive": [
+      "The unarmored anatomical left arm remains connected at screen-left shoulder, elbow above that shoulder and forearm across above head.",
+      "Bronze right shoulder and lowered right arm retain their side.",
+      "Fist and pale wraps remain visibly complete after reconstruction; no v2-style erased forearm.",
+      "Back-view upper-right head and boots, blue left-hip sash and full trousers remain readable."
+    ],
+    "open_points": [
+      "Candidate crown is a few pixels higher than contact at the shared output pivot, and its silhouette/details are not an exact identity match.",
+      "The hand sits slightly nearer the head in the reconstructed canvas; equipment reviewer must judge whether its motion/axe angle continues the strike at actual phase timing.",
+      "Existing recovery remains much lower; no claim that this three-pose transition is a complete accepted action."
+    ],
+    "side_failures": "No visible physical-side swap in this candidate.",
+    "acceptance": "pending independent root/equipment review; not a gameplay claim"
+  },
+  "preview_scale_note": "Native1x and2x/4x offline fixed-canvas reviews, not a live game capture.",
+  "frames": [
+    {
+      "label": "contact",
+      "path": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-followthrough-v3-candidate\\contact.png",
+      "sha256": "a01d04feff3a6340d808c04b23ad8e289ef86f531b36052364e581ddb6d213e6",
+      "canvas": [
+        80,
+        96
+      ],
+      "bounds": [
+        27,
+        20,
+        54,
+        96
+      ],
+      "alpha_values": [
+        0,
+        255
+      ],
+      "visible_colors": 32
+    },
+    {
+      "label": "follow-through",
+      "path": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-followthrough-v3-candidate\\followthrough.png",
+      "sha256": "3b878d039cbbfb65afbab630cd5c9bfdeba597a273f691014216a9c30edf0806",
+      "canvas": [
+        80,
+        96
+      ],
+      "bounds": [
+        24,
+        20,
+        54,
+        96
+      ],
+      "alpha_values": [
+        0,
+        255
+      ],
+      "visible_colors": 32
+    },
+    {
+      "label": "existing recovery",
+      "path": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-followthrough-v3-candidate\\existing-recovery.png",
+      "sha256": "3439b11bb1e655f977724588ad26e980d83b5a88575b4dd163858284ab75c8ca",
+      "canvas": [
+        80,
+        96
+      ],
+      "bounds": [
+        24,
+        28,
+        53,
+        96
+      ],
+      "alpha_values": [
+        0,
+        255
+      ],
+      "visible_colors": 30
+    }
+  ]
+}

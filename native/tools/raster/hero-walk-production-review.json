@@ -1,0 +1,39 @@
+{
+  "status": "pending_live_motion",
+  "scope": "Corrected-reference hero walk imports",
+  "runtime_frames": {
+    "se": 4,
+    "sw": 8,
+    "nw": 8,
+    "ne": 8
+  },
+  "shared_canvas": [
+    80,
+    96
+  ],
+  "cycle_palette": "32 colors jointly reduced by actual Pixel Respecter for each new direction",
+  "source_choices": {
+    "sw": "actors_hero-walk-sw-d2poses-v2.png",
+    "nw": "actors_hero-walk-nw-d2poses-v1.png",
+    "ne": "actors_hero-walk-ne-d2poses-v2.png"
+  },
+  "scale_and_phase_findings": {
+    "sw": "Alternating support through narrow/crossed, raised, open and opposite passing poses. One measured450px source row-origin stride; no independent pose fitting.",
+    "nw": "Opposite anatomical leg advances through crossed stance; passing poses differ. Equal local source pivot preserves2\u20134px apparent row/torso bob for live inspection.",
+    "ne": "Revised2-to3 transition opens into wide stride, then6/7 close.0/1 and4/5 remain close in the generated output. One measured460px source row-origin stride; no independent pose fitting."
+  },
+  "preview_pattern": "hero-walk-DIRECTION-strip-1x.png / -contact-4x.png / -preview.gif",
+  "preview_duration_ms": 80,
+  "known_limits": [
+    "Source layout registration and head/body bob need equipped live motion review.",
+    "Generated near-holds are observed limitations, not asserted artistic intent."
+  ],
+  "validation": {
+    "importer_tests": 7,
+    "registered_manifest_count": 18,
+    "asset_records_including_superseded": 115,
+    "active_asset_count": 106,
+    "unique_sources": 35,
+    "rejected_candidates_in_default_order": false
+  }
+}

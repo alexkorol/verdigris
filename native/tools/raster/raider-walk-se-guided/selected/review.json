@@ -1,0 +1,20 @@
+{
+  "status": "root_provisional_import_approval",
+  "visual_checks": [
+    "All5 current source images inspected.",
+    "Native1x and3x idle-cycle-idle inspected.",
+    "Both support sides differ anatomically; passing poses bend corresponding opposite legs.",
+    "Axe remains in anatomical-right/screen-left hand; no direction mirroring used.",
+    "Two narrow contact cleanup windows preserve7 bracer-edge pixels rejected by larger trial.",
+    "Eight passing windows source-reviewed; removed pixels have no chroma>20.",
+    "Approved contact2 remains byte-identical after combined recipe and native_scale_group metadata import."
+  ],
+  "playback": "Four chronological160ms GIF frames and idle boundaries assembled; frame count/order/durations checked. Production-game playback has not been accepted by this lane.",
+  "open_limits": [
+    "Narrower bodies than idle; bone-mask shape and head angle shift slightly between poses.",
+    "Compact right-hand bronze axes differ in darkness/size from idle.",
+    "Four-phase640ms authored loop; production timing and live enemy motion still need root review.",
+    "True generated alpha in initial contact and left contact only. Corrected contact and passing sources are RGB with painted patterns; exact owner-API cleanup is recorded.",
+    "Native54\u201356px body heights and source grid pitches are explicit; no hidden individual fit or resampling."
+  ]
+}

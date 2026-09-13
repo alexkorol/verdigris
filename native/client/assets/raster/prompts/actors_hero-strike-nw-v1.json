@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "tool": "builtin image_gen.imagegen",
+  "model": "Not exposed by the built-in tool; no model selector was supplied",
+  "source": "../source/actors_hero-strike-nw-v1.png",
+  "source_sha256": "963f33bc6228c95fe615e007df2dcf53e2552689088a26da844f8f308c252868",
+  "source_size": [
+    1536,
+    1024
+  ],
+  "source_mode": "RGB",
+  "exact_prompt_file": "actors_hero-strike-nw-v1.txt",
+  "references": [
+    {
+      "path": "../runtime/hero_nw.png",
+      "sha256": "2fd7271f16f65eceefc583746d8373f1a81e25a74e505af7917e8ec722b0becc",
+      "submitted": true,
+      "role": "Only reference: adult identity, clothing, palette, pixel style and fixed upper-left/back camera."
+    }
+  ],
+  "excluded_reference": {
+    "path": "../source/actors_hero-strike-se-identity-v3.png",
+    "submitted": false,
+    "reason": "Parent removed the SE action reference before dispatch after SW direction contamination."
+  },
+  "published_workflow": {
+    "creator": "Kiki / @Mayz1169",
+    "prompt_url": "https://x.com/Mayz1169/status/2097540160611287452",
+    "result_url": "https://x.com/Mayz1169/status/2097539942985728162",
+    "original_read": "Original full prompt inspected in browser; web fetch had failed.",
+    "excerpt": "Ready stance → Anticipation → Attack → Impact peak → Effects dissipate → Recovery.",
+    "adaptation": [
+      "Six chronological poses in 3x2 rather than sixteen in 4x4.",
+      "Use our mature adult identity and actual NW view rather than chibi proportions.",
+      "Physical-left empty-hand strike; no baked weapon or unrelated effects.",
+      "Preserve preparation, full arm clearance, weight transfer, contact and recovery; maintain camera, size and origin.",
+      "GIF assembly, slicing, package creation and timing belong to tools/runtime rather than the image request."
+    ]
+  },
+  "layout": {
+    "columns": 3,
+    "rows": 2,
+    "cell_size": [
+      512,
+      512
+    ],
+    "order": [
+      "ready",
+      "windup",
+      "commit",
+      "contact",
+      "follow-through",
+      "recovery"
+    ]
+  },
+  "source_review": {
+    "direction": "All six show upper-left/back; no source facing flip observed.",
+    "handedness": "Left/screen-left arm strikes throughout; bronze shoulder guard remains physical right/screen-right.",
+    "motion": "Distinct guard, raised windup, extension, deeper contact, recoil and recovery. Windup is a raised coil rather than a strong backward draw.",
+    "identity_caveat": "Source head and shoulders look broader than accepted idle; judge native reconstruction before adoption.",
+    "alpha": "FAIL: source is RGB with a painted light transparency pattern; explicit connected cleanup is required.",
+    "registration": "FAIL: source cells have uneven horizontal placement and row baselines. Measured front-support boot sole landmarks remove packing translations at shared scale.",
+    "weapon": "Empty closed fists; equipment sockets must be measured independently on native output.",
+    "status": "Source candidate only; no final animation or game acceptance claimed."
+  },
+  "generation_calls": 1,
+  "original_generated_file": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-3cf7cd17-4770-4fbe-a905-96d41ab95d03.png",
+  "exact_prompt_sha256": "c766ae0d34995147689f4adf37cad00413847b9ce10a75e160ee75b5388b8fe7",
+  "conversion": {
+    "manifest": "../../../../tools/raster/hero-strike-nw.json",
+    "runtime_provenance": "../runtime/hero-strike-nw.provenance.json",
+    "native_review": "../../../../tools/raster/hero-strike-nw-review.json",
+    "status": "Six native candidates reconstructed by actual Pixel Respecter and inspected at1x and integer enlargement; pending root and production review."
+  }
+}

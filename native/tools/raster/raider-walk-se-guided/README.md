@@ -1,0 +1,15 @@
+# Guided SE raider walk
+
+Frozen September10,2026 after root reviewed the native1x and3x idle-cycle-idle strips and approved four distinct phases for a production trial. Runtime promotion belongs to the renderer lane; production motion and gameplay acceptance remain with root.
+
+The four phases use accepted hero0/1/2/3 SE walk geometry as explicit pose guides: left contact, left-supported passing, right contact, right-supported passing. The original raider supplies identity. A focused correction preserved the initially successful missing right-support pose while replacing its sickle-shaped axe with a compact chopping head. That corrected contact is final frame2 and remains byte-identical.
+
+This is a local adaptation of the verified Higgsfield geometry-guide prompt at https://x.com/higgsfield/status/2097514684811554911. The original is a spring turntable, not a tested human gait. Exact prompts, reference roles, source hashes and the parent research worker's original-source verification are recorded in `native/client/assets/raster/prompts/raider-walk-se-guided-provenance.json` relative to the repository. Five built-in calls were made; no selectable model or variant is claimed.
+
+`raider-walk-se-guided-candidate.json` uses the existing shared importer and actual external Pixel Respecter API. All four frames use80×96 canvases, pivot40,96, and the original idle's fixed32-color palette. Native body heights are55,56,54,55px against idle56px. Individually generated exports have different enlarged grids: the three new poses use pitch12, while the approved contact retains pitch11. The explicit reviewed group is `raider-se-guided-native-2026-09-10`. No reconstructed frame is resized or independently fitted; source crops and floor/body-axis anchors are recorded.
+
+`selected/idle-cycle-idle-1x.png` and `-3x.png` show exact native pixels. Cycle GIFs contain four chronological160ms frames; the idle-boundary GIFs hold idle400ms at both ends. Both support sides differ, the narrow passing poses differ, and the axe remains in the anatomical-right/screen-left hand. The bodies are narrower than idle, mask/head shape changes modestly, and the axe remains smaller/darker in places. Root approved these caveats for the production trial.
+
+The left contact has true source alpha. The corrected right contact and two passing sources painted opaque patterns. Owner-API border-connected cleanup and explicit underarm/hair windows are documented. A broad contact window would have removed seven brown bracer-edge pixels; two narrower windows preserve them. The passing-window source audit preserves all measured chromatic foreground pixels. Final alpha is binary0/255. Original source files remain unchanged.
+
+`raider-walk-se-guided-dependencies.json` contains exact minimal import dependencies and final hashes. `raider-walk-se-guided-staging-paths.txt` lists retained new sources, prompts, generation-chain references, conversion metadata and focused reviews. Old rejected SE candidates and `docs/loop-journal.md` were preserved. This lane made no runtime, catalog, main, shared importer, external engine or git changes.

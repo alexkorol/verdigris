@@ -1,0 +1,84 @@
+PASS monster-delta: loopback endpoint starts
+PASS monster-delta: actual remote handshake
+PASS monster-delta: received admitted
+PASS monster-delta: snapshot admits real family facts
+PASS monster-delta: received moving
+PASS monster-delta: raw endpoint immediate, display inside accepted segment
+PASS monster-delta: polling advances display without advancing authority
+PASS monster-delta: received old-delta
+PASS monster-delta: received old-snapshot
+PASS monster-delta: received equal-sequence
+PASS monster-delta: stale reconciliation cannot rewind/restart; no extrapolation
+PASS monster-delta: older snapshot and equal sequence retain authoritative SW facing
+PASS monster-delta: received wrong-scene
+PASS monster-delta: received unknown-scene
+PASS monster-delta: received unknown-actor
+PASS monster-delta: wrong/unknown room and unknown actor rejected
+PASS monster-delta: received stopped
+PASS monster-delta: zero stop facing retains prior authoritative direction
+PASS monster-delta: received death
+PASS monster-delta: death clears display interpolation
+PASS monster-delta: received retired
+PASS monster-delta: received late-room
+PASS monster-delta: scene retirement rejects late actor data
+PASS crypt-remote: actual native server starts in test capsule
+PASS crypt-remote: normal RemoteProtocolSession handshake
+PASS crypt-remote: authored crypt roster and authoritative map arrive
+PASS crypt-remote: real roster provides an unobstructed SW approach
+crypt-remote trace: monster-1-7 21.000,19.000 -> 19.487,20.009 endpoints=2 southwest=1
+PASS crypt-remote: ordinary ticks move real wight authority through deltas
+PASS crypt-remote: 15ms polls advance display between unchanged authority endpoints
+PASS crypt-remote: WorldView retains exact scaled authority and production wight resolver
+PASS crypt-remote: real pursuit reaches incoming contact without inflated life
+PASS crypt-remote: arrival display settles at authority endpoint
+PASS crypt-remote: actual SW facing survives incoming contact and stop
+PASS incoming-action: scripted loopback server bound
+PASS incoming-action: real WebSocket handshake
+PASS incoming-action: login acknowledged
+PASS incoming-action: authoritative behaviour snapshot decoded
+PASS incoming-action: native common rarity stays ordinary
+PASS incoming-action: generic melee preserves exact actor/action/damage/death order
+PASS incoming-action: known ordinary attacker keeps its body scale at contact
+PASS incoming-action: generic melee preserves authoritative health and damage
+PASS incoming-action: generic melee enters confirmed contact only for identified melee
+PASS incoming-action: explicit melee preserves exact actor/action/damage/death order
+PASS incoming-action: explicit melee preserves authoritative health and damage
+PASS incoming-action: explicit melee enters confirmed contact only for identified melee
+PASS incoming-action: sweep preserves exact actor/action/damage/death order
+PASS incoming-action: sweep preserves authoritative health and damage
+PASS incoming-action: sweep enters confirmed contact only for identified melee
+PASS incoming-action: thrust preserves exact actor/action/damage/death order
+PASS incoming-action: thrust preserves authoritative health and damage
+PASS incoming-action: thrust enters confirmed contact only for identified melee
+PASS incoming-action: generic ranged preserves exact actor/action/damage/death order
+PASS incoming-action: generic ranged preserves authoritative health and damage
+PASS incoming-action: generic ranged enters confirmed contact only for identified melee
+PASS incoming-action: ranged skill preserves exact actor/action/damage/death order
+PASS incoming-action: ranged skill preserves authoritative health and damage
+PASS incoming-action: ranged skill enters confirmed contact only for identified melee
+PASS incoming-action: boss ground slam preserves exact actor/action/damage/death order
+PASS incoming-action: boss ground slam preserves authoritative health and damage
+PASS incoming-action: boss ground slam enters confirmed contact only for identified melee
+PASS incoming-action: unknown behaviour preserves exact actor/action/damage/death order
+PASS incoming-action: unknown behaviour preserves authoritative health and damage
+PASS incoming-action: unknown behaviour enters confirmed contact only for identified melee
+PASS incoming-action: unknown skill preserves exact actor/action/damage/death order
+PASS incoming-action: unknown skill preserves authoritative health and damage
+PASS incoming-action: unknown skill enters confirmed contact only for identified melee
+PASS incoming-action: missing skill preserves exact actor/action/damage/death order
+PASS incoming-action: missing skill preserves authoritative health and damage
+PASS incoming-action: missing skill enters confirmed contact only for identified melee
+PASS incoming-action: non-string skill preserves exact actor/action/damage/death order
+PASS incoming-action: non-string skill preserves authoritative health and damage
+PASS incoming-action: non-string skill enters confirmed contact only for identified melee
+PASS incoming-action: missing attacker preserves exact actor/action/damage/death order
+PASS incoming-action: missing attacker preserves authoritative health and damage
+PASS incoming-action: missing attacker enters confirmed contact only for identified melee
+PASS incoming-action: empty attacker preserves exact actor/action/damage/death order
+PASS incoming-action: empty attacker preserves authoritative health and damage
+PASS incoming-action: empty attacker enters confirmed contact only for identified melee
+PASS incoming-action: player attacker preserves exact actor/action/damage/death order
+PASS incoming-action: player attacker preserves authoritative health and damage
+PASS incoming-action: player attacker enters confirmed contact only for identified melee
+PASS incoming-action: lethal melee preserves exact actor/action/damage/death order
+PASS incoming-action: lethal melee preserves authoritative health and damage

@@ -1,0 +1,394 @@
+[
+  {
+    "source": ".ci-artifacts/ground-hud-final-build-tests.log",
+    "retained": "native-suites.log",
+    "sha256": "628ebedb1c4221d70dd918d1b62239b711aa3b2c3b35243c5267defee67243e2",
+    "source_sha256": "2522ffc255070a0cf154965b18a2d4a4607e9a635826038f1c5688789153b0b4",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-final-scenarios.log",
+    "retained": "initial-native-65-of-66.log",
+    "sha256": "770350fd9ec654fbafc78543eb732324de72b66eabea353fdb9e3f4724095728",
+    "source_sha256": "f4fdfc1ca10d01b3284dcb97a2354e80db4168bcd0dd65e642fbf35964a266b7",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-browser-playtest.log",
+    "retained": "browser-32-of-32.log",
+    "sha256": "1b274edde79eabcdad867d545bf318c6459167ccdd281940e8d5137903eb879b",
+    "source_sha256": "212b700194f33c31d3fd8c6d51f623128781ebcec8a516e464e8469760e69f4d",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-importer-tests.log",
+    "retained": "importer-7-of-7.log",
+    "sha256": "21fcebdcb3ea424e25e5390fde8a39800c910c7c1e0c34df12c4181b55ee2bf5",
+    "source_sha256": "61734facf4b388280bb952c4274cac5b41f04829311f6c82a3c966c9acf01ec0",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-motion-raider-motion.log",
+    "retained": "rejected-ai-fixture.log",
+    "sha256": "3521446618d7d4ce3da432f5dfd347ac77fa88c991da19352e9ec4d11b0863d1",
+    "source_sha256": "6e7999618acbdfbb2e531e60edbc4355b1d13c8ae801dc9c4e99e873561bbfbc",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-motion/raider-motion-sw.csv",
+    "retained": "rejected-ai-fixture.csv",
+    "sha256": "c78bd7f4913cb1a4c146105ca3315dda3c8388542fa5508d34c5511344d01d3c",
+    "source_sha256": "4b4ad731ac9f6b67a4dbcb15033dffca083802340eebb47b68385275eb6b1748",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-motion-hud-chrome.log",
+    "retained": "initial-hud-label-failures.log",
+    "sha256": "d8ad5633360090c211e7fa37851c244bf9c088c88ea80c3b1c373050b4101bd4",
+    "source_sha256": "50b066c59d74a6389e4cd3d211afb9bb8c4145c3e56d3eeabaf80b003e8a4d1b",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-profile-frame-budget.log",
+    "retained": "initial-moving-profile.log",
+    "sha256": "a64a4f96eef43afac6b64d83cb46766cd0f491d09ec029021ac484d93d254640",
+    "source_sha256": "ff833802d7c3cd362e0da677bb4cf88a2390c4fa369d24694d8bb8b5d692d65e",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/ground-raster/result.log",
+    "retained": "ground-probe.log",
+    "sha256": "419aaa7a1b088b6f81b2dee8242d71edaf2ced755902e3638bb0dd6ab5f8fd37",
+    "source_sha256": "4b8ec3ec02be8b529787ca314b1cfca6dab51e5b33934c990787e66f5b9eda45",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/ground-raster/optimized-before-horizontal.log",
+    "retained": "ground-earlier-optimized.log",
+    "sha256": "0eb60f3f8ca919e283bd6d258b8f0a0798c2513a2a5198ce2524612defa5383c",
+    "source_sha256": "8d09c7a40118757c1aa47080c024bd5fa7f0e256a1f8f5ccd1ff4b38be78b9f7",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/ground-raster/optimized-before-horizontal.flags.txt",
+    "retained": "ground-earlier-optimized-flags.txt",
+    "sha256": "46ddddc9d3b838b216f16f2e5c83b0de221549fdc6a1f493daae9fb46a3eaca5",
+    "source_sha256": "4c70174978f855fc2a25fdf9c06a2474da1df711de981f5e822ca6cec69709d7",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/ground-raster/horizontal-pixel-comparison.json",
+    "retained": "ground-pixel-equality.json",
+    "sha256": "d417abc23dc06ac9663ff8e96208a5c16b461a0471a22690824443ad2202dec7",
+    "source_sha256": "c9b564da11b72db7ab446b1826ce39ca71c7df169a2faf9b7f81bf59f7a0d3ca",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/ground-raster/logical-road-preview-1x.png",
+    "retained": "ground-layout-1x.png",
+    "sha256": "3435414ad21d3ad4b90e29f5f951f896c991db2a586e37aaf06105a16c6dd70e",
+    "source_sha256": "3435414ad21d3ad4b90e29f5f951f896c991db2a586e37aaf06105a16c6dd70e",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/terrain-quiet-v1/terrain-quiet-v1-comparison-repeat-2x.png",
+    "retained": "terrain-repeat-comparison.png",
+    "sha256": "fe87b96e7795482cd73b985c7f06cc5dc6ab77852e509a308d839c036913080e",
+    "source_sha256": "fe87b96e7795482cd73b985c7f06cc5dc6ab77852e509a308d839c036913080e",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/terrain-quiet-v1/terrain-quiet-v1-review.json",
+    "retained": "terrain-review.json",
+    "sha256": "21cf1dbf1a7651e3fd0036632b02836de78dee1103f02275ec6d588b7c4bb9ce",
+    "source_sha256": "b46e771d35d58918bb06a54c83d0f7232524126aab203e697cf3b3d879950827",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/terrain-quiet-v1/terrain-quiet-v1-seams.json",
+    "retained": "terrain-seams.json",
+    "sha256": "0e1e4623bd0c1a0f94624d9f4b96b482fc175bc6b5411dae196af010f7837b71",
+    "source_sha256": "173a4fc0876662d238180f31e0ade7b42facc8107a8b6ee48898e5b20e8b805b",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/hud-chrome/result.log",
+    "retained": "hud-probe.log",
+    "sha256": "f1d50b86a934aafac6831cc85ad044b9f8da18be56495bd1b3798c311d21715c",
+    "source_sha256": "b2381b164dcf68635319074a77253786907237a95354b320ee07bb3943f50261",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/hud-chrome/responsive-probe.log",
+    "retained": "hud-layout-60-cases.log",
+    "sha256": "de9588d8f7e955a2c3cd2c6ec73b3a742d7c6255b0233bccacdf6a505e43dab6",
+    "source_sha256": "e32726aac94393ed83e84d885a33cefc69c2db489625ba7bb092308ad7b3a1c3",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/raster-equipment/nw-registration-correction/equipment-probe.log",
+    "retained": "nw-equipment-probe.log",
+    "sha256": "b3e03472878876908fd43207df3b8805dc97b9864c9ce8d051d842894e0557ed",
+    "source_sha256": "8d208ef2ca998cedf1345c1958fb13b75c6acd64b0316e3b59a663a41162683c",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/raster-equipment/nw-registration-correction/equipment-review.json",
+    "retained": "nw-equipment-review.json",
+    "sha256": "b88a2c3faa42a0fbb3253871256cef11f2bc9393bf2d5e846a6b666642bfdaab",
+    "source_sha256": "e83d2cc6fd68b4c2935bcbefdcb49c0a0b6fc8483b9881e7ca181c4ecab4ba44",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/raster-equipment/nw-registration-correction/pixel-translation-verification.json",
+    "retained": "nw-exact-translation.json",
+    "sha256": "678fcf6e665dcea69b11f367d6893936be67436b864a676a685f633d6eaa9e5a",
+    "source_sha256": "b4cae7bf811b2e52016fc12f3d23da081197a435de589e7aa4304e831bd1af4c",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/raster-equipment/nw-registration-correction/corrected-anatomy-4x.png",
+    "retained": "nw-equipment-4x.png",
+    "sha256": "724676ccc5d8217dca948709e94fe6e74d57ae90b0add68210a98595fb2c7019",
+    "source_sha256": "724676ccc5d8217dca948709e94fe6e74d57ae90b0add68210a98595fb2c7019",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-equipment/ne-contact-v6/axe-contact-review-1x.png",
+    "retained": "ne-contact-equipment-1x.png",
+    "sha256": "5acbca8ed624af8c240a759c6d49c1974c34720feef94ef0775bbc36c8a9e44c",
+    "source_sha256": "5acbca8ed624af8c240a759c6d49c1974c34720feef94ef0775bbc36c8a9e44c",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-equipment/ne-contact-v6/axe-contact-review-3x.png",
+    "retained": "ne-contact-equipment-3x.png",
+    "sha256": "a36359fe5d6f7161521df3b0baa21e8a0d6cc4b4dd9b4342ca49716ecba76d45",
+    "source_sha256": "a36359fe5d6f7161521df3b0baa21e8a0d6cc4b4dd9b4342ca49716ecba76d45",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/raster-equipment/ne-contact-v6/equipment-review.json",
+    "retained": "ne-contact-review.json",
+    "sha256": "0d83619a0f07ff5e4a0749a4975d1869ae8bb80560dcf44c14f2a94b66f5c966",
+    "source_sha256": "0b4f3779cfee5a5111c935657b74b83684ed99e0e228dbfa74a1427dec465ca6",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": "native/client/assets/raster/source/actors_hero-strike-ne-followthrough-v2-comparison-4x.png",
+    "retained": "ne-rejected-followthrough-4x.png",
+    "sha256": "d3a306036a4306ef428988bd2d1087ba83c763d9b63378deadfb47dbc5dd96ea",
+    "source_sha256": "d3a306036a4306ef428988bd2d1087ba83c763d9b63378deadfb47dbc5dd96ea",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified-build-scenarios.log",
+    "retained": "native-final-66-of-66.log",
+    "sha256": "29f36974cfb4d74243d61f58da266febfc28234ea4822fe36a283d5964c2a8b6",
+    "source_sha256": "702395c51ab4f17e8540cb47538d96e0d2ec6833287865f5805c403090f5de77",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified-live.log",
+    "retained": "live-session.log",
+    "sha256": "cfe457fefecb1133d848d64da8b754e3449cacaf9efdd53f8f073b80ca0f4b3c",
+    "source_sha256": "aca8c2e5b3c29e4c09836bc593ed68ac3f5be9e8496993e7e8ff72b738ca3ada",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/live-3440x1440.png",
+    "retained": "live-3440x1440.png",
+    "sha256": "cd64fcf162e47a0a8d271999466b9a36865407d5d4ff7bdfdf38e81560e44339",
+    "source_sha256": "cd64fcf162e47a0a8d271999466b9a36865407d5d4ff7bdfdf38e81560e44339",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/frame-budget-report.txt",
+    "retained": "frame-budget-report.txt",
+    "sha256": "52bf97d78d50552f67caa7e87243690a49ef1adaba8754df3c0240127ef47ccb",
+    "source_sha256": "52bf97d78d50552f67caa7e87243690a49ef1adaba8754df3c0240127ef47ccb",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/hud-chrome-3440x1440-unmuted.png",
+    "retained": "hud-3440x1440.png",
+    "sha256": "51652aa2bbc6007406fbeb6af3b63dc165cf38dd87ca964cafbdc91dd1cdf4b8",
+    "source_sha256": "51652aa2bbc6007406fbeb6af3b63dc165cf38dd87ca964cafbdc91dd1cdf4b8",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/hud-chrome-1366x768-unmuted.png",
+    "retained": "hud-1366x768.png",
+    "sha256": "b68f7dc0304e85181a386b36d9748ce4e95a3dc5b6caf0b953a02a5c86d092c4",
+    "source_sha256": "b68f7dc0304e85181a386b36d9748ce4e95a3dc5b6caf0b953a02a5c86d092c4",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/hud-chrome-960x600-muted.png",
+    "retained": "hud-muted-960x600.png",
+    "sha256": "4fc5f8440d83cf14bd1ae58b06b5609c93adf74a6990b478df08ef94d1aaf0bc",
+    "source_sha256": "4fc5f8440d83cf14bd1ae58b06b5609c93adf74a6990b478df08ef94d1aaf0bc",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/hud-pane-readability-dual-muted-960x600.png",
+    "retained": "hud-dual-muted-960x600.png",
+    "sha256": "d243125e982f7f8c581c3c1177ed1910f3e857d13c3b8eeaadd88f010006264e",
+    "source_sha256": "d243125e982f7f8c581c3c1177ed1910f3e857d13c3b8eeaadd88f010006264e",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/hud-pane-readability-dual-unmuted-960x600.png",
+    "retained": "hud-dual-unmuted-960x600.png",
+    "sha256": "6166c8afb1f71665cc275ff5350dec89edb619e782483fcb439284c3b67b270d",
+    "source_sha256": "6166c8afb1f71665cc275ff5350dec89edb619e782483fcb439284c3b67b270d",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/hud-chrome-bounds.csv",
+    "retained": "hud-chrome-bounds.csv",
+    "sha256": "58b0e4f4a471cca6a7bb9a9126f2f2a04bcda7496fd0c291eb49a43c4276f47e",
+    "source_sha256": "58b0e4f4a471cca6a7bb9a9126f2f2a04bcda7496fd0c291eb49a43c4276f47e",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/raster-motion-nw-019.png",
+    "retained": "hero-nw-production-019.png",
+    "sha256": "00e89ab1d8541cc71b62edc9bef838370d6bcd2bac932d8623b4f47b2d6d8c1c",
+    "source_sha256": "00e89ab1d8541cc71b62edc9bef838370d6bcd2bac932d8623b4f47b2d6d8c1c",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/raider-scripted-motion-sw.csv",
+    "retained": "raider-scripted-motion-sw.csv",
+    "sha256": "8dabf6bf07312e21b4313ed6925dbb7a39f3817ad60469f965b8be62e2cd8007",
+    "source_sha256": "c698ece546641a06c7dd41fe17de2a75b5fa32dc09e2048a6bdb83eab1ebb92b",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/raster-motion-se.csv",
+    "retained": "hero-motion-se.csv",
+    "sha256": "3ce07ab7a3fc0da7bee7523e7a112c31ca76fc2f9be613f674ed89a109aa7140",
+    "source_sha256": "d8d84a907d42f931f044a8cd76fcffa89a8f101139246bec407fe77110b95ad5",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/raster-motion-sw.csv",
+    "retained": "hero-motion-sw.csv",
+    "sha256": "db5ef9651f69bb2c23776f04d475d0765245fd80b6c7ef41c6ef6287e755aaa7",
+    "source_sha256": "03c44baf71bb1b711c3fc262961f2a5989f57ee094c0eff23713970b176f4c1a",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/raster-motion-nw.csv",
+    "retained": "hero-motion-nw.csv",
+    "sha256": "17a353295f0c0be4bc6d586a1c66fd92add594cdee6621f014ffe71ff430f501",
+    "source_sha256": "2006dc401ed35f445f86baa8c1add47df7df7031f54cab14600b4d81aee29054",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/raster-motion-ne.csv",
+    "retained": "hero-motion-ne.csv",
+    "sha256": "ef6717975e28bac6e6cbdbd7bec5a1b15846bbc3411c53fbf41086cb7cef41e1",
+    "source_sha256": "09baf714aebdd47cbef0cb2ed05aabedd262226ca83dd9cc11024fd56866a48c",
+    "hash_policy": "sha256: retained UTF-8 LF bytes; source_sha256: original captured bytes before text normalization"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/raider-scripted-motion-sw-000.png",
+    "retained": "raider-phase-0.png",
+    "sha256": "37b7186a3e220f6d1c7bba538e3d3b19f58e7f65de07d2ec72444b7cedf2397b",
+    "source_sha256": "37b7186a3e220f6d1c7bba538e3d3b19f58e7f65de07d2ec72444b7cedf2397b",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/raider-scripted-motion-sw-008.png",
+    "retained": "raider-phase-1.png",
+    "sha256": "f21ff3c2fd5dbf498c3c46652f2dd37b6481bcc3407972c9d9e929cccecab9c1",
+    "source_sha256": "f21ff3c2fd5dbf498c3c46652f2dd37b6481bcc3407972c9d9e929cccecab9c1",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/raider-scripted-motion-sw-001.png",
+    "retained": "raider-phase-2.png",
+    "sha256": "9af3a5538c626a1623a7e524fee855ac8de00cd23793c3f08bbd715ccb54d4f5",
+    "source_sha256": "9af3a5538c626a1623a7e524fee855ac8de00cd23793c3f08bbd715ccb54d4f5",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/raider-scripted-motion-sw-010.png",
+    "retained": "raider-phase-3.png",
+    "sha256": "86bd64c39159f8c27db98f9ae6c14b58d203ed7deada3374865909d51d166604",
+    "source_sha256": "86bd64c39159f8c27db98f9ae6c14b58d203ed7deada3374865909d51d166604",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/raider-scripted-motion-sw-003.png",
+    "retained": "raider-phase-4.png",
+    "sha256": "1686457453ecb00b192b4bcd18f2b781a0202d44728bfd1821d9183670c4349e",
+    "source_sha256": "1686457453ecb00b192b4bcd18f2b781a0202d44728bfd1821d9183670c4349e",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/raider-scripted-motion-sw-012.png",
+    "retained": "raider-phase-5.png",
+    "sha256": "3c301a73a310877c31ff331244cdb89fe0d1f7985eff5d6ee3698443b8033374",
+    "source_sha256": "3c301a73a310877c31ff331244cdb89fe0d1f7985eff5d6ee3698443b8033374",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/raider-scripted-motion-sw-005.png",
+    "retained": "raider-phase-6.png",
+    "sha256": "4e9bc74401d1051e6e18de99ee33637219e71d1d79619bba69ceb08d6467a745",
+    "source_sha256": "4e9bc74401d1051e6e18de99ee33637219e71d1d79619bba69ceb08d6467a745",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/raider-scripted-motion-sw-006.png",
+    "retained": "raider-phase-7.png",
+    "sha256": "6f3fe6c1ae8725e29c2f8d7b874ff5ed9b0560f1fc8b77f34bfa8e6a57823906",
+    "source_sha256": "6f3fe6c1ae8725e29c2f8d7b874ff5ed9b0560f1fc8b77f34bfa8e6a57823906",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/raster-motion-se-%03d.png",
+    "retained": "hero-motion-se.mp4",
+    "sha256": "665a8073059e95db0dddfd811f147b877e7c3b2039f42ec48a59d9c8b98f2832",
+    "encoding": "40 captured frames at 50/3 fps; H264 CRF18 yuv420p; no interpolation; PNGs are color authority",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/raster-motion-sw-%03d.png",
+    "retained": "hero-motion-sw.mp4",
+    "sha256": "f8b5a3af1fa62c38ac5164128d5a48b0447b5eb433667a2b1d17f573366e5f37",
+    "encoding": "40 captured frames at 50/3 fps; H264 CRF18 yuv420p; no interpolation; PNGs are color authority",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/raster-motion-nw-%03d.png",
+    "retained": "hero-motion-nw.mp4",
+    "sha256": "57b0aca2556f80e7ef2776452f930c4a6a6865502885bbb866a686b8c9fea73b",
+    "encoding": "40 captured frames at 50/3 fps; H264 CRF18 yuv420p; no interpolation; PNGs are color authority",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/raster-motion-ne-%03d.png",
+    "retained": "hero-motion-ne.mp4",
+    "sha256": "1b4cceb099c65d5d30d44ae68485445a72073596a21ed56071bc8f8715aa0ecf",
+    "encoding": "40 captured frames at 50/3 fps; H264 CRF18 yuv420p; no interpolation; PNGs are color authority",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/raider-scripted-motion-sw-%03d.png",
+    "retained": "raider-scripted-motion-sw.mp4",
+    "sha256": "d04c2fe1aed4f899e5959c84d6add1debf8b3393aa070a65e2e05005b51c8bfe",
+    "encoding": "32 captured frames at 40/3 fps; scripted asset review, not AI pursuit; H264 CRF18 yuv420p; no interpolation",
+    "hash_policy": "sha256: exact retained binary bytes"
+  },
+  {
+    "source": ".ci-artifacts/ground-hud-verified/raider-scripted-motion-sw-019.png",
+    "retained": "raider-production-019.png",
+    "sha256": "5e7dfe3b8e42517d2ad4b94db4f2a2ac31a99e465e5caa0f04baa4d4e98ec743",
+    "source_sha256": "5e7dfe3b8e42517d2ad4b94db4f2a2ac31a99e465e5caa0f04baa4d4e98ec743",
+    "hash_policy": "sha256: exact retained binary bytes"
+  }
+]

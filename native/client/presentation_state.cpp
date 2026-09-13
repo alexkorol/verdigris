@@ -1,15 +1,103 @@
 #include "presentation_state.hpp"
+#include "publish-telegraph-timing-and-geometry.hpp"
+#include "ingest-ranged-projectile-warning.hpp"
 
 #include <algorithm>
 #include <cmath>
 
 namespace verdigris::client {
 
+namespace {
+
+void clear_actor_falls(PresentationFx& fx) {
+  fx.effects.erase(std::remove_if(fx.effects.begin(), fx.effects.end(),
+      [](const EffectFx& effect) { return effect.kind == EffectFx::Kind::ActorFall; }),
+      fx.effects.end());
+}
+
+void bound_effects(std::vector<EffectFx>& effects) {
+  auto falls = std::count_if(effects.begin(), effects.end(), [](const EffectFx& effect) {
+    return effect.kind == EffectFx::Kind::ActorFall;
+  });
+  while (falls > static_cast<int>(kMaxActorFalls)) {
+    effects.erase(std::find_if(effects.begin(), effects.end(), [](const EffectFx& effect) {
+      return effect.kind == EffectFx::Kind::ActorFall;
+    }));
+    --falls;
+  }
+  // Preserve retained bodies during bursts of short-lived hit feedback.
+  while (effects.size() > kMaxPresentationEffects) {
+    effects.erase(std::find_if(effects.begin(), effects.end(), [](const EffectFx& effect) {
+      return effect.kind != EffectFx::Kind::ActorFall;
+    }));
+  }
+}
+
+}  // namespace
+
+const char* monster_art_family(const WorldActor& monster, const WorldView& world) {
+  return monster.behaviour == "ranged" ? "archer"
+      : world.theme == "crypt" ? "wight"
+      : world.theme == "wilds" || world.theme == "marsh" ? "beast"
+      : "raider";
+}
+
+double actor_fall_phase(const EffectFx& fall, double fractional_tick) {
+  return std::clamp((fall.age + fractional_tick) / kActorFallMotionTicks, 0.0, 1.0);
+}
+
+double actor_fall_opacity(const EffectFx& fall, double fractional_tick) {
+  return std::clamp((fall.ttl - fall.age - fractional_tick) / kActorFallFadeTicks, 0.0, 1.0);
+}
+
+bool present_actor_death(std::vector<EffectFx>& effects, const WorldView& world,
+                         const WorldActor& monster) {
+  if (monster.id.empty() || monster.id == world.player.id) return false;
+  effects.erase(std::remove_if(effects.begin(), effects.end(), [&](const EffectFx& effect) {
+    return effect.actor_id == monster.id &&
+        (effect.kind == EffectFx::Kind::Swing || effect.kind == EffectFx::Kind::SweepArc ||
+         effect.kind == EffectFx::Kind::TargetFlash || effect.kind == EffectFx::Kind::Materialize);
+  }), effects.end());
+  if (std::any_of(effects.begin(), effects.end(), [&](const EffectFx& effect) {
+        return effect.kind == EffectFx::Kind::ActorFall && effect.actor_id == monster.id;
+      })) return false;
+  double dx = static_cast<double>(world.player.position.x) - monster.position.x;
+  double dy = static_cast<double>(world.player.position.y) - monster.position.y;
+  if (dx == 0.0 && dy == 0.0) {
+    dx = monster.facing.x;
+    dy = monster.facing.y;
+  }
+  EffectFx fall;
+  fall.kind = EffectFx::Kind::ActorFall;
+  fall.wx = monster.position.x;
+  fall.wy = monster.position.y;
+  fall.angle = std::atan2(dy, dx);
+  fall.ttl = kActorFallTtlTicks;
+  fall.actor_id = monster.id;
+  fall.actor_family = monster_art_family(monster, world);
+  fall.actor_elite = monster.elite;
+  effects.push_back(std::move(fall));
+  bound_effects(effects);
+  return true;
+}
+
+void sync_presentation_scene(PresentationFx& fx, const WorldView& world) {
+  if (fx.actor_fall_scene_known && fx.actor_fall_route_id != world.route_id)
+    clear_actor_falls(fx);
+  fx.actor_fall_route_id = world.route_id;
+  fx.actor_fall_scene_known = true;
+}
+
 verdigris::Vec2 facing_vector(const std::string& facing) {
-  if (facing == "left" || facing == "west") return {-1, 0};
-  if (facing == "right" || facing == "east") return {1, 0};
-  if (facing == "up" || facing == "north") return {0, -1};
-  return {0, 1};
+  // Compound eight-way names ("up-left", ...) resolve component-wise so the
+  // rendered facing matches the diagonal the wire actually carried.
+  verdigris::Vec2 result{0, 0};
+  if (facing.find("left") != std::string::npos || facing == "west") result.x = -1;
+  else if (facing.find("right") != std::string::npos || facing == "east") result.x = 1;
+  if (facing.find("up") != std::string::npos || facing == "north") result.y = -1;
+  else if (facing.find("down") != std::string::npos || facing == "south") result.y = 1;
+  if (result.x == 0 && result.y == 0) result.y = 1;
+  return result;
 }
 
 double protocol_to_world(double protocol_units) {
@@ -24,7 +112,8 @@ const char* extraction_action_hint(bool remote_session) {
   return remote_session ? "walk onto it" : "press F there";
 }
 
-void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& sim) {
+void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& sim,
+                                long long combat_xp) {
   world = WorldView{};
   world.house_name = sim.house().name;
   world.scion_name = sim.scion().name;
@@ -56,6 +145,31 @@ void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& s
     world.player.cooldown_ticks = player->cooldown_ticks;
     world.player.war_cry_ticks_remaining = player->war_cry_ticks_remaining;
     world.player.alive = player->alive;
+  }
+  {
+    const int level = std::max(1, world.player.level);
+    long long floor_xp = 0;
+    for (int x = 1; x < level; ++x)
+      floor_xp += static_cast<long long>(
+          std::floor(x + 265.0 * std::pow(2.0, x / 7.0)));
+    floor_xp /= 4;
+    long long next_xp = 0;
+    for (int x = 1; x < level + 1; ++x)
+      next_xp += static_cast<long long>(
+          std::floor(x + 265.0 * std::pow(2.0, x / 7.0)));
+    next_xp /= 4;
+    // Local core stores level, not intra-level combat XP. The HUD adapter
+    // tracks kill XP with the same RS curve as the snapshot `state.xp` block
+    // so a live local window is not an empty black strip.
+    const double floor_d = static_cast<double>(floor_xp);
+    const double next_d = static_cast<double>(next_xp);
+    world.xp_present = next_d > floor_d;
+    world.xp_fraction =
+        world.xp_present
+            ? std::clamp((static_cast<double>(combat_xp) - floor_d) /
+                             (next_d - floor_d),
+                         0.0, 1.0)
+            : 0.0;
   }
   for (const auto& actor : sim.actors()) {
     if (actor.kind != verdigris::ActorKind::Monster || !actor.alive) continue;
@@ -142,27 +256,74 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     monster.id = source.id;
     monster.position = {static_cast<int>(std::lround(protocol_to_world(source.x))),
                         static_cast<int>(std::lround(protocol_to_world(source.y)))};
-    // TASK-0122 Phase A: the wire snapshot carries no monster facing field,
-    // so the proved client-only fabrication (inverting the player's facing)
-    // is removed. Monsters keep the neutral default until the wire ships an
-    // authoritative facing; the presentation never invents one from the
-    // player's aim.
+    monster.has_display_position = source.has_display_position &&
+        std::isfinite(source.display_x) && std::isfinite(source.display_y);
+    if (monster.has_display_position)
+      monster.display_position = {
+          static_cast<int>(std::lround(protocol_to_world(source.display_x))),
+          static_cast<int>(std::lround(protocol_to_world(source.display_y)))};
+    // Native movement metadata supplies facing through contact and stop.
+    // Older snapshots retain the neutral default, independent of player aim.
+    if (source.has_facing && std::abs(source.facing_x) <= 1 &&
+        std::abs(source.facing_y) <= 1 && (source.facing_x || source.facing_y))
+      monster.facing = {source.facing_x, source.facing_y};
+    monster.name = source.name;
+    monster.kind = source.kind;
+    monster.behaviour = source.behaviour;
     monster.life = source.life;
     monster.life_max = source.life_max;
     monster.alive = source.alive;
     monster.elite = source.elite;
     world.monsters.push_back(std::move(monster));
   }
+  world.theme = model.theme;
+  {
+    const double span = model.xp_next - model.xp_floor;
+    world.xp_present = span > 0.0;
+    world.xp_fraction =
+        span > 0.0
+            ? std::clamp((model.xp_current - model.xp_floor) / span, 0.0, 1.0)
+            : 0.0;
+  }
+  world.map_width = model.map_width;
+  world.map_height = model.map_height;
+  world.map_walkable = model.map_walkable;
+  world.npcs.clear();
+  for (const auto& source : model.npcs) {
+    WorldNpc npc;
+    npc.id = source.id;
+    npc.name = source.name;
+    npc.position = {static_cast<int>(std::lround(protocol_to_world(source.x))),
+                    static_cast<int>(std::lround(protocol_to_world(source.y)))};
+    npc.actions = source.actions;
+    world.npcs.push_back(std::move(npc));
+  }
   world.carried.clear();
   for (const auto& item : model.inventory) {
     const std::string label = item.name.empty() ? item.id : item.name;
-    world.carried.push_back({item.uuid, label, item.attack_rating, false});
+    world.carried.push_back({item.uuid, label, item.attack_rating, false,
+                             item.width, item.height, item.quantity,
+                             item.equip_slot, item.two_handed});
   }
-  if (!model.equipped.uuid.empty()) {
+  // Worn equipment is authoritative and lives outside the backpack. Keep it
+  // in the same presentation collection so the gear pane can render the
+  // real paper-doll seats without duplicating or losing a carried item.
+  if (!model.worn.empty()) {
+    for (const auto& worn : model.worn) {
+      const auto& item = worn.item;
+      const std::string label = item.name.empty() ? item.id : item.name;
+      world.carried.push_back({item.uuid, label, item.attack_rating, true,
+                               item.width, item.height, item.quantity,
+                               worn.seat, item.two_handed});
+    }
+  } else if (!model.equipped.uuid.empty()) {
     const std::string label =
         model.equipped.name.empty() ? model.equipped.id : model.equipped.name;
-    world.carried.push_back(
-        {model.equipped.uuid, label, model.equipped.attack_rating, true});
+    world.carried.push_back({model.equipped.uuid, label,
+                             model.equipped.attack_rating, true,
+                             model.equipped.width, model.equipped.height,
+                             model.equipped.quantity, "right_hand",
+                             model.equipped.two_handed});
   }
   world.loot_names.clear();
   for (const auto& item : model.ground)
@@ -180,7 +341,8 @@ const WorldActor* find_monster(const WorldView& world, const std::string& id) {
 }
 
 verdigris::Vec2 event_anchor(const WorldView& world, const PresentationFx& fx,
-                             const PresentationEvent& event, bool prefer_player) {
+                           const PresentationEvent& event, bool prefer_player) {
+  if (event.has_actor_pose) return {event.actor_x, event.actor_y};
   if (prefer_player) return world.player.position;
   if (const auto* monster = find_monster(world, event.actor_id)) return monster->position;
   if (fx.last_death_pos.x != 0 || fx.last_death_pos.y != 0) return fx.last_death_pos;
@@ -190,18 +352,80 @@ verdigris::Vec2 event_anchor(const WorldView& world, const PresentationFx& fx,
   return at;
 }
 
+const EffectFx* actor_strike(const std::vector<EffectFx>& effects,
+                             const std::string& actor_id) {
+  if (actor_id.empty()) return nullptr;
+  for (const auto& effect : effects)
+    if (effect.actor_id == actor_id && effect.age < effect.ttl &&
+        (effect.kind == EffectFx::Kind::Swing || effect.kind == EffectFx::Kind::SweepArc))
+      return &effect;
+  return nullptr;
+}
+
+double strike_phase(const EffectFx& strike, double fractional_tick) {
+  return std::clamp((strike.age + fractional_tick) / std::max(1, strike.ttl), 0.0, 1.0);
+}
+
+void present_strike(std::vector<EffectFx>& effects, const std::string& actor_id,
+                    verdigris::Vec2 position, double angle, bool sweep,
+                    bool speculative) {
+  if (actor_id.empty()) return;
+  // Repeated input cannot reset a live preparation or confirmed recovery.
+  if (speculative && actor_strike(effects, actor_id)) return;
+  effects.erase(std::remove_if(effects.begin(), effects.end(), [&](const EffectFx& effect) {
+    return effect.actor_id == actor_id &&
+           (effect.kind == EffectFx::Kind::Swing || effect.kind == EffectFx::Kind::SweepArc);
+  }), effects.end());
+  EffectFx strike;
+  strike.kind = sweep ? EffectFx::Kind::SweepArc : EffectFx::Kind::Swing;
+  strike.wx = position.x;
+  strike.wy = position.y;
+  strike.angle = angle;
+  strike.ttl = sweep ? 8 : 6;
+  strike.age = speculative ? 0 : strike.ttl / 2;
+  strike.actor_id = actor_id;
+  strike.speculative = speculative;
+  effects.push_back(std::move(strike));
+  bound_effects(effects);
+}
+
 void apply_presentation_event(PresentationFx& fx, const WorldView& world,
                               const PresentationEvent& event, std::uint64_t now_tick) {
-  const bool to_player = event.text == "incoming" || event.type == PresentationEventType::ScionDied;
+  sync_presentation_scene(fx, world);
+  const bool to_player = event.text == "incoming" || event.type == PresentationEventType::ScionDied ||
+      (event.type == PresentationEventType::DamageApplied && event.actor_id == world.player.id);
   const verdigris::Vec2 at = event_anchor(world, fx, event, to_player);
   const double ex = static_cast<double>(at.x);
   const double ey = static_cast<double>(at.y);
   switch (event.type) {
-    case PresentationEventType::AttackStarted:
+    case PresentationEventType::AttackStarted: {
+      const auto warning = fx.telegraphs.find(event.actor_id);
+      const bool committed = warning != fx.telegraphs.end();
+      const Vec2 committed_facing = committed ? warning->second.facing : Vec2{};
       fx.telegraphs.erase(event.actor_id);
-      fx.effects.push_back({EffectFx::Kind::Swing, static_cast<double>(world.player.position.x),
-                            static_cast<double>(world.player.position.y), 0.0, 0, 6});
+      const WorldActor* actor = event.actor_id == world.player.id ? &world.player
+          : find_monster(world, event.actor_id);
+      if (!actor) break;
+      double dx = actor->facing.x;
+      double dy = actor->facing.y;
+      if (event.has_actor_pose) {
+        dx = event.facing_x;
+        dy = event.facing_y;
+      } else if (committed) {
+        dx = committed_facing.x;
+        dy = committed_facing.y;
+      } else if (actor != &world.player &&
+          (actor->position.x != world.player.position.x ||
+           actor->position.y != world.player.position.y)) {
+        dx = static_cast<double>(world.player.position.x) - actor->position.x;
+        dy = static_cast<double>(world.player.position.y) - actor->position.y;
+      }
+      const double swing_angle = std::atan2(dy, dx);
+      const Vec2 contact = event.has_actor_pose ? Vec2{event.actor_x, event.actor_y} : actor->position;
+      present_strike(fx.effects, event.actor_id, contact, swing_angle,
+                     event.text == "sweep", false);
       break;
+    }
     case PresentationEventType::DamageApplied: {
       fx.effects.push_back({EffectFx::Kind::Impact, ex, ey, 0.0, 0, 4});
       EffectFx flash;
@@ -212,6 +436,9 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       flash.damage_to_player = to_player;
       flash.critical = event.critical;
       flash.style = event.style;
+      // Incoming events name the attacking monster; their tint belongs to
+      // the player. Outgoing events name the resolved hit target.
+      flash.actor_id = to_player ? world.player.id : event.actor_id;
       fx.effects.push_back(flash);
       EffectFx number;
       number.kind = EffectFx::Kind::DamageNumber;
@@ -223,26 +450,65 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       number.critical = event.critical;
       number.style = event.style;
       fx.effects.push_back(number);
-      if (to_player) fx.screen_pulse_ticks = 3;
+      if (to_player) {
+        fx.screen_pulse_ticks = 3;
+        if (!event.actor_id.empty() && event.actor_id != world.player.id)
+          fx.monster_strikes[event.actor_id] = now_tick;
+      }
       break;
     }
     case PresentationEventType::Telegraph: {
+      if (projectile::is_projectile_warning(event)) {
+        projectile::apply_warning(fx, world, event, now_tick);
+        break;
+      }
       ActiveTelegraph telegraph;
       telegraph.actor_id = event.actor_id;
-      telegraph.action = event.text.find("sweep") != std::string::npos ? "sweep" : "thrust";
       telegraph.position = event_anchor(world, fx, event, false);
-      // TASK-0122 Phase A: same inversion removal as monster sync. Without an
-      // authoritative telegraph facing on the wire (radius/position wire work
-      // is deferred), the warning keeps its neutral default instead of a
-      // client-only inverted copy of the player's aim.
       telegraph.start_tick = now_tick;
-      telegraph.windup_ticks = std::max(1, event.value > 20 ? event.value / 50 : event.value);
-      fx.telegraphs[event.actor_id.empty() ? "foe" : event.actor_id] = std::move(telegraph);
+      if (event.has_actor_pose)
+        telegraph.facing = {event.facing_x, event.facing_y};
+      else if (const auto* monster = find_monster(world, event.actor_id))
+        telegraph.facing = monster->facing;
+      const auto spec = actions::spec_from_payload(
+          event.text, event.value, verdigris::Simulation::presentation_catalog());
+      actions::apply_spec(telegraph, spec);
+      fx.telegraphs[event.actor_id.empty() ? "foe" : event.actor_id] =
+          std::move(telegraph);
       break;
     }
-    case PresentationEventType::ActorDied:
-    case PresentationEventType::ScionDied:
+    case PresentationEventType::ActorDied: {
       fx.telegraphs.erase(event.actor_id);
+      fx.monster_strikes.erase(event.actor_id);
+      // The prior snapshot supplies identity/family/elite, even if its position
+      // predates the final pursuit step. Pose metadata alone cannot invent a
+      // missing monster or turn a Scion death into a raider corpse.
+      const auto* monster = find_monster(world, event.actor_id);
+      if (!monster) break;
+      WorldActor death = *monster;
+      if (event.has_actor_pose) {
+        death.position = {event.actor_x, event.actor_y};
+        death.facing = {event.facing_x, event.facing_y};
+      }
+      if (!present_actor_death(fx.effects, world, death)) break;
+      if (event.has_actor_pose && (death.facing.x != 0 || death.facing.y != 0)) {
+        for (auto& effect : fx.effects) {
+          if (effect.kind == EffectFx::Kind::ActorFall && effect.actor_id == death.id) {
+            effect.angle = std::atan2(static_cast<double>(death.facing.y),
+                                      static_cast<double>(death.facing.x));
+            break;
+          }
+        }
+      }
+      fx.last_death_pos = death.position;
+      fx.effects.push_back({EffectFx::Kind::Dust, static_cast<double>(death.position.x),
+                            static_cast<double>(death.position.y), 0.7, 0, 10});
+      break;
+    }
+    case PresentationEventType::ScionDied:
+      clear_actor_falls(fx);
+      fx.telegraphs.erase(event.actor_id);
+      fx.monster_strikes.erase(event.actor_id);
       if (event.type == PresentationEventType::ScionDied) fx.telegraphs.clear();
       fx.last_death_pos = at;
       fx.effects.push_back({EffectFx::Kind::DeathRing, ex, ey, 0.0, 0, 12});
@@ -252,6 +518,7 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       // TASK-0122 Phase A: a long, distinct loss beat anchored on the player.
       // Distinct from death rings in color, shape, and lifetime; it decorates
       // the already-resolved loss and mutates nothing authoritative.
+      clear_actor_falls(fx);
       fx.telegraphs.clear();
       fx.effects.push_back(
           {EffectFx::Kind::ScionLostBeat, static_cast<double>(world.player.position.x),
@@ -285,18 +552,41 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       else if (!fx.loot_positions.empty()) fx.loot_positions.erase(fx.loot_positions.begin());
       break;
     case PresentationEventType::ExtractionCompleted:
+      clear_actor_falls(fx);
       fx.hint = "Returned to the surface";
       fx.hint_ticks = 80;
       break;
     case PresentationEventType::ConnectionLost:
+      clear_actor_falls(fx);
+      fx.actor_fall_scene_known = false;
       fx.hint = event.text.empty() ? "CONNECTION LOST — not playing offline" : event.text;
       fx.hint_ticks = 200;
       fx.screen_pulse_ticks = 8;
       break;
     case PresentationEventType::Message:
+      if (!event.text.empty()) {
+        const bool combat_log_message =
+            event.text.rfind("You have slain ", 0) == 0 ||
+            event.text.rfind("You are now level ", 0) == 0;
+        if (combat_log_message) {
+          // Kill/level messages belong to the persistent combat lane, not the
+          // transient center toast where they can cover the XP meter.
+          fx.event_log.push_back(event.text);
+          if (fx.event_log.size() > 6) fx.event_log.erase(fx.event_log.begin());
+        } else {
+          // Story, trade, and extraction messages remain readable as a short
+          // upper-center toast.
+          fx.hint = event.text;
+          fx.hint_ticks = std::min<int>(400, 100 + static_cast<int>(event.text.size()) * 2);
+        }
+      }
+      break;
     case PresentationEventType::SessionReady:
-    case PresentationEventType::ItemEquipped:
     case PresentationEventType::ConnectionEstablished:
+      clear_actor_falls(fx);
+      fx.actor_fall_scene_known = false;
+      break;
+    case PresentationEventType::ItemEquipped:
     case PresentationEventType::ProtocolError:
       break;
   }
@@ -310,7 +600,8 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
         line = "Kill " + event.text;
         break;
       case PresentationEventType::Telegraph:
-        line = "Telegraph " + event.text;
+        line = event.text == "projectile" ? "Projectile warning " + event.actor_id
+                                          : "Telegraph " + event.text;
         break;
       case PresentationEventType::ItemDropped:
         line = "Loot";
@@ -336,6 +627,7 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       if (fx.event_log.size() > 6) fx.event_log.erase(fx.event_log.begin());
     }
   }
+  bound_effects(fx.effects);
 }
 
 void age_presentation_fx(PresentationFx& fx) {
@@ -343,12 +635,14 @@ void age_presentation_fx(PresentationFx& fx) {
   fx.effects.erase(std::remove_if(fx.effects.begin(), fx.effects.end(),
                                   [](const EffectFx& effect) { return effect.age >= effect.ttl; }),
                    fx.effects.end());
+  bound_effects(fx.effects);
   if (fx.hint_ticks > 0) --fx.hint_ticks;
   if (fx.screen_pulse_ticks > 0) --fx.screen_pulse_ticks;
 }
 
 void detect_monster_spawns(PresentationFx& fx, const WorldView& world,
                            std::uint64_t now_tick) {
+  sync_presentation_scene(fx, world);
   (void)now_tick;
   // TASK-0122 Phase A: one materialization beat per never-before-seen living
   // foe, in the deterministic snapshot order. This reads the authoritative
@@ -361,8 +655,10 @@ void detect_monster_spawns(PresentationFx& fx, const WorldView& world,
     spawn.wx = static_cast<double>(monster.position.x);
     spawn.wy = static_cast<double>(monster.position.y);
     spawn.ttl = phase_a::kMaterializeTtlTicks;
+    spawn.actor_id = monster.id;
     fx.effects.push_back(std::move(spawn));
   }
+  bound_effects(fx.effects);
 }
 
 void record_world_ops(render::List& rl, const WorldView& world, const PresentationFx& fx,
@@ -379,10 +675,16 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
     rl.push_back({render::Op::Player, static_cast<double>(base.x), static_cast<double>(base.y)});
   }
   for (const auto& monster : world.monsters) {
-    const auto base = at(monster.position.x, monster.position.y);
+    const auto& displayed = monster.displayed_position();
+    const auto base = at(displayed.x, displayed.y);
     rl.push_back({render::Op::Monster, static_cast<double>(base.x),
                   static_cast<double>(base.y), 0.0, monster.life,
                   monster.elite ? "elite" : "monster"});
+  }
+  for (const auto& npc : world.npcs) {
+    const auto base = at(npc.position.x, npc.position.y);
+    rl.push_back({render::Op::Npc, static_cast<double>(base.x),
+                  static_cast<double>(base.y), 0.0, npc.id, npc.name});
   }
   for (const auto& loot : fx.loot_positions) {
     const auto base = at(loot.second.x, loot.second.y);
@@ -390,6 +692,7 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
                   0, loot.first});
   }
   for (const auto& entry : fx.telegraphs) {
+    if (actions::telegraph_expired(world.tick, entry.second)) continue;
     const auto base = at(entry.second.position.x, entry.second.position.y);
     rl.push_back({render::Op::Telegraph, static_cast<double>(base.x),
                   static_cast<double>(base.y), 0.0, 0, entry.second.action});
@@ -419,6 +722,10 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
         rl.push_back({render::Op::Death, static_cast<double>(base.x),
                       static_cast<double>(base.y)});
         break;
+      case EffectFx::Kind::ActorFall:
+        rl.push_back({render::Op::Death, static_cast<double>(base.x),
+                      static_cast<double>(base.y), 0.0, 0, "actor-fall"});
+        break;
       case EffectFx::Kind::TargetFlash:
         rl.push_back({render::Op::TargetFlash, static_cast<double>(base.x),
                       static_cast<double>(base.y), 0.0, 0,
@@ -433,6 +740,8 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
       case EffectFx::Kind::WarCryFade:
         rl.push_back({render::Op::WarCry, static_cast<double>(base.x),
                       static_cast<double>(base.y), 0.0, 0, phase_a::kWarcryFadeLabel});
+        rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                      static_cast<double>(base.y), 0.0, 0, "vfx-weave:cancel"});
         break;
       case EffectFx::Kind::ScionLostBeat:
         rl.push_back({render::Op::ScreenPulse, 0.0, 0.0, 0.0, 0,

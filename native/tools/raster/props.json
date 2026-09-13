@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "defaults": {
+    "cell_size": 5,
+    "alpha_mode": "crisp",
+    "max_colors": 32,
+    "canvas": [
+      64,
+      96
+    ],
+    "trim": true,
+    "require_transparency": true
+  },
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "assets": [
+        {
+          "name": "tree",
+          "source_box": [
+            0,
+            0,
+            386,
+            422
+          ]
+        },
+        {
+          "name": "dead_tree",
+          "source_box": [
+            386,
+            0,
+            728,
+            422
+          ]
+        },
+        {
+          "name": "rock",
+          "source_box": [
+            728,
+            0,
+            1060,
+            422
+          ]
+        },
+        {
+          "name": "grass",
+          "source_box": [
+            1060,
+            0,
+            1448,
+            422
+          ]
+        },
+        {
+          "name": "hut",
+          "source_box": [
+            0,
+            422,
+            386,
+            760
+          ],
+          "canvas": [
+            96,
+            128
+          ]
+        },
+        {
+          "name": "storehut",
+          "source_box": [
+            386,
+            422,
+            728,
+            760
+          ],
+          "canvas": [
+            96,
+            128
+          ]
+        },
+        {
+          "name": "column",
+          "source_box": [
+            728,
+            422,
+            1060,
+            760
+          ]
+        },
+        {
+          "name": "shrine",
+          "source_box": [
+            1060,
+            422,
+            1448,
+            760
+          ]
+        },
+        {
+          "name": "chest",
+          "source_box": [
+            0,
+            760,
+            386,
+            1086
+          ]
+        },
+        {
+          "name": "brazier",
+          "source_box": [
+            386,
+            760,
+            728,
+            1086
+          ]
+        },
+        {
+          "name": "pottery",
+          "source_box": [
+            728,
+            760,
+            1060,
+            1086
+          ]
+        },
+        {
+          "name": "wall",
+          "source_box": [
+            1060,
+            760,
+            1448,
+            1086
+          ]
+        }
+      ]
+    }
+  ]
+}

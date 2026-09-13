@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-UI-001",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "90241156",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "pane-stack",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario pane-stack", "exit_code": 0}
+  ],
+  "assertions": [
+    "native HUD publishes pane-stack:2 with gear+character painted",
+    "first Escape dismisses character only",
+    "bare Escape after empty stack requests quit",
+    "skill tree paints owner title Skill tree and absence Skill tree: no data yet",
+    "absent tree hides seats and paints No seats yet",
+    "absent tree cannot paint tree-seat node ids",
+    "controls hint never enters the tree pane",
+    "identity never enters the tree pane",
+    "controls hint never enters the character pane",
+    "controls hint remains with the character sheet open",
+    "character pane never covers the minimap or life orb",
+    "character sheet close hint remains inside the slot",
+    "Stack 2 stays in the world lane between the two panes",
+    "covering First Scion or gear with Stack 2 is the anti-pattern",
+    "Stack 2 stays off WASD, the objective, and Life",
+    "live HUD names Stack 2 and Escape closes",
+    "live HUD rejects invented origin"
+  ],
+  "negative_control": {
+    "name": "helper pane_stack_depth without native paint or Escape, Geometric Passives as the owner title, an invented origin seat while the tree says no data yet, WASD painted on the tree, WASD painted on the character sheet, a clipped C or Esc closes footer, or Stack 2 covering First Scion or the gear pane",
+    "observed_result": "REJECTED as a passing journey"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/pane-stack-960x600.png",
+      "sha256": "38dc549680f4cf74f56c766425968e60286c653b1335b1179f99015a5c3e97e9",
+      "produced_by": "native/build/verdigris_client.exe --scenario pane-stack"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/tree-pane-960x600.png",
+      "sha256": "228fa265c4254c77d96312cae05f7b61eb99de3396af55fe318eb1c197acce4a",
+      "produced_by": "native/build/verdigris_client.exe --scenario pane-stack"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Client Escape stack only. Owner Demo Chronicles journeys not duplicated.",
+    "TASK-0193 geometric slice is unchanged and only paints after a payload. Open tree and character panes keep the top HUD out. Deleting WASD cannot certify the sheet. Covering the minimap or Life cannot certify. A clipped C or Esc closes footer cannot certify. Stack 2 is a review overlay in the world lane between the diptych; covering either pane cannot certify. Compact Sources on the stacked sheet uses Base/Gear. Not Owner Demo. No TASK numbers minted."
+  ]
+}

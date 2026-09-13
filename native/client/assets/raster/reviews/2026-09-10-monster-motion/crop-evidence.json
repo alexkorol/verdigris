@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "purpose": "Exact unscaled production actor crops and original screenshots. Phase montage does not claim chronological timing.",
+  "records": [
+    {
+      "retained": "native/client/assets/raster/reviews/2026-09-10-monster-motion/native-pursuit-se-walk-00.png",
+      "source": ".ci-artifacts/monster-motion-wave/captures/native-pursuit-se-walk-00.png",
+      "source_sha256": "6caf51f61ebb6016fe36f1970f1d4cc0a28aadcb95566be8be3c92ac750a2c00",
+      "crop_box": [
+        417,
+        97,
+        617,
+        272
+      ],
+      "resized": false
+    },
+    {
+      "retained": "native/client/assets/raster/reviews/2026-09-10-monster-motion/native-pursuit-se-walk-01.png",
+      "source": ".ci-artifacts/monster-motion-wave/captures/native-pursuit-se-walk-01.png",
+      "source_sha256": "c5d3543438d31217c0abc73a2af623a5281cd81bb28c6e1f426cd7f02a20c736",
+      "crop_box": [
+        427,
+        104,
+        627,
+        279
+      ],
+      "resized": false
+    },
+    {
+      "retained": "native/client/assets/raster/reviews/2026-09-10-monster-motion/native-pursuit-se-walk-02.png",
+      "source": ".ci-artifacts/monster-motion-wave/captures/native-pursuit-se-walk-02.png",
+      "source_sha256": "502e49c55a4ddb822d5800b2d07a6619b6efb77395285950d6bebef13240c1ec",
+      "crop_box": [
+        443,
+        125,
+        643,
+        300
+      ],
+      "resized": false
+    },
+    {
+      "retained": "native/client/assets/raster/reviews/2026-09-10-monster-motion/native-pursuit-se-walk-03.png",
+      "source": ".ci-artifacts/monster-motion-wave/captures/native-pursuit-se-walk-03.png",
+      "source_sha256": "77aeedb48d027b78092dd41bd1bed695c080ca864605ec3593d1bfe35bf01099",
+      "crop_box": [
+        458,
+        137,
+        658,
+        312
+      ],
+      "resized": false
+    },
+    {
+      "retained": "native/client/assets/raster/reviews/2026-09-10-monster-motion/remote-wight_walk0_sw.png",
+      "source": ".ci-artifacts/monster-motion-wave/captures/remote-wight_walk0_sw.png",
+      "source_sha256": "facda25157065895c4aa7a8ec13377b5d5cf2c2f9403a49791c764e6731e357c",
+      "crop_box": [
+        403,
+        214,
+        603,
+        389
+      ],
+      "resized": false
+    },
+    {
+      "retained": "native/client/assets/raster/reviews/2026-09-10-monster-motion/remote-wight_walk1_sw.png",
+      "source": ".ci-artifacts/monster-motion-wave/captures/remote-wight_walk1_sw.png",
+      "source_sha256": "8955d7e8e7dffec95c8bff19301939eb56e00191e05246f34c95de78e8eec127",
+      "crop_box": [
+        543,
+        167,
+        743,
+        342
+      ],
+      "resized": false
+    },
+    {
+      "retained": "native/client/assets/raster/reviews/2026-09-10-monster-motion/remote-wight_walk2_sw.png",
+      "source": ".ci-artifacts/monster-motion-wave/captures/remote-wight_walk2_sw.png",
+      "source_sha256": "23bc31db1bbb3ffdd3a19563e30e4093721627369f8f1fe0143357716e832b4a",
+      "crop_box": [
+        458,
+        195,
+        658,
+        370
+      ],
+      "resized": false
+    },
+    {
+      "retained": "native/client/assets/raster/reviews/2026-09-10-monster-motion/remote-wight_walk3_sw.png",
+      "source": ".ci-artifacts/monster-motion-wave/captures/remote-wight_walk3_sw.png",
+      "source_sha256": "d14656ba8eb9480861be29b3a52729ff6b040de072124655713460b4850e4468",
+      "crop_box": [
+        446,
+        199,
+        646,
+        374
+      ],
+      "resized": false
+    },
+    {
+      "retained": "native/client/assets/raster/reviews/2026-09-10-monster-motion/remote-wight_walk5_sw.png",
+      "source": ".ci-artifacts/monster-motion-wave/captures/remote-wight_walk5_sw.png",
+      "source_sha256": "552fefcebc727d2f007610dc90221b12def9fb6083a4eda4cbb3dd5f7cf21eb4",
+      "crop_box": [
+        434,
+        208,
+        634,
+        383
+      ],
+      "resized": false
+    },
+    {
+      "retained": "native/client/assets/raster/reviews/2026-09-10-monster-motion/remote-wight_walk6_sw.png",
+      "source": ".ci-artifacts/monster-motion-wave/captures/remote-wight_walk6_sw.png",
+      "source_sha256": "ad7eb6be7b0c9d967872417f5a22d5eaf03210f055bad34ea8661f6409141d19",
+      "crop_box": [
+        422,
+        209,
+        622,
+        384
+      ],
+      "resized": false
+    },
+    {
+      "retained": "native/client/assets/raster/reviews/2026-09-10-monster-motion/remote-wight_walk7_sw.png",
+      "source": ".ci-artifacts/monster-motion-wave/captures/remote-wight_walk7_sw.png",
+      "source_sha256": "7810cb4b52ce47af3737df3d6fce3f5026d4d58a1f92dcc049746dd0be8208fe",
+      "crop_box": [
+        411,
+        215,
+        611,
+        390
+      ],
+      "resized": false
+    }
+  ]
+}

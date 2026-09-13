@@ -1,0 +1,12 @@
+Use case: stylized-concept
+Asset type: ONE isolated low-resolution pixel-art game character sprite with a transparent background.
+
+Draw exactly one full-body adult male adventurer in a relaxed combat-ready idle stance, EMPTY HANDED. He faces screen DOWN-RIGHT (southeast): a three-quarter FRONT view with chest and face visible, nose and both feet turned toward the lower-right of the screen. Slightly elevated isometric game camera. No other direction, no other pose, no sheet, no duplicates.
+
+Mature grounded anatomy: lean practical adult body, approximately seven heads tall, modest head and long adult legs, not stocky or cute. Short dark brown hair and a small dark beard. Muted russet linen tunic to mid-thigh, dark brown leather belt, bracers, leg wraps and boots. One small clean warm BRONZE shoulder guard, copper-brown with restrained golden highlight. A DEEP INDIGO BLUE cloth sash tied at the waist with one short hanging end. Warm natural skin. Both hands empty and loosely curled so a separate equipment sprite can be added. Entire body and both feet visible.
+
+TRUE PIXEL ART: Draw this as a 48-pixel-wide by 80-pixel-tall game sprite on a discrete logical pixel grid, then present it enlarged with nearest-neighbor scaling. Its logical pixels must be LARGE VISIBLE SQUARES with perfectly flat colors. Use at most 24 opaque colors. Broad connected clusters, three flat shades per material, simple two-tone face with a few-pixel eye/brow, bold dark silhouette edges. Crisp large staircase diagonals. There must be no details smaller than one logical pixel. No realistic texture, no fine hair strands, no speckling, no dithering, no painterly shading, no gradient, no smooth contour or anti-aliasing. This should look like hand-placed low-resolution game pixels when seen at full output size.
+
+Keep the figure centered with generous empty margins on all sides, feet on one clear baseline. Warm light from the upper-left is expressed only through flat pixel clusters. Metal is natural warm bronze with no green oxidation. No weapon, no shield, no helmet, no floor, no cast shadow, no effects, no lettering.
+
+Output a real RGBA PNG cutout: all outside pixels fully transparent, all colored sprite pixels fully opaque.

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-GPU-005",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "5656a2bc",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "grounding",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario grounding", "exit_code": 0}
+  ],
+  "assertions": [
+    "Y-sort and foot shadows are the named policy",
+    "Sweep paints a readable disc on the village gate",
+    "a foreground wall cannot erase the telegraph pass",
+    "a HUD token without a telegraph cannot certify",
+    "live HUD names Y-sort and Sweep disc",
+    "Y-sort stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Y-sort is the anti-pattern"
+  ],
+  "negative_control": {
+    "name": "foreground wall hiding mandatory threat telegraphs, a capture-black Sweep fill, or Y-sort covering WASD/objective/Tin village/Life",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/grounding-960x600.png",
+      "sha256": "a070cab7af489214ed14a2c9799b5bf4be8e9b17c0c4082c4e8d81c50d2c683f",
+      "produced_by": "native/build/verdigris_client.exe --scenario grounding"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Painter's-algorithm overlay, not a GPU depth buffer. VG-WORLD-001 stays Kimi.",
+    "Owner strip paints Y-sort / Sweep disc and parks off WASD, the objective, Tin village, and Life. Wall hide cannot certify. Covering those combat surfaces cannot certify.",
+    "Capture pins the sim-authored Sweep onto the village gate so the warning sits on scenery. Not Owner Demo. Does not re-spec TASK-0108."
+  ]
+}

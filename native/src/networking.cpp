@@ -7,6 +7,7 @@
 #include <cctype>
 #include <cstdlib>
 #include <cstring>
+#include <fstream>
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
@@ -89,6 +90,17 @@ std::string json_escape(const std::string& input) {
     }
   }
   return output.str();
+}
+
+std::string persistence_filename(const std::string& identity) {
+  std::string safe;
+  safe.reserve(identity.size());
+  for (const unsigned char ch : identity) {
+    if (std::isalnum(ch) || ch == '-' || ch == '_' || ch == '.') safe.push_back(static_cast<char>(ch));
+    else safe.push_back('_');
+  }
+  if (safe.empty()) safe = "default-guest";
+  return safe + ".json";
 }
 
 class JsonParser {
@@ -567,7 +579,14 @@ bool parse_json(const std::string& text, JsonValue& out, std::string* error) { r
 bool parse_envelope(const std::string& text, Envelope& out, std::string* error) {
   JsonValue root; if (!parse_json(text, root, error) || !root.is_object()) { if (error && error->empty()) *error="envelope must be an object"; return false; }
   const auto* event=root.get("event"); if (!event || !event->string() || event->string()->empty()) { if (error) *error="envelope event must be a non-empty string"; return false; }
-  const auto* data=root.get("data"); if (!data || !data->is_object()) { if (error) *error="envelope data must be an object"; return false; }
+  const auto* data=root.get("data");
+  // monster:state is the existing JS actor-delta array. Requests retain
+  // their object-only contract; accepting this event does not broaden it.
+  if (!data || (!data->is_object() &&
+      !(*event->string() == "monster:state" && data->is_array()))) {
+    if (error) *error="envelope data must be an object (monster:state may be an array)";
+    return false;
+  }
   out.event=*event->string(); out.data=*data; out.meta.reset(); if (const auto* meta=root.get("meta")) out.meta=*meta; return true;
 }
 std::string emit_envelope(const Envelope& envelope) {
@@ -594,11 +613,74 @@ void ProtocolSession::set_direct_emit(std::function<void(const Envelope&)> emit)
   direct_emit_ = std::move(emit);
 }
 
+void ProtocolSession::attach_persistence(const std::filesystem::path& path) {
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  persistence_path_ = path;
+  if (persistence_path_.empty() || !std::filesystem::exists(persistence_path_)) return;
+  std::ifstream input(persistence_path_, std::ios::binary);
+  std::string text((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
+  if (text.size() > 8 * 1024 * 1024) return;
+  JsonValue saved;
+  if (!parse_json(text, saved) || !saved.object()) return;
+  if (const auto* chronicle = saved.get("chronicle")) chronicle_ = *chronicle;
+  chronicles_revision_ = static_cast<int>(saved.get("chroniclesRevision") &&
+                                          saved.get("chroniclesRevision")->number()
+                                              ? *saved.get("chroniclesRevision")->number() : 0);
+  active_house_id_ = as_string(saved.get("activeHouseId"));
+  active_house_name_ = as_string(saved.get("activeHouseName"));
+  active_scion_id_ = as_string(saved.get("activeScionId"));
+  active_scion_name_ = as_string(saved.get("activeScionName"));
+  username_ = as_string(saved.get("username"));
+  house_treasury_ = as_int(saved.get("houseTreasury"), 0);
+}
+
+void ProtocolSession::persist() const {
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  if (persistence_path_.empty()) return;
+  std::error_code ec;
+  std::filesystem::create_directories(persistence_path_.parent_path(), ec);
+  if (ec) return;
+  JsonValue::Object saved;
+  put(saved, "version", 1);
+  put(saved, "identity", identity_);
+  put(saved, "username", username_);
+  put(saved, "chronicle", chronicle_);
+  put(saved, "chroniclesRevision", chronicles_revision_);
+  put(saved, "activeHouseId", active_house_id_);
+  put(saved, "activeHouseName", active_house_name_);
+  put(saved, "activeScionId", active_scion_id_);
+  put(saved, "activeScionName", active_scion_name_);
+  put(saved, "houseTreasury", house_treasury_);
+  const auto temp = persistence_path_.wstring() + L".tmp";
+  std::ofstream output(temp, std::ios::binary | std::ios::trunc);
+  if (!output) return;
+  output << JsonValue(std::move(saved)).stringify();
+  output.close();
+  std::filesystem::rename(temp, persistence_path_, ec);
+  if (ec) {
+    std::filesystem::remove(persistence_path_, ec);
+    ec.clear();
+    std::filesystem::rename(temp, persistence_path_, ec);
+  }
+}
+
 void ProtocolSession::tick(std::int64_t now) {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   if (!direct_emit_) return;
   maybe_respawn(now);
-  if (world_->in_instance()) process_combat(now, direct_emit_);
+  if (auto* actor = simulation_->actor(simulation_->scion().actor_id);
+      actor && actor->war_cry_ticks_remaining > 0) {
+    // Remote combat runs through WorldSimulation's real-clock tick rather
+    // than Simulation::advance_tick, so expire the same authoritative buff
+    // here instead of leaving its bonus permanently stuck on the scion.
+    --actor->war_cry_ticks_remaining;
+    if (actor->war_cry_ticks_remaining == 0) actor->war_cry_attack_bonus = 0;
+  }
+  if (world_->in_instance()) {
+    const auto* player = simulation_->actor(simulation_->scion().actor_id);
+    world_->advance_monster_movement(now, player && player->stats.life > 0);
+    process_combat(now, direct_emit_);
+  }
 }
 
 void ProtocolSession::reset_world_for_new_socket() {
@@ -876,11 +958,77 @@ JsonValue ProtocolSession::scene_payload() const {
 JsonValue ProtocolSession::movement_step_payload() const {
   const auto& step=world_->last_step(); JsonValue::Object value; put(value,"sequence",static_cast<double>(step.sequence)); put(value,"startedAt",static_cast<double>(step.started_at_ms)); put(value,"duration",step.duration_ms); if(step.direction.empty()) put(value,"direction",nullptr); else put(value,"direction",step.direction); put(value,"blocked",step.blocked); return JsonValue(std::move(value));
 }
+namespace {
+long long xp_for_level(int level);
+int level_from_xp(long long exp);
+}  // namespace
+
+JsonValue ProtocolSession::monster_payload(const WorldMonster& candidate) const {
+    JsonValue::Object monster; put(monster,"uuid",candidate.uuid); put(monster,"id",candidate.id); put(monster,"name",candidate.name);
+    const auto precise = candidate.world_position();
+    put(monster,"sceneId",world_->scene_id());
+    put(monster,"x",precise.x); put(monster,"y",precise.y); put(monster,"level",candidate.level); put(monster,"rarity",candidate.rarity);
+    JsonValue::Array tags; for (const auto& tag:candidate.tags) tags.emplace_back(tag); put(monster,"tags",std::move(tags));
+    put(monster,"coins",candidate.coins);
+    JsonValue::Object behaviour; put(behaviour,"type",candidate.behaviour_type); put(monster,"behaviour",std::move(behaviour));
+    JsonValue::Object mhp; put(mhp,"current",candidate.life); put(mhp,"max",candidate.life_max); put(monster,"hp",std::move(mhp));
+    JsonValue::Array modifiers; for (const auto& modifier:candidate.modifiers) { JsonValue::Object value; put(value,"id",modifier); put(value,"label",modifier=="empowered"?"Empowered":modifier); modifiers.emplace_back(std::move(value)); } put(monster,"modifiers",std::move(modifiers));
+    JsonValue::Object effects; if (candidate.empowered) { JsonValue::Object effect; put(effect,"label","Empowered"); put(effect,"id","aura:damage"); put(effects,"aura",std::move(effect)); } put(monster,"state",JsonValue::Object{{"effects",std::move(effects)}});
+    JsonValue::Object step;
+    put(step, "sequence", static_cast<double>(candidate.movement_sequence));
+    put(step, "startedAt", static_cast<double>(candidate.movement_started_at_ms));
+    put(step, "duration", candidate.movement_duration_ms);
+    put(step, "fromX", candidate.movement_from.x);
+    put(step, "fromY", candidate.movement_from.y);
+    put(step, "facingX", candidate.movement_facing.x);
+    put(step, "facingY", candidate.movement_facing.y);
+    put(monster, "movementStep", std::move(step));
+    return JsonValue(std::move(monster));
+}
+
+void ProtocolSession::emit_monster_state(
+    std::int64_t now, const std::function<void(const Envelope&)>& emit) {
+  // Each connected session publishes the shared world's changes to its own
+  // client. This also avoids the legacy global broadcast leaking solo rooms.
+  if (published_monster_scene_ != world_->scene_id()) {
+    published_monster_scene_ = world_->scene_id();
+    published_monsters_.clear();
+  }
+  JsonValue::Array changed;
+  std::unordered_map<std::string, std::string> current;
+  for (const auto& monster : world_->monsters()) {
+    if (current.size() >= 256) break;
+    JsonValue actor = monster_payload(monster);
+    const std::string encoded = actor.stringify();
+    const auto prior = published_monsters_.find(monster.uuid);
+    if (prior == published_monsters_.end() || prior->second != encoded)
+      changed.push_back(std::move(actor));
+    current.emplace(monster.uuid, encoded);
+  }
+  published_monsters_.swap(current);
+  if (changed.empty()) return;
+  Envelope envelope{"monster:state", JsonValue(std::move(changed))};
+  envelope.meta = JsonValue::Object{{"sceneId", world_->scene_id()},
+                                  {"sentAt", static_cast<double>(now)}};
+  emit(envelope);
+}
+
 JsonValue ProtocolSession::snapshot() const {
   JsonValue::Object state; const auto& scion=simulation_->scion(); const auto* actor=simulation_->actor(scion.actor_id); const auto position=world_->position();
   put(state,"uuid",identity_); put(state,"x",position.x); put(state,"y",position.y); put(state,"sceneId",world_->scene_id()); put(state,"sceneType",world_->scene_type()); put(state,"sceneName",world_->scene_name());
   put(state,"lifecycle",lifecycle_);
   put(state,"lifecycleMode",lifecycle_mode_);
+  put(state,"theme",world_->in_instance()?world_->metadata().theme:std::string("town"));
+  { // Combat experience for the client XP bar (RS-style curve; the level is
+    // already derived server-side from this same value).
+    const int xp_level = level_from_xp(combat_xp_);
+    JsonValue::Object xp;
+    put(xp, "current", static_cast<double>(combat_xp_));
+    put(xp, "level", xp_level);
+    put(xp, "floor", static_cast<double>(xp_for_level(xp_level)));
+    put(xp, "next", static_cast<double>(xp_for_level(xp_level + 1)));
+    put(state, "xp", std::move(xp));
+  }
   JsonValue::Object chronicles; put(chronicles,"mortal",mortal_oath_); put(chronicles,"scionId",active_scion_id_.empty()?JsonValue(nullptr):JsonValue(active_scion_id_)); put(chronicles,"houseId",active_house_id_.empty()?JsonValue(nullptr):JsonValue(active_house_id_)); put(state,"chronicles",std::move(chronicles));
   put(state,"bestDepth",best_depth_);
   put(state,"quests",quests_json());
@@ -922,17 +1070,10 @@ JsonValue ProtocolSession::snapshot() const {
   }
   JsonValue::Object lifecycle_details; put(lifecycle_details,"deaths",lifecycle_deaths_); put(lifecycle_details,"respawn",JsonValue::Object{{"at",static_cast<double>(respawn_at_ms_)}}); put(state,"lifecycleDetails",std::move(lifecycle_details));
   JsonValue::Object hp; put(hp,"current",actor?actor->stats.life:0); put(hp,"max",actor?actor->stats.life_max:0); put(state,"hp",std::move(hp));
-  JsonValue::Array monsters; for (const auto& candidate:world_->monsters()) if (candidate.alive) {
-    JsonValue::Object monster; put(monster,"uuid",candidate.uuid); put(monster,"id",candidate.id); put(monster,"name",candidate.name);
-    put(monster,"x",candidate.x); put(monster,"y",candidate.y); put(monster,"level",candidate.level); put(monster,"rarity",candidate.rarity);
-    JsonValue::Array tags; for (const auto& tag:candidate.tags) tags.emplace_back(tag); put(monster,"tags",std::move(tags));
-    put(monster,"coins",candidate.coins);
-    JsonValue::Object behaviour; put(behaviour,"type",candidate.behaviour_type); put(monster,"behaviour",std::move(behaviour));
-    JsonValue::Object mhp; put(mhp,"current",candidate.life); put(mhp,"max",candidate.life_max); put(monster,"hp",std::move(mhp));
-    JsonValue::Array modifiers; for (const auto& modifier:candidate.modifiers) { JsonValue::Object value; put(value,"id",modifier); put(value,"label",modifier=="empowered"?"Empowered":modifier); modifiers.emplace_back(std::move(value)); } put(monster,"modifiers",std::move(modifiers));
-    JsonValue::Object effects; if (candidate.empowered) { JsonValue::Object effect; put(effect,"label","Empowered"); put(effect,"id","aura:damage"); put(effects,"aura",std::move(effect)); } put(monster,"state",JsonValue::Object{{"effects",std::move(effects)}});
-    monsters.emplace_back(std::move(monster));
-  } put(state,"monsters",std::move(monsters));
+  JsonValue::Array monsters;
+  for (const auto& candidate : world_->monsters())
+    if (candidate.alive) monsters.emplace_back(monster_payload(candidate));
+  put(state, "monsters", std::move(monsters));
   if (world_->in_instance()) { const auto& meta=world_->metadata(); JsonValue::Object metadata; put(metadata,"seed",static_cast<double>(meta.seed)); put(metadata,"theme",meta.theme); if(meta.layout.empty()) put(metadata,"layout",nullptr); else put(metadata,"layout",meta.layout); put(metadata,"depth",meta.depth);
     JsonValue::Object up; put(up,"x",meta.stairs_up.x); put(up,"y",meta.stairs_up.y); put(metadata,"stairsUp",std::move(up));
     JsonValue::Object down; put(down,"x",meta.stairs_down.x); put(down,"y",meta.stairs_down.y); put(metadata,"stairsDown",std::move(down));
@@ -982,7 +1123,36 @@ JsonValue ProtocolSession::snapshot() const {
   JsonValue::Array stored; for (const auto& item:house_store_) stored.emplace_back(item_identity_json(item)); put(state,"houseStoredItems",std::move(stored));
   put(state,"groundTrophies",JsonValue::Array{}); return JsonValue(std::move(state));
 }
-std::string ProtocolSession::state_payload(const std::string& request_id) const { std::lock_guard<std::recursive_mutex> lock(mutex_); JsonValue::Object data; put(data,"player",JsonValue::Object{{"socket_id",socket_id_}}); put(data,"state",snapshot()); put(data,"requestId",request_id); return JsonValue(std::move(data)).stringify(); }
+std::string ProtocolSession::state_payload(const std::string& request_id, bool include_map) const {
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  JsonValue::Object data;
+  put(data,"player",JsonValue::Object{{"socket_id",socket_id_}});
+  JsonValue state_value = snapshot();
+  if (include_map) {
+    // The walkable grid the world already resolves movement against. Sent
+    // only on request (the client asks once per scene) so the 4 Hz snapshot
+    // stays light; without it walls are invisible and read as ghost
+    // collisions on the client.
+    const auto& grid = world_->grid();
+    JsonValue::Object map;
+    put(map, "sceneId", world_->scene_id());
+    put(map, "width", grid.width);
+    put(map, "height", grid.height);
+    JsonValue::Array rows;
+    for (int y = 0; y < grid.height; ++y) {
+      std::string row(static_cast<std::size_t>(grid.width), '1');
+      for (int x = 0; x < grid.width; ++x)
+        if (!grid.walkable_at(x, y)) row[static_cast<std::size_t>(x)] = '0';
+      rows.emplace_back(std::move(row));
+    }
+    put(map, "rows", std::move(rows));
+    if (auto* state_object = state_value.object())
+      (*state_object)["map"] = JsonValue(std::move(map));
+  }
+  put(data,"state",std::move(state_value));
+  put(data,"requestId",request_id);
+  return JsonValue(std::move(data)).stringify();
+}
 void ProtocolSession::emit_inventory_refresh(const std::function<void(const Envelope&)>& emit) const {
   // dev.js: core:refresh:inventory carries the full slot list.
   JsonValue::Array slots; for (const auto& item:inventory_.items()) slots.emplace_back(item_identity_json(item));
@@ -2090,9 +2260,12 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
   const bool mana_skill = active_skill_id_.rfind("ability", 0) == 0;
   const int player_power = (std::max)(1, static_cast<int>(std::lround(mana_skill
       ? 4.0 + int_attr * 0.5
-      : 2.0 + str_attr * 0.45 + wear_attack * 1.5)));
+      : 2.0 + str_attr * 0.45 + wear_attack * 1.5))
+      + actor->war_cry_attack_bonus);
   const bool engaged_here = world_->engaged_by().empty() || world_->engaged_by() == identity_;
   const auto events = world_->advance_combat(actor->stats.level, engaged_here ? player_power : 0, actor->stats.life, actor->stats.life_max, now);
+  // Publish exact authority positions before contact/death facts use them.
+  emit_monster_state(now, emit);
   // N5 respawn ward: monsters cannot damage a freshly-respawned scion until
   // the scion acts. Absorb monster damage here (the player still lands hits);
   // the skill handler ends the ward.
@@ -2504,7 +2677,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     }
     return;
   }
-  if (envelope.event=="player:skill:trigger") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor&&world_->in_instance()){ if (respawn_protection_until_ms_ > 0) respawn_protection_until_ms_ = 0; active_skill_id_=as_string(payload?payload->get("skillId"):nullptr,"primary-attack"); world_->set_engaged_by(identity_); const auto direction=as_string(payload?payload->get("direction"):nullptr,"down"); const auto wear_totals=wear_.totals(); const int wear_bonus=(std::max)((std::max)(wear_totals.attack.stab,wear_totals.attack.slash),(std::max)(wear_totals.attack.crush,wear_totals.attack.range)); world_->start_player_attack(actor->stats.level,actor->stats.attack+(std::max)(0,wear_bonus),now_ms(),direction); process_combat(now_ms(),emit); /* real-clock cadence: polls advance combat */ } return; }
+  if (envelope.event=="player:skill:trigger") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor&&world_->in_instance()){ if (respawn_protection_until_ms_ > 0) respawn_protection_until_ms_ = 0; active_skill_id_=as_string(payload?payload->get("skillId"):nullptr,"primary-attack"); if (active_skill_id_ == "war-cry") { if (actor->stats.resource < presentation_constants::kWarCryResourceCost) { emit_message(emit,"Not enough resource for War Cry."); return; } actor->stats.resource -= presentation_constants::kWarCryResourceCost; actor->war_cry_attack_bonus = presentation_constants::kWarCryAttackBonus; actor->war_cry_ticks_remaining = presentation_constants::kWarCryDurationTicks; emit_message(emit,"War Cry: attack empowered."); return; } world_->set_engaged_by(identity_); const auto direction=as_string(payload?payload->get("direction"):nullptr,"down"); const auto wear_totals=wear_.totals(); const int wear_bonus=(std::max)((std::max)(wear_totals.attack.stab,wear_totals.attack.slash),(std::max)(wear_totals.attack.crush,wear_totals.attack.range)); world_->start_player_attack(actor->stats.level,actor->stats.attack+(std::max)(0,wear_bonus),now_ms(),direction); process_combat(now_ms(),emit); /* real-clock cadence: polls advance combat */ } return; }
   if (envelope.event=="dev:give") { if (payload) handle_give(*payload,emit); return; }
   if (envelope.event=="dev:drop") { if (payload) handle_drop(*payload,emit); return; }
   if (envelope.event=="dev:forcecritical") { world_->player_combat_mods().force_critical=true; emit_message(emit,"Your next strike will be a critical hit."); return; }
@@ -2565,7 +2738,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
   if (envelope.event=="player:context-menu:build") { if (payload) handle_menu_build(*payload,emit); return; }
   if (envelope.event=="player:context-menu:action") { if (payload) handle_menu_action(*payload,emit); return; }
   if (envelope.event=="player:inventory:commit") { if (payload) handle_inventory_commit(*payload,emit); return; }
-  if (envelope.event=="dev:state") { maybe_respawn(now_ms()); if (world_->in_instance()) best_depth_=(std::max)(best_depth_,world_->metadata().depth); process_combat(now_ms(),emit); const auto id=as_string(payload?payload->get("requestId"):nullptr); JsonValue data; parse_json(state_payload(id),data); emit(Envelope{"dev:state",std::move(data)}); return; }
+  if (envelope.event=="dev:state") { maybe_respawn(now_ms()); if (world_->in_instance()) best_depth_=(std::max)(best_depth_,world_->metadata().depth); process_combat(now_ms(),emit); const auto id=as_string(payload?payload->get("requestId"):nullptr); const auto* want_map=payload?payload->get("includeMap"):nullptr; const bool include_map=want_map&&((want_map->boolean()&&*want_map->boolean())||(want_map->number()&&*want_map->number()!=0.0)); JsonValue data; parse_json(state_payload(id,include_map),data); emit(Envelope{"dev:state",std::move(data)}); return; }
   // ── N5 Chronicles admission (server/player/handlers/chronicles.js) ──────
   if (envelope.event=="chronicles:house:found") {
     static std::atomic<std::uint64_t> house_serial{1};
@@ -2802,7 +2975,8 @@ struct WebSocketServer::Connection {
   }
 };
 
-WebSocketServer::WebSocketServer(std::uint16_t port):port_(port) {}
+WebSocketServer::WebSocketServer(std::uint16_t port, std::filesystem::path save_directory)
+    : port_(port), save_directory_(std::move(save_directory)) {}
 WebSocketServer::~WebSocketServer(){ stop(); }
 bool WebSocketServer::start(std::string* error) {
 #ifdef _WIN32
@@ -2985,7 +3159,7 @@ void WebSocketServer::handle_message(const std::shared_ptr<Connection>& connecti
 // JS parity: the anonymous guest is ONE shared account. A second concurrent
 // login replaces the earlier session (replaceExistingSession); multiplayer
 // scenarios that need distinct players carry playtestGuestId/guestId.
-const bool quick=as_bool(envelope.data.get("quickGuest"));const auto* playtest_guest=envelope.data.get("playtestGuestId");if(playtest_guest&&playtest_guest->string())identity=*playtest_guest->string();const auto* playtest_name=envelope.data.get("playtestGuestName");std::shared_ptr<ProtocolSession> session;std::shared_ptr<Connection> old;{std::lock_guard lock(mutex_);auto it=sessions_.find(identity);if(it!=sessions_.end()){for(const auto& candidate:connections_)if(candidate->session==it->second&&candidate!=connection&&!candidate->closed){old=candidate;break;}session=it->second;}if(!session){std::uint64_t seed=1469598103934665603ULL;for(unsigned char c:identity)seed=(seed^c)*1099511628211ULL;session=std::make_shared<ProtocolSession>(identity,connection->id,seed,quick);sessions_[identity]=session;}else { const bool adopted = connection->session != session; session->replace_socket(connection->id); if (adopted) session->reset_world_for_new_socket(); } connection->session=session;}session->set_broadcast([this](const Envelope& event){broadcast(event);});if(playtest_name&&playtest_name->string())session->set_username(*playtest_name->string());session->set_direct_emit([connection](const Envelope& event){connection->send_text(emit_envelope(event));});if(old){old->send_text(emit_envelope(Envelope{"player:session-replaced",JsonValue::Object{{"player",JsonValue::Object{{"socket_id",old->id}}}}}));old->shutdown_send();old->close();}session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});return;} auto session=connection->session;if(!session)return;if(envelope.event.rfind("party:",0)==0&&handle_party_event(connection,envelope))return;session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});}
+const bool quick=as_bool(envelope.data.get("quickGuest"));const auto* playtest_guest=envelope.data.get("playtestGuestId");if(playtest_guest&&playtest_guest->string())identity=*playtest_guest->string();const auto* playtest_name=envelope.data.get("playtestGuestName");std::shared_ptr<ProtocolSession> session;std::shared_ptr<Connection> old;bool created=false;{std::lock_guard lock(mutex_);auto it=sessions_.find(identity);if(it!=sessions_.end()){for(const auto& candidate:connections_)if(candidate->session==it->second&&candidate!=connection&&!candidate->closed){old=candidate;break;}session=it->second;}if(!session){std::uint64_t seed=1469598103934665603ULL;for(unsigned char c:identity)seed=(seed^c)*1099511628211ULL;session=std::make_shared<ProtocolSession>(identity,connection->id,seed,quick);sessions_[identity]=session;created=true;}else { const bool adopted = connection->session != session; session->replace_socket(connection->id); if (adopted) session->reset_world_for_new_socket(); } connection->session=session;}if(created&& !save_directory_.empty())session->attach_persistence(save_directory_/persistence_filename(identity));session->set_broadcast([this](const Envelope& event){broadcast(event);});if(playtest_name&&playtest_name->string())session->set_username(*playtest_name->string());session->set_direct_emit([connection](const Envelope& event){connection->send_text(emit_envelope(event));});if(old){old->send_text(emit_envelope(Envelope{"player:session-replaced",JsonValue::Object{{"player",JsonValue::Object{{"socket_id",old->id}}}}}));old->shutdown_send();old->close();}session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});session->persist();return;} auto session=connection->session;if(!session)return;if(envelope.event.rfind("party:",0)==0&&handle_party_event(connection,envelope)){session->persist();return;}session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});session->persist();}
 void WebSocketServer::broadcast(const Envelope& envelope){ std::vector<std::shared_ptr<Connection>> targets; {std::lock_guard lock(mutex_);targets=connections_;} const auto wire=emit_envelope(envelope); for(const auto& candidate:targets) if(candidate->session&&!candidate->closed) candidate->send_text(wire); }
 void WebSocketServer::remove_connection(const std::shared_ptr<Connection>& connection){std::lock_guard lock(mutex_);connections_.erase(std::remove(connections_.begin(),connections_.end(),connection),connections_.end());}
 

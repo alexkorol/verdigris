@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "generationTool": "built-in image_gen",
+  "selectedModel": "Not exposed by tool",
+  "modelIdentityReturned": false,
+  "source": "native/client/assets/raster/source/raider-strike-sw-v1.png",
+  "sourceSha256": "fb668850b3b283e2539a00a5328a51ce2290c786f371f8a5d522eab7139455cc",
+  "prompt": "native/client/assets/raster/prompts/raider-strike-sw-v1.txt",
+  "promptSha256": "8975328d4a37262b850d08e125382049c9d7014df67c0507f946d72d2df994cd",
+  "submittedPrompt": "Using this single raider reference, create a six-frame pixel-art axe attack sheet arranged in three columns and two rows, in chronological reading order.\n\nPreserve the reference's character identity, grounded adult proportions, bone mask, tied dark hair, charcoal shoulder wraps and torn trousers, ochre sash, leather bracers, brown boots, natural palette and crisp pixel scale. Keep the same broad curved bronze axe and wooden handle, held by the same anatomical RIGHT hand (on screen-left in this SW view). The opposite hand remains free throughout.\n\nShow one coherent downward axe chop toward lower-left. Keep the raider facing lower-left with the same elevated camera in all six cells:\n1. Ready: balanced stance, axe held low as in the reference.\n2. Anticipation: load the rear leg and draw the axe hand back; torso coils slightly, knees flex.\n3. Committed windup: raise that same right-hand axe above and behind the right shoulder, elbow bent, ready to accelerate downward; the free left hand guards the body.\n4. Contact: drive the same axe forward and downward toward lower-left, with a clear extended arm, visible blade and forward weight transfer.\n5. Follow-through: continue the same arc lower and slightly beyond contact; torso and knees absorb the swing, axe stays in the right hand.\n6. Recovery: bend that right elbow, bring the axe back toward the low ready position and restore balance, allowing a return to frame 1.\n\nAnimate actual limb, torso and weight changes. Keep apparent body size, camera and ground registration consistent. Exactly one complete raider and its attached axe per cell, with generous weapon clearance and no cropping or overlap. Use deliberate sharp pixel clusters and a restrained palette. No labels, frame numbers, grid lines, motion trails, impact effects, scenery or other characters. Return actual transparent RGBA, with no painted transparency pattern. Frame timing, slicing and file assembly will be handled separately.",
+  "generatedOriginal": "C:/Users/Alex/.codex/generated_images/01a0896f-29de-7452-bb4b-6fb64351c1eb/exec-ad1e38be-aa8c-4d22-bdf5-759266eb671b.png",
+  "references": [
+    {
+      "order": 1,
+      "path": "native/client/assets/raster/runtime/raider_sw.png",
+      "sha256": "13e515e678d001de0e764729048986d1d459c9df2de9c2b52d2d1c8538b3daf4",
+      "role": "Original raider identity, natural palette, adult body, bone mask, charcoal clothes, ochre sash and baked anatomical-right bronze axe. V2 uses it as color/identity reference only.",
+      "inspectedBeforeCall": true
+    }
+  ],
+  "recipe": {
+    "primarySource": "https://x.com/Mayz1169/status/2097540160611287452",
+    "originalRead": "The complete published Kiki combat prompt was read in the browser during this task after web text returned403.",
+    "sourceSummary": "Reference identity and equipment, a planned preparation/attack/contact/recovery sequence, actual body mechanics, stable registration, full weapon clearance and variable frame holds.",
+    "projectRecipe": "native/client/assets/raster/prompts/actors_hero-strike-sw-v2.txt",
+    "adaptation": "Six adult raider SW axe poses in3x2 instead of16 chibi frames. Preserve bone mask, charcoal clothes, ochre sash and the baked RIGHT-hand axe. Omit effects; deterministic tools own slicing, alpha cleanup and preview assembly. V2 is a focused clothing-color repair of the one olive-tinted anticipation pose.",
+    "claimBoundary": "This is a local adaptation and observed result. The cited creator did not demonstrate this raider, six-pose attack or our production timing. No image-model variant is asserted."
+  },
+  "observedOutput": {
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "alpha": "Requested actual transparency failed; both sources contain an opaque checker pattern.",
+    "view": "Six SW lower-left-facing poses; actual same right-hand axe grip is visible throughout.",
+    "selection": "V1 poses0,2,3,4,5 plus V2 pose1. Other V2 cells were not substituted because their shading changed outside the requested repair.",
+    "v1Failure": "Anticipation1 acquired olive clothing; corrected and original source preserved.",
+    "v2Result": "Anticipation cloth restored to charcoal while retaining its outward-lift pose and attached axe.",
+    "phaseReview": "Ready low axe; outward preparatory lift; raised overhead windup; low extended contact; low follow-through with changed balance/free hand; recovery toward ready. Anticipation is an outward lift rather than the requested rear draw.",
+    "appearanceLimit": "The generated standing body is approximately58native pixels versus57 in idle, with small outline/material/axe-contour differences."
+  },
+  "conversion": {
+    "engine": "Actual Pixel Respecter workspace.reconstruct plus shared palettes.reduce_colors via existing import_assets.py",
+    "manifest": "native/tools/raster/raider-strike-sw-candidate.json",
+    "manifestSha256": "9e356fce903c5f889be7f827386a03abdd29715cd567f7898e045093d474aa67",
+    "report": "native/tools/raster/raider-strike-sw-candidates/selected/raider-strike-sw-candidate.provenance.json",
+    "reportSha256": "83eeb539208cf19bf058d0006875e414d92ffe3d7bc7e8e58bd10d76d2367feb",
+    "canvas": [
+      80,
+      96
+    ],
+    "anchorPx": [
+      40,
+      96
+    ],
+    "cellSize": 6,
+    "sharedColors": 32,
+    "sourceOrigin": [
+      280,
+      480
+    ],
+    "columnStride": 500,
+    "rowStride": 490,
+    "normalization": "One shared scale and origin pattern, with pose offsets retained; no per-pose fitting or centering.",
+    "alpha": "Border-connected fill followed by exact rectangles of visually inspected neutral pixels in hair loops and recovery-arm gaps. alpha-audit.json records zero chromatic pixels removed by final local cleanup.",
+    "rejectedCleanup": "selected/rejected-color-fill preserves the prior broader color fill. Final neutral-only windows retain80 source pixels excluded from that earlier cleanup, including pale skin."
+  },
+  "acceptance": "Root viewed native idle-cycle strip and chronological4x contact; accepted for integration. Runtime pixels are byte-identical to selected candidate. Actual production event timing and game gates remain root-owned and pending.",
+  "activeManifest": "native/tools/raster/raider-strike-sw.json",
+  "activeReport": "native/client/assets/raster/runtime/raider-strike-sw.provenance.json",
+  "ownership": "Only raider strike sources/prompts, candidate tools/evidence, authorized active manifest and six runtime PNGs/report. No import_all, catalog, ORDER, main, equipment or unrelated art changes; no raw D2 references copied."
+}

@@ -1,7 +1,8 @@
 ---
 task: TASK-0104
 title: Itemization, extraction, and item-history gap audit
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head 40c505ac, 2026-08-23)
 packet: BOUNDED-DESIGN
 topology: INDEPENDENT
 job: BOUNDED-DESIGN

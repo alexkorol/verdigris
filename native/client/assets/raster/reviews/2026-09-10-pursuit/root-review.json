@@ -1,0 +1,93 @@
+{
+  "approved_for_freeze": true,
+  "metadata": {
+    "milestone": "Real native pursuit, NE6/NW8 raider walks and visible entry anchors, 162 assets",
+    "status": "Root reviewed native/production pixels and supported live window; final build/all71 scenarios and native/browser/asset checks pass. Live manual combat completion remains unverified.",
+    "acceptance": "root_production_pursuit_reviewed_provisional_integration_2026-09-10",
+    "acceptance_scope": "Fourteen exact new walk PNGs, actual fixed-tick pursuit/detour/contact, immutable poses, local-session scene/coordinate contracts and physically/visually clear entries. No smooth-video or complete manual-session claim.",
+    "pursuit_limits": "Bounded circle navigation without crowd separation; source body/axe/crown drift remains; SE walk rejected. Opening hostile local-testbed pace and other monster motion remain open."
+  },
+  "final_validation": {
+    "native_supported_build_all_scenarios": {
+      "exit_code": 0,
+      "passed": 71,
+      "total": 71,
+      "log": "native/client/assets/raster/reviews/2026-09-10-pursuit/native-final-build-all.log"
+    },
+    "native_suites": {
+      "exit_code": 0,
+      "containing_command_exit_code": 1,
+      "log": "native/client/assets/raster/reviews/2026-09-10-pursuit/native-suites-and-commitment-fixture-failure.log",
+      "scope": "Every native suite completed successfully. That command subsequently failed two main.cpp commitment fixture assertions; final main-only fixture/content corrections are covered by the final supported build/all71. Core, session, presentation and unit-test sources are unchanged since their successful run."
+    },
+    "browser_playtest": {
+      "exit_code": 0,
+      "passed": 32,
+      "total": 32,
+      "log": "native/client/assets/raster/reviews/2026-09-10-pursuit/browser-32-of-32.log"
+    },
+    "importer": {
+      "exit_code": 0,
+      "passed": 10,
+      "total": 10,
+      "log": "native/client/assets/raster/reviews/2026-09-10-pursuit/importer-10-of-10.log"
+    },
+    "equipment": {
+      "exit_code": 0,
+      "poses": 60,
+      "weapons": 5,
+      "scales": 3,
+      "fractional_sampling_passed": true,
+      "log": "native/client/assets/raster/reviews/2026-09-10-pursuit/equipment.log"
+    },
+    "frame_budget": {
+      "width": 3440,
+      "height": 1440,
+      "frames": 20,
+      "static_avg_ms": 23.283,
+      "moving_avg_ms": 25.402,
+      "moving_peak_ms": 34.124,
+      "average_limit_ms": 40
+    },
+    "live": {
+      "supported_launch": "native/tools/play-native.ps1 -Local",
+      "viewed_original_resolution": true,
+      "capture": "native/client/assets/raster/reviews/2026-09-10-pursuit/live-gear-3440x1440.png",
+      "exit_code": 0,
+      "fresh_sky_game_window_list_empty": true,
+      "completed_manual_combat": false,
+      "outcome": "Both idle local sessions lost the Scion before combat actions could be verified. Gear input and clean closure were verified; real combat/loot/extraction acceptance comes from the production scenarios.",
+      "logs": [
+        "native/client/assets/raster/reviews/2026-09-10-pursuit/live-first-launch-close.log",
+        "native/client/assets/raster/reviews/2026-09-10-pursuit/live-second-launch-close.log"
+      ]
+    },
+    "review_limits": "native/client/assets/raster/reviews/2026-09-10-pursuit/README.md"
+  },
+  "review_paths": [
+    "native/client/assets/raster/reviews/2026-09-10-pursuit/README.md",
+    "native/client/assets/raster/reviews/2026-09-10-pursuit/walk-production-crops-1x.png",
+    "native/client/assets/raster/reviews/2026-09-10-pursuit/root-review.json"
+  ],
+  "retained_evidence_manifests": [
+    "native/client/assets/raster/reviews/2026-09-10-pursuit/retained-evidence.json"
+  ],
+  "additional_dependency_paths": [
+    "native/tools/raster/raider-pursuit-production-adoption.json"
+  ],
+  "reviewed_source_hash_policy": "canonical_lf",
+  "reviewed_source_sha256": {
+    "native/client/local_session.cpp": "06b5072f98def3fec92652ef25a0085f25c162d00dcd0fc0fc67918bf4d2a624",
+    "native/client/local_session.hpp": "0d1c72acb1c65b1e14fbf3b94be70488a73356a3c8f813a8acada6214ac77a63",
+    "native/client/main.cpp": "8b57aa33693cd691e58a7f886ef84d97de65924467a89aaf3fcb1a56fb50ba90",
+    "native/client/presentation_events.hpp": "4e010f2a082d45f07264355591d815844fc91d28c0b9f05a0058e23356669c3a",
+    "native/client/presentation_state.cpp": "e8a43eebc0a5440bbe5f0f7ec6f9773b4198d988b82d111b1e1773e3ce34b107",
+    "native/client/session.hpp": "cd530757cdd7277b52fcc0660b05801679484090420785faacdd46d8c467e238",
+    "native/include/verdigris/core.hpp": "70bfc6a9a7b7337c8da86ee2fb715a08f43429be248086196d01d8df195c054d",
+    "native/src/core.cpp": "895350071fabfd3baf6a26a322ca22db24df50bed114b6a27fc177a58e3e2215",
+    "native/tests/core_tests.cpp": "6f0cfdb9e4fe7cff2f0bab1913e44eec743c681dd5d5c293b61e75bba6bc9a4d",
+    "native/tests/presentation_events_tests.cpp": "8f616a21daf37b35af19eb491002693988f5d1d639554184df0c40dcadfd5ac6",
+    "native/tests/session_tests.cpp": "2f0555a622387a8462618d598df6b07594c5d4e5a55ee2d6812fbfb480aaf21e"
+  },
+  "validated_client_binary_raw_sha256": "e0cdc3cca19d164eece47b955b0c08b2c38b1b048c0c6bf5b8311178d9c45fe9"
+}

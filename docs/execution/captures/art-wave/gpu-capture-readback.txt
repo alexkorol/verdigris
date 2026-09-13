@@ -1,0 +1,5 @@
+backend=software
+content=cooked:bronze-stone-v1
+platform=software
+width=64
+height=64

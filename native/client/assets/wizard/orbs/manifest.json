@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "pack": "wizard_orbs",
+  "provenance": {
+    "wizard_commit": "66a5d9ff6810e886c1bd08cbeaaf83cabf92aae9",
+    "module_id": "wizard.wizard-orbs",
+    "source_root": "WIZARD/tools/wizard_orbs",
+    "generated_by": "TASK-0168"
+  },
+  "contact_sheet": "contact_sheet.png",
+  "layers": [
+    {
+      "id": "life_art",
+      "role": "color_plate",
+      "path": "layers/life_art.jpg",
+      "source_path": "tmp/orbs-original/extracted/art.jpg",
+      "sha256": "11ba0f762e7ba56c793c7f2d938b19562731d48e1c8e27a12728aa087f6cf370",
+      "bytes": 181343,
+      "dimensions": { "w": 1672, "h": 941, "mode": "RGB" }
+    },
+    {
+      "id": "mask",
+      "role": "orb_mask",
+      "path": "layers/mask.png",
+      "source_path": "tmp/orbs-original/extracted/mask.png",
+      "sha256": "53eb592b25298711d68f3303ab580a742583a068d1630cfc4ca97f3ed0bd0c6d",
+      "bytes": 22150,
+      "dimensions": { "w": 836, "h": 470, "mode": "L" }
+    },
+    {
+      "id": "normal",
+      "role": "normal_map",
+      "path": "layers/normal.jpg",
+      "source_path": "tmp/orbs-original/extracted/norm.jpg",
+      "sha256": "1f326c708662510a542c0b3bf600c9abe176911b8a6a10e3b719a2c09fa5f384",
+      "bytes": 80228,
+      "dimensions": { "w": 1254, "h": 706, "mode": "RGB" }
+    },
+    {
+      "id": "depth_pack",
+      "role": "depth_ao_pack",
+      "path": "layers/depth_pack.jpg",
+      "source_path": "tmp/orbs-original/extracted/pack.jpg",
+      "sha256": "ae4e6d7f60399b9bd368961e46ccd7d696c53f526f2718cb7a8d2433b247e92a",
+      "bytes": 80691,
+      "dimensions": { "w": 1254, "h": 706, "mode": "RGB" }
+    },
+    {
+      "id": "stone",
+      "role": "reserved_stone",
+      "path": "layers/stone.jpg",
+      "source_path": "tmp/orbs-original/extracted/stone.jpg",
+      "sha256": "0a3794396ca96e8b6651b8dd60cc1e661e6092f177d6f33c99ecb545a4a21385",
+      "bytes": 117956,
+      "dimensions": { "w": 1254, "h": 706, "mode": "RGB" }
+    },
+    {
+      "id": "empty_glass",
+      "role": "empty_glass",
+      "path": "layers/empty_glass.jpg",
+      "source_path": "tmp/orbs-original/extracted/empty.jpg",
+      "sha256": "2fedda107fd4ddc47080bfdbd880d0cd6ea29ece916db1927bbaa714e112698a",
+      "bytes": 92715,
+      "dimensions": { "w": 1254, "h": 706, "mode": "RGB" }
+    }
+  ],
+  "states": [
+    {
+      "id": "full",
+      "role": "depletion_state",
+      "label": "full",
+      "path": "states/full.png",
+      "source_path": "tools/wizard_orbs/screenshots/shot_hero.png",
+      "sha256": "76d0c951d571cda54b0b91a03484744d435c5d9066953021fcb3b25fbfa101b2",
+      "bytes": 847860,
+      "dimensions": { "w": 1254, "h": 706, "mode": "RGB" }
+    },
+    {
+      "id": "low",
+      "role": "depletion_state",
+      "label": "low",
+      "path": "states/low.png",
+      "source_path": "tools/wizard_orbs/screenshots/shot_low.png",
+      "sha256": "86f4084dfe71c198e96a2caf49c22ecd5eda20a874aa55f53928f7c63aa9ba68",
+      "bytes": 691487,
+      "dimensions": { "w": 1254, "h": 706, "mode": "RGB" }
+    },
+    {
+      "id": "reserved",
+      "role": "depletion_state",
+      "label": "reserved",
+      "path": "states/reserved.png",
+      "source_path": "tools/wizard_orbs/screenshots/shot_reserved.png",
+      "sha256": "1f32fa2d440acc8fe9c21b5607d627c6ce29557f4e06238b25dd98dc9587f4e4",
+      "bytes": 876636,
+      "dimensions": { "w": 1254, "h": 706, "mode": "RGB" }
+    },
+    {
+      "id": "empty",
+      "role": "depletion_state",
+      "label": "empty",
+      "path": "states/empty.jpg",
+      "source_path": "tmp/orbs-original/extracted/empty.jpg",
+      "sha256": "2fedda107fd4ddc47080bfdbd880d0cd6ea29ece916db1927bbaa714e112698a",
+      "bytes": 92715,
+      "dimensions": { "w": 1254, "h": 706, "mode": "RGB" }
+    }
+  ]
+}

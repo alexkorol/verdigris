@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-ART-001",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "5f33604e",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "visual-target",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario move-and-camera", "exit_code": 0}
+  ],
+  "assertions": [
+    "in-game HUD names camera top-down, adult proportion, bronze-stone palette, ink-on-panel contrast",
+    "target:concept-art cannot substitute",
+    "loaded billboards do not paint a skeleton art: PNG billboards loaded chip",
+    "missing art still warns on the owner HUD; F3 still shows the loader line",
+    "composition sheet shows a filled XP meter",
+    "live rig uses adult head ratio (~1/8); a 1/3 chibi head cannot pass",
+    "composition sheet shows a held item on the world actor, not a paper-doll seat",
+    "Scion cloth/metal paint bronze (not GDI-capture blue)",
+    "village trees are a forked clustered canopy; a circle-on-stick cannot pass",
+    "town wardens use jointed legs, a snout, and filled claws; a crate foe cannot pass",
+    "live HUD names Adult camera and Bronze palette",
+    "Adult camera stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Adult camera is the anti-pattern",
+    "live HUD names Jointed warden and Snout claws",
+    "Jointed warden stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Jointed warden is the anti-pattern",
+    "overlapping scenery and terrain tiles shift by one uniform delta under pan at min/default/max zoom",
+    "live HUD names Uniform pan and Zoom lock",
+    "Uniform pan stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Uniform pan is the anti-pattern",
+    "scenery and terrain tiles share one pan delta at default zoom",
+    "live HUD names Kit lock and Same delta",
+    "Kit lock stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Kit lock is the anti-pattern"
+  ],
+  "negative_control": {
+    "name": "external concept-art HUD token, a loader chip as the sheet, a chibi head, Adult camera covering WASD/objective/Tin village/Life, a crate-shaped foe, Jointed warden covering WASD/objective/Tin village/Life, Uniform pan covering WASD/objective/Tin village/Life, Kit lock covering WASD/objective/Tin village/Life, a free tile that slides independently under pan, or a sliding kit under camera move",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/visual-target-960x600.png",
+      "sha256": "25fdede9435b8fa8b52ea92cf0c96da429af28caa02d2066895db1d93ac78bc1",
+      "produced_by": "native/build/verdigris_client.exe --scenario visual-target"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/first-fight-960x600.png",
+      "sha256": "deffc52e77010af4b5d12acc63a5af2a6d80faeb677fcbfc869f56c22737d4dd",
+      "produced_by": "native/build/verdigris_client.exe --scenario first-fight"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/zoom-invariance-960x600.png",
+      "sha256": "4d34111fbecbe6a835e82ac056aff8763f13b4184f12ff946fe7468e3d3a6845",
+      "produced_by": "native/build/verdigris_client.exe --scenario zoom-invariance"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/move-and-camera-960x600.png",
+      "sha256": "5432b151ff53e6a54acc0f2283963435c04042fe5c2fae2fc0fee590eee6a22f",
+      "produced_by": "native/build/verdigris_client.exe --scenario move-and-camera"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Composition axes remain HUD labels on the live expedition, not a separate art bible PNG.",
+    "visual-target owner strip paints Adult camera / Bronze palette and parks off WASD, the objective, Tin village, and Life. Chibi head cannot certify.",
+    "first-fight owner strip paints Jointed warden / Snout claws and parks off WASD, the objective, Tin village, and Life. Crate foe cannot certify.",
+    "zoom-invariance owner strip paints Uniform pan / Zoom lock and parks off WASD, the objective, Tin village, and Life. A free tile cannot certify the camera contract.",
+    "move-and-camera owner strip paints Kit lock / Same delta and parks off WASD, the objective, Tin village, and Life. A sliding kit cannot certify the pan contract. Covering those combat surfaces cannot certify.",
+    "Mute chip stays owner-facing. Loader jargon lives on F3.",
+    "Does not re-spec TASK-0108 or Owner Demo (VG-ART-007 mixed-pack review not this packet).",
+    "32bpp scenario DIBs still need dc_color; live CreateCompatibleBitmap path does not.",
+    "No TASK numbers minted."
+  ]
+}

@@ -1,0 +1,23 @@
+from pathlib import Path
+import csv, math
+from PIL import Image, ImageDraw
+
+root = Path(__file__).resolve().parents[1]
+captures = root / 'docs/execution/captures/art-wave'
+sheet = Image.new('RGB', (1280, 360), (31, 30, 28))
+draw = ImageDraw.Draw(sheet)
+for row, (direction, count, camera) in enumerate((('ne', 6, (2800, 3200)), ('nw', 8, (3200, 3200)))):
+    records = list(csv.DictReader((captures / f'native-pursuit-{direction}.csv').open()))
+    for phase in range(count):
+        name = f'native-pursuit-{direction}-walk-{phase:02d}.png'
+        record = next(r for r in records if r['capture'] == name)
+        def lround(value):
+            return math.floor(value + .5) if value >= 0 else math.ceil(value - .5)
+        x = 683 + lround((int(record['x']) - camera[0]) * .85)
+        y = 384 + lround((int(record['y']) - camera[1]) * .85)
+        original = Image.open(captures / name).convert('RGB')
+        crop = original.crop((x-80, y-138, x+80, y+22))
+        sheet.paste(crop, (phase*160, row*180+20))
+        draw.text((phase*160+6, row*180+4), f'{direction.upper()} {phase} / {record["time_ms"]} ms', fill=(240,231,209))
+sheet.save(root / '.ci-artifacts/pursuit-production-crops-1x.png')
+print('Unscaled crops of production walk captures; anchored from their actual CSV world positions.')

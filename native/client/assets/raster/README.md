@@ -1,0 +1,264 @@
+# Pixel world art: current integration
+
+The production Windows client now draws the imported player, enemy, NPC,
+scenery, terrain and loot PNGs from `runtime/`. `raster_art.hpp` caches decoded
+and nearest-neighbor scaled images with bounded memory. Static props use
+visible content height; animation uses the shared full-canvas pivot and scale.
+
+`source/` retains generated candidates, including rejected ones. `prompts/`
+records the actual image requests, reference paths and observed failures.
+`runtime/catalog.json` resolves import order and records the active source,
+conversion settings, hashes and limitations for each of 176 PNGs. The importer
+uses the owner's actual Pixel Respecter project at
+`Z:/Code/Python/pixel-perfecter`; it is not a substitute pixelation filter.
+
+Read [RESEARCH.md](RESEARCH.md) for firsthand Image 2.5 prompts, demonstrations
+and critical feedback, and [PROMPTING.md](PROMPTING.md) for the resulting local
+workflow. Model variant names are recorded only where the source actually
+identifies them; our image tool has no model selector.
+
+## Current milestone: quieter interior floors and depth-sorted stone walls
+
+Dungeons use quiet earth and crypts use the new quiet stone tile. Opaque
+64x96 wall modules cover the authoritative 64x64 blocked-cell footprints,
+share actor depth sorting and fade over the player's visible sprite.
+Actual Pixel Respecter imports bring the catalog to 176 PNGs, 33 manifests
+and 62 sources; all 174 previous PNGs remain byte-identical. Published MIT
+seam-processing code, original prompts and plane-normalization recipes are
+retained with the selected assets.
+
+Native suites passed; the final client run passed all 73 scenarios after a
+backend-free fixture lookup fix. Browser 32/32, importer 10/10 and ground cache
+checks pass. Static/moving fullscreen averages are 22.429/24.785 ms. Root viewed
+production wall/floor captures and the supported live remote dungeon, then
+verified clean exit. Repeating slabs, wall joins and abrupt cutaway transitions
+remain provisional. The owner requested pause and ship; broader work is unfinished.
+[Evidence and acceptance scope](reviews/2026-09-10-terrain-walls/README.md).
+
+## Previous milestone: native server pursuit and reference-guided monster walks
+
+The normal native server's `WorldSimulation` now moves ordinary melee enemies.
+The earlier pursuit milestone below covered the smaller local `Simulation`.
+Continuous positions advance only on the server's ordinary 150 ms tick, using
+50 ms substeps, bounded catchup, visibility, a home leash, tile collision and
+body separation. Existing contact ranges, damage and attack clocks remain.
+Warnings and recovery stop travel. The remote client receives changed actor
+positions directly and interpolates display coordinates without moving the
+authority endpoint; facing survives contact and stop. Common enemies retain
+their normal size when delivering a hit.
+
+Four SE raider and eight SW wight walk frames bring the catalog to 174 PNGs,
+31 manifests and 60 sources. All 162 previous PNGs remain byte-identical.
+The SE trial adapts Higgsfield's explicit pose-guide roles using accepted hero
+frames and the raider identity; the wight adapts PURESO's walking-sheet workflow.
+Exact source prompts, failures, alpha repairs and reference roles are retained.
+
+Supported native build, all suites and all 72 client scenarios pass; browser
+32/32, importer 10/10 and equipment/sampling checks pass. Static/moving
+3440x1440 averages are 22.510/24.684 ms, with 33.976 ms moving peak under the
+unchanged 40 ms average limits. Root viewed all four actual SE pursuit phases,
+seven wight phases during real crypt pursuit, contact and scene replacement.
+The eighth wight phase passes the production raster frame check; this short
+live chase did not paint it. Normal launch, House/Scion creation, expedition
+entry and F3 were verified in the live window, followed by clean exit.
+
+This is provisional integration. Body/mask/axe drift and partly obscured wight
+hip continuity remain. Manual combat completion was not demonstrated. Noisy
+dungeon/crypt ground, flat wall placeholders, other monster directions and
+weapon-specific actions remain open.
+[Evidence and exact acceptance limits](reviews/2026-09-10-monster-motion/README.md).
+
+## Previous milestone: local pursuit and directional walking
+
+Six NE and eight NW raider walk frames join the existing SW eight-frame walk.
+All 148 previous runtime PNGs remain unchanged; 29 manifests resolve 55 sources
+to 162 active sprites. SE walking remains rejected because its repeated
+leading leg did not form a complete gait.
+
+Local testbed enemies pursue around shared scenery collision. Input commands
+resolve once per 50 ms tick, and actor motion follows actual travel. Immutable
+event poses preserve strike direction and death/drop positions across later
+movement. Local sessions preserve coordinates, actor identity and floor
+geometry through entry, extraction and re-entry. Entry construction clears
+both physical anchors and the initial hero/stair artwork; one Tin2 tree moves
+to make the previously hidden entrance visible.
+
+Final supported build/all 71 scenarios pass. Native suites, browser 32/32,
+importer 10/10 and equipment/sampling checks pass. Fullscreen static/moving
+averages are 23.283/25.402 ms; moving peak is 34.124 ms. Both average limits
+remain 40 ms. Root viewed all fourteen new production walk poses, the actual
+detour/contact and cleared entrance, and the 3440x1440 live window. The live
+local testbed killed the idle character during inspection; successful fight,
+loot and extraction evidence comes from the production harness. Opening pace
+and full interactive-session acceptance remain unfinished.
+
+[Evidence and precise acceptance limits](reviews/2026-09-10-pursuit/README.md).
+
+## Previous milestone: pixel contact, dust and retained bodies
+
+Nine new pixel sprites replace geometric dust/swing feedback and add a four-pose SW
+raider collapse. The catalog now contains 148 assets across 27 manifests and 52
+sources. Each new output exactly matches its reviewed Pixel Respecter candidate;
+all 139 previous runtime PNGs remain unchanged.
+
+Ordinary native melee now identifies its attacker before damage. Identified
+remote melee/thrust/sweep does the same; ranged and unknown attacks retain their
+existing damage feedback. Live ticks age old effects before ingesting contact,
+so the first paint keeps the contact pose. Session deaths use a prior actor
+snapshot when polling/painting has already removed the living enemy.
+
+Falls last 160 ticks (8 seconds), with four poses over 8 ticks and a final
+20-tick fade. Settled bodies draw beneath standing actors. Up to 32 bodies share
+the 128-effect cap; transient bursts preserve them. Death never creates a live
+actor or a second reward, and scene/loss transitions clear retained bodies.
+
+Final supported build/all 69 scenarios pass. Native core/networking/session/
+presentation/audio suites, browser 32/32, importer 10/10 and equipment 60x5x3 plus
+sampling pass. Twenty 3440x1440 stationary frames average 25.426 ms; moving
+frames average 25.467 ms with 35.561 ms peak. Both average gates remain
+40 ms. Root viewed the final supported live window and closed it with exit0.
+
+[Production review and remaining limits](reviews/2026-09-10-feedback/README.md).
+
+## Previous milestone: reference-led attacks and readable warnings, September 10, 2026
+
+Twenty-four manifests resolve 148 import records to 139 active PNGs from 49 sources.
+All four hero strike directions have six poses; raider SW also has six. NE uses
+the accepted idle palette and measured equipment grips. Existing drop art now
+matches twelve item families, and compatible storehut variation reuses current
+landmarks. Warning boundaries preserve visible actors; real elite attacks paint
+contact on the confirmed damage event and then recover.
+
+Supported build/all 68 scenarios, native suites, browser 32/32, importer 10/10 and
+equipment 60×5×3 plus sampling pass. Fullscreen static/moving averages are
+22.550/23.993 ms, moving peak 33.926 ms; unchanged 40 ms average gates. Root viewed
+actual contact, warning, item and scenery captures, native equipment grids and
+the supported live window. [Evidence and remaining limits](reviews/2026-09-10-actions/README.md).
+
+NE follow-through width/reset and clip identity remain imperfect. Bow/staff
+attachment is not weapon-specific animation. Raider art covers SW; elite event
+proof does not claim ordinary native melee has attacker-owned animation.
+Native pursuit, other monster motion, pixel effects/deaths and terrain repeat
+remain unfinished. Exact active inputs and historical-source limits are recorded
+in the two strike dependency manifests. This is provisional integration.
+
+## Previous milestone: ground, motion registration and HUD, September 10, 2026
+
+- Twenty-two manifests resolve 136 import records to 127 active PNGs from 41
+  source files. The added quiet earth and eight SW raider poses use the actual
+  Pixel Respecter pipeline. The raider retains its axe across the accepted cycle.
+- World-aligned paths and planting use the existing village/town landmarks and
+  solid footprints. The 512-tile ground cache is bounded and invalidates on
+  source reload. Ground detail is quieter, but the generated earth is not
+  certified seamless; repeat checks retain the measured edge mismatch.
+- NW walking frames move down by exactly one pixel in the first row and five
+  in the second, with matching equipment registration. No body pixels are
+  rescaled or repainted. Actual movement starts the walk immediately; the
+  existing stop smoothing still settles to idle.
+- Route, audio and quickbar chrome uses the shared ornate skin, measured text
+  and responsive placement. Equipment vital/stat rows no longer overlap, and
+  the XP caption clears character/gear panes at 960x600. Fullscreen and smaller
+  production captures, including both panes with audio muted, were reviewed.
+- Native suites and all 66 final scenarios pass. Twenty 3440x1440 paints average
+  23.258 ms stationary; twenty measured moving paints average 24.715 ms with a
+  36.620 ms peak. Both retain the 40 ms average gate. Browser playtest is 32/32,
+  importer 7/7, and equipment/ground/HUD probes pass.
+- The raider review moves a monster through the production presentation path
+  with scripted, collision-checked positions and verifies all eight phases and
+  return to idle. Native enemy AI remains stationary; this is not pursuit proof.
+- Reference-led NE contact repair improved the striking arm, but the next
+  generated phase switched arms and its matte cleanup damaged the forearm.
+  Both exact requests and diagnostic outputs are retained outside runtime.
+  These are local built-in-tool observations; no model variant was selectable.
+- [Viewed live window, phase captures, traces, clips, failures and final logs](reviews/2026-09-10-ground-hud/README.md).
+
+## Previous integration milestone, September 10, 2026
+
+- Hero walking now uses SE4, SW8, NW8 and NE8 frames. SE, SW and NW strikes
+  each have six poses, with frame3 displayed at confirmed contact. Distance
+  drives walking phase; completed strikes and released movement return to idle.
+- The actual Pixel Respecter importer reduces one shared palette across each
+  new cycle and preserves common 80x96 canvases. Twenty manifests resolve 127
+  import records to 118 active PNGs from 39 source files. Binary alpha, at most
+  32 colors, dimensions and source/output hashes are verified.
+- Published workflows were applied, with exact prompts and failures retained.
+  Kiki's preparation/contact/recovery structure guided strikes. SW's two bad
+  hand poses were repaired as individual edits using Noel's fallback and
+  Flixly's transition/identity reference roles. Corrected D2 motion references
+  stay in the external study cache; none of their original pixels ship here.
+- Equipment follows measured hands and changing body/finger occlusion. The
+  probe passes 54 poses x five weapons x three scales, with grip error <=0.5px,
+  stable GDI/cache usage and unchanged SE hand fingerprints. Bow/staff carry
+  orientation remains a limitation during these melee body poses.
+- A small pixel spark and a tint through the actual struck sprite replace
+  contact disks at the feet. The 48x48 spark's measured contact origin is
+  [21.5,27.5], used by `draw_contact_spark`; it fades as a static sprite.
+  Damage text ends above its lift rather than extending down across life bars.
+- Decorative trees frame the clearing, team rings are smaller, and life bars
+  follow visible sprite bounds. `ui_skin.hpp` now composites the existing
+  detailed orb art with textured liquid at 21 fill levels, preserving glass,
+  stone hands and empty states. Its layer cache is capped at 64 layers/16MiB.
+- Native suites and all 64 final scenarios pass. The unchanged fullscreen
+  gate measures 18.7 ms over twenty 3440x1440 frames; the dense 128-effect frame
+  measures 9.4 ms. Browser final rerun passes 32/32. Seven importer tests and
+  the orb, equipment and color checks pass.
+- [Retained live captures, actual motion traces, clips and verification](reviews/2026-09-10/README.md).
+
+That milestone verified integration for further iteration. Its elevated NW
+feet are corrected above; SW strike heads and cross-clip palette/outline changes
+still need refinement.
+
+## Verified milestone, September 9, 2026
+
+- Follow-up: three individual referenced hero directions replace the old
+  costume-changing idles; larger props were reconstructed at a finer grid to
+  match the hero's display pixel scale. Quiet packed earth and physical exit
+  stairs replace the cracked lattice and giant exit plate. A brazier now
+  accompanies the restrained gate light. These changes were inspected in the
+  actual 3440x1440 window and at smaller production capture sizes.
+- Equipment uses measured grips and body/finger occlusion for the sprite
+  actually drawn, including idle fallbacks. Walking settles to idle after
+  movement stops; the former bool conversion treated the smoothing tail as
+  permanent movement. The separate equipment checks pass for 12 poses, five
+  weapons, three sizes, and eight additional sampling sizes.
+- Current final build: all 64 native scenarios pass, including the new actual
+  movement/stop capture. Frame budget is 18.7 ms over twenty 3440x1440 frames;
+  the dense 128-effect frame is 8.6 ms. Both retain the 40 ms limit.
+- Corrected reversed color bytes in the orb masks, PNG exporter and orb test.
+  An independent GDI swatch/export round trip verifies RGB preservation. The
+  scenario painter now uses the display's color format; its former memory-DC
+  bitmap was monochrome and cost 50.6 ms under the dense-effect fixture.
+- Browser playtest passes 32/32. Native core/network/session/presentation/audio
+  suites pass. Six importer checks and the equipment probes pass.
+- Retained [live capture, motion clip, trace and review](reviews/2026-09-09/README.md).
+
+The preceding initial milestone established these foundations:
+
+- Six actor families have four named static direction assets. Hero/raider
+  also have attack poses; a first SE hero walk has four separate referenced
+  images. Facing and identity remain subject to the caveats below; this is
+  not full animation coverage.
+- The active catalog verifies real RGBA, binary alpha, at most 32 colors per
+  asset, native dimensions and source/output hashes.
+- Six importer checks pass, including preservation of common animation scale
+  and limiting enclosed-background cleanup to reviewed rectangles.
+- All 62 existing client scenarios pass; frame budget is 16.6 ms over twenty
+  3440x1440 frames, below the unchanged 40 ms bound. The added `raster-world`
+  scenario separately passes directional asset decoding, four distinct SE
+  phase paints through the production helper, and a production scene capture.
+- `npm run playtest` passes 32/32. The new native build passes. Full native
+  core/network/session suites passed during the initial renderer integration;
+  this refinement changes presentation and the XP pixel-sampling bounds.
+- Viewed the supported live-window capture at its actual 3440x1440 resolution.
+  Houses now have useful scale relative to people, and contact shadows retain
+  the ground texture. Native and 4x walk strips were inspected.
+
+## Still unfinished
+
+The fall clip covers only SW raiders. Other death directions/families retain
+dust, and deaths without a known prior snapshot cannot fabricate a body. Slash
+trails are generic combat feedback, not measured weapon-specific paths. Native
+pursuit, other monster motion, bow/staff actions, cross-clip identity, terrain
+repetition and remote wall presentation remain unfinished. WarCry, spawn/loss
+effects, semantic boundaries, team rings and shadows still use procedural forms.
+The broad pixel-world goal remains active.

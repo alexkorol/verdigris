@@ -259,6 +259,11 @@ struct Event {
   std::string text;
   int value = 0;
   std::uint64_t tick = 0;
+  // Immutable pose of actor_id at emission. Later commands in the same tick
+  // may turn or move that actor before presentation drains this event.
+  bool has_actor_pose = false;
+  Vec2 actor_position{};
+  Vec2 actor_facing{};
 };
 
 enum class CommandType {
@@ -311,11 +316,35 @@ struct InstanceState {
   std::string seasonal_objective_text;
 };
 
+// Content supplies the same solid circles that presentation draws. Radii are
+// rounded outward to whole world units; actor clearance is added by the core.
+// This live scene data is deliberately absent from durable House snapshots.
+struct NavigationObstacle {
+  Vec2 center;
+  int radius = 0;
+};
+inline constexpr std::size_t kMaxNavigationObstacles = 64;
+bool navigation_segment_blocked(const std::vector<NavigationObstacle>& obstacles,
+                                Vec2 from, Vec2 to);
+
 class Simulation {
  public:
   explicit Simulation(std::uint64_t seed, const std::string& house_name = "House Verdigris");
 
   void dispatch(const Command& command);
+  // One 50 ms authority step, including when commands is empty. Repeated
+  // movement cannot multiply displacement; Dash replaces walking and each
+  // action kind resolves at most once. Aim/action ordering is preserved.
+  void dispatch_tick(const std::vector<Command>& commands);
+  void set_navigation_obstacles(std::vector<NavigationObstacle> obstacles);
+  const std::vector<NavigationObstacle>& navigation_obstacles() const {
+    return navigation_obstacles_;
+  }
+  // Capture when constructing scene content: player, extraction, living
+  // monsters and the still-owed pack's birth positions. Later calls reflect
+  // current living positions; callers retain the route-construction snapshot.
+  std::vector<Vec2> navigation_anchors() const;
+  bool movement_blocked(Vec2 from, Vec2 to) const;
   void set_seasonal_mechanic(SeasonalMechanic* mechanic);
   void create_successor(const std::string& name);
 
@@ -385,11 +414,13 @@ class Simulation {
   void retire_instance();
   void advance_tick();
   void enemy_turn();
+  void pursue(Actor& enemy, const Actor& player, int contact_range);
+  std::optional<Vec2> pursuit_waypoint(Vec2 from, Vec2 target) const;
   Actor make_monster(Vec2 position, int level, bool elite);
   void spawn_enemy();
   void materialize_wave();
   void record_equipped_item_use(Actor& attacker);
-  void drop_reward();
+  void drop_reward(const std::string& defeated_actor_id);
   void clear_route_and_unlock_children();
   void handle_death(Actor& actor, const std::string& killer_id = {});
   void record_legend(const std::string& kind, const std::string& subject,
@@ -404,6 +435,11 @@ class Simulation {
   std::vector<Scion> fallen_scions_;
   std::vector<Actor> actors_;
   InstanceState instance_;
+  std::vector<NavigationObstacle> navigation_obstacles_;
+  std::vector<Vec2> navigation_vertices_;
+  std::vector<std::vector<int>> navigation_edges_;
+  bool defer_enemy_turn_ = false;
+  bool enemies_active_ = true;
   // Unmaterialized warden roster of the active instance (see pending_wave()).
   std::vector<Actor> pending_wave_;
   // Tick at which the remaining owed pack materializes together; 0 when
@@ -796,7 +832,30 @@ struct WorldMonster {
   // and m.tags).
   std::vector<std::string> tags;
   int coins = 0;
+  // Continuous authority for live movement. x/y remain the rounded occupied
+  // tile used by the existing collision/combat contract, never a render step.
+  WorldPosition continuous_position{};
+  bool has_continuous_position = false;
+  WorldPosition movement_from{};
+  std::uint64_t movement_sequence = 0;
+  std::int64_t movement_started_at_ms = 0;
+  int movement_duration_ms = 0;
+  Vec2 movement_facing{};
+  WorldPosition pursuit_home{};
+  bool pursuit_active = false;
+  WorldPosition world_position() const {
+    return has_continuous_position ? continuous_position
+                                  : WorldPosition{static_cast<double>(x), static_cast<double>(y)};
+  }
 };
+
+namespace world_pursuit {
+inline constexpr int kStepMs = kSimulationTickMs;
+inline constexpr int kMaxCatchupMs = 150;  // one ordinary native server tick
+inline constexpr double kAcquireTiles = 4.0;
+inline constexpr double kRetainTiles = 6.0;
+inline constexpr double kHomeLeashTiles = 8.0;
+}  // namespace world_pursuit
 
 struct WorldCombatEvent {
   std::string type; // hit, death, telegraph, drop
@@ -920,6 +979,9 @@ class WorldSimulation {
   std::vector<WorldCombatEvent> advance_combat(int player_level, int player_attack,
                                                int& player_life, int player_life_max,
                                                std::int64_t now_ms);
+  // Only the ordinary server clock advances pursuit. Input/combat polling
+  // must not spend movement time; repeated or older clock samples are inert.
+  void advance_monster_movement(std::int64_t now_ms, bool player_alive = true);
   void set_level(int level);
   void heal_player(int& player_life, int player_life_max);
   // Display name for a template/layout pair (falls back to template-only,
@@ -956,6 +1018,8 @@ class WorldSimulation {
  private:
   bool can_move_to(double target_x, double target_y) const;
   bool is_blocked(const WorldPosition& origin, const WorldPosition& delta) const;
+  bool monster_segment_clear(std::size_t mover, WorldPosition from, WorldPosition to) const;
+  std::optional<WorldPosition> monster_waypoint(std::size_t mover) const;
   void register_step(const std::string& direction, int duration_ms, bool blocked,
                      std::int64_t now_ms);
   void generate_instance();
@@ -998,6 +1062,7 @@ public:
 private:
   std::uint64_t next_player_attack_ms_ = 0;
   std::uint64_t next_boss_telegraph_ms_ = 0;
+  std::int64_t last_pursuit_tick_ms_ = -1;
   bool boss_warning_seen_ = false;
   int player_level_ = 1;
   MovementStepInfo last_step_;

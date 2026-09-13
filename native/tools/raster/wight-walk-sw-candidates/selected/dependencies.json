@@ -1,0 +1,276 @@
+{
+  "schema_version": 1,
+  "state": "frozen_selected_pixels_root_import_authorized",
+  "reconstruct_command": "& 'Z:/Code/Python/pixel-perfecter/.venv/Scripts/python.exe' 'native/tools/raster/import_assets.py' 'native/tools/raster/wight-walk-sw-candidates/selected/import.json'",
+  "working_directory": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study",
+  "reconstruction_direct_inputs": [
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/import.json",
+      "sha256": "065d567075e74998ed904d6f37c3f7116ee717c96091424281ccac369b5b03a0",
+      "role": "Required exact reconstruction input"
+    },
+    {
+      "path": "native/client/assets/raster/source/wight-walk-sw-v1.png",
+      "sha256": "6817135c9ea8f4eefcb35b583f8bfdc3d858d123e8b17c0fc3a7f6635f3e2c90",
+      "role": "Required exact reconstruction input"
+    },
+    {
+      "path": "native/client/assets/raster/runtime/wight_sw.png",
+      "sha256": "b2a71f83a721a4a6e9414706f4148b432f5a50acbcbd5d73b15a9980b8b8697d",
+      "role": "Required exact reconstruction input"
+    },
+    {
+      "path": "native/tools/raster/import_assets.py",
+      "sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+      "role": "Required exact reconstruction input"
+    }
+  ],
+  "generation_provenance_inputs": [
+    {
+      "path": "native/client/assets/raster/source/wight-walk-sw-v1.png",
+      "sha256": "6817135c9ea8f4eefcb35b583f8bfdc3d858d123e8b17c0fc3a7f6635f3e2c90",
+      "role": "Source, original prompt, actual reference or reproducible reference assembly"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/wight-walk-sw-v1.txt",
+      "sha256": "811d18730c653e03d047956a4b96b32bf28506ab076a9487ebfea3ffa31f1c78",
+      "role": "Source, original prompt, actual reference or reproducible reference assembly"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/wight-walk-sw-v1.provenance.json",
+      "sha256": "d32093e235dbec3d3e11754f37d3558c9fff2c21d2dd4b17d6671aa76592f370",
+      "role": "Source, original prompt, actual reference or reproducible reference assembly"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/hero-sw-gait-guide-4x.png",
+      "sha256": "705014f60cd038f4b23c9d46def4b941d71fd4ede50c4b67b5992cd594f0d95d",
+      "role": "Source, original prompt, actual reference or reproducible reference assembly"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/hero-sw-gait-guide.provenance.json",
+      "sha256": "0e73c4b42c60b8cb880e1f830cbe48df185f065305c96b71de978946a780e272",
+      "role": "Source, original prompt, actual reference or reproducible reference assembly"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/build_guide.py",
+      "sha256": "3fa18d012302825defb85180faae89d9a18d7c2972eb890970cf286c0f52e9c8",
+      "role": "Source, original prompt, actual reference or reproducible reference assembly"
+    },
+    {
+      "path": "native/tools/raster/import_assets.py",
+      "sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+      "role": "Source, original prompt, actual reference or reproducible reference assembly"
+    },
+    {
+      "path": "native/client/assets/raster/runtime/wight_sw.png",
+      "sha256": "b2a71f83a721a4a6e9414706f4148b432f5a50acbcbd5d73b15a9980b8b8697d",
+      "role": "Source, original prompt, actual reference or reproducible reference assembly"
+    },
+    {
+      "path": "native/client/assets/raster/runtime/hero_walk0_sw.png",
+      "sha256": "fc98f21c0b05ce3f8f6dbf57bce248d1e1c76b6ffc15b799e00600e28a3bddee",
+      "role": "Source, original prompt, actual reference or reproducible reference assembly"
+    },
+    {
+      "path": "native/client/assets/raster/runtime/hero_walk1_sw.png",
+      "sha256": "4097dde5cf1fbde8d31a6402ac5ff4d8e5f7e8bd69d5bbae836ff9d4abe67499",
+      "role": "Source, original prompt, actual reference or reproducible reference assembly"
+    },
+    {
+      "path": "native/client/assets/raster/runtime/hero_walk2_sw.png",
+      "sha256": "124d7222fe94f4f352b1bdfe1c796928319a7b734ddbecaca6321ef5515dba67",
+      "role": "Source, original prompt, actual reference or reproducible reference assembly"
+    },
+    {
+      "path": "native/client/assets/raster/runtime/hero_walk3_sw.png",
+      "sha256": "8985a80b875a9a1b99b98d742be7ef3bf26b38fdb1b2dbf61b80eda0183683f3",
+      "role": "Source, original prompt, actual reference or reproducible reference assembly"
+    },
+    {
+      "path": "native/client/assets/raster/runtime/hero_walk4_sw.png",
+      "sha256": "4d5d8f023e4b300cadc543b7f343b303311a371e37b3b6f1f36db3c0a8b49fa3",
+      "role": "Source, original prompt, actual reference or reproducible reference assembly"
+    },
+    {
+      "path": "native/client/assets/raster/runtime/hero_walk5_sw.png",
+      "sha256": "500618b960abc738dacb79215ea19cf1273a11dc3f1e54d9f755f3c1a0768275",
+      "role": "Source, original prompt, actual reference or reproducible reference assembly"
+    },
+    {
+      "path": "native/client/assets/raster/runtime/hero_walk6_sw.png",
+      "sha256": "f4b3a68a15bebc08f924a9ce5c8a908d53e013f6bbf4c904425927c3968834ef",
+      "role": "Source, original prompt, actual reference or reproducible reference assembly"
+    },
+    {
+      "path": "native/client/assets/raster/runtime/hero_walk7_sw.png",
+      "sha256": "380988958b83f7439e2edc18df87c04c8132106fce1325f5bd23d0cb47960412",
+      "role": "Source, original prompt, actual reference or reproducible reference assembly"
+    }
+  ],
+  "selected_output_pngs": [
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/wight_walk0_sw.png",
+      "sha256": "e629505dd6ded21886aac68d5050e278e30758963fabaa76c2daedd9022d2c74",
+      "role": "Frozen candidate pixels; renderer must verify byte-identical runtime import."
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/wight_walk1_sw.png",
+      "sha256": "27af4bf637fa8b1d4627e3d5c3509748a3090713d9e8c83c0434043c89a4257e",
+      "role": "Frozen candidate pixels; renderer must verify byte-identical runtime import."
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/wight_walk2_sw.png",
+      "sha256": "80045fe9fcc4cca57ad204d2a88e66914ffe243628357c6c481c14401b636475",
+      "role": "Frozen candidate pixels; renderer must verify byte-identical runtime import."
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/wight_walk3_sw.png",
+      "sha256": "22c7bd06c790fa99eccac701cd44bb9341d34f525abea45732d1c432e5035d4e",
+      "role": "Frozen candidate pixels; renderer must verify byte-identical runtime import."
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/wight_walk4_sw.png",
+      "sha256": "b18f2542c7fcf744265123cdd629bc99681503fb5401c6b9986fb4f035db80d5",
+      "role": "Frozen candidate pixels; renderer must verify byte-identical runtime import."
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/wight_walk5_sw.png",
+      "sha256": "ce2dc2315ece93a284ee5946715a30493e2de5200616e0fa0246978d9925083d",
+      "role": "Frozen candidate pixels; renderer must verify byte-identical runtime import."
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/wight_walk6_sw.png",
+      "sha256": "998568b7326ccbd99e4d8f2b71c316e7ada1dc7ee4721da6fa2dce6af416d6a5",
+      "role": "Frozen candidate pixels; renderer must verify byte-identical runtime import."
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/wight_walk7_sw.png",
+      "sha256": "18606fe5684cb36f6e0bb05ca62e7fa9b577f1c65811592d76a3de6c7c7274a9",
+      "role": "Frozen candidate pixels; renderer must verify byte-identical runtime import."
+    }
+  ],
+  "review_and_recipe_evidence": [
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/import.json",
+      "sha256": "065d567075e74998ed904d6f37c3f7116ee717c96091424281ccac369b5b03a0",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/import.provenance.json",
+      "sha256": "83c9421037d2c0bbfe107ddbe21b66a7d5cb1d711416e57bb0a21b9e87487055",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/acceptance.json",
+      "sha256": "8b7ee031afc47cbcdfd7d30cf2c3cd7ed842a49b43b01aa6daf1185f6477a335",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/native-review.json",
+      "sha256": "6ddbbf6b3948c73ad631c4f400ae5fcef5c0d50b0f2c0881bbe0df60899d35ce",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/alpha-recipe-review.json",
+      "sha256": "b81aacf6e09fa4b648dd2475b587f55e581ffa8de6b4630ce29e86479473f126",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/alpha-audit.json",
+      "sha256": "b4d4a2279c7e9197ff643b507af6efc76097c01437b071de04cda113070df1ba",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/idle-cycle-idle-1x.png",
+      "sha256": "3f140775569f3d781bfc898b6e17971f2cda41c25489d7922a4856008d2003a0",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/idle-cycle-idle-3x.png",
+      "sha256": "636ebd395f1f7eab8e993210985490f7ce981e1271d07d2e4b723f02f0899b3b",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/contact-3x.png",
+      "sha256": "d66b00867e9be1dc22ecad9a18e82e9669274498dc28b0e03ce6ddc3e680fa27",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/idle-cycle-idle.gif",
+      "sha256": "42219b5b140ceeeaf6000a700634daa08cc3f654f0ddaf7a24a173ef09201741",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/walk-loop.gif",
+      "sha256": "f524c499b9912afa0314fc028c9016ad229cd6ee3376509c4fc4fb00deffe1c8",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/alpha-source-comparison.png",
+      "sha256": "bf58b5f0570d8c873fe441bccac121193e9c1018216b10f34c37ccf740132259",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/hand-alpha-comparison.png",
+      "sha256": "eeda2cd6de814f6bffb3262ab9ce432ee6e2e39aca85d908fe170d5eee8b494d",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/chromatic-edge-review.png",
+      "sha256": "3756e696662c9ed7a548af5537e069a3d33757591a1d466c14149ac039bae39f",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/review_walk.py",
+      "sha256": "3d7266b9fa56b27d90763b15aed4d7af2d84d68c55a1ce45496768f92228ecfc",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/audit_alpha.py",
+      "sha256": "0c2c459588b671ea40095fff825af907c319485e428e363225db4292638c292f",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/playback.html",
+      "sha256": "d75a957da132957d26b18e1476aa32a2cd0a22edc8711dae617fedbffa2375bc",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/alpha-study/build_safe_recipe.py",
+      "sha256": "cff7e6efa8a853c00bdb4dd34e407f6326b7021afdce77c81c7256d5db2f4e5b",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/alpha-study/neutral-components.json",
+      "sha256": "330e3fd0e4cbfd8f8cf3762160f682b8942668772fc383d5c2bf1768bd4c2a4a",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/alpha-study/neutral-gap-review.png",
+      "sha256": "73b508376fa8a5814bbcdb905c8293f396a20b28ce6695094bdff121d50b8870",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/README.md",
+      "sha256": "4765b3f41b262a5d539d30ba44b5416546d8312174b3b1db3b6589ba6848469a",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/selected/idle-reference.png",
+      "sha256": "b2a71f83a721a4a6e9414706f4148b432f5a50acbcbd5d73b15a9980b8b8697d",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/alpha-study/prepare_alpha.py",
+      "sha256": "4e52367651f60c09c535051cd8ab634e36a7e6b50ab7c60b4f4619337e28f3b7",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/v1/import.json",
+      "sha256": "de2d750d8a3601576774789935c2acb02dfc040d4f5992a159acc108150d2456",
+      "role": "Selected alpha/native/motion review and recipe evidence"
+    }
+  ],
+  "external_engine": "Exact external engine source hashes and Python/package versions are recorded in selected/import.provenance.json; external project was read and called, never modified.",
+  "runtime_promotion_owner": "raster_renderer; no runtime/catalog/main edits by this asset lane."
+}

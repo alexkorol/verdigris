@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-ACT-007",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "772a0a08376225c7752116a9d749983957db106e",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "attack-beat",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario attack-beat", "exit_code": 0}
+  ],
+  "assertions": [
+    "a swing sprite without events cannot mint a beat",
+    "AttackStarted advances anticipation and submits attack-anticipate",
+    "DamageApplied advances impact",
+    "dash during anticipation is cancel, not impact",
+    "live HUD names Attack beat and Anticipate"
+  ],
+  "negative_control": {
+    "name": "fabricated swing FX minting an attack beat",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/attack-beat-960x600.png",
+      "sha256": "e98e3c4722b75e3c5d6990d12d02a55f2875b072a46db263a7c27c30c2aa6c1b",
+      "produced_by": "native/build/verdigris_client.exe --scenario attack-beat"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Presentation bridge only. Core melee resolution stays Kimi. Does not re-spec TASK-0108."
+  ]
+}

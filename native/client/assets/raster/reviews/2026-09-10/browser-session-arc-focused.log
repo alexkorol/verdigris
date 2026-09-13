@@ -1,0 +1,56 @@
+
+> verdigris@0.2.0 playtest
+> node playtest/run.mjs session-arc
+
+Booting playtest server on :6510…
+Timing guard: load-adaptive deadlines enabled (max 1.75x; explicit load mode: off; baseline 20ms event-loop lag)
+Playing against ws://localhost:6510
+
+  ▶ session-arc
+      ✓ the session begins with Aldwyn present in town
+      ✓ the first goal begins through an in-world Talk action
+      ✓ Aldwyn frames the first goal around a Warden
+      ✓ first run begins with a real fight
+      ✓ the first goal culminates in the named Warden
+      ✓ the cleared floor persists the return-to-Aldwyn objective
+      ✓ returning from the first goal awards a Verdigris point
+      ✓ loot visibly raises authoritative attack power (0 -> 21)
+      ✓ the looted weapon changes the next fight (9 -> 28 damage)
+      ✓ real combat advanced the scion to level 2
+      ✓ level-up becomes a persisted build choice
+      ✓ the server applies the tree path to combat attributes (+5)
+      ✓ floor 4 presents a visible level wall (5 vs 15)
+      ✓ the next run keeps level 5
+      ✓ the next run keeps the looted weapon equipped
+      ✓ relogin rebuilds the weapon combat bonus
+      ✓ the next run keeps the tree decision
+      ✓ the scion voluntarily starts another populated run
+      ✓ the second run contains a mortal threat
+      ✓ the developed scion enters the crypt by name
+      ✓ the developed vessel becomes an heirloom candidate
+      ✓ a later scion recovers the developed battleaxe heirloom
+      METRICS
+      {
+        "secondsToFirstCombat": 0.97,
+        "secondsToFirstDrop": 5.18,
+        "ttkSeconds": {
+          "level1": 0.14,
+          "level5": 0.25
+        },
+        "meaningfulChoices": {
+          "total": 6,
+          "treePoints": 2,
+          "equipSwaps": 1,
+          "zonePicks": 3
+        },
+        "deaths": 1,
+        "depthReached": 4,
+        "criticScore": 80
+      }
+  PASS session-arc (11528ms)
+
+────────────────────────────────
+ PASS  session-arc (11528ms)
+
+1/1 scenarios passed
+Timing diagnostics: {"loadMode":false,"p99EventLoopLagMs":35.880959,"maxEventLoopLagMs":40.435711}

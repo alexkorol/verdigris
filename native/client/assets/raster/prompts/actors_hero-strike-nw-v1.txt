@@ -1,0 +1,15 @@
+Create a six-pose pixel-art study of one coherent left-hand melee strike by the adult hero in the reference. Arrange six equal cells as three columns and two rows, in chronological reading order.
+
+IDENTITY AND VIEW
+Use the supplied image as the only identity, clothing, palette, pixel-style and camera reference. Retain the same brown tunic, full dark trousers, wraps, bronze shoulder guard on the character's physical right, and blue sash on his physical left. Mature adult proportions, about 64 logical pixels from crown to soles at neutral stance. Every pose faces upper-left and shows the back of the head and tunic, with the reference's slight left-facing profile. Keep this view through the entire action.
+
+ONE LEFT-HAND ACTION
+The physical LEFT arm, on the screen-left side of this rear view, performs the whole strike. The bronze-guarded RIGHT side remains the supporting guard. Both hands are closed and empty; do not add a weapon or swap arms.
+1. Ready: balanced fighting stance, knees relaxed, left hand prepared.
+2. Windup: draw the left fist and elbow back, load the rear leg, and coil the torso slightly without turning toward the camera.
+3. Commit: push from the rear foot and drive the left shoulder and forearm toward upper-left; the elbow begins straightening.
+4. Contact: the left fist reaches its clear maximum forward extension toward upper-left, supported by the braced hips and forward weight shift.
+5. Follow-through: release the shoulder tension, bend the left elbow and begin drawing the striking hand back; weight settles naturally.
+6. Recovery: bring the left hand back into the original ready guard and restore balance so the sequence can return to pose 1.
+
+Make genuine changes in limbs, weight and posture. Keep the body's apparent size, ground origin, camera elevation and lighting consistent throughout. Use crisp square pixel clusters and the reference's restrained natural colors. Give the entire arm reach generous space inside every cell, with clear transparent margins and no cropping or overlap. Produce actual RGBA transparency around all six whole figures. No text, numbers, grid lines, floor, scenery, effects or other characters.

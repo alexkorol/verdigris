@@ -1,0 +1,8 @@
+Use case: identity-preserve
+Make one separate pixel-art sprite variation based on the original pixel image supplied. Reference 1 is the approved character identity, scale, colors and pixel construction. Keep its anatomy, clothing, equipment, palette and camera elevation consistent.
+
+Turn this SAME burial wight to face the upper-left corner, away from the viewer: a NORTHWEST ready pose showing its back and left-facing silhouette. The back of the skull and upper spine are visible. Its head leans upper-left of its hips; the face points upper-left and is hidden. The arms and feet follow that direction.
+
+Keep adult skeletal proportions, torn charcoal linen, ivory bone and plain warm bronze ornaments. Retain the original small pixel count: about64 logical pixels crown-to-sole, purposeful square clusters,24–32 flat colors and crisp stepped edges.
+
+Output ONE complete character in ONE pose, centered with generous empty margin and stable foot contact. Actual transparent alpha background. Atlas placement will be done separately.

@@ -1,0 +1,565 @@
+{
+  "meta": {
+    "task": "TASK-0115",
+    "title": "Browser panel and typography inventory",
+    "lane": "ox-pc-bc",
+    "base_commit": "d2423873c577d299b3b39c56024d1d840993c72b",
+    "branch": "worker/verdigris/pc/ox-pc-bc",
+    "captured_at": "2026-08-23",
+    "driver": "orchestration/tasks/TASK-0115-browser-panel-typography-inventory/captures/capture-0115.mjs",
+    "capture_helper": "tests/e2e/lib/capture-harness.mjs",
+    "server_port": 6620,
+    "bind_host": "127.0.0.1",
+    "viewports": ["1920x1080", "1366x768"],
+    "evidence_files": [
+      "captures/capture-0115-evidence.json",
+      "captures/capture-0115-checks.json"
+    ],
+    "negative_control": {
+      "command_env": "NEGATIVE_CONTROL=1 SKIP_BUILD=1 CAPTURE_PORT=6621",
+      "injected_false_check": "negative-control.false-visibility-inventory",
+      "result": "CAPTURE FAILED: negative-control.false-visibility-inventory; exit code 1",
+      "disposable_output_removed": true
+    },
+    "font_tokens_source": {
+      "declarations": "src/assets/scss/typography/fonts.scss:2-18",
+      "UIFont": "Px437_IBM_PS2thin2.ttf (declared fonts.scss:3, referenced by no component)",
+      "ChatFont": "PxPlus_IBM_VGA8.ttf (fonts.scss:9)",
+      "GameFont": "pixelmix.ttf / pixelmix_bold.ttf (fonts.scss:15)",
+      "body_default": "src/assets/scss/abstracts/_tokens.scss:60-65 ('GameFont', sans-serif; --font-size-base clamp(14px,1.1vw,16px); color #eee2c5)"
+    },
+    "excluded_unmounted_components": [
+      {
+        "paths": [
+          "src/components/game-panes/Bank.vue",
+          "src/components/game-panes/Chart.vue",
+          "src/components/game-panes/Shop.vue",
+          "src/components/game-panes/Wagon.vue"
+        ],
+        "reason": "legacy panes not imported anywhere under src/ (rg 'from.*game-panes' = no matches); not part of the live browser panel contract"
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": "hud-chrome",
+      "name": "HUD chrome (identity chip, HP/MP orbs, quickbar, XP bar)",
+      "persistence": "persistent",
+      "trigger": "always mounted while in game (GameContainer.vue:251-261 renders GameHUD after login canvas)",
+      "anchor": ".game-container__hud",
+      "mounted_vue_path": "src/components/layout/GameHUD.vue (children src/components/hud/HudOrb.vue, src/components/hud/Quickbar.vue); mounted at src/components/layout/GameContainer.vue:251",
+      "size_1920x1080": { "width": 1852, "height": 97 },
+      "size_1366x768": { "width": 1212, "height": 91.1 },
+      "font_measured": {
+        "family": "'GameFont', sans-serif",
+        "size_at_1920": "16px",
+        "size_at_1366": "15.026px",
+        "weight": "400",
+        "color": "rgb(238, 226, 197) (#eee2c5 --color-text-primary)"
+      },
+      "font_source_refs": [
+        "src/assets/scss/abstracts/_tokens.scss:61-64",
+        "src/components/hud/HudOrb.vue:144",
+        "src/components/hud/Quickbar.vue:308 (hotkey 0.52rem GameFont), :358 (600-weight 0.85rem value), :338/:373/:394 (ChatFont micro-labels)",
+        "src/components/layout/GameHUD.vue:137 (identity chip 0.72rem), :209 (xp label 0.56rem #efe6cf)"
+      ],
+      "gameplay_load": "Highest: vitals, level progress and the eight quickbar slots are read continuously during combat and movement; never dismissed.",
+      "native_phasing_rank": 1,
+      "native_phase": "P0 first-playable",
+      "captures": [
+        "panel-1920x1080-hud-chrome.png",
+        "panel-1366x768-hud-chrome.png"
+      ]
+    },
+    {
+      "id": "inventory-pane",
+      "name": "Inventory pane (docked right, 12x7 backpack + equipment)",
+      "persistence": "situational (docked side pane)",
+      "trigger": "keyboard 'i' (Delaford.vue:1273 paneHotkeys) or EscapeMenu entry; toggles closed with second press",
+      "anchor": "[aria-label=\"Inventory panel\"]",
+      "mounted_vue_path": "src/components/inventory/InventoryGrid.vue + src/components/slots/Inventory.vue inside PaneCard; registry entry src/Delaford.vue:124 (slot 'right'), host src/components/ui/panes/PaneHost.vue:43-65",
+      "size_1920x1080": { "width": 1240, "height": 968 },
+      "size_1366x768": { "width": 680, "height": 489.8 },
+      "font_measured": {
+        "family": "'GameFont', sans-serif",
+        "size_at_1920": "16px",
+        "size_at_1366": "15.026px",
+        "weight": "400",
+        "color": "rgb(238, 226, 197)"
+      },
+      "font_source_refs": [
+        "src/components/inventory/EquipmentRagdoll.vue:217,255",
+        "src/components/util/ItemGrid.vue:318",
+        "src/components/inventory/ItemTooltip.vue:98,125,133,236 (ChatFont prose + GameFont stats)",
+        "PaneCard header src/components/ui/panes/PaneCard.vue:122"
+      ],
+      "gameplay_load": "Core loop surface: equip, examine, drop, and bag management; wide docked layout at desktop narrows to 680px at laptop width (PaneHost.vue:293-298, 413-416).",
+      "native_phasing_rank": 2,
+      "native_phase": "P0 first-playable",
+      "captures": [
+        "panel-1920x1080-inventory-pane.png",
+        "panel-1366x768-inventory-pane.png"
+      ]
+    },
+    {
+      "id": "chatbox-expanded",
+      "name": "Chatbox expanded (message log + input)",
+      "persistence": "persistent (expanded/collapsed states)",
+      "trigger": "'/' opens chat (Delaford.vue:1291-1294), chat peek click, double-click peek reset",
+      "anchor": ".game-container__chat-overlay:not(.game-container__chat-overlay--collapsed) .chatbox",
+      "mounted_vue_path": "src/components/Chatbox.vue; mounted at src/components/layout/GameContainer.vue:208-249 inside draggable .game-container__chat-overlay",
+      "size_1920x1080": { "width": 320, "height": 247 },
+      "size_1366x768": { "width": 280, "height": 255.6 },
+      "font_measured": {
+        "family": "'GameFont', sans-serif (root); messages 'ChatFont','GameFont',sans-serif",
+        "size_at_1920": "16px",
+        "size_at_1366": "15.026px",
+        "weight": "400",
+        "color": "rgb(238, 226, 197)"
+      },
+      "font_source_refs": [
+        "src/components/Chatbox.vue:494 (messages ChatFont), :510 (GameFont header)"
+      ],
+      "gameplay_load": "Communication and server event log; auto-hide countdown keeps it non-blocking while carrying every system message.",
+      "native_phasing_rank": 3,
+      "native_phase": "P0 first-playable",
+      "captures": [
+        "panel-1920x1080-chatbox-expanded.png",
+        "panel-1366x768-chatbox-expanded.png"
+      ]
+    },
+    {
+      "id": "chat-peek",
+      "name": "Chat peek (collapsed one-line preview pill)",
+      "persistence": "persistent (default collapsed state)",
+      "trigger": "always visible while chat collapsed; click expands, double-click resets dock corner",
+      "anchor": ".game-container__chat-peek",
+      "mounted_vue_path": "src/components/layout/GameContainer.vue:167-207 (.game-container__chat-peek with preview label + unread badge)",
+      "size_1920x1080": { "width": 340, "height": 29.2 },
+      "size_1366x768": { "width": 280, "height": 29.2 },
+      "font_measured": {
+        "family": "'GameFont', sans-serif",
+        "size_at_1920": "12px",
+        "size_at_1366": "12px",
+        "weight": "400",
+        "color": "rgb(242, 211, 145) (#f2d391)"
+      },
+      "font_source_refs": [
+        "src/components/layout/GameContainer.vue:1289 (.game-container__chat-peek-label #f2d391)"
+      ],
+      "gameplay_load": "Ambient awareness of latest message without expanding; draggable to any corner.",
+      "native_phasing_rank": 4,
+      "native_phase": "P0 first-playable (same surface as expanded chatbox)",
+      "captures": [
+        "panel-1920x1080-chat-peek.png",
+        "panel-1366x768-chat-peek.png"
+      ]
+    },
+    {
+      "id": "world-minimap",
+      "name": "World minimap (canvas + coordinate readout)",
+      "persistence": "persistent",
+      "trigger": "always mounted while no legacy pane/docked pane covers stage (GameContainer.vue:45-48)",
+      "anchor": ".world-minimap",
+      "mounted_vue_path": "src/components/hud/WorldMinimap.vue; mounted at src/components/layout/GameContainer.vue:45 (top-left)",
+      "size_1920x1080": { "width": 168, "height": 183.1 },
+      "size_1366x768": { "width": 168, "height": 183.1 },
+      "font_measured": {
+        "family": "'GameFont', sans-serif",
+        "size_at_1920": "16px",
+        "size_at_1366": "15.026px",
+        "weight": "400",
+        "color": "rgb(238, 226, 197)"
+      },
+      "font_source_refs": [
+        "src/components/hud/WorldMinimap.vue (readout inherits body token)"
+      ],
+      "gameplay_load": "Orientation: zone-relative position glance; updated per movement tick.",
+      "native_phasing_rank": 5,
+      "native_phase": "P1 navigation wave",
+      "captures": [
+        "panel-1920x1080-world-minimap.png",
+        "panel-1366x768-world-minimap.png"
+      ]
+    },
+    {
+      "id": "panel-nav",
+      "name": "Panel nav pills (Quests/Settings/Exit + Party/Adventure/Roads)",
+      "persistence": "persistent",
+      "trigger": "always rendered in the party overlay stack (GameContainer.vue:58-104)",
+      "anchor": ".game-container__pane-menu",
+      "mounted_vue_path": "src/components/layout/GameContainer.vue:58-104 (nav.game-container__pane-menu aria-label='Game panels' + nav aria-label='World actions')",
+      "size_1920x1080": { "width": 246.8, "height": 37 },
+      "size_1366x768": { "width": 280, "height": 37 },
+      "font_measured": {
+        "family": "'GameFont', sans-serif",
+        "size_at_1920": "16px",
+        "size_at_1366": "15.026px",
+        "weight": "400",
+        "color": "rgb(238, 226, 197)"
+      },
+      "font_source_refs": [
+        "src/assets/scss/abstracts/_tokens.scss:61 (button form element inherits GameFont via elements/form.scss:18)"
+      ],
+      "gameplay_load": "Primary navigation hub to every pane/menu; constant affordance.",
+      "native_phasing_rank": 6,
+      "native_phase": "P1 navigation wave",
+      "captures": [
+        "panel-1920x1080-panel-nav.png",
+        "panel-1366x768-panel-nav.png"
+      ]
+    },
+    {
+      "id": "zone-menu",
+      "name": "Expedition zone menu ('Choose an expedition')",
+      "persistence": "situational",
+      "trigger": "Adventure nav button toggle (GameContainer.vue:90-96 -> toggleAdventure)",
+      "anchor": "[aria-label=\"Choose a zone\"]",
+      "mounted_vue_path": "src/components/layout/GameContainer.vue:121-148 (.game-container__zone-menu listing adventureZones)",
+      "size_1920x1080": { "width": 442.5, "height": 391.6 },
+      "size_1366x768": { "width": 280, "height": 277.7 },
+      "font_measured": {
+        "family": "'GameFont', sans-serif (root); zone-note line Georgia, serif",
+        "size_at_1920": "16px",
+        "size_at_1366": "15.026px",
+        "weight": "400",
+        "color": "rgb(238, 226, 197)"
+      },
+      "font_source_refs": [
+        "src/components/layout/GameContainer.vue:1252-1254 (zone-name 0.82rem), :1256-1261 (zone-note Georgia 0.64rem rgba(178,170,153,.72)), :1263-1269 (zone-objective GameFont 0.62rem #e7c570)"
+      ],
+      "gameplay_load": "Gateway to all expedition content; every session start routes through it.",
+      "native_phasing_rank": 7,
+      "native_phase": "P1 navigation wave",
+      "captures": [
+        "panel-1920x1080-zone-menu.png",
+        "panel-1366x768-zone-menu.png"
+      ]
+    },
+    {
+      "id": "guide-banner",
+      "name": "Guide banner (Aldwyn tutorial beats)",
+      "persistence": "persistent while guidance text active",
+      "trigger": "tutorial beat events bus 'tutorial:beat' (GameContainer.vue:767-774); capture hook window.__verdigrisOverlayCapture.setGuide (GameContainer.vue:780-786)",
+      "anchor": ".guide-banner",
+      "mounted_vue_path": "src/components/ui/world/GuideBanner.vue; mounted at src/components/layout/GameContainer.vue:49-53 (top-center)",
+      "size_1920x1080": { "width": 499.8, "height": 54.9 },
+      "size_1366x768": { "width": 499.8, "height": 54.9 },
+      "font_measured": {
+        "family": "'GameFont', sans-serif (root); text 'ChatFont','GameFont',sans-serif",
+        "size_at_1920": "16px",
+        "size_at_1366": "15.026px",
+        "weight": "400",
+        "color": "rgb(239, 230, 207) (#efe6cf)"
+      },
+      "font_source_refs": [
+        "src/components/ui/world/GuideBanner.vue:87 (color), :92-98 (speaker GameFont 0.62rem uppercase #e7c570), :100-105 (text ChatFont 0.86rem)"
+      ],
+      "gameplay_load": "Onboarding voice; carries the scripted early-game direction beats.",
+      "native_phasing_rank": 8,
+      "native_phase": "P1 navigation wave",
+      "captures": [
+        "panel-1920x1080-guide-banner.png",
+        "panel-1366x768-guide-banner.png"
+      ]
+    },
+    {
+      "id": "character-pane",
+      "name": "Character pane (stats/equipment, docked left)",
+      "persistence": "situational (docked side pane)",
+      "trigger": "keyboard 'c' (Delaford.vue:1272) or EscapeMenu entry",
+      "anchor": "[aria-label=\"Character panel\"]",
+      "mounted_vue_path": "src/components/slots/Stats.vue; registry src/Delaford.vue:123 (title 'Character', slot 'left'), host PaneHost.vue:13-34",
+      "size_1920x1080": { "width": 921.6, "height": 968 },
+      "size_1366x768": { "width": 655.7, "height": 489.8 },
+      "font_measured": {
+        "family": "'GameFont', sans-serif",
+        "size_at_1920": "16px",
+        "size_at_1366": "15.026px",
+        "weight": "400",
+        "color": "rgb(238, 226, 197)"
+      },
+      "font_source_refs": [
+        "src/components/slots/Stats.vue:401"
+      ],
+      "gameplay_load": "Build inspection: combat stats and worn gear; consulted between fights rather than during.",
+      "native_phasing_rank": 9,
+      "native_phase": "P2 session panes",
+      "captures": [
+        "panel-1920x1080-character-pane.png",
+        "panel-1366x768-character-pane.png"
+      ]
+    },
+    {
+      "id": "quests-pane",
+      "name": "Quest journal overlay",
+      "persistence": "situational",
+      "trigger": "keyboard 'j' (Delaford.vue:1274), Quests nav button title 'Quest journal (J)' (GameContainer.vue:59-66), EscapeMenu entry",
+      "anchor": "[aria-label=\"Quests overlay\"]",
+      "mounted_vue_path": "src/components/slots/Quests.vue; registry src/Delaford.vue:127 (title 'Quests'), overlay host PaneHost.vue:67-94",
+      "size_1920x1080": { "width": 560, "height": 313.7 },
+      "size_1366x768": { "width": 560, "height": 313.7 },
+      "font_measured": {
+        "family": "'GameFont', sans-serif",
+        "size_at_1920": "16px",
+        "size_at_1366": "15.026px",
+        "weight": "400",
+        "color": "rgb(238, 226, 197)"
+      },
+      "font_source_refs": [
+        "src/components/slots/Quests.vue:78 (body ChatFont 0.72rem), :90 (heading GameFont 1.05rem), :99 (meta 0.62rem)"
+      ],
+      "gameplay_load": "Progress tracking; low-frequency consult surface.",
+      "native_phasing_rank": 10,
+      "native_phase": "P2 session panes",
+      "captures": [
+        "panel-1920x1080-quests-pane.png",
+        "panel-1366x768-quests-pane.png"
+      ]
+    },
+    {
+      "id": "escape-menu",
+      "name": "Escape menu (Verdigris pane launcher)",
+      "persistence": "situational",
+      "trigger": "Escape key when no other pane/chat layer is open (Delaford.vue:1234-1266)",
+      "anchor": ".escape-menu",
+      "mounted_vue_path": "src/components/ui/panes/EscapeMenu.vue; registry src/Delaford.vue:129 (overlay title 'Verdigris')",
+      "size_1920x1080": { "width": 480, "height": 371.2 },
+      "size_1366x768": { "width": 480, "height": 370.2 },
+      "font_measured": {
+        "family": "'GameFont', sans-serif",
+        "size_at_1920": "16px",
+        "size_at_1366": "15.026px",
+        "weight": "400",
+        "color": "rgb(238, 226, 197)"
+      },
+      "font_source_refs": [
+        "src/components/ui/panes/EscapeMenu.vue:99 (title 'GameFont', Georgia, serif), :138 (entries GameFont), :52-56 (entry list Character C / Inventory I / Quests J / Skill Tree P)"
+      ],
+      "gameplay_load": "Session control and pane launcher; the pause seam of the browser client.",
+      "native_phasing_rank": 11,
+      "native_phase": "P2 session panes",
+      "captures": [
+        "panel-1920x1080-escape-menu.png",
+        "panel-1366x768-escape-menu.png"
+      ]
+    },
+    {
+      "id": "settings-overlay",
+      "name": "Settings overlay (+ SettingsBindings rebind capture)",
+      "persistence": "situational",
+      "trigger": "Settings nav button (GameContainer.vue:67-73) or requestPane('settings')",
+      "anchor": "[aria-label=\"Settings overlay\"]",
+      "mounted_vue_path": "src/components/slots/Settings.vue with src/components/ui/SettingsBindings.vue; registry src/Delaford.vue:125",
+      "size_1920x1080": { "width": 560, "height": 567 },
+      "size_1366x768": { "width": 560, "height": 489.8 },
+      "font_measured": {
+        "family": "'GameFont', sans-serif",
+        "size_at_1920": "16px",
+        "size_at_1366": "15.026px",
+        "weight": "400",
+        "color": "rgb(238, 226, 197)"
+      },
+      "font_source_refs": [
+        "src/components/slots/Settings.vue:133,218 (rows ChatFont 0.72rem)",
+        "src/components/ui/SettingsBindings.vue:213,279 (binding chips ChatFont)"
+      ],
+      "gameplay_load": "Controls/audio configuration; occasional, but owns the rebind capture UX that must not fight WASD.",
+      "native_phasing_rank": 12,
+      "native_phase": "P2 session panes",
+      "captures": [
+        "panel-1920x1080-settings-overlay.png",
+        "panel-1366x768-settings-overlay.png"
+      ]
+    },
+    {
+      "id": "logout-overlay",
+      "name": "Logout/exit confirmation overlay",
+      "persistence": "situational",
+      "trigger": "Exit nav button (GameContainer.vue:74-80) -> requestPane('logout')",
+      "anchor": "[aria-label=\"Logout overlay\"]",
+      "mounted_vue_path": "src/components/slots/Logout.vue; registry src/Delaford.vue:126 (title 'Logout')",
+      "size_1920x1080": { "width": 560, "height": 325.3 },
+      "size_1366x768": { "width": 560, "height": 325.3 },
+      "font_measured": {
+        "family": "'GameFont', sans-serif",
+        "size_at_1920": "16px",
+        "size_at_1366": "15.026px",
+        "weight": "400",
+        "color": "rgb(238, 226, 197)"
+      },
+      "font_source_refs": [
+        "src/components/slots/Logout.vue:62 (1.4rem heading), :92 (body ChatFont 0.82rem)"
+      ],
+      "gameplay_load": "Session end guard; rare but must be unmissable (mortal-oath stakes).",
+      "native_phasing_rank": 13,
+      "native_phase": "P2 session panes",
+      "captures": [
+        "panel-1920x1080-logout-overlay.png",
+        "panel-1366x768-logout-overlay.png"
+      ]
+    },
+    {
+      "id": "party-panel",
+      "name": "Party panel (members, invites, instance controls)",
+      "persistence": "situational",
+      "trigger": "Party nav button toggle; also auto-shows on incoming invite (GameContainer.vue:106 v-if partyOpen || invites.length)",
+      "anchor": ".party-panel",
+      "mounted_vue_path": "src/components/ui/world/PartyPanel.vue; mounted at src/components/layout/GameContainer.vue:105-120 inside .game-container__party-overlay",
+      "size_1920x1080": { "width": 300, "height": 100.5 },
+      "size_1366x768": { "width": 280, "height": 100.5 },
+      "font_measured": {
+        "family": "'GameFont', sans-serif",
+        "size_at_1920": "16px",
+        "size_at_1366": "15.026px",
+        "weight": "400",
+        "color": "rgb(238, 226, 197)"
+      },
+      "font_source_refs": [
+        "src/components/ui/world/PartyPanel.vue:243 (root), :350 (0.67rem labels), :402 (invite text ChatFont 0.68rem)"
+      ],
+      "gameplay_load": "Co-op coordination; idle until multiplayer moments, then time-sensitive (invites).",
+      "native_phasing_rank": 14,
+      "native_phase": "P2 session panes",
+      "captures": [
+        "panel-1920x1080-party-panel.png",
+        "panel-1366x768-party-panel.png"
+      ]
+    },
+    {
+      "id": "roads-chart",
+      "name": "Roads chart menu ('Read the chart of…')",
+      "persistence": "situational",
+      "trigger": "Roads nav button toggle (GameContainer.vue:97-103 -> toggleRoads)",
+      "anchor": "[aria-label=\"Choose a road\"]",
+      "mounted_vue_path": "src/components/layout/GameContainer.vue:149-165 (.game-container__zone-menu road list)",
+      "size_1920x1080": { "width": 250, "height": 240.9 },
+      "size_1366x768": { "width": 280, "height": 240.9 },
+      "font_measured": {
+        "family": "'GameFont', sans-serif",
+        "size_at_1920": "16px",
+        "size_at_1366": "15.026px",
+        "weight": "400",
+        "color": "rgb(238, 226, 197)"
+      },
+      "font_source_refs": [
+        "shares .game-container__zone-title/.game-container__zone styles with zone menu (GameContainer.vue:1252+)"
+      ],
+      "gameplay_load": "Travel between town scenes; occasional wayfinding.",
+      "native_phasing_rank": 15,
+      "native_phase": "P3 situational moments",
+      "captures": [
+        "panel-1920x1080-roads-chart.png",
+        "panel-1366x768-roads-chart.png"
+      ]
+    },
+    {
+      "id": "loot-moment",
+      "name": "First-find loot moment toast",
+      "persistence": "situational (auto-dismisses after 7s)",
+      "trigger": "curated first-drop pickup; capture hook window.__verdigrisOverlayCapture.showLoot() (GameContainer.vue:796-807); LootMoment.vue:27 AUTO_DISMISS_MS",
+      "anchor": "[aria-label=\"First find\"] (.loot-moment__card)",
+      "mounted_vue_path": "src/components/ui/LootMoment.vue; presented through GameCanvas open:screen seam (GameCanvas.vue:8-25)",
+      "size_1920x1080": { "width": 440, "height": 159 },
+      "size_1366x768": { "width": 440, "height": 159 },
+      "font_measured": {
+        "family": "Georgia, serif (root deviation from GameFont body default)",
+        "size_at_1920": "16px",
+        "size_at_1366": "15.026px",
+        "weight": "400",
+        "color": "rgb(233, 223, 198)"
+      },
+      "font_source_refs": [
+        "src/components/ui/LootMoment.vue:109 (Georgia serif root), :117 (eyebrow GameFont 0.66rem), :125 (item name GameFont 1.3rem), :141 (hint 0.74rem)"
+      ],
+      "gameplay_load": "One-shot dopamine beat for the session's first curated find; typographic showcase moment.",
+      "native_phasing_rank": 16,
+      "native_phase": "P3 situational moments",
+      "captures": [
+        "panel-1920x1080-loot-moment.png",
+        "panel-1366x768-loot-moment.png"
+      ]
+    },
+    {
+      "id": "death-overlay",
+      "name": "Death overlay (summary, losses, Continue)",
+      "persistence": "situational",
+      "trigger": "player death summary bus 'player:death-summary'; capture hook showDeath() (GameContainer.vue:787-795)",
+      "anchor": ".death-overlay__panel",
+      "mounted_vue_path": "src/components/ui/world/DeathOverlay.vue; mounted at src/components/layout/GameContainer.vue:267",
+      "size_1920x1080": { "width": 720, "height": 458.3 },
+      "size_1366x768": { "width": 720, "height": 376.3 },
+      "font_measured": {
+        "family": "Georgia, serif (root deviation from GameFont body default)",
+        "size_at_1920": "16px",
+        "size_at_1366": "15.026px",
+        "weight": "400",
+        "color": "rgb(233, 223, 198)"
+      },
+      "font_source_refs": [
+        "src/components/ui/world/DeathOverlay.vue:168 (Georgia serif root), :210 (title clamp(1.5rem,4vw,2.45rem) GameFont w/ Georgia fallback), :202,:241,:303 (labels GameFont/0.68rem)"
+      ],
+      "gameplay_load": "High-stakes failure resolution (soft return vs mortal oath); must render flawlessly exactly once per death.",
+      "native_phasing_rank": 17,
+      "native_phase": "P3 situational moments",
+      "captures": [
+        "panel-1920x1080-death-overlay.png",
+        "panel-1366x768-death-overlay.png"
+      ]
+    },
+    {
+      "id": "context-menu",
+      "name": "World context menu (Shift+RMB actions incl. 'Walk here', Cancel)",
+      "persistence": "situational",
+      "trigger": "Shift+right-click on game canvas (GameCanvas.vue:342-366 rightClick fallthrough; plain RMB fires ability-1 per controls.js D-007); server round-trip player:context-menu:build -> game:context-menu:items",
+      "anchor": "#context-menu #actions",
+      "mounted_vue_path": "src/components/sub/ContextMenu.vue; mounted at src/components/layout/GameContainer.vue:266",
+      "size_1920x1080": { "width": 156, "height": 76.4 },
+      "size_1366x768": { "width": 156, "height": 76.4 },
+      "font_measured": {
+        "family": "'GameFont', sans-serif",
+        "size_at_1920": "12px",
+        "size_at_1366": "12px",
+        "weight": "400",
+        "color": "rgb(238, 226, 197)"
+      },
+      "font_source_refs": [
+        "src/components/sub/ContextMenu.vue:300 (12px/1.35 GameFont actions)"
+      ],
+      "gameplay_load": "Object/NPC interaction vocabulary (walk, examine, trade); server-authoritative action list with colour-markup labels.",
+      "native_phasing_rank": 18,
+      "native_phase": "P3 situational moments",
+      "captures": [
+        "panel-1920x1080-context-menu.png",
+        "panel-1366x768-context-menu.png"
+      ]
+    },
+    {
+      "id": "skill-tree-overlay",
+      "name": "Skill Tree overlay (fullscreen geometric passives canvas)",
+      "persistence": "situational (fullscreen)",
+      "trigger": "keyboard 'p' (Delaford.vue:1275 -> flowerOfLife fullscreen) or EscapeMenu entry",
+      "anchor": "[aria-label=\"Skill Tree overlay\"]",
+      "mounted_vue_path": "src/components/passives/GeometricSkillTreePane.vue; registry src/Delaford.vue:128 (options.fullscreen true), fullscreen card PaneHost.vue:338-368",
+      "size_1920x1080": { "width": 1904, "height": 968 },
+      "size_1366x768": { "width": 1350, "height": 489.8 },
+      "font_measured": {
+        "family": "'GameFont', sans-serif",
+        "size_at_1920": "16px",
+        "size_at_1366": "15.026px",
+        "weight": "400",
+        "color": "rgb(238, 226, 197)"
+      },
+      "font_source_refs": [
+        "src/components/passives/GeometricSkillTreePane.vue:848,1409"
+      ],
+      "gameplay_load": "Long-horizon progression planning; heavy custom canvas interaction (nodes, conduits, search).",
+      "native_phasing_rank": 19,
+      "native_phase": "P3 situational moments (most bespoke surface; last to reconstitute)",
+      "captures": [
+        "panel-1920x1080-skill-tree-overlay.png",
+        "panel-1366x768-skill-tree-overlay.png"
+      ]
+    }
+  ]
+}

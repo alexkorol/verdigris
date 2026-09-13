@@ -1,0 +1,5 @@
+Create one pixel-art raider walk frame. Image 1 is the geometry, leg-motion, contact and camera guide: the supplied guide already contains the correct rotation for this frame, so copy its pose exactly. Copy this passing stance with the legs close: the screen-right boot supports the body while the other knee bends and its foot lifts behind toward screen-left. Preserve the guide's pelvis, body lean and lower-right-facing view.
+
+Image 2 supplies the original adult raider identity. Image 3 is the accepted opposite-contact rendering: preserve its body proportions, compact bone mask, dark blue-charcoal clothes, ochre sash, brown boots and straight-haft bronze wedge axe consistently. Do not copy Image 3's leg pose. Keep the axe gripped in the same anatomical RIGHT/screen-left hand, and the other hand empty.
+
+Return the Image 1 pose as this same raider, at Image 3's approximately54–56-logical-pixel body scale, with the same crisp pixel construction, palette and fixed camera. Preserve the full figure, held axe and feet, with generous margins and genuine transparent alpha. One frame; no labels or scenery.

@@ -332,3 +332,22 @@ tier. Distant mutable packets do not receive stale immutable bases; exact
 dependency predicates release validated successors without owner prose. Low
 runway is repaired by decomposition and packet production, never by architect
 implementation takeover.
+
+## D-129 - Ranged windup rides the projectile convention (owner-ruled, 2026-08-24)
+
+Ranged monster attack warnings do NOT reuse `monster:telegraph` and do NOT
+get a new telegraph-family envelope. They ride a projectile-style wire event
+aligned with the JS stack's existing `world:projectile` convention
+(server/core/entities/monster/combat-controller.js emits telegraphs only for
+the ground slam and projectiles for ranged). `monster:telegraph` remains
+slam-only on both stacks; the frozen gate-b journey
+(native/tests/session_tests.cpp:1392-1402) stays byte-identical.
+
+Consequences: both TASK-0108 heads are superseded on the wire question —
+ox-pc-ba's telegraph reuse (b73386c4) and ox-sw-a's `monster:ranged-telegraph`
+envelope (cb5f0bc5). Their combat/gameplay logic may be salvaged during
+re-implementation where it survives review on its own merits. The architect
+writes TASK-0108 SPEC rev 3 defining the native projectile-style windup event
+with JS payload parity; owned_paths must include the networking emit path so
+the lane is not boxed out again. Full analysis:
+orchestration/tasks/TASK-0108-combat-depth-wave/LEADER_BRIEF.md.

@@ -1,0 +1,14 @@
+{
+  "version":1,
+  "output_dir":"../../client/assets/raster/runtime",
+  "defaults":{"cell_size":3,"alpha_mode":"crisp","max_colors":32,"canvas":[192,256],"trim":true,"preserve_scale":true,"require_transparency":true,"acceptance":"display_comparison_inspected_pending_live_game"},
+  "known_limitations":["Large static props were freshly reconstructed from original sources after the original coarser sprites failed the hero-relative pixel-pitch comparison. Original props.json/gate.json and their provenance remain as superseded imports.","Source images do not form exact nearest-neighbor grids (Pixel Respecter detect_nn_scale returns 1); chosen manual grids sample visible source clusters. No resizing occurs after reconstruction. Huts retain source shading texture."],
+  "sheets":[
+    {"source":"../../client/assets/raster/source/environment-props-warm-pixel-v4.png","assets":[
+      {"name":"tree","source_box":[0,0,386,422]},
+      {"name":"hut","source_box":[0,422,386,760],"cell_size":2},
+      {"name":"storehut","source_box":[386,422,728,760],"cell_size":2},
+      {"name":"column","source_box":[728,422,1060,760]}]},
+    {"source":"../../client/assets/raster/source/environment-gate-v1.png","grid":[1,1],"assets":[{"name":"gate","cell":[0,0],"cell_size":8}]}
+  ]
+}

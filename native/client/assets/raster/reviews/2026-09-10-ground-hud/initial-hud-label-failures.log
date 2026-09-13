@@ -1,0 +1,454 @@
+== scenario hud-chrome ==
+    ok: hud-chrome: production bounds report opened
+    ok: hud-chrome: text measurement DC created
+    ok: hud-chrome-3440x1440-unmuted: production capture written
+    ok: hud-chrome-3440x1440-unmuted: minimap painted
+    ok: hud-chrome-3440x1440-unmuted: route-card painted
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip painted
+    ok: hud-chrome-3440x1440-unmuted: orb-life painted
+    ok: hud-chrome-3440x1440-unmuted: orb-resource painted
+    ok: hud-chrome-3440x1440-unmuted: identity painted
+    ok: hud-chrome-3440x1440-unmuted: objective painted
+    ok: hud-chrome-3440x1440-unmuted: controls painted
+    ok: hud-chrome-3440x1440-unmuted: audio-mixer painted
+    ok: hud-chrome-3440x1440-unmuted: mute chip follows actual mute state
+    ok: hud-chrome-3440x1440-unmuted: minimap inside viewport
+    ok: hud-chrome-3440x1440-unmuted: route-card inside viewport
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip inside viewport
+    ok: hud-chrome-3440x1440-unmuted: orb-life inside viewport
+    ok: hud-chrome-3440x1440-unmuted: orb-resource inside viewport
+    ok: hud-chrome-3440x1440-unmuted: identity inside viewport
+    ok: hud-chrome-3440x1440-unmuted: objective inside viewport
+    ok: hud-chrome-3440x1440-unmuted: controls inside viewport
+    ok: hud-chrome-3440x1440-unmuted: audio-mixer inside viewport
+    ok: hud-chrome-3440x1440-unmuted: minimap clears route-card
+    ok: hud-chrome-3440x1440-unmuted: minimap clears quickbar-strip
+    ok: hud-chrome-3440x1440-unmuted: minimap clears orb-life
+    ok: hud-chrome-3440x1440-unmuted: minimap clears orb-resource
+    ok: hud-chrome-3440x1440-unmuted: minimap clears identity
+    ok: hud-chrome-3440x1440-unmuted: minimap clears objective
+    ok: hud-chrome-3440x1440-unmuted: minimap clears controls
+    ok: hud-chrome-3440x1440-unmuted: minimap clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: route-card clears quickbar-strip
+    ok: hud-chrome-3440x1440-unmuted: route-card clears orb-life
+    ok: hud-chrome-3440x1440-unmuted: route-card clears orb-resource
+    ok: hud-chrome-3440x1440-unmuted: route-card clears identity
+    ok: hud-chrome-3440x1440-unmuted: route-card clears objective
+    ok: hud-chrome-3440x1440-unmuted: route-card clears controls
+    ok: hud-chrome-3440x1440-unmuted: route-card clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip clears orb-life
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip clears orb-resource
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip clears identity
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip clears objective
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip clears controls
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: orb-life clears orb-resource
+    ok: hud-chrome-3440x1440-unmuted: orb-life clears identity
+    ok: hud-chrome-3440x1440-unmuted: orb-life clears objective
+    ok: hud-chrome-3440x1440-unmuted: orb-life clears controls
+    ok: hud-chrome-3440x1440-unmuted: orb-life clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: orb-resource clears identity
+    ok: hud-chrome-3440x1440-unmuted: orb-resource clears objective
+    ok: hud-chrome-3440x1440-unmuted: orb-resource clears controls
+    ok: hud-chrome-3440x1440-unmuted: orb-resource clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: identity clears objective
+    ok: hud-chrome-3440x1440-unmuted: identity clears controls
+    ok: hud-chrome-3440x1440-unmuted: identity clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: objective clears controls
+    ok: hud-chrome-3440x1440-unmuted: objective clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: controls clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: mixer trace matches measured production text
+    ok: hud-chrome-3440x1440-unmuted: every route and return row fits without shrinking
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: full HUD typography uses the authored Segoe sizes
+    FAIL: hud-chrome-3440x1440-unmuted: action labels fit the unchanged slots
+    ok: hud-chrome-3440x1440-unmuted: original owner actions remain in the production HUD
+    ok: hud-chrome-3440x1440-muted: production capture written
+    ok: hud-chrome-3440x1440-muted: minimap painted
+    ok: hud-chrome-3440x1440-muted: route-card painted
+    ok: hud-chrome-3440x1440-muted: quickbar-strip painted
+    ok: hud-chrome-3440x1440-muted: orb-life painted
+    ok: hud-chrome-3440x1440-muted: orb-resource painted
+    ok: hud-chrome-3440x1440-muted: identity painted
+    ok: hud-chrome-3440x1440-muted: objective painted
+    ok: hud-chrome-3440x1440-muted: controls painted
+    ok: hud-chrome-3440x1440-muted: audio-mixer painted
+    ok: hud-chrome-3440x1440-muted: mute chip follows actual mute state
+    ok: hud-chrome-3440x1440-muted: minimap inside viewport
+    ok: hud-chrome-3440x1440-muted: route-card inside viewport
+    ok: hud-chrome-3440x1440-muted: quickbar-strip inside viewport
+    ok: hud-chrome-3440x1440-muted: orb-life inside viewport
+    ok: hud-chrome-3440x1440-muted: orb-resource inside viewport
+    ok: hud-chrome-3440x1440-muted: identity inside viewport
+    ok: hud-chrome-3440x1440-muted: objective inside viewport
+    ok: hud-chrome-3440x1440-muted: controls inside viewport
+    ok: hud-chrome-3440x1440-muted: audio-mixer inside viewport
+    ok: hud-chrome-3440x1440-muted: audio-muted inside viewport
+    ok: hud-chrome-3440x1440-muted: minimap clears route-card
+    ok: hud-chrome-3440x1440-muted: minimap clears quickbar-strip
+    ok: hud-chrome-3440x1440-muted: minimap clears orb-life
+    ok: hud-chrome-3440x1440-muted: minimap clears orb-resource
+    ok: hud-chrome-3440x1440-muted: minimap clears identity
+    ok: hud-chrome-3440x1440-muted: minimap clears objective
+    ok: hud-chrome-3440x1440-muted: minimap clears controls
+    ok: hud-chrome-3440x1440-muted: minimap clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: minimap clears audio-muted
+    ok: hud-chrome-3440x1440-muted: route-card clears quickbar-strip
+    ok: hud-chrome-3440x1440-muted: route-card clears orb-life
+    ok: hud-chrome-3440x1440-muted: route-card clears orb-resource
+    ok: hud-chrome-3440x1440-muted: route-card clears identity
+    ok: hud-chrome-3440x1440-muted: route-card clears objective
+    ok: hud-chrome-3440x1440-muted: route-card clears controls
+    ok: hud-chrome-3440x1440-muted: route-card clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: route-card clears audio-muted
+    ok: hud-chrome-3440x1440-muted: quickbar-strip clears orb-life
+    ok: hud-chrome-3440x1440-muted: quickbar-strip clears orb-resource
+    ok: hud-chrome-3440x1440-muted: quickbar-strip clears identity
+    ok: hud-chrome-3440x1440-muted: quickbar-strip clears objective
+    ok: hud-chrome-3440x1440-muted: quickbar-strip clears controls
+    ok: hud-chrome-3440x1440-muted: quickbar-strip clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: quickbar-strip clears audio-muted
+    ok: hud-chrome-3440x1440-muted: orb-life clears orb-resource
+    ok: hud-chrome-3440x1440-muted: orb-life clears identity
+    ok: hud-chrome-3440x1440-muted: orb-life clears objective
+    ok: hud-chrome-3440x1440-muted: orb-life clears controls
+    ok: hud-chrome-3440x1440-muted: orb-life clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: orb-life clears audio-muted
+    ok: hud-chrome-3440x1440-muted: orb-resource clears identity
+    ok: hud-chrome-3440x1440-muted: orb-resource clears objective
+    ok: hud-chrome-3440x1440-muted: orb-resource clears controls
+    ok: hud-chrome-3440x1440-muted: orb-resource clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: orb-resource clears audio-muted
+    ok: hud-chrome-3440x1440-muted: identity clears objective
+    ok: hud-chrome-3440x1440-muted: identity clears controls
+    ok: hud-chrome-3440x1440-muted: identity clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: identity clears audio-muted
+    ok: hud-chrome-3440x1440-muted: objective clears controls
+    ok: hud-chrome-3440x1440-muted: objective clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: objective clears audio-muted
+    ok: hud-chrome-3440x1440-muted: controls clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: controls clears audio-muted
+    ok: hud-chrome-3440x1440-muted: audio-mixer clears audio-muted
+    ok: hud-chrome-3440x1440-muted: mixer trace matches measured production text
+    ok: hud-chrome-3440x1440-muted: every route and return row fits without shrinking
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: full HUD typography uses the authored Segoe sizes
+    FAIL: hud-chrome-3440x1440-muted: action labels fit the unchanged slots
+    ok: hud-chrome-3440x1440-muted: original owner actions remain in the production HUD
+    ok: hud-chrome-1366x768-unmuted: production capture written
+    ok: hud-chrome-1366x768-unmuted: minimap painted
+    ok: hud-chrome-1366x768-unmuted: route-card painted
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip painted
+    ok: hud-chrome-1366x768-unmuted: orb-life painted
+    ok: hud-chrome-1366x768-unmuted: orb-resource painted
+    ok: hud-chrome-1366x768-unmuted: identity painted
+    ok: hud-chrome-1366x768-unmuted: objective painted
+    ok: hud-chrome-1366x768-unmuted: controls painted
+    ok: hud-chrome-1366x768-unmuted: audio-mixer painted
+    ok: hud-chrome-1366x768-unmuted: mute chip follows actual mute state
+    ok: hud-chrome-1366x768-unmuted: minimap inside viewport
+    ok: hud-chrome-1366x768-unmuted: route-card inside viewport
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip inside viewport
+    ok: hud-chrome-1366x768-unmuted: orb-life inside viewport
+    ok: hud-chrome-1366x768-unmuted: orb-resource inside viewport
+    ok: hud-chrome-1366x768-unmuted: identity inside viewport
+    ok: hud-chrome-1366x768-unmuted: objective inside viewport
+    ok: hud-chrome-1366x768-unmuted: controls inside viewport
+    ok: hud-chrome-1366x768-unmuted: audio-mixer inside viewport
+    ok: hud-chrome-1366x768-unmuted: minimap clears route-card
+    ok: hud-chrome-1366x768-unmuted: minimap clears quickbar-strip
+    ok: hud-chrome-1366x768-unmuted: minimap clears orb-life
+    ok: hud-chrome-1366x768-unmuted: minimap clears orb-resource
+    ok: hud-chrome-1366x768-unmuted: minimap clears identity
+    ok: hud-chrome-1366x768-unmuted: minimap clears objective
+    ok: hud-chrome-1366x768-unmuted: minimap clears controls
+    ok: hud-chrome-1366x768-unmuted: minimap clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: route-card clears quickbar-strip
+    ok: hud-chrome-1366x768-unmuted: route-card clears orb-life
+    ok: hud-chrome-1366x768-unmuted: route-card clears orb-resource
+    ok: hud-chrome-1366x768-unmuted: route-card clears identity
+    ok: hud-chrome-1366x768-unmuted: route-card clears objective
+    ok: hud-chrome-1366x768-unmuted: route-card clears controls
+    ok: hud-chrome-1366x768-unmuted: route-card clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip clears orb-life
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip clears orb-resource
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip clears identity
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip clears objective
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip clears controls
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: orb-life clears orb-resource
+    ok: hud-chrome-1366x768-unmuted: orb-life clears identity
+    ok: hud-chrome-1366x768-unmuted: orb-life clears objective
+    ok: hud-chrome-1366x768-unmuted: orb-life clears controls
+    ok: hud-chrome-1366x768-unmuted: orb-life clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: orb-resource clears identity
+    ok: hud-chrome-1366x768-unmuted: orb-resource clears objective
+    ok: hud-chrome-1366x768-unmuted: orb-resource clears controls
+    ok: hud-chrome-1366x768-unmuted: orb-resource clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: identity clears objective
+    ok: hud-chrome-1366x768-unmuted: identity clears controls
+    ok: hud-chrome-1366x768-unmuted: identity clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: objective clears controls
+    ok: hud-chrome-1366x768-unmuted: objective clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: controls clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: mixer trace matches measured production text
+    ok: hud-chrome-1366x768-unmuted: every route and return row fits without shrinking
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: full HUD typography uses the authored Segoe sizes
+    FAIL: hud-chrome-1366x768-unmuted: action labels fit the unchanged slots
+    ok: hud-chrome-1366x768-unmuted: original owner actions remain in the production HUD
+    ok: hud-chrome-1366x768-muted: production capture written
+    ok: hud-chrome-1366x768-muted: minimap painted
+    ok: hud-chrome-1366x768-muted: route-card painted
+    ok: hud-chrome-1366x768-muted: quickbar-strip painted
+    ok: hud-chrome-1366x768-muted: orb-life painted
+    ok: hud-chrome-1366x768-muted: orb-resource painted
+    ok: hud-chrome-1366x768-muted: identity painted
+    ok: hud-chrome-1366x768-muted: objective painted
+    ok: hud-chrome-1366x768-muted: controls painted
+    ok: hud-chrome-1366x768-muted: audio-mixer painted
+    ok: hud-chrome-1366x768-muted: mute chip follows actual mute state
+    ok: hud-chrome-1366x768-muted: minimap inside viewport
+    ok: hud-chrome-1366x768-muted: route-card inside viewport
+    ok: hud-chrome-1366x768-muted: quickbar-strip inside viewport
+    ok: hud-chrome-1366x768-muted: orb-life inside viewport
+    ok: hud-chrome-1366x768-muted: orb-resource inside viewport
+    ok: hud-chrome-1366x768-muted: identity inside viewport
+    ok: hud-chrome-1366x768-muted: objective inside viewport
+    ok: hud-chrome-1366x768-muted: controls inside viewport
+    ok: hud-chrome-1366x768-muted: audio-mixer inside viewport
+    ok: hud-chrome-1366x768-muted: audio-muted inside viewport
+    ok: hud-chrome-1366x768-muted: minimap clears route-card
+    ok: hud-chrome-1366x768-muted: minimap clears quickbar-strip
+    ok: hud-chrome-1366x768-muted: minimap clears orb-life
+    ok: hud-chrome-1366x768-muted: minimap clears orb-resource
+    ok: hud-chrome-1366x768-muted: minimap clears identity
+    ok: hud-chrome-1366x768-muted: minimap clears objective
+    ok: hud-chrome-1366x768-muted: minimap clears controls
+    ok: hud-chrome-1366x768-muted: minimap clears audio-mixer
+    ok: hud-chrome-1366x768-muted: minimap clears audio-muted
+    ok: hud-chrome-1366x768-muted: route-card clears quickbar-strip
+    ok: hud-chrome-1366x768-muted: route-card clears orb-life
+    ok: hud-chrome-1366x768-muted: route-card clears orb-resource
+    ok: hud-chrome-1366x768-muted: route-card clears identity
+    ok: hud-chrome-1366x768-muted: route-card clears objective
+    ok: hud-chrome-1366x768-muted: route-card clears controls
+    ok: hud-chrome-1366x768-muted: route-card clears audio-mixer
+    ok: hud-chrome-1366x768-muted: route-card clears audio-muted
+    ok: hud-chrome-1366x768-muted: quickbar-strip clears orb-life
+    ok: hud-chrome-1366x768-muted: quickbar-strip clears orb-resource
+    ok: hud-chrome-1366x768-muted: quickbar-strip clears identity
+    ok: hud-chrome-1366x768-muted: quickbar-strip clears objective
+    ok: hud-chrome-1366x768-muted: quickbar-strip clears controls
+    ok: hud-chrome-1366x768-muted: quickbar-strip clears audio-mixer
+    ok: hud-chrome-1366x768-muted: quickbar-strip clears audio-muted
+    ok: hud-chrome-1366x768-muted: orb-life clears orb-resource
+    ok: hud-chrome-1366x768-muted: orb-life clears identity
+    ok: hud-chrome-1366x768-muted: orb-life clears objective
+    ok: hud-chrome-1366x768-muted: orb-life clears controls
+    ok: hud-chrome-1366x768-muted: orb-life clears audio-mixer
+    ok: hud-chrome-1366x768-muted: orb-life clears audio-muted
+    ok: hud-chrome-1366x768-muted: orb-resource clears identity
+    ok: hud-chrome-1366x768-muted: orb-resource clears objective
+    ok: hud-chrome-1366x768-muted: orb-resource clears controls
+    ok: hud-chrome-1366x768-muted: orb-resource clears audio-mixer
+    ok: hud-chrome-1366x768-muted: orb-resource clears audio-muted
+    ok: hud-chrome-1366x768-muted: identity clears objective
+    ok: hud-chrome-1366x768-muted: identity clears controls
+    ok: hud-chrome-1366x768-muted: identity clears audio-mixer
+    ok: hud-chrome-1366x768-muted: identity clears audio-muted
+    ok: hud-chrome-1366x768-muted: objective clears controls
+    ok: hud-chrome-1366x768-muted: objective clears audio-mixer
+    ok: hud-chrome-1366x768-muted: objective clears audio-muted
+    ok: hud-chrome-1366x768-muted: controls clears audio-mixer
+    ok: hud-chrome-1366x768-muted: controls clears audio-muted
+    ok: hud-chrome-1366x768-muted: audio-mixer clears audio-muted
+    ok: hud-chrome-1366x768-muted: mixer trace matches measured production text
+    ok: hud-chrome-1366x768-muted: every route and return row fits without shrinking
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: full HUD typography uses the authored Segoe sizes
+    FAIL: hud-chrome-1366x768-muted: action labels fit the unchanged slots
+    ok: hud-chrome-1366x768-muted: original owner actions remain in the production HUD
+    ok: hud-chrome-960x600-unmuted: production capture written
+    ok: hud-chrome-960x600-unmuted: minimap painted
+    ok: hud-chrome-960x600-unmuted: route-card painted
+    ok: hud-chrome-960x600-unmuted: quickbar-strip painted
+    ok: hud-chrome-960x600-unmuted: orb-life painted
+    ok: hud-chrome-960x600-unmuted: orb-resource painted
+    ok: hud-chrome-960x600-unmuted: identity painted
+    ok: hud-chrome-960x600-unmuted: objective painted
+    ok: hud-chrome-960x600-unmuted: controls painted
+    ok: hud-chrome-960x600-unmuted: audio-mixer painted
+    ok: hud-chrome-960x600-unmuted: mute chip follows actual mute state
+    ok: hud-chrome-960x600-unmuted: minimap inside viewport
+    ok: hud-chrome-960x600-unmuted: route-card inside viewport
+    ok: hud-chrome-960x600-unmuted: quickbar-strip inside viewport
+    ok: hud-chrome-960x600-unmuted: orb-life inside viewport
+    ok: hud-chrome-960x600-unmuted: orb-resource inside viewport
+    ok: hud-chrome-960x600-unmuted: identity inside viewport
+    ok: hud-chrome-960x600-unmuted: objective inside viewport
+    ok: hud-chrome-960x600-unmuted: controls inside viewport
+    ok: hud-chrome-960x600-unmuted: audio-mixer inside viewport
+    ok: hud-chrome-960x600-unmuted: minimap clears route-card
+    ok: hud-chrome-960x600-unmuted: minimap clears quickbar-strip
+    ok: hud-chrome-960x600-unmuted: minimap clears orb-life
+    ok: hud-chrome-960x600-unmuted: minimap clears orb-resource
+    ok: hud-chrome-960x600-unmuted: minimap clears identity
+    ok: hud-chrome-960x600-unmuted: minimap clears objective
+    ok: hud-chrome-960x600-unmuted: minimap clears controls
+    ok: hud-chrome-960x600-unmuted: minimap clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: route-card clears quickbar-strip
+    ok: hud-chrome-960x600-unmuted: route-card clears orb-life
+    ok: hud-chrome-960x600-unmuted: route-card clears orb-resource
+    ok: hud-chrome-960x600-unmuted: route-card clears identity
+    ok: hud-chrome-960x600-unmuted: route-card clears objective
+    ok: hud-chrome-960x600-unmuted: route-card clears controls
+    ok: hud-chrome-960x600-unmuted: route-card clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: quickbar-strip clears orb-life
+    ok: hud-chrome-960x600-unmuted: quickbar-strip clears orb-resource
+    ok: hud-chrome-960x600-unmuted: quickbar-strip clears identity
+    ok: hud-chrome-960x600-unmuted: quickbar-strip clears objective
+    ok: hud-chrome-960x600-unmuted: quickbar-strip clears controls
+    ok: hud-chrome-960x600-unmuted: quickbar-strip clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: orb-life clears orb-resource
+    ok: hud-chrome-960x600-unmuted: orb-life clears identity
+    ok: hud-chrome-960x600-unmuted: orb-life clears objective
+    ok: hud-chrome-960x600-unmuted: orb-life clears controls
+    ok: hud-chrome-960x600-unmuted: orb-life clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: orb-resource clears identity
+    ok: hud-chrome-960x600-unmuted: orb-resource clears objective
+    ok: hud-chrome-960x600-unmuted: orb-resource clears controls
+    ok: hud-chrome-960x600-unmuted: orb-resource clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: identity clears objective
+    ok: hud-chrome-960x600-unmuted: identity clears controls
+    ok: hud-chrome-960x600-unmuted: identity clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: objective clears controls
+    ok: hud-chrome-960x600-unmuted: objective clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: controls clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: mixer trace matches measured production text
+    ok: hud-chrome-960x600-unmuted: every route and return row fits without shrinking
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: full HUD typography uses the authored Segoe sizes
+    FAIL: hud-chrome-960x600-unmuted: action labels fit the unchanged slots
+    ok: hud-chrome-960x600-unmuted: original owner actions remain in the production HUD
+    ok: hud-chrome-960x600-muted: production capture written
+    ok: hud-chrome-960x600-muted: minimap painted
+    ok: hud-chrome-960x600-muted: route-card painted
+    ok: hud-chrome-960x600-muted: quickbar-strip painted
+    ok: hud-chrome-960x600-muted: orb-life painted
+    ok: hud-chrome-960x600-muted: orb-resource painted
+    ok: hud-chrome-960x600-muted: identity painted
+    ok: hud-chrome-960x600-muted: objective painted
+    ok: hud-chrome-960x600-muted: controls painted
+    ok: hud-chrome-960x600-muted: audio-mixer painted
+    ok: hud-chrome-960x600-muted: mute chip follows actual mute state
+    ok: hud-chrome-960x600-muted: minimap inside viewport
+    ok: hud-chrome-960x600-muted: route-card inside viewport
+    ok: hud-chrome-960x600-muted: quickbar-strip inside viewport
+    ok: hud-chrome-960x600-muted: orb-life inside viewport
+    ok: hud-chrome-960x600-muted: orb-resource inside viewport
+    ok: hud-chrome-960x600-muted: identity inside viewport
+    ok: hud-chrome-960x600-muted: objective inside viewport
+    ok: hud-chrome-960x600-muted: controls inside viewport
+    ok: hud-chrome-960x600-muted: audio-mixer inside viewport
+    ok: hud-chrome-960x600-muted: audio-muted inside viewport
+    ok: hud-chrome-960x600-muted: minimap clears route-card
+    ok: hud-chrome-960x600-muted: minimap clears quickbar-strip
+    ok: hud-chrome-960x600-muted: minimap clears orb-life
+    ok: hud-chrome-960x600-muted: minimap clears orb-resource
+    ok: hud-chrome-960x600-muted: minimap clears identity
+    ok: hud-chrome-960x600-muted: minimap clears objective
+    ok: hud-chrome-960x600-muted: minimap clears controls
+    ok: hud-chrome-960x600-muted: minimap clears audio-mixer
+    ok: hud-chrome-960x600-muted: minimap clears audio-muted
+    ok: hud-chrome-960x600-muted: route-card clears quickbar-strip
+    ok: hud-chrome-960x600-muted: route-card clears orb-life
+    ok: hud-chrome-960x600-muted: route-card clears orb-resource
+    ok: hud-chrome-960x600-muted: route-card clears identity
+    ok: hud-chrome-960x600-muted: route-card clears objective
+    ok: hud-chrome-960x600-muted: route-card clears controls
+    ok: hud-chrome-960x600-muted: route-card clears audio-mixer
+    ok: hud-chrome-960x600-muted: route-card clears audio-muted
+    ok: hud-chrome-960x600-muted: quickbar-strip clears orb-life
+    ok: hud-chrome-960x600-muted: quickbar-strip clears orb-resource
+    ok: hud-chrome-960x600-muted: quickbar-strip clears identity
+    ok: hud-chrome-960x600-muted: quickbar-strip clears objective
+    ok: hud-chrome-960x600-muted: quickbar-strip clears controls
+    ok: hud-chrome-960x600-muted: quickbar-strip clears audio-mixer
+    ok: hud-chrome-960x600-muted: quickbar-strip clears audio-muted
+    ok: hud-chrome-960x600-muted: orb-life clears orb-resource
+    ok: hud-chrome-960x600-muted: orb-life clears identity
+    ok: hud-chrome-960x600-muted: orb-life clears objective
+    ok: hud-chrome-960x600-muted: orb-life clears controls
+    ok: hud-chrome-960x600-muted: orb-life clears audio-mixer
+    ok: hud-chrome-960x600-muted: orb-life clears audio-muted
+    ok: hud-chrome-960x600-muted: orb-resource clears identity
+    ok: hud-chrome-960x600-muted: orb-resource clears objective
+    ok: hud-chrome-960x600-muted: orb-resource clears controls
+    ok: hud-chrome-960x600-muted: orb-resource clears audio-mixer
+    ok: hud-chrome-960x600-muted: orb-resource clears audio-muted
+    ok: hud-chrome-960x600-muted: identity clears objective
+    ok: hud-chrome-960x600-muted: identity clears controls
+    ok: hud-chrome-960x600-muted: identity clears audio-mixer
+    ok: hud-chrome-960x600-muted: identity clears audio-muted
+    ok: hud-chrome-960x600-muted: objective clears controls
+    ok: hud-chrome-960x600-muted: objective clears audio-mixer
+    ok: hud-chrome-960x600-muted: objective clears audio-muted
+    ok: hud-chrome-960x600-muted: controls clears audio-mixer
+    ok: hud-chrome-960x600-muted: controls clears audio-muted
+    ok: hud-chrome-960x600-muted: audio-mixer clears audio-muted
+    ok: hud-chrome-960x600-muted: mixer trace matches measured production text
+    ok: hud-chrome-960x600-muted: every route and return row fits without shrinking
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: full HUD typography uses the authored Segoe sizes
+    FAIL: hud-chrome-960x600-muted: action labels fit the unchanged slots
+    ok: hud-chrome-960x600-muted: original owner actions remain in the production HUD
+   FAIL (6 failures)

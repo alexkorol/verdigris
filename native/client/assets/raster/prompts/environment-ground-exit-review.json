@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "generatedOn": "2026-09-09",
+  "generationMode": "built-in image_gen",
+  "modelSelection": "Tool exposes no model selector; no particular model or variant asserted.",
+  "status": "Sources and Pixel Respecter runtime outputs visually reviewed at native size and 3x; packed-earth 3x3 repeat reviewed. Ready for production renderer review.",
+  "assets": [
+    {
+      "id": "environment-packed-earth-v1",
+      "source": "native/client/assets/raster/source/environment-packed-earth-v1.png",
+      "prompt": "native/client/assets/raster/prompts/environment-packed-earth-v1.txt",
+      "references": [],
+      "generatedOriginal": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-b4c50378-2316-4146-85b1-a77e9731f05d.png",
+      "sha256": "19e112eaff82a13bf26f2093bf491826d374b0742f21b81a54ab4b5747f77951",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGB",
+      "requestedLogicalSize": [
+        64,
+        64
+      ],
+      "suggestedRuntimeMaxColors": 12,
+      "visualInspection": "Single opaque warm muted brown packed-earth patch. Deliberate visible square grit clusters and sparse embedded pebbles. No large cracked lattice, path, border, grass, or scenery. Source has more logical pixels than requested, so runtime scale is not proven by this source.",
+      "sourceEdgeMeanAbsRGB": {
+        "horizontal": 4.004,
+        "vertical": 3.868
+      },
+      "sourceAdjacentMeanAbsRGB": {
+        "horizontal": 0.743,
+        "vertical": 0.707
+      },
+      "limitations": [
+        "Opposite edges are not pixel-identical. The reconstructed 3x3 repeat has no obvious boundary grid at the reviewed scale, but production-camera review remains required.",
+        "The source did not literally honor64x64 logical construction; Pixel Respecter reconstruction produced64x64 runtime pixels."
+      ],
+      "runtimeReview": {
+        "path": "native/client/assets/raster/runtime/terrain_packed_earth.png",
+        "canvas": [
+          64,
+          64
+        ],
+        "colors": 11,
+        "sourceCellSize": 13,
+        "preview": "native/tools/raster/environment-singles-preview-3x.png",
+        "repeatedPreview": "native/tools/raster/terrain-packed-earth-repeat-3x.png",
+        "seamReport": "native/tools/raster/terrain-packed-earth-seams.json",
+        "seamMeanAbsRGB": {
+          "horizontal": 3.1771,
+          "vertical": 3.0521
+        },
+        "ordinaryNeighborMeanAbsRGB": {
+          "horizontal": 4.3942,
+          "vertical": 4.5192
+        },
+        "visualInspection": "Viewed native64x64 image,3x enlargement,and3x3 repeat. Muted brown soil with small subdued grain. No visible hard tile boundary or cracked lattice. Some recurring grit placement can be found on deliberate inspection, but it does not form dominant lines.",
+        "acceptance": "Accept for live game trial. Opposite edges are not pixel-identical; do not claim mathematically seamless. Full production camera acceptance remains pending."
+      }
+    },
+    {
+      "id": "environment-exit-stairs-v1",
+      "source": "native/client/assets/raster/source/environment-exit-stairs-v1.png",
+      "prompt": "native/client/assets/raster/prompts/environment-exit-stairs-v1.txt",
+      "references": [
+        {
+          "path": "native/client/assets/raster/runtime/gate.png",
+          "role": "Accepted isolated pixel material, lighting, and elevated camera reference only; not the requested object.",
+          "inspectedWith": "view_image"
+        }
+      ],
+      "generatedOriginal": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-ddc8ee7f-d661-444d-b85f-3639c7d69bb9.png",
+      "sha256": "4558d8c66f75000b065e760f7272bf321a422b7c4d434fae2b9d92ad38bc78c7",
+      "width": 1299,
+      "height": 1211,
+      "mode": "RGBA",
+      "fullyTransparentPixels": 907575,
+      "alphaBelow128Pixels": 922334,
+      "alphaMaximum": 255,
+      "requestedLogicalWidth": 96,
+      "suggestedRuntimeMaxColors": 16,
+      "visualInspection": "One whole warm-grey/sandstone staircase and small upper landing, foot toward lower-right, rising upper-left. Elevated camera shows top treads and shaded stone side. Broad clear steps and no surrounding landscape or props.",
+      "limitations": [
+        "Source body alpha was mostly253 with partially transparent edge pixels; runtime conversion normalized to binary alpha.",
+        "Visible runtime width is102px rather than exactly96px; inspect relative to actors and exit interaction footprint in the game."
+      ],
+      "runtimeReview": {
+        "path": "native/client/assets/raster/runtime/exit_stairs.png",
+        "canvas": [
+          128,
+          128
+        ],
+        "visibleBody": [
+          102,
+          106
+        ],
+        "colors": 32,
+        "sourceCellSize": 10,
+        "alpha": "Binary",
+        "preview": "native/tools/raster/environment-singles-preview-3x.png",
+        "visualInspection": "Viewed native128x128 output and3x enlargement. Broad steps and upper landing remain distinguishable; clean whole footprint and crisp outline; same warmstone palette and elevated view as the gate. Approximate96px requested width became102px visible width.",
+        "acceptance": "Accept for live game trial; replacement of flat exit circle and live actor-scale/readability remain renderer review responsibilities."
+      }
+    }
+  ],
+  "rejectedCandidates": [],
+  "replacesObservedProblems": [
+    "Existing terrain_ochre repeats a saturated cracked lattice that visually dominates the game ground.",
+    "Flat exit circle should become a recognizable physical stone passage marker."
+  ]
+}

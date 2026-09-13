@@ -1,0 +1,97 @@
+{
+  "generator": "built-in image_gen",
+  "model_selection": "No model or variant control exposed; no specific version selected.",
+  "scope": "Three replacement idle directions for the accepted single hero. No new gait frames.",
+  "identity_anchor": "native/tools/raster/hero_se_reference_4x.png",
+  "original_costume_reference": "native/client/assets/raster/source/actors_hero-se-idle-v1.png",
+  "desired_runtime_canvas": [
+    80,
+    96
+  ],
+  "desired_logical_body_height": 64,
+  "acceptance": "Preview accepted after individual source review and independent reconstructed four-direction checks at 1x and 4x. Full trousers, pale wraps, empty hands and fixed anatomical equipment sides survive. Live game and equipment alignment remain parent integration work; no gameplay success claimed by this asset subtask.",
+  "runtime_review": {
+    "canvas": [80, 96],
+    "alpha_values": [0, 255],
+    "opaque_colors_each": 32,
+    "visible_heights": {"se": 63, "sw": 65, "nw": 63, "ne": 65},
+    "conversion": "Actual Pixel Respecter via pixel_pipeline, shared source cell size 17 for the three new directions. Connected background cleanup and locally reviewed enclosed pockets recorded in native/tools/raster/hero-directions.json and pipeline provenance.",
+    "native_preview": "native/tools/raster/hero-directions-preview-1x.png",
+    "enlarged_preview": "native/tools/raster/hero-directions-preview-4x.png",
+    "observations": "SW is a front-left face with a naturally splayed idle stance. NE/NW are distinct rear directions with no front-facing eyes. New views have small width/brightness differences but preserve costume and the full trousered limbs, replacing the older mismatched exposed-knee actor art.",
+    "renderer_handoff": "Renderer worker notified to measure refreshed hand anchors. Preserving the existing SE screen-right-fist attachment uses anatomical left hand: SW front screen-right, NE/NW rear screen-left."
+  },
+  "selected": [
+    {
+      "direction": "sw",
+      "source": "actors_hero-sw-idle-v1.png",
+      "prompt": "actors_hero-sw-idle-v1.txt",
+      "size": [
+        1145,
+        1374
+      ],
+      "mode": "RGB",
+      "references": [
+        {
+          "path": "native/tools/raster/hero_se_reference_4x.png",
+          "role": "Accepted pixel identity, adult proportion, camera, palette and logical pixel construction"
+        },
+        {
+          "path": "native/client/assets/raster/source/actors_hero-se-idle-v1.png",
+          "role": "Original clothing and anatomical equipment-side authority"
+        }
+      ],
+      "observed": "Front-left face and chest; full dark trousers, pale wraps, empty hands, same russet tunic. Feet remain naturally splayed in idle stance. Bronze guard remains on anatomical right (screen-left from front), sash remains anatomical left (screen-right), unlike a horizontally mirrored source.",
+      "raw_alpha_issue": "Baked light checkerboard RGB; real alpha must come from documented actual Pixel Respecter cleanup."
+    },
+    {
+      "direction": "ne",
+      "source": "actors_hero-ne-idle-v1.png",
+      "prompt": "actors_hero-ne-idle-v1.txt",
+      "size": [
+        1145,
+        1374
+      ],
+      "mode": "RGB",
+      "references": [
+        {
+          "path": "native/tools/raster/hero_se_reference_4x.png",
+          "role": "Accepted pixel identity, adult proportion, camera, palette and logical pixel construction"
+        },
+        {
+          "path": "native/client/assets/raster/source/actors_hero-se-idle-v1.png",
+          "role": "Original clothing and anatomical equipment-side authority"
+        }
+      ],
+      "observed": "Rear-right body, back of head/tunic, no eyes or front of face. Small near ear/jaw edge. Full dark trousers, both pale wraps, empty hands. Bronze guard screen-right at physical right shoulder; indigo sash screen-left at physical left hip.",
+      "raw_alpha_issue": "Baked gray checkerboard RGB; real alpha must come from documented actual Pixel Respecter cleanup."
+    },
+    {
+      "direction": "nw",
+      "source": "actors_hero-nw-idle-v1.png",
+      "prompt": "actors_hero-nw-idle-v1.txt",
+      "size": [
+        1145,
+        1374
+      ],
+      "mode": "RGB",
+      "references": [
+        {
+          "path": "native/tools/raster/hero_se_reference_4x.png",
+          "role": "Accepted pixel identity, adult proportion, camera, palette and logical pixel construction"
+        },
+        {
+          "path": "native/client/assets/raster/source/actors_hero-se-idle-v1.png",
+          "role": "Original clothing and anatomical equipment-side authority"
+        },
+        {
+          "path": "native/client/assets/raster/source/actors_hero-ne-idle-v1.png",
+          "role": "Established rear tunic/costume appearance; rotate to other diagonal without mirroring equipment"
+        }
+      ],
+      "observed": "Rear-left body, back of hair and tunic, no visible eyes/front face, small near ear/jaw edge. Forward visible boot points left. Full dark trousers, both wraps and empty hands. Bronze remains screen-right at far right shoulder; sash remains screen-left. Different facing without swapped equipment.",
+      "raw_alpha_issue": "Baked gray checkerboard RGB; real alpha must come from documented actual Pixel Respecter cleanup."
+    }
+  ],
+  "provenance_policy": "All originals and submitted prompts preserved. No source overwritten or relabeled as another facing. Atlas assembly, alpha repair and normalization owned by pixel_pipeline."
+}

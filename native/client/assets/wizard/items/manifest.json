@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "pack": "rpg_inventory_items",
+  "provenance": {
+    "wizard_commit": "66a5d9ff6810e886c1bd08cbeaaf83cabf92aae9",
+    "module_id": "wizard.rpg-inventory",
+    "source_root": "WIZARD/tools/rpg_inventory",
+    "generated_by": "TASK-0169"
+  },
+  "contact_sheet": "contact_sheet.png",
+  "items": [
+    {
+      "id": "dagger_bronze",
+      "category": "weapon",
+      "display_name": "Bronze Dagger",
+      "path": "dagger_bronze.png",
+      "source_path": "tools/rpg_inventory/assets/dagger_bronze.png",
+      "sha256": "a5fed373ddbbf2e17628294e50db7bbf6d07cce0688125513e671c805d9b2fa4",
+      "bytes": 26543,
+      "footprint": { "w": 344, "h": 512, "mode": "P" }
+    },
+    {
+      "id": "boar_pike",
+      "category": "weapon",
+      "display_name": "Boar Pike",
+      "path": "boar_pike.png",
+      "source_path": "tools/rpg_inventory/assets/boar_pike.png",
+      "sha256": "28601e63fa6dc665c169e34bb0c1895a1b74a1dea293f84778fb4fd9d535687c",
+      "bytes": 19252,
+      "footprint": { "w": 204, "h": 512, "mode": "P" }
+    },
+    {
+      "id": "astral_plate",
+      "category": "armor",
+      "display_name": "Astral Plate",
+      "path": "astral_plate.png",
+      "source_path": "tools/rpg_inventory/assets/astral_plate.png",
+      "sha256": "c4227d4f5ca0242c022ac753f9b805f8ca4f1d601c6414ac9b987d218d5b4e84",
+      "bytes": 65310,
+      "footprint": { "w": 421, "h": 512, "mode": "P" }
+    },
+    {
+      "id": "boots_fur",
+      "category": "armor",
+      "display_name": "Fur Boots",
+      "path": "boots_fur.png",
+      "source_path": "tools/rpg_inventory/assets/boots_fur.png",
+      "sha256": "df45c89d69fab7877c7574cc1b7de78ec3b4f3f9d19d107adf1527a791855763",
+      "bytes": 83331,
+      "footprint": { "w": 471, "h": 512, "mode": "P" }
+    },
+    {
+      "id": "cur_chisel",
+      "category": "tool",
+      "display_name": "Curator Chisel",
+      "path": "cur_chisel.png",
+      "source_path": "tools/rpg_inventory/assets/cur_chisel.png",
+      "sha256": "11350462d69643c5810b5b647b1aaa826be87a0b217ea56eea5caaee566924c4",
+      "bytes": 20038,
+      "footprint": { "w": 84, "h": 512, "mode": "P" }
+    },
+    {
+      "id": "cur_knife",
+      "category": "tool",
+      "display_name": "Curator Knife",
+      "path": "cur_knife.png",
+      "source_path": "tools/rpg_inventory/assets/cur_knife.png",
+      "sha256": "d6fadd4bf27fa9e5452726c75e78dab22ef9304ecba6623e50b54883b0c6df74",
+      "bytes": 33675,
+      "footprint": { "w": 470, "h": 512, "mode": "P" }
+    },
+    {
+      "id": "cur_draught",
+      "category": "reagent",
+      "display_name": "Curator Draught",
+      "path": "cur_draught.png",
+      "source_path": "tools/rpg_inventory/assets/cur_draught.png",
+      "sha256": "14996e08c3398c9e8a69c4b1b4c4e9109b61efaddee9f3cbe012debe43e5402e",
+      "bytes": 67917,
+      "footprint": { "w": 376, "h": 512, "mode": "P" }
+    },
+    {
+      "id": "cur_orb",
+      "category": "reagent",
+      "display_name": "Curator Orb",
+      "path": "cur_orb.png",
+      "source_path": "tools/rpg_inventory/assets/cur_orb.png",
+      "sha256": "f5e75a8f2bc1343c23f03c587f09fed113752e9dfb40588a7e3878fefeb54de6",
+      "bytes": 85479,
+      "footprint": { "w": 416, "h": 512, "mode": "P" }
+    },
+    {
+      "id": "bird_omen",
+      "category": "trophy",
+      "display_name": "Bird Omen",
+      "path": "bird_omen.png",
+      "source_path": "tools/rpg_inventory/assets/bird_omen.png",
+      "sha256": "276acac57329b0870889f74ab0d9ee33a04c5f1e085fecfa74fd531f2c1459e1",
+      "bytes": 44651,
+      "footprint": { "w": 339, "h": 512, "mode": "P" }
+    },
+    {
+      "id": "blood_omen",
+      "category": "trophy",
+      "display_name": "Blood Omen",
+      "path": "blood_omen.png",
+      "source_path": "tools/rpg_inventory/assets/blood_omen.png",
+      "sha256": "5f71ff943b599bb79550d78f4283c188811644397e8d097392092b6488bbb78f",
+      "bytes": 58746,
+      "footprint": { "w": 512, "h": 381, "mode": "P" }
+    },
+    {
+      "id": "ember_shell",
+      "category": "recoverable",
+      "display_name": "Ember Shell",
+      "path": "ember_shell.png",
+      "source_path": "tools/rpg_inventory/assets/ember_shell.png",
+      "sha256": "bbd2e67adc91b108a53085ff6dad517d3ef86d1a00638e406073c5b3ced825eb",
+      "bytes": 75544,
+      "footprint": { "w": 399, "h": 512, "mode": "P" }
+    },
+    {
+      "id": "bowl_bronze_offering",
+      "category": "recoverable",
+      "display_name": "Bronze Offering Bowl",
+      "path": "bowl_bronze_offering.png",
+      "source_path": "tools/rpg_inventory/assets/bowl_bronze_offering.png",
+      "sha256": "26823b0f4f584aa4e740381c299394e0a0d3555f82892a11532fad5cbd33068c",
+      "bytes": 251407,
+      "footprint": { "w": 512, "h": 323, "mode": "RGBA" }
+    }
+  ]
+}

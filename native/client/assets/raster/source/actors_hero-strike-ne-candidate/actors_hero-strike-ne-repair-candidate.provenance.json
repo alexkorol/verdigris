@@ -1,0 +1,759 @@
+{
+  "version": 1,
+  "manifest_sha256": "f8919f7891e9e08d9025b541f42017c5385940d64d5dbed91b3580768f5bf755",
+  "importer_sha256": "d59ef9d71a73740f15c8ef5ce5fad588273e2fb4856684985203b7501dfee7c2",
+  "engine": {
+    "project": "Pixel Respecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "root": "Z:/Code/Python/pixel-perfecter",
+    "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+    "git_dirty": true,
+    "source_sha256": {
+      "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+      "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+      "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+      "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+      "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+      "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+      "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+      "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+      "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+      "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+      "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+      "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+      "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+    },
+    "dependencies": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    }
+  },
+  "known_limitations": [
+    "Single generated sources have different margins; fixed cell12 reconstructs body scale without resizing. Measured feet pivots register independent frames."
+  ],
+  "sources": [
+    {
+      "source": "../runtime/hero_ne.png",
+      "sha256": "aafeeed5b41a4ee6cad27d6331b0dec4e121ba711c86380ca2a83228a322c0c5",
+      "size": [
+        80,
+        96
+      ]
+    },
+    {
+      "source": "../source/actors_hero-strike-ne-windup-v2.png",
+      "sha256": "157f44650116a0683996d9deb85f3332225e496363744c3e5d9f507670b4116b",
+      "size": [
+        1145,
+        1374
+      ],
+      "background_removal": {
+        "api": "pixel_perfecter.colors.make_border_connected_transparent",
+        "color": [
+          220,
+          220,
+          220
+        ],
+        "tolerance": 80,
+        "interior_windows": [],
+        "transparent_pixels_after": 1413981
+      }
+    },
+    {
+      "source": "../source/actors_hero-strike-ne-contact-v3.png",
+      "sha256": "32801fb1475e9a7d6ca17e82647b493ec43fe0bffc4ad421cc328c9f6e8561da",
+      "size": [
+        1145,
+        1374
+      ],
+      "background_removal": {
+        "api": "pixel_perfecter.colors.make_border_connected_transparent",
+        "color": [
+          220,
+          220,
+          220
+        ],
+        "tolerance": 80,
+        "interior_windows": [],
+        "transparent_pixels_after": 1397737
+      }
+    },
+    {
+      "source": "../source/actors_hero-strike-ne-contact-v5.png",
+      "sha256": "ef5d144ee3655cbc25a58e791831056ceb480f4a036647d5daa9dbc469274343",
+      "size": [
+        1145,
+        1374
+      ],
+      "background_removal": {
+        "api": "pixel_perfecter.colors.make_border_connected_transparent",
+        "color": [
+          155,
+          155,
+          155
+        ],
+        "tolerance": 110,
+        "interior_windows": [],
+        "transparent_pixels_after": 1409089
+      }
+    },
+    {
+      "source": "../source/actors_hero-strike-ne-followthrough-v1.png",
+      "sha256": "6632c7227cceff93af6eb08af881eab61810c0ff036163461c69ece062fd3d4c",
+      "size": [
+        1145,
+        1374
+      ],
+      "background_removal": {
+        "api": "pixel_perfecter.colors.make_border_connected_transparent",
+        "color": [
+          220,
+          220,
+          220
+        ],
+        "tolerance": 110,
+        "interior_windows": [
+          {
+            "source_box": [
+              499,
+              695,
+              543,
+              750
+            ],
+            "new_transparent_pixels": 766
+          },
+          {
+            "source_box": [
+              505,
+              750,
+              543,
+              802
+            ],
+            "new_transparent_pixels": 739
+          }
+        ],
+        "transparent_pixels_after": 1406145
+      }
+    },
+    {
+      "source": "../source/actors_hero-strike-ne-recovery-v1.png",
+      "sha256": "83e379b710b8a8e04159e15d008436e6ede4606196716f31928e42f99a520796",
+      "size": [
+        1145,
+        1374
+      ],
+      "background_removal": {
+        "api": "pixel_perfecter.colors.make_border_connected_transparent",
+        "color": [
+          155,
+          155,
+          155
+        ],
+        "tolerance": 110,
+        "interior_windows": [
+          {
+            "source_box": [
+              477,
+              702,
+              515,
+              760
+            ],
+            "new_transparent_pixels": 1206
+          },
+          {
+            "source_box": [
+              466,
+              760,
+              505,
+              835
+            ],
+            "new_transparent_pixels": 1110
+          }
+        ],
+        "transparent_pixels_after": 1401510
+      }
+    }
+  ],
+  "assets": [
+    {
+      "name": "idle",
+      "file": "idle.png",
+      "source": "../runtime/hero_ne.png",
+      "acceptance": "candidate only; NE action not runtime accepted",
+      "source_box": [
+        0,
+        0,
+        80,
+        96
+      ],
+      "cell_size": 1,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 20,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        80,
+        96
+      ],
+      "trim_box": [
+        27,
+        31,
+        53,
+        96
+      ],
+      "before_resize": [
+        26,
+        65
+      ],
+      "placed_size": [
+        26,
+        65
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        27,
+        31,
+        53,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        40,
+        96
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "cc71bed98f54f67ca65532cce987221550bf8d95d99d776b8731f82daa906ea0"
+    },
+    {
+      "name": "windup",
+      "file": "windup.png",
+      "source": "../source/actors_hero-strike-ne-windup-v2.png",
+      "acceptance": "candidate only; NE action not runtime accepted",
+      "source_box": [
+        0,
+        0,
+        1145,
+        1374
+      ],
+      "cell_size": 12,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 27,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        95,
+        114
+      ],
+      "trim_box": [
+        34,
+        35,
+        64,
+        102
+      ],
+      "before_resize": [
+        30,
+        67
+      ],
+      "placed_size": [
+        30,
+        67
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        24,
+        29,
+        54,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        600,
+        1220
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "a44cc816d6fdfa8faac813eadf352b2d51d89669b5698b6b3d422159856cd3ba"
+    },
+    {
+      "name": "commit",
+      "file": "commit.png",
+      "source": "../source/actors_hero-strike-ne-contact-v3.png",
+      "acceptance": "candidate only; NE action not runtime accepted",
+      "source_box": [
+        0,
+        0,
+        1145,
+        1374
+      ],
+      "cell_size": 12,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 25,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        95,
+        114
+      ],
+      "trim_box": [
+        35,
+        27,
+        63,
+        105
+      ],
+      "before_resize": [
+        28,
+        78
+      ],
+      "placed_size": [
+        28,
+        78
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        25,
+        18,
+        53,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        600,
+        1261
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "e3a1b3c14472ea809af3dd592bdf582242252a56bbb77aed49d55c867cec17c3"
+    },
+    {
+      "name": "contact",
+      "file": "contact.png",
+      "source": "../source/actors_hero-strike-ne-contact-v5.png",
+      "acceptance": "candidate only; NE action not runtime accepted",
+      "source_box": [
+        0,
+        0,
+        1145,
+        1374
+      ],
+      "cell_size": 12,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 26,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        95,
+        114
+      ],
+      "trim_box": [
+        26,
+        35,
+        64,
+        102
+      ],
+      "before_resize": [
+        38,
+        67
+      ],
+      "placed_size": [
+        38,
+        67
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        16,
+        29,
+        54,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        600,
+        1222
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "98d1b6dbc655b9ce8385020752f1ed179be41f815f6d8163619ec8d65b3e519e"
+    },
+    {
+      "name": "followthrough",
+      "file": "followthrough.png",
+      "source": "../source/actors_hero-strike-ne-followthrough-v1.png",
+      "acceptance": "candidate only; NE action not runtime accepted",
+      "source_box": [
+        0,
+        0,
+        1145,
+        1374
+      ],
+      "cell_size": 12,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 27,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        95,
+        114
+      ],
+      "trim_box": [
+        36,
+        35,
+        66,
+        102
+      ],
+      "before_resize": [
+        30,
+        67
+      ],
+      "placed_size": [
+        30,
+        67
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        26,
+        29,
+        56,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        600,
+        1224
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "ef6eba908f55d63599b92473d2b9b10ebf6a9bd6221d4309735e803b4519d0eb"
+    },
+    {
+      "name": "recovery",
+      "file": "recovery.png",
+      "source": "../source/actors_hero-strike-ne-recovery-v1.png",
+      "acceptance": "candidate only; NE action not runtime accepted",
+      "source_box": [
+        0,
+        0,
+        1145,
+        1374
+      ],
+      "cell_size": 12,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 30,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        95,
+        114
+      ],
+      "trim_box": [
+        34,
+        35,
+        63,
+        103
+      ],
+      "before_resize": [
+        29,
+        68
+      ],
+      "placed_size": [
+        29,
+        68
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        24,
+        28,
+        53,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        600,
+        1236
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "3439b11bb1e655f977724588ad26e980d83b5a88575b4dd163858284ab75c8ca"
+    }
+  ],
+  "shared_palette": {
+    "api": "pixel_perfecter.palettes.reduce_colors",
+    "max_colors": 32,
+    "visible_colors_before": 603,
+    "visible_colors_after": 32,
+    "palette_rgb": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        9,
+        14,
+        43
+      ],
+      [
+        30,
+        24,
+        15
+      ],
+      [
+        32,
+        47,
+        67
+      ],
+      [
+        51,
+        73,
+        100
+      ],
+      [
+        56,
+        79,
+        147
+      ],
+      [
+        64,
+        6,
+        6
+      ],
+      [
+        65,
+        52,
+        29
+      ],
+      [
+        92,
+        32,
+        3
+      ],
+      [
+        97,
+        73,
+        54
+      ],
+      [
+        112,
+        40,
+        31
+      ],
+      [
+        117,
+        117,
+        117
+      ],
+      [
+        120,
+        100,
+        74
+      ],
+      [
+        133,
+        57,
+        12
+      ],
+      [
+        133,
+        66,
+        63
+      ],
+      [
+        143,
+        141,
+        142
+      ],
+      [
+        162,
+        77,
+        21
+      ],
+      [
+        171,
+        121,
+        93
+      ],
+      [
+        175,
+        104,
+        51
+      ],
+      [
+        188,
+        153,
+        110
+      ],
+      [
+        192,
+        173,
+        140
+      ],
+      [
+        196,
+        195,
+        195
+      ],
+      [
+        210,
+        139,
+        64
+      ],
+      [
+        213,
+        110,
+        40
+      ],
+      [
+        221,
+        172,
+        123
+      ],
+      [
+        231,
+        187,
+        150
+      ],
+      [
+        233,
+        142,
+        97
+      ],
+      [
+        247,
+        174,
+        67
+      ],
+      [
+        247,
+        245,
+        243
+      ],
+      [
+        249,
+        207,
+        117
+      ],
+      [
+        249,
+        231,
+        176
+      ],
+      [
+        255,
+        169,
+        113
+      ]
+    ],
+    "dithering": "none",
+    "scope": "all reconstructed frames in this manifest"
+  }
+}

@@ -1,0 +1,230 @@
+{
+  "version": 1,
+  "output_dir": "selected",
+  "defaults": {
+    "cell_size": 6,
+    "alpha_mode": "crisp",
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "candidate_native_review_pending_production_axe_identity_limit"
+  },
+  "sheets": [
+    {
+      "source": "../../../client/assets/raster/source/raider-walk-nw-d2poses-v2.png",
+      "border_background": {
+        "color": [
+          170,
+          170,
+          170
+        ],
+        "tolerance": 125,
+        "interior_windows": [
+          [
+            195,
+            163,
+            200,
+            168
+          ],
+          [
+            206,
+            164,
+            210,
+            169
+          ],
+          [
+            1004,
+            159,
+            1013,
+            164
+          ],
+          [
+            1412,
+            159,
+            1416,
+            163
+          ],
+          [
+            220,
+            628,
+            226,
+            633
+          ],
+          [
+            608,
+            628,
+            612,
+            633
+          ],
+          [
+            226,
+            235,
+            230,
+            238
+          ],
+          [
+            632,
+            230,
+            637,
+            237
+          ],
+          [
+            627,
+            240,
+            632,
+            245
+          ],
+          [
+            1441,
+            230,
+            1446,
+            235
+          ],
+          [
+            1436,
+            240,
+            1441,
+            245
+          ],
+          [
+            233,
+            698,
+            238,
+            703
+          ]
+        ]
+      },
+      "assets": [
+        {
+          "name": "raider_walk0_nw",
+          "source_box": [
+            0,
+            0,
+            394,
+            500
+          ],
+          "anchor_source": [
+            190,
+            468
+          ]
+        },
+        {
+          "name": "raider_walk1_nw",
+          "source_box": [
+            394,
+            0,
+            788,
+            500
+          ],
+          "anchor_source": [
+            202,
+            468
+          ]
+        },
+        {
+          "name": "raider_walk2_nw",
+          "source_box": [
+            788,
+            0,
+            1181,
+            500
+          ],
+          "anchor_source": [
+            214,
+            468
+          ]
+        },
+        {
+          "name": "raider_walk3_nw",
+          "source_box": [
+            1181,
+            0,
+            1575,
+            500
+          ],
+          "anchor_source": [
+            227,
+            468
+          ]
+        },
+        {
+          "name": "raider_walk4_nw",
+          "source_box": [
+            0,
+            500,
+            394,
+            999
+          ],
+          "anchor_source": [
+            190,
+            443
+          ]
+        },
+        {
+          "name": "raider_walk5_nw",
+          "source_box": [
+            394,
+            500,
+            788,
+            999
+          ],
+          "anchor_source": [
+            202,
+            443
+          ]
+        },
+        {
+          "name": "raider_walk6_nw",
+          "source_box": [
+            788,
+            500,
+            1181,
+            999
+          ],
+          "anchor_source": [
+            214,
+            443
+          ]
+        },
+        {
+          "name": "raider_walk7_nw",
+          "source_box": [
+            1181,
+            500,
+            1575,
+            999
+          ],
+          "anchor_source": [
+            227,
+            443
+          ]
+        }
+      ]
+    }
+  ],
+  "palette_reference": {
+    "source": "../../../client/assets/raster/runtime/raider_nw.png",
+    "max_colors": 32
+  },
+  "report_name": "raider-walk-nw-candidate.provenance.json",
+  "registration": {
+    "source_origin": [
+      190,
+      468
+    ],
+    "column_stride": 406,
+    "row_stride": 475,
+    "canvas": [
+      80,
+      96
+    ],
+    "pivot": [
+      40,
+      96
+    ],
+    "rationale": "One source origin across all cells. The floor anchor468 is the shared six-pixel grid line just beyond the furthest authored foot in the first row; row2 uses the measured475-pixel packing stride. No individual body fitting or centering."
+  }
+}

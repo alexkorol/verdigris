@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "owner_demo_town",
+  "classification": "non_combat_settlement",
+  "id": "verdigris-crossroads",
+  "display_name": "The Crossroads",
+  "crisis_direction": "Ash banners crowd the Thornward ridge; Aldwyn urges a patrol before the palisade cracks again.",
+  "npcs": [
+    {
+      "id": "aldwyn-guide",
+      "display_name": "Aldwyn the Guide",
+      "role": "elder",
+      "position": { "x": 34, "y": 116 },
+      "services": ["guidance", "expedition_access"],
+      "actions": ["talk", "examine"]
+    },
+    {
+      "id": "ludovicus-weapons",
+      "display_name": "Ludovicus, Weapons Trader",
+      "role": "weapons_tools_trainer",
+      "position": { "x": 19, "y": 113 },
+      "services": ["shop"],
+      "actions": ["trade", "examine"]
+    },
+    {
+      "id": "selene-rite",
+      "display_name": "Selene of the Rite",
+      "role": "armor_ritual_merchant",
+      "position": { "x": 45, "y": 108 },
+      "services": ["shop"],
+      "actions": ["trade", "examine"]
+    },
+    {
+      "id": "rhea-countinghouse",
+      "display_name": "Rhea of the Countinghouse",
+      "role": "steward",
+      "position": { "x": 31, "y": 121 },
+      "services": ["storage", "house_investment"],
+      "actions": ["bank", "examine"]
+    }
+  ],
+  "facilities": [
+    {
+      "id": "weapons-yard",
+      "kind": "shop",
+      "display_name": "Road Iron Yard",
+      "anchor_npc": "ludovicus-weapons"
+    },
+    {
+      "id": "rite-vault",
+      "kind": "shop",
+      "display_name": "Rite Vault",
+      "anchor_npc": "selene-rite"
+    },
+    {
+      "id": "countinghouse",
+      "kind": "storage",
+      "display_name": "Countinghouse Tent",
+      "anchor_npc": "rhea-countinghouse"
+    },
+    {
+      "id": "house-coffer",
+      "kind": "house_investment",
+      "display_name": "House Coffer",
+      "anchor_npc": "rhea-countinghouse"
+    },
+    {
+      "id": "wayfarer-board",
+      "kind": "guidance",
+      "display_name": "Wayfarer Board",
+      "anchor_npc": "aldwyn-guide"
+    },
+    {
+      "id": "expedition-gate",
+      "kind": "expedition_access",
+      "display_name": "Expedition Gate",
+      "anchor_npc": "aldwyn-guide"
+    }
+  ],
+  "exits": [
+    {
+      "id": "thornward-gate",
+      "label": "Thornward Approach",
+      "to_zone": "owner-demo-thornward",
+      "position": { "x": 38, "y": 95 },
+      "kind": "gate"
+    },
+    {
+      "id": "rift-gate",
+      "label": "Rift Hollow Trail",
+      "to_zone": "owner-demo-rift-hollow",
+      "position": { "x": 52, "y": 110 },
+      "kind": "gate"
+    }
+  ]
+}

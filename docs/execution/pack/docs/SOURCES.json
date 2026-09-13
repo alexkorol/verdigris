@@ -1,0 +1,128 @@
+[
+  {
+    "id": "R01",
+    "title": "Product constitution",
+    "url": "https://github.com/alexkorol/verdigris/blob/8597c654894181c52d0a45a7932cce9deaeeb0c2/docs/product/VERDIGRIS_CONSTITUTION.md",
+    "note": "Product identity and architecture authority.",
+    "accessed": "2026-09-04"
+  },
+  {
+    "id": "R02",
+    "title": "Native product convergence",
+    "url": "https://github.com/alexkorol/verdigris/blob/8597c654894181c52d0a45a7932cce9deaeeb0c2/docs/rebuild/NATIVE_PRODUCT_CONVERGENCE.md",
+    "note": "Separates rules, player journeys and presentation acceptance.",
+    "accessed": "2026-09-04"
+  },
+  {
+    "id": "R03",
+    "title": "Existing orchestration protocol",
+    "url": "https://github.com/alexkorol/verdigris/blob/8597c654894181c52d0a45a7932cce9deaeeb0c2/orchestration/PROTOCOL.md",
+    "note": "Lifecycle, path ownership and older no-push rule.",
+    "accessed": "2026-09-04"
+  },
+  {
+    "id": "R04",
+    "title": "Coordination BUS",
+    "url": "https://github.com/alexkorol/verdigris/blob/8597c654894181c52d0a45a7932cce9deaeeb0c2/orchestration/BUS.md",
+    "note": "Enrollment, later push-based coordination and integration ownership; requires precedence reconciliation.",
+    "accessed": "2026-09-04"
+  },
+  {
+    "id": "R05",
+    "title": "Leader policy",
+    "url": "https://github.com/alexkorol/verdigris/blob/8597c654894181c52d0a45a7932cce9deaeeb0c2/orchestration/LEADER_POLICY.md",
+    "note": "Tier A/B/C review and product authority.",
+    "accessed": "2026-09-04"
+  },
+  {
+    "id": "R06",
+    "title": "Owner Demo task runway",
+    "url": "https://github.com/alexkorol/verdigris/blob/8597c654894181c52d0a45a7932cce9deaeeb0c2/orchestration/OWNER_DEMO_RUNWAY.md",
+    "note": "Existing TASK-0166 through TASK-0208 integration graph.",
+    "accessed": "2026-09-04"
+  },
+  {
+    "id": "R07",
+    "title": "Durability audit",
+    "url": "https://github.com/alexkorol/verdigris/blob/8597c654894181c52d0a45a7932cce9deaeeb0c2/orchestration/tasks/TASK-0097-persistence-durability-audit/FINDINGS.md",
+    "note": "Prior static audit of actual profile persistence; not newly reproduced here.",
+    "accessed": "2026-09-04"
+  },
+  {
+    "id": "R08",
+    "title": "Combat-depth audit",
+    "url": "https://github.com/alexkorol/verdigris/blob/8597c654894181c52d0a45a7932cce9deaeeb0c2/orchestration/tasks/TASK-0101-combat-depth-gap-audit/FINDINGS.md",
+    "note": "Prior static combat gap analysis; verify current implementation before issuing work.",
+    "accessed": "2026-09-04"
+  },
+  {
+    "id": "R09",
+    "title": "Parser and abuse-boundary audit",
+    "url": "https://github.com/alexkorol/verdigris/blob/8597c654894181c52d0a45a7932cce9deaeeb0c2/orchestration/tasks/TASK-0098-wire-parser-robustness-audit/FINDINGS.md",
+    "note": "Static candidates, not newly reproduced exploits.",
+    "accessed": "2026-09-04"
+  },
+  {
+    "id": "R10",
+    "title": "Arcane Lattice reference",
+    "url": "https://github.com/alexkorol/verdigris/blob/8597c654894181c52d0a45a7932cce9deaeeb0c2/docs/product/WIZARD_ARCANE_LATTICE_REFERENCE.md",
+    "note": "Reference topology and explicit placeholder effect-generation caveat.",
+    "accessed": "2026-09-04"
+  },
+  {
+    "id": "R11",
+    "title": "Current remote adapter",
+    "url": "https://github.com/alexkorol/verdigris/blob/8597c654894181c52d0a45a7932cce9deaeeb0c2/native/client/remote_session.cpp",
+    "note": "Source baseline for input mapping and supported replication work.",
+    "accessed": "2026-09-04"
+  },
+  {
+    "id": "R12",
+    "title": "Current native build graph",
+    "url": "https://github.com/alexkorol/verdigris/blob/8597c654894181c52d0a45a7932cce9deaeeb0c2/native/CMakeLists.txt",
+    "note": "Source baseline for integration and actual linked runtime subsystems.",
+    "accessed": "2026-09-04"
+  },
+  {
+    "id": "R13",
+    "title": "Current branch head",
+    "url": "https://github.com/alexkorol/verdigris/commit/8597c654894181c52d0a45a7932cce9deaeeb0c2",
+    "note": "Integration ref verified at 8597c654894181c52d0a45a7932cce9deaeeb0c2; no new runtime measurements.",
+    "accessed": "2026-09-04"
+  },
+  {
+    "id": "E01",
+    "title": "Blizzard: Diablo II remaster announcement",
+    "url": "https://investor.activision.com/news-releases/news-release-details/blizzard-entertainment-resurrect-diablor-ii-2021-pc-and-consoles",
+    "note": "Primary source for 3D rendering, dynamic lighting, animation and sound upgrade; historical scope, not a current patch inventory.",
+    "accessed": "2026-09-04"
+  },
+  {
+    "id": "E02",
+    "title": "Grinding Gear Games: Path of Exile overview",
+    "url": "https://www.pathofexile.com/game",
+    "note": "Primary overview of customization and item-economy direction. Benchmark interpretation is our proposal.",
+    "accessed": "2026-09-04"
+  },
+  {
+    "id": "E03",
+    "title": "Grinding Gear Games: Atlas skill tree",
+    "url": "https://www.pathofexile.com/atlas-skill-tree",
+    "note": "Primary evidence of player-selectable endgame specialization surface; no node-count parity asserted.",
+    "accessed": "2026-09-04"
+  },
+  {
+    "id": "E04",
+    "title": "Grinding Gear Games: Path of Exile 2",
+    "url": "https://pathofexile2.com/",
+    "note": "Indexed official feature summary describes active and support gems. Full page requires JavaScript; no current gem/class counts inferred.",
+    "accessed": "2026-09-04"
+  },
+  {
+    "id": "E05",
+    "title": "Grinding Gear Games: 0.1.1 patch preview",
+    "url": "https://www.pathofexile.com/forum/view-thread/3695606",
+    "note": "Official historical example of WASD movement/skill interaction and iterative playability improvements, not latest balance authority.",
+    "accessed": "2026-09-04"
+  }
+]

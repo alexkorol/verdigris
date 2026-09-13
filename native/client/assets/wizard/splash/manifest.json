@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "pack": "verdigris_splash",
+  "provenance": {
+    "wizard_commit": "66a5d9ff6810e886c1bd08cbeaaf83cabf92aae9",
+    "module_id": "wizard.verdigris-splash",
+    "source_root": "WIZARD/tools/verdigris_splash",
+    "generated_by": "TASK-0179"
+  },
+  "composition": {
+    "anchor": "center",
+    "safe_title_region": { "x": 0.15, "y": 0.08, "w": 0.7, "h": 0.22 },
+    "world_disc_center": { "x": 0.5, "y": 0.56 },
+    "fallback_policy": "use_background_fallback_when_primary_missing"
+  },
+  "contact_sheet": "contact_sheet.png",
+  "tiers": [
+    {
+      "id": "primary",
+      "role": "background",
+      "path": "background_primary.webp",
+      "source_path": "tools/verdigris_splash/assets/world/celestial_world_top_texture_4k_detail.webp",
+      "sha256": "2342a16a7a7d6a4795c66303296ba93b43e69623bfcb2a921f5156f058327a56",
+      "bytes": 3961618,
+      "dimensions": { "w": 4096, "h": 4096, "mode": "RGB" }
+    },
+    {
+      "id": "fallback",
+      "role": "background",
+      "path": "background_fallback.png",
+      "source_path": "tools/verdigris_splash/assets/world/celestial_world_top_texture.png",
+      "sha256": "45c6b04bd8e1def2ff6d6187fa8ddc04767c04850095bd10bf3d3e7432479a19",
+      "bytes": 2650614,
+      "dimensions": { "w": 1254, "h": 1254, "mode": "RGB" }
+    },
+    {
+      "id": "atmosphere",
+      "role": "sky_band",
+      "path": "atmosphere_milkyway.png",
+      "source_path": "tools/verdigris_splash/assets/textures/milkyway_band_2048x512.png",
+      "sha256": "da57f538f3d678d85ac3529d606c6b7350938bbe8a06afdc269c4b926374a1bb",
+      "bytes": 656822,
+      "dimensions": { "w": 2048, "h": 512, "mode": "RGBA" }
+    }
+  ]
+}

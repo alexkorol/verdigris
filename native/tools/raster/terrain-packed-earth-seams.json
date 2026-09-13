@@ -1,0 +1,30 @@
+{
+  "name": "terrain_packed_earth",
+  "canvas": [
+    64,
+    64
+  ],
+  "colors": 11,
+  "horizontal_seam": {
+    "mean_absolute_rgb": 3.1771,
+    "p95_absolute_rgb": 16.0,
+    "max_absolute_rgb": 35.0
+  },
+  "vertical_seam": {
+    "mean_absolute_rgb": 3.0521,
+    "p95_absolute_rgb": 16.0,
+    "max_absolute_rgb": 40.0
+  },
+  "horizontal_neighbors": {
+    "mean_absolute_rgb": 4.3942,
+    "p95_absolute_rgb": 20.0,
+    "max_absolute_rgb": 64.0
+  },
+  "vertical_neighbors": {
+    "mean_absolute_rgb": 4.5192,
+    "p95_absolute_rgb": 21.0,
+    "max_absolute_rgb": 67.0
+  },
+  "method": "Opposing tile edges versus ordinary adjacent native pixels; no blending, wrapping correction, or hidden seam smoothing.",
+  "acceptance": "repeated_preview_inspected_pending_live_game"
+}

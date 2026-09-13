@@ -1,0 +1,6 @@
+Use case: identity-preserve
+Make a BACK-LEFT / NORTHWEST view of this same pixel-art civilian, one separate sprite. Rotate his whole body away from the viewer until he faces the UPPER LEFT. His head is upper-left of his feet, the toes point LEFT, and the back of his head and robe face us. Keep a clear diagonal left-facing profile, not a straight rear portrait.
+
+Use the supplied original as the identity anchor: same old man, grey hair, ochre robe, belt pouch, sandals, plain wooden staff in his right hand. Preserve adult proportions, tiny64-pixel body, limited warm colors and crisp square pixel clusters. Only change direction.
+
+One complete isolated figure, generous empty margin, stable feet baseline, actual transparent alpha.

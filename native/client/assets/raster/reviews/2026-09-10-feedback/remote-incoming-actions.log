@@ -1,0 +1,48 @@
+PASS incoming-action: scripted loopback server bound
+PASS incoming-action: real WebSocket handshake
+PASS incoming-action: login acknowledged
+PASS incoming-action: authoritative behaviour snapshot decoded
+PASS incoming-action: generic melee preserves exact actor/action/damage/death order
+PASS incoming-action: generic melee preserves authoritative health and damage
+PASS incoming-action: generic melee enters confirmed contact only for identified melee
+PASS incoming-action: explicit melee preserves exact actor/action/damage/death order
+PASS incoming-action: explicit melee preserves authoritative health and damage
+PASS incoming-action: explicit melee enters confirmed contact only for identified melee
+PASS incoming-action: sweep preserves exact actor/action/damage/death order
+PASS incoming-action: sweep preserves authoritative health and damage
+PASS incoming-action: sweep enters confirmed contact only for identified melee
+PASS incoming-action: thrust preserves exact actor/action/damage/death order
+PASS incoming-action: thrust preserves authoritative health and damage
+PASS incoming-action: thrust enters confirmed contact only for identified melee
+PASS incoming-action: generic ranged preserves exact actor/action/damage/death order
+PASS incoming-action: generic ranged preserves authoritative health and damage
+PASS incoming-action: generic ranged enters confirmed contact only for identified melee
+PASS incoming-action: ranged skill preserves exact actor/action/damage/death order
+PASS incoming-action: ranged skill preserves authoritative health and damage
+PASS incoming-action: ranged skill enters confirmed contact only for identified melee
+PASS incoming-action: boss ground slam preserves exact actor/action/damage/death order
+PASS incoming-action: boss ground slam preserves authoritative health and damage
+PASS incoming-action: boss ground slam enters confirmed contact only for identified melee
+PASS incoming-action: unknown behaviour preserves exact actor/action/damage/death order
+PASS incoming-action: unknown behaviour preserves authoritative health and damage
+PASS incoming-action: unknown behaviour enters confirmed contact only for identified melee
+PASS incoming-action: unknown skill preserves exact actor/action/damage/death order
+PASS incoming-action: unknown skill preserves authoritative health and damage
+PASS incoming-action: unknown skill enters confirmed contact only for identified melee
+PASS incoming-action: missing skill preserves exact actor/action/damage/death order
+PASS incoming-action: missing skill preserves authoritative health and damage
+PASS incoming-action: missing skill enters confirmed contact only for identified melee
+PASS incoming-action: non-string skill preserves exact actor/action/damage/death order
+PASS incoming-action: non-string skill preserves authoritative health and damage
+PASS incoming-action: non-string skill enters confirmed contact only for identified melee
+PASS incoming-action: missing attacker preserves exact actor/action/damage/death order
+PASS incoming-action: missing attacker preserves authoritative health and damage
+PASS incoming-action: missing attacker enters confirmed contact only for identified melee
+PASS incoming-action: empty attacker preserves exact actor/action/damage/death order
+PASS incoming-action: empty attacker preserves authoritative health and damage
+PASS incoming-action: empty attacker enters confirmed contact only for identified melee
+PASS incoming-action: player attacker preserves exact actor/action/damage/death order
+PASS incoming-action: player attacker preserves authoritative health and damage
+PASS incoming-action: player attacker enters confirmed contact only for identified melee
+PASS incoming-action: lethal melee preserves exact actor/action/damage/death order
+PASS incoming-action: lethal melee preserves authoritative health and damage

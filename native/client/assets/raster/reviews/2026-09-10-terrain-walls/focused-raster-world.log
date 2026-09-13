@@ -1,0 +1,256 @@
+== scenario raster-world ==
+    ok: raster-world: directional sprite decodes: hero_se
+    ok: raster-world: directional sprite decodes: hero_sw
+    ok: raster-world: directional sprite decodes: hero_ne
+    ok: raster-world: directional sprite decodes: hero_nw
+    ok: raster-world: directional sprite decodes: raider_se
+    ok: raster-world: directional sprite decodes: raider_sw
+    ok: raster-world: directional sprite decodes: raider_ne
+    ok: raster-world: directional sprite decodes: raider_nw
+    ok: raster-world: directional sprite decodes: beast_se
+    ok: raster-world: directional sprite decodes: beast_sw
+    ok: raster-world: directional sprite decodes: beast_ne
+    ok: raster-world: directional sprite decodes: beast_nw
+    ok: raster-world: directional sprite decodes: wight_se
+    ok: raster-world: directional sprite decodes: wight_sw
+    ok: raster-world: directional sprite decodes: wight_ne
+    ok: raster-world: directional sprite decodes: wight_nw
+    ok: raster-world: directional sprite decodes: archer_se
+    ok: raster-world: directional sprite decodes: archer_sw
+    ok: raster-world: directional sprite decodes: archer_ne
+    ok: raster-world: directional sprite decodes: archer_nw
+    ok: raster-world: directional sprite decodes: artisan_se
+    ok: raster-world: directional sprite decodes: artisan_sw
+    ok: raster-world: directional sprite decodes: artisan_ne
+    ok: raster-world: directional sprite decodes: artisan_nw
+    ok: raster-world: scenery decodes: tree
+    ok: raster-world: scenery decodes: hut
+    ok: raster-world: scenery decodes: column
+    ok: raster-world: scenery decodes: shrine
+    ok: raster-world: scenery decodes: gate
+    ok: raster-world: scenery decodes: brazier
+    ok: raster-world: scenery decodes: exit_stairs
+    ok: raster-world: scenery decodes: effect_hit_spark
+    ok: raster-world: scenery decodes: terrain_packed_earth
+    ok: raster-world: scenery decodes: terrain_dark
+    ok: raster-world: scenery decodes: terrain_moss
+    ok: raster-world: scenery decodes: terrain_stone
+    ok: raster-world: walk frame decodes: hero_walk0_se
+    ok: raster-world: walk frame decodes: hero_walk1_se
+    ok: raster-world: walk frame decodes: hero_walk2_se
+    ok: raster-world: walk frame decodes: hero_walk3_se
+    ok: raster-world: walk frame decodes: hero_walk0_sw
+    ok: raster-world: walk frame decodes: hero_walk1_sw
+    ok: raster-world: walk frame decodes: hero_walk2_sw
+    ok: raster-world: walk frame decodes: hero_walk3_sw
+    ok: raster-world: walk frame decodes: hero_walk4_sw
+    ok: raster-world: walk frame decodes: hero_walk5_sw
+    ok: raster-world: walk frame decodes: hero_walk6_sw
+    ok: raster-world: walk frame decodes: hero_walk7_sw
+    ok: raster-world: walk frame decodes: hero_walk0_ne
+    ok: raster-world: walk frame decodes: hero_walk1_ne
+    ok: raster-world: walk frame decodes: hero_walk2_ne
+    ok: raster-world: walk frame decodes: hero_walk3_ne
+    ok: raster-world: walk frame decodes: hero_walk4_ne
+    ok: raster-world: walk frame decodes: hero_walk5_ne
+    ok: raster-world: walk frame decodes: hero_walk6_ne
+    ok: raster-world: walk frame decodes: hero_walk7_ne
+    ok: raster-world: walk frame decodes: hero_walk0_nw
+    ok: raster-world: walk frame decodes: hero_walk1_nw
+    ok: raster-world: walk frame decodes: hero_walk2_nw
+    ok: raster-world: walk frame decodes: hero_walk3_nw
+    ok: raster-world: walk frame decodes: hero_walk4_nw
+    ok: raster-world: walk frame decodes: hero_walk5_nw
+    ok: raster-world: walk frame decodes: hero_walk6_nw
+    ok: raster-world: walk frame decodes: hero_walk7_nw
+    ok: raster-world: animation paint surface allocated
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: monster walk renders without silent idle substitution
+    ok: raster-world: authored monster phases have different rendered pixels
+    ok: raster-world: an unanimated wight attack holds its feet despite movement smoothing
+    ok: raster-world: an unanimated wight attack holds its feet despite movement smoothing
+    ok: raster-world: an unanimated wight attack holds its feet despite movement smoothing
+    ok: raster-world: an unanimated wight attack holds its feet despite movement smoothing
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: each completed directional strike returns to idle
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: each completed directional strike returns to idle
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: each completed directional strike returns to idle
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: each completed directional strike returns to idle
+    ok: raster-world: stopped motion tail returns to the idle pose
+    ok: raster-world: a finished strike returns to the idle pose
+    ok: raster-world: actual orb masks retain red life and blue resource
+    ok: raster-world: reference color swatch exported
+    ok: raster-world: exported PNG preserves live RGB channels
+    ok: raster-world: capture root accepted
+    ok: raster-world: production scene captured
+    ok: raster-world: player, enemy and scenery all use raster draws
+    ok: raster-world: the extraction landmark paints pixel stairs
+   PASS (0 failures)

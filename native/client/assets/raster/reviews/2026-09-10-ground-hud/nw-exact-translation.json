@@ -1,0 +1,82 @@
+[
+  {
+    "frame": 0,
+    "translation": [
+      0,
+      1
+    ],
+    "pixel_exact": true,
+    "alpha_clipped": false,
+    "after_sha256": "ec99c0233bb2d8251697c365c5646b37e03035823c2b39a9012ba9f20caa7785"
+  },
+  {
+    "frame": 1,
+    "translation": [
+      0,
+      1
+    ],
+    "pixel_exact": true,
+    "alpha_clipped": false,
+    "after_sha256": "d73f0d8be95d222debe748b169b3fe78be80e192de3a3117ea7cf60b02583dbe"
+  },
+  {
+    "frame": 2,
+    "translation": [
+      0,
+      1
+    ],
+    "pixel_exact": true,
+    "alpha_clipped": false,
+    "after_sha256": "742618bb8ae6b4bb6de92ff0db4aa2679d763aad365b7115b2c60858b3e62612"
+  },
+  {
+    "frame": 3,
+    "translation": [
+      0,
+      1
+    ],
+    "pixel_exact": true,
+    "alpha_clipped": false,
+    "after_sha256": "bbae2cb7b435fc4c8074a4bfc4192c37904e5eb3c50ea6061a93e5566beb399e"
+  },
+  {
+    "frame": 4,
+    "translation": [
+      0,
+      5
+    ],
+    "pixel_exact": true,
+    "alpha_clipped": false,
+    "after_sha256": "c92b2ab6e5e5686f3898ad8c5dcb368fbc6afe84b4f205326b917f40e22862b0"
+  },
+  {
+    "frame": 5,
+    "translation": [
+      0,
+      5
+    ],
+    "pixel_exact": true,
+    "alpha_clipped": false,
+    "after_sha256": "2ad3c17350bbf2ee9eee24812edc8e41e94181c72cee2a79bc0b95ea305b70ea"
+  },
+  {
+    "frame": 6,
+    "translation": [
+      0,
+      5
+    ],
+    "pixel_exact": true,
+    "alpha_clipped": false,
+    "after_sha256": "ffb1a9399220bd1552518c78cddeeddc05f02012d76a5b4bac121182c0ee4b98"
+  },
+  {
+    "frame": 7,
+    "translation": [
+      0,
+      5
+    ],
+    "pixel_exact": true,
+    "alpha_clipped": false,
+    "after_sha256": "df4e3ada07ea120353cafb1e384f74acdf295e26f2ca7039c8e4987f6e40ec7d"
+  }
+]

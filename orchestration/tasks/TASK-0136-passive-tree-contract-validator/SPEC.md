@@ -1,7 +1,8 @@
 ---
 task: TASK-0136
 title: Passive-tree contract validator CLI
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head aad6dadb, 2026-08-23)
 packet: MECHANICAL
 topology: INDEPENDENT
 job: IMPLEMENTATION

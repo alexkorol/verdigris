@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-GOV-006",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "c8c786c1e400ec38a205ee9f5ae6bf5739edc4f2",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "death-disconnect",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario death-disconnect", "exit_code": 0}
+  ],
+  "assertions": [
+    "disconnect+uncommitted cannot paint extract:ok",
+    "live HUD publishes extract:uncommitted",
+    "already-banked extract:ok survives reconnect",
+    "live HUD names Carry open and No extract"
+  ],
+  "negative_control": {
+    "name": "silent extract ack on disconnect with uncommitted carry",
+    "observed_result": "REJECTED as a passing journey"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/death-disconnect-960x600.png",
+      "sha256": "40e2cef51202284766a4818ea309ef303b4f434c52777c49d0024070011f57ff",
+      "produced_by": "native/build/verdigris_client.exe --scenario death-disconnect"
+    },
+    {
+      "kind": "decision",
+      "path": "docs/execution/decisions/rule-on-death-and-disconnect.md",
+      "produced_by": "Cursor Grok VG-GOV-006 draft"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "HUD/policy only. native/src/core.cpp death and D-106 relic algebra stay Kimi/TASK-0018."
+  ]
+}

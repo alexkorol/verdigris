@@ -1,0 +1,332 @@
+{
+  "version": 1,
+  "manifest_sha256": "ea05a7f43e0f67c9d2dc2174772d235d9a4c7550c5fda43e6057fd9d1732c054",
+  "importer_sha256": "d59ef9d71a73740f15c8ef5ce5fad588273e2fb4856684985203b7501dfee7c2",
+  "engine": {
+    "project": "Pixel Respecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "root": "Z:/Code/Python/pixel-perfecter",
+    "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+    "git_dirty": true,
+    "source_sha256": {
+      "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+      "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+      "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+      "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+      "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+      "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+      "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+      "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+      "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+      "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+      "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+      "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+      "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+    },
+    "dependencies": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    }
+  },
+  "known_limitations": [
+    "Generated framing reduces crown-to-sole size relative to the commit. Compare fixed integer source pitches11 and12 without post-resize; neither is silently accepted."
+  ],
+  "sources": [
+    {
+      "source": "../runtime/hero_ne.png",
+      "sha256": "aafeeed5b41a4ee6cad27d6331b0dec4e121ba711c86380ca2a83228a322c0c5",
+      "size": [
+        80,
+        96
+      ]
+    },
+    {
+      "source": "../source/actors_hero-strike-ne-contact-v6-reference-commit.png",
+      "sha256": "e3a1b3c14472ea809af3dd592bdf582242252a56bbb77aed49d55c867cec17c3",
+      "size": [
+        80,
+        96
+      ]
+    },
+    {
+      "source": "../source/actors_hero-strike-ne-contact-v6.png",
+      "sha256": "5a9b30d1687906af04a3e9c6fa1ddada002f643e385982f0455a694e2928abd7",
+      "size": [
+        1145,
+        1374
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "name": "idle",
+      "file": "idle.png",
+      "source": "../runtime/hero_ne.png",
+      "acceptance": "candidate-only single NE contact repair; no runtime promotion",
+      "source_box": [
+        0,
+        0,
+        80,
+        96
+      ],
+      "cell_size": 1,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        80,
+        96
+      ],
+      "trim_box": [
+        27,
+        31,
+        53,
+        96
+      ],
+      "before_resize": [
+        26,
+        65
+      ],
+      "placed_size": [
+        26,
+        65
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        27,
+        31,
+        53,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        40,
+        96
+      ],
+      "sha256": "aafeeed5b41a4ee6cad27d6331b0dec4e121ba711c86380ca2a83228a322c0c5"
+    },
+    {
+      "name": "commit",
+      "file": "commit.png",
+      "source": "../source/actors_hero-strike-ne-contact-v6-reference-commit.png",
+      "acceptance": "candidate-only single NE contact repair; no runtime promotion",
+      "source_box": [
+        0,
+        0,
+        80,
+        96
+      ],
+      "cell_size": 1,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 25,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        80,
+        96
+      ],
+      "trim_box": [
+        25,
+        18,
+        53,
+        96
+      ],
+      "before_resize": [
+        28,
+        78
+      ],
+      "placed_size": [
+        28,
+        78
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        25,
+        18,
+        53,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        40,
+        96
+      ],
+      "sha256": "e3a1b3c14472ea809af3dd592bdf582242252a56bbb77aed49d55c867cec17c3"
+    },
+    {
+      "name": "contact-cell11",
+      "file": "contact-cell11.png",
+      "source": "../source/actors_hero-strike-ne-contact-v6.png",
+      "acceptance": "candidate-only single NE contact repair; no runtime promotion",
+      "source_box": [
+        0,
+        0,
+        1145,
+        1374
+      ],
+      "cell_size": 11,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        104,
+        124
+      ],
+      "trim_box": [
+        42,
+        39,
+        69,
+        115
+      ],
+      "before_resize": [
+        27,
+        76
+      ],
+      "placed_size": [
+        27,
+        76
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        27,
+        20,
+        54,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        600,
+        1265
+      ],
+      "sha256": "a01d04feff3a6340d808c04b23ad8e289ef86f531b36052364e581ddb6d213e6"
+    },
+    {
+      "name": "contact-cell12",
+      "file": "contact-cell12.png",
+      "source": "../source/actors_hero-strike-ne-contact-v6.png",
+      "acceptance": "candidate-only single NE contact repair; no runtime promotion",
+      "source_box": [
+        0,
+        0,
+        1145,
+        1374
+      ],
+      "cell_size": 12,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        95,
+        114
+      ],
+      "trim_box": [
+        39,
+        36,
+        63,
+        105
+      ],
+      "before_resize": [
+        24,
+        69
+      ],
+      "placed_size": [
+        24,
+        69
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        29,
+        27,
+        53,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        600,
+        1260
+      ],
+      "sha256": "b9811761a1c3791bc5a8f43c4171772d6b2dee5d2f348b7b50ed6115cbe073b2"
+    }
+  ]
+}

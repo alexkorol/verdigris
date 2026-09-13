@@ -1,0 +1,43 @@
+{
+  "task": "Six SW melee strike poses",
+  "tool": "image_gen.imagegen",
+  "model_selection": "No model or variant selector exposed; none claimed.",
+  "imagegen_calls": 1,
+  "source": "../source/actors_hero-strike-sw-v1.png",
+  "source_sha256": "b336cf4e6f97dafdec60f16258848c67f77e7ca81aeaa73d610ce3a45e6ba3ca",
+  "size": [
+    1536,
+    1024
+  ],
+  "mode": "RGB",
+  "alpha": "missing RGB channel; painted checkerboard",
+  "prompt": "actors_hero-strike-sw-v1.txt",
+  "published_recipe": {
+    "author": "Kiki / Mayz1169",
+    "url": "https://x.com/Mayz1169/status/2097540160611287452",
+    "access": "Original full prompt read directly in browser after web fetch403; original combat post and reply also visible.",
+    "excerpt": "Ready stance \u2192 Anticipation \u2192 Attack \u2192 Impact peak \u2192 Effects dissipate \u2192 Recovery.",
+    "preserved": "Character fidelity; coherent action beats; actual body mechanics; consistent pixel scale; fixed camera/registration; sufficient margins; actual alpha request.",
+    "adaptations": "Six poses in3x2 instead of16in4x4; accepted grounded adult instead of stylized proportions; specific physical-left-hand melee strike toward lower-left; separate equipment and effects; engine handles frame holds and slicing. SE sheet supplied only as action/relative-scale reference."
+  },
+  "references": [
+    {
+      "path": "../runtime/hero_sw.png",
+      "sha256": "815aa38865fa79bdf9e9ee3bcf335a8cd3b8833d02ddeb50c237bb8703e064dd",
+      "role": "Authoritative identity, lower-left facing, adult proportions, natural palette and restrained pixel edge style; inspected before use."
+    },
+    {
+      "path": "../source/actors_hero-strike-se-identity-v3.png",
+      "sha256": "4b61b9a28a80358587227a80eb60834172d52022ba06f9da325671a424966581",
+      "role": "Action beats and relative scale only; inspected; prompt explicitly excludes copying its facing/heavier contours."
+    }
+  ],
+  "visual_review": {
+    "decision": "rejected_source_no_conversion_or_runtime_import",
+    "failure": "The first three poses retain rightward facing/strike from the SE action reference. Contact flips abruptly toward screen-left instead of continuing a fixed lower-left direction. Right-shoulder armor changes screen side across that flip, making anatomical continuity unreliable. A continuous SW left-hand action is not demonstrated.",
+    "identity": "Brown tunic/dark trousers/sash/bronze shoulder remain recognizable, but body/head are noticeably broader and outlined more heavily than accepted SW idle.",
+    "layout": "Six full figures in a3x2 layout with margins; layout success does not repair direction or continuity failure.",
+    "transparency": "RGB output paints checker texture instead of actual alpha.",
+    "followup": "No additional generation call, per bounded task. Keep failed source/prompt for an evidence-backed next repair; do not import merely by assigning SW filenames."
+  }
+}

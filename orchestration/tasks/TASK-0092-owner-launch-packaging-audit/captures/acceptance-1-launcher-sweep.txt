@@ -1,0 +1,56 @@
+native/README.md:49:`native/tools/play-native.ps1` builds if the exes are missing or stale, starts
+native/README.md:50:`verdigris_server` on a free **6520–6539** port (never 6500), launches
+native/README.md:51:`verdigris_client --remote` against it, tees server output under
+native/README.md:55:powershell -NoProfile -File native/tools/play-native.ps1
+native/README.md:56:powershell -NoProfile -File native/tools/play-native.ps1 -Local
+native/README.md:57:powershell -NoProfile -File native/tools/play-native.ps1 -Port 6521 -Rebuild
+native/README.md:63:powershell.exe -NoProfile -ExecutionPolicy Bypass -File <clone>\native\tools\play-native.ps1
+native/README.md:78:./native/build/verdigris_client
+native/README.md:106:native/build/verdigris_client.exe --scenario first-fight   # one scenario
+native/README.md:107:native/build/verdigris_client.exe --scenario first-session-clarity   # TASK-0153 contracts
+native/build.ps1:103:$serverExe = Join-Path $buildRoot "verdigris_server.exe"
+native/build.ps1:104:$clientExe = Join-Path $buildRoot "verdigris_client.exe"
+native/tools\play-native.ps1:14:$serverExe = Join-Path $buildRoot "verdigris_server.exe"
+native/tools\play-native.ps1:15:$clientExe = Join-Path $buildRoot "verdigris_client.exe"
+native/tools\play-native.ps1:17:$capsuleStart = 6520
+native/tools\play-native.ps1:18:$capsuleEnd = 6539
+native/tools\play-native.ps1:21:  throw "play-native: $message"
+native/tools\play-native.ps1:99:  Write-Host "play-native: building via native/build.ps1"
+native/tools\play-native.ps1:120:if (-not (Test-Path $clientExe)) { Fail "missing $clientExe; run play-native.ps1 -Rebuild to produce it" }
+native/tools\play-native.ps1:121:if (-not $Local -and -not (Test-Path $serverExe)) { Fail "missing $serverExe; run play-native.ps1 -Rebuild to produce it" }
+native/tools\play-native.ps1:131:  Write-Host "play-native: starting verdigris_server on ws://127.0.0.1:$chosenPort (capsule $capsuleStart-$capsuleEnd)"
+native/tools\play-native.ps1:156:      Fail "verdigris_server (pid $($proc.Id)) exited during startup with code $($proc.ExitCode); stderr: $tail"
+native/tools\play-native.ps1:159:      Fail "verdigris_server (pid $($proc.Id)) printed no listening line within 12s; see $outLog"
+native/tools\play-native.ps1:162:      Fail "verdigris_server reported port $readyPort but the launcher chose $chosenPort"
+native/tools\play-native.ps1:167:      Write-Host "play-native: startup readiness failed; stopped spawned server pid $($proc.Id) to prevent an orphan"
+native/tools\play-native.ps1:169:      Write-Host "play-native: startup readiness failed; spawned server pid $($proc.Id) already exited"
+native/tools\play-native.ps1:173:  Write-Host "play-native: server ready (pid $($proc.Id), stdout log $outLog, stderr log $errLog)"
+native/tools\play-native.ps1:243:    throw "play-native: window interop type is not loaded"
+native/tools\play-native.ps1:259:  Write-Host "play-native: $label left no orphan verdigris processes (verified by pid)"
+native/tools\play-native.ps1:267:  Write-Host "play-native: selftest $name starting on port $chosenPort (log $outLog)"
+native/tools\play-native.ps1:273:    Write-Host "play-native: selftest $name client pid $($client.Id) (--remote 127.0.0.1 $chosenPort)"
+native/tools\play-native.ps1:286:      Write-Host "play-native: selftest $name forced client exit done (pid $($client.Id) killed)"
+native/tools\play-native.ps1:299:      Write-Host "play-native: selftest $name normal close accepted (client pid $($client.Id) exited by itself with code 0)"
+native/tools\play-native.ps1:305:    @{ Name = "verdigris_server"; Id = $server.Id },
+native/tools\play-native.ps1:306:    @{ Name = "verdigris_client"; Id = $client.Id }
+native/tools\play-native.ps1:308:  Write-Host "play-native: selftest $name PASS (port $chosenPort, server log $outLog)"
+native/tools\play-native.ps1:313:    $fakeInner = "[Console]::Out.WriteLine('verdigris_server listening on ws://127.0.0.1:6599'); Start-Sleep -Seconds 120"
+native/tools\play-native.ps1:323:  Write-Host "play-native: fault-control $name starting on port $chosenPort ($expectedReason)"
+native/tools\play-native.ps1:330:    Write-Host "play-native: fault-control $name observed the expected failure - $($_.Exception.Message)"
+native/tools\play-native.ps1:342:  Write-Host "play-native: fault-control $name PASS (published pid $leakedPid is gone; no orphan)"
+native/tools\play-native.ps1:348:  Write-Host "play-native: readiness fault control PASS (live post-spawn failures left no orphan server)"
+native/tools\play-native.ps1:355:  Write-Host "play-native: lifecycle selftest PASS (normal close and forced client exit both cleaned up)"
+native/tools\play-native.ps1:370:      Write-Host "play-native: using requested port $chosenPort"
+native/tools\play-native.ps1:373:      Write-Host "play-native: auto-selected free port $chosenPort (first free in $capsuleStart-$capsuleEnd)"
+native/tools\play-native.ps1:385:      Write-Host ("play-native: note, other listeners inside the capsule (not this launch): " +
+native/tools\play-native.ps1:392:    Write-Host "play-native: starting real windowed client: verdigris_client --remote 127.0.0.1 $chosenPort"
+native/tools\play-native.ps1:394:    Write-Host "play-native: local mode (no server); starting client with in-process simulation"
+native/tools\play-native.ps1:396:  Write-Host "play-native: close the window or press Esc to quit"
+native/tools\play-native.ps1:403:  Write-Host "play-native: client pid $($client.Id)"
+native/tools\play-native.ps1:405:  Write-Host "play-native: client exit code $($client.ExitCode)"
+native/tools\play-native.ps1:407:  Write-Host "play-native: FAILED - $($_.Exception.Message)"
+native/tools\play-native.ps1:414:  Assert-SessionClean $sessionLabel @(@{ Name = "verdigris_client"; Id = $client.Id })
+native/tools\play-native.ps1:417:    @{ Name = "verdigris_server"; Id = $server.Id },
+native/tools\play-native.ps1:418:    @{ Name = "verdigris_client"; Id = $client.Id }
+native/tools\play-native.ps1:420:  Write-Host "play-native: chosen port $chosenPort; server log $serverLog"
+native/tools\ci-native.ps1:49:  $clientExe = Join-Path $nativeRoot "build\cmake\windows-msvc\verdigris_client.exe"

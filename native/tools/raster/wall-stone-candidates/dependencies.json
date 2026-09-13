@@ -1,0 +1,201 @@
+{
+  "owned_retained_files": [
+    {
+      "path": "native/client/assets/raster/source/wall-stone-cutaway-v1.png",
+      "sha256": "7c9a7f43e42389b51f0bf21dc8d9edb97df1917fe6bd5ddcb16866dc0dc23dd6",
+      "original_recorded_raw_sha256": "7c9a7f43e42389b51f0bf21dc8d9edb97df1917fe6bd5ddcb16866dc0dc23dd6",
+      "hash_policy": "raw_bytes"
+    },
+    {
+      "path": "native/client/assets/raster/source/wall-stone-cutaway-v2.png",
+      "sha256": "0f102c68882885437a70b1c8069d40ecde7f203e52d179a0750c8f16a7622f65",
+      "original_recorded_raw_sha256": "0f102c68882885437a70b1c8069d40ecde7f203e52d179a0750c8f16a7622f65",
+      "hash_policy": "raw_bytes"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/wall-stone-cutaway-v1.txt",
+      "sha256": "dd18ee5ddbd6c2a10fca7128bf85a589e54a9e13f4355ecb694e1189c4549a42",
+      "original_recorded_raw_sha256": "dd18ee5ddbd6c2a10fca7128bf85a589e54a9e13f4355ecb694e1189c4549a42",
+      "hash_policy": "canonical_lf"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/wall-stone-cutaway-v2.txt",
+      "sha256": "2146ace4ec0ee8365580e927b022a7fefe5e67363c92f909530d13df45bf7c9b",
+      "original_recorded_raw_sha256": "2146ace4ec0ee8365580e927b022a7fefe5e67363c92f909530d13df45bf7c9b",
+      "hash_policy": "canonical_lf"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/wall-stone-cutaway-provenance.json",
+      "sha256": "42118bc8b57b6a6f0ff4b6a19724b0da61fafaefbca65dc0741473dcc3965a66",
+      "original_recorded_raw_sha256": "665e79fbc19133c4ee96df1beee5ade356b6d04e5ebbf552d7f3a308d07a08d3",
+      "hash_policy": "canonical_lf"
+    },
+    {
+      "path": "native/tools/raster/wall-stone-candidates/wall-stone-cutaway-geometry-guide-proposed.png",
+      "sha256": "1110966836a0899cd1a2c7f9296c21aee9b0f52543b09894022379b396f7bb2d",
+      "original_recorded_raw_sha256": "1110966836a0899cd1a2c7f9296c21aee9b0f52543b09894022379b396f7bb2d",
+      "hash_policy": "raw_bytes"
+    },
+    {
+      "path": "native/tools/raster/wall-stone-candidates/wall-stone-cutaway-geometry-guide-proposed.json",
+      "sha256": "430bd8b1ca95024ea8f852cad4eb457f57f900ed10b322277b2f399c213a1bc1",
+      "original_recorded_raw_sha256": "55c6af5d23822c281fe98a1d86c6c21d08579b7189232f79870e9b9f49c29bee",
+      "hash_policy": "canonical_lf"
+    },
+    {
+      "path": "native/tools/raster/wall-stone-candidates/geometry-proposal.json",
+      "sha256": "a594f871b996529949b7635a8d317840c1f1f7346b8383a6e7fb521834334bc9",
+      "original_recorded_raw_sha256": "6451ed08eba1e67e466b1ce6bce76ba401074ef008e52384abc74218ad03e219",
+      "hash_policy": "canonical_lf"
+    },
+    {
+      "path": "native/tools/raster/wall-stone-candidates/wall-stone-cutaway-v1-candidate.json",
+      "sha256": "8d69996a6a9f194910c3f554a6c3e6712cd7ba9770c3062add0eb481bcda54fb",
+      "original_recorded_raw_sha256": "9e33137ed9beb8169f77b251adba50d8be4ac4b0fea335b04e6ead574ae996a7",
+      "hash_policy": "canonical_lf"
+    },
+    {
+      "path": "native/tools/raster/wall-stone-candidates/v1/wall_stone_cutaway.png",
+      "sha256": "4ec4360b4c8ff26d8ec78f5f2d914ae371caa03262f6510d518c33805b929e58",
+      "original_recorded_raw_sha256": "4ec4360b4c8ff26d8ec78f5f2d914ae371caa03262f6510d518c33805b929e58",
+      "hash_policy": "raw_bytes"
+    },
+    {
+      "path": "native/tools/raster/wall-stone-candidates/v1/wall-stone-cutaway-v1-candidate.provenance.json",
+      "sha256": "8a720b57e7071e036c813fae7c1eac222a6a5c9bbd5fd41c6315d556d420ea40",
+      "original_recorded_raw_sha256": "55d8259cdd384d18d8f48971f3c97ec57a991c841581c1f8e404f66c9db01b82",
+      "hash_policy": "canonical_lf"
+    },
+    {
+      "path": "native/tools/raster/wall-stone-candidates/wall-stone-cutaway-v2-planes.json",
+      "sha256": "15622df63ac8998f58a2924864bdd39e713b5ff1aedcb9f0a91525db6484e52b",
+      "original_recorded_raw_sha256": "5d05fa0ac827bc9d40c226f3f047ff2628f35e686c612ce4af3c7d0ec77b6cd1",
+      "hash_policy": "canonical_lf"
+    },
+    {
+      "path": "native/tools/raster/wall-stone-candidates/v2-planes/wall_stone_cutaway_cap.png",
+      "sha256": "8e1a0cc864fc68b632b1c53aff66a2e7460dd618c21b8267b18e77b30aa1895f",
+      "original_recorded_raw_sha256": "8e1a0cc864fc68b632b1c53aff66a2e7460dd618c21b8267b18e77b30aa1895f",
+      "hash_policy": "raw_bytes"
+    },
+    {
+      "path": "native/tools/raster/wall-stone-candidates/v2-planes/wall_stone_cutaway_face.png",
+      "sha256": "ff6c68afa7c9deb6035a316780aa1bb7f2139280c50b6ed80de975e2bdc3ae93",
+      "original_recorded_raw_sha256": "ff6c68afa7c9deb6035a316780aa1bb7f2139280c50b6ed80de975e2bdc3ae93",
+      "hash_policy": "raw_bytes"
+    },
+    {
+      "path": "native/tools/raster/wall-stone-candidates/v2-planes/wall-stone-cutaway-v2-planes.provenance.json",
+      "sha256": "313b56248b1d0a7c3dd96a22e91b03111c5347ad0054ab396de0b995ef51d19d",
+      "original_recorded_raw_sha256": "ce94082039e48a393130bbbd46dca51afd45781a06d05ccb6332a9d4e1dd836d",
+      "hash_policy": "canonical_lf"
+    },
+    {
+      "path": "native/tools/raster/wall-stone-candidates/assemble_review.py",
+      "sha256": "a9d6d7a88116225834857992e84c2653ff7a783194e21b600ea906230bba3aa1",
+      "original_recorded_raw_sha256": "1b8c199e3d5d62cf792e58877b1bf15a9ac78e9047a86b73c8569499d2f674ea",
+      "hash_policy": "canonical_lf"
+    },
+    {
+      "path": "native/tools/raster/wall-stone-candidates/wall-stone-cutaway-candidate.json",
+      "sha256": "774f292f785edfe90f7933efac00f7d2a6433cdee78d1688ffcc45d4aa15ad78",
+      "original_recorded_raw_sha256": "86bf189789a30d111ab829a93cfe7be6593b6c672275b6f658144cea982801b2",
+      "hash_policy": "canonical_lf"
+    },
+    {
+      "path": "native/tools/raster/wall-stone-candidates/selected/wall_stone_cutaway.png",
+      "sha256": "69d9bd08e777a9a17f45d11e09836fa81b6918fd076fd5e202a936a56c859e0b",
+      "original_recorded_raw_sha256": "69d9bd08e777a9a17f45d11e09836fa81b6918fd076fd5e202a936a56c859e0b",
+      "hash_policy": "raw_bytes"
+    },
+    {
+      "path": "native/tools/raster/wall-stone-candidates/selected/native-3x.png",
+      "sha256": "1fc44dac063e3532cf92f35d0dc7597bc95d26f42d9954f89bb8029c3cfbad0f",
+      "original_recorded_raw_sha256": "1fc44dac063e3532cf92f35d0dc7597bc95d26f42d9954f89bb8029c3cfbad0f",
+      "hash_policy": "raw_bytes"
+    },
+    {
+      "path": "native/tools/raster/wall-stone-candidates/selected/wall-3x3-1x.png",
+      "sha256": "db567d69d23a98bcd8e392f5d3a1c34ed669b381a3bd12c5d1fb7f04cf51dee5",
+      "original_recorded_raw_sha256": "db567d69d23a98bcd8e392f5d3a1c34ed669b381a3bd12c5d1fb7f04cf51dee5",
+      "hash_policy": "raw_bytes"
+    },
+    {
+      "path": "native/tools/raster/wall-stone-candidates/selected/wall-3x3-3x.png",
+      "sha256": "af0d1dd4caeb03c19f4dd2cda52fea84f8305e83c65897f888ba2210fa2f7d6f",
+      "original_recorded_raw_sha256": "af0d1dd4caeb03c19f4dd2cda52fea84f8305e83c65897f888ba2210fa2f7d6f",
+      "hash_policy": "raw_bytes"
+    },
+    {
+      "path": "native/tools/raster/wall-stone-candidates/selected/actor-context-1x.png",
+      "sha256": "28f511e52078b44a44cc32465eb6a5618f79f24732602cae3f7403fc38709e2c",
+      "original_recorded_raw_sha256": "28f511e52078b44a44cc32465eb6a5618f79f24732602cae3f7403fc38709e2c",
+      "hash_policy": "raw_bytes"
+    },
+    {
+      "path": "native/tools/raster/wall-stone-candidates/selected/comparison-1x.png",
+      "sha256": "cf654df1f2da1003217d7de7bab79a4e3512eb38994ffe4b58b8cb9bd1d13c55",
+      "original_recorded_raw_sha256": "cf654df1f2da1003217d7de7bab79a4e3512eb38994ffe4b58b8cb9bd1d13c55",
+      "hash_policy": "raw_bytes"
+    },
+    {
+      "path": "native/tools/raster/wall-stone-candidates/selected/comparison-3x.png",
+      "sha256": "14b69623eee079ffbf91ba964b7272c78014935bc4cbefb0d22f86b664461e0b",
+      "original_recorded_raw_sha256": "14b69623eee079ffbf91ba964b7272c78014935bc4cbefb0d22f86b664461e0b",
+      "hash_policy": "raw_bytes"
+    },
+    {
+      "path": "native/tools/raster/wall-stone-candidates/selected/measurements.json",
+      "sha256": "e5d084767956f8a328954ef9d0de1689a8364303338a118040da248fb1193d16",
+      "original_recorded_raw_sha256": "6fa21abf8dc986fdcd6cb4af02bedbac0a3c90fcf0dd39106a0bfb58adc55f44",
+      "hash_policy": "canonical_lf"
+    },
+    {
+      "path": "native/tools/raster/wall-stone-candidates/source-crops-review.png",
+      "sha256": "60aefe8ab91b5a378cc33f5ef2654b155e51cda9b3481425a6a818b7b5947bcb",
+      "original_recorded_raw_sha256": "60aefe8ab91b5a378cc33f5ef2654b155e51cda9b3481425a6a818b7b5947bcb",
+      "hash_policy": "raw_bytes"
+    },
+    {
+      "path": "native/tools/raster/wall-stone-candidates/README.md",
+      "sha256": "5c662301ddcc2b34dc57a4eb68cee4039006a76f9deaa2cfc24ee67d111d6dca",
+      "original_recorded_raw_sha256": "1669f0d36efd9c5c6895ab1f99fa5f4e281834b9cddce0ef61fc4362dab65454",
+      "hash_policy": "canonical_lf"
+    }
+  ],
+  "existing_read_only_dependencies": [
+    {
+      "path": "native/client/assets/raster/runtime/column.png",
+      "sha256": "3073e69247d2d2355b3d12c556e851d4e85bb80e9fb54a3aac166777ef41b33c",
+      "original_recorded_raw_sha256": "3073e69247d2d2355b3d12c556e851d4e85bb80e9fb54a3aac166777ef41b33c",
+      "hash_policy": "raw_bytes"
+    },
+    {
+      "path": "native/client/assets/raster/runtime/hero_nw.png",
+      "sha256": "2fd7271f16f65eceefc583746d8373f1a81e25a74e505af7917e8ec722b0becc",
+      "original_recorded_raw_sha256": "2fd7271f16f65eceefc583746d8373f1a81e25a74e505af7917e8ec722b0becc",
+      "hash_policy": "raw_bytes"
+    },
+    {
+      "path": "native/client/assets/raster/runtime/hero_se.png",
+      "sha256": "56a882d079b83d942c42340ac9155b25ddbd923d436173019e8f2bd4ed5d28f7",
+      "original_recorded_raw_sha256": "56a882d079b83d942c42340ac9155b25ddbd923d436173019e8f2bd4ed5d28f7",
+      "hash_policy": "raw_bytes"
+    },
+    {
+      "path": "native/client/assets/raster/runtime/terrain_quiet_earth.png",
+      "sha256": "059b101504c96b84a3541f5021dfd1811a7bb1ddb81ebd40fd03be9dbad2af70",
+      "original_recorded_raw_sha256": "059b101504c96b84a3541f5021dfd1811a7bb1ddb81ebd40fd03be9dbad2af70",
+      "hash_policy": "raw_bytes"
+    },
+    {
+      "path": "native/tools/raster/import_assets.py",
+      "sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+      "original_recorded_raw_sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+      "hash_policy": "canonical_lf"
+    }
+  ],
+  "external_engine_provenance": "v2-planes/wall-stone-cutaway-v2-planes.provenance.json",
+  "freeze": "Source, prompt, candidate PNG and conversion bytes frozen for root-authorized integrated production trial. Existing plane import report retains pre-review candidate status as historical conversion evidence.",
+  "packaging_note": "Current text hashes use CRLF-to-LF normalization for Git portability; original source records retained. README and assembly script lose only a redundant final blank line."
+}

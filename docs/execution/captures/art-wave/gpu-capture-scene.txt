@@ -1,0 +1,5 @@
+backend=software
+content=gdi-scene:tin-village
+platform=win32-gdi
+width=960
+height=600

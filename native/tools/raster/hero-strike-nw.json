@@ -1,0 +1,162 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "shared_palette_max_colors": 32,
+  "defaults": {
+    "cell_size": 6,
+    "alpha_mode": "crisp",
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10"
+  },
+  "registration_review": {
+    "method": "Align measured planted screen-left/front boot sole center to one common native location, retaining all source limb/body offsets. Only sheet packing translations; one shared reconstruction pitch, no individual fitting.",
+    "source_cell_sole_centers": [
+      [
+        244,
+        446
+      ],
+      [
+        195,
+        446
+      ],
+      [
+        174,
+        445
+      ],
+      [
+        242,
+        406
+      ],
+      [
+        212,
+        410
+      ],
+      [
+        180,
+        414
+      ]
+    ],
+    "common_source_offset_from_sole_to_anchor": [
+      60,
+      18
+    ],
+    "expected_native_support_sole": [
+      30,
+      93
+    ],
+    "measurement": "Foreground components in the lower boot strips were measured and checked against the original image. The support boot remains planted through this strike."
+  },
+  "known_limitations": [
+    "Root inspected native,4x sequence and idle comparison: upper-left/back facing and physical-left strike remain consistent through distinct extension,contact and recoil. Production timing/equipped motion acceptance remains pending.",
+    "Torso is broader and redder than accepted idle; visible crown-to-sole height is57\u201359px versus idle63px. These remain identity/transition caveats for production trial.",
+    "Source RGB painted pattern was removed with the recorded border-connected cleanup. Source-owner native/3x review found no visible trapped pattern pockets; the light contact-frame pixel was confirmed as a bronze highlight.",
+    "Source grid packing varies; measured planted-boot registration removes translations using one shared reconstruction pitch and a common support-sole target. No pose is independently resized."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/actors_hero-strike-nw-v1.png",
+      "grid": [
+        3,
+        2
+      ],
+      "border_background": {
+        "color": [
+          220,
+          220,
+          220
+        ],
+        "tolerance": 80
+      },
+      "assets": [
+        {
+          "name": "hero_strike0_nw",
+          "cell": [
+            0,
+            0
+          ],
+          "anchor_source": [
+            304,
+            464
+          ]
+        },
+        {
+          "name": "hero_strike1_nw",
+          "cell": [
+            1,
+            0
+          ],
+          "anchor_source": [
+            255,
+            464
+          ]
+        },
+        {
+          "name": "hero_strike2_nw",
+          "cell": [
+            2,
+            0
+          ],
+          "anchor_source": [
+            234,
+            463
+          ]
+        },
+        {
+          "name": "hero_strike3_nw",
+          "cell": [
+            0,
+            1
+          ],
+          "anchor_source": [
+            302,
+            424
+          ]
+        },
+        {
+          "name": "hero_strike4_nw",
+          "cell": [
+            1,
+            1
+          ],
+          "anchor_source": [
+            272,
+            428
+          ]
+        },
+        {
+          "name": "hero_strike5_nw",
+          "cell": [
+            2,
+            1
+          ],
+          "anchor_source": [
+            240,
+            432
+          ]
+        }
+      ]
+    }
+  ],
+  "integration_review": {
+    "date": "2026-09-10",
+    "reviewer": "root",
+    "scope": "Runtime integration and production captures reviewed for this iteration; not final visual polish.",
+    "native_build_and_core_suites": "passed",
+    "production_scenarios": {
+      "passed": 64,
+      "fullscreen_average_ms": 18.7,
+      "dense_average_ms": 9.4
+    },
+    "browser_checks": {
+      "passed": 32,
+      "total": 32
+    },
+    "capture_review": "Live3440x1440 window viewed and closed; actual SW/NW/NE walking frames and all three equipped strike contact captures viewed.",
+    "limitations_policy": "Existing identity,palette,registration and source-generation observations remain unchanged."
+  }
+}

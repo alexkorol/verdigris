@@ -1,0 +1,143 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "shared_palette_max_colors": 32,
+  "defaults": {
+    "cell_size": 7,
+    "alpha_mode": "crisp",
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10"
+  },
+  "known_limitations": [
+    "V3 reduces head width to10-11native pixels while preserving commoncell7,80x96canvas and source origins. All six poses now use v3 with documented connected checker removal.",
+    "Darker contours, redder and busier material shading, and abrupt raised-hand entry remain known roughness versus idle. Production timing and idle transitions remain subject to live review.",
+    "Updated hand pixels require equipment socket remeasurement; prior v1/v2 socket measurements are not assumed exact."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/actors_hero-strike-se-identity-v3.png",
+      "grid": [
+        1,
+        1
+      ],
+      "border_background": {
+        "color": [
+          220,
+          220,
+          220
+        ],
+        "tolerance": 80,
+        "interior_windows": [
+          [
+            614,
+            315,
+            645,
+            359
+          ]
+        ]
+      },
+      "assets": [
+        {
+          "name": "hero_strike0_se",
+          "source_box": [
+            0,
+            0,
+            400,
+            687
+          ],
+          "anchor_source": [
+            200,
+            630
+          ]
+        },
+        {
+          "name": "hero_strike1_se",
+          "source_box": [
+            400,
+            0,
+            775,
+            687
+          ],
+          "anchor_source": [
+            190,
+            630
+          ]
+        },
+        {
+          "name": "hero_strike2_se",
+          "source_box": [
+            775,
+            0,
+            1145,
+            687
+          ],
+          "anchor_source": [
+            185,
+            630
+          ]
+        },
+        {
+          "name": "hero_strike3_se",
+          "source_box": [
+            0,
+            687,
+            440,
+            1374
+          ],
+          "anchor_source": [
+            200,
+            543
+          ]
+        },
+        {
+          "name": "hero_strike4_se",
+          "source_box": [
+            440,
+            687,
+            780,
+            1374
+          ],
+          "anchor_source": [
+            150,
+            543
+          ]
+        },
+        {
+          "name": "hero_strike5_se",
+          "source_box": [
+            780,
+            687,
+            1145,
+            1374
+          ],
+          "anchor_source": [
+            180,
+            543
+          ]
+        }
+      ]
+    }
+  ],
+  "integration_review": {
+    "date": "2026-09-10",
+    "reviewer": "root",
+    "scope": "Runtime integration and production captures reviewed for this iteration; not final visual polish.",
+    "native_build_and_core_suites": "passed",
+    "production_scenarios": {
+      "passed": 64,
+      "fullscreen_average_ms": 18.7,
+      "dense_average_ms": 9.4
+    },
+    "browser_checks": {
+      "passed": 32,
+      "total": 32
+    },
+    "capture_review": "Live3440x1440 window viewed and closed; actual SW/NW/NE walking frames and all three equipped strike contact captures viewed.",
+    "limitations_policy": "Existing identity,palette,registration and source-generation observations remain unchanged."
+  }
+}

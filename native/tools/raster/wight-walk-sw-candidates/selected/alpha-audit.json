@@ -1,0 +1,73 @@
+{
+  "source_mode": "RGB",
+  "source_dimensions": [
+    1619,
+    971
+  ],
+  "source_sha256": "6817135c9ea8f4eefcb35b583f8bfdc3d858d123e8b17c0fc3a7f6635f3e2c90",
+  "source_true_transparent_pixels": 0,
+  "source_partial_alpha_pixels": 0,
+  "generation_failure": "Requested RGBA but returned an opaque painted checker.",
+  "cleanup_api": "pixel_perfecter.colors.make_border_connected_transparent",
+  "cleanup_color": [
+    210,
+    210,
+    255
+  ],
+  "cleanup_tolerance": 70,
+  "window_count": 538,
+  "window_new_transparent_pixels": 4097,
+  "removed_chromatic_pixels_above20": 12,
+  "chromatic_components": [
+    {
+      "box": [
+        682,
+        317,
+        685,
+        323
+      ],
+      "pixels": 7
+    },
+    {
+      "box": [
+        979,
+        324,
+        980,
+        325
+      ],
+      "pixels": 1
+    },
+    {
+      "box": [
+        979,
+        326,
+        980,
+        327
+      ],
+      "pixels": 1
+    },
+    {
+      "box": [
+        1485,
+        825,
+        1486,
+        826
+      ],
+      "pixels": 1
+    },
+    {
+      "box": [
+        1485,
+        827,
+        1487,
+        828
+      ],
+      "pixels": 2
+    }
+  ],
+  "source_rgb_edits": 0,
+  "retained_foreground_rgb_changed": false,
+  "review": "Source/alpha pairs and phase1 hand compared at enlarged scale. Native bone hand survives; enclosed arm and finger checker gaps are transparent. Small chromatic removals are source matte fringe, preserved in chromatic-edge-review.png for inspection.",
+  "accepted": false,
+  "state": "Candidate only; root native/game motion review pending."
+}

@@ -1,0 +1,339 @@
+{
+  "schema": "verdigris-benchmark-inventory/1",
+  "task": "TASK-0099-native-performance-budget-audit",
+  "generated_at_utc": "2026-08-23",
+  "audited_head": "ee9628aac71d15420f4c432ccfa8cc5c24af7412",
+  "method": {
+    "acceptance_sweep": "rg -n \"benchmark|duration|latency|frame|memory|density|soak|p95|p99|timing\" native orchestration playtest --glob \"*.md\" --glob \"*.json\" --glob \"*.mjs\" --glob \"*.cpp\" --glob \"*.ps1\" (1983 lines, retained in session tool log)",
+    "targeted_reads": [
+      "native/tools/entity_density_bench.cpp",
+      "native/tools/server_lifecycle_soak.cpp",
+      "native/tools/ci-native.ps1",
+      "native/build.ps1 (-RunDensityBench / -RunServerLifecycleSoak sections)",
+      "bench/README.md",
+      "bench/baseline.json",
+      "playtest/timing.mjs",
+      "playtest/soak.mjs",
+      "playtest/README.md",
+      ".github/workflows/native.yml",
+      "orchestration/benchmarks/side-by-side-2026-08-20/BENCHMARK.md",
+      "orchestration/tasks/TASK-0065-entity-density-benchmark/{RESULTS.md,REPORT.md,captures}",
+      "orchestration/tasks/TASK-0152-native-density-benchmark-evidence/{README.md,REPORT.md,captures/**}",
+      "orchestration/tasks/TASK-0129-server-lifecycle-soak/{REPORT.md,captures/*.json}",
+      "orchestration/tasks/TASK-0074-gear-outcomes-profile/FINDINGS.md (+ timing.jsonl reference)",
+      "orchestration/tasks/TASK-0062-playtest-flake-triage/FINDINGS.md",
+      "orchestration/tasks/TASK-0029-browser-25d-phase5/{REPORT.md,captures/*frame-time.json}",
+      "orchestration/tasks/TASK-0053-world-composition-polish/{REPORT.md,captures/_measure-frame-time.mjs}",
+      "orchestration/tasks/TASK-0135-server-lifecycle-soak-integration-contract/soak-integration-policy.json",
+      "orchestration/tasks/TASK-0140-soak-evidence-bundle-validator/{validate-soak-evidence.mjs,SPEC.md}",
+      "orchestration/tasks/TASK-0120-release-verification-gap-audit/captures/release-gates.json"
+    ],
+    "constraints": [
+      "read-only resource capsule: no servers started, no benchmarks re-executed, port 6500 untouched; every number below is cited from committed evidence",
+      "no performance budget is invented and no code is tuned; existing codified contracts are labeled as pre-existing"
+    ]
+  },
+  "audit_machine_provenance": {
+    "host": "DESKTOP-TVU7OR7",
+    "os": "Windows 10 Pro 10.0.19045",
+    "arch": "x86_64",
+    "cpu": "AMD Ryzen 5 1600 Six-Core Processor",
+    "cpu_cores": 6,
+    "cpu_logical": 12,
+    "node_version": "v22.23.2",
+    "lane": "ox-pc-bd",
+    "model_id": "openrouter/stealth/ox-alpha",
+    "branch": "worker/verdigris/pc/ox-pc-bd",
+    "note": "Same physical CPU as the TASK-0152 density captures (provenance.cpu matches), which makes those captures the only cross-run-comparable native simulation timings currently in the repo."
+  },
+  "categories": {
+    "simulation_native": {
+      "benchmarks": [
+        {
+          "id": "entity-density-evidence-v2",
+          "tool": "native/tools/entity_density_bench.cpp (tool_version 2.0.0)",
+          "runner": "manual MSVC compile/link per TASK-0152 REPORT; native/build.ps1 -RunDensityBench still targets the older TASK-0065 output form/folder",
+          "scenario": "density-melee-contact: enter route:tin:1:0, spawn N monsters at melee contact via Simulation::spawn_monster, drive T scripted Melee dispatches at the fixed 20 Hz cadence budget; frame = dispatch + read-only presentation state read (not a GDI paint)",
+          "metrics": ["update_ms p50/p90/p99/max/mean", "frame_ms p50/p90/p99/max/mean", "ticks_per_sec", "elapsed_s", "fnv1a64 state checksum A/B"],
+          "percentile_method": "nearest-rank",
+          "status": "observed",
+          "observed": [
+            {"capture": "orchestration/tasks/TASK-0152-native-density-benchmark-evidence/captures/density-n50-seed424242-runA.json", "n": 50, "seed": 424242, "ticks_per_sec": "~25000", "update_p99_ms": 0.0009, "frame_p50_ms": 0.0384, "frame_p99_ms": 0.0627},
+            {"capture": "...density-n500-seed777-runA.json", "n": 500, "seed": 777, "ticks_per_sec": "~2400", "update_p99_ms_range_runAB": [0.0041, 0.0062], "frame_p50_ms": 0.373, "frame_p99_ms_range_runAB": [1.1191, 1.1226]},
+            {"capture": "...density-n1000-seed42424242-runA.json", "n": 1000, "seed": 42424242, "ticks_per_sec": 1238.462636883, "update_p99_ms_range_runAB": [0.0098, 0.0101], "frame_p50_ms": 0.747, "frame_p99_ms_range_runAB": [2.1217, 2.2373]}
+          ],
+          "existing_thresholds": {
+            "contract": "verdigris-density-threshold/1 (pre-existing, enforced on every run and recomputed by --validate)",
+            "checks": ["monsters_spawned >= n", "samples_complete >= ticks", "reproducible >= 1 (A/B counts+checksum)", "frame_p99_within_budget <= 50 ms", "frame_mean_within_budget <= 50 ms", "update_p99_within_budget <= 50 ms", "ticks_per_sec_floor >= 20"],
+            "budget_note": "the 50 ms bound equals the existing fixed-step tick budget kSimulationTickMs=50 (20 Hz); it is an existing contract, not a new budget from this audit"
+          },
+          "provenance_quality": "strong: git_ref, compiler msvc-192930157, c++20, build_config debug-no-ndebug, os/arch/cpu/cpu_cores, timer + timer_resolution_ns recorded in every capture; A/B seeded determinism with matching checksums",
+          "gaps": ["no warmup phase (first-tick scheduler spikes land in max only, which is deliberately unbounded)", "no regression comparison against any stored same-machine baseline", "--validate recomputes checks but nothing schedules the bench"],
+          "ci_feasibility": "seconds-scale and offline; feasible on windows-latest runners, but ci-native.ps1 explicitly omits it today ('Density bench is not invoked') and shared-runner timing noise would make any tighter-than-50ms bound flaky"
+        },
+        {
+          "id": "entity-density-bench-v1-superseded",
+          "tool": "same cpp, TASK-0065-era flat JSON form",
+          "status": "observed_superseded",
+          "observed": {
+            "source": "orchestration/tasks/TASK-0065-entity-density-benchmark/RESULTS.md (2026-08-20, 12 runs)",
+            "medians_ticks_per_sec": {"n50": 1650000, "n200": 541000, "n500": 311000, "n1000": 182000},
+            "n1000_median_p99_tick_ms": 0.0075
+          },
+          "provenance_quality": "weak by current standards: host line says 'Windows 10, MSVC 2019 x64' with no CPU model, no seeds, no A/B checksum; numbers are NOT comparable to the v2 captures (different measurement composition and ~150x ticks/s delta from debug presentation-read inclusion)",
+          "gaps": ["superseded form kept for history; must not be averaged or compared with v2 numbers"]
+        }
+      ]
+    },
+    "simulation_fixed_step_constants": {
+      "benchmarks": [
+        {
+          "id": "tick-budget-constant",
+          "value": "kSimulationTickMs = 50 (20 Hz) fixed-step simulation budget",
+          "sources": ["native/tools/entity_density_bench.cpp (timings.tick_budget_ms must equal 50, enforced by --validate)", "orchestration/tasks/TASK-0065-entity-density-benchmark/RESULTS.md:5"],
+          "status": "observed_existing_contract",
+          "note": "codified design constant, not a measured number"
+        }
+      ]
+    },
+    "server_js": {
+      "benchmarks": [
+        {
+          "id": "instance-generation",
+          "tool": "bench/instance-generation.mjs (`npm run bench:instance`)",
+          "measures": "server/core/map.js Map.generateInstance across a fixed 12-case matrix (layouts/themes/depths)",
+          "metrics": ["per-case min/median/mean/max", "generationsPerSecond", "sha256 semantic digests with determinism self-check"],
+          "warmup": "explicit: default 3 warmup rounds per case, 30 measured (--rounds/--warmup tunable)",
+          "status": "observed",
+          "observed": {
+            "baseline": {"source": "bench/baseline.json", "median_ms": 5.328, "node": "v22.11.0", "platform": "win32/x64", "startedAt": "2026-07-21T01:38:12.945Z", "params": {"rounds": 30, "warmup": 3}},
+            "post_optimization": {"source": "bench/README.md", "six_clean_process_runs_ms": [0.330, 0.523], "speedup_range": "10.32x-16.21x", "cold_500_seed_median_ms": 0.970}
+          },
+          "existing_thresholds": "--verify gates semantic digest equality vs baseline.json (correctness gate); verify.medianSpeedup>=10x is claimable but nothing fails CI on a speed regression",
+          "provenance_quality": "partial: node version + platform + timestamp recorded; NO cpu model or machine id -> not comparable across machines",
+          "gaps": ["no perf-regression threshold (digests only)", "no machine tag", "not wired into any gate"],
+          "ci_feasibility": "pure Node, seconds-scale, deterministic digests: trivially CI-feasible as an L0 correctness gate; timing columns are informational on shared runners"
+        },
+        {
+          "id": "playtest-scenario-wall-times",
+          "tool": "npm run playtest (playtest/run.mjs) with optional PLAYTEST_TIMING_LOG=1 JSONL",
+          "metrics": ["per-scenario wall ms", "suite p99/max event-loop lag (harness process, monitorEventLoopDelay resolution 20ms)", "DIAG wait labels on failure"],
+          "status": "observed",
+          "observed": [
+            {"source": "orchestration/tasks/TASK-0074-gear-outcomes-profile/FINDINGS.md", "context": "10 serialized full suites, Luna Mac capsule (macOS, ports 7001-7010), timing.jsonl 320 records", "gear_outcomes_ms": {"min": 30779, "median": 33731.5, "p90": 34283.9, "max": 34688}, "suite_lag": {"p99_ms_range": [22.151167, 22.593535], "max_ms_range": [43.220991, 65.535999]}},
+            {"source": "orchestration/tasks/TASK-0062-playtest-flake-triage/FINDINGS.md", "context": "3 full suites on :6580, one Windows lane", "suite_walls_s": [168.5, 165.6, 186.5], "slowest_spread": {"gear_outcomes_ms": [31740, 53419], "quest_ms": [23560, 25816], "session_arc_ms": [12347, 17962], "zones_ms": [18087, 18257], "respawn_ms": [12318, 13228], "loot_ms": [1064, 3920]}},
+            {"source": "orchestration/tasks/TASK-0043-playtest-harness-stabilization/REPORT.md", "context": "10 full-suite runs under documented CPU-spinner load, Windows lane", "walls_s_range": [183.9, 193.1], "lag_p99_ms": [32.16, 32.23], "lag_max_ms": [95.42, 127.99]},
+            {"source": "orchestration/tasks/TASK-0155-deterministic-loot-playtest-reliability/REPORT.md", "context": "full suite wall 190.0 s; focused loot runs 2996/8410/2576/8302/2595 ms", "suite_lag": {"p99_ms": 32.194559, "max_ms": 103.350271}}
+          ],
+          "existing_thresholds": "none numeric; adaptiveTimeoutMs adds bounded slack (cap 1.75x) from observed lag — a fairness cap, explicitly NOT a performance budget (TASK-0120 release-gates.json:107)",
+          "provenance_quality": "mixed: machine identifiable per task report (Luna Mac vs Windows lanes) but no structured provenance block in the JSONL records",
+          "gaps": ["event-loop lag measures the harness process, not server or game latency", "cross-machine numbers (macOS capsule vs Windows lanes) differ materially (~22ms vs ~32ms p99) and must never be pooled", "adaptive slack masks slowdowns by design"],
+          "ci_feasibility": "runs in CI today (browser ci.yml) but as pass/fail only; using its durations as a perf gate would false-green because load adaptation absorbs regressions"
+        },
+        {
+          "id": "playtest-soak-js",
+          "tool": "playtest/soak.mjs (SOAK_SECONDS, :6511)",
+          "measures": "server process survival over fight->loot->pickup->re-zone->die->respawn cycles; counts cycles/kills/pickups/deaths; exits non-zero if server dies",
+          "status": "observed_tool_exists_no_committed_numbers_found_in_repo_evidence",
+          "existing_thresholds": "survival exit code only; no duration/memory metrics emitted",
+          "gaps": ["invoked by no gate or workflow (TASK-0120 FINDINGS #12)", "emits no percentile or memory data"],
+          "ci_feasibility": "~150 s default fits a CI job but binds a port and needs isolation; policy work (TASK-0135 pattern) would be required before gating on it"
+        }
+      ]
+    },
+    "networking_native": {
+      "benchmarks": [
+        {
+          "id": "server-lifecycle-soak-native",
+          "tool": "native/tools/server_lifecycle_soak.exe via native/build.ps1 -RunServerLifecycleSoak",
+          "measures": "real WebSocketServer start/upgrade/login/close lifecycle x100 cycles on loopback ports 6680-6699 plus an 8-client burst; stop durations per cycle; hard watchdog 15 min",
+          "status": "observed",
+          "observed": {
+            "captures": [
+              "orchestration/tasks/TASK-0129-server-lifecycle-soak/captures/lifecycle-soak-20260821-224506.json",
+              "orchestration/tasks/TASK-0129-server-lifecycle-soak/captures/lifecycle-soak-20260821-224623.json"
+            ],
+            "summary": {"cycles": "100/100 both runs", "upgrades_logins_closes": "100/100", "burst": "8/8, stop 149.0 ms", "stop_durations_ms": {"first_cycle": 155.0, "typical": "138-143", "total_100_cycles": 14037.0, "max": 155.0}, "total_duration_ms": 15764.0}
+          },
+          "existing_thresholds": {"exit_codes": "0 pass / failures non-zero / usage / watchdog breach (per tool main())", "policy": "TASK-0135 soak-integration-policy.json: source-head binding, platform evidence required, no retry may convert failure to green, hard watchdog 15000 ms burst window context budgets"},
+          "provenance_quality": "weak in artifact: JSON records host 127.0.0.1 + portCapsule + timestamps but NO os/cpu/compiler/git-ref block (unlike density evidence); policy requires binding source head at bundle level instead",
+          "gaps": ["stop-duration list has no computed percentiles or bound", "no latency/throughput metric at all", "Windows-only (WS2_32) so linux/macos runners cannot execute it (policy lists this as owner path)"],
+          "ci_feasibility": "~16-30 s on windows-latest is feasible; artifact provenance gap should close first so greens bind to a machine identity"
+        },
+        {
+          "id": "dual-server-matrix-durations",
+          "tool": "playtest/tools/dual-server-matrix.mjs (TASK-0082)",
+          "measures": "same scenarios against JS and native servers side by side; scenario durationMs informational",
+          "status": "observed_informational_only",
+          "observed": {"source": "orchestration/tasks/TASK-0082-dual-server-matrix/captures/smoke.json", "example_ms": {"zones_js": 18236, "zones_native": 1230}, "report_note": "REPORT.md:214 'Native-side durations differ from JS ... contract, timing is informational'"},
+          "gaps": ["durations reflect authored waits, not engine cost; explicitly not comparable"],
+          "ci_feasibility": "parity matrix yes; duration comparisons no"
+        },
+        {
+          "id": "session-echo-latency-seam",
+          "tool": "native/tests/session_tests.cpp (Gate-B reliability, TASK-0163)",
+          "measures": "late-echo handling costs latency, never the path; per-attempt echo window stays 400 ms",
+          "status": "observed_test_bound_not_benchmark",
+          "gaps": ["a functional timeout constant inside tests, not a distribution; no RTT benchmark exists for either server"],
+          "ci_feasibility": "already runs in ctest; irrelevant as a perf gate"
+        }
+      ]
+    },
+    "renderer_browser": {
+      "benchmarks": [
+        {
+          "id": "browser-frame-time-raf",
+          "tool": "measure-frame-time.mjs methodology (committed in orchestration/tasks/TASK-0029-browser-25d-phase5/captures/, reused by TASK-0053 _measure-frame-time.mjs): synchronous RAF callback duration, fixed 1440x1000 viewport, >=10 s scripted WASD workload, >=100 samples, mean/p95/max",
+          "status": "observed",
+          "observed": [
+            {"source": "TASK-0029-browser-25d-phase5/REPORT.md + captures/before-frame-time.json", "commit_context": "phase 5 before", "samples": 260, "mean_ms": 45.015, "p95_ms": 129.5, "max_ms": 137.8},
+            {"source": "TASK-0029-browser-25d-phase5/REPORT.md + captures/after-frame-time.json", "commit_context": "phase 5 after", "samples": 276, "mean_ms": 42.976, "p95_ms": 122.5, "max_ms": 127.1},
+            {"source": "TASK-0053-world-composition-polish/REPORT.md", "commit_context": "world composition before", "samples": 198, "mean_ms": 65.224, "p95_ms": 212.0, "max_ms": 271.2},
+            {"source": "TASK-0053-world-composition-polish/REPORT.md", "commit_context": "world composition after", "samples": 286, "mean_ms": 40.910, "p95_ms": 114.9, "max_ms": 128.4}
+          ],
+          "existing_thresholds": "none; numbers were change-evidence (before/after within one task), never gated",
+          "provenance_quality": "partial: viewport/workload/duration/sample method fixed by harness; machines unnamed in the reports; browser/GPU version unrecorded; headless-vs-windowed rendering mode unrecorded",
+          "gaps": ["no stored baseline to diff against", "no hardware tag", "no determinism expectation (RAF timing varies run to run)"],
+          "ci_feasibility": "possible with Playwright but headless software GL timings are unrepresentative of owner GPUs: high false-red and false-green risk; keep manual/L2 until a hardware tier exists"
+        }
+      ]
+    },
+    "renderer_native": {
+      "benchmarks": [],
+      "status": "absent",
+      "notes": [
+        "No native frame-time/paint benchmark exists anywhere in native/.",
+        "Closest proxies that are NOT renderer cost: density bench frame_ms includes a read-only presentation-state read (~0.747 ms median at N=1000, debug build), explicitly not a GDI paint (TASK-0152 REPORT unresolved question notes frame cost dominated by the full-state read).",
+        "Client presents via memory-DC double buffer (native/client/main.cpp:3887-3895); staged client scenarios assert render-list content with two-run byte equality — visual determinism evidence, not timing evidence."
+      ]
+    },
+    "startup": {
+      "benchmarks": [],
+      "status": "absent",
+      "notes": [
+        "No boot/cold-start/time-to-ready measurement exists for the JS server, native server, or native client.",
+        "Only indirect traces: soak.mjs polls up to 15 s for first login readiness (functional, not timed); dual-server smoke includes boot implicitly in wall times; playtest walls include hermetic boot (TASK-0155 wall 10.5-10.9 s incl. boot).",
+        "Nothing records time-to-first-frame or time-to-listen."
+      ]
+    },
+    "memory": {
+      "benchmarks": [],
+      "status": "absent",
+      "notes": [
+        "No RSS/heap benchmark or memory regression gate exists in any workspace.",
+        "Related non-benchmark facts: pm2 max_memory_restart '768M' ops guard (ecosystem.config.cjs:20); TASK-0097 R6 P2 risk that ProtocolSession::sessions_ never evicts identities -> unbounded growth on long-lived native servers; density bench emits no memory counters; lifecycle soak emits none.",
+        "The soak tools watch survival, not footprint, so a slow leak passes them green today."
+      ]
+    },
+    "entity_density_cross_reference": {
+      "benchmarks": [],
+      "status": "covered_by_simulation_native_and_v1_entries",
+      "notes": ["Entity-density is fully inventoried under simulation_native (v2 evidence) and its superseded v1 form; the JS side has no spawn seam so no apples-to-apples JS density benchmark exists (TASK-0065 RESULTS.md 'JS comparison (not implemented)')."]
+    },
+    "capture_infrastructure": {
+      "benchmarks": [
+        {
+          "id": "side-by-side-visual-benchmark",
+          "tool": "orchestration/benchmarks/side-by-side-2026-08-20/ (BENCHMARK.md D-124, browser-scenes.mjs, reference-manifest.mjs --verify from TASK-0084)",
+          "measures": "visual parity scenes (PNG/JPG composites at 1920x1080) + manifest hash verification; rerun protocol per P1 task",
+          "status": "observed_visual_not_timing",
+          "ci_feasibility": "manifest --verify is cheap and deterministic; image capture needs browsers/displays and stays manual"
+        },
+        {
+          "id": "native-staged-capture-byte-equality",
+          "tool": "client scenario runner two-run byte equality (main.cpp:4493-4498 region, five scenes x {JSON, PNG@1920x1080, PNG@1366x768})",
+          "measures": "render-list/capture determinism, not speed",
+          "status": "observed_determinism_gate",
+          "gaps": ["multi-tick animation sequences not yet sequence-dumped (TASK-0116 R12/R17)"]
+        },
+        {
+          "id": "soak-evidence-bundle-validator",
+          "tool": "TASK-0140 validate-soak-evidence.mjs (33 node:test cases)",
+          "measures": "lifecycle-soak artifacts against accepted TASK-0135 policy: provenance completeness, watchdog/context budgets, retry-masking rejection",
+          "status": "observed_policy_gate",
+          "ci_feasibility": "deterministic CLI, seconds-scale: CI-feasible now; it validates bundles rather than producing numbers"
+        },
+        {
+          "id": "playtest-timing-jsonl",
+          "tool": "PLAYTEST_TIMING_LOG=1 (playtest/lib/diagnostics.mjs, timingLogPath -> timing.jsonl)",
+          "measures": "per-scenario wall + suite p99/max event-loop lag records (96-320 rows committed under TASK-0062/TASK-0074)",
+          "status": "observed_instrumentation",
+          "gaps": ["records lack structured machine provenance fields"]
+        }
+      ]
+    }
+  },
+  "missing_threshold_dimensions": {
+    "percentiles": [
+      "density v2 computes p50/p90/p99/max/mean but bounds only p99+mean at the loose 50 ms tick budget; max deliberately unbounded",
+      "browser frame-time records mean+p95+max with no bound anywhere",
+      "lifecycle-soak stores raw stopDurationsMs without computing/storing percentiles or any bound",
+      "playtest logs p99/max lag informationally with no threshold",
+      "no p95 exists for any native/server-side metric (only the browser RAF harness computes p95)"
+    ],
+    "hardware": [
+      "owner target-hardware tiers do not exist yet (owner-input dependency; this audit stops short of defining them)",
+      "structured CPU/build provenance exists ONLY in verdigris-density-evidence/2 captures",
+      "bench/baseline.json lacks CPU model; TASK-0065 RESULTS.md names OS/compiler only; browser frame-time reports name no machine; lifecycle-soak JSON names no machine",
+      "cross-machine pooling already demonstrably wrong: macOS capsule p99 lag ~22 ms vs Windows lanes ~32 ms on the identical suite"
+    ],
+    "warmup": [
+      "instance-generation has explicit warmup rounds; density bench has none (cold-start spikes visible in max); browser frame-time settles 3 s before sampling; soak/lifecycle tools have no warmup concept",
+      "no rung defines a minimum settled state before sampling"
+    ],
+    "determinism": [
+      "density bench: seeded A/B counts+checksum agreement (good)",
+      "instance-generation: per-case sha256 digests + double-generation self-check (good)",
+      "lifecycle soak: policy-level retry/no-retry rules and watchdogs (good) but no state checksum",
+      "browser frame-time: no determinism expectation at all (inherently noisy)",
+      "native staged captures: byte equality proves visual determinism but covers single staged frames, not multi-tick sequences"
+    ],
+    "regression": [
+      "no stored baseline comparison exists for any metric except instance-generation semantic digests (correctness, not speed)",
+      "no CI gate executes any performance benchmark: ci-native.ps1 explicitly omits the density bench; ci.yml runs playtest pass/fail only; TASK-0120 release-gates.json confirms 'No frame-time/memory/p95 budget gate exists anywhere in CI or acceptance'",
+      "TASK-0099 (this audit) is the designated predecessor of such a gate; budgets themselves remain owner-owned"
+    ]
+  },
+  "negative_control": {
+    "number": "~43 ms mean frame at 1440x1000 (browser)",
+    "citation": "orchestration/DECISIONS.md:101 ('own measurement: ~43ms mean frame at 1440x1000')",
+    "why_it_lacks_provenance": [
+      "no commit SHA, date, machine, CPU, browser version, sample count, or methodology citation accompanies the decision-line figure",
+      "candidate underlying measurements span 40.910-45.015 ms mean across at least two different commits/tasks (TASK-0029 phase 5 before/after; TASK-0053 after) on unstated machines, so the decision number cannot be attributed to a specific run",
+      "consequence: it cannot be compared across runs, used as a regression base, or reproduced; treat it as anecdote until a machine-tagged capture supersedes it"
+    ],
+    "secondary_examples": [
+      "lifecycle-soak-20260821-*.json artifacts carry no os/cpu/git provenance fields",
+      "bench/baseline.json records Node/platform/date but no CPU model",
+      "TASK-0065 RESULTS.md table lacks CPU model and seeds"
+    ]
+  },
+  "benchmark_ladder_proposal": {
+    "principle": "machine-tagged rungs compare only like with like; absolute budgets stay limited to already-accepted contracts (50 ms tick budget, soak exit codes/watchdogs); every NEW numeric budget is an owner decision and is out of scope here",
+    "run_tag_format": "{host-id}/{cpu-short}/{build-config-or-runtime}/{git-sha-7}@{utc-date}  e.g. DESKTOP-TVU7OR7/R5-1600/debug-no-ndebug/ee9628a@2026-08-23",
+    "artifact_rule": "every rung writes JSON carrying the verdigris-density-evidence/2-style provenance block (git_ref, compiler/runtime, build_config, os, arch, cpu, cpu_cores, timer, timer_resolution_ns); tools lacking it (lifecycle soak, frame-time, timing.jsonl) get the block added before their numbers enter any ladder",
+    "rungs": [
+      {"tier": "L0-commit", "where": "CI (windows-latest)", "contents": ["entity_density_bench n=500 single seed + --validate (seconds, offline, no ports)", "bench/instance-generation.mjs --verify against committed baseline (semantic gate; timing columns informational)", "validate-soak-evidence self-tests"], "feasible": true, "risk": "shared-runner timing noise -> keep L0 assertions to existing loose contracts and digests only"},
+      {"tier": "L1-lane-prereview", "where": "worker capsule, owned ports only", "contents": ["full density ladder n=50/500/1000 seeds A/B with provenance block", "one full npm run playtest with PLAYTEST_TIMING_LOG=1 archived to the task captures/", "native lifecycle soak 100 cycles (~16 s) OR playtest soak.mjs ~150 s when touching the respective surface"], "feasible": true},
+      {"tier": "L2-integration-nightly", "where": "scheduled/manual on a named stable host", "contents": ["same-tag repetition (>=3 runs) to expose spread", "stored same-tag baselines enabling relative-delta regression reporting (delta % reported; fail thresholds set later by owner)", "SOAK_SECONDS=600 long soak variant"], "feasible": "needs an owner-designated host"},
+      {"tier": "L3-owner-hardware-tiers", "where": "reserved", "contents": ["target-hardware-tier definitions and their budgets belong to the owner; this audit intentionally does not propose them"], "feasible": "blocked on owner input"}
+    ],
+    "comparison_rules": ["never pool across run tags (macOS-capsule vs Windows-lane lag demonstrates why)", "regression signal = same-tag relative delta against the most recent stored same-tag baseline", "a red is never converted to green by retry (mirrors accepted TASK-0135 invariant)"]
+  },
+  "ci_feasibility_and_false_green_risks": {
+    "summary": "Today zero performance benchmarks execute in CI; all perf numbers come from opt-in local tools and one-off task evidence.",
+    "per_tool": [
+      {"tool": "density bench v2", "ci_ready": "technically yes (offline, seconds)", "false_green_risk": "50 ms bounds sit ~20x above observed worst p99, so gross regressions could still pass; conversely tight bounds would false-red on shared runners; debug-no-ndebug config differs from release intuition"},
+      {"tool": "instance-generation", "ci_ready": "yes", "false_green_risk": "verify gates semantics only; a 10x slowdown would stay green if digests match"},
+      {"tool": "playtest diagnostics", "ci_ready": "runs already", "false_green_risk": "high if misused as perf gate: adaptiveTimeoutMs deliberately absorbs load-induced delays up to 1.75x; lag metrics measure the harness process"},
+      {"tool": "native lifecycle soak", "ci_ready": "windows runners yes", "false_green_risk": "survival-only verdict passes slow leaks and degradations; missing artifact provenance weakens auditability; retry masking already structurally rejected by TASK-0140 validator"},
+      {"tool": "browser frame-time harness", "ci_ready": "not recommended", "false_green_risk": "headless software rendering timings neither bound owner-GPU behavior nor reproduce locally; both false directions likely"},
+      {"tool": "memory", "ci_ready": "nothing to run", "false_green_risk": "absent entirely: leaks and bloat are invisible to every existing gate (pm2 restart limit is an ops backstop, not evidence)"}
+    ]
+  },
+  "separation_of_observed_vs_targets": {
+    "observed_numbers": "every value under categories.*.benchmarks[].observed above, each tied to a committed capture/report citation",
+    "existing_codified_contracts": ["kSimulationTickMs = 50 (20 Hz)", "verdigris-density-threshold/1 bounds", "TASK-0135 soak watchdogs/budgets", "pm2 max_memory_restart 768M (ops guard)", "session echo 400 ms test window"],
+    "future_targets": "none defined by this audit; owner hardware tiers and product budgets are explicitly left to the owner (owner_input_dependency)"
+  }
+}

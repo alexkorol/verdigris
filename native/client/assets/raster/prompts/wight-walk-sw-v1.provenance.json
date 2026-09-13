@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-10",
+  "use_case": "style-transfer",
+  "tool": "built-in image_gen.imagegen",
+  "model_selection": "No image model or variant selector was exposed or claimed.",
+  "prompt": {
+    "path": "native/client/assets/raster/prompts/wight-walk-sw-v1.txt",
+    "sha256": "811d18730c653e03d047956a4b96b32bf28506ab076a9487ebfea3ffa31f1c78",
+    "role": "Exact submitted prompt, unchanged."
+  },
+  "references": [
+    {
+      "index": 1,
+      "path": "native/tools/raster/wight-walk-sw-candidates/hero-sw-gait-guide-4x.png",
+      "sha256": "705014f60cd038f4b23c9d46def4b941d71fd4ede50c4b67b5992cd594f0d95d",
+      "role": "Edit target: eight chronological lower-body poses and order; no hero identity/equipment.",
+      "viewed_before_generation": true
+    },
+    {
+      "index": 2,
+      "path": "native/client/assets/raster/runtime/wight_sw.png",
+      "sha256": "b2a71f83a721a4a6e9414706f4148b432f5a50acbcbd5d73b15a9980b8b8697d",
+      "role": "Only wight appearance, skull/ribs/cloth/palette reference.",
+      "viewed_before_generation": true
+    }
+  ],
+  "original_output": "C:/Users/Alex/.codex/generated_images/01a0896f-29de-7452-bb4b-6fb64351c1eb/exec-596a43d4-c966-4d99-8f58-bc6e1decfc62.png",
+  "saved_source": {
+    "path": "native/client/assets/raster/source/wight-walk-sw-v1.png",
+    "sha256": "6817135c9ea8f4eefcb35b583f8bfdc3d858d123e8b17c0fc3a7f6635f3e2c90",
+    "role": "Unmodified built-in output copied into the project."
+  },
+  "source_dimensions": [
+    1619,
+    971
+  ],
+  "source_mode": "RGB",
+  "source_actual_alpha": false,
+  "published_workflow": [
+    {
+      "url": "https://x.com/pureso_studio/status/2097520619193868590",
+      "access": "Original creator post and photo2 opened in browser; short Japanese walking prompt read in the original result image.",
+      "creator_claim": "Creator reports improved walking, clothing identity and several motions from a free Images2.5 chat. This is a firsthand report, not a benchmark or a wight test.",
+      "adaptation": "Retain the short reference-character walking-sheet structure; reduce sixteen4x4 poses to eight4x2, use accepted wight identity and existing hero gait guide, target the native actor scale."
+    },
+    {
+      "url": "https://x.com/higgsfield/status/2097514684811554911",
+      "access": "Original post and its full geometry-guide prompt read in browser.",
+      "scope": "Published example is an orange helix studio turntable with strict reference geometry, pose, composition and unchanged camera/scale. It does not establish skeletal or human gait accuracy.",
+      "adaptation": "Give accepted hero motion the geometry/order role and accepted wight idle the appearance-only role. This is our explicit adaptation, not a published wight recipe."
+    },
+    {
+      "url": "https://x.com/Mayz1169/status/2097535082248671625",
+      "access": "Previously read original idle prompt; current raster RESEARCH/PROMPTING reread before the task.",
+      "adaptation": "Retain fixed alignment and baseline across cells. Published idle alignment is not proof that the generated walk has a perfect shared pivot."
+    }
+  ],
+  "observations": {
+    "result": "Selected original eight poses after source-preserving alpha reconstruction.",
+    "good": "All eight face lower-left, retain bare skull/ribs, curled empty hands and torn brown cloth. Stride opens, closes and transfers weight; all frames are distinct.",
+    "limits": "Torso is narrower and more leg is exposed than idle. Cloth partly obscures hip-to-knee ownership; this is not certified perfect anatomical alternation. Phases0/1 and4/5 are close. All generated backgrounds are opaque painted checkers.",
+    "review_correction": "The initial same-leading-leg concern based on screen-left foot position was too strong: in a SW walk either forward foot naturally appears lower-left. Anatomical support must follow hip/knee and occlusion. Current verdict is partly obscured ownership, not proven duplicate halves."
+  },
+  "conversion": "native/tools/raster/wight-walk-sw-candidates/selected/import.json",
+  "acceptance": "Root approved cleaned originalv1 eight poses for production import and actual game review; final gameplay acceptance pending."
+}

@@ -1,0 +1,9 @@
+play-native: auto-selected free port 6520 (first free in 6520-6539)
+play-native: starting verdigris_server on ws://127.0.0.1:6520 (capsule 6520-6539)
+play-native: server ready (pid 16064, stdout log C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\build\logs\server-6520-20260910-065423-717.log, stderr log C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\build\logs\server-6520-20260910-065423-717.err.log)
+play-native: starting real windowed client: verdigris_client --remote 127.0.0.1 6520
+play-native: close the window or press Esc to quit
+play-native: client pid 10728
+play-native: client exit code 0
+play-native: owner session left no orphan verdigris processes (verified by pid)
+play-native: chosen port 6520; server log C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\build\logs\server-6520-20260910-065423-717.log

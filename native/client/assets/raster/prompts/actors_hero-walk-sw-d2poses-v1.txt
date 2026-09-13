@@ -1,0 +1,7 @@
+Make a simplified pixel-art walking motion sprite sheet of the character in Image 1, with a genuinely transparent background, arranged 4 columns × 2 rows in chronological order.
+
+Image 1 is ONLY the character identity and pixel-style reference: preserve this exact grounded adult, face and hair, brown tunic, full dark trousers, pale wrist wraps, boots, bronze guard on the anatomical RIGHT shoulder and blue sash on the anatomical LEFT hip. Both hands are empty. Preserve its natural warm palette and clear low-resolution square pixel clusters, designed for a 64-pixel crown-to-sole body. Keep adult proportions.
+
+Image 2 is ONLY the ordered walking-pose reference. Recreate its eight successive body, leg and arm poses, one corresponding pose in each cell, left to right then top to bottom. Follow its alternating supporting legs, swinging feet, knee bends and opposing arm swing; frame 4 must be the opposite foot-contact phase from frame 0. Use our Image 1 character's appearance throughout, never Image 2's costume or bald head.
+
+All eight frames face diagonally toward the lower-left of the screen. Walk in place with a common camera, body scale, cell alignment and ground plane. Keep all extremities inside each cell with empty margins. Output only the eight character sprites: actual transparent alpha, no checkerboard, background, labels, numbers or grid lines.

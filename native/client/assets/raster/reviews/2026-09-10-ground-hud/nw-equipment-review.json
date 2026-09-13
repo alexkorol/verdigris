@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "review": "NW walk registration equipment correction",
+  "run_date_local": "2026-09-10",
+  "timezone": "America/Los_Angeles",
+  "command": "./native/tools/raster/test_equipment.ps1 -Python (Get-Command python).Source",
+  "exit_code": 0,
+  "full_log": "equipment-probe.log",
+  "log_sha256": "8d208ef2ca998cedf1345c1958fb13b75c6acd64b0316e3b59a663a41162683c",
+  "tool_provenance": {
+    "terminal_session_id": 12343,
+    "launch_output_chunk_id": "498a52",
+    "completion_output_chunk_id": "81f215"
+  },
+  "reported_results": [
+    "PASS: all six V3 hand-region fingerprints and measured palm texels match the reviewed sockets.",
+    "PASS: 36 reviewed directional hand neighborhoods and palm texels match their measured sockets.",
+    "Stable repeat: 90 strike placements x 100 plus idle; image-load delta 0, bitmap-build delta 0, GDI handles 251 -> 251; cache 122 bitmaps / 22635640 bytes.",
+    "PASS: 54 poses x 5 weapons at three scales; grip error <=0.5 px, exact actor occlusion, unchanged zero-angle pixels, direct PARGB nearest samples, normalized angle identity, 360-angle bounded eviction, stable full-strike repeat cache/GDI handles and invalid-parameter rejection.",
+    "PASS: measured GDI+ nearest-neighbor source coordinates match helper finger clipping at all eight tested sizes.",
+    "Equipment checks passed. Contact sheets, strike animation and sampling fixtures: C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-diablo-study\\.ci-artifacts\\raster-equipment"
+  ],
+  "source_sha256": {
+    "native/client/raster_equipment.hpp": "b1af849e6528e7ad8b248a57fb61684cdec2e624ac06abe1113ad5106dba74e8",
+    "native/tools/raster/test_equipment.cpp": "b52af120164ea049c565cd60ee8f1110147beb4c52fd47bfabbb9ae0312bca96",
+    "native/tools/raster/test_equipment.ps1": "d612dc066d486a05f7ef87b0a810b293c4252f7362cc56bb1141ed5f25891f03"
+  },
+  "frames": [
+    {
+      "frame": 0,
+      "translation": [
+        0,
+        1
+      ],
+      "pixel_exact": true,
+      "alpha_clipped": false,
+      "after_sha256": "ec99c0233bb2d8251697c365c5646b37e03035823c2b39a9012ba9f20caa7785"
+    },
+    {
+      "frame": 1,
+      "translation": [
+        0,
+        1
+      ],
+      "pixel_exact": true,
+      "alpha_clipped": false,
+      "after_sha256": "d73f0d8be95d222debe748b169b3fe78be80e192de3a3117ea7cf60b02583dbe"
+    },
+    {
+      "frame": 2,
+      "translation": [
+        0,
+        1
+      ],
+      "pixel_exact": true,
+      "alpha_clipped": false,
+      "after_sha256": "742618bb8ae6b4bb6de92ff0db4aa2679d763aad365b7115b2c60858b3e62612"
+    },
+    {
+      "frame": 3,
+      "translation": [
+        0,
+        1
+      ],
+      "pixel_exact": true,
+      "alpha_clipped": false,
+      "after_sha256": "bbae2cb7b435fc4c8074a4bfc4192c37904e5eb3c50ea6061a93e5566beb399e"
+    },
+    {
+      "frame": 4,
+      "translation": [
+        0,
+        5
+      ],
+      "pixel_exact": true,
+      "alpha_clipped": false,
+      "after_sha256": "c92b2ab6e5e5686f3898ad8c5dcb368fbc6afe84b4f205326b917f40e22862b0"
+    },
+    {
+      "frame": 5,
+      "translation": [
+        0,
+        5
+      ],
+      "pixel_exact": true,
+      "alpha_clipped": false,
+      "after_sha256": "2ad3c17350bbf2ee9eee24812edc8e41e94181c72cee2a79bc0b95ea305b70ea"
+    },
+    {
+      "frame": 6,
+      "translation": [
+        0,
+        5
+      ],
+      "pixel_exact": true,
+      "alpha_clipped": false,
+      "after_sha256": "ffb1a9399220bd1552518c78cddeeddc05f02012d76a5b4bac121182c0ee4b98"
+    },
+    {
+      "frame": 7,
+      "translation": [
+        0,
+        5
+      ],
+      "pixel_exact": true,
+      "alpha_clipped": false,
+      "after_sha256": "df4e3ada07ea120353cafb1e384f74acdf295e26f2ca7039c8e4987f6e40ec7d"
+    }
+  ],
+  "non_nw_walk_metadata_entries_byte_equivalent": 46,
+  "expected_hand_fingerprint_hash_values_unchanged": true,
+  "visual_review": {
+    "source_native_and_4x_viewed": true,
+    "all_40_equipped_composites_viewed_native_and_3x": true,
+    "result": "The same physical-left hand pixels cover the held grip after exact row registration changes. No new floating grip, handedness change, finger occlusion defect or weapon clipping was observed.",
+    "live_gameplay_review": "Pending root integration; this evidence covers production equipment draw and source registration, not live contact timing."
+  },
+  "other_candidate_audit": {
+    "asset": "native/client/assets/raster/source/raider-walk-sw-axe-v2.png",
+    "result": "All eight built-in axes remain attached to anatomical-right/screen-left hands; ordinary whole-sprite monster rendering is appropriate without hero overlay. Blade shrinks to a smaller square hatchet versus idle, so equipment identity across idle/walk still needs the targeted art correction.",
+    "runtime_candidate_directory": "native/tools/raster/raider-walk-sw-candidates/axe-v2",
+    "status": "not accepted for runtime by this audit"
+  }
+}

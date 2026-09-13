@@ -1,0 +1,290 @@
+[
+  {
+    "retained": "browser-32-of-32.log",
+    "sha256": "56e356053494a6b82fa1126069501f259004b36d1531a8ebba88a1b5d2974e39",
+    "source": ".ci-artifacts/monster-motion-wave/browser-playtest.log",
+    "source_sha256": "7f236650a2ef117639dea86ff60ac8acaa9de2196b715dc4205eb02e2424493d"
+  },
+  {
+    "retained": "crop-evidence.json",
+    "sha256": "0dbfadb113926a3703819270468f2feafbea2619ba1e196c4bd3e9531373aada",
+    "source": "Root-authored review artifact; originals and unscaled crop rectangles are recorded in crop-evidence.json.",
+    "source_sha256": "f7bd60038f4266f805a17f8e0ad6e1a4b4674266d436f6c7167192f665bb94d4"
+  },
+  {
+    "retained": "equipment.log",
+    "sha256": "fb2a1f742e89b6eed1410b4b94e31459301f7e9d8e61993d212563fb6ae49d6b",
+    "source": ".ci-artifacts/monster-motion-wave/equipment.log",
+    "source_sha256": "3f76552cd2dfb77b2ad7aa63be578a4685d31bf52cd3f6da977513743f94d2a7"
+  },
+  {
+    "retained": "focused-native-transport.log",
+    "sha256": "0ef8e7a888512b593e53ce55dec3df9cddfaba9a5a6edb6a1f0f711eb4db60da",
+    "source": ".ci-artifacts/native-monster-transport/transport-result.log",
+    "source_sha256": "d79bfa2057c4cbb1562e19b2ee30cda21bbee4cf256a33be406347a63acff93d"
+  },
+  {
+    "retained": "focused-world-pursuit.log",
+    "sha256": "c704995cc8a6dbb0bf0e367ee8623de5f624963d13d730bcca7aab835ddcb8b2",
+    "source": ".ci-artifacts/world-pursuit/final-bounds-test.log",
+    "source_sha256": "2fae4a6bbde06851728b2be99fd87aa7866769bc3764e8b067810977a3c0ac0c"
+  },
+  {
+    "retained": "frame-budget-report.txt",
+    "sha256": "7f2a2189407e1f585a15a5703626d100286b90a810ce2a3eac710c2fd7511b33",
+    "source": ".ci-artifacts/monster-motion-wave/captures/frame-budget-report.txt",
+    "source_sha256": "7f2a2189407e1f585a15a5703626d100286b90a810ce2a3eac710c2fd7511b33"
+  },
+  {
+    "retained": "importer-10-of-10.log",
+    "sha256": "f69258b587bad9fcc317882fcd84dc8d1988d0fc26924c2989b7edcc8cc8f267",
+    "source": ".ci-artifacts/monster-motion-wave/importer.log",
+    "source_sha256": "55a8a94313053299b2bf55417431e380f1a6d1aecad0ac3deaa5e3619ee64c5a"
+  },
+  {
+    "retained": "initial-integration-compile-failure.log",
+    "sha256": "08cb1f740f0e97b1aabcc7b77f5af4517280538dfdb254aa538f6aa261d112f4",
+    "source": ".ci-artifacts/monster-motion-wave/native-build-all.log",
+    "source_sha256": "6b203aac684a95a754584def872040d7474d17ecfa0bede09be69f265a4a211e"
+  },
+  {
+    "retained": "live-created.png",
+    "sha256": "9207b3f65955b0e770c35a5d5923ff3f287d1b7d09941b84d86a1f39377f144d",
+    "source": ".ci-artifacts/monster-motion-wave/live-created.png",
+    "source_sha256": "9207b3f65955b0e770c35a5d5923ff3f287d1b7d09941b84d86a1f39377f144d"
+  },
+  {
+    "retained": "live-entry.png",
+    "sha256": "2501edba8157ec1e47d8ab2328e0a4f6fe590c4ef6b433fe2f683b3ffa3c83ef",
+    "source": ".ci-artifacts/monster-motion-wave/live-entry.png",
+    "source_sha256": "2501edba8157ec1e47d8ab2328e0a4f6fe590c4ef6b433fe2f683b3ffa3c83ef"
+  },
+  {
+    "retained": "live-launch.log",
+    "sha256": "92dab7cb969794ede2fbe3c769de8a9a8c179132db0c8edd7f6fa8e52fedc989",
+    "source": ".ci-artifacts/monster-motion-wave/live-launch.log",
+    "source_sha256": "a83229c0d4c72c2dacfcb51a1a696f9f600b1850afadf52a8a3b68c381d017cb"
+  },
+  {
+    "retained": "live-moved.png",
+    "sha256": "94cda74648ecf6637b38260437e7f3bcc1869e5e653907edf4188cd8659a8292",
+    "source": ".ci-artifacts/monster-motion-wave/live-moved.png",
+    "source_sha256": "94cda74648ecf6637b38260437e7f3bcc1869e5e653907edf4188cd8659a8292"
+  },
+  {
+    "retained": "live-performance-native-crop.png",
+    "sha256": "e16d34eef0d82dad1549e87161f334f8e1df6f648cb356dd4dbd26fcefb1040f",
+    "source": "Root-authored review artifact; originals and unscaled crop rectangles are recorded in crop-evidence.json.",
+    "source_sha256": "e16d34eef0d82dad1549e87161f334f8e1df6f648cb356dd4dbd26fcefb1040f"
+  },
+  {
+    "retained": "live-performance.png",
+    "sha256": "540e328323297d27293b571db6935a81b77b2429981e8604780125da93028f3f",
+    "source": ".ci-artifacts/monster-motion-wave/live-performance.png",
+    "source_sha256": "540e328323297d27293b571db6935a81b77b2429981e8604780125da93028f3f"
+  },
+  {
+    "retained": "live-road.png",
+    "sha256": "94cda74648ecf6637b38260437e7f3bcc1869e5e653907edf4188cd8659a8292",
+    "source": ".ci-artifacts/monster-motion-wave/live-road.png",
+    "source_sha256": "94cda74648ecf6637b38260437e7f3bcc1869e5e653907edf4188cd8659a8292"
+  },
+  {
+    "retained": "live-world.png",
+    "sha256": "2fbb67be1bb2be84374421dafc663d4264865b164303f80f378074f30ecb6179",
+    "source": ".ci-artifacts/monster-motion-wave/live-world.png",
+    "source_sha256": "2fbb67be1bb2be84374421dafc663d4264865b164303f80f378074f30ecb6179"
+  },
+  {
+    "retained": "native-final-build-all.log",
+    "sha256": "68296a159b752248b5bc9ced0d355f5182e5aaf0cfe258e42be9fa0029bcbf5c",
+    "source": ".ci-artifacts/monster-motion-wave/native-final-build-all.log",
+    "source_sha256": "24e2f0103a520c0caaaa90cdf4d689ec3980ab5a768c0c5dc4c319d782e4cb7e"
+  },
+  {
+    "retained": "native-pursuit-se-contact.png",
+    "sha256": "d6dfb1d8578462cc70a110de4cd09050a8c580b6fb6f891ac44fae7d668a054e",
+    "source": ".ci-artifacts/monster-motion-wave/captures/native-pursuit-se-contact.png",
+    "source_sha256": "d6dfb1d8578462cc70a110de4cd09050a8c580b6fb6f891ac44fae7d668a054e"
+  },
+  {
+    "retained": "native-pursuit-se-walk-00.png",
+    "sha256": "6caf51f61ebb6016fe36f1970f1d4cc0a28aadcb95566be8be3c92ac750a2c00",
+    "source": ".ci-artifacts/monster-motion-wave/captures/native-pursuit-se-walk-00.png",
+    "source_sha256": "6caf51f61ebb6016fe36f1970f1d4cc0a28aadcb95566be8be3c92ac750a2c00",
+    "crop_box_for_contact_sheet": [
+      417,
+      97,
+      617,
+      272
+    ]
+  },
+  {
+    "retained": "native-pursuit-se-walk-01.png",
+    "sha256": "c5d3543438d31217c0abc73a2af623a5281cd81bb28c6e1f426cd7f02a20c736",
+    "source": ".ci-artifacts/monster-motion-wave/captures/native-pursuit-se-walk-01.png",
+    "source_sha256": "c5d3543438d31217c0abc73a2af623a5281cd81bb28c6e1f426cd7f02a20c736",
+    "crop_box_for_contact_sheet": [
+      427,
+      104,
+      627,
+      279
+    ]
+  },
+  {
+    "retained": "native-pursuit-se-walk-02.png",
+    "sha256": "502e49c55a4ddb822d5800b2d07a6619b6efb77395285950d6bebef13240c1ec",
+    "source": ".ci-artifacts/monster-motion-wave/captures/native-pursuit-se-walk-02.png",
+    "source_sha256": "502e49c55a4ddb822d5800b2d07a6619b6efb77395285950d6bebef13240c1ec",
+    "crop_box_for_contact_sheet": [
+      443,
+      125,
+      643,
+      300
+    ]
+  },
+  {
+    "retained": "native-pursuit-se-walk-03.png",
+    "sha256": "77aeedb48d027b78092dd41bd1bed695c080ca864605ec3593d1bfe35bf01099",
+    "source": ".ci-artifacts/monster-motion-wave/captures/native-pursuit-se-walk-03.png",
+    "source_sha256": "77aeedb48d027b78092dd41bd1bed695c080ca864605ec3593d1bfe35bf01099",
+    "crop_box_for_contact_sheet": [
+      458,
+      137,
+      658,
+      312
+    ]
+  },
+  {
+    "retained": "native-pursuit-se.csv",
+    "sha256": "0427fd9d21a50a82f649a17627cb0529ef223cb7830da526b8a20b976921f016",
+    "source": ".ci-artifacts/monster-motion-wave/captures/native-pursuit-se.csv",
+    "source_sha256": "c699db2e6268d0c02926bb3ddc2f860dce85de5827f74888f31e1d744839a983"
+  },
+  {
+    "retained": "raider-se-production-crops-1x.png",
+    "sha256": "f2a02404b320c8dd8c3acefba29eca1d97a816914264f80cb3143bb9d8d851e5",
+    "source": "Root-authored review artifact; originals and unscaled crop rectangles are recorded in crop-evidence.json.",
+    "source_sha256": "f2a02404b320c8dd8c3acefba29eca1d97a816914264f80cb3143bb9d8d851e5"
+  },
+  {
+    "retained": "raster-world-1366x768.png",
+    "sha256": "8a8ab8958d4c8b042c1838205cf48d7d26ffc17d9ab349154d4a49d6850f93a1",
+    "source": ".ci-artifacts/monster-motion-wave/captures/raster-world-1366x768.png",
+    "source_sha256": "8a8ab8958d4c8b042c1838205cf48d7d26ffc17d9ab349154d4a49d6850f93a1"
+  },
+  {
+    "retained": "README.md",
+    "sha256": "e9bfdec0c05c481afc5562297de91bde7c54c3b5395f2bb51e8e55f9af76c44f",
+    "source": ".ci-artifacts/monster-motion-wave/README.md",
+    "source_sha256": "e9bfdec0c05c481afc5562297de91bde7c54c3b5395f2bb51e8e55f9af76c44f"
+  },
+  {
+    "retained": "remote-wight-arrived.png",
+    "sha256": "3bf189e6d1c2d1f6bb9c6f76de6ebcc74356cc6a7e9a91b33366b6f7175883b2",
+    "source": ".ci-artifacts/monster-motion-wave/captures/remote-wight-arrived.png",
+    "source_sha256": "3bf189e6d1c2d1f6bb9c6f76de6ebcc74356cc6a7e9a91b33366b6f7175883b2"
+  },
+  {
+    "retained": "remote-wight-motion.csv",
+    "sha256": "79fc27ef8d48bdc6625bef5266d01bae9f0f3f7f09f37d504a84886adb355824",
+    "source": ".ci-artifacts/monster-motion-wave/captures/remote-wight-motion.csv",
+    "source_sha256": "0e3904f7652bc1a67120f3bc6cfceac558fe2d2430fb5aee30f0661fa87d7b16"
+  },
+  {
+    "retained": "remote-wight-new-scene.png",
+    "sha256": "090159817a2c79b0c81bd160e925c087ddd0a5ebcaba5c639d20609497c5a98f",
+    "source": ".ci-artifacts/monster-motion-wave/captures/remote-wight-new-scene.png",
+    "source_sha256": "090159817a2c79b0c81bd160e925c087ddd0a5ebcaba5c639d20609497c5a98f"
+  },
+  {
+    "retained": "remote-wight_walk0_sw.png",
+    "sha256": "facda25157065895c4aa7a8ec13377b5d5cf2c2f9403a49791c764e6731e357c",
+    "source": ".ci-artifacts/monster-motion-wave/captures/remote-wight_walk0_sw.png",
+    "source_sha256": "facda25157065895c4aa7a8ec13377b5d5cf2c2f9403a49791c764e6731e357c",
+    "crop_box_for_contact_sheet": [
+      403,
+      214,
+      603,
+      389
+    ]
+  },
+  {
+    "retained": "remote-wight_walk1_sw.png",
+    "sha256": "8955d7e8e7dffec95c8bff19301939eb56e00191e05246f34c95de78e8eec127",
+    "source": ".ci-artifacts/monster-motion-wave/captures/remote-wight_walk1_sw.png",
+    "source_sha256": "8955d7e8e7dffec95c8bff19301939eb56e00191e05246f34c95de78e8eec127",
+    "crop_box_for_contact_sheet": [
+      543,
+      167,
+      743,
+      342
+    ]
+  },
+  {
+    "retained": "remote-wight_walk2_sw.png",
+    "sha256": "23bc31db1bbb3ffdd3a19563e30e4093721627369f8f1fe0143357716e832b4a",
+    "source": ".ci-artifacts/monster-motion-wave/captures/remote-wight_walk2_sw.png",
+    "source_sha256": "23bc31db1bbb3ffdd3a19563e30e4093721627369f8f1fe0143357716e832b4a",
+    "crop_box_for_contact_sheet": [
+      458,
+      195,
+      658,
+      370
+    ]
+  },
+  {
+    "retained": "remote-wight_walk3_sw.png",
+    "sha256": "d14656ba8eb9480861be29b3a52729ff6b040de072124655713460b4850e4468",
+    "source": ".ci-artifacts/monster-motion-wave/captures/remote-wight_walk3_sw.png",
+    "source_sha256": "d14656ba8eb9480861be29b3a52729ff6b040de072124655713460b4850e4468",
+    "crop_box_for_contact_sheet": [
+      446,
+      199,
+      646,
+      374
+    ]
+  },
+  {
+    "retained": "remote-wight_walk5_sw.png",
+    "sha256": "552fefcebc727d2f007610dc90221b12def9fb6083a4eda4cbb3dd5f7cf21eb4",
+    "source": ".ci-artifacts/monster-motion-wave/captures/remote-wight_walk5_sw.png",
+    "source_sha256": "552fefcebc727d2f007610dc90221b12def9fb6083a4eda4cbb3dd5f7cf21eb4",
+    "crop_box_for_contact_sheet": [
+      434,
+      208,
+      634,
+      383
+    ]
+  },
+  {
+    "retained": "remote-wight_walk6_sw.png",
+    "sha256": "ad7eb6be7b0c9d967872417f5a22d5eaf03210f055bad34ea8661f6409141d19",
+    "source": ".ci-artifacts/monster-motion-wave/captures/remote-wight_walk6_sw.png",
+    "source_sha256": "ad7eb6be7b0c9d967872417f5a22d5eaf03210f055bad34ea8661f6409141d19",
+    "crop_box_for_contact_sheet": [
+      422,
+      209,
+      622,
+      384
+    ]
+  },
+  {
+    "retained": "remote-wight_walk7_sw.png",
+    "sha256": "7810cb4b52ce47af3737df3d6fce3f5026d4d58a1f92dcc049746dd0be8208fe",
+    "source": ".ci-artifacts/monster-motion-wave/captures/remote-wight_walk7_sw.png",
+    "source_sha256": "7810cb4b52ce47af3737df3d6fce3f5026d4d58a1f92dcc049746dd0be8208fe",
+    "crop_box_for_contact_sheet": [
+      411,
+      215,
+      611,
+      390
+    ]
+  },
+  {
+    "retained": "wight-sw-production-crops-1x.png",
+    "sha256": "ea1f2acc10f363766402917c9af6cd6fb95ca87c6d6db9b5e2b6f4322f4f5e28",
+    "source": "Root-authored review artifact; originals and unscaled crop rectangles are recorded in crop-evidence.json.",
+    "source_sha256": "ea1f2acc10f363766402917c9af6cd6fb95ca87c6d6db9b5e2b6f4322f4f5e28"
+  }
+]

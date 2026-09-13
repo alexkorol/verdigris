@@ -1,0 +1,6 @@
+Edit the supplied earth texture into one much quieter game-floor patch. Reference image 1 supplies only its muted warm-brown clay material and top-down view; replace the dense speckling.
+
+Build the surface as deliberate 64-by-64 logical pixel art, enlarged with crisp square pixel edges, using about 16–24 closely related earth colors. Most of the area should be broad connected flat color clusters, roughly 6–16 logical pixels across, with very low contrast between neighboring areas. Leave generous calm areas of plain compacted soil. Add only a few tiny subdued stone chips and faint pressed scuff marks embedded in the earth. They must remain secondary to the quiet ground.
+
+Straight-down orthographic view of a single homogeneous packed-earth surface, fully opaque and filling the square edge to edge. Even diffuse color across the whole patch. No granular noise, stippling, dithering, cracks, directional lighting, vignette, gradients, objects, vegetation, paths, borders, labels or visible grid. Return one square texture.
+

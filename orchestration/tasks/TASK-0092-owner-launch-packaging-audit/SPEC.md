@@ -1,7 +1,8 @@
 ---
 task: TASK-0092
 title: Owner launch and packaging readiness audit
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head c84fc0d6, 2026-08-23)
 packet: MECHANICAL
 topology: INDEPENDENT
 job: MECHANICAL

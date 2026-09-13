@@ -19,6 +19,7 @@ enum class Op {
   Scenery,    // label = kind name; x/y = projected screen base point
   Player,     // x/y = projected screen base point
   Monster,    // x/y = projected base point; value = current life
+  Npc,        // x/y = projected base point; value = npc id; label = name
   Telegraph,  // label = "thrust" | "sweep"; x/y = base; radius = pixels
   Swing,      // x/y = projected base point of the swing arc
   Sweep,      // x/y = base; radius = pixels

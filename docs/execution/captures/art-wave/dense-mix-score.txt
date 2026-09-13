@@ -1,0 +1,11 @@
+cues=17
+unique=6
+peak=700
+floor=160
+hit=1
+kill=1
+warning=1
+ambience=1
+music=1
+isolated=0
+attribution=ambience:route:tin:1:0,music:combat,hit,attack-anticipate,kill,scion-lost

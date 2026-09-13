@@ -1,0 +1,8 @@
+{
+  "derived_source": "native/client/assets/raster/source/wall-stone-cutaway-v2-module.png",
+  "sha256": "69d9bd08e777a9a17f45d11e09836fa81b6918fd076fd5e202a936a56c859e0b",
+  "upstream_provenance": "native/client/assets/raster/prompts/wall-stone-cutaway-provenance.json",
+  "upstream_provenance_sha256_canonical_lf": "42118bc8b57b6a6f0ff4b6a19724b0da61fafaefbca65dc0741473dcc3965a66",
+  "reproduction": "native/tools/raster/wall-stone-candidates/README.md",
+  "scope": "Exact opaque64x96 assembly of two measured Pixel Respecter planes. Original generated sources unchanged. Candidate/native review allows integrated production trial; final acceptance recorded with live review."
+}

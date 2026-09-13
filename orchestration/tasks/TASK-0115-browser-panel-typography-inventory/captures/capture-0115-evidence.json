@@ -1,0 +1,645 @@
+{
+  "task": "TASK-0115",
+  "port": 6620,
+  "bindHost": "127.0.0.1",
+  "negativeControl": false,
+  "viewports": [
+    "1920x1080",
+    "1366x768"
+  ],
+  "panels": [
+    "hud-chrome",
+    "world-minimap",
+    "chat-peek",
+    "panel-nav",
+    "guide-banner",
+    "party-panel",
+    "zone-menu",
+    "roads-chart",
+    "chatbox-expanded",
+    "character-pane",
+    "inventory-pane",
+    "quests-pane",
+    "skill-tree-overlay",
+    "settings-overlay",
+    "logout-overlay",
+    "loot-moment",
+    "death-overlay",
+    "escape-menu",
+    "context-menu"
+  ],
+  "results": {
+    "1920x1080": {
+      "hud-chrome": {
+        "box": {
+          "x": 34,
+          "y": 927,
+          "width": 1852,
+          "height": 97
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1920x1080-hud-chrome.png",
+        "visible": true
+      },
+      "world-minimap": {
+        "box": {
+          "x": 46,
+          "y": 68,
+          "width": 168,
+          "height": 183.1
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1920x1080-world-minimap.png",
+        "visible": true
+      },
+      "chat-peek": {
+        "box": {
+          "x": 46,
+          "y": 259.1,
+          "width": 340,
+          "height": 29.2
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "12px",
+          "fontWeight": "400",
+          "color": "rgb(242, 211, 145)"
+        },
+        "shot": "panel-1920x1080-chat-peek.png",
+        "visible": true
+      },
+      "panel-nav": {
+        "box": {
+          "x": 1639.2,
+          "y": 68,
+          "width": 246.8,
+          "height": 37
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1920x1080-panel-nav.png",
+        "visible": true
+      },
+      "guide-banner": {
+        "box": {
+          "x": 716.1,
+          "y": 70,
+          "width": 499.8,
+          "height": 54.9
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(239, 230, 207)"
+        },
+        "shot": "panel-1920x1080-guide-banner.png",
+        "visible": true
+      },
+      "party-panel": {
+        "box": {
+          "x": 1586,
+          "y": 148,
+          "width": 300,
+          "height": 100.5
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1920x1080-party-panel.png",
+        "visible": true
+      },
+      "zone-menu": {
+        "box": {
+          "x": 1443.5,
+          "y": 152,
+          "width": 442.5,
+          "height": 391.6
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1920x1080-zone-menu.png",
+        "visible": true
+      },
+      "roads-chart": {
+        "box": {
+          "x": 1636,
+          "y": 152,
+          "width": 250,
+          "height": 240.9
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1920x1080-roads-chart.png",
+        "visible": true
+      },
+      "chatbox-expanded": {
+        "box": {
+          "x": 46,
+          "y": 291.1,
+          "width": 320,
+          "height": 247
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1920x1080-chatbox-expanded.png",
+        "visible": true
+      },
+      "character-pane": {
+        "box": {
+          "x": 8,
+          "y": 10.1,
+          "width": 921.6,
+          "height": 968
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1920x1080-character-pane.png",
+        "visible": true
+      },
+      "inventory-pane": {
+        "box": {
+          "x": 672,
+          "y": 8,
+          "width": 1240,
+          "height": 968
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1920x1080-inventory-pane.png",
+        "visible": true
+      },
+      "quests-pane": {
+        "box": {
+          "x": 680,
+          "y": 335.2,
+          "width": 560,
+          "height": 313.7
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1920x1080-quests-pane.png",
+        "visible": true
+      },
+      "skill-tree-overlay": {
+        "box": {
+          "x": 8,
+          "y": 8,
+          "width": 1904,
+          "height": 968
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1920x1080-skill-tree-overlay.png",
+        "visible": true
+      },
+      "settings-overlay": {
+        "box": {
+          "x": 680,
+          "y": 208.5,
+          "width": 560,
+          "height": 567
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1920x1080-settings-overlay.png",
+        "visible": true
+      },
+      "logout-overlay": {
+        "box": {
+          "x": 680,
+          "y": 329.3,
+          "width": 560,
+          "height": 325.3
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1920x1080-logout-overlay.png",
+        "visible": true
+      },
+      "loot-moment": {
+        "box": {
+          "x": 746,
+          "y": 228,
+          "width": 440,
+          "height": 159
+        },
+        "font": {
+          "fontFamily": "Georgia, serif",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(233, 223, 198)"
+        },
+        "shot": "panel-1920x1080-loot-moment.png",
+        "visible": true
+      },
+      "death-overlay": {
+        "box": {
+          "x": 600,
+          "y": 310.9,
+          "width": 720,
+          "height": 458.3
+        },
+        "font": {
+          "fontFamily": "Georgia, serif",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(233, 223, 198)"
+        },
+        "shot": "panel-1920x1080-death-overlay.png",
+        "visible": true
+      },
+      "escape-menu": {
+        "box": {
+          "x": 720,
+          "y": 328.9,
+          "width": 480,
+          "height": 371.2
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1920x1080-escape-menu.png",
+        "visible": true
+      },
+      "context-menu": {
+        "box": {
+          "x": 957,
+          "y": 533,
+          "width": 156,
+          "height": 76.4
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "12px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1920x1080-context-menu.png",
+        "visible": true
+      }
+    },
+    "1366x768": {
+      "hud-chrome": {
+        "box": {
+          "x": 77,
+          "y": 584.9,
+          "width": 1212,
+          "height": 91.1
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "15.026px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1366x768-hud-chrome.png",
+        "visible": true
+      },
+      "world-minimap": {
+        "box": {
+          "x": 89,
+          "y": 104,
+          "width": 168,
+          "height": 183.1
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "15.026px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1366x768-world-minimap.png",
+        "visible": true
+      },
+      "chat-peek": {
+        "box": {
+          "x": 89,
+          "y": 295.1,
+          "width": 280,
+          "height": 29.2
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "12px",
+          "fontWeight": "400",
+          "color": "rgb(242, 211, 145)"
+        },
+        "shot": "panel-1366x768-chat-peek.png",
+        "visible": true
+      },
+      "panel-nav": {
+        "box": {
+          "x": 1009,
+          "y": 104,
+          "width": 280,
+          "height": 37
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "15.026px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1366x768-panel-nav.png",
+        "visible": true
+      },
+      "guide-banner": {
+        "box": {
+          "x": 267,
+          "y": 106,
+          "width": 499.8,
+          "height": 54.9
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "15.026px",
+          "fontWeight": "400",
+          "color": "rgb(239, 230, 207)"
+        },
+        "shot": "panel-1366x768-guide-banner.png",
+        "visible": true
+      },
+      "party-panel": {
+        "box": {
+          "x": 1009,
+          "y": 184,
+          "width": 280,
+          "height": 100.5
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "15.026px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1366x768-party-panel.png",
+        "visible": true
+      },
+      "zone-menu": {
+        "box": {
+          "x": 1009,
+          "y": 188,
+          "width": 280,
+          "height": 277.7
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "15.026px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1366x768-zone-menu.png",
+        "visible": true
+      },
+      "roads-chart": {
+        "box": {
+          "x": 1009,
+          "y": 188,
+          "width": 280,
+          "height": 240.9
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "15.026px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1366x768-roads-chart.png",
+        "visible": true
+      },
+      "chatbox-expanded": {
+        "box": {
+          "x": 89,
+          "y": 313.3,
+          "width": 280,
+          "height": 255.6
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "15.026px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1366x768-chatbox-expanded.png",
+        "visible": true
+      },
+      "character-pane": {
+        "box": {
+          "x": 8,
+          "y": 8,
+          "width": 655.7,
+          "height": 489.8
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "15.026px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1366x768-character-pane.png",
+        "visible": true
+      },
+      "inventory-pane": {
+        "box": {
+          "x": 678,
+          "y": 8,
+          "width": 680,
+          "height": 489.8
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "15.026px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1366x768-inventory-pane.png",
+        "visible": true
+      },
+      "quests-pane": {
+        "box": {
+          "x": 403,
+          "y": 96,
+          "width": 560,
+          "height": 313.7
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "15.026px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1366x768-quests-pane.png",
+        "visible": true
+      },
+      "skill-tree-overlay": {
+        "box": {
+          "x": 8,
+          "y": 8,
+          "width": 1350,
+          "height": 489.8
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "15.026px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1366x768-skill-tree-overlay.png",
+        "visible": true
+      },
+      "settings-overlay": {
+        "box": {
+          "x": 403,
+          "y": 8,
+          "width": 560,
+          "height": 489.8
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "15.026px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1366x768-settings-overlay.png",
+        "visible": true
+      },
+      "logout-overlay": {
+        "box": {
+          "x": 403,
+          "y": 90.2,
+          "width": 560,
+          "height": 325.3
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "15.026px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1366x768-logout-overlay.png",
+        "visible": true
+      },
+      "loot-moment": {
+        "box": {
+          "x": 469,
+          "y": 263,
+          "width": 440,
+          "height": 159
+        },
+        "font": {
+          "fontFamily": "Georgia, serif",
+          "fontSize": "15.026px",
+          "fontWeight": "400",
+          "color": "rgb(233, 223, 198)"
+        },
+        "shot": "panel-1366x768-loot-moment.png",
+        "visible": true
+      },
+      "death-overlay": {
+        "box": {
+          "x": 323,
+          "y": 195.9,
+          "width": 720,
+          "height": 376.3
+        },
+        "font": {
+          "fontFamily": "Georgia, serif",
+          "fontSize": "15.026px",
+          "fontWeight": "400",
+          "color": "rgb(233, 223, 198)"
+        },
+        "shot": "panel-1366x768-death-overlay.png",
+        "visible": true
+      },
+      "escape-menu": {
+        "box": {
+          "x": 443,
+          "y": 90.3,
+          "width": 480,
+          "height": 370.2
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "15.026px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1366x768-escape-menu.png",
+        "visible": true
+      },
+      "context-menu": {
+        "box": {
+          "x": 680,
+          "y": 377,
+          "width": 156,
+          "height": 76.4
+        },
+        "font": {
+          "fontFamily": "GameFont, sans-serif",
+          "fontSize": "12px",
+          "fontWeight": "400",
+          "color": "rgb(238, 226, 197)"
+        },
+        "shot": "panel-1366x768-context-menu.png",
+        "visible": true
+      }
+    }
+  }
+}

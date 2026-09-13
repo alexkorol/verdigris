@@ -1,7 +1,8 @@
 ---
 task: TASK-0098
 title: Native wire parser robustness and abuse-boundary audit
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head 48a9d487, 2026-08-23)
 packet: MECHANICAL
 topology: INDEPENDENT
 job: MECHANICAL

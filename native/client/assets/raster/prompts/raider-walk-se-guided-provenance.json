@@ -1,0 +1,229 @@
+{
+  "date": "2026-09-10",
+  "baseline_head": "79b572f6f",
+  "tool": "built-in image_gen.imagegen",
+  "model_selector_exposed": false,
+  "reported_model": null,
+  "calls": 5,
+  "recipe": {
+    "original_url": "https://x.com/higgsfield/status/2097514684811554911",
+    "original_evidence": "Parent supplied the exact guide-role excerpt directly verified by image25_game_feedback in the expanded original browser prompt. This lane attempted the original with web; it returned403.",
+    "excerpt": "the supplied guide already contains the correct rotation for this frame, so copy its pose exactly.",
+    "original_task": "A spring turntable with per-frame geometry/rotation guide, not a demonstrated human walking recipe.",
+    "adaptation": "Accepted hero walk frames supply explicit body/leg/contact geometry. Original raider supplies identity; after targeted weapon/mask correction, the approved contact supplies rendering consistency only for the other3 single frames. Each guide has a separate explicit role. Human gait, equipment, native registration, palette snapping and cleanup are local adaptations requiring visual checks."
+  },
+  "attempts": [
+    {
+      "name": "contact-right-v1",
+      "source": {
+        "path": "native/client/assets/raster/source/raider-walk-se-guided-contact-right-v1.png",
+        "sha256": "052bacbdd898cd80c7aadb20a033feb2e8a645390b4076097c81d8755f3fc1e4",
+        "role": "unaltered built-in generated image"
+      },
+      "exact_prompt": {
+        "path": "native/client/assets/raster/prompts/raider-walk-se-guided-contact-right-v1.txt",
+        "sha256": "5d7e5f03235344d804d1a1f0a4386a34a05e9801cdb4a7387ae213d9efbf202a",
+        "role": "exact submitted prompt"
+      },
+      "references": [
+        {
+          "path": "native/client/assets/raster/runtime/hero_walk2_se.png",
+          "sha256": "608aedb034d9ffaa1ae7b784456d4c0c61f67d9469a41921bb9f07c7ab3394b7",
+          "role": "strict opposite-support geometry, leg motion and camera guide"
+        },
+        {
+          "path": "native/client/assets/raster/runtime/raider_se.png",
+          "sha256": "bd0db16b309b39705764b05fff310401e61d932caae010117f0efcc2acf421d0",
+          "role": "original character identity and pixel style"
+        }
+      ],
+      "generated_original": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-2804e8e0-bec2-4841-922a-55766813d304.png",
+      "dimensions": [
+        1145,
+        1374
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "partial_alpha_pixels": 181105,
+      "verdict": "Successful missing support; rejected identity because axe became sickle-shaped and mask elongated. Retained as the strict pose reference for correction."
+    },
+    {
+      "name": "contact-right-v2",
+      "source": {
+        "path": "native/client/assets/raster/source/raider-walk-se-guided-contact-right-v2.png",
+        "sha256": "6b0d61fa4e335b2830e3e04e3885d2f80b1b8d6b834f2ff7df3039d9830405ac",
+        "role": "unaltered built-in generated image"
+      },
+      "exact_prompt": {
+        "path": "native/client/assets/raster/prompts/raider-walk-se-guided-contact-right-v2.txt",
+        "sha256": "4b2f0bb006991c23b26e446068f4d88b15e91095087f8dfc5418b54152d78f9e",
+        "role": "exact submitted prompt"
+      },
+      "references": [
+        {
+          "path": "native/tools/raster/raider-walk-se-guided/contact-right-v1/raider_walk2_se.png",
+          "sha256": "647875d7938400c68a16d1f99f6b637656e4aa269011b9d40758ec16b22cf807",
+          "role": "strict pose, scale and placement guide; legs preserved"
+        },
+        {
+          "path": "native/client/assets/raster/runtime/raider_se.png",
+          "sha256": "bd0db16b309b39705764b05fff310401e61d932caae010117f0efcc2acf421d0",
+          "role": "identity reference for compact axe and bone mask"
+        }
+      ],
+      "generated_original": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-af1c3636-f100-4b43-951c-2c453f6bf0fe.png",
+      "dimensions": [
+        1145,
+        1374
+      ],
+      "mode": "RGB",
+      "alpha_range": [
+        255,
+        255
+      ],
+      "partial_alpha_pixels": 0,
+      "verdict": "Root provisionally approved corrected contact and identity; final frame2 byte-identical. Body54px versus idle56; smaller/darker axe remains a caveat."
+    },
+    {
+      "name": "contact-left-v1",
+      "source": {
+        "path": "native/client/assets/raster/source/raider-walk-se-guided-contact-left-v1.png",
+        "sha256": "58752f4a8da3cf97d8f9081a5d4b649c66169efe777e5f35e97ddad50c121df9",
+        "role": "unaltered built-in generated image"
+      },
+      "exact_prompt": {
+        "path": "native/client/assets/raster/prompts/raider-walk-se-guided-contact-left-v1.txt",
+        "sha256": "2d2fe0b1661af9f7a4efc24fdb61423d254d1d8248889d19c43d15fc8f828b59",
+        "role": "exact submitted prompt"
+      },
+      "references": [
+        {
+          "path": "native/client/assets/raster/runtime/hero_walk0_se.png",
+          "sha256": "cac714cf1f0c5e00aac781930c309b58fe752c4fdf77dad268513c106ebf3541",
+          "role": "strict opposite contact geometry and foot placement"
+        },
+        {
+          "path": "native/client/assets/raster/runtime/raider_se.png",
+          "sha256": "bd0db16b309b39705764b05fff310401e61d932caae010117f0efcc2acf421d0",
+          "role": "original raider identity"
+        },
+        {
+          "path": "native/tools/raster/raider-walk-se-guided/contact-right-v2/raider_walk2_se.png",
+          "sha256": "a1e4e582c6d10d7bcae6c9bf4dc30b8c2b87cfdec28df683905da44b552999a8",
+          "role": "approved rendering scale, mask, clothing and compact axe consistency; not leg pose"
+        }
+      ],
+      "generated_original": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-08b726f6-c281-46d5-9939-d6776754ff55.png",
+      "dimensions": [
+        1145,
+        1374
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "partial_alpha_pixels": 140876,
+      "verdict": "Selected frame0: left-leg support at screen-right with right leg trailing."
+    },
+    {
+      "name": "passing-left-v1",
+      "source": {
+        "path": "native/client/assets/raster/source/raider-walk-se-guided-passing-left-v1.png",
+        "sha256": "4fe170930ccd806de3e922a6e6ebbb60a19bcddda8572693e8464836b56a721e",
+        "role": "unaltered built-in generated image"
+      },
+      "exact_prompt": {
+        "path": "native/client/assets/raster/prompts/raider-walk-se-guided-passing-left-v1.txt",
+        "sha256": "aac7cba57ca28935667ccaff1a5a392dc7b5b20643d73e558275c95f2e0f4e5a",
+        "role": "exact submitted prompt"
+      },
+      "references": [
+        {
+          "path": "native/client/assets/raster/runtime/hero_walk1_se.png",
+          "sha256": "5ebe4b3b765e2f80ae219e52ddff0f6bd0ae00d70f52b02c5676b5ee619cbb61",
+          "role": "strict left-supported passing pose geometry"
+        },
+        {
+          "path": "native/client/assets/raster/runtime/raider_se.png",
+          "sha256": "bd0db16b309b39705764b05fff310401e61d932caae010117f0efcc2acf421d0",
+          "role": "original raider identity"
+        },
+        {
+          "path": "native/tools/raster/raider-walk-se-guided/contact-right-v2/raider_walk2_se.png",
+          "sha256": "a1e4e582c6d10d7bcae6c9bf4dc30b8c2b87cfdec28df683905da44b552999a8",
+          "role": "approved rendering consistency, not leg pose"
+        }
+      ],
+      "generated_original": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-6cfd1dfb-a3e1-4d11-a962-2166beb4fafa.png",
+      "dimensions": [
+        1145,
+        1374
+      ],
+      "mode": "RGB",
+      "alpha_range": [
+        255,
+        255
+      ],
+      "partial_alpha_pixels": 0,
+      "verdict": "Selected frame1: left support, bent lifted right foot, legs close."
+    },
+    {
+      "name": "passing-right-v1",
+      "source": {
+        "path": "native/client/assets/raster/source/raider-walk-se-guided-passing-right-v1.png",
+        "sha256": "53b2b4f9dd756324533b33d8604ad30ab894fe5a5e8925f47358b77b1525f5e7",
+        "role": "unaltered built-in generated image"
+      },
+      "exact_prompt": {
+        "path": "native/client/assets/raster/prompts/raider-walk-se-guided-passing-right-v1.txt",
+        "sha256": "577bc6e4fce0b65b7d51fa0ddcb5d072b4a19364b879d987ace58aa341bd7f92",
+        "role": "exact submitted prompt"
+      },
+      "references": [
+        {
+          "path": "native/client/assets/raster/runtime/hero_walk3_se.png",
+          "sha256": "008280726e2af3a42f230895c96a98108b133a566c8b693b0b2e49bb970b0e55",
+          "role": "strict right-supported passing pose geometry"
+        },
+        {
+          "path": "native/client/assets/raster/runtime/raider_se.png",
+          "sha256": "bd0db16b309b39705764b05fff310401e61d932caae010117f0efcc2acf421d0",
+          "role": "original raider identity"
+        },
+        {
+          "path": "native/tools/raster/raider-walk-se-guided/contact-right-v2/raider_walk2_se.png",
+          "sha256": "a1e4e582c6d10d7bcae6c9bf4dc30b8c2b87cfdec28df683905da44b552999a8",
+          "role": "approved rendering consistency, not leg pose"
+        }
+      ],
+      "generated_original": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-68eb6b76-c71c-4f7c-b531-f7b50243a961.png",
+      "dimensions": [
+        1145,
+        1374
+      ],
+      "mode": "RGB",
+      "alpha_range": [
+        255,
+        255
+      ],
+      "partial_alpha_pixels": 0,
+      "verdict": "Selected frame3: right support, left leg folds behind. Root provisionally approved distinct native cycle."
+    }
+  ],
+  "unchanged_prior_study": "native/tools/raster/raider-walk-se-candidates/README.md; old failed sheets preserved, not reused as a cycle.",
+  "selected_manifest": {
+    "path": "native/tools/raster/raider-walk-se-guided/raider-walk-se-guided-candidate.json",
+    "sha256": "f611c7171f207b5433caaf82318454ac55daa7a946533b058904be71fae8fbcb",
+    "role": ""
+  },
+  "selected_report": {
+    "path": "native/tools/raster/raider-walk-se-guided/selected/raider-walk-se-guided-candidate.provenance.json",
+    "sha256": "f2854d4e599f51c45466b62df461d1943853c13c5aa26888100830be76138e50",
+    "role": ""
+  },
+  "approval": "Root viewed final idle-cycle-idle1x/3x and approved4 distinct phases for production import; live motion remains pending."
+}

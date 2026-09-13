@@ -1,0 +1,23 @@
+{
+  "repository": "https://github.com/ianlintner/ai-pixel-art-image-generation",
+  "commit": "19dbb4d5b655f8c4c0c8f979dd89baeb10237b0a",
+  "license": "MIT; original2026IanLintner notice retained in LICENSE",
+  "code_modified": false,
+  "files": [
+    {
+      "file": "seamless.py",
+      "url": "https://raw.githubusercontent.com/ianlintner/ai-pixel-art-image-generation/19dbb4d5b655f8c4c0c8f979dd89baeb10237b0a/scripts/lib/seamless.py",
+      "raw_sha256": "75930b9ca88cb578636a7abce9c838364bef24ed1381efa5caca7033abd41a28"
+    },
+    {
+      "file": "palettes.py",
+      "url": "https://raw.githubusercontent.com/ianlintner/ai-pixel-art-image-generation/19dbb4d5b655f8c4c0c8f979dd89baeb10237b0a/scripts/lib/palettes.py",
+      "raw_sha256": "95f682a3b8d5972e7608be81b32835a8bef68c927e4026023b5221ff911b35c6"
+    },
+    {
+      "file": "LICENSE",
+      "url": "https://raw.githubusercontent.com/ianlintner/ai-pixel-art-image-generation/19dbb4d5b655f8c4c0c8f979dd89baeb10237b0a/LICENSE",
+      "raw_sha256": "27f48c03207a710fe744e322279245528e31dc64aad389ede0964854d7554c8b"
+    }
+  ]
+}

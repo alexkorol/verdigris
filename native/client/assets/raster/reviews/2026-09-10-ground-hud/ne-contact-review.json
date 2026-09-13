@@ -1,0 +1,156 @@
+{
+  "date": "2026-09-10",
+  "scope": "Temporary equipment and pose review only; no generation, promotion, runtime source edits, or gameplay acceptance.",
+  "verdict": "Contact cell11 usable as NE overhead-contact candidate; six-phase cycle still requires coherent followthrough and appearance normalization.",
+  "files": {
+    "native": "axe-contact-review-1x.png",
+    "gameplay_scale_3x": "axe-contact-review-3x.png",
+    "source": "review_ne_contact.cpp",
+    "compile_log": "compile.log",
+    "probe_log": "probe.log",
+    "anatomy": "body-phases-5x.png",
+    "fist_coordinates": "raised-fist-grid.png",
+    "head_coordinates": "head-grid.png"
+  },
+  "rendering": {
+    "production_api": "raster_art::draw_sprite + raster_equipment::draw_front",
+    "source_canvas": [
+      80,
+      96
+    ],
+    "common_pivot": [
+      40,
+      96
+    ],
+    "actor_heights": [
+      96,
+      288
+    ],
+    "weapon": "weapon_axe",
+    "weapon_source_grip": [
+      22.5,
+      57.5
+    ],
+    "weapon_flip": true,
+    "occlusion": "Opaque actor replay over far-hand weapon; exact original actor pixels",
+    "runtime_equipment_table_used_for_registration": false
+  },
+  "temporary_poses": [
+    {
+      "name": "idle",
+      "anatomical_hand": "left",
+      "grip": [
+        29.5,
+        62.5
+      ],
+      "fingers_exclusive": [
+        28,
+        61,
+        31,
+        65
+      ],
+      "angle_degrees_clockwise": 0
+    },
+    {
+      "name": "commit",
+      "anatomical_hand": "left",
+      "grip": [
+        30.5,
+        21.5
+      ],
+      "fingers_exclusive": [
+        29,
+        19,
+        33,
+        24
+      ],
+      "angle_degrees_clockwise": -45
+    },
+    {
+      "name": "contact",
+      "anatomical_hand": "left",
+      "grip": [
+        46.5,
+        22.5
+      ],
+      "fingers_exclusive": [
+        44,
+        21,
+        48,
+        25
+      ],
+      "angle_degrees_clockwise": [
+        55,
+        65
+      ],
+      "preferred_trial_angle": 65
+    }
+  ],
+  "visual_findings": [
+    "Both inspected contact angles place the blade upper-right of the actor; +65 degrees is the shallower NE reach. The haft meets the physical-left fist, while the bronze-armored right arm remains at the side.",
+    "Commit to contact shifts the measured left palm +16px x and +1px y; paired with the trial weapon rotation, this reads as an overhead sweep.",
+    "The reviewed source pixels all retain 80x96 canvas and lowest opaque sole at y95, bottom edge96. The observed crown starts approximately y31 idle, y27 commit, y29 contact, so contact settles about2px from commit. Pose and hair-shape changes prevent treating crown height alone as an exact body-scale measurement.",
+    "Cell11 does not show the obvious whole-body shrink seen in the cell12 comparison. It remains a candidate with approximate rather than identical head and torso proportions.",
+    "The existing followthrough returns the left fist to the left hip immediately after the overhead contact, without a visible outward/downward continuation and deceleration pose. Static equipment feasibility does not establish coherent action timing.",
+    "Dark forearm bracer and pale wrap coverage change between commit, contact and followthrough. Generated phases have an ochre/orange tunic compared with the accepted red idle; the reduced-palette candidate idle itself changes appearance."
+  ],
+  "next_required_phase": "Repair the post-contact followthrough with the same left hand, forearm clothing and body proportions, preserving a visible continuation of the NE strike before recovery; re-review the full timed sequence before adding runtime sockets.",
+  "probe_result": "PASS: 8 placements (idle, commit, contact55, contact65 at1x and3x); grip rounding error<=0.5px on both axes; weapon canvases stay inside review panels; production drawing succeeded.",
+  "compiler_result": "MSVC C++20 exit0; warnings are C4458 shadowing in Windows SDK GDI+ headers.",
+  "command_provenance": {
+    "compile": "vcvars64.bat then cl /nologo /std:c++20 /EHsc /W4 /O2 /UNDEBUG review_ne_contact.cpp /link user32.lib gdi32.lib; exact source and compile log retained",
+    "run": ".ci-artifacts/raster-equipment/ne-contact-v6/review_ne_contact.exe",
+    "tool_chunk_id": "602f03",
+    "exit_code": 0
+  },
+  "input_verification": [
+    {
+      "name": "idle",
+      "source": "native\\client\\assets\\raster\\runtime\\hero_ne.png",
+      "sha256": "aafeeed5b41a4ee6cad27d6331b0dec4e121ba711c86380ca2a83228a322c0c5",
+      "review_copy_matches": true
+    },
+    {
+      "name": "ready",
+      "source": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-candidate\\idle.png",
+      "sha256": "cc71bed98f54f67ca65532cce987221550bf8d95d99d776b8731f82daa906ea0",
+      "review_copy_matches": true
+    },
+    {
+      "name": "windup",
+      "source": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-candidate\\windup.png",
+      "sha256": "a44cc816d6fdfa8faac813eadf352b2d51d89669b5698b6b3d422159856cd3ba",
+      "review_copy_matches": true
+    },
+    {
+      "name": "commit",
+      "source": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-contact-v6-candidate\\commit.png",
+      "sha256": "e3a1b3c14472ea809af3dd592bdf582242252a56bbb77aed49d55c867cec17c3",
+      "review_copy_matches": true
+    },
+    {
+      "name": "contact",
+      "source": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-contact-v6-candidate\\contact-cell11.png",
+      "sha256": "a01d04feff3a6340d808c04b23ad8e289ef86f531b36052364e581ddb6d213e6",
+      "review_copy_matches": true
+    },
+    {
+      "name": "followthrough",
+      "source": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-candidate\\followthrough.png",
+      "sha256": "ef6eba908f55d63599b92473d2b9b10ebf6a9bd6221d4309735e803b4519d0eb",
+      "review_copy_matches": true
+    },
+    {
+      "name": "recovery",
+      "source": "native\\client\\assets\\raster\\source\\actors_hero-strike-ne-candidate\\recovery.png",
+      "sha256": "3439b11bb1e655f977724588ad26e980d83b5a88575b4dd163858284ab75c8ca",
+      "review_copy_matches": true
+    },
+    {
+      "name": "weapon_axe",
+      "source": "native\\client\\assets\\raster\\runtime\\weapon_axe.png",
+      "sha256": "84e987a2d16ba5250f8d2528cd033d461029b293183f68cef5f4d6e652e9e8c9",
+      "review_copy_matches": true
+    }
+  ]
+}

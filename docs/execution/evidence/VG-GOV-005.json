@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-GOV-005",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "renderer-trial",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build/verdigris_client.exe --scenario gpu-sample", "exit_code": 0}
+  ],
+  "assertions": [
+    "trial boundary is the software sample on this lease",
+    "gpu-sample cannot authorize a full-engine migration"
+  ],
+  "negative_control": {
+    "name": "treat a green quad as renderer/engine port approval",
+    "observed_result": "REJECTED as a passing journey"
+  },
+  "artifacts": [
+    {
+      "kind": "decision",
+      "path": "docs/execution/decisions/choose-the-renderer-trial-boundary.md",
+      "produced_by": "Cursor Grok VG-GOV-005 draft"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "NOT_REQUIRED",
+  "limitations": [
+    "Extends TASK-0114 research; does not pick sokol or SDL. Owner may still ADR."
+  ]
+}

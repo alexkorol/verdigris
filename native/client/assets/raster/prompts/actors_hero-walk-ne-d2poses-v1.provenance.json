@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "generationTool": "built-in image_gen",
+  "model": "Not exposed by tool",
+  "source": "native/client/assets/raster/source/actors_hero-walk-ne-d2poses-v1.png",
+  "sourceSha256": "1ff6f4bed314924ecf956fe0a142557561f3ae3046a1c3e721c92160642cdd4e",
+  "prompt": "native/client/assets/raster/prompts/actors_hero-walk-ne-d2poses-v1.txt",
+  "promptSha256": "ef40121019c3ed309cc3afddba1332818e0995d0661bddd1da8ceb4bb599921a",
+  "generatedOriginal": "C:/Users/Alex/.codex/generated_images/01a0896f-29de-7452-bb4b-6fb64351c1eb/exec-159a0df0-b2a2-4f20-a38d-de7680383fd7.png",
+  "recipe": {
+    "url": "https://www.reddit.com/r/aigamedev/comments/1wbmvnm/gpt_image_25_nailed_a_16_frame_combat_sprite_sheet/?sort=top",
+    "publishedPrompt": "Make a simplified 128px pixel art combat motion sprite sheet of this character, transparent background if you can, arrange it 4x4.",
+    "adaptation": "Walking instead of combat,64px adult body instead of128px,4x2 eight chronological poses. Added explicit reference roles to address repeated supporting-leg failures: image1 only hero appearance/style/camera; image2 only ordered corrected walk poses. The ordered D2 pose-reference method is a project adaptation, not a published Image2.5 success claim."
+  },
+  "references": [
+    {
+      "order": 1,
+      "path": "native/client/assets/raster/runtime/hero_ne.png",
+      "sha256": "aafeeed5b41a4ee6cad27d6331b0dec4e121ba711c86380ca2a83228a322c0c5",
+      "role": "ONLY original character appearance, clothing, pixel construction, warm palette, adult proportions and NE back camera."
+    },
+    {
+      "order": 2,
+      "path": "C:/Users/Alex/Documents/ChatGPT/diablo-reference-cache/motion-study-20260909/body-corrected-cof/ne-ordered-4x2-3x.png",
+      "sha256": "fc80e25429ea6089589751fd959ae18c1472aae505b17de031808d9ff70c547e",
+      "role": "ONLY eight ordered chronological walking limb/body poses, corresponding4x2 cells. Costume, character, colors, labels and background excluded.",
+      "rawReferenceCopiedIntoRepository": false
+    }
+  ],
+  "observedOutput": {
+    "dimensions": [
+      1575,
+      999
+    ],
+    "mode": "RGB",
+    "alpha": "No alpha; fully opaque drawn checker background.",
+    "intendedOrder": "row-major frames0..7",
+    "provisionalCropBoundaries": {
+      "x": [
+        0,
+        394,
+        788,
+        1181,
+        1575
+      ],
+      "y": [
+        0,
+        500,
+        999
+      ],
+      "verified": false
+    },
+    "styleAndIdentity": "Actual back NE direction in all8, adult brown tunic, full dark trousers, right bronze guard, left hip sash, empty hands preserved.",
+    "phaseReview": "Broad pose progression follows reference more than previous attempt:0/1 narrow bent steps,4/5 wide contacts,6/7 narrower again. Adjacent0/1 and4/5 remain close; anatomical supporting-leg alternation is not yet established. Sent to pipeline and motion-reference reviewer for actual ordered-phase comparison.",
+    "status": "Rejected as a faithful complete eight-frame walk transfer.",
+    "independentPhaseReview": "motion_references compared the actual generated sheet to the corrected ordered NE reference. Generated F3 returns to a narrow F0-like leg overlap while reference F3 has already opened both legs toward wide F4, causing an abrupt generated F3-to-F4 stance jump. Generated F0/F1 are nearly held. Boot height alone cannot certify anatomical support. Broad narrow-to-wide-to-narrow progression is present, but complete chronological pose transfer failed.",
+    "nextProposedRepair": "Use the corrected ordered pose sheet as the actual edit target and the accepted hero only as an appearance/style reference; preserve each existing pose and placement, concentrating on F2-to-F3-to-F4 continuity. This edit was NOT dispatched.",
+    "pause": "User requested further real creator-prompt and feedback research. Generation held before any v2 call; all sources and metadata preserved."
+  },
+  "ownership": "Only source, actual prompt and provenance/inspection files; no runtime/importer/main/header edits and no raw reference art copied."
+}

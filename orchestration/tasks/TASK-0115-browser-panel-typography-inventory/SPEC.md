@@ -1,7 +1,8 @@
 ---
 task: TASK-0115
 title: Browser panel and typography inventory
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head 16816293, 2026-08-23)
 packet: MECHANICAL
 topology: INDEPENDENT
 job: MECHANICAL

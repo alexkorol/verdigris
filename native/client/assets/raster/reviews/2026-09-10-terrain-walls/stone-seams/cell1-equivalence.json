@@ -1,0 +1,14 @@
+{
+  "input_raw_sha256": "8dc78bbb0e473ed8153b6fe44646849dfe1f433964ce98127b5117ffe2a61e24",
+  "output_raw_sha256": "8dc78bbb0e473ed8153b6fe44646849dfe1f433964ce98127b5117ffe2a61e24",
+  "byte_identical": true,
+  "pixels_identical": true,
+  "canvas": [
+    64,
+    64
+  ],
+  "actual_api": "pixel_perfecter.workspace.reconstruct",
+  "cell_size": 1,
+  "geometry_policy": "preserve_scale; no crop or resize",
+  "acceptance": "Roundtrip verification only; no production acceptance"
+}

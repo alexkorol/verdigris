@@ -1,0 +1,5 @@
+Edit Image 1, the ordered eight-pose walking sheet. Replace the appearance of each existing figure with the original hero from Image 2. Retain Image 1's eight distinct body poses, exact leg and arm positions, foot contacts, cell placement, scale, camera and chronological order. Change the figures' appearance, not their motion.
+
+Image 2 is the appearance and pixel-style reference ONLY; do not copy its standing pose. Preserve its grounded adult proportions and hair, brown tunic, full dark trousers, pale wrist wraps, boots, warm bronze guard on the anatomical right shoulder, blue sash on the anatomical left hip, and empty hands. Use its crisp simplified pixel clusters and natural palette, with no chibi redesign.
+
+Return the same eight walking poses in a 4-column by 2-row sheet, all facing upper-right and showing the actual back. Preserve the opening of the legs from frame 2 through frame 3 into frame 4 exactly as Image 1 shows. Remove Image 1's labels and dark background; use actual transparent alpha with no checkerboard or grid. Keep every complete silhouette within its cell.

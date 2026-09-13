@@ -1,7 +1,10 @@
 #include "remote_session.hpp"
+#include "input/preserve-diagonal-remote-input.hpp"
+#include "input/make-aim-independent-of-motion.hpp"
 
 #include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <cstring>
 
 #ifdef _WIN32
@@ -60,9 +63,20 @@ const std::string* json_string(const JsonValue* value) {
   return value && value->string() ? value->string() : nullptr;
 }
 
+// Eight-way wire direction name for a quantized (dx, dy) input; matches the
+// server's direction table exactly. Empty for the zero vector.
+std::string direction_name(int dx, int dy) {
+  return move::encode_eight_way(dx, dy);
+}
+
 double json_number(const JsonValue* value, double fallback = 0.0) {
   if (!value || !value->number()) return fallback;
   return *value->number();
+}
+
+bool json_bool(const JsonValue* value, bool fallback = false) {
+  if (!value || !value->boolean()) return fallback;
+  return *value->boolean();
 }
 
 ClientItemSlot parse_item_slot(const JsonValue& entry) {
@@ -74,6 +88,14 @@ ClientItemSlot parse_item_slot(const JsonValue& entry) {
   if (const auto* index = entry.get("slot"); index && index->number()) {
     slot.slot = static_cast<int>(*index->number());
   }
+  slot.quantity = (std::max)(1, static_cast<int>(json_number(entry.get("qty"), 1.0)));
+  if (const auto* size = entry.get("size"); size && size->object()) {
+    slot.width = std::clamp(static_cast<int>(json_number(size->get("width"), 1.0)), 1, 12);
+    slot.height = std::clamp(static_cast<int>(json_number(size->get("height"), 1.0)), 1, 7);
+  }
+  if (const auto* equip_slot = json_string(entry.get("equipSlot")))
+    slot.equip_slot = *equip_slot;
+  slot.two_handed = json_bool(entry.get("twoHanded"), false);
   if (const auto* health = entry.get("resourceBonuses")) {
     slot.bonus_health = static_cast<int>(json_number(health->get("health")));
   }
@@ -94,26 +116,111 @@ ClientItemSlot parse_item_slot(const JsonValue& entry) {
   return slot;
 }
 
+void apply_wear_details(const JsonValue& source, ClientModel& model) {
+  if (!source.object()) return;
+  static constexpr const char* seats[] = {
+      "right_hand", "left_hand", "armor", "head", "back", "belt",
+      "gloves", "feet", "ring", "ring2", "necklace", "warhorn",
+      "quick_rig", "attendant"};
+  model.worn.clear();
+  model.equipped = {};
+  for (const char* seat : seats) {
+    const auto* entry = source.get(seat);
+    if (!entry || !entry->object()) continue;
+    ClientWornItem worn;
+    worn.seat = seat;
+    worn.item = parse_item_slot(*entry);
+    if (worn.item.uuid.empty() && worn.item.id.empty()) continue;
+    if (worn.item.name.empty()) worn.item.name = worn.item.id;
+    if (worn.seat == "right_hand") model.equipped = worn.item;
+    model.worn.push_back(std::move(worn));
+  }
+  if (model.equipped.uuid.empty() && !model.worn.empty())
+    model.equipped = model.worn.front().item;
+}
+
 // TASK-0156: mirror the authoritative `passiveTree` envelope (schemaVersion
 // 2: nodes / conduits / points.skill / earned) into plain model fields. Only
 // payload-borne values are copied; the client derives no rules, costs, or
-// effects. A malformed or missing envelope leaves the previous state intact.
-void apply_passive_tree(const JsonValue& tree, ClientModel& model) {
-  if (!tree.object()) return;
+// effects.
+//
+// TASK-0162 hardening: the mirror is fail-closed. It may only update when the
+// schema version, points.skill, earned, nodes, and conduits all carry their
+// expected wire types with sane nonnegative integral values; anything else
+// leaves the last valid snapshot untouched and surfaces one deterministic
+// ProtocolError diagnostic. Invalid payloads never silently become zero and
+// never become absurd counts through unchecked casts.
+//
+// The single cap below is a TRANSPORT BOUND, not a product rule. It exists
+// only so a hostile or corrupting frame cannot overflow an int cast or force
+// pathological parse/memory behavior; it encodes no tree design, cost,
+// budget, or balance opinion, and any well-typed value under it is mirrored
+// verbatim. 65536 sits orders of magnitude above any authored tree while
+// staying safely inside the 1 MiB reader frame ceiling in reader_loop().
+constexpr std::size_t kPassiveTreeTransportBound = 65536;
+
+bool sane_passive_tree_integer(const JsonValue* value) {
+  if (!value || !value->number()) return false;
+  const double raw = *value->number();
+  if (!(raw >= 0.0)) return false;           // rejects NaN and negatives alike
+  if (std::floor(raw) != raw) return false;  // fractional counts are malformed
+  return raw <= static_cast<double>(kPassiveTreeTransportBound);
+}
+
+void apply_passive_tree(const JsonValue& tree, ClientModel& model,
+                        std::vector<PresentationEvent>& events) {
+  const char* reason = nullptr;
+  const JsonValue* nodes = nullptr;
+  const JsonValue* conduits = nullptr;
+  if (!tree.object()) {
+    reason = "envelope must be an object";
+  } else {
+    const auto* schema = tree.get("schemaVersion");
+    const std::optional<double> schema_value =
+        schema ? schema->number() : std::nullopt;
+    if (!schema_value || std::floor(*schema_value) != *schema_value ||
+        *schema_value != 2.0) {
+      reason = "schemaVersion must be the number 2";
+    }
+    if (!reason) {
+      const auto* points = tree.get("points");
+      const auto* skill = points ? points->get("skill") : nullptr;
+      if (!sane_passive_tree_integer(skill))
+        reason = "points.skill must be a nonnegative integer";
+    }
+    if (!reason && !sane_passive_tree_integer(tree.get("earned")))
+      reason = "earned must be a nonnegative integer";
+    if (!reason) {
+      nodes = tree.get("nodes");
+      conduits = tree.get("conduits");
+      if (!nodes || !nodes->array()) reason = "nodes must be an array";
+      else if (!conduits || !conduits->array()) reason = "conduits must be an array";
+      else if (nodes->array()->size() > kPassiveTreeTransportBound)
+        reason = "nodes exceeds the passiveTree transport entry bound";
+      else if (conduits->array()->size() > kPassiveTreeTransportBound)
+        reason = "conduits exceeds the passiveTree transport entry bound";
+    }
+  }
+  if (reason != nullptr) {
+    events.push_back({PresentationEventType::ProtocolError, "", "",
+                      std::string("passiveTree rejected: ") + reason, 0});
+    return;
+  }
   model.progression = ClientPassiveProgression{};
   model.progression.present = true;
-  if (const auto* points = tree.get("points")) {
-    model.progression.unspent_points =
-        static_cast<int>(json_number(points->get("skill"), 0));
-  }
+  model.progression.unspent_points =
+      static_cast<int>(*tree.get("points")->get("skill")->number());
   model.progression.earned_points =
-      static_cast<int>(json_number(tree.get("earned"), 0));
-  if (const auto* nodes = tree.get("nodes"); nodes && nodes->array()) {
-    model.progression.node_count = static_cast<int>(nodes->array()->size());
-  }
-  if (const auto* conduits = tree.get("conduits"); conduits && conduits->array()) {
-    model.progression.conduit_count = static_cast<int>(conduits->array()->size());
-  }
+      static_cast<int>(*tree.get("earned")->number());
+  model.progression.node_count = static_cast<int>(nodes->array()->size());
+  model.progression.conduit_count = static_cast<int>(conduits->array()->size());
+  for (const auto& node : *nodes->array())
+    if (node.string()) model.progression.nodes.push_back(*node.string());
+  for (const auto& conduit : *conduits->array())
+    if (conduit.string()) model.progression.conduits.push_back(*conduit.string());
+  if (const auto* selected = tree.get("selectedNodeId");
+      selected && selected->string())
+    model.progression.selected_node = *selected->string();
 }
 
 void apply_player_fields(ClientPlayer& player, const JsonValue& source) {
@@ -320,6 +427,7 @@ bool RemoteProtocolSession::connect_transport(std::string* error) {
 }
 
 void RemoteProtocolSession::close_transport() {
+  clear_monster_display();
   running_.store(false);
   if (socket_ != -1) {
     send_frame(0x8, "");
@@ -408,6 +516,8 @@ void RemoteProtocolSession::shutdown() {
 }
 
 void RemoteProtocolSession::submit(const ClientCommand& command) {
+  // VG-MOVE-008: encoding a command onto the wire is not input-to-photon.
+  // Present markers live in the client paint path.
   Envelope envelope{"", JsonValue::Object{}};
   switch (command.type) {
     case ClientCommand::Type::Login:
@@ -416,30 +526,31 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
                                         {"quickGuest", JsonValue(command.value != 0)}};
       break;
     case ClientCommand::Type::Move: {
-      const char* direction = "down";
-      if (command.dy < 0) direction = "up";
-      else if (command.dy > 0) direction = "down";
-      else if (command.dx < 0) direction = "left";
-      else if (command.dx > 0) direction = "right";
-      last_facing_ = direction;
-      model_.player.facing = direction;
+      // Full eight-way serialization: the server's direction table accepts
+      // the compound names ("up-left", ...), so diagonals go on the wire
+      // instead of being collapsed to their vertical component.
+      const std::string direction = direction_name(command.dx, command.dy);
+      if (direction.empty()) return;
+      last_move_dir_ = direction;
       envelope.event = "player:move";
       envelope.data = JsonValue::Object{{"direction", JsonValue(direction)}};
       break;
     }
     case ClientCommand::Type::Aim: {
-      // Aim is presentation-local on this protocol: no envelope, facing
-      // updates the model so the next skill trigger carries direction.
-      if (command.dy < 0) last_facing_ = "up";
-      else if (command.dy > 0) last_facing_ = "down";
-      else if (command.dx < 0) last_facing_ = "left";
-      else if (command.dx > 0) last_facing_ = "right";
+      const std::string direction = direction_name(command.dx, command.dy);
+      if (direction.empty()) return;
+      last_facing_ = direction;
+      aim_held_ = true;
       model_.player.facing = last_facing_;
       return;
     }
     case ClientCommand::Type::UseAction: {
       envelope.event = "player:skill:trigger";
-      envelope.data = JsonValue::Object{{"skill", JsonValue(command.target)},
+      // The native server reads the authoritative skill id from `skillId`.
+      // Sending the old `skill` spelling silently downgraded every remote
+      // input to primary-attack, which made War Cry (and future bindings)
+      // look dead even though the key path fired.
+      envelope.data = JsonValue::Object{{"skillId", JsonValue(command.target)},
                                         {"direction", JsonValue(last_facing_)}};
       break;
     }
@@ -453,6 +564,7 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
           {"item", JsonValue::Object{{"uuid", JsonValue(command.target)}}}};
       break;
     case ClientCommand::Type::EnterZone:
+      model_.chart.open = false;
       envelope.event = "world:zone:enter";
       envelope.data = JsonValue::Object{{"nodeId", JsonValue(command.target)}};
       break;
@@ -503,6 +615,68 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
       envelope.event = "chronicles:scion:set-out";
       envelope.data = JsonValue::Object{{"scionId", JsonValue(command.target)}};
       break;
+    case ClientCommand::Type::NpcAction: {
+      // The server dispatches NPC verbs through the context-menu action
+      // surface: queueItem carries the actionId and the NPC item reference.
+      envelope.event = "player:context-menu:action";
+      envelope.data = JsonValue::Object{
+          {"queueItem",
+           JsonValue::Object{
+               {"action", JsonValue::Object{{"actionId", JsonValue(command.target)}}},
+               {"item", JsonValue::Object{{"id", JsonValue(command.value)}}}}}};
+      break;
+    }
+    case ClientCommand::Type::MenuAction: {
+      // Generic context-menu action with an item reference. The item object
+      // carries the ref under both keys the server reads ("id" for shop buy,
+      // "uuid" for sell/withdraw/deposit) plus the numeric field under both
+      // of its spellings; handlers pick the fields they own.
+      envelope.event = "player:context-menu:action";
+      envelope.data = JsonValue::Object{
+          {"queueItem",
+           JsonValue::Object{
+               {"action", JsonValue::Object{{"actionId", JsonValue(command.target)}}},
+               {"item", JsonValue::Object{{"id", JsonValue(command.extra)},
+                                          {"uuid", JsonValue(command.extra)},
+                                          {"price", JsonValue(command.value)},
+                                          {"qty", JsonValue(command.value)}}}}}};
+      break;
+    }
+    case ClientCommand::Type::CloseScreen:
+      // Pane dismissal is presentation-local; the server keeps no modal.
+      model_.shop.open = false;
+      model_.bank.open = false;
+      model_.chart.open = false;
+      return;
+    case ClientCommand::Type::AllocateNode: {
+      // Extend the authoritative allocation by one node and save the whole
+      // snapshot (the wire's unit of tree persistence). The server owns the
+      // point budget; the client only proposes.
+      if (!model_.progression.present) return;
+      JsonValue::Array nodes;
+      bool already = false;
+      for (const auto& node : model_.progression.nodes) {
+        if (node == command.target) already = true;
+        nodes.emplace_back(node);
+      }
+      if (already) return;
+      nodes.emplace_back(command.target);
+      JsonValue::Array conduits;
+      for (const auto& conduit : model_.progression.conduits)
+        conduits.emplace_back(conduit);
+      JsonValue::Object snapshot;
+      snapshot.emplace("schemaVersion", JsonValue(2));
+      snapshot.emplace("nodes", JsonValue(std::move(nodes)));
+      snapshot.emplace("conduits", JsonValue(std::move(conduits)));
+      snapshot.emplace(
+          "selectedNodeId",
+          JsonValue(model_.progression.selected_node.empty()
+                        ? std::string("0,0")
+                        : model_.progression.selected_node));
+      envelope.event = "player:skilltree:save";
+      envelope.data = JsonValue::Object{{"snapshot", JsonValue(std::move(snapshot))}};
+      break;
+    }
   }
   if (!envelope.event.empty()) send_envelope(envelope);
 }
@@ -515,7 +689,14 @@ void RemoteProtocolSession::poll() {
     const auto now = std::chrono::steady_clock::now();
     if (now - last_state_request_ > std::chrono::milliseconds(250)) {
       last_state_request_ = now;
-      Envelope request{"dev:state", JsonValue::Object{{"requestId", JsonValue("model-sync")}}};
+      // Ask for the walkable grid whenever the scene we hold a map for is
+      // not the scene the player is in (including the empty initial state).
+      const bool need_map =
+          model_.map_scene_id.empty() ||
+          model_.map_scene_id != model_.player.scene_id;
+      Envelope request{"dev:state",
+                       JsonValue::Object{{"requestId", JsonValue("model-sync")},
+                                         {"includeMap", JsonValue(need_map)}}};
       send_envelope(request);
     }
   }
@@ -542,6 +723,7 @@ void RemoteProtocolSession::poll() {
     }
   }
   pump_retry();
+  sample_monster_display();
 }
 
 std::vector<PresentationEvent> RemoteProtocolSession::drain_events() {
@@ -633,8 +815,98 @@ void RemoteProtocolSession::reader_loop() {
   }
 }
 
+void RemoteProtocolSession::clear_monster_display() {
+  monster_movement_.clear();
+  for (auto& monster : model_.monsters) monster.has_display_position = false;
+}
+
+bool RemoteProtocolSession::apply_monster_movement(ClientMonster& monster,
+                                                   const JsonValue& source) {
+  const auto* step = source.get("movementStep");
+  const auto prior = monster_movement_.find(monster.id);
+  const double sequence = step ? json_number(step->get("sequence"), -1.0) : -1.0;
+  const bool valid = std::isfinite(sequence) && sequence >= 0.0 &&
+      sequence <= 9007199254740991.0 && std::floor(sequence) == sequence;
+  const double facing_x = step ? json_number(step->get("facingX"), 0.0) : 0.0;
+  const double facing_y = step ? json_number(step->get("facingY"), 0.0) : 0.0;
+  const bool valid_facing = std::isfinite(facing_x) && std::isfinite(facing_y) &&
+      std::abs(facing_x) <= 1.0 && std::abs(facing_y) <= 1.0 &&
+      std::floor(facing_x) == facing_x && std::floor(facing_y) == facing_y &&
+      (facing_x != 0.0 || facing_y != 0.0);
+  const auto copy_facing = [&](const MonsterMovement& motion) {
+    monster.has_facing = motion.has_facing;
+    monster.facing_x = motion.facing_x; monster.facing_y = motion.facing_y;
+  };
+  if (prior != monster_movement_.end() &&
+      (!valid || sequence <= static_cast<double>(prior->second.sequence))) {
+    // dev:state remains a lifecycle/stat reconciliation. A same/older
+    // sequence cannot restart interpolation or rewind the motion endpoint.
+    monster.x = prior->second.to_x;
+    monster.y = prior->second.to_y;
+    if (valid && sequence == static_cast<double>(prior->second.sequence) && valid_facing) {
+      prior->second.has_facing = true;
+      prior->second.facing_x = static_cast<int>(facing_x);
+      prior->second.facing_y = static_cast<int>(facing_y);
+    }
+    copy_facing(prior->second);
+    return valid && sequence == static_cast<double>(prior->second.sequence);
+  }
+  if (!valid || !monster.alive || !std::isfinite(monster.x) ||
+      !std::isfinite(monster.y)) return false;
+  if (prior == monster_movement_.end() && monster_movement_.size() >= 256) return false;
+  MonsterMovement motion;
+  if (prior != monster_movement_.end()) {
+    motion.has_facing = prior->second.has_facing;
+    motion.facing_x = prior->second.facing_x; motion.facing_y = prior->second.facing_y;
+  }
+  if (valid_facing) {
+    motion.has_facing = true;
+    motion.facing_x = static_cast<int>(facing_x);
+    motion.facing_y = static_cast<int>(facing_y);
+  }
+  motion.sequence = static_cast<std::uint64_t>(sequence);
+  motion.to_x = monster.x;
+  motion.to_y = monster.y;
+  motion.from_x = json_number(step->get("fromX"), monster.x);
+  motion.from_y = json_number(step->get("fromY"), monster.y);
+  const double duration = json_number(step->get("duration"), 0.0);
+  if (!std::isfinite(motion.from_x) || !std::isfinite(motion.from_y) ||
+      !std::isfinite(duration)) return false;
+  motion.duration_ms = static_cast<int>(std::clamp(duration, 0.0, 250.0));
+  // A teleport or newly admitted actor has no inferred travel path.
+  if (sequence == 0.0 || std::hypot(motion.to_x - motion.from_x,
+                                   motion.to_y - motion.from_y) > 4.0)
+    motion.duration_ms = 0;
+  motion.received_at = std::chrono::steady_clock::now();
+  monster_movement_[monster.id] = motion;
+  copy_facing(motion);
+  return true;
+}
+
+void RemoteProtocolSession::sample_monster_display() {
+  const auto now = std::chrono::steady_clock::now();
+  for (auto it = monster_movement_.begin(); it != monster_movement_.end();) {
+    ClientMonster* monster = find_monster(model_, it->first);
+    if (!monster || !monster->alive) {
+      if (monster) monster->has_display_position = false;
+      it = monster_movement_.erase(it);
+      continue;
+    }
+    const auto& motion = it->second;
+    const double elapsed = std::chrono::duration<double, std::milli>(
+        now - motion.received_at).count();
+    const double phase = motion.duration_ms > 0
+        ? std::clamp(elapsed / motion.duration_ms, 0.0, 1.0) : 1.0;
+    monster->display_x = motion.from_x + (motion.to_x - motion.from_x) * phase;
+    monster->display_y = motion.from_y + (motion.to_y - motion.from_y) * phase;
+    monster->has_display_position = true;
+    ++it;
+  }
+}
+
 void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
   if (envelope.event == "player:login") {
+    clear_monster_display();
     if (const auto* player = envelope.data.get("player")) {
       apply_player_fields(model_.player, *player);
       if (const auto* username = json_string(player->get("username")))
@@ -647,6 +919,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         if (const auto* house_id = json_string(chronicles->get("houseId")))
           model_.chronicle.active_house_id = *house_id;
       }
+      if (const auto* wear = player->get("wearDetails"))
+        apply_wear_details(*wear, model_);
       last_facing_ = model_.player.facing.empty() ? last_facing_ : model_.player.facing;
       model_.inventory.clear();
       if (const auto* inventory = player->get("inventory")) {
@@ -659,7 +933,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       // TASK-0156: the admission payload carries the authoritative
       // passiveTree envelope (player_payload puts it beside quests).
       if (const auto* tree = player->get("passiveTree"))
-        apply_passive_tree(*tree, model_);
+        apply_passive_tree(*tree, model_, pending_events_);
     }
     if (const auto* scene = envelope.data.get("scene")) apply_scene_fields(model_.scene, *scene);
     // A full player:login is a world admission on the Gate-B journey: the
@@ -718,6 +992,87 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
          "The chronicle records the fall of " + model_.chronicle.fallen.name + ".", 0});
     return;
   }
+  if (envelope.event == "open:screen") {
+    // Authoritative trader/countinghouse screens: mirrored into the model
+    // verbatim for the pane painters. `open` clears only via CloseScreen.
+    // The server emits {player, screen, payload} at the envelope's top
+    // level; tolerate a nested data wrapper for forward compatibility.
+    const auto* data = envelope.data.get("screen") ? &envelope.data
+                                                   : envelope.data.get("data");
+    const auto* screen = json_string(data ? data->get("screen") : nullptr);
+    const auto* payload = data ? data->get("payload") : nullptr;
+    if (screen && payload) {
+      if (*screen == "shop") {
+        ClientShopScreen shop;
+        shop.open = true;
+        if (const auto* name = json_string(payload->get("name"))) shop.name = *name;
+        shop.carried_coins =
+            static_cast<int>(json_number(payload->get("carriedCoins"), 0.0));
+        if (const auto* items = payload->get("items"); items && items->array()) {
+          for (const auto& row : *items->array()) {
+            ClientShopRow entry;
+            if (const auto* id = json_string(row.get("id"))) entry.id = *id;
+            if (const auto* row_name = json_string(row.get("name")))
+              entry.name = *row_name;
+            entry.price = static_cast<int>(json_number(row.get("price"), 0.0));
+            entry.qty = static_cast<int>(json_number(row.get("qty"), 0.0));
+            shop.rows.push_back(std::move(entry));
+          }
+        }
+        model_.shop = std::move(shop);
+        model_.bank.open = false;
+      } else if (*screen == "chart") {
+        ClientChartScreen chart;
+        chart.open = true;
+        if (const auto* road = json_string(payload->get("roadId")))
+          chart.road_id = *road;
+        if (const auto* name = json_string(payload->get("roadName")))
+          chart.road_name = *name;
+        if (const auto* blurb = json_string(payload->get("blurb")))
+          chart.blurb = *blurb;
+        if (const auto* nodes = payload->get("nodes"); nodes && nodes->array()) {
+          for (const auto& row : *nodes->array()) {
+            ClientChartNode node;
+            if (const auto* id = json_string(row.get("id"))) node.id = *id;
+            if (const auto* node_name = json_string(row.get("name")))
+              node.name = *node_name;
+            if (const auto* warden = json_string(row.get("wardenName")))
+              node.warden = *warden;
+            if (const auto* status = json_string(row.get("status")))
+              node.status = *status;
+            node.tier = static_cast<int>(json_number(row.get("tier"), 1.0));
+            chart.nodes.push_back(std::move(node));
+          }
+        }
+        model_.chart = std::move(chart);
+        model_.shop.open = false;
+        model_.bank.open = false;
+      } else if (*screen == "bank") {
+        ClientBankScreen bank;
+        bank.open = true;
+        bank.carried_coins =
+            static_cast<int>(json_number(payload->get("carriedCoins"), 0.0));
+        if (const auto* house = payload->get("house"))
+          bank.treasury =
+              static_cast<int>(json_number(house->get("treasury"), 0.0));
+        if (const auto* items = payload->get("items"); items && items->array()) {
+          for (const auto& row : *items->array()) {
+            ClientBankItem entry;
+            if (const auto* uuid = json_string(row.get("uuid"))) entry.uuid = *uuid;
+            if (const auto* row_name = json_string(row.get("name")))
+              entry.name = *row_name;
+            if (entry.name.empty())
+              if (const auto* id = json_string(row.get("id"))) entry.name = *id;
+            entry.qty = static_cast<int>(json_number(row.get("qty"), 0.0));
+            bank.items.push_back(std::move(entry));
+          }
+        }
+        model_.bank = std::move(bank);
+        model_.shop.open = false;
+      }
+    }
+    return;
+  }
   if (envelope.event == "player:session-replaced") {
     suppress_retry_ = true;
     fail(ConnectionState::Disconnected, "session replaced by a newer connection");
@@ -739,7 +1094,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
   }
   if (envelope.event == "player:movement") {
     apply_player_fields(model_.player, envelope.data);
-    if (!model_.player.facing.empty()) last_facing_ = model_.player.facing;
+    if (!aim_held_ && !model_.player.facing.empty())
+      last_facing_ = model_.player.facing;
     return;
   }
   if (envelope.event == "world:scene:transition" ||
@@ -749,8 +1105,39 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       apply_player_fields(model_.player, *player_state);
     }
     if (!model_.scene.id.empty()) model_.player.scene_id = model_.scene.id;
+    clear_monster_display();
     model_.monsters.clear();
+    model_.npcs.clear();
     model_.ground.clear();
+    return;
+  }
+  if (envelope.event == "monster:state") {
+    const auto* actors = envelope.data.array();
+    const auto* scene = envelope.meta ? json_string(envelope.meta->get("sceneId")) : nullptr;
+    const std::string& current_scene = model_.player.scene_id;
+    // Scene-scoped deltas never admit unknown actors or populate a room.
+    // The ordinary full snapshot remains authoritative for membership.
+    if (!actors || actors->size() > 256 || !scene || current_scene.empty() ||
+        *scene != current_scene) return;
+    for (const auto& entry : *actors) {
+      const auto* id = json_string(entry.get("uuid"));
+      if (!id) continue;
+      ClientMonster* existing = find_monster(model_, *id);
+      if (!existing || !existing->alive) continue;
+      const auto* x = entry.get("x");
+      const auto* y = entry.get("y");
+      if (!x || !x->number() || !y || !y->number() ||
+          !std::isfinite(*x->number()) || !std::isfinite(*y->number())) continue;
+      ClientMonster update = *existing;
+      update.x = *x->number(); update.y = *y->number();
+      if (!apply_monster_movement(update, entry)) continue;
+      if (const auto* hp = entry.get("hp")) {
+        update.life = static_cast<int>(json_number(hp->get("current"), update.life));
+        update.life_max = static_cast<int>(json_number(hp->get("max"), update.life_max));
+        update.alive = update.life > 0;
+      }
+      *existing = std::move(update);
+    }
     return;
   }
   if (envelope.event == "monster:telegraph") {
@@ -786,8 +1173,26 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       }
     }
     if (hits_player) {
-      if (attacker) upsert_monster(model_, *attacker, "", true);
+      // A confirmed hit does not change the authored actor's rarity/scale.
+      if (attacker && !find_monster(model_, *attacker))
+        upsert_monster(model_, *attacker, "", true);
       model_.last_incoming_hit = amount;
+      const auto* skill = json_string(envelope.data.get("skillId"));
+      if (attacker && !attacker->empty() && *attacker != model_.player.uuid && skill) {
+        const auto* foe = find_monster(model_, *attacker);
+        // monster:attack is also used by ranged foes. Only an explicit melee
+        // action or the server's melee behaviour snapshot confirms a swing;
+        // attackStyle describes damage and cannot identify the action.
+        const bool explicit_melee = *skill == "melee" || *skill == "thrust" ||
+                                    *skill == "sweep";
+        const bool known_melee = *skill == "monster:attack" && foe &&
+                                 foe->behaviour == "melee";
+        if (explicit_melee || known_melee) {
+          pending_events_.push_back({PresentationEventType::AttackStarted,
+                                     *attacker, "", known_melee ? "melee" : *skill,
+                                     amount});
+        }
+      }
       pending_events_.push_back({PresentationEventType::DamageApplied,
                                  attacker ? *attacker : "", "", "incoming", amount});
       if (died) {
@@ -817,9 +1222,12 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       } else {
         foe.life = (std::max)(0, foe.life - amount);
       }
+      // skillId names the confirmed action; attackStyle is a damage channel,
+      // and last_facing_ is only a direction. Neither can preserve Sweep.
+      const auto* skill = json_string(envelope.data.get("skillId"));
       pending_events_.push_back({PresentationEventType::AttackStarted,
                                  attacker ? *attacker : model_.player.uuid, "",
-                                 last_facing_, amount});
+                                 skill ? *skill : "primary-attack", amount});
       PresentationEvent outgoing;
       outgoing.type = PresentationEventType::DamageApplied;
       outgoing.actor_id = target ? *target : "";
@@ -858,8 +1266,10 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     if (const auto* lifecycle = json_string(state->get("lifecycle")))
       model_.lifecycle = *lifecycle;
     // TASK-0156: the dev:state snapshot carries the same authoritative
-    // passiveTree envelope; keep the mirror current between logins.
-    if (const auto* tree = state->get("passiveTree")) apply_passive_tree(*tree, model_);
+    // passiveTree envelope; keep the mirror current between logins. TASK-0162:
+    // a malformed snapshot fails closed and surfaces its diagnostic.
+    if (const auto* tree = state->get("passiveTree"))
+      apply_passive_tree(*tree, model_, pending_events_);
     if (const auto* hp = state->get("hp")) {
       // Authoritative life keeps alive honest between combat envelopes.
       model_.player.life = static_cast<int>(json_number(hp->get("current"), model_.player.life));
@@ -867,18 +1277,39 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
           static_cast<int>(json_number(hp->get("max"), model_.player.life_max));
       model_.player.alive = model_.player.life > 0;
     }
+    if (const auto* attributes = state->get("attributes")) {
+      model_.attr_strength = static_cast<int>(
+          json_number(attributes->get("strength"), model_.attr_strength));
+      model_.attr_dexterity = static_cast<int>(
+          json_number(attributes->get("dexterity"), model_.attr_dexterity));
+      model_.attr_intelligence = static_cast<int>(
+          json_number(attributes->get("intelligence"), model_.attr_intelligence));
+    }
     if (const auto* record = state->get("chroniclesRecord")) {
       if (json_number(record->get("revision"), 0) > 0.0) {
         if (const auto* chronicle = record->get("state"))
           apply_chronicle_object(model_.chronicle, *chronicle);
       }
     }
+    if (const auto* theme = json_string(state->get("theme")))
+      model_.theme = *theme;
+    if (const auto* xp = state->get("xp")) {
+      model_.xp_current = json_number(xp->get("current"), model_.xp_current);
+      model_.xp_floor = json_number(xp->get("floor"), model_.xp_floor);
+      model_.xp_next = json_number(xp->get("next"), model_.xp_next);
+    }
+    if (const auto* wear = state->get("wearDetails"))
+      apply_wear_details(*wear, model_);
     if (const auto* monsters = state->get("monsters"); monsters && monsters->array()) {
       model_.monsters.clear();
       for (const auto& entry : *monsters->array()) {
         ClientMonster monster;
         if (const auto* uuid = json_string(entry.get("uuid"))) monster.id = *uuid;
         if (const auto* name = json_string(entry.get("name"))) monster.name = *name;
+        if (const auto* kind = json_string(entry.get("id"))) monster.kind = *kind;
+        if (const auto* behaviour = entry.get("behaviour"))
+          if (const auto* type = json_string(behaviour->get("type")))
+            monster.behaviour = *type;
         monster.x = json_number(entry.get("x"), 0.0);
         monster.y = json_number(entry.get("y"), 0.0);
         if (const auto* hp = entry.get("hp")) {
@@ -886,10 +1317,48 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
           monster.life_max = static_cast<int>(json_number(hp->get("max"), monster.life_max));
         }
         if (const auto* rarity = json_string(entry.get("rarity"))) {
-          monster.elite = (*rarity != "normal" && !rarity->empty());
+          monster.elite = (*rarity != "normal" && *rarity != "common" && !rarity->empty());
         }
         monster.alive = monster.life > 0;
+        apply_monster_movement(monster, entry);
         model_.monsters.push_back(std::move(monster));
+      }
+    }
+    if (const auto* map = state->get("map"); map && map->object()) {
+      const int width = static_cast<int>(json_number(map->get("width"), 0.0));
+      const int height = static_cast<int>(json_number(map->get("height"), 0.0));
+      const auto* rows = map->get("rows");
+      if (width > 0 && height > 0 && rows && rows->array() &&
+          static_cast<int>(rows->array()->size()) == height) {
+        model_.map_width = width;
+        model_.map_height = height;
+        if (const auto* scene = json_string(map->get("sceneId")))
+          model_.map_scene_id = *scene;
+        model_.map_walkable.assign(
+            static_cast<std::size_t>(width) * static_cast<std::size_t>(height),
+            1);
+        for (int y = 0; y < height; ++y) {
+          const auto* row = (*rows->array())[static_cast<std::size_t>(y)].string();
+          if (!row || static_cast<int>(row->size()) != width) continue;
+          for (int x = 0; x < width; ++x)
+            if ((*row)[static_cast<std::size_t>(x)] == '0')
+              model_.map_walkable[static_cast<std::size_t>(y) * width + x] = 0;
+        }
+      }
+    }
+    if (const auto* npcs = state->get("npcs"); npcs && npcs->array()) {
+      model_.npcs.clear();
+      for (const auto& entry : *npcs->array()) {
+        ClientNpc npc;
+        npc.id = static_cast<int>(json_number(entry.get("id"), 0.0));
+        if (const auto* name = json_string(entry.get("name"))) npc.name = *name;
+        npc.x = json_number(entry.get("x"), 0.0);
+        npc.y = json_number(entry.get("y"), 0.0);
+        if (const auto* actions = entry.get("actions"); actions && actions->array()) {
+          for (const auto& action : *actions->array())
+            if (action.string()) npc.actions.push_back(*action.string());
+        }
+        model_.npcs.push_back(std::move(npc));
       }
     }
     if (const auto* ground = state->get("groundItems"); ground && ground->array()) {
@@ -912,9 +1381,10 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
   }
   if (envelope.event == "player:skilltree:update") {
     // TASK-0156: the server's reply to a committed tree snapshot carries the
-    // refreshed authoritative passiveTree envelope.
+    // refreshed authoritative passiveTree envelope. TASK-0162: malformed
+    // refreshes fail closed with a diagnostic instead of zeroing the pane.
     if (const auto* tree = envelope.data.get("passiveTree"))
-      apply_passive_tree(*tree, model_);
+      apply_passive_tree(*tree, model_, pending_events_);
     return;
   }
   if (envelope.event == "core:refresh:inventory") {

@@ -1,0 +1,6 @@
+Make one simplified pixel-art melee slash trail, using reference image 1 only for its crisp pixel clusters and pale ivory/warm gold palette. Create a single open curved swish at the contact beat: it bows toward the right and opens toward the left. The brightest short edge is at right-middle. Both ends taper back toward the left, with three or four small broken pixel fragments in the wake.
+
+Construct the effect for a 64-by-64 logical pixel canvas, with a compact roughly 40-pixel extent, an irregular 1–3-pixel ivory edge and a restrained darker gold trailing edge. Keep the middle of the curve empty. Use at most 16 closely related colors, hard pixel edges and generous balanced transparent margins around the whole effect.
+
+One isolated effect on genuine transparent alpha. No soft glow, blur, gradient, weapon, character, text, environment or additional effects.
+

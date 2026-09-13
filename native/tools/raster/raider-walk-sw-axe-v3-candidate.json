@@ -1,0 +1,312 @@
+{
+  "version": 1,
+  "output_dir": "raider-walk-sw-candidates/axe-v3",
+  "report_name": "raider-walk-sw-axe-v3.provenance.json",
+  "shared_palette_max_colors": 32,
+  "defaults": {
+    "cell_size": 6,
+    "alpha_mode": "crisp",
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "candidate_only_pending_complete_cycle_and_idle_review"
+  },
+  "known_limitations": [
+    "Axe and trouser continuity targeted edit; source phase progression retained. Await reconstructed visual acceptance.",
+    "Source opaque checker requires border cleanup and inspection of enclosed gaps.",
+    "Same measured shared grid from previous source: source origin197,480, column stride406,row stride435, cell6. No per-frame fitting or centering. Verify source invariants after edit."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/raider-walk-sw-axe-v3.png",
+      "border_background": {
+        "color": [
+          210,
+          210,
+          210
+        ],
+        "tolerance": 95,
+        "interior_windows": [
+          [
+            214,
+            177,
+            217,
+            180
+          ],
+          [
+            210,
+            189,
+            212,
+            191
+          ],
+          [
+            214,
+            195,
+            217,
+            199
+          ],
+          [
+            619,
+            164,
+            623,
+            167
+          ],
+          [
+            620,
+            172,
+            623,
+            176
+          ],
+          [
+            618,
+            189,
+            622,
+            193
+          ],
+          [
+            1024,
+            166,
+            1027,
+            171
+          ],
+          [
+            1025,
+            173,
+            1028,
+            176
+          ],
+          [
+            1022,
+            189,
+            1027,
+            194
+          ],
+          [
+            1427,
+            164,
+            1431,
+            170
+          ],
+          [
+            1429,
+            174,
+            1431,
+            176
+          ],
+          [
+            1426,
+            189,
+            1430,
+            194
+          ],
+          [
+            213,
+            614,
+            215,
+            616
+          ],
+          [
+            210,
+            629,
+            213,
+            632
+          ],
+          [
+            214,
+            633,
+            217,
+            637
+          ],
+          [
+            618,
+            613,
+            620,
+            616
+          ],
+          [
+            620,
+            618,
+            623,
+            622
+          ],
+          [
+            615,
+            629,
+            618,
+            633
+          ],
+          [
+            618,
+            634,
+            621,
+            637
+          ],
+          [
+            1023,
+            613,
+            1025,
+            617
+          ],
+          [
+            1019,
+            631,
+            1023,
+            634
+          ],
+          [
+            1023,
+            634,
+            1027,
+            638
+          ],
+          [
+            1439,
+            608,
+            1442,
+            610
+          ],
+          [
+            1437,
+            613,
+            1440,
+            616
+          ],
+          [
+            1434,
+            629,
+            1437,
+            632
+          ],
+          [
+            1438,
+            634,
+            1441,
+            637
+          ],
+          [
+            110,
+            773,
+            132,
+            802
+          ],
+          [
+            512,
+            777,
+            534,
+            801
+          ]
+        ]
+      },
+      "assets": [
+        {
+          "name": "raider_walk0_sw",
+          "source_box": [
+            0,
+            0,
+            394,
+            520
+          ],
+          "anchor_source": [
+            197,
+            480
+          ]
+        },
+        {
+          "name": "raider_walk1_sw",
+          "source_box": [
+            394,
+            0,
+            788,
+            520
+          ],
+          "anchor_source": [
+            209,
+            480
+          ]
+        },
+        {
+          "name": "raider_walk2_sw",
+          "source_box": [
+            788,
+            0,
+            1181,
+            520
+          ],
+          "anchor_source": [
+            221,
+            480
+          ]
+        },
+        {
+          "name": "raider_walk3_sw",
+          "source_box": [
+            1181,
+            0,
+            1575,
+            520
+          ],
+          "anchor_source": [
+            234,
+            480
+          ]
+        },
+        {
+          "name": "raider_walk4_sw",
+          "source_box": [
+            0,
+            520,
+            394,
+            999
+          ],
+          "anchor_source": [
+            197,
+            395
+          ]
+        },
+        {
+          "name": "raider_walk5_sw",
+          "source_box": [
+            394,
+            520,
+            788,
+            999
+          ],
+          "anchor_source": [
+            209,
+            395
+          ]
+        },
+        {
+          "name": "raider_walk6_sw",
+          "source_box": [
+            788,
+            520,
+            1181,
+            999
+          ],
+          "anchor_source": [
+            221,
+            395
+          ]
+        },
+        {
+          "name": "raider_walk7_sw",
+          "source_box": [
+            1181,
+            520,
+            1575,
+            999
+          ],
+          "anchor_source": [
+            234,
+            395
+          ]
+        }
+      ]
+    }
+  ],
+  "candidate_revision": 4
+}

@@ -1,0 +1,46 @@
+{
+  "baseline": "e0e1beaa9",
+  "current_projection": "axis-aligned orthographic, uniform both axes",
+  "protocol_tile_world_units": 107.25,
+  "current_lift_fraction": 0.3,
+  "proposed_module": {
+    "canvas": [
+      64,
+      96
+    ],
+    "pivot": [
+      32,
+      96
+    ],
+    "cap": [
+      0,
+      0,
+      64,
+      64
+    ],
+    "south_face": [
+      0,
+      64,
+      64,
+      96
+    ],
+    "ground_footprint": [
+      0,
+      32,
+      64,
+      96
+    ],
+    "lift_fraction": 0.5,
+    "status": "Root approved 2026-09-10; renderer interface confirmed"
+  },
+  "reference_hashes": {
+    "column": "3073e69247d2d2355b3d12c556e851d4e85bb80e9fb54a3aac166777ef41b33c",
+    "gate": "701eabbd5156205e808243195c0ad5543cf7608a3588807721f3d532d10e8e4a",
+    "wall": "052a4bd1ad3d753bbbf8bfed32e197663be7c5e0d4f3554daac53e31def47590"
+  },
+  "source_capture": "native/client/assets/raster/reviews/2026-09-10-monster-motion/remote-wight-new-scene.png",
+  "geometry_authority": [
+    "native/client/camera2d.hpp",
+    "native/client/main.cpp draw_wall_tiles"
+  ]
+}

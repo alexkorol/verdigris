@@ -1,6 +1,7 @@
 #include "verdigris/networking.hpp"
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <iostream>
 #include <optional>
@@ -28,6 +29,8 @@ void test_envelope_round_trip() {
   check(decoded.data["useGuestAccount"].boolean().value_or(false), "boolean payload survives round-trip");
   check(decoded.data["guestId"].string() && *decoded.data["guestId"].string() == "roundtrip-guest", "string payload survives round-trip");
   check(!parse_envelope("{\"event\":\"dev:state\",\"data\":[]}", decoded, &error), "array payload is rejected");
+  check(parse_envelope("{\"event\":\"monster:state\",\"data\":[],\"meta\":{\"sceneId\":\"crypt:test\"}}", decoded, &error),
+        "existing monster:state delta arrays round-trip without broadening requests");
 }
 
 void test_session_lifecycle() {
@@ -175,6 +178,98 @@ void test_instance_entry_and_stairs() {
         "stair return announces the surface");
 }
 
+void test_crypt_pursuit_publishes_exact_authority() {
+  ProtocolSession session("guest-crypt-pursuit", "socket-crypt", 79, false);
+  std::vector<Envelope> published;
+  session.set_direct_emit([&](const Envelope& envelope) { published.push_back(envelope); });
+  session.handle(Envelope{"instance:enterSolo", JsonValue::Object{{"template", "crypt"}, {"layout", "warren"}}},
+                 [](const Envelope&) {});
+  auto world = session.shared_world();
+  check(world->metadata().theme == "crypt", "pursuit transport enters authored crypt");
+  const auto& grid = world->grid();
+  verdigris::Vec2 player_tile{};
+  bool corridor = false;
+  for (int y = 4; y < grid.height - 3 && !corridor; ++y) {
+    for (int x = 3; x < grid.width - 4 && !corridor; ++x) {
+      bool open = true;
+      for (int oy = -2; oy <= 0; ++oy)
+        for (int ox = 0; ox <= 2; ++ox) open = open && grid.walkable_at(x + ox, y + oy);
+      const auto up = world->metadata().stairs_up;
+      const auto down = world->metadata().stairs_down;
+      if (open && (x != up.x || y != up.y) && (x != down.x || y != down.y)) {
+        player_tile = {x, y}; corridor = true;
+      }
+    }
+  }
+  check(corridor, "pursuit transport finds real open crypt corridor");
+  auto& monsters = const_cast<std::vector<verdigris::WorldMonster>&>(world->monsters());
+  std::string id;
+  for (auto& monster : monsters) {
+    if (id.empty() && !monster.boss && monster.behaviour_type == "melee") id = monster.uuid;
+    const bool chosen = monster.uuid == id;
+    monster.continuous_position = chosen
+        ? verdigris::WorldPosition{double(player_tile.x + 2), double(player_tile.y - 2)}
+        : verdigris::WorldPosition{-1000.0 - double(&monster - monsters.data()) * 2.0, -1000.0};
+    monster.has_continuous_position = true;
+    monster.x = int(monster.continuous_position.x); monster.y = int(monster.continuous_position.y);
+    monster.movement_from = monster.continuous_position;
+    monster.pursuit_home = monster.continuous_position;
+  }
+  check(!id.empty(), "pursuit transport uses authored melee wight without stat changes");
+  session.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", player_tile.x}, {"y", player_tile.y}}},
+                 [](const Envelope&) {});
+  const auto base = std::chrono::duration_cast<std::chrono::milliseconds>(
+      std::chrono::system_clock::now().time_since_epoch()).count();
+  bool moved = false, fractional = false, hit = false;
+  std::uint64_t previous_sequence = 0;
+  int movement_packets = 0;
+  for (int tick = 0; tick < 40 && !hit; ++tick) {
+    published.clear(); session.tick(base + tick * 150);
+    const verdigris::WorldMonster* authority = nullptr;
+    for (const auto& monster : world->monsters()) if (monster.uuid == id) authority = &monster;
+    check(authority != nullptr, "pursuit transport retains the authority actor");
+    for (const auto& envelope : published) {
+      check(envelope.event != "dev:state", "ordinary tick sends no full snapshot");
+      if (envelope.event == "monster:state") {
+        check(envelope.meta && (*envelope.meta)["sceneId"].string() &&
+              *(*envelope.meta)["sceneId"].string() == world->scene_id(),
+              "monster deltas are scoped to the actual scene");
+        for (const auto& actor : *envelope.data.array()) {
+          if (!actor["uuid"].string() || *actor["uuid"].string() != id) continue;
+          const auto precise = authority->world_position();
+          const double x = actor["x"].number().value_or(-10000);
+          const double y = actor["y"].number().value_or(-10000);
+          check(std::abs(x - precise.x) < 1e-9 && std::abs(y - precise.y) < 1e-9,
+                "monster packet carries precise authority coordinates");
+          const auto seq = std::uint64_t(actor["movementStep"]["sequence"].number().value_or(0));
+          check(seq >= previous_sequence, "monster sequence is monotonic");
+          if (seq > previous_sequence) {
+            previous_sequence = seq; ++movement_packets;
+            moved = moved || x < player_tile.x + 2;
+            fractional = fractional || std::abs(x - std::round(x)) > 1e-6;
+          }
+        }
+      }
+      if (envelope.event == "combat:hit" && envelope.data["attackerId"].string() &&
+          *envelope.data["attackerId"].string() == id &&
+          envelope.data["targetId"].string() && *envelope.data["targetId"].string() == session.identity() &&
+          envelope.data["amount"].number().value_or(0) > 0) hit = true;
+    }
+  }
+  check(moved && fractional && movement_packets >= 2,
+        "ordinary server ticks publish multiple fractional pursuit segments");
+  check(hit, "authored wight arrives and deals real incoming damage");
+  JsonValue snapshot;
+  check(verdigris::networking::parse_json(session.state_payload("after-pursuit"), snapshot),
+        "pursuit snapshot can be reconciled");
+  bool exact_snapshot = false;
+  for (const auto& monster : *snapshot["state"]["monsters"].array()) {
+    if (monster["uuid"].string() && *monster["uuid"].string() == id)
+      exact_snapshot = monster["movementStep"]["sequence"].number().value_or(-1) == previous_sequence;
+  }
+  check(exact_snapshot, "snapshot and delta use the same movement sequence");
+}
+
 void test_n3_combat_rules_and_wire_events() {
   ProtocolSession session("guest-n3-rules", "socket-n3", 101, false);
   session.handle(Envelope{"instance:enterSolo", JsonValue::Object{{"template", "marsh"}, {"layout", "clearings"}}}, [](const Envelope&) {});
@@ -312,20 +407,28 @@ void test_gate_a_ground_login_and_kill_loot() {
   session.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", mx + 1.0}, {"y", static_cast<double>(my)}}},
                  [](const Envelope&) {});
   bool kill_loot = false;
-  for (int swing = 0; swing < 40 && !kill_loot; ++swing) {
+  const auto observe_loot = [&](const Envelope& event) {
+    if (event.event != "item:change") return;
+    if (const auto* items = ground_list_from_change(event)) {
+      for (const auto& item : *items) {
+        if (item["id"].string() && *item["id"].string() == "coins"
+            && ground_item_has_fields(item)) {
+          kill_loot = true;
+        }
+      }
+    }
+  };
+  session.set_direct_emit(observe_loot);
+  session.handle(Envelope{"dev:forcecritical", JsonValue::Object{}}, [](const Envelope&) {});
+  session.handle(Envelope{"player:skill:trigger", JsonValue::Object{{"direction", "left"}}},
+                 observe_loot);
+  // Drive the server's existing clock seam at the real attack cadence.
+  // Forty commands in one instant must not substitute for elapsed recovery.
+  const auto started_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+      std::chrono::system_clock::now().time_since_epoch()).count();
+  for (int swing = 1; swing < 40 && !kill_loot; ++swing) {
     session.handle(Envelope{"dev:forcecritical", JsonValue::Object{}}, [](const Envelope&) {});
-    session.handle(Envelope{"player:skill:trigger", JsonValue::Object{{"direction", "left"}}},
-                   [&](const Envelope& event) {
-                     if (event.event != "item:change") return;
-                     if (const auto* items = ground_list_from_change(event)) {
-                       for (const auto& item : *items) {
-                         if (item["id"].string() && *item["id"].string() == "coins"
-                             && ground_item_has_fields(item)) {
-                           kill_loot = true;
-                         }
-                       }
-                     }
-                   });
+    session.tick(started_ms + swing * 350);
   }
   check(kill_loot, "kill loot emits item:change with coin drop fields");
 }
@@ -437,6 +540,7 @@ int main() {
     test_session_lifecycle();
     test_continuous_movement();
     test_instance_entry_and_stairs();
+    test_crypt_pursuit_publishes_exact_authority();
     test_n3_combat_rules_and_wire_events();
     test_gate_a_ground_login_and_kill_loot();
     test_gate_a_extract_and_stairs();

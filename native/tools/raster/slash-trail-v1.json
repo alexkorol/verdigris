@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "output_dir": "../../../.ci-artifacts/slash-trail-v1",
+  "defaults": {
+    "cell_size": 15,
+    "alpha_mode": "crisp",
+    "alpha_floor": 128,
+    "max_colors": 16,
+    "canvas": [
+      64,
+      64
+    ],
+    "align": "center",
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "native_1x_3x_and_pivots_reviewed_pending_root_production"
+  },
+  "known_limitations": [
+    "One static directional curved slash trail, not an authored animation or omnidirectional sweep area. Renderer timing/orientation remains separate.",
+    "Source genuine alpha contains partial edge pixels and faint low-alpha remnants; actual Pixel Respecter crisp reconstruction yields the reviewed binary native mask without a matte-color deletion.",
+    "The seven detached native components total only15 pixels; main curve has243 pixels. Native contact flare is broader than the requested1-3px edge, but the arc stays compact.",
+    "This candidate is not registered in runtime/catalog and has not yet been reviewed through live production paint."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/effects-slash-trail-v1.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "effect_slash0",
+          "source_box": [
+            345,
+            300,
+            1050,
+            960
+          ]
+        }
+      ]
+    }
+  ],
+  "effect_geometry": {
+    "canvas": [
+      64,
+      64
+    ],
+    "visible_bounds": [
+      11,
+      13,
+      52,
+      51
+    ],
+    "rotation_center_px": [
+      26.5,
+      32.5
+    ],
+    "contact_core_px": [
+      44.5,
+      32.5
+    ],
+    "forward_angle_degrees": 0,
+    "orientation": "Screen-right forward; crescent bows right and opens left. Rotation/contact anchors are in pixel-edge coordinates, so n+.5 denotes a pixel center.",
+    "rotation_center_measurement": "Main bright curved centerline fit away from contact protrusion estimated [26.78,32.65]; chosen nearby pixel center [26.5,32.5] was visually reviewed.",
+    "contact_measurement": "Bright right-middle component centroid [44.4,32.3], chosen nearby pixel center [44.5,32.5] was visually reviewed."
+  }
+}

@@ -1,0 +1,714 @@
+{
+  "version": 1,
+  "manifest_sha256": "22f787aca628e8d78509aa1f4a3b040b31c8d2ec4fbf0c9ba25e41d86ebc052c",
+  "importer_sha256": "d59ef9d71a73740f15c8ef5ce5fad588273e2fb4856684985203b7501dfee7c2",
+  "engine": {
+    "project": "Pixel Respecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "root": "Z:/Code/Python/pixel-perfecter",
+    "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+    "git_dirty": true,
+    "source_sha256": {
+      "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+      "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+      "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+      "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+      "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+      "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+      "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+      "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+      "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+      "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+      "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+      "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+      "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+    },
+    "dependencies": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    }
+  },
+  "known_limitations": [
+    "Root inspected the final native and4x idle-to-strike0..5-to-idle comparison. Physical-left strike,contact and retraction remain consistent; common native scale and pivot are retained. Production timing/equipped motion remains a review gate.",
+    "Remaining visual differences: heads are14\u201315px wide versus idle12; standing body is67\u201368px versus idle65; dark outline and tunic colors shift. This is production-trial acceptance, not final visual polish.",
+    "Explicit source roots compensate sheet packing translations; no pose is independently fitted or resized.",
+    "Mixed-source integer grid pitches differ by about2percent from the measured1254/512 canvas ratio. That residual scale approximation is preserved in provenance.",
+    "All sources use recorded connected checker cleanup, including the individually inspected enclosed window. Final source and runtime candidates remain preserved."
+  ],
+  "sources": [
+    {
+      "source": "../../client/assets/raster/source/actors_hero-strike-sw-v2.png",
+      "sha256": "0d03170686c984557043df20d56d9330d27f003897c38d341ae2ff0e3c0051cd",
+      "size": [
+        1536,
+        1024
+      ],
+      "background_removal": {
+        "api": "pixel_perfecter.colors.make_border_connected_transparent",
+        "color": [
+          225,
+          225,
+          225
+        ],
+        "tolerance": 75,
+        "interior_windows": [
+          {
+            "source_box": [
+              719,
+              252,
+              730,
+              267
+            ],
+            "new_transparent_pixels": 0
+          }
+        ],
+        "transparent_pixels_after": 1361219
+      }
+    },
+    {
+      "source": "../../client/assets/raster/source/actors_hero-strike-sw-contact3-v3.png",
+      "sha256": "8d0892f1ebaa609f956a4f08849cc30ad489fda9f795d304ae2fb75135990f41",
+      "size": [
+        1254,
+        1254
+      ],
+      "background_removal": {
+        "api": "pixel_perfecter.colors.make_border_connected_transparent",
+        "color": [
+          230,
+          230,
+          230
+        ],
+        "tolerance": 90,
+        "interior_windows": [],
+        "transparent_pixels_after": 1367004
+      }
+    },
+    {
+      "source": "../../client/assets/raster/source/actors_hero-strike-sw-follow4-v3.png",
+      "sha256": "8a33834548681b3253a5249316c9aecb62176cbf261ddfe599dff12e5cdeef80",
+      "size": [
+        1254,
+        1254
+      ],
+      "background_removal": {
+        "api": "pixel_perfecter.colors.make_border_connected_transparent",
+        "color": [
+          230,
+          230,
+          230
+        ],
+        "tolerance": 90,
+        "interior_windows": [],
+        "transparent_pixels_after": 1369258
+      }
+    }
+  ],
+  "assets": [
+    {
+      "name": "hero_strike0_sw",
+      "file": "hero_strike0_sw.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-sw-v2.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 31,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        102,
+        102
+      ],
+      "trim_box": [
+        46,
+        24,
+        86,
+        91
+      ],
+      "before_resize": [
+        40,
+        67
+      ],
+      "placed_size": [
+        40,
+        67
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        20,
+        29,
+        60,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        330,
+        456
+      ],
+      "native_scale_group": "hero-sw-strike-v2-sheet5px-isolated12px",
+      "palette_scope": "manifest_cycle",
+      "sha256": "db56eb0df266f426a56ff1216527b435729c9b70d521b720862409ecd68d7027"
+    },
+    {
+      "name": "hero_strike1_sw",
+      "file": "hero_strike1_sw.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-sw-v2.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        512,
+        0,
+        1024,
+        512
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 28,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        102,
+        102
+      ],
+      "trim_box": [
+        30,
+        25,
+        78,
+        91
+      ],
+      "before_resize": [
+        48,
+        66
+      ],
+      "placed_size": [
+        48,
+        66
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        20,
+        30,
+        68,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        252,
+        456
+      ],
+      "native_scale_group": "hero-sw-strike-v2-sheet5px-isolated12px",
+      "palette_scope": "manifest_cycle",
+      "sha256": "a36acef59d38a1060d3c0edcb862c9dc194b53df565e2f7725b851a5c994a27f"
+    },
+    {
+      "name": "hero_strike2_sw",
+      "file": "hero_strike2_sw.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-sw-v2.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        1024,
+        0,
+        1536,
+        512
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 26,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        102,
+        102
+      ],
+      "trim_box": [
+        15,
+        30,
+        63,
+        90
+      ],
+      "before_resize": [
+        48,
+        60
+      ],
+      "placed_size": [
+        48,
+        60
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        16,
+        36,
+        64,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        195,
+        450
+      ],
+      "native_scale_group": "hero-sw-strike-v2-sheet5px-isolated12px",
+      "palette_scope": "manifest_cycle",
+      "sha256": "a6c609e93135280adc2d24ec8019477f23084a6ce713db127259744194a35619"
+    },
+    {
+      "name": "hero_strike5_sw",
+      "file": "hero_strike5_sw.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-sw-v2.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        1024,
+        512,
+        1536,
+        1024
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        102,
+        102
+      ],
+      "trim_box": [
+        18,
+        12,
+        58,
+        80
+      ],
+      "before_resize": [
+        40,
+        68
+      ],
+      "placed_size": [
+        40,
+        68
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        20,
+        28,
+        60,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        190,
+        400
+      ],
+      "native_scale_group": "hero-sw-strike-v2-sheet5px-isolated12px",
+      "palette_scope": "manifest_cycle",
+      "sha256": "d3117ce02256fc83461a7f32b4627c3c9ece61d913c711726f53c3e31acd5124"
+    },
+    {
+      "name": "hero_strike3_sw",
+      "file": "hero_strike3_sw.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-sw-contact3-v3.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 12,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 26,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        104,
+        104
+      ],
+      "trim_box": [
+        15,
+        30,
+        64,
+        91
+      ],
+      "before_resize": [
+        49,
+        61
+      ],
+      "placed_size": [
+        49,
+        61
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        15,
+        34,
+        64,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        478,
+        1104
+      ],
+      "native_scale_group": "hero-sw-strike-v2-sheet5px-isolated12px",
+      "palette_scope": "manifest_cycle",
+      "sha256": "7e69e501464ade7f467e08db9415ae5e391b8a5eeba3588d3603ea741e301a70"
+    },
+    {
+      "name": "hero_strike4_sw",
+      "file": "hero_strike4_sw.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-sw-follow4-v3.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cell_size": 12,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 23,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        104,
+        104
+      ],
+      "trim_box": [
+        15,
+        30,
+        64,
+        91
+      ],
+      "before_resize": [
+        49,
+        61
+      ],
+      "placed_size": [
+        49,
+        61
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        15,
+        34,
+        64,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        478,
+        1104
+      ],
+      "native_scale_group": "hero-sw-strike-v2-sheet5px-isolated12px",
+      "palette_scope": "manifest_cycle",
+      "sha256": "8b4e062ce67462dc7890b5e8020ef03d26aa779958e407fa5807328fff15e8bc"
+    }
+  ],
+  "shared_palette": {
+    "api": "pixel_perfecter.palettes.reduce_colors",
+    "max_colors": 32,
+    "visible_colors_before": 814,
+    "visible_colors_after": 32,
+    "palette_rgb": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        15,
+        20,
+        30
+      ],
+      [
+        37,
+        47,
+        56
+      ],
+      [
+        50,
+        72,
+        92
+      ],
+      [
+        53,
+        23,
+        8
+      ],
+      [
+        75,
+        99,
+        116
+      ],
+      [
+        81,
+        55,
+        50
+      ],
+      [
+        82,
+        84,
+        86
+      ],
+      [
+        108,
+        45,
+        14
+      ],
+      [
+        112,
+        105,
+        94
+      ],
+      [
+        113,
+        121,
+        123
+      ],
+      [
+        117,
+        86,
+        63
+      ],
+      [
+        123,
+        55,
+        46
+      ],
+      [
+        148,
+        68,
+        17
+      ],
+      [
+        153,
+        129,
+        100
+      ],
+      [
+        160,
+        100,
+        73
+      ],
+      [
+        172,
+        170,
+        172
+      ],
+      [
+        175,
+        72,
+        47
+      ],
+      [
+        184,
+        109,
+        42
+      ],
+      [
+        193,
+        159,
+        123
+      ],
+      [
+        196,
+        115,
+        83
+      ],
+      [
+        212,
+        89,
+        42
+      ],
+      [
+        212,
+        133,
+        38
+      ],
+      [
+        217,
+        139,
+        100
+      ],
+      [
+        226,
+        111,
+        67
+      ],
+      [
+        228,
+        188,
+        160
+      ],
+      [
+        241,
+        218,
+        200
+      ],
+      [
+        243,
+        144,
+        70
+      ],
+      [
+        244,
+        158,
+        110
+      ],
+      [
+        247,
+        202,
+        124
+      ],
+      [
+        255,
+        228,
+        147
+      ],
+      [
+        255,
+        255,
+        255
+      ]
+    ],
+    "dithering": "none",
+    "scope": "all reconstructed frames in this manifest"
+  },
+  "native_scale_group": "hero-sw-strike-v2-sheet5px-isolated12px",
+  "scale_review": "V2 source334px standingbody uses common5px grid (about67nativepx; accepted SWidle65). Isolated1254px canvases derive from512px phase2 crop, scale2.4492; common12px isolated grid approximates5px*2.4492=12.2461 with about2percent pitch difference. Crouch height and source stance are retained; no per-pose fitting/resizing. Authored roots compensate demonstrated sheet packing offsets; both singles share the scaled phase2 root. Ground contact roots measured on planted feet: phase2[195,450], singles[478,1104] at the nearest12px grid boundary to its scaled root. This retains a common ground pivot, not a per-pose scale fit.",
+  "integration_review": {
+    "date": "2026-09-10",
+    "reviewer": "root",
+    "scope": "Runtime integration and production captures reviewed for this iteration; not final visual polish.",
+    "native_build_and_core_suites": "passed",
+    "production_scenarios": {
+      "passed": 64,
+      "fullscreen_average_ms": 18.7,
+      "dense_average_ms": 9.4
+    },
+    "browser_checks": {
+      "passed": 32,
+      "total": 32
+    },
+    "capture_review": "Live3440x1440 window viewed and closed; actual SW/NW/NE walking frames and all three equipped strike contact captures viewed.",
+    "limitations_policy": "Existing identity,palette,registration and source-generation observations remain unchanged."
+  }
+}

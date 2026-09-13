@@ -1,0 +1,285 @@
+{
+  "version": 1,
+  "scope": "NE six-phase palette-pinned provisional integration; all paths below are repository relative",
+  "reproduction_boundary": "Exact active reproduction starts from the six preserved native PNGs. Re-run native/tools/raster/hero-strike-ne.json with the external Pixel Respecter version and source fingerprints recorded in the active report. No generated source or old candidate recipe is executed by import_all for this cycle.",
+  "historical_batch_note": "The original windup/commit/recovery inputs were jointly quantized with superseded contact/followthrough candidates. Those immutable selected outputs are retained exactly. Historical batch recipes/reports retain their original unselected records, but their absent rejected sibling PNGs are not required dependencies of the active import. Do not claim that the historical batch can be rerun from this curated subset.",
+  "hash_policy": "Current text SHA256 uses CRLF-to-LF only; binary hashes use raw bytes. Historical raw prompt/source-report fields are left unchanged, and the raw working-file hashes here are separate historical observations.",
+  "active_inputs": [
+    {
+      "path": "native/client/assets/raster/runtime/hero_ne.png",
+      "role": "immutable selected native input",
+      "sha256": "aafeeed5b41a4ee6cad27d6331b0dec4e121ba711c86380ca2a83228a322c0c5",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/client/assets/raster/source/actors_hero-strike-ne-candidate/windup.png",
+      "role": "immutable selected native input",
+      "sha256": "a44cc816d6fdfa8faac813eadf352b2d51d89669b5698b6b3d422159856cd3ba",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/client/assets/raster/source/actors_hero-strike-ne-candidate/commit.png",
+      "role": "immutable selected native input",
+      "sha256": "e3a1b3c14472ea809af3dd592bdf582242252a56bbb77aed49d55c867cec17c3",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/client/assets/raster/source/actors_hero-strike-ne-contact-v6-candidate/contact-cell11.png",
+      "role": "immutable selected native input",
+      "sha256": "a01d04feff3a6340d808c04b23ad8e289ef86f531b36052364e581ddb6d213e6",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/client/assets/raster/source/actors_hero-strike-ne-followthrough-v3-candidate/followthrough.png",
+      "role": "immutable selected native input",
+      "sha256": "3b878d039cbbfb65afbab630cd5c9bfdeba597a273f691014216a9c30edf0806",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/client/assets/raster/source/actors_hero-strike-ne-candidate/recovery.png",
+      "role": "immutable selected native input",
+      "sha256": "3439b11bb1e655f977724588ad26e980d83b5a88575b4dd163858284ab75c8ca",
+      "hash_policy": "raw_binary"
+    }
+  ],
+  "active_recipes": [
+    {
+      "path": "native/tools/raster/hero-strike-ne.json",
+      "role": "active reproducible six-frame import",
+      "sha256": "e7b7dd26dd64dae373f2fb492f2266b4801664bc24856504e5419c5b512ea856",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "e7b7dd26dd64dae373f2fb492f2266b4801664bc24856504e5419c5b512ea856"
+    },
+    {
+      "path": "native/tools/raster/import_assets.py",
+      "role": "actual Pixel Respecter API adapter",
+      "sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017"
+    }
+  ],
+  "historical_provenance": [
+    {
+      "path": "native/client/assets/raster/source/actors_hero-strike-ne-windup-v2.png",
+      "role": "selected generated source",
+      "sha256": "157f44650116a0683996d9deb85f3332225e496363744c3e5d9f507670b4116b",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/actors_hero-strike-ne-windup-v2.txt",
+      "role": "exact submitted prompt; embedded historical raw hashes are not rewritten",
+      "sha256": "dd447d1fc069fb9775f29e349054ee6abff7dd9292001c7b25e61cf2dc42df9c",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "dd447d1fc069fb9775f29e349054ee6abff7dd9292001c7b25e61cf2dc42df9c"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/actors_hero-strike-ne-windup-v2.provenance.json",
+      "role": "historical source-generation record; original candidate judgments unchanged",
+      "sha256": "80969073367d08299d535419846f274f126bb1df531d913d8737d95ac3f26e60",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "80969073367d08299d535419846f274f126bb1df531d913d8737d95ac3f26e60"
+    },
+    {
+      "path": "native/client/assets/raster/source/actors_hero-strike-ne-contact-v3.png",
+      "role": "selected generated source",
+      "sha256": "32801fb1475e9a7d6ca17e82647b493ec43fe0bffc4ad421cc328c9f6e8561da",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/actors_hero-strike-ne-contact-v3.txt",
+      "role": "exact submitted prompt; embedded historical raw hashes are not rewritten",
+      "sha256": "bae6cc902ad5eccf45e209b8cacdc52ab4196643188e58d435812561183a954b",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "bae6cc902ad5eccf45e209b8cacdc52ab4196643188e58d435812561183a954b"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/actors_hero-strike-ne-contact-v3.provenance.json",
+      "role": "historical source-generation record; original candidate judgments unchanged",
+      "sha256": "159bde5a26ee00c4e868ada9b1c3c7a2f0ed94de55c5b863f83ad5bd470d2025",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "36b08ed68c1e0b34972913b7775fd819c04adc2a97cda42c87f94093f216910d"
+    },
+    {
+      "path": "native/client/assets/raster/source/actors_hero-strike-ne-contact-v6.png",
+      "role": "selected generated source",
+      "sha256": "5a9b30d1687906af04a3e9c6fa1ddada002f643e385982f0455a694e2928abd7",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/actors_hero-strike-ne-contact-v6.txt",
+      "role": "exact submitted prompt; embedded historical raw hashes are not rewritten",
+      "sha256": "eef97885ca46047bc1131284ab9c49826110166b8125c923d7bb74afb50e64f7",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "eef97885ca46047bc1131284ab9c49826110166b8125c923d7bb74afb50e64f7"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/actors_hero-strike-ne-contact-v6.provenance.json",
+      "role": "historical source-generation record; original candidate judgments unchanged",
+      "sha256": "df28224ee05ae1d22d70d05c1a22632511bda0262c7683bf5463e64ab3512b39",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "c76f57c450c4858092f3175c32ddf60ee039a86c5c4b8434ee00da8a57da1fc3"
+    },
+    {
+      "path": "native/client/assets/raster/source/actors_hero-strike-ne-followthrough-v3.png",
+      "role": "selected generated source",
+      "sha256": "e88608cf5073110741d0832db327e226c3e7592f233ee3b12a6816abac2f492d",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/actors_hero-strike-ne-followthrough-v3.txt",
+      "role": "exact submitted prompt; embedded historical raw hashes are not rewritten",
+      "sha256": "d0017dd7f0ee785e72c84664e940d596de68a4b782a76126a7d2704b4f70e529",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "d0017dd7f0ee785e72c84664e940d596de68a4b782a76126a7d2704b4f70e529"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/actors_hero-strike-ne-followthrough-v3.provenance.json",
+      "role": "historical source-generation record; original candidate judgments unchanged",
+      "sha256": "8b431cf265e8979ef73110cddb5464e5f86655722045b2779e72a9580fafa7fa",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "f630573f5ff2c0f72e70d7a8ab7d711290f397de9c9655999ed62981f8e39996"
+    },
+    {
+      "path": "native/client/assets/raster/source/actors_hero-strike-ne-recovery-v1.png",
+      "role": "selected generated source",
+      "sha256": "83e379b710b8a8e04159e15d008436e6ede4606196716f31928e42f99a520796",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/actors_hero-strike-ne-recovery-v1.txt",
+      "role": "exact submitted prompt; embedded historical raw hashes are not rewritten",
+      "sha256": "a8917af251237521e8fbf30657f4e2e9ebbfbf16b14d59c79422ffc07d64a55e",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "a8917af251237521e8fbf30657f4e2e9ebbfbf16b14d59c79422ffc07d64a55e"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/actors_hero-strike-ne-recovery-v1.provenance.json",
+      "role": "historical source-generation record; original candidate judgments unchanged",
+      "sha256": "36229a86bb18c83f62a28b63b776a8e54854061230afc71481a9d685acd02b1b",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "156726bfb980dc6976a4259bda9a9dc2b6c85911dfa53f01a86d838c166e16ff"
+    },
+    {
+      "path": "native/client/assets/raster/source/actors_hero-strike-ne-windup-v2-cell12.png",
+      "role": "preserved generation/import reference snapshot, not an active phase",
+      "sha256": "6f43247be0aec45c1bf276f2053a25760efe3c56b074f9782653307f2df32da1",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/client/assets/raster/source/actors_hero-strike-ne-reference-followthrough12.png",
+      "role": "preserved generation/import reference snapshot, not an active phase",
+      "sha256": "c25d45289113a2ceaa57fdfde449d0fd049824a503d8c2a0fe5f09245075e1a9",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/client/assets/raster/source/actors_hero-strike-ne-contact-v6-reference-commit.png",
+      "role": "preserved generation/import reference snapshot, not an active phase",
+      "sha256": "e3a1b3c14472ea809af3dd592bdf582242252a56bbb77aed49d55c867cec17c3",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/client/assets/raster/source/actors_hero-strike-ne-followthrough-v3-reference-contact.png",
+      "role": "preserved generation/import reference snapshot, not an active phase",
+      "sha256": "a01d04feff3a6340d808c04b23ad8e289ef86f531b36052364e581ddb6d213e6",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/client/assets/raster/source/actors_hero-strike-ne-followthrough-v3-reference-recovery.png",
+      "role": "preserved generation/import reference snapshot, not an active phase",
+      "sha256": "3439b11bb1e655f977724588ad26e980d83b5a88575b4dd163858284ab75c8ca",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/actors_hero-strike-ne-repair-candidate.json",
+      "role": "archived precursor recipe; not invoked by active import",
+      "sha256": "f8919f7891e9e08d9025b541f42017c5385940d64d5dbed91b3580768f5bf755",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "f8919f7891e9e08d9025b541f42017c5385940d64d5dbed91b3580768f5bf755"
+    },
+    {
+      "path": "native/client/assets/raster/source/actors_hero-strike-ne-candidate/actors_hero-strike-ne-repair-candidate.provenance.json",
+      "role": "original native-input reconstruction evidence; unselected sibling records remain historical",
+      "sha256": "53c26f220e9eae2b143e5a04b9f53700187d9cbf73c62ec1b9dee27bc064d6a4",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "678b32409a7998b35066618f90e3862029322f9edb112bb1d887dfa1c79b1799"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/actors_hero-strike-ne-windup-v2-import.json",
+      "role": "archived precursor recipe; not invoked by active import",
+      "sha256": "201bd543a15a2518ed46509b46826c1fc2a8255de18f2ea2a64a24ab3a831a4b",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "201bd543a15a2518ed46509b46826c1fc2a8255de18f2ea2a64a24ab3a831a4b"
+    },
+    {
+      "path": "native/client/assets/raster/source/actors_hero-strike-ne-windup-v2-import.provenance.json",
+      "role": "original native-input reconstruction evidence; unselected sibling records remain historical",
+      "sha256": "899efbd1ac6bebee61f7a1280f2de575b9a17f2705d774a4e5d91fbfe1faa665",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "232ce4bbbaeee81a399da6d25f80699016e838ef9c4a0f66c6913b08b97a878c"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/actors_hero-strike-ne-contact-v6-import.json",
+      "role": "archived precursor recipe; not invoked by active import",
+      "sha256": "ea05a7f43e0f67c9d2dc2174772d235d9a4c7550c5fda43e6057fd9d1732c054",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "ea05a7f43e0f67c9d2dc2174772d235d9a4c7550c5fda43e6057fd9d1732c054"
+    },
+    {
+      "path": "native/client/assets/raster/source/actors_hero-strike-ne-contact-v6-candidate/actors_hero-strike-ne-contact-v6-import.provenance.json",
+      "role": "original native-input reconstruction evidence; unselected sibling records remain historical",
+      "sha256": "4c1fb0f2b8ff95d82f1dbc9cf2c1675b254930eca6f14afabff63345ee3ebb26",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "5f169d376d67b9c54d393d2531bcf219b5f85c57aeccdd592f8f339ddd9d1cec"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/actors_hero-strike-ne-followthrough-v3-import.json",
+      "role": "archived precursor recipe; not invoked by active import",
+      "sha256": "b36eb758640ad75cb41f6da752200161ab53942748a0f0283e8ae0f5cabb3002",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "b36eb758640ad75cb41f6da752200161ab53942748a0f0283e8ae0f5cabb3002"
+    },
+    {
+      "path": "native/client/assets/raster/source/actors_hero-strike-ne-followthrough-v3-candidate/actors_hero-strike-ne-followthrough-v3-import.provenance.json",
+      "role": "original native-input reconstruction evidence; unselected sibling records remain historical",
+      "sha256": "28a10d4a85226476c837b7f8c8e80947091c4218d50000e62b7c9e6b9a72a9d2",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "2d8426c37f26da3f7f92a1056f58668cb77d2e9788400d2d20086855166fe20d"
+    }
+  ],
+  "external_project": {
+    "path": "Z:/Code/Python/pixel-perfecter",
+    "vendored": false,
+    "provenance": "native/client/assets/raster/runtime/hero-strike-ne.provenance.json"
+  },
+  "limitations": [
+    "Root viewed fixed-origin native/3x palette comparison, native equipped NE grids and actual equipped NE hit. Production contact is reviewed for provisional integration; this is not final visual polish.",
+    "Each selected input is an immutable native 80x96 reconstruction. Actual Pixel Respecter cell1 reconstruction and palette snap preserve every alpha value, pixel position and common pivot[40,96]; no individual pose fitting or rescaling.",
+    "CIELAB nearest-color matching pins RGB to the accepted NE idle palette. Followthrough remains wider, the return to recovery is fast, and anatomical/material differences remain despite successful production contact integration.",
+    "Ready uses the actual accepted runtime hero_ne.png and remains pixel-identical; the obsolete candidate idle is excluded.",
+    "The selected windup, commit and recovery native inputs retain their earlier batch palette. The original batch report is historical provenance; exact active reproduction starts from these preserved native PNGs and does not rerun superseded candidate poses.",
+    "Bow/staff checks verify attachment and sampling only; they do not establish a bow draw/release or staff casting animation."
+  ],
+  "previous_active_recipe_hashes": [
+    [
+      {
+        "path": "native/tools/raster/hero-strike-ne.json",
+        "role": "active reproducible six-frame import",
+        "sha256": "f7a7003d2178807f5e9035d3ab0c703c0ea4474a58435949a4752eba13140ae7",
+        "hash_policy": "canonical_lf_crlf_to_lf_only",
+        "historical_working_file_raw_sha256": "f7a7003d2178807f5e9035d3ab0c703c0ea4474a58435949a4752eba13140ae7"
+      },
+      {
+        "path": "native/tools/raster/import_assets.py",
+        "role": "actual Pixel Respecter API adapter",
+        "sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+        "hash_policy": "canonical_lf_crlf_to_lf_only",
+        "historical_working_file_raw_sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017"
+      }
+    ]
+  ],
+  "production_review": {
+    "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+    "evidence": "native/client/assets/raster/reviews/2026-09-10-actions/retained-evidence.json",
+    "scope": "Root-reported supported production captures and gates; successful integration for this iteration, not final visual polish."
+  }
+}

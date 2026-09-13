@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-GOV-008",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "4502b0295588ba5ac163c1fb6c92821a9eec5238",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "roadmap-validate",
+  "platform": "win32-x64",
+  "toolchain": "Python 3 / docs/execution/pack/tools",
+  "commands": [
+    {"run": "python tools/roadmap.py validate", "exit_code": 0},
+    {"run": "python -m unittest discover -s tools -p test_*.py -v", "exit_code": 0}
+  ],
+  "assertions": [
+    "200 goals and 689 edges validate",
+    "intentional cycle, missing-ID, and overlap fixtures fail",
+    "wildcard overlap and shared exclusive resources are not independent"
+  ],
+  "negative_control": {
+    "name": "wildcard overlap or shared integration hook treated as independent",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "decision",
+      "path": "docs/execution/decisions/audit-dependency-and-path-scheduling.md",
+      "produced_by": "python tools/roadmap.py validate && python -m unittest discover -s tools -p test_*.py -v"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "NOT_REQUIRED",
+  "limitations": [
+    "Read-only pack validator. VG-GOV-002 remains unstamped; wave() still returns no READY work.",
+    "Does not mint TASK numbers."
+  ]
+}

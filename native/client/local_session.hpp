@@ -7,9 +7,11 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "session.hpp"
+#include "input/make-aim-independent-of-motion.hpp"
 #include "verdigris/core.hpp"
 
 namespace verdigris::client {
@@ -23,22 +25,33 @@ class LocalCoreSession final : public IClientSession {
   void shutdown() override;
   void submit(const ClientCommand& command) override;
   void poll() override;
+  void advance_fixed_tick() override;
   ConnectionState connection_state() const override { return state_; }
   const ClientModel& model() const override { return model_; }
   std::vector<PresentationEvent> drain_events() override;
   const std::string& last_error() const override { return last_error_; }
+
+  // Local content supplies collision to local authority; remote collision
+  // always belongs to the server and has no corresponding client setter.
+  void set_navigation_obstacles(std::vector<verdigris::NavigationObstacle> obstacles);
+  std::vector<verdigris::Vec2> navigation_anchors() const;
 
   // Deterministic-test escape hatch. Scenario drivers may use this to reach
   // the simulation; production presentation code must not.
   verdigris::Simulation* simulation_for_scenarios() { return simulation_.get(); }
 
  private:
+  void queue_command(const verdigris::Command& command);
   void refresh_model();
   void translate_new_events();
 
   std::uint64_t seed_;
   std::string house_name_;
+  move::AimHold aim_hold_{};
   std::unique_ptr<verdigris::Simulation> simulation_;
+  std::vector<verdigris::Command> pending_commands_;
+  // Event-authored drop anchors, retained only while the item is on this floor.
+  std::unordered_map<std::string, verdigris::Vec2> ground_positions_;
   ConnectionState state_ = ConnectionState::Idle;
   ClientModel model_;
   std::vector<PresentationEvent> pending_events_;

@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: ONE transparent low-resolution pixel-art game character sprite.
+
+The provided image is the approved identity and pixel-art style reference. Preserve it with the strongest possible visual fidelity: same small skull, thin skeletal anatomy, charcoal torn shroud, warm ivory bones, ordinary copper-brown bronze discs, dark shadows, sparse flat color ramps, exact low pixel count. Change ONLY the viewpoint/pose to the requested missing direction. No character redesign. Produce ONE actor, ONE pose, no sheet.
+
+Required physical orientation: NORTHWEST, travelling diagonally toward the UPPER LEFT corner of the image, AWAY from the viewer. Show the character's UPPER BACK and LEFT SIDE. The head is to the LEFT of the hips in screen space. The nose points upper-left and must be hidden behind the skull; NO EYE SOCKETS, TEETH, FACE, FRONT RIBCAGE or chest ornament visible. We see the BACK OF THE SKULL, shoulder blades, upper spine and back of the charcoal shroud. Feet and claw hands point along the same upper-left direction. This is the opposite diagonal to an upper-right / northeast back view. Quiet hostile ready stance, slightly hunched, open skeletal hands. Do not have it look back over a shoulder.
+
+Pixel design: actual authored low-resolution pixel art, body about64 logical pixels tall at seven-head adult proportions. Large obvious square pixel clusters, 32-color palette maximum, grouped flat 3-to-4-tone materials, dark stepped silhouette. No painterly fine detail, gradients, stipple, blur, texture noise or antialiasing. Match reference pixel density and color choices. Warm bronze metal only.
+
+One full complete figure centered with generous transparent margin and feet on a shared horizontal baseline near the bottom. Camera is isometric 3/4 slightly above at30degrees. Background must be genuinely empty transparent alpha. Output PNG with transparency; keep head, hands and feet complete. Only one wight. No labels, text, effects, scenery, cast shadows or other actors.

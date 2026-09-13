@@ -1,0 +1,85 @@
+{
+  "frames": [
+    {
+      "frame": 0,
+      "bounds": [
+        24,
+        41,
+        55,
+        96
+      ],
+      "height": 55,
+      "visible_colors": 23,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "sha256": "984ab024c806c18948710c60800483232132a534b67c8da30a0897f69042f269"
+    },
+    {
+      "frame": 1,
+      "bounds": [
+        26,
+        39,
+        55,
+        95
+      ],
+      "height": 56,
+      "visible_colors": 24,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "sha256": "1f2a54a48a4e27be80d52ae5ef8fa0d36e6a4640392ed278263370d870a939ba"
+    },
+    {
+      "frame": 2,
+      "bounds": [
+        23,
+        42,
+        58,
+        96
+      ],
+      "height": 54,
+      "visible_colors": 24,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "sha256": "a1e4e582c6d10d7bcae6c9bf4dc30b8c2b87cfdec28df683905da44b552999a8"
+    },
+    {
+      "frame": 3,
+      "bounds": [
+        24,
+        40,
+        54,
+        95
+      ],
+      "height": 55,
+      "visible_colors": 26,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "sha256": "6455e5d13ab8e601a504f5617e419e336c26a84443f8f1f0ab3acf730b108892"
+    }
+  ],
+  "approved_contact_exact_bytes": true,
+  "canvas": [
+    80,
+    96
+  ],
+  "pivot": [
+    40,
+    96
+  ],
+  "palette": "accepted raider_se fixed32",
+  "durations_ms": [
+    160,
+    160,
+    160,
+    160
+  ],
+  "duplicate_pairs": []
+}

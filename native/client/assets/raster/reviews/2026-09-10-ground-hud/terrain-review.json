@@ -1,0 +1,64 @@
+{
+  "viewed": [
+    "native candidate64x64",
+    "3x3 repeated preview at4x",
+    "current versus candidate3x3 comparison at2x"
+  ],
+  "visual_verdict": "Substantial reduction in high-frequency speckle. Broad muted soil clusters and sparse chips/scuffs survive native reconstruction. Repeated broad patterns remain perceptible.",
+  "edge_verdict": "Opposite edges are not equal. Left/right join MAD3.469 exceeds internal horizontal1.414; top/bottom MAD0.807 is below internal vertical1.443. Absolute contrast is low, but no seamless claim is made.",
+  "metrics": {
+    "candidate": {
+      "size": [
+        64,
+        64
+      ],
+      "colors": 24,
+      "alpha_range": [
+        255,
+        255
+      ],
+      "mean_rgb": [
+        129.3,
+        97.3,
+        61.42
+      ],
+      "luma_std": 3.163,
+      "internal_horizontal_mean_abs_rgb": 1.414,
+      "internal_vertical_mean_abs_rgb": 1.443,
+      "opposite_lr_mean_abs_rgb": 3.469,
+      "opposite_tb_mean_abs_rgb": 0.807,
+      "opposite_lr_p95_abs_rgb": 8.0,
+      "opposite_tb_p95_abs_rgb": 4.0,
+      "edge_exact_equal": false
+    },
+    "current": {
+      "size": [
+        64,
+        64
+      ],
+      "colors": 11,
+      "alpha_range": [
+        255,
+        255
+      ],
+      "mean_rgb": [
+        128.93,
+        92.85,
+        58.33
+      ],
+      "luma_std": 6.739,
+      "internal_horizontal_mean_abs_rgb": 4.394,
+      "internal_vertical_mean_abs_rgb": 4.519,
+      "opposite_lr_mean_abs_rgb": 3.177,
+      "opposite_tb_mean_abs_rgb": 3.052,
+      "opposite_lr_p95_abs_rgb": 16.0,
+      "opposite_tb_p95_abs_rgb": 16.0,
+      "edge_exact_equal": false
+    }
+  },
+  "rejected_claims": [
+    "No verified seamless-tiling recipe.",
+    "No final gameplay acceptance from a texture preview."
+  ],
+  "root_review": "Root viewed comparison and repeated4x preview and accepted this source for a production trial, with the repeated-pattern/seam caveat."
+}

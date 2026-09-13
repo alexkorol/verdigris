@@ -1,7 +1,8 @@
 ---
 task: TASK-0094
 title: Native asset provenance manifest audit
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head 8b561963, 2026-08-23)
 packet: MECHANICAL
 topology: INDEPENDENT
 job: MECHANICAL

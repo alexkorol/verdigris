@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "tool": "image_gen.imagegen",
+  "model": "tool default; no selector or model identification exposed",
+  "calls": 1,
+  "source": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-diablo-study\\native\\client\\assets\\raster\\source\\actors_hero-strike-ne-contact-v3.png",
+  "source_sha256": "32801fb1475e9a7d6ca17e82647b493ec43fe0bffc4ad421cc328c9f6e8561da",
+  "source_size": [
+    1145,
+    1374
+  ],
+  "source_mode": "RGB",
+  "source_alpha_extrema": null,
+  "original_tool_output": "C:/Users/Alex/.codex/generated_images/01a0896d-2712-78b1-8ee3-5e362a202349/exec-fb7d0a06-5177-4168-8eba-e4c140cfc7ee.png",
+  "prompt_file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-diablo-study\\native\\client\\assets\\raster\\prompts\\actors_hero-strike-ne-contact-v3.txt",
+  "prompt_sha256": "bae6cc902ad5eccf45e209b8cacdc52ab4196643188e58d435812561183a954b",
+  "reference_images": [
+    {
+      "path": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-diablo-study\\native\\client\\assets\\raster\\source\\actors_hero-strike-ne-windup-v2-cell12.png",
+      "sha256": "6f43247be0aec45c1bf276f2053a25760efe3c56b074f9782653307f2df32da1",
+      "role": "reviewed preparation pose to edit for arm continuity; reference 1",
+      "inspected_before_generation": true
+    },
+    {
+      "path": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-diablo-study\\native\\client\\assets\\raster\\runtime\\hero_ne.png",
+      "sha256": "aafeeed5b41a4ee6cad27d6331b0dec4e121ba711c86380ca2a83228a322c0c5",
+      "role": "original accepted character identity, camera and palette anchor; reference 2",
+      "inspected_before_generation": true
+    }
+  ],
+  "published_workflow": {
+    "url": "https://www.flixly.ai/blog/stop-motion-chatgpt-images-2-5",
+    "method": "Previous reviewed frame first, original identity second, one focused physical change.",
+    "adaptation": "Single-frame adult NE melee phases; this is our repair experiment, not the original fox prompt or a verified published sprite recipe."
+  },
+  "status": "candidate commit pose",
+  "visual_verdict": "Left arm and bronze right guard are coherent. Pose reads as overhead loading, so it was reclassified as commit rather than called contact.",
+  "runtime_acceptance": false,
+  "conversion_manifest": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-diablo-study\\native\\client\\assets\\raster\\prompts\\actors_hero-strike-ne-repair-candidate.json"
+}

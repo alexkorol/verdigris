@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "output_dir": "v2-planes",
+  "defaults": {
+    "alpha_mode": "crisp",
+    "max_colors": 24,
+    "cell_size": 10,
+    "trim": false,
+    "fill": true,
+    "align": "top_left",
+    "acceptance": "candidate_only_pending_repeated_wall_review"
+  },
+  "known_limitations": [
+    "Source is RGB with painted background. Both plane crops lie entirely within the opaque authored rectangle; no alpha-removal claim.",
+    "Source cap stretched relative to guide; cap and front face use measured independent plane normalization to approved64x64 and64x32. This is module registration, not actor pose fitting.",
+    "Extra authored cap-rim strip y960..997 is excluded, retaining source unchanged.",
+    "Straight full edges are geometric; opposite-edge colors and masonry joints still need literal repeat review."
+  ],
+  "sheets": [
+    {
+      "source": "../../../client/assets/raster/source/wall-stone-cutaway-v2.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "wall_stone_cutaway_cap",
+          "source_box": [
+            194,
+            261,
+            828,
+            959
+          ],
+          "canvas": [
+            64,
+            64
+          ]
+        },
+        {
+          "name": "wall_stone_cutaway_face",
+          "source_box": [
+            194,
+            997,
+            828,
+            1277
+          ],
+          "canvas": [
+            64,
+            32
+          ]
+        }
+      ]
+    }
+  ],
+  "shared_palette_max_colors": 24
+}

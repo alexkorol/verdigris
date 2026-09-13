@@ -1,0 +1,148 @@
+{
+  "version": 1,
+  "acceptance": "root_production_monster_motion_reviewed_provisional_2026-09-10",
+  "previous_acceptance": "root_monster_motion_candidate_reviewed_pending_production_2026-09-10",
+  "scope": "Metadata-only adoption after root reviewed actual production pursuit/scene captures and normal 3440 live entry/F3. All 174 PNGs are unchanged; no source or candidate metadata is rewritten. Provisional game integration retains identity/hip caveats and makes no completed manual combat or smooth-video claim.",
+  "previous_canonical_sha256": {
+    "native/tools/raster/raider-walk-se.json": "72703a4727b26d3332d02dc1fc418e0ab330ab3ab7c0bc22827130c3a833a013",
+    "native/tools/raster/wight-walk-sw.json": "ab4c41f532d3c03ca7269841baeff0a78756be27ea43e62f4deeb168970682fa",
+    "native/client/assets/raster/runtime/raider-walk-se.provenance.json": "55cd9a569d84e9890b255da697215df274483c71f1f38e38894dd7b12a648566",
+    "native/client/assets/raster/runtime/wight-walk-sw.provenance.json": "e436bb0ed04bc5e116258083d6a3879f7d22dcaa230e4fb4f81da1e91007b4e7",
+    "native/client/assets/raster/runtime/catalog.json": "4afaf476b35dfc36ac06ac1be393a2fff6467bb541f4f93cd9efa17c98403450",
+    "native/tools/raster/monster-motion-wave-dependencies.json": "af1c8b20e3e903a36e062097e1a9687b40662b3c580193937d7e1af42cb36d60",
+    "native/tools/raster/monster-motion-wave-paths.json": "747ee8471b99e40b27bbe5ccabca7a41bf7bea1ce9c27fdb9725b2d05dd2fe8a"
+  },
+  "current_active_metadata_canonical_sha256": {
+    "native/tools/raster/raider-walk-se.json": "900bd1353322de14767216439cb7aa7b4479492e5a124fc81e063ca5953df789",
+    "native/tools/raster/wight-walk-sw.json": "1157b5817c14d52a7048291353d1762d99a8b8748e1a04f00b166443290619bb",
+    "native/client/assets/raster/runtime/raider-walk-se.provenance.json": "d29352f42d4924f6544405e416852e0209db6bef5e87b47cdbb0c0f71e2eda7c",
+    "native/client/assets/raster/runtime/wight-walk-sw.provenance.json": "8dd7f2b77178a99fdcb72b8e4841db80a70221d75f1c7733345b460c609572fc",
+    "native/client/assets/raster/runtime/catalog.json": "cc02a795494090d2157364be700ee9f50d67dfb0e7c21be687ed1cc3e7e77c7f"
+  },
+  "commands": [
+    [
+      "Z:/Code/Python/pixel-perfecter/.venv/Scripts/python.exe",
+      "native/tools/raster/import_assets.py",
+      "native/tools/raster/raider-walk-se.json",
+      "--project",
+      "Z:/Code/Python/pixel-perfecter"
+    ],
+    [
+      "Z:/Code/Python/pixel-perfecter/.venv/Scripts/python.exe",
+      "native/tools/raster/import_assets.py",
+      "native/tools/raster/wight-walk-sw.json",
+      "--project",
+      "Z:/Code/Python/pixel-perfecter"
+    ],
+    [
+      "Z:/Code/Python/pixel-perfecter/.venv/Scripts/python.exe",
+      "native/tools/raster/build_catalog.py"
+    ]
+  ],
+  "command_exit_codes": [
+    0,
+    0,
+    0
+  ],
+  "verification": {
+    "runtime_png_count": 174,
+    "all_runtime_pngs_raw_unchanged": true,
+    "exact_candidate_runtime_matches": 12,
+    "historical_candidate_and_source_metadata_unchanged": {
+      "native/tools/raster/raider-walk-se-guided/raider-walk-se-guided-candidate.json": "f611c7171f207b5433caaf82318454ac55daa7a946533b058904be71fae8fbcb",
+      "native/client/assets/raster/prompts/raider-walk-se-guided-provenance.json": "15731805aaca9f9154bf34b1636935e6ddde6490568536769ef9a5c6bf6d6d52",
+      "native/client/assets/raster/prompts/raider-walk-se-guided-contact-right-v1.txt": "5d7e5f03235344d804d1a1f0a4386a34a05e9801cdb4a7387ae213d9efbf202a",
+      "native/client/assets/raster/prompts/raider-walk-se-guided-contact-right-v2.txt": "4b2f0bb006991c23b26e446068f4d88b15e91095087f8dfc5418b54152d78f9e",
+      "native/client/assets/raster/prompts/raider-walk-se-guided-contact-left-v1.txt": "2d2fe0b1661af9f7a4efc24fdb61423d254d1d8248889d19c43d15fc8f828b59",
+      "native/client/assets/raster/prompts/raider-walk-se-guided-passing-left-v1.txt": "aac7cba57ca28935667ccaff1a5a392dc7b5b20643d73e558275c95f2e0f4e5a",
+      "native/client/assets/raster/prompts/raider-walk-se-guided-passing-right-v1.txt": "577bc6e4fce0b65b7d51fa0ddcb5d072b4a19364b879d987ace58aa341bd7f92",
+      "native/tools/raster/raider-walk-se-guided/selected/raider-walk-se-guided-candidate.provenance.json": "f2854d4e599f51c45466b62df461d1943853c13c5aa26888100830be76138e50",
+      "native/tools/raster/wight-walk-sw-candidates/selected/import.json": "065d567075e74998ed904d6f37c3f7116ee717c96091424281ccac369b5b03a0",
+      "native/client/assets/raster/prompts/wight-walk-sw-v1.txt": "811d18730c653e03d047956a4b96b32bf28506ab076a9487ebfea3ffa31f1c78",
+      "native/client/assets/raster/prompts/wight-walk-sw-v1.provenance.json": "d32093e235dbec3d3e11754f37d3558c9fff2c21d2dd4b17d6671aa76592f370",
+      "native/tools/raster/wight-walk-sw-candidates/selected/import.provenance.json": "83c9421037d2c0bbfe107ddbe21b66a7d5cb1d711416e57bb0a21b9e87487055",
+      "native/tools/raster/raider-walk-se-guided/raider-walk-se-guided-dependencies.json": "8674ab0ac8b2f2a08555298f89477098de8d08294059fc53d648b093d45c4c46",
+      "native/tools/raster/wight-walk-sw-candidates/selected/dependencies.json": "a8c16ef4c00e8705c4ab2d9476ec67dbd6cb0c257805395b040ed1eb9ae5e17f"
+    }
+  },
+  "exact_png_parity": [
+    {
+      "runtime": "native/client/assets/raster/runtime/raider_walk0_se.png",
+      "candidate": "native/tools/raster/raider-walk-se-guided/selected/raider_walk0_se.png",
+      "sha256": "984ab024c806c18948710c60800483232132a534b67c8da30a0897f69042f269"
+    },
+    {
+      "runtime": "native/client/assets/raster/runtime/raider_walk1_se.png",
+      "candidate": "native/tools/raster/raider-walk-se-guided/selected/raider_walk1_se.png",
+      "sha256": "1f2a54a48a4e27be80d52ae5ef8fa0d36e6a4640392ed278263370d870a939ba"
+    },
+    {
+      "runtime": "native/client/assets/raster/runtime/raider_walk2_se.png",
+      "candidate": "native/tools/raster/raider-walk-se-guided/selected/raider_walk2_se.png",
+      "sha256": "a1e4e582c6d10d7bcae6c9bf4dc30b8c2b87cfdec28df683905da44b552999a8"
+    },
+    {
+      "runtime": "native/client/assets/raster/runtime/raider_walk3_se.png",
+      "candidate": "native/tools/raster/raider-walk-se-guided/selected/raider_walk3_se.png",
+      "sha256": "6455e5d13ab8e601a504f5617e419e336c26a84443f8f1f0ab3acf730b108892"
+    },
+    {
+      "runtime": "native/client/assets/raster/runtime/wight_walk0_sw.png",
+      "candidate": "native/tools/raster/wight-walk-sw-candidates/selected/wight_walk0_sw.png",
+      "sha256": "e629505dd6ded21886aac68d5050e278e30758963fabaa76c2daedd9022d2c74"
+    },
+    {
+      "runtime": "native/client/assets/raster/runtime/wight_walk1_sw.png",
+      "candidate": "native/tools/raster/wight-walk-sw-candidates/selected/wight_walk1_sw.png",
+      "sha256": "27af4bf637fa8b1d4627e3d5c3509748a3090713d9e8c83c0434043c89a4257e"
+    },
+    {
+      "runtime": "native/client/assets/raster/runtime/wight_walk2_sw.png",
+      "candidate": "native/tools/raster/wight-walk-sw-candidates/selected/wight_walk2_sw.png",
+      "sha256": "80045fe9fcc4cca57ad204d2a88e66914ffe243628357c6c481c14401b636475"
+    },
+    {
+      "runtime": "native/client/assets/raster/runtime/wight_walk3_sw.png",
+      "candidate": "native/tools/raster/wight-walk-sw-candidates/selected/wight_walk3_sw.png",
+      "sha256": "22c7bd06c790fa99eccac701cd44bb9341d34f525abea45732d1c432e5035d4e"
+    },
+    {
+      "runtime": "native/client/assets/raster/runtime/wight_walk4_sw.png",
+      "candidate": "native/tools/raster/wight-walk-sw-candidates/selected/wight_walk4_sw.png",
+      "sha256": "b18f2542c7fcf744265123cdd629bc99681503fb5401c6b9986fb4f035db80d5"
+    },
+    {
+      "runtime": "native/client/assets/raster/runtime/wight_walk5_sw.png",
+      "candidate": "native/tools/raster/wight-walk-sw-candidates/selected/wight_walk5_sw.png",
+      "sha256": "ce2dc2315ece93a284ee5946715a30493e2de5200616e0fa0246978d9925083d"
+    },
+    {
+      "runtime": "native/client/assets/raster/runtime/wight_walk6_sw.png",
+      "candidate": "native/tools/raster/wight-walk-sw-candidates/selected/wight_walk6_sw.png",
+      "sha256": "998568b7326ccbd99e4d8f2b71c316e7ada1dc7ee4721da6fa2dce6af416d6a5"
+    },
+    {
+      "runtime": "native/client/assets/raster/runtime/wight_walk7_sw.png",
+      "candidate": "native/tools/raster/wight-walk-sw-candidates/selected/wight_walk7_sw.png",
+      "sha256": "18606fe5684cb36f6e0bb05ca62e7fa9b577f1c65811592d76a3de6c7c7274a9"
+    }
+  ],
+  "root_reported_validation": {
+    "supported_native_suites": "passed",
+    "native_scenarios": {
+      "passed": 72,
+      "total": 72
+    },
+    "browser": {
+      "passed": 32,
+      "total": 32
+    },
+    "importer": {
+      "passed": 10,
+      "total": 10
+    },
+    "equipment": "passed",
+    "evidence_owner": "Root is assembling the final review and freeze; this record does not substitute for those retained logs."
+  },
+  "hash_policy": "Current metadata hashes canonicalize CRLF to LF only. PNGs and historical protected-file observations use raw bytes. Candidate/source/import-generation records retain their original pending-review stage. Promotion-report hashes before adoption are preserved here; its current hash is recorded externally to avoid circular hashes."
+}

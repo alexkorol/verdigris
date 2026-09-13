@@ -1,11 +1,628 @@
 # Run status — PC Verdigris overnight product wave
 
+## HEARTBEAT / coordinator-of-day (claude-architect-pc) — 2026-08-24 ~09:15 PDT
+
+- review sweep tally: root wave COMPLETE. INTEGRATED today: TASK-0167,
+  0168, 0169, 0177, 0180, 0181, 0200 (7 packets; every harness
+  independently reproduced, every asset provenance re-hashed). REVISE:
+  TASK-0182 (invented id space; claude-a lane on r2) and TASK-0166
+  (provenance overclaim on 51 untracked WIZARD sources; claude-b lane on
+  r2). Verdicts + evidence in each task's REVIEW.md.
+- remaining review queue (18): models 0170-0176, content 0178-0179,
+  0191/0193/0195, loops 0197-0199, 0202-0204. Next validation wave
+  dispatching: 0170-0173.
+- TASK-0201 unblock progress: 0200 INTEGRATED (one of its two gates);
+  0190 remains BRIDGE_PREP — claimable per the day-wave broadcast.
+- owner evening items (not fleet-blocking): (1) commit the 51 untracked
+  WIZARD source files in Z:\Code\WIZARD per TASK-0166 REVIEW; (2) review
+  D-129 follow-through: TASK-0108 rev 3 is READY and claimable.
+- human decision needed: NO
+
+## HEARTBEAT / coordinator-of-day claim (architect lane, Claude Code PC) — 2026-08-24 ~08:00 PDT
+
+- coordinator-of-day: CLAIMED by claude-architect-pc per BUS.md (this pushed
+  heartbeat is the claim). Released when a newer heartbeat says so or
+  SUPERVISION thresholds lapse.
+- context: ox-alpha provider API is down (all ox-pc/ox-sw/worker-t lanes
+  stalled); Cursor is the live implementation harness. The review queue is
+  the bottleneck: 13 packets at REVIEW_REQUESTED (0180-0182, 0191, 0193,
+  0195, 0197-0200, 0202-0204).
+- in progress now: four independent validation passes running on
+  TASK-0200 (house line critical path per cursor residual) and
+  TASK-0180/0181/0182 (render adapters). Verdicts + integrations land as
+  they complete; remaining nine follow.
+- landed this morning: cursor prep wave merged (98c7361e lineage), BUS.md
+  binding, D-129 ruled (projectile convention; TASK-0108 SPEC rev 3 owed
+  by architect today), TASK-0201 cursor slice claim now bus-valid.
+- deterministic sentinel: live, Task Scheduler, 30-min cadence
+  (Z:\Code\.fleet\logs\sentinel.log is its liveness proof).
+- human decision needed: NO (board refilled; ruling recorded; next owner
+  touchpoint is the evening review of integrated work)
+
+## Effective READY — Owner Demo P0 refill (14 packets)
+
+Generated from the 2026-08-23 owner interview and validated at program head
+3d358812. These packets are path-disjoint foundations/content/assets. First
+protocol-valid durable claim wins. Each has a 15-minute heartbeat, 40-minute
+lease, two-attempt limit, fallback, evidence, and successor rule.
+
+| Pri | Task | Lane | Owner-visible contribution |
+|---|---|---|---|
+| P0 | TASK-0166 | assets/tooling | WIZARD source/provenance manifest |
+| P0 | TASK-0167 | assets/tooling | Framekit raster slice pack |
+| P0 | TASK-0168 | assets/tooling | WIZARD orb raster pack |
+| P0 | TASK-0169 | assets/tooling | RPG Inventory item-art pack |
+| P0 | TASK-0170 | client model | menu/Escape state model |
+| P0 | TASK-0171 | client model | inventory grid model |
+| P0 | TASK-0172 | client model | paper-doll model |
+| P0 | TASK-0173 | client model | actor animation model |
+| P0 | TASK-0174 | client model | attack VFX model |
+| P0 | TASK-0175 | client model | gate interaction model |
+| P0 | TASK-0176 | client model | instance refresh model |
+| P0 | TASK-0177 | content | town content seed |
+| P0 | TASK-0178 | content | multi-zone graph content |
+| P0 | TASK-0179 | assets/tooling | splash asset pack |
+
+## Sequenced successors — Owner Demo P0 (29 packets)
+
+These are nonclaimable AUTO_RELEASE/DRAFT packets until their dependency and
+current-tip release predicates validate. The coordinator promotes them in small
+collision-free waves; main.cpp/core/networking integration remains serialized.
+
+| Task | Dependency release | Outcome |
+|---|---|---|
+| TASK-0180 | 0167 accepted plus current-tip validation | Framekit render adapter |
+| TASK-0181 | 0168 accepted plus current-tip validation | orb render adapter |
+| TASK-0182 | 0169 accepted plus current-tip validation | item-art render adapter |
+| TASK-0183 | 0170+0179+0180 accepted plus current-tip validation | splash/menu integration |
+| TASK-0184 | 0171+0172+0180+0182 accepted plus current-tip validation | grid inventory/paper doll integration |
+| TASK-0185 | 0181 accepted plus current-tip validation | orb HUD integration |
+| TASK-0186 | 0173 accepted plus current-tip validation | animated actor integration |
+| TASK-0187 | 0174+0186 accepted plus current-tip validation | attack arcs/trails integration |
+| TASK-0188 | 0175+0178 accepted plus current-tip validation | readable gate integration |
+| TASK-0189 | 0176+0188 accepted plus current-tip validation | persistent instance refresh integration |
+| TASK-0190 | 0177 accepted plus current-tip validation | town/NPC runtime integration |
+| TASK-0191 | 0166+0178 accepted plus current-tip validation | Cartographer native adapter |
+| TASK-0192 | 0178+0191 accepted plus current-tip validation | multi-zone runtime |
+| TASK-0193 | 0166 accepted plus current-tip validation | geometric skill-tree model |
+| TASK-0194 | 0193 accepted plus current-tip validation | first level-up tree integration |
+| TASK-0195 | 0166 accepted plus current-tip validation | bounded spell-lattice model |
+| TASK-0196 | 0194+0195 accepted plus current-tip validation | first lattice choice integration |
+| TASK-0197 | 0180+0190 accepted plus current-tip validation | Chronicles Owner pane integration |
+| TASK-0198 | 0169+0184 accepted plus current-tip validation | first Brand crafting loop |
+| TASK-0199 | 0198 accepted plus current-tip validation | Bond progress visibility |
+| TASK-0200 | 0177 accepted plus current-tip validation | House-vs-Scion model |
+| TASK-0201 | 0190+0200 accepted plus current-tip validation | House-vs-Scion integration |
+| TASK-0202 | 0169+0192 accepted plus current-tip validation | recovered item loop |
+| TASK-0203 | 0178+0186+0187 accepted plus current-tip validation | village-defense prologue |
+| TASK-0204 | 0157+0203 accepted plus current-tip validation | Owner Demo audio beats |
+| TASK-0205 | integrated journey dependencies accepted plus current-tip validation | fifteen-minute journey gate |
+| TASK-0206 | 0205 accepted plus current-tip validation | visual fidelity comparison |
+| TASK-0207 | 0205 accepted plus current-tip validation | performance budget |
+| TASK-0208 | 0205+0206+0207 accepted plus current-tip validation | release candidate/correction wave |
+
+
+
+## HEARTBEAT / reviewer lane — 2026-08-24 01:00 UTC
+
+- lane: `verdigris/pc/reviewer` (independent validator, no task claim)
+- worktree: `Z:\Code\Games\delaford\delaford_game`; branch `codex/native-reconstitution`
+- last pushed commit: `19508efc` (program head == origin, 0 ahead / 0 behind; no uncommitted work of mine; the
+  untracked `orchestration/HEARTBEAT-cursor-session.md` is the owner's read-only self-record — left uncommitted)
+- task state: DONE (no in-flight claim); standing by to review any new REVIEW_REQUESTED flip
+- **review triage:** my managed lanes (bb/bc/bd) all shipped+integrated. `ox-pc-bf` (TASK-0082 @ `67fed855`) and
+  `ox-pc-bg` (TASK-0097 @ `524ad481`) are REVIEW_REQUESTED but are STALE DUPLICATES of tasks already integrated
+  under bb/bc — not new review work, flagged not re-reviewed. `ox-pc-bh` (owner lane) is ACTIVE on TASK-0163
+  (`59b299aa`), independent; will validate when it flips REVIEW_REQUESTED.
+- status: blocked/parked — no claimable task (board effective_ready = 1 = already-claimed TASK-0108); awaiting
+  backlog refill + TASK-0108 owner ruling
+- human decision needed: YES — backlog-factory refill to regenerate READY packets; TASK-0108 gate-b ruling.
+
+## HEARTBEAT / triage (coordinator lane) — 2026-08-24 00:30 UTC
+
+- lane: `verdigris/pc/coordinator` (integration lease holder, SUPERVISION.md)
+- worktree: `Z:\Code\Games\delaford\delaford_game`; branch `codex/native-reconstitution`
+- last pushed commit: `66f3b3ae` (program head == origin, 0 ahead / 0 behind; clean tree, no uncommitted work)
+- task state: DONE for all 23 packets shipped this session; no in-flight claim on my lane
+- **collision watch:** owner-launcher branches `ox-pc-bf` (TASK-0082 @ `67fed855`) and
+  `ox-pc-bg` (TASK-0097 @ `524ad481`) hold claims on tasks already integrated this session
+  under lanes bb/bc. These are stale duplicate branches from the separate owner launcher,
+  NOT my managed lanes; their content diverges from the integrated truth. Flagged, not
+  worked on. `ox-pc-bh` (TASK-0163 @ `a2bd0a12`) is independent, no overlap with shipped files.
+- status: active (coordinating), no human decision required for my lane right now
+- next bottleneck: backlog-factory refill (board effective_ready < min_ready 8)
+
+## SHIPPED 23 audits this session — 2026-08-24 00:10 UTC
+
+- **TASK-0160** (visual-kit packaging proof, bd) ACCEPTED + integrated at
+  `2e1d9467`. Implemented `native/tools/verify_native_visual_kit.py` (stdlib,
+  `--check` proves byte-for-byte reproduction; `--regenerate`); negative suite
+  15/15 pass; `__pycache__` cleaned.
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092, 0102, 0093, 0095, 0094, 0096, 0121, 0118, 0115, 0114, 0085, 0136, 0084,
+  0162 all ACCEPTED + integrated.
+- **BOARD EXHAUSTED**: every previously-READY task is now claimed or
+  integrated. `board-sentinel` reports `healthy: false` (effective_ready 1 <
+  min_ready 8). The fleet cannot take new work until the backlog-factory
+  regenerates READY packets.
+- Open items awaiting owner: TASK-0108 QUESTION (ranged telegraph collides
+  with frozen gate-b boss-slam); TASK-0098 PC-014/PC-015 crash-class findings;
+  TASK-0085 denylist-exception ruling; TASK-0121 G-13/G-14 packets + G-15 scale
+  tier; backlog refill.
+
+## SHIPPED 22 audits this session — 2026-08-23 23:50 UTC
+
+- **TASK-0162** (native passive-tree payload hardening, bc) ACCEPTED + integrated
+  at `ef2acd34`. Implemented fail-closed `apply_passive_tree` (schema v2,
+  nonnegative integrals, documented transport bound 65536, deterministic
+  single diagnostic, snapshot preservation); 507 new session-test lines (79
+  PASS), build + session tests green.
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092, 0102, 0093, 0095, 0094, 0096, 0121, 0118, 0115, 0114, 0085, 0136, 0084
+  all ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (P0 ranged combat, QUESTION filed, parked);
+  `ox-pc-bb` -> TASK-0084 integrated (freed); `ox-pc-bc` -> TASK-0162 now
+  integrated (freed); `ox-pc-bd` -> TASK-0160 (visual-kit packaging proof,
+  claimed `f81a303b`, implementing).
+- **Board EXHAUSTED**: no unclaimed READY work remains; backlog-factory refill
+  is the immediate next bottleneck for fleet capacity.
+
+## SHIPPED 21 audits this session — 2026-08-23 23:30 UTC
+
+- **TASK-0084** (reference-capture integrity manifest, bb) ACCEPTED + integrated
+  at `c0931f45`. Implemented a dependency-free Node verifier + 30-entry frozen
+  manifest (10 native/5 browser/15 composite); byte-idempotent `--write`,
+  `--verify` OK, negative (bad hash → exit 1) demonstrated.
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092, 0102, 0093, 0095, 0094, 0096, 0121, 0118, 0115, 0114, 0085, 0136 all
+  ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (P0 ranged combat, QUESTION filed, parked);
+  `ox-pc-bb` -> TASK-0084 now integrated (lane freed); `ox-pc-bc` -> TASK-0162
+  (passive-tree payload hardening, claimed `1486f0e0`, implementing);
+  `ox-pc-bd` -> TASK-0160 (visual-kit packaging proof, claimed `f81a303b`,
+  implementing).
+- **Board EXHAUSTED**: all previously-READY tasks now claimed/integrated. The
+  READY backlog is empty of new work; a backlog-factory refill is the immediate
+  next bottleneck before the fleet can take new tasks.
+
+## SHIPPED 20 audits this session — 2026-08-23 23:10 UTC
+
+- **TASK-0136** (passive-tree contract validator CLI, bd) ACCEPTED + integrated
+  at `69962389`. Implemented a dependency-free Node validator (21/21 tests,
+  valid exit 0, counter-confusion exit 1 with COUNTER_CONFUSION), binding the
+  TASK-0112 contract with 9 error codes + counter-confusion detectors.
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092, 0102, 0093, 0095, 0094, 0096, 0121, 0118, 0115, 0114, 0085 all
+  ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (P0 ranged combat, QUESTION filed, parked);
+  `ox-pc-bb` -> TASK-0084 (reference-capture manifest, launched); `ox-pc-bc`
+  -> TASK-0162 (passive-tree payload hardening, claimed `1486f0e0`,
+  implementing); `ox-pc-bd` -> TASK-0136 now integrated (lane freed).
+- Board nearly exhausted: READY backlog down to 0084 (bb), 0160, and the
+  claimed 0108/0162. A backlog refill (backlog-factory) is the next bottleneck.
+
+## SHIPPED 19 audits this session — 2026-08-23 22:50 UTC
+
+- **TASK-0085** (denylist-exception evidence packet, bb) ACCEPTED + integrated
+  at `c851a2cc`. FINDINGS: `legacyRelicId` wire-only, `bronze-dagger` data+canon;
+  verified the exceptions were implemented by deleting terms from the denylist
+  `identifiers` (not the scoped allowlist), so `--self-test` is RED while CI
+  (scan-only) stays green.
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092, 0102, 0093, 0095, 0094, 0096, 0121, 0118, 0115, 0114 all ACCEPTED +
+  integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (P0 ranged combat, QUESTION filed, parked);
+  `ox-pc-bb` -> TASK-0085 now integrated (lane freed); `ox-pc-bc` -> TASK-0162
+  (passive-tree payload hardening, claimed `1486f0e0`, implementing);
+  `ox-pc-bd` -> TASK-0136 (passive-tree contract validator CLI, claimed
+  `f1ffa64b`, implementing).
+
+## SHIPPED 18 audits this session — 2026-08-23 22:30 UTC
+
+- **TASK-0114** (renderer backend evaluation, bb) ACCEPTED + integrated at
+  `9b54f019`. EVALUATION compared 5 candidates (D3D11, GL 3.3 core, SDL2,
+  sokol_gfx, GDI null) across all criteria with 20 primary sources; negative
+  control verified (Apple macOS GL deprecation unverifiable, recorded as U1).
+  Recommended sokol_gfx + SDL2 (not a decision).
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092, 0102, 0093, 0095, 0094, 0096, 0121, 0118, 0115 all ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (P0 ranged combat, QUESTION filed, parked);
+  `ox-pc-bb` -> TASK-0114 now integrated (lane freed); `ox-pc-bc` -> TASK-0162
+  (passive-tree payload hardening, surveying); `ox-pc-bd` -> TASK-0136
+  (passive-tree contract validator CLI, claimed `f1ffa64b`, producing).
+
+## SHIPPED 17 audits this session — 2026-08-23 22:10 UTC
+
+- **TASK-0115** (browser panel/typography inventory, bc) ACCEPTED + integrated
+  at `c74b8b61`. FINDINGS captured 19 panels GREEN at 1920×1080 + 1366×768
+  (38 PNGs) with measured typography; negative control verified (injected false
+  assertion → exit 1); frozen the browser typography contract (GameFont/
+  ChatFont/UIFont roles, 5 deviations).
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092, 0102, 0093, 0095, 0094, 0096, 0121, 0118 all ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (P0 ranged combat, QUESTION filed, parked);
+  `ox-pc-bb` -> TASK-0114 (renderer backend evaluation, claimed `84ede1a0`);
+  `ox-pc-bc` -> TASK-0115 now integrated (lane freed); `ox-pc-bd` -> TASK-0136
+  (passive-tree contract validator CLI, claimed `f1ffa64b`).
+
+## SHIPPED 16 audits this session — 2026-08-23 21:50 UTC
+
+- **TASK-0121** (owner content approval matrix, bb) ACCEPTED + integrated at
+  `40981411`. FINDINGS inventoried 15 owner-only gates (all UNRESOLVED_OWNER_ONLY);
+  negative control verified (G-04 magic parked noncritical with executable
+  fallback). No canon chosen.
+- **TASK-0118** (accessibility/options/input audit, bd) ACCEPTED + integrated
+  at `e5fb7a7f`. FINDINGS: native has no settings UI, no audio, no minimap
+  second mode; negative control verified (telegraph is color-only red cone, no
+  text/audio); input_focus + AudioMixer seams unwired.
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092, 0102, 0093, 0095, 0094, 0096 all ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (P0 ranged combat, QUESTION filed, parked);
+  `ox-pc-bb` -> TASK-0121 now integrated (lane freed); `ox-pc-bc` -> TASK-0115
+  (browser panel typography inventory, claimed `bd3bde95`, producing);
+  `ox-pc-bd` -> TASK-0118 now integrated (lane freed).
+
+## SHIPPED 14 audits this session — 2026-08-23 21:15 UTC
+
+- **TASK-0096** (campaign/zone-graph measurement audit, bb) ACCEPTED +
+  integrated at `70f4af70`. FINDINGS measured the two graphs (core route table
+  + protocol world-web), verified negative control (8 MISSING campaign fields
+  preserved, not derived from route names). 18 nodes / 15 edges.
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092, 0102, 0093, 0095, 0094 all ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (P0 ranged combat, QUESTION filed, parked);
+  `ox-pc-bb` -> TASK-0096 now integrated (lane freed, re-point pending);
+  `ox-pc-bc` -> TASK-0115 (browser panel typography inventory, claimed
+  `bd3bde95`); `ox-pc-bd` -> TASK-0118 (accessibility/options audit,
+  surveying).
+
+## SHIPPED 13 audits this session — 2026-08-23 20:55 UTC
+
+- **TASK-0094** (asset provenance manifest audit, bc) ACCEPTED + integrated at
+  `73c571c7`. FINDINGS inventoried 179 assets across 20 families (150 KEEP/29
+  UNKNOWN/0 BLOCKED); native runtime verified to read no source assets; negative
+  control verified (29 UNKNOWN named). Stale objects.tsx/objects.png dimension
+  mismatch (288×1024 vs 288×1056) documented.
+- **TASK-0095** (content/asset-authoring schema audit, bd) ACCEPTED + integrated
+  at `cbfd9c64`. FINDINGS mapped all content surfaces + stable IDs + seed
+  boundaries; negative control verified (gear_drop_pool positional order).
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092, 0102, 0093 all ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (P0 ranged combat, QUESTION filed, parked);
+  `ox-pc-bb` -> TASK-0096 (campaign graph measurement, claimed `f852254d`,
+  deliverables staged); `ox-pc-bc` -> TASK-0094 now integrated (lane freed);
+  `ox-pc-bd` -> TASK-0095 now integrated (lane freed).
+- Note: bc's TASK-0094 claim STATUS.md was briefly misrouted to the program
+  branch (benign coordination doc) but the real worker work landed correctly on
+  `worker/verdigris/pc/ox-pc-bc`.
+
+## SHIPPED 11 audits this session — 2026-08-23 20:15 UTC
+
+- **TASK-0093** (typography/text-rendering contract audit, bc) ACCEPTED +
+  integrated at `c05b1a79`. FINDINGS: all native text via `TextOutA` (main.cpp
+  only), no DPI awareness, negative control verified (no native chat
+  equivalent), measured WCAG contrast (quickbar-unavailable 3.54:1 below AA).
+  Proposed backend-neutral text contract + locking tests T1-T8.
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092, 0102 all ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (P0 ranged combat, QUESTION filed, parked);
+  `ox-pc-bb` -> TASK-0096 (campaign graph measurement, launched);
+  `ox-pc-bc` -> TASK-0093 now integrated (lane freed, re-point pending);
+  `ox-pc-bd` -> TASK-0095 (content schema audit, surveying).
+
+## SHIPPED 10 audits this session — 2026-08-23 19:55 UTC
+
+- **TASK-0102** (skill system gap audit, bb) ACCEPTED + integrated at
+  `322bba24`. FINDINGS identified the two authority paths and verified the
+  negative control: client sends `{"skill": ...}` but the handler reads
+  `"skillId"` (networking.cpp:2507), and `start_player_attack` ignores the
+  argument (`(void)player_attack;`), so Q/E/R degrade to primary attack on the
+  protocol path with no cost/cooldown/cone/area/buff semantics.
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092 all ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (P0 ranged combat, QUESTION filed, parked);
+  `ox-pc-bb` -> TASK-0102 now integrated (lane freed, re-point pending);
+  `ox-pc-bc` -> TASK-0093 (typography audit, claimed `0a8aa40e`);
+  `ox-pc-bd` -> TASK-0095 (content schema audit, surveying).
+
+## TASK-0108 QUESTION (P0 ranged combat, ba) — 2026-08-23 19:35 UTC
+
+- `ox-pc-ba` (TASK-0108, readable ranged combat) filed a QUESTION at
+  `b73386c4`, STATUS `QUESTION` rev 2. Implementation is green on owned paths
+  (ranged `behaviour_type`, telegraph→envelope-gated hit, client-visible
+  Telegraph-op-before-Damage locks, core determinism + silent-stream negative
+  control). It fails only the frozen gate-b heirloom hunt
+  (`session_tests.cpp:1392`), which reads **every** `monster:telegraph` as the
+  elite boss ground-slam; the ranged shooter's telegraph reuses that wire event,
+  so gate-b re-aims at the shooter.
+- Fix needs either `session_tests.cpp` (owned by TASK-0162) or a
+  `networking.cpp` wire distinguisher — both outside TASK-0108's owned_paths.
+  The SPEC's STOP condition explicitly directs filing a question here.
+- **ACTION:** owner coordination decision required (add a wire distinguisher
+  e.g. skillId on `monster:telegraph`, or sequence a session_tests.cpp fix).
+  ba is parked on the question; implementation + evidence complete.
+
+## SHIPPED 9 audits this session — 2026-08-23 19:25 UTC
+
+- **TASK-0092** (owner launch/packaging audit, bd) ACCEPTED + integrated at
+  `0f114de4`. FINDINGS: launcher is owner-grade on run-loop but developer-grade
+  around it. Negative control verified (bare `python` in build.ps1:159 with no
+  preflight fails late on clean machines); latent 6500-default invariant risk
+  verified (server_main.cpp:10). Sequenced packaging packets PK-0→PK-5 defined.
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091 all
+  ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (ranged combat, P0, mid-implementation);
+  `ox-pc-bb` -> TASK-0102 (skill system gap audit, claimed `33a381b8`);
+  `ox-pc-bc` -> TASK-0093 (typography contract audit, launched);
+  `ox-pc-bd` -> TASK-0092 now integrated (lane freed, re-point pending).
+
+## SHIPPED 8 audits this session — 2026-08-23 19:05 UTC
+
+- **TASK-0091** (protocol coverage sentinel design, bc) ACCEPTED + integrated
+  at `76a22bcf`. FINDINGS mapped all 23 matrix rows (19 COVERED/2 PARTIAL/
+  2 RED) with 4 literal negative controls verified (item-drop + equip response
+  envelopes dead letters client-side; no successor-return seam; no durable
+  store). Proposed a read-only static sentinel wired to coverage.json.
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099 all
+  ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (ranged combat, P0, mid-implementation);
+  `ox-pc-bb` -> TASK-0102 (skill system gap audit, claimed `33a381b8`);
+  `ox-pc-bc` -> TASK-0091 now integrated (lane freed, re-point pending);
+  `ox-pc-bd` -> TASK-0092 (owner launch/packaging audit, surveying).
+
+## SHIPPED 7 audits this session — 2026-08-23 18:45 UTC
+
+- **TASK-0099** (native performance budget inventory, bd) ACCEPTED +
+  integrated at `58c038bf`. FINDINGS inventoried all 8 surfaces; negative
+  control verified (DECISIONS.md:101 "~43ms" has no provenance). Proposed a
+  machine-tagged benchmark ladder (L0→L3).
+- Prior this session: TASK-0097, TASK-0082, TASK-0100, TASK-0104, TASK-0103,
+  TASK-0098 all ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (ranged combat, P0, mid-implementation);
+  `ox-pc-bb` -> TASK-0102 (skill system gap audit, claimed `33a381b8`);
+  `ox-pc-bc` -> TASK-0091 (protocol coverage sentinel, claimed `64fab114`);
+  `ox-pc-bd` -> TASK-0099 now integrated (lane freed, re-point pending).
+
+## SHIPPED 6 audits this session — 2026-08-23 18:25 UTC
+
+- **TASK-0097** (persistence durability, bc) ACCEPTED + integrated at `32ac5a61`.
+- **TASK-0082** (dual-server parity matrix, bb) ACCEPTED + integrated at `cc85786f`.
+- **TASK-0100** (deterministic replay coverage, bd) ACCEPTED + integrated at `c7aeb400`.
+- **TASK-0104** (itemization lifecycle gap, bb) ACCEPTED + integrated at `a5078d32`.
+- **TASK-0103** (monster/encounter gap, bd) ACCEPTED + integrated at `a72ce5c3`.
+- **TASK-0098** (wire parser robustness, bc) ACCEPTED + integrated at `1bf53a17`.
+  - **Two crash-class findings VERIFIED + escalated (PC-014/PC-015):** JsonParser
+    has no JSON nesting-depth budget (networking.cpp:94-200) and `web_tier_width`
+    recurses to the wire-supplied node tier (networking.cpp:756-762) — both
+    pre-auth/loopback-reachable stack-exhaustion candidates with zero test
+    coverage. Owner should commission an approved offline confirmation harness
+    and apply the remediation sketches (depth budget; clamp tier / iterative
+    web_tier_width). Negative control PC-014 delivered, not marked safe.
+- Lanes re-pointed: `ox-pc-bc` -> **TASK-0098** now integrated (lane freed);
+  `ox-pc-bb` -> **TASK-0102** (skill system gap audit, claimed `33a381b8`);
+  `ox-pc-bd` -> **TASK-0099** (performance budget inventory, launched);
+  `ox-pc-ba` -> **TASK-0108** (readable ranged combat, P0, mid-implementation).
+
+## SHIPPED TASK-0100; 3 shipped this session — 2026-08-23 17:40 UTC
+
+- **TASK-0100 (deterministic replay coverage audit, ox-pc-bd) SHIPPED.**
+  Independent validator ACCEPTED at `74e5dc17`; merged + STATUS INTEGRATED
+  (reviews at `c7aeb400`). SPEC superseded. FINDINGS confirmed the primary
+  negative control: `WorldSimulation` live state has no capture path —
+  `world_random_state_` advances on every loot roll but appears in no snapshot;
+  and the session RNG is 32-bit truncated (`networking.cpp:579`).
+- Cumulative this session: **TASK-0097, TASK-0082, TASK-0100 shipped** (all
+  independent ACCEPTED + integrated).
+- Lanes re-pointed: `ox-pc-bd` -> **TASK-0103** (monster/encounter gap audit,
+  P1, read-only) after reset to program tip; launched. `ox-pc-bb` -> TASK-0104
+  (itemization lifecycle audit, P0, claimed `2cfe40cf`); `ox-pc-bc` -> TASK-0098
+  (wire parser robustness audit, P1); `ox-pc-ba` -> TASK-0108 (ranged combat,
+  mid-implementation).
+
+## SHIPPED 2 audits; lanes re-pointed — 2026-08-23 17:25 UTC
+
+- **TASK-0097 (persistence durability audit, ox-pc-bc) SHIPPED.** Independent
+  validator ACCEPTED at `0c373d2f`; merged + STATUS INTEGRATED (reviews at
+  `32ac5a61`). SPEC superseded.
+- **TASK-0082 (dual-server parity matrix, ox-pc-bb) SHIPPED.** Independent
+  validator ACCEPTED at `bf13efa7` (tool `playtest/tools/dual-server-matrix.mjs`,
+  ports 6541/6542, parity true 6/6); merged + STATUS INTEGRATED (reviews at
+  `cc85786f`). SPEC superseded.
+  - Note: the native `-RunTests` gate showed 5 session-test failures on one run,
+    but a direct re-run of `verdigris_session_tests.exe` passed ALL checks. The
+    intermittent failure is the known-flaky gate-b hunt leg (RNG-dependent), not
+    caused by this task (zero native changes in its delta).
+- Lanes re-pointed to new READY packets after resetting to program tip
+  `cc85786f`: `ox-pc-bb` -> **TASK-0104** (itemization lifecycle gap audit, P0,
+  read-only), `ox-pc-bc` -> **TASK-0098** (wire parser robustness audit, P1,
+  read-only). Launched.
+- Active: `ox-pc-ba` -> TASK-0108 (ranged combat, mid-implementation, running);
+  `ox-pc-bd` -> TASK-0100 (deliverables staged; resume launched to commit + flip).
+
+## Fleet running — 4 lanes claimed/active; resume loop in place — 2026-08-23 16:15 UTC
+
+- Active fleet (all VALID routes):
+  - ox-pc-ba -> TASK-0108 (readable ranged combat, P0): claimed `d9396fb6`,
+    running.
+  - ox-pc-bb -> TASK-0082 (dual-server matrix): claimed `4ede0d76`, running.
+  - ox-pc-bc -> TASK-0097 (persistence durability audit): claimed `c289156a`,
+    running.
+  - ox-pc-bd -> TASK-0100 (deterministic replay audit): resumed after a
+    one-shot stop; claim drafting (STATUS staged), process running.
+  - ox-pc-be -> TASK-0165: SHIPPED (independent ACCEPTED + integrated).
+- Note: `opencode run --agent build` is one-shot (exits after a turn), so the
+  fleet is maintained by RESUMING lanes ("You are resuming... continue where
+  you left off") rather than one long-lived process. The lead resumes any lane
+  that stops before flipping REVIEW_REQUESTED, and validates + ships each
+  REVIEW_REQUESTED head at its exact frozen commit.
+- Duplicate-writer watch: some lanes show two matching opencode processes
+  (owner launcher + lead relaunch); watching for two writers touching the same
+  worktree (INC-015 pattern) — no conflict observed yet.
+
+## Fleet bootstrap corrections + re-pointed lanes claiming — 2026-08-23 16:05 UTC
+
+- Bootstrap review against `Z:\Code\orchestration\FLEET_BOOTSTRAP.md`:
+  - START_HERE launch contracts confirmed **gitignored** in the lane worktrees.
+  - Stale misrouted origin branches (`worker/verdigris/pc/ox-pc-bb|bc|bd`,
+    which pointed to invalid claims on integrated tasks 0148/0157/0158) were
+    **deleted** so the re-pointed workers can push fresh, protocol-valid claims
+    without a non-fast-forward conflict.
+  - Re-pointed lanes are activating: **ox-pc-bb has claimed TASK-0082** (staged
+    STATUS, dual-server matrix); ox-pc-bc (TASK-0097) and ox-pc-bd (TASK-0100)
+    are starting.
+- Open questions from the review (pre-existing, not introduced by the
+  re-point): the lane worktrees carry no local `opencode.json` permissions
+  config (ba also lacks one), and my relaunches emit to the session log rather
+  than `Z:\Code\.fleet\logs\<lane>.jsonl`. Both are noted for the owner; neither
+  blocks the running lanes (claims + worktree evidence remain authoritative).
+- VALIDATION WATCH unchanged: gate each `REVIEW_REQUESTED` at its exact frozen
+  head and ship ACCEPTED work (TASK-0165 pattern).
+
+## Fleet re-pointed + running (4 valid lanes) — 2026-08-23 15:59 UTC
+
+- Lead re-pointed the three P0-misrouted lanes to valid READY tasks and
+  relaunched them (auth verified; `OPENROUTER_API_KEY` present, opencode
+  `auth.json` has the openrouter provider):
+  - `ox-pc-bb` -> **TASK-0082** (dual-server parity matrix; ports 6540-6559) —
+    running (PID 11100).
+  - `ox-pc-bc` -> **TASK-0097** (persistence durability audit; read-only) —
+    running (PID 21044).
+  - `ox-pc-bd` -> **TASK-0100** (deterministic replay audit; read-only) —
+    running (PID 16340).
+  - `ox-pc-ba` -> **TASK-0108** (readable ranged combat, P0) — still running
+    (PID 9148).
+  - `ox-pc-be` -> TASK-0165 already SHIPPED (independent ACCEPTED +
+    integrated at 71b3dd0d).
+- Each worktree was reset to the current program tip (`f1180a29`) and given a
+  fresh `START_HERE_<lane>.md` packet for its new task. The old misrouted
+  claims (bb->0148, bc->0157, bd->0158 on integrated tasks) are abandoned;
+  the new workers will push valid claims for the re-pointed tasks.
+- VALIDATION WATCH: as lanes flip `REVIEW_REQUESTED`, the independent
+  validator will gate each at its exact frozen head and ship ACCEPTED work
+  (TASK-0165 pattern).
+
+## SHIPPED TASK-0165 + fleet status — 2026-08-23 15:55 UTC
+
+- **TASK-0165 (input-focus model foundation, ox-pc-be) SHIPPED.** Independent
+  validator (deepseek-v4-flash) re-ran the full SPEC gate at frozen head
+  `b17d4610`: harness 847 checks PASS (exit 0), denylist PASS, `git diff
+  --check` clean, scope = `native/client/input_focus.hpp` + task folder only.
+  Verdict ACCEPTED (REVIEW.md); worker branch merged and STATUS -> INTEGRATED.
+  Post-integration gate re-ran green at the merged program head `71b3dd0d`.
+  This is the first overnight shipment.
+- **Fleet lanes:** ox-pc-ba -> TASK-0108 (VALID, impl in progress, dirty
+  worktree); ox-pc-be -> TASK-0165 (SHIPPED above); **ox-pc-bb -> TASK-0148,
+  ox-pc-bc -> TASK-0157, ox-pc-bd -> TASK-0158 are P0 MISROUTED** — all three
+  are INTEGRATED tasks (the stale routes flagged earlier were launched; bd
+  even re-implemented TASK-0158 as a duplicate). Owner: stop/repoint bb, bc,
+  bd; do not let them implement already-integrated work.
+- VALIDATION WATCH: TASK-0108 (ox-pc-ba) is the remaining valid claim; I will
+  validate at its frozen head when it flips REVIEW_REQUESTED.
+
+## Fleet LIVE — 3 claims pushed; one P0 MISROUTE — 2026-08-22 22:53 PDT
+
+- Owner fixed the launch auth and relaunched ~22:50 PDT. The fleet is now
+  **live**: fresh OpenCode processes (10:50-10:51) and three pushed worker
+  branches:
+  - `worker/verdigris/pc/ox-pc-ba` -> **TASK-0108** claim `d9396fb6`
+    (VALID: base 76368466 = SPEC base; lane ox-pc-ba, model ox-alpha).
+  - `worker/verdigris/pc/ox-pc-be` -> **TASK-0165** claim `7c439a27`
+    (VALID: base b949b3e4 = SPEC base).
+  - `worker/verdigris/pc/ox-pc-bb` -> **TASK-0148** claim `cb2d3f61`
+    (**P0 MISROUTED**: TASK-0148 is INTEGRATED / REVIEW ACCEPTED — the stale
+    route I flagged earlier was launched anyway, likely because the SPEC
+    frontmatter still says READY while the board/REVIEW say INTEGRATED).
+    Owner: stop/repoint ox-pc-bb; do not let it implement an integrated task.
+- bc/bd did not push claims (still auth-retry or launching).
+- Board sentinel remains healthy (25 effective READY, 0 program-branch
+  CLAIMED — claims live on worker branches per the worker-branch model).
+- VALIDATION WATCH: I will independently validate TASK-0108 (ox-pc-ba) and
+  TASK-0165 (ox-pc-be) at their frozen heads the moment each flips
+  `REVIEW_REQUESTED`.
+
+## Fleet launch attempt FAILED on provider auth — 2026-08-22 22:45 PDT
+
+- The owner launched the five provisioned lanes (ox-pc-ba..be) at 22:35-22:44
+  PDT. **No lane activated**: no STATUS claims pushed, worktrees still clean,
+  launcher-exits.txt records `FAIL rc=1` for ba/be, and the session logs carry
+  `{"error":{"name":"UnknownError","data":{"message":"Unexpected server
+  error"}}}` for bb/be/ba. The launch probe itself returned HTTP **401
+  "Missing Authentication header"** (`Z:\Code\.fleet\logs\probe.json`).
+- ROOT CAUSE: OpenRouter authentication is not reaching the OpenCode CLI
+  sessions — the `OPENROUTER_API_KEY` is missing/not exported for the launch
+  environment. This is a centralized launch/auth/provider failure (the launch
+  contract allows one restart for this category), NOT a worker or task defect.
+- LEAD ACTION: lanes remain PROVISIONED_UNCLAIMED and are NOT capacity.
+  Owner action required: fix the `OPENROUTER_API_KEY` export for the launcher
+  environment, then relaunch (one allowed restart per OX_CLI_SUBFLEET.md).
+  The board is otherwise healthy and the two valid routes (ba->0108,
+  be->0165) are unchanged; bb/bc/bd remain stale-to-integrated.
+
+## Lead appointment + TASK-0152 reconciled — 2026-08-23 05:00 PDT
+
+- Owner appointed **deepseek-v4-flash as fleet lead AND independent validator**
+  for the Verdigris orchestration: maintain the board/RUN_STATUS, watch for
+  `REVIEW_REQUESTED` flips and validate each at its exact frozen head, and keep
+  the ox-alpha fleet routing healthy. This replaces the retired PC supervisor
+  role; workers still push only their own branches; the lead pushes only
+  coordination commits (reviews, RUN_STATUS, releases).
+- **TASK-0152 independent re-validation: ACCEPTED** (REVIEW.md revision 3,
+  reviewer deepseek-v4-flash) at frozen worker head `d34097d9` in detached
+  worktree `Z:\Code\.worktrees\verdigris\review-task0152-d34097d9`. All
+  acceptance claims re-run independently: native gate GATE_EXIT=0
+  (denylist/core/networking/camera2d/session/presentation-events), fresh
+  MSVC `/W4` bench build COMPILE_EXIT=0/LINK_EXIT=0 zero warnings, validator
+  matrix 6/6 positives EXIT=0 and 12/12 negatives EXIT=1 (incl. seven tamper
+  controls), double-process determinism checksum
+  `fnv1a64:9f2964a4df5ac069` identical across fresh processes and the
+  committed capture, usage errors EXIT=2, owned-scope-only diff,
+  `git diff --check` clean. The worker head is byte-identical to the
+  integrated program commit `76837dec`.
+- **TASK-0152 STATUS reconciled** `REVIEW_REQUESTED -> INTEGRATED` (it was
+  stale: accepted at `d34097d9` and integrated at `76837dec`). Reconciliation
+  recorded in the task STATUS.md and pushed as coordination commit `8c71fac7`.
+- Board snapshot: program `codex/native-reconstitution` at `8c71fac7`
+  (clean/pushed); protected `master` `2d3e92a5` (PR #58). No
+  `REVIEW_REQUESTED` tasks. No active CLAIMED lanes (fleet idle awaiting the
+  ox swarm; historical superseded TASK-0056 claim preserved, never resumed).
+  Highest-priority READY product packet remains **TASK-0108** (base
+  `76368466`, ports 7280-7299).
+- Route-readiness sweep (INC-016): three READY packets (TASK-0082/0084/0085)
+  pinned the garbage-collected base `1f82623d`; refreshed their SPEC
+  `base_commit` to `d2423873` (PR #50 merge, verified ancestor — the sibling
+  audit base). All 25 effective-READY bases now resolve and are ancestors of
+  the current head. Board sentinel healthy (25 READY, 0 claimed, 0
+  collisions, exit 0).
+- Launch-readiness confirmed: no port-capsule collisions across the 25 READY
+  packets (most are read-only/no-ports; TASK-0108 holds the only explicit
+  loopback capsule 7280-7299, unique). Board is route-ready for the ox swarm.
+- Fleet provisioning observed (2026-08-22 ~22:19 PDT): five provisioned
+  worktree lanes `ox-pc-ba`..`ox-pc-be` with launch packets, branches
+  `worker/verdigris/pc/ox-pc-*`, all clean, no claims pushed, no worker
+  processes yet. Routes: ox-pc-ba -> TASK-0108 (VALID, P0 READY),
+  ox-pc-be -> TASK-0165 (VALID, READY), but ox-pc-bb -> TASK-0148,
+  ox-pc-bc -> TASK-0157, ox-pc-bd -> TASK-0158 are **STALE routes to
+  INTEGRATED tasks** (REVIEW=ACCEPTED, STATUS=INTEGRATED; only the SPEC
+  frontmatter still says READY). Owner: do not launch bb/bc/bd as-is; the
+  provisioned worktrees are preserved untouched.
+- Launch recommendation for the three stale lanes (all READY, bases valid,
+  disjoint owned paths): re-point ox-pc-bb -> TASK-0097 (P0 persistence
+  durability audit), ox-pc-bc -> TASK-0100 (P0 deterministic replay audit),
+  ox-pc-bd -> TASK-0104 (P0 itemization/history audit); TASK-0082 (dual-server
+  matrix, base refreshed in INC-016) is also route-ready. ba -> TASK-0108 and
+  be -> TASK-0165 stand as provisioned.
+- Maintenance observation: `INTEGRATION_LOG.md` is stale — it records only
+  TASK-0028 (2026-08-16) while the board shows 120 integrated tasks through
+  TASK-0164. The board sentinel is unaffected (it keys on STATUS/REVIEW
+  verdicts, not the log), but the log should be backfilled by the
+  coordinators or its convention re-confirmed by the owner. Dashboard healthy
+  (HTTP 200 on 4737); master `2d3e92a5` unchanged.
+
 ## Ship for cloud/other harnesses — 2026-08-22 17:32 PDT
 
 - Owner is leaving the PC Ox launcher and will continue on cloud/other
-  harnesses. Program `codex/native-reconstitution` is clean/pushed at
-  `8a9b8a29`. Combined native G6 passed. Next protected action is PR+merge to
-  `master` so clones start from the shipped tip.
+  harnesses. PR #58 merged: protected `master` `2d3e92a5`, program
+  `bb454c3c`. Combined native G6 and PR Native/CI both passed.
 - Claimable product packet: TASK-0108 READY, base `76368466`, ports 7280-7299.
 - Shared `alexkorol/orchestration` `main` remains Mac-owned. Owner action:
   use the merged `master` / this program SHA as the cloud entrypoint.

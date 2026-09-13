@@ -1,0 +1,178 @@
+{
+  "version": 1,
+  "scope": "Raider SW six-phase strike, root native review accepted; production event timing remains root-owned. Paths are repository relative.",
+  "reproduction_boundary": "Active import reconstructs selected v1 phases0,2,3,4,5 and v2 anticipation1 from the two original PNGs using actual Pixel Respecter, one shared32-color palette, cell6 and common source registration. Exact neutral-only alpha windows are embedded in the active manifest; no rejected candidate recipe or PNG is required.",
+  "hash_policy": "Text hashes normalize CRLF to LF only; binary hashes use raw bytes. Historical generation and candidate-report hash fields remain unchanged.",
+  "active_inputs": [
+    {
+      "path": "native/client/assets/raster/source/raider-strike-sw-v1.png",
+      "role": "raw generated source; selected phases0,2,3,4,5",
+      "sha256": "fb668850b3b283e2539a00a5328a51ce2290c786f371f8a5d522eab7139455cc",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/client/assets/raster/source/raider-strike-sw-v2.png",
+      "role": "raw color repair; selected anticipation1 only",
+      "sha256": "b7773572b750c069d5c609f3b69987c1923d6d4ba5fc5c2f377943f4c3afe9a2",
+      "hash_policy": "raw_binary"
+    }
+  ],
+  "active_recipes": [
+    {
+      "path": "native/tools/raster/raider-strike-sw.json",
+      "role": "active reproducible six-frame import",
+      "sha256": "01d338b2722c31759a89b71203ec474d80f38ed600adb9d8a2fb6d3022884578",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "01d338b2722c31759a89b71203ec474d80f38ed600adb9d8a2fb6d3022884578"
+    },
+    {
+      "path": "native/tools/raster/import_assets.py",
+      "role": "actual Pixel Respecter API adapter",
+      "sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017"
+    }
+  ],
+  "historical_provenance": [
+    {
+      "path": "native/client/assets/raster/runtime/raider_sw.png",
+      "role": "supplied original identity and axe reference, unchanged",
+      "sha256": "13e515e678d001de0e764729048986d1d459c9df2de9c2b52d2d1c8538b3daf4",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/raider-strike-sw-v1.txt",
+      "role": "exact submitted prompt",
+      "sha256": "8975328d4a37262b850d08e125382049c9d7014df67c0507f946d72d2df994cd",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "8975328d4a37262b850d08e125382049c9d7014df67c0507f946d72d2df994cd"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/raider-strike-sw-v1.provenance.json",
+      "role": "source generation and reference-role record",
+      "sha256": "990602493d74424210f0fb4099fd37c178cd766b57264d3d38732d4278727e46",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "0d5cc9650ae86708acc1e38fb8b7831ac266ee8d95ed3932226529439762a3cf"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/raider-strike-sw-v2.txt",
+      "role": "exact submitted prompt",
+      "sha256": "6f17aae55e77ce8fc74a7f56e5b6f0cc01ab735cbccaa0156ae5bc2b9250520c",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "6f17aae55e77ce8fc74a7f56e5b6f0cc01ab735cbccaa0156ae5bc2b9250520c"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/raider-strike-sw-v2.provenance.json",
+      "role": "source generation and reference-role record",
+      "sha256": "2a87e6d9750d17ddde91794bde98946001f0573fb3c8ff2d53c99e8b2c63049f",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "0d5b29a5a9899bdac623c1727113674dcce6d69711a75365b6c726fec0819a0a"
+    },
+    {
+      "path": "native/tools/raster/raider-strike-sw-candidate.json",
+      "role": "selected candidate reconstruction recipe",
+      "sha256": "3e5a459457307ccaccd55e22f8b4feb309ff2b3a2a883c6c378b90db3d42dc3b",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "9e356fce903c5f889be7f827386a03abdd29715cd567f7898e045093d474aa67"
+    },
+    {
+      "path": "native/tools/raster/raider-strike-sw-candidates/selected/raider-strike-sw-candidate.provenance.json",
+      "role": "selected candidate reconstruction evidence",
+      "sha256": "31cd366c877a5744d626193b7d7d8d95c4b7d227c8c56e9225a673c398544f42",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "83eeb539208cf19bf058d0006875e414d92ffe3d7bc7e8e58bd10d76d2367feb"
+    }
+  ],
+  "review_evidence": [
+    {
+      "path": "native/tools/raster/raider-strike-sw-candidates/selected/acceptance-review.json",
+      "role": "selected native/alpha acceptance evidence",
+      "sha256": "f26e37e7d56934fab0db259b2bd8931c8d3569345696fdb0f6cdd0d903cb9070",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "f26e37e7d56934fab0db259b2bd8931c8d3569345696fdb0f6cdd0d903cb9070"
+    },
+    {
+      "path": "native/tools/raster/raider-strike-sw-candidates/selected/alpha-audit.json",
+      "role": "selected native/alpha acceptance evidence",
+      "sha256": "53aa765908689dd30159419659a070e5ef8534623a2ceef6984da83e1c3aa351",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "96c7c6c322351139a428643b55b023c459d5d1de72d07ab4a589fb6138545c72"
+    },
+    {
+      "path": "native/tools/raster/raider-strike-sw-candidates/selected/cleanup-inspection.json",
+      "role": "selected native/alpha acceptance evidence",
+      "sha256": "fad2fb5dbb6667de95f18f95a14ab5c4e45c2c288543912e7ea94a19d8342319",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "f81a582a0ad936939661665d46d15bf3dd5dd763aa273499ecd28caec75b28a6"
+    },
+    {
+      "path": "native/tools/raster/raider-strike-sw-candidates/selected/cycle-review.json",
+      "role": "selected native/alpha acceptance evidence",
+      "sha256": "0043f27edae85bf957cdd76aadd381d2631cca77fe0bd2ebbae4bd53a0bb53f8",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "80e7ac8bd3b83a88c87441a755434955c4228206f53f3d5d1f2d956be2c85e0a"
+    },
+    {
+      "path": "native/tools/raster/raider-strike-sw-candidates/selected/runtime-promotion.json",
+      "role": "selected native/alpha acceptance evidence",
+      "sha256": "4b9b5737c5b5fb8198a590a382ba9132a82b8d04f42fb306b59a6083c003f556",
+      "hash_policy": "canonical_lf_crlf_to_lf_only",
+      "historical_working_file_raw_sha256": "c4ca668e54cbb66ee3b37a874b17ecd999ade3df2669267fc741e5fbc14efb66"
+    },
+    {
+      "path": "native/tools/raster/raider-strike-sw-candidates/selected/contact-4x.png",
+      "role": "selected native/alpha acceptance evidence",
+      "sha256": "395420b818ac42979b9fd187e19085273ae2b4b2d8ffc2ff2f7f594befa387f5",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/tools/raster/raider-strike-sw-candidates/selected/idle-strike-idle-1x.png",
+      "role": "selected native/alpha acceptance evidence",
+      "sha256": "73b47adbf172e4f708a572bd95be8f51f84cfee3c40211b13864806ee57f3610",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/tools/raster/raider-strike-sw-candidates/selected/source-gap-inspection.png",
+      "role": "selected native/alpha acceptance evidence",
+      "sha256": "7430bc70e8fad3d08a11c5f563a72874157f6198309d187ffadd98146f061ca4",
+      "hash_policy": "raw_binary"
+    }
+  ],
+  "external_project": {
+    "path": "Z:/Code/Python/pixel-perfecter",
+    "vendored": false,
+    "provenance": "native/client/assets/raster/runtime/raider-strike-sw.provenance.json"
+  },
+  "limitations": [
+    "Root viewed native SW action, corrected warning poses and actual elite SW sweep contact: warning0/1/2 precedes life loss, first confirmed hit3 applies damage8 and impact, followed by followthrough4/recovery5/idle. This is provisional production integration, not final visual polish.",
+    "Selected original v1 poses0,2,3,4,5 plus corrected v2 anticipation1. Color repair restored charcoal cloth; original olive-tinted phase1 remains preserved and rejected.",
+    "One shared cell6 reconstruction with source origin280,480, column500,row490,canvas80x96,pivot40,96; no per-pose fitting or centering.",
+    "Anticipation is an outward preparatory lift. Contact3 is synchronized to the confirmed production hit; low follow-through4 and recovery retain abrupt pose and silhouette changes that still need visual refinement.",
+    "Source opaque checker removed through actual Pixel Respecter. Exact neutral-only local windows preserve pale colored skin; earlier broader color cleanup is preserved as rejected evidence.",
+    "Axe is baked into the same anatomical-right/screen-left hand in all6 SW frames. Ordinary whole monster rendering; no separate hero equipment overlay.",
+    "Only Raider SW has this six-phase action. Other raider action directions are not supplied or inferred from these frames; the former scripted SW locomotion review remains separate from this real elite combat event proof."
+  ],
+  "previous_active_recipe_hashes": [
+    [
+      {
+        "path": "native/tools/raster/raider-strike-sw.json",
+        "role": "active reproducible six-frame import",
+        "sha256": "14cedb1d459e2b049bb278f6e910df01c4e468c52be0bf3594703786d48b50ed",
+        "hash_policy": "canonical_lf_crlf_to_lf_only",
+        "historical_working_file_raw_sha256": "a5f15471e9ef4f61cf3a8747c4b7f3f877c703312a08a7fbc20dbfd2319f0711"
+      },
+      {
+        "path": "native/tools/raster/import_assets.py",
+        "role": "actual Pixel Respecter API adapter",
+        "sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+        "hash_policy": "canonical_lf_crlf_to_lf_only",
+        "historical_working_file_raw_sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017"
+      }
+    ]
+  ],
+  "production_review": {
+    "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+    "evidence": "native/client/assets/raster/reviews/2026-09-10-actions/retained-evidence.json",
+    "scope": "Root-reported supported production captures and gates; successful integration for this iteration, not final visual polish."
+  }
+}

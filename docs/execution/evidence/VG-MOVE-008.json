@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-MOVE-008",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "c8c786c1e400ec38a205ee9f5ae6bf5739edc4f2",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "input-latency",
+  "platform": "win32-x64 display 3440x1440 12 logical CPUs GDI present",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario input-latency", "exit_code": 0}
+  ],
+  "assertions": [
+    "command time is not a photon label",
+    "paired input-to-present samples were recorded",
+    "p50/p95 are present-path milliseconds",
+    "photon must not appear on the HUD",
+    "live HUD names To present and Input paint"
+  ],
+  "negative_control": {
+    "name": "Simulation::dispatch elapsed time labeled input-to-photon",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/input-latency-960x600.png",
+      "sha256": "f7a4afb1b4689cc176560a482d57b0a26b0cb0da5db2a59f069faefdf1121cff",
+      "produced_by": "native/build/verdigris_client.exe --scenario input-latency"
+    },
+    {
+      "kind": "log",
+      "path": "docs/execution/captures/art-wave/input-latency-report.txt",
+      "sha256": "2b037f50b31f23925f9d79bd613472b48d5ec2546b838925d8f2e644b407746c",
+      "produced_by": "native/build/verdigris_client.exe --scenario input-latency"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Input-to-present through paint_scene, not vsync/photon. p50/p95 are machine-timed.",
+    "VG-MOVE-007 action buffering stays with Kimi."
+  ]
+}

@@ -1,0 +1,13 @@
+Make a simplified pixel-art walking motion sprite sheet of this one raider, with six chronological frames arranged in three columns and two rows, on a transparent background.
+
+Image 1 is the sole character and camera reference. Preserve the grounded adult body, tied dark hair, dark blue-charcoal cloth, ochre sash, full dark trousers with the same torn knees, brown leather boots/bracers, and broad warm-bronze axe. Keep the axe in the anatomical RIGHT hand, on screen-right in this rear view; the other hand stays free. All six frames walk toward upper-right and show the actual back, with face and mask hidden as in the reference. Keep camera elevation, body size, pixel pitch and colors consistent.
+
+Show one complete alternating walk cycle, in place, with natural weight transfer and small opposing arm swings:
+0. RIGHT-foot contact forward toward upper-right; LEFT leg trails toward lower-left.
+1. Weight over the planted RIGHT foot; LEFT knee bends and the raised LEFT boot passes beside it.
+2. LEFT leg reaches ahead toward upper-right; RIGHT heel lifts behind.
+3. LEFT-foot contact forward toward upper-right; RIGHT leg now trails toward lower-left. The visible trailing boot must be the opposite boot from frame 0.
+4. Weight over the planted LEFT foot; RIGHT knee bends and the raised RIGHT boot passes beside it. This must visibly swap the passing leg from frame 1.
+5. RIGHT leg reaches forward toward upper-right; LEFT heel lifts behind, leading naturally back to frame 0.
+
+Retain actual leg overlap and foot-height changes, modest head/body rise and fall, and the attached axe in the same hand. Keep a common ground registration and about64 logical pixels for the standing body, deliberate crisp square clusters and at most32 purposeful colors. Full silhouettes and axe clearance in each cell. No labels, grid, scenery, trails or effects. Return actual transparent RGBA, without a painted checker pattern. Slicing, palette reconstruction, exact pivots and playback are handled separately.

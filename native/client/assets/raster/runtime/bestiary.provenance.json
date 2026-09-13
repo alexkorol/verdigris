@@ -1,0 +1,930 @@
+{
+  "version": 1,
+  "manifest_sha256": "59c41c7fcb5228ea43e0c1c0c2b4fbdeaf830fee19305de751183e264591bc99",
+  "importer_sha256": "4ea3788b6d7916b0567d387da4698548460bc1779ff760c2215a24e52368a427",
+  "engine": {
+    "project": "Pixel Respecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "root": "Z:/Code/Python/pixel-perfecter",
+    "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+    "git_dirty": true,
+    "source_sha256": {
+      "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+      "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+      "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+      "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+      "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+      "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+      "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+      "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+      "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+      "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+      "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+      "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+      "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+    },
+    "dependencies": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    }
+  },
+  "known_limitations": [
+    "Archer rear diagonals require live-game directional review."
+  ],
+  "sources": [
+    {
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "sha256": "ea710d7e6f4d4bd9c347ff0ea2b93373c76e1f6613d0de43037e64504572542d",
+      "size": [
+        1254,
+        1254
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "name": "beast_se",
+      "file": "beast_se.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        314,
+        290
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        58
+      ],
+      "trim_box": [
+        4,
+        12,
+        59,
+        55
+      ],
+      "before_resize": [
+        55,
+        43
+      ],
+      "placed_size": [
+        55,
+        43
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        13,
+        53,
+        68,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "0f4b45bb0be9ad1bc9eb53ec60a30f1cabd6f119d34d08102cbd500b34de96fc"
+    },
+    {
+      "name": "beast_sw",
+      "file": "beast_sw.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        314,
+        0,
+        627,
+        290
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        58
+      ],
+      "trim_box": [
+        6,
+        12,
+        61,
+        55
+      ],
+      "before_resize": [
+        55,
+        43
+      ],
+      "placed_size": [
+        55,
+        43
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        15,
+        53,
+        70,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "2952e2c46b31813d10e72111485f93e3f022d76cb962b9d28607f132ce1def80"
+    },
+    {
+      "name": "beast_nw",
+      "file": "beast_nw.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        627,
+        0,
+        941,
+        290
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        58
+      ],
+      "trim_box": [
+        12,
+        12,
+        60,
+        54
+      ],
+      "before_resize": [
+        48,
+        42
+      ],
+      "placed_size": [
+        48,
+        42
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        21,
+        54,
+        69,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "28a885c935d4954337120bfec06f2a0cdef8e6534fe97840f3f077ff433ee95f"
+    },
+    {
+      "name": "beast_ne",
+      "file": "beast_ne.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        941,
+        0,
+        1254,
+        290
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        58
+      ],
+      "trim_box": [
+        3,
+        11,
+        59,
+        55
+      ],
+      "before_resize": [
+        56,
+        44
+      ],
+      "placed_size": [
+        56,
+        44
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        12,
+        52,
+        68,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "d0772bd832c1e812d23143a0d8007818d85255aefdfd73a236a07bd495b0e0f4"
+    },
+    {
+      "name": "wight_se",
+      "file": "wight_se.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        290,
+        314,
+        611
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        64
+      ],
+      "trim_box": [
+        12,
+        3,
+        59,
+        62
+      ],
+      "before_resize": [
+        47,
+        59
+      ],
+      "placed_size": [
+        47,
+        59
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        21,
+        37,
+        68,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "7f075c51d5b231083fc201b80f97ef0eec62230549a8b0636ea43eda20492f33"
+    },
+    {
+      "name": "wight_sw",
+      "file": "wight_sw.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        314,
+        290,
+        627,
+        611
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        64
+      ],
+      "trim_box": [
+        6,
+        3,
+        56,
+        64
+      ],
+      "before_resize": [
+        50,
+        61
+      ],
+      "placed_size": [
+        50,
+        61
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        15,
+        35,
+        65,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "b2a71f83a721a4a6e9414706f4148b432f5a50acbcbd5d73b15a9980b8b8697d"
+    },
+    {
+      "name": "wight_ne",
+      "file": "wight_ne.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        941,
+        290,
+        1254,
+        611
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        64
+      ],
+      "trim_box": [
+        13,
+        4,
+        55,
+        63
+      ],
+      "before_resize": [
+        42,
+        59
+      ],
+      "placed_size": [
+        42,
+        59
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        22,
+        37,
+        64,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "ced357318b062af32d08f17e3b7fa5ea0e79faa2a335140fbbb028391ad4b87e"
+    },
+    {
+      "name": "archer_se",
+      "file": "archer_se.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        611,
+        314,
+        926
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        63
+      ],
+      "trim_box": [
+        13,
+        1,
+        53,
+        61
+      ],
+      "before_resize": [
+        40,
+        60
+      ],
+      "placed_size": [
+        40,
+        60
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        22,
+        36,
+        62,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "69dd1032ed0ca8fbd82e1949aadd78617b2099e8aca1b2da59c6d1aea3c24c65"
+    },
+    {
+      "name": "archer_sw",
+      "file": "archer_sw.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        314,
+        611,
+        627,
+        926
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        63
+      ],
+      "trim_box": [
+        11,
+        1,
+        50,
+        61
+      ],
+      "before_resize": [
+        39,
+        60
+      ],
+      "placed_size": [
+        39,
+        60
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        20,
+        36,
+        59,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "54f2fef2efeb4a5969a7702a0edd5bd942e086753cd63d50b953a065bb27d8cc"
+    },
+    {
+      "name": "archer_nw",
+      "file": "archer_nw.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        627,
+        611,
+        941,
+        926
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        63
+      ],
+      "trim_box": [
+        8,
+        3,
+        49,
+        61
+      ],
+      "before_resize": [
+        41,
+        58
+      ],
+      "placed_size": [
+        41,
+        58
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        17,
+        38,
+        58,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "005c0606cc1c74b9efc62b3ac2e8af1cd0da11517a3bdc3dd0350eaf385dd414"
+    },
+    {
+      "name": "archer_ne",
+      "file": "archer_ne.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        941,
+        611,
+        1254,
+        926
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        63
+      ],
+      "trim_box": [
+        16,
+        1,
+        56,
+        61
+      ],
+      "before_resize": [
+        40,
+        60
+      ],
+      "placed_size": [
+        40,
+        60
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        25,
+        36,
+        65,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "de8e780f81425276aeb78b4ea02e2b355c11f667775c76dc3e9a8926e68ef4d6"
+    },
+    {
+      "name": "artisan_se",
+      "file": "artisan_se.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        926,
+        314,
+        1254
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        65
+      ],
+      "trim_box": [
+        16,
+        2,
+        48,
+        58
+      ],
+      "before_resize": [
+        32,
+        56
+      ],
+      "placed_size": [
+        32,
+        56
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        25,
+        40,
+        57,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "7812fd17be282e428fcd4901f809ac20605300560b2251348b0b5d72dcb767e9"
+    },
+    {
+      "name": "artisan_sw",
+      "file": "artisan_sw.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        314,
+        926,
+        627,
+        1254
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        65
+      ],
+      "trim_box": [
+        15,
+        2,
+        46,
+        59
+      ],
+      "before_resize": [
+        31,
+        57
+      ],
+      "placed_size": [
+        31,
+        57
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        24,
+        39,
+        55,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "5d7806014b08433c6fdb05ba6c9905444e691c29fcf042663027e6e7a38d7b02"
+    },
+    {
+      "name": "artisan_ne",
+      "file": "artisan_ne.png",
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        941,
+        926,
+        1254,
+        1254
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        65
+      ],
+      "trim_box": [
+        18,
+        2,
+        50,
+        58
+      ],
+      "before_resize": [
+        32,
+        56
+      ],
+      "placed_size": [
+        32,
+        56
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        27,
+        40,
+        59,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "f18d4587bee4f8f7e375f34161672f2b8806583aa33572cbeebf2ab2036592a9"
+    }
+  ]
+}

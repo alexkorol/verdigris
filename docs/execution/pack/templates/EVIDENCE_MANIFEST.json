@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "template_only": true,
+  "task_id": null,
+  "claim_token": null,
+  "base_sha": null,
+  "head_sha": null,
+  "integrated_sha": null,
+  "content_hash": null,
+  "seed": null,
+  "platform": null,
+  "toolchain": null,
+  "commands": [],
+  "assertions": [],
+  "negative_control": {"name": null, "observed_result": "NOT_RUN"},
+  "artifacts": [],
+  "reviewer": null,
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "NOT_RUN",
+  "limitations": ["Template only; no game tests or measurements represented."]
+}

@@ -1,0 +1,183 @@
+{
+  "version": 1,
+  "date": "2026-09-10",
+  "acceptance": "root_production_pursuit_reviewed_provisional_integration_2026-09-10",
+  "authority": "Root reported original-scale production review and explicitly authorized active acceptance metadata adoption. This lane reproduces assets and verifies exact hash parity.",
+  "review_scope": "All14 production-rendered NE/NW walk phase crops at original scale, native idle cycles, full-frame NE walk, NW contact and tree detour.",
+  "reviewed_original_artifact": {
+    "path": ".ci-artifacts/pursuit-production-crops-1x.png",
+    "raw_sha256": "74f148e68f8fe82b3e1e40176ebe289223243ffc1683a98512b4e24439fe2217",
+    "retention": "Root owns final reviewed evidence retention and source mappings."
+  },
+  "limits": "Smaller axe, narrower body and crown/phase drift remain. No smooth-video claim. SE remains rejected. Final supported build/all-scenario validation is still root-owned; this record does not claim it has completed.",
+  "historical_context": "Original generation/candidate records retain prior pending-production statuses and hashes. Previous active recipe/report/catalog hashes are preserved here to place that history in context. No original prompt, source, candidate pixel or import report was edited.",
+  "previous_acceptance": "root_pursuit_candidate_reviewed_pending_production_2026-09-10",
+  "metadata_transitions": [
+    {
+      "manifest": "raider-walk-ne",
+      "previous_active_recipe": {
+        "path": "native/tools/raster/raider-walk-ne.json",
+        "raw_sha256": "bdc644771ccc5c9901bfb69e4673847c250ca8b28ad66e5e48e0a8989105d4c9",
+        "canonical_lf_sha256": "71f9741a5cf6955a5ff39f6d1ad7a8ee1acccfedbc8872168cc2325d9790bdc9"
+      },
+      "current_active_recipe": {
+        "path": "native/tools/raster/raider-walk-ne.json",
+        "raw_sha256": "dff840eda53e0a9dba6de75d1b331f5fcbb27469b3657724d2e8dbc47293d2f8",
+        "canonical_lf_sha256": "617fa7a5c54a860d890ee35211223ffa154dae334a4f2e354a956e20ed832ad6"
+      },
+      "previous_runtime_provenance": {
+        "path": "native/client/assets/raster/runtime/raider-walk-ne.provenance.json",
+        "raw_sha256": "6589531080111afe28117f7fc8c8d1958f93d6eff65a414afb0b98c0318f347e",
+        "canonical_lf_sha256": "1c6f40575dfb70b2342879f954269357b13210ae9d7c6664e9ed84bf774cc614"
+      },
+      "current_runtime_provenance": {
+        "path": "native/client/assets/raster/runtime/raider-walk-ne.provenance.json",
+        "raw_sha256": "60647c622c75ce6f12d963aaa0a2f71c3a045dc254353eb4799383dd6931c705",
+        "canonical_lf_sha256": "c52145154b2c3d61855763cece05d3e1493241035a18a711445b869b259caac1"
+      }
+    },
+    {
+      "manifest": "raider-walk-nw",
+      "previous_active_recipe": {
+        "path": "native/tools/raster/raider-walk-nw.json",
+        "raw_sha256": "b2e0f84c45523d0c1af2f60183ee5eb5c25eaf0d697aa03a3b21868602786526",
+        "canonical_lf_sha256": "d636eaea4a271545447e927e9d6aa166325751290b89260168b65220b60059f7"
+      },
+      "current_active_recipe": {
+        "path": "native/tools/raster/raider-walk-nw.json",
+        "raw_sha256": "75189bcdccd20e1598b20741b20409f866d8fbe1c976d12a066a690b6ef9056c",
+        "canonical_lf_sha256": "b5f0c4f91d2ff29b06321cb9c3e3207cf710dd6ca927045c4b6f2b9525937690"
+      },
+      "previous_runtime_provenance": {
+        "path": "native/client/assets/raster/runtime/raider-walk-nw.provenance.json",
+        "raw_sha256": "88022124f1788445a70263b61aab9482d0d03d78f64d12ce3129e71f21931eda",
+        "canonical_lf_sha256": "d837b914163ecb1aadb0f98533a097adb9bffb8ad9b111b7ec31a84b553f97d0"
+      },
+      "current_runtime_provenance": {
+        "path": "native/client/assets/raster/runtime/raider-walk-nw.provenance.json",
+        "raw_sha256": "39a87e308a21f4687f99ac6e7ad1cfcb58ada78d6dd46ed0fa7571141580fc99",
+        "canonical_lf_sha256": "0295e0b7187385aa7839d7e499c80c8bd15e8ee3ccff4ce1e7a454fe625da490"
+      }
+    }
+  ],
+  "previous_catalog": {
+    "path": "native/client/assets/raster/runtime/catalog.json",
+    "raw_sha256": "cb6186d382ad1c70da4444240a3546a7eed247b9dc10ffbfb7443ad4dfe6c806",
+    "canonical_lf_sha256": "c515218c383298fbddb5400f607522947f0fdcdb3a41cdc90a2fb6fb379507a8"
+  },
+  "current_catalog": {
+    "path": "native/client/assets/raster/runtime/catalog.json",
+    "raw_sha256": "d4ceb9debdf97a66c06829f9c7b5e230bcaf48aecc958ebbeb8f43d347bd2c21",
+    "canonical_lf_sha256": "296a94af2ff94573e963e1b7db04365531aff6d72f45782f4c09d72b668dbb50"
+  },
+  "previous_promotion_record": {
+    "path": "native/tools/raster/raider-pursuit-walk-dependencies.json",
+    "raw_sha256": "c924825ae56bb3f3820c61373bf764151ed71debc7b44e74bc73d96adb6af484",
+    "canonical_lf_sha256": "3327a418bc0b1383c5d293c79b233fa87436fd6f4f5a63322d6144c723e33ba9"
+  },
+  "commands": [
+    {
+      "command": "& 'Z:/Code/Python/pixel-perfecter/.venv/Scripts/python.exe' native/tools/raster/import_assets.py native/tools/raster/raider-walk-ne.json",
+      "exit_code": 0
+    },
+    {
+      "command": "& 'Z:/Code/Python/pixel-perfecter/.venv/Scripts/python.exe' native/tools/raster/import_assets.py native/tools/raster/raider-walk-nw.json",
+      "exit_code": 0
+    },
+    {
+      "command": "& 'Z:/Code/Python/pixel-perfecter/.venv/Scripts/python.exe' native/tools/raster/build_catalog.py",
+      "exit_code": 0,
+      "result": "Verified162 active RGBA sprites, expected canvas, binary alpha,<=32colors and provenance hashes."
+    }
+  ],
+  "png_parity": [
+    {
+      "name": "raider_walk0_ne",
+      "raw_sha256": "a4d4fa77a2d48ce4259c78ef56957912e74751cce939806dc414980ceb383c68",
+      "unchanged_from_pre_adoption_and_selected_candidate": true
+    },
+    {
+      "name": "raider_walk1_ne",
+      "raw_sha256": "431179cbeb988a77ea7630b885a503e896b605a62e20d8ec1d278148b0bb8c49",
+      "unchanged_from_pre_adoption_and_selected_candidate": true
+    },
+    {
+      "name": "raider_walk2_ne",
+      "raw_sha256": "a7da3557936d2864fcfb5be9fe67b6c046396516dd1018025b123349de03ff5e",
+      "unchanged_from_pre_adoption_and_selected_candidate": true
+    },
+    {
+      "name": "raider_walk3_ne",
+      "raw_sha256": "301c8d88e7cea8efebef76fa0955b70f11581a1f4736ff6a641baa42a66ba129",
+      "unchanged_from_pre_adoption_and_selected_candidate": true
+    },
+    {
+      "name": "raider_walk4_ne",
+      "raw_sha256": "874a669f55f6fcd85c769577d5175ceee781f0cdbb7a3e80a44ecdbbf9459155",
+      "unchanged_from_pre_adoption_and_selected_candidate": true
+    },
+    {
+      "name": "raider_walk5_ne",
+      "raw_sha256": "4d0af302b2dc723e4c6296f5fb6b567455e470a4e01e56b2544cbe0cb8bae796",
+      "unchanged_from_pre_adoption_and_selected_candidate": true
+    },
+    {
+      "name": "raider_walk0_nw",
+      "raw_sha256": "1ec3e09192d5d669b1eec90a13a207674d2f05dcf66f9951f20534138e2df0a3",
+      "unchanged_from_pre_adoption_and_selected_candidate": true
+    },
+    {
+      "name": "raider_walk1_nw",
+      "raw_sha256": "dab0e2bdfd6aacafb73e5764019c9af4b16c43c7d1bea67b7781d27466d2a634",
+      "unchanged_from_pre_adoption_and_selected_candidate": true
+    },
+    {
+      "name": "raider_walk2_nw",
+      "raw_sha256": "e5bc6705f3a2c5de17de51d79e609274713ee17684c5994be412b662dd58c886",
+      "unchanged_from_pre_adoption_and_selected_candidate": true
+    },
+    {
+      "name": "raider_walk3_nw",
+      "raw_sha256": "f059217063420816a5f0e5c3c8ff01320847d75b2224ed9d37b28f0affdbbf45",
+      "unchanged_from_pre_adoption_and_selected_candidate": true
+    },
+    {
+      "name": "raider_walk4_nw",
+      "raw_sha256": "14a9fcea0e76cf6c15ea359fef5927500e9466d00b298c3602f0249467d7a116",
+      "unchanged_from_pre_adoption_and_selected_candidate": true
+    },
+    {
+      "name": "raider_walk5_nw",
+      "raw_sha256": "eb03c4c09c71afb80b0f2d9d10c42f746139fb5a97083a0a8e116c464709abbb",
+      "unchanged_from_pre_adoption_and_selected_candidate": true
+    },
+    {
+      "name": "raider_walk6_nw",
+      "raw_sha256": "8e6609679f0b79397dc0277baacc13f73b96a6fa1a9b1e491804dd597fab4231",
+      "unchanged_from_pre_adoption_and_selected_candidate": true
+    },
+    {
+      "name": "raider_walk7_nw",
+      "raw_sha256": "6ec9c432a3129ca3638cb70d9eb0d47c83472c6d5fb4e6ff82ce0626f71dfe0d",
+      "unchanged_from_pre_adoption_and_selected_candidate": true
+    }
+  ],
+  "verification": {
+    "all162_pngs_unchanged": true,
+    "new14_exact_candidates": true,
+    "runtime_files_checked": 192,
+    "changed_runtime_files": [
+      "catalog.json",
+      "raider-walk-ne.provenance.json",
+      "raider-walk-nw.provenance.json"
+    ],
+    "pre_adoption_png_name_sha256_map_digest": "e0b71a90fad8dc527508ea7baf173c09c8debaa400b505d5ba2394e0208080ba",
+    "historical_authoring_dependency_hashes_unchanged": true,
+    "active_manifest_count": 29,
+    "active_sprite_count": 162,
+    "catalog_freeze_unchanged": {
+      "raw_sha256": "5406d4e8e05bb30ae0fb237a2915d165bd5dcedd2bbef9b578ea3fa9b0deb99d",
+      "canonical_lf_sha256": "5406d4e8e05bb30ae0fb237a2915d165bd5dcedd2bbef9b578ea3fa9b0deb99d"
+    }
+  }
+}

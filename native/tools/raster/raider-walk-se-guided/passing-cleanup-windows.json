@@ -1,0 +1,146 @@
+{
+  "windows": {
+    "passing-left-v1": [
+      [
+        505,
+        751,
+        525,
+        771
+      ],
+      [
+        485,
+        781,
+        525,
+        861
+      ],
+      [
+        666,
+        813,
+        674,
+        822
+      ],
+      [
+        674,
+        832,
+        684,
+        841
+      ]
+    ],
+    "passing-right-v1": [
+      [
+        504,
+        650,
+        508,
+        659
+      ],
+      [
+        471,
+        792,
+        499,
+        876
+      ],
+      [
+        658,
+        810,
+        667,
+        828
+      ],
+      [
+        668,
+        829,
+        677,
+        841
+      ]
+    ]
+  },
+  "trial_audit": [
+    {
+      "name": "passing-left-v1",
+      "window": [
+        505,
+        751,
+        525,
+        771
+      ],
+      "removed_pixels": 302,
+      "removed_chroma_over20": 0
+    },
+    {
+      "name": "passing-left-v1",
+      "window": [
+        485,
+        781,
+        525,
+        861
+      ],
+      "removed_pixels": 1448,
+      "removed_chroma_over20": 0
+    },
+    {
+      "name": "passing-left-v1",
+      "window": [
+        666,
+        813,
+        674,
+        822
+      ],
+      "removed_pixels": 56,
+      "removed_chroma_over20": 0
+    },
+    {
+      "name": "passing-left-v1",
+      "window": [
+        674,
+        832,
+        684,
+        841
+      ],
+      "removed_pixels": 88,
+      "removed_chroma_over20": 0
+    },
+    {
+      "name": "passing-right-v1",
+      "window": [
+        504,
+        650,
+        508,
+        659
+      ],
+      "removed_pixels": 12,
+      "removed_chroma_over20": 0
+    },
+    {
+      "name": "passing-right-v1",
+      "window": [
+        471,
+        792,
+        499,
+        876
+      ],
+      "removed_pixels": 1287,
+      "removed_chroma_over20": 0
+    },
+    {
+      "name": "passing-right-v1",
+      "window": [
+        658,
+        810,
+        667,
+        828
+      ],
+      "removed_pixels": 162,
+      "removed_chroma_over20": 0
+    },
+    {
+      "name": "passing-right-v1",
+      "window": [
+        668,
+        829,
+        677,
+        841
+      ],
+      "removed_pixels": 102,
+      "removed_chroma_over20": 0
+    }
+  ]
+}

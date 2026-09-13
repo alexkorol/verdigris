@@ -1,0 +1,57 @@
+{
+  "asset": "effects_hit-spark-v1",
+  "purpose": "Compact contact-centered melee impact sprite for the pixel-art world",
+  "tool": "image_gen__imagegen",
+  "execution_mode": "built-in",
+  "model_selection": "No model or variant selector was exposed; no specific model selection is claimed.",
+  "calls": 1,
+  "prompt_file": "effects-hit-spark-v1.txt",
+  "generated_source": "C:/Users/Alex/.codex/generated_images/01a089c3-5390-76a2-8353-a73d7b52eeb8/exec-b739fdc9-6e45-41e5-8c09-d8ece72f9f2e.png",
+  "saved_source": "native/client/assets/raster/source/effects_hit-spark-v1.png",
+  "use_case": "stylized-concept",
+  "references": [
+    {
+      "path": "native/client/assets/raster/runtime/weapon_axe.png",
+      "role": "Warm material palette and crisp pixel-cluster reference only; axe is excluded from generated subject",
+      "inspected_before_call": true,
+      "sha256": "84e987a2d16ba5250f8d2528cd033d461029b293183f68cef5f4d6e652e9e8c9"
+    }
+  ],
+  "published_workflow_adaptation": {
+    "simple_pixel_asset_recipe": "https://www.reddit.com/r/aigamedev/comments/1wbmvnm/gpt_image_25_nailed_a_16_frame_combat_sprite_sheet/",
+    "published_prompt": "Make a simplified 128px pixel art combat motion sprite sheet of this character, transparent background if you can, arrange it 4x4.",
+    "reference_role_recipe": "https://12ui.com/gpt-image-2.5-vs-2",
+    "changes": "Retained a short simplified-pixel-art request and transparent output; changed character combat sheet into one isolated physical hit effect at 32-pixel scale. Explicitly assigned the existing axe reference to palette/pixel style only. Contact-burst shape and warm colors come from the parent's asset brief.",
+    "evidence_limit": "The cited creators did not publish this hit-spark recipe. This is an original single-effect adaptation, not a claimed reproduction of a demonstrated effect workflow."
+  },
+  "source_review": {
+    "viewed": true,
+    "description": "One small warm ivory center, four short angular amber streaks and detached flecks, clear surrounding alpha. Large square clusters read as synthetic low-resolution pixel art. No axe, scene, text, ring or orb.",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "alpha_zero_pixels": 1541848,
+    "alpha_limit": "Generated edges include partial alpha; reconstruction must threshold and review the actual pixels.",
+    "source_contact_center_estimate": [
+      624,
+      664
+    ],
+    "state": "Source accepted for Pixel Respecter reconstruction; runtime appearance pending",
+    "alpha_bounds_at_128": [
+      466,
+      446,
+      836,
+      791
+    ]
+  },
+  "pipeline_request": {
+    "runtime_name_suggestion": "effect_hit_spark",
+    "visible_logical_extent": "24-32 pixels",
+    "palette_target": "8-12 colors if the ivory core and amber streaks survive",
+    "pivot": "Contact-centered, not feet; place ivory flash center at runtime canvas center",
+    "review": "Native and intended gameplay-size previews, then live production impact placement and fade"
+  },
+  "source_sha256": "910a905e4a4fb1dade6829d69ceb531c98df47d68280331b94f68d43b62bb080"
+}

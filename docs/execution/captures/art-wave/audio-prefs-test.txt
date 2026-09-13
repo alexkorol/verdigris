@@ -1,0 +1,3 @@
+muted=1
+sfx=400
+music=700

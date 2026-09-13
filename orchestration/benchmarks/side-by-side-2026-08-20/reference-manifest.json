@@ -1,0 +1,328 @@
+{
+  "schemaVersion": 1,
+  "generator": "orchestration/benchmarks/side-by-side-2026-08-20/reference-manifest.mjs",
+  "benchmark": "side-by-side-2026-08-20 (D-124 native vs browser)",
+  "entryCount": 30,
+  "entries": [
+    {
+      "path": "../../tasks/TASK-0070-reference-scenes/captures/01-route-entrance.json",
+      "kind": "render-list-json",
+      "side": "native",
+      "scene": "01-route-entrance",
+      "byteLength": 30229,
+      "sha256": "e7c2adbaee642cc5432a6b5d6d09413fb9a7e45ed281849e5506f66580635689",
+      "sourceRevision": "0a0144207cccfdf6024ebc467c7d81b2462b2c52"
+    },
+    {
+      "path": "../../tasks/TASK-0070-reference-scenes/captures/02-pack-combat.json",
+      "kind": "render-list-json",
+      "side": "native",
+      "scene": "02-pack-combat",
+      "byteLength": 32578,
+      "sha256": "6bd507b34ec692924986c75a522bf6c0913b0409cde20cf553bae81a097e688a",
+      "sourceRevision": "0a0144207cccfdf6024ebc467c7d81b2462b2c52"
+    },
+    {
+      "path": "../../tasks/TASK-0070-reference-scenes/captures/03-elite-telegraph.json",
+      "kind": "render-list-json",
+      "side": "native",
+      "scene": "03-elite-telegraph",
+      "byteLength": 30415,
+      "sha256": "6522e22ab2161b8b4009b73cf2b36acf7e528a0c718854f5484c3f9b41fa230c",
+      "sourceRevision": "0a0144207cccfdf6024ebc467c7d81b2462b2c52"
+    },
+    {
+      "path": "../../tasks/TASK-0070-reference-scenes/captures/04-named-drop-gear.json",
+      "kind": "render-list-json",
+      "side": "native",
+      "scene": "04-named-drop-gear",
+      "byteLength": 32546,
+      "sha256": "ec86c9e12990807fcb1dd535b6fe7a502558e23c9d65b413106c089894798146",
+      "sourceRevision": "0a0144207cccfdf6024ebc467c7d81b2462b2c52"
+    },
+    {
+      "path": "../../tasks/TASK-0070-reference-scenes/captures/05-critical-health.json",
+      "kind": "render-list-json",
+      "side": "native",
+      "scene": "05-critical-health",
+      "byteLength": 33033,
+      "sha256": "bb306d4abc9221005c2032e2d6255fd584ab7b2d5239b6ce81fb2f9c45d4a3be",
+      "sourceRevision": "0a0144207cccfdf6024ebc467c7d81b2462b2c52"
+    },
+    {
+      "path": "browser-01-route-entrance-1920x1080.png",
+      "kind": "image",
+      "side": "browser",
+      "scene": "01-route-entrance",
+      "byteLength": 2458621,
+      "width": 1920,
+      "height": 1080,
+      "sha256": "87ac3584e549c442ed6707149e8179f871565e4208de7804c9b93730b86e1173",
+      "sourceRevision": "ec7d88ccf429a1b9d21572ab84f048af40501f95"
+    },
+    {
+      "path": "browser-02-pack-combat-1920x1080.png",
+      "kind": "image",
+      "side": "browser",
+      "scene": "02-pack-combat",
+      "byteLength": 2367378,
+      "width": 1920,
+      "height": 1080,
+      "sha256": "cbc6519196a7419508e3c22ef3dab351c6fcf8bc98d6587473ffe14a50e92589",
+      "sourceRevision": "ec7d88ccf429a1b9d21572ab84f048af40501f95"
+    },
+    {
+      "path": "browser-03-combat-aftermath-1920x1080.png",
+      "kind": "image",
+      "side": "browser",
+      "scene": "03-elite-telegraph",
+      "byteLength": 2372259,
+      "width": 1920,
+      "height": 1080,
+      "sha256": "f69c4d46e9b91a5a8138d809b40a324fca97f85f58d059d22e389cb9eb52b06a",
+      "sourceRevision": "ec7d88ccf429a1b9d21572ab84f048af40501f95"
+    },
+    {
+      "path": "browser-04-inventory-open-1920x1080.png",
+      "kind": "image",
+      "side": "browser",
+      "scene": "04-named-drop-gear",
+      "byteLength": 1346544,
+      "width": 1920,
+      "height": 1080,
+      "sha256": "7b2875057ebcc0474f2c21242e42e832719214153ca1f15a4dc365d75a9041c6",
+      "sourceRevision": "ec7d88ccf429a1b9d21572ab84f048af40501f95"
+    },
+    {
+      "path": "browser-05-hud-state-1920x1080.png",
+      "kind": "image",
+      "side": "browser",
+      "scene": "05-critical-health",
+      "byteLength": 2377422,
+      "width": 1920,
+      "height": 1080,
+      "sha256": "522eae57a66d9059a8e02ceb374cf27dac524d77ff4d0ec5fc695398e34cc1bd",
+      "sourceRevision": "ec7d88ccf429a1b9d21572ab84f048af40501f95"
+    },
+    {
+      "path": "native-after/01-route-entrance-1920x1080.png",
+      "kind": "image",
+      "side": "native",
+      "scene": "01-route-entrance",
+      "byteLength": 2051456,
+      "width": 1920,
+      "height": 1080,
+      "sha256": "f6586c4fb85eb0e2e260dae34d91a698863408830ebe3dac5360df174363c46d",
+      "sourceRevision": "77b21764c043585f5da55d3c9008361f55e30d2b"
+    },
+    {
+      "path": "native-after/02-pack-combat-1920x1080.png",
+      "kind": "image",
+      "side": "native",
+      "scene": "02-pack-combat",
+      "byteLength": 2141588,
+      "width": 1920,
+      "height": 1080,
+      "sha256": "9d92f20a91ec1265862fbc1d02fb0f9ddcba8af9c846022cfac18dcb095db1ab",
+      "sourceRevision": "77b21764c043585f5da55d3c9008361f55e30d2b"
+    },
+    {
+      "path": "native-after/03-elite-telegraph-1920x1080.png",
+      "kind": "image",
+      "side": "native",
+      "scene": "03-elite-telegraph",
+      "byteLength": 2058261,
+      "width": 1920,
+      "height": 1080,
+      "sha256": "3c76c8da77e86f4d737067da7fffd1388394bca5cadd0ee56172abc964ece54a",
+      "sourceRevision": "77b21764c043585f5da55d3c9008361f55e30d2b"
+    },
+    {
+      "path": "native-after/04-named-drop-gear-1920x1080.png",
+      "kind": "image",
+      "side": "native",
+      "scene": "04-named-drop-gear",
+      "byteLength": 1966062,
+      "width": 1920,
+      "height": 1080,
+      "sha256": "e4d678f55312fe06f3967f1a9c00fb539058db78c9062794eab99b3a7121a909",
+      "sourceRevision": "77b21764c043585f5da55d3c9008361f55e30d2b"
+    },
+    {
+      "path": "native-after/05-critical-health-1920x1080.png",
+      "kind": "image",
+      "side": "native",
+      "scene": "05-critical-health",
+      "byteLength": 1996712,
+      "width": 1920,
+      "height": 1080,
+      "sha256": "b3cf9973f79119d483c35d6d2666159597b924846e7a23e5a66f3647c8a62811",
+      "sourceRevision": "77b21764c043585f5da55d3c9008361f55e30d2b"
+    },
+    {
+      "path": "sxs-01-route-entrance.jpg",
+      "kind": "image",
+      "side": "composite",
+      "scene": "01-route-entrance",
+      "byteLength": 158168,
+      "width": 1920,
+      "height": 568,
+      "sha256": "1c65b1095ce29232479c67f048e3955f95709b6f2c772c8138c16be03a3fe58a",
+      "sourceRevision": "ec7d88ccf429a1b9d21572ab84f048af40501f95"
+    },
+    {
+      "path": "sxs-02-pack-combat.jpg",
+      "kind": "image",
+      "side": "composite",
+      "scene": "02-pack-combat",
+      "byteLength": 163661,
+      "width": 1920,
+      "height": 568,
+      "sha256": "7dcb3efa0ae55856aae391c36a5a1480eace0f14ea79a545e4b6de0f5f722a75",
+      "sourceRevision": "ec7d88ccf429a1b9d21572ab84f048af40501f95"
+    },
+    {
+      "path": "sxs-03-combat.jpg",
+      "kind": "image",
+      "side": "composite",
+      "scene": "03-elite-telegraph",
+      "byteLength": 163558,
+      "width": 1920,
+      "height": 568,
+      "sha256": "72845d696973f7a56a53b2b2efd3ec3790378418ba06b8907a761c1629b5fa32",
+      "sourceRevision": "ec7d88ccf429a1b9d21572ab84f048af40501f95"
+    },
+    {
+      "path": "sxs-04-inventory.jpg",
+      "kind": "image",
+      "side": "composite",
+      "scene": "04-named-drop-gear",
+      "byteLength": 125972,
+      "width": 1920,
+      "height": 568,
+      "sha256": "8c470ca2a9ecb7fd9c27fa43cf433ba155cc76e7f5606336c57e247dc90641b6",
+      "sourceRevision": "ec7d88ccf429a1b9d21572ab84f048af40501f95"
+    },
+    {
+      "path": "sxs-05-hud.jpg",
+      "kind": "image",
+      "side": "composite",
+      "scene": "05-critical-health",
+      "byteLength": 168981,
+      "width": 1920,
+      "height": 568,
+      "sha256": "8998a8d438a22e3b46cb3af12850515f415111031941be0e057407711adcf2e8",
+      "sourceRevision": "ec7d88ccf429a1b9d21572ab84f048af40501f95"
+    },
+    {
+      "path": "sxs2-01-route-entrance.jpg",
+      "kind": "image",
+      "side": "composite",
+      "scene": "01-route-entrance",
+      "byteLength": 200221,
+      "width": 1920,
+      "height": 568,
+      "sha256": "0dbab9378537f4b7c63cf0bdb3625368226e52d06d7542dd85b9aba668cab823",
+      "sourceRevision": "77b21764c043585f5da55d3c9008361f55e30d2b"
+    },
+    {
+      "path": "sxs2-02-pack-combat.jpg",
+      "kind": "image",
+      "side": "composite",
+      "scene": "02-pack-combat",
+      "byteLength": 208507,
+      "width": 1920,
+      "height": 568,
+      "sha256": "3f3fa8580dec2f50c4434092e25eeb65751fd5bb44d0cd656d5fb6b65041aa4a",
+      "sourceRevision": "77b21764c043585f5da55d3c9008361f55e30d2b"
+    },
+    {
+      "path": "sxs2-03-combat.jpg",
+      "kind": "image",
+      "side": "composite",
+      "scene": "03-elite-telegraph",
+      "byteLength": 204496,
+      "width": 1920,
+      "height": 568,
+      "sha256": "62831423292fd11073dd992b94d27fe09e2887b75d07583b6ed6aa150e19bb40",
+      "sourceRevision": "77b21764c043585f5da55d3c9008361f55e30d2b"
+    },
+    {
+      "path": "sxs2-04-inventory.jpg",
+      "kind": "image",
+      "side": "composite",
+      "scene": "04-named-drop-gear",
+      "byteLength": 169583,
+      "width": 1920,
+      "height": 568,
+      "sha256": "261cefa4718bf0e05d6e3371e8479e231ec7a8b8ddf18b1f88f8c205bbb6a866",
+      "sourceRevision": "77b21764c043585f5da55d3c9008361f55e30d2b"
+    },
+    {
+      "path": "sxs2-05-hud.jpg",
+      "kind": "image",
+      "side": "composite",
+      "scene": "05-critical-health",
+      "byteLength": 214449,
+      "width": 1920,
+      "height": 568,
+      "sha256": "fa9ad702fa3a29a5fdbe3b0f9ede89d59f22836c9460beefff8e150361bf964d",
+      "sourceRevision": "77b21764c043585f5da55d3c9008361f55e30d2b"
+    },
+    {
+      "path": "sxs3-01-route-entrance.jpg",
+      "kind": "image",
+      "side": "composite",
+      "scene": "01-route-entrance",
+      "byteLength": 200221,
+      "width": 1920,
+      "height": 568,
+      "sha256": "0dbab9378537f4b7c63cf0bdb3625368226e52d06d7542dd85b9aba668cab823",
+      "sourceRevision": "6a3a46c33c218aaca38048c297f3806c66567447"
+    },
+    {
+      "path": "sxs3-02-pack-combat.jpg",
+      "kind": "image",
+      "side": "composite",
+      "scene": "02-pack-combat",
+      "byteLength": 208507,
+      "width": 1920,
+      "height": 568,
+      "sha256": "3f3fa8580dec2f50c4434092e25eeb65751fd5bb44d0cd656d5fb6b65041aa4a",
+      "sourceRevision": "6a3a46c33c218aaca38048c297f3806c66567447"
+    },
+    {
+      "path": "sxs3-03-combat.jpg",
+      "kind": "image",
+      "side": "composite",
+      "scene": "03-elite-telegraph",
+      "byteLength": 204496,
+      "width": 1920,
+      "height": 568,
+      "sha256": "62831423292fd11073dd992b94d27fe09e2887b75d07583b6ed6aa150e19bb40",
+      "sourceRevision": "6a3a46c33c218aaca38048c297f3806c66567447"
+    },
+    {
+      "path": "sxs3-04-inventory.jpg",
+      "kind": "image",
+      "side": "composite",
+      "scene": "04-named-drop-gear",
+      "byteLength": 169583,
+      "width": 1920,
+      "height": 568,
+      "sha256": "261cefa4718bf0e05d6e3371e8479e231ec7a8b8ddf18b1f88f8c205bbb6a866",
+      "sourceRevision": "6a3a46c33c218aaca38048c297f3806c66567447"
+    },
+    {
+      "path": "sxs3-05-hud.jpg",
+      "kind": "image",
+      "side": "composite",
+      "scene": "05-critical-health",
+      "byteLength": 214449,
+      "width": 1920,
+      "height": 568,
+      "sha256": "fa9ad702fa3a29a5fdbe3b0f9ede89d59f22836c9460beefff8e150361bf964d",
+      "sourceRevision": "6a3a46c33c218aaca38048c297f3806c66567447"
+    }
+  ]
+}

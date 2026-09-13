@@ -52,6 +52,12 @@ struct ClientCommand {
     CreateScion,    // `target` = Scion display name
     SelectScion,    // `target` = scion id; value!=0 => mortal oath
     SetOut,         // `target` = scion id (plain admission / road purse)
+    NpcAction,      // `target` = wire action id ("player:npc:talk", ...);
+                    // value = town NPC id
+    MenuAction,     // `target` = wire action id; `extra` = item id/uuid;
+                    // value = price or quantity (server reads what it needs)
+    CloseScreen,    // dismiss the open shop/bank pane (client-local)
+    AllocateNode,   // `target` = passive-tree axial node id ("q,r")
   };
 
   Type type = Type::Move;
@@ -59,6 +65,7 @@ struct ClientCommand {
   int dy = 0;
   int value = 0;
   std::string target;
+  std::string extra;  // MenuAction: the item id/uuid riding queueItem.item
 
   static ClientCommand login(std::string guest_id, bool quick_guest);
   static ClientCommand move(int dx, int dy);
@@ -72,6 +79,11 @@ struct ClientCommand {
   static ClientCommand create_scion(std::string scion_name);
   static ClientCommand select_scion(std::string scion_id, bool mortal_oath);
   static ClientCommand set_out(std::string scion_id);
+  static ClientCommand npc_action(int npc_id, std::string action_id);
+  static ClientCommand menu_action(std::string action_id, std::string item_ref,
+                                   int value);
+  static ClientCommand close_screen();
+  static ClientCommand allocate_node(std::string node_id);
 };
 
 class IClientSession {
@@ -88,6 +100,11 @@ class IClientSession {
   // Pump the session: apply queued authoritative updates to the model and
   // stage presentation events. Cheap; call once per frame.
   virtual void poll() = 0;
+
+  // Advance one caller-scheduled 50 ms authority step. Remote time belongs
+  // to the server; local sessions consume their input batch here. Polling
+  // and input frequency must never determine simulation time.
+  virtual void advance_fixed_tick() {}
 
   virtual ConnectionState connection_state() const = 0;
   virtual const ClientModel& model() const = 0;

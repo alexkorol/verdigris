@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <filesystem>
 #include <functional>
 #include <memory>
 #include <mutex>
@@ -85,10 +86,16 @@ class ProtocolSession {
   }
   const std::string& socket_id() const { return socket_id_; }
   std::string login_payload() const;
-  std::string state_payload(const std::string& request_id) const;
+  std::string state_payload(const std::string& request_id,
+                            bool include_map = false) const;
   void handle(const Envelope& envelope, const std::function<void(const Envelope&)>& emit);
   void replace_socket(std::string socket_id);
   void reset_world_for_new_socket();
+  // Small durable account seam for the native owner flow. The chronicle is
+  // loaded before login and checkpointed after mutating commands so House and
+  // Scion identity survive a server restart.
+  void attach_persistence(const std::filesystem::path& path);
+  void persist() const;
   // World events (movement, scene transitions) are broadcast to every live
   // connection, mirroring the JS server's room broadcast.  Unit tests leave
   // this unset and receive the same envelopes through the requester's emit.
@@ -107,6 +114,11 @@ class ProtocolSession {
   JsonValue snapshot() const;
   JsonValue scene_payload() const;
   JsonValue movement_step_payload() const;
+  JsonValue monster_payload(const WorldMonster& monster) const;
+  void emit_monster_state(std::int64_t now_ms,
+                          const std::function<void(const Envelope&)>& emit);
+  std::string published_monster_scene_;
+  std::unordered_map<std::string, std::string> published_monsters_;
   void emit_login(const std::function<void(const Envelope&)>& emit) const;
   void emit_transition(const std::function<void(const Envelope&)>& emit, const char* event) const;
   void emit_movement(const std::function<void(const Envelope&)>& emit) const;
@@ -244,12 +256,14 @@ class ProtocolSession {
   std::shared_ptr<WorldSimulation> world_;
   std::function<void(const Envelope&)> broadcast_;
   std::function<void(const Envelope&)> direct_emit_;
+  std::filesystem::path persistence_path_;
   mutable std::recursive_mutex mutex_;
 };
 
 class WebSocketServer {
  public:
-  explicit WebSocketServer(std::uint16_t port = 6500);
+  explicit WebSocketServer(std::uint16_t port = 6500,
+                           std::filesystem::path save_directory = {});
   ~WebSocketServer();
 
   WebSocketServer(const WebSocketServer&) = delete;
@@ -268,6 +282,7 @@ class WebSocketServer {
   void broadcast(const Envelope& envelope);
 
   std::uint16_t port_;
+  std::filesystem::path save_directory_;
   std::intptr_t listen_socket_ = -1;
   bool running_ = false;
   std::mutex mutex_;

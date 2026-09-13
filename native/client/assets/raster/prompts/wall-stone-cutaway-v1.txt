@@ -1,0 +1,7 @@
+Create one pixel-art cutaway limestone wall module for an axis-aligned orthographic game.
+
+Image 1 is a geometry guide only. Preserve its exact rectangular silhouette, camera, proportions, placement and horizontal plane boundary: an upper square top cap and a lower rectangular south-facing vertical wall face. Discard the guide's colors, flat shading and background; replace them with the stone rendering described below. Keep the same empty margins and genuine transparent alpha outside the rectangle.
+
+Image 2 supplies only the natural warm-gray limestone material and crisp pixel-cluster style. Do not copy the column's shape. Author rough-cut masonry with broad quiet stone surfaces, narrow muted mortar, and a few restrained chips. The top cap consists of fitted limestone slabs; the darker south face shows two staggered masonry courses. Use warm beige-gray lights and earthy gray-brown shadows with 24–32 purposeful colors. Keep readable square pixel clusters for a 64×96 logical-pixel module.
+
+The cap is exactly 64×64 logical pixels; the front face is exactly 64×32. These fill the same straight-sided rectangle as Image 1. Every shared edge reaches the rectangle boundary. Continue stone and horizontal courses across the left and right edges. The cap should continue naturally into another identical cap on all sides. Avoid an outlined perimeter, enclosing border, raised rim or per-module bevel. No perspective slant, side planes, broken outer corners, exterior floor, cast shadow, rubble, objects or text. Return one complete module.

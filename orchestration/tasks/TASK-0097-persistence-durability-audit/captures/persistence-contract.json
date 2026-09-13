@@ -1,0 +1,202 @@
+{
+  "task": "TASK-0097",
+  "title": "Native persistence durability and fault-model audit",
+  "packet": "BOUNDED-DESIGN",
+  "generatedBy": {
+    "lane": "ox-pc-bc",
+    "model": "openrouter/stealth/ox-alpha"
+  },
+  "baseCommit": "d2423873c577d299b3b39c56024d1d840993c72b",
+  "claimHead": "c289156ae46979efe32ce53e4d5c928e69f4ce43",
+  "capsule": "read-only; no real saves touched; no ports bound; port 6500 untouched",
+  "frozenInvariants": {
+    "D-106": {
+      "statement": "Items are never destroyed by Scion death; everything carried returns to a recoverable pool (relic pool / loot pool). Death transforms recoverability.",
+      "canon": "orchestration/DECISIONS.md:42-46",
+      "nativeEvidence": [
+        "native/src/core.cpp:563-605 retire_instance() requeues surfaced relic/trophy candidates into pending pools at every instance boundary",
+        "native/tests/core_tests.cpp:778-819 D-109 mid-instance snapshot preserves carried items/trophies",
+        "native/tests/core_tests.cpp:821-845 recovery pools survive snapshot/restore byte-stably"
+      ]
+    },
+    "D-109": {
+      "statement": "Logout, disconnect, or crash never loses items or progress; Scion keeps everything and returns to town on next login. Death is the only loss event.",
+      "canon": "orchestration/DECISIONS.md:61-67; docs/rebuild/ADR-002-persistence-seam.md:3-15",
+      "nativeEvidence": [
+        "native/src/core.cpp:1265-1291 snapshot retires active instance; surfaced candidates return to pending queues",
+        "native/src/networking.cpp:604-651 reset_world_for_new_socket() resets transient state, keeps account state, restores life",
+        "native/tests/session_tests.cpp:401-450 disconnect/restart/relogin cycle stays Ready without losing identity"
+      ]
+    }
+  },
+  "headlineFinding": "The native persistence seam exists and is well-tested as a library (core snapshot/restore + atomic file adapter), but it has ZERO production callers: no save trigger exists anywhere in native production code. All live profiles (ProtocolSession state, networking.hpp:161-247) are process-memory only, so a native server crash or restart silently resets every guest to a fresh deterministic profile. D-109 currently holds within a running process only.",
+  "layers": {
+    "coreSnapshotFormat": {
+      "purpose": "Versioned, canonical, line-oriented durable House/Scion/RNG bytes; no I/O inside the core (D-002).",
+      "writer": "verdigris::snapshot(Simulation) native/src/core.cpp:1226-1295",
+      "reader": "verdigris::restore(bytes) native/src/core.cpp:1297-1375",
+      "schemaVersionGate": "kSnapshotSchemaVersion=1 (native/src/core.cpp:964); restore hard-throws on missing/mismatched version (native/src/core.cpp:1299-1301); no migration path",
+      "grammar": {
+        "encoding": "key=value lines, UTF-8 strings hex-encoded lower-case (native/src/core.cpp:968-996); numbers decimal; booleans 0/1; fixed field order gives byte-stable output",
+        "collections": "<key>.count followed by stable numeric indexes (native/src/core.cpp:1015-1053)",
+        "parsing": "first-occurrence-wins duplicate keys, CRLF tolerated, blank/separator-less lines skipped (native/src/core.cpp:1079-1093)",
+        "failClosed": "missing required fields throw 'missing snapshot field'; malformed numbers/booleans/hex throw with key name (native/src/core.cpp:1101-1141); collection counts capped at 1e6 (native/src/core.cpp:1143-1147)"
+      }
+    },
+    "fileAdapter": {
+      "path": "native/persistence/adapter.hpp (header-only, exposed via native/include/verdigris/persistence.hpp:6)",
+      "writeAtomic": "temp file '<target>.tmp' -> write -> flush -> close -> MoveFileExW(REPLACE_EXISTING|WRITE_THROUGH) on Windows / rename(2) elsewhere; failure removes temp and throws (adapter.hpp:23-57)",
+      "read": "plain byte read; never touches .tmp leftovers (adapter.hpp:59-73)",
+      "knownGaps": [
+        "No FlushFileBuffers/fsync of temp data before rename; MOVEFILE_WRITE_THROUGH covers the metadata op only, so an OS-crash/power-loss window can leave a durably-renamed but empty/truncated target (adapter.hpp:27-35)",
+        "Fixed '.tmp' suffix: concurrent writers to one target share and clobber one temp path (adapter.hpp:25)",
+        "Crash between temp creation and rename leaves a stale .tmp that read() ignores and nothing ever cleans"
+      ]
+    },
+    "sessionLayer": {
+      "purpose": "The real player-facing profile lives in ProtocolSession and has NO serialization seam.",
+      "inventory": "networking.hpp:161-247 (identity, lifecycle/mortal-oath, quest chain + tree points, passive_tree_ JSON, house treasury/renown, bank_, house_store_, cleared world-web nodes, combat_xp_, chronicle_ JSON v3, pending relic items, inventory_/wear_, session RNG, Simulation, WorldSimulation)",
+      "storage": "WebSocketServer::sessions_ keyed by guest identity for the lifetime of the server process (native/src/networking.cpp:2988); remove_connection drops only the socket, never the session (native/src/networking.cpp:2990)"
+    }
+  },
+  "persistedFields": {
+    "format": "Every key emitted by verdigris::snapshot(); counts via <key>.count + numeric indexes; strings hex-encoded.",
+    "scalars": [
+      {"key": "schemaVersion", "source": "native/src/core.cpp:1228", "restore": "required uint64 == 1 (core.cpp:1299)"},
+      {"key": "rng.state", "source": "core.cpp:1229", "note": "RNG continuation across restarts prevents drop rerolling"},
+      {"key": "rng.serial", "source": "core.cpp:1230"},
+      {"key": "tick", "source": "core.cpp:1231"},
+      {"key": "nextLegendOrdinal", "source": "core.cpp:1232"},
+      {"key": "house.id", "source": "core.cpp:1234"},
+      {"key": "house.name", "source": "core.cpp:1235"},
+      {"key": "house.campaignComplete", "source": "core.cpp:1257"}
+    ],
+    "houseCollections": [
+      {"key": "house.routes[i]", "fields": "id,parentId,optional,children[]", "source": "core.cpp:1236-1244"},
+      {"key": "house.unlockedRoutes[]", "source": "core.cpp:1245"},
+      {"key": "house.clearedRoutes[]", "source": "core.cpp:1246"},
+      {"key": "house.specializations[]", "source": "core.cpp:1247"},
+      {"key": "house.storedTrophies[i]{id,name}", "source": "core.cpp:1248"},
+      {"key": "house.storedItems[i]", "itemFields": "id,name,attackBonus,ownerId,useCount,equipped,relicCandidate,history[]", "source": "core.cpp:1023-1032,1249"},
+      {"key": "house.relicCandidates[i]", "itemFields": "same item shape", "source": "core.cpp:1250"},
+      {"key": "house.lostTrophies[i]{id,name}", "source": "core.cpp:1251"},
+      {"key": "house.seasonalRewards[]", "source": "core.cpp:1252"},
+      {"key": "house.legends[i]", "fields": "ordinal,tick,scionId,scionName,kind,subject,detail,killerId,routeId,founding", "source": "core.cpp:1066-1077,1253-1256"}
+    ],
+    "scionsAndPools": [
+      {"key": "scion", "fields": "id,name,level,alive,actorId,carriedTrophies[],carriedItems[],deeds[]", "source": "core.cpp:1055-1064,1259"},
+      {"key": "fallenScions[i]", "fields": "same scion shape", "source": "core.cpp:1260-1263"},
+      {"key": "pendingRelicItems[i]", "note": "explicit pool + surfaced ground relic candidates folded in at snapshot boundary", "source": "core.cpp:1268-1277,1290"},
+      {"key": "pendingRelicTrophies[i]", "note": "surfaced resurfaced-trophy floor entries folded in; already-resurfaced ids excluded", "source": "core.cpp:1278-1289,1291"}
+    ],
+    "deliberatelyAbsent": [
+      "InstanceState, actors_, monsters, events_, windups (native/include/verdigris/core.hpp:405-426; persistence/README.md:22-25)",
+      "pending_wave_/wave_materialization_tick_ retired at boundaries (core.cpp:599-603)",
+      "seasonal_mechanic_ pointer reset to null on restore (core.cpp:1357); earned house.seasonalRewards strings ARE persisted",
+      "ground_items_/ground_trophies_ except surfaced recovery candidates (folded into pending pools, core.cpp:1265-1291)",
+      "ENTIRE ProtocolSession profile (see layers.sessionLayer) - not representable in this format at all"
+    ]
+  },
+  "saveTriggers": [
+    {"trigger": "PRODUCTION: none", "detail": "rg over native/src, native/include shows zero callers of verdigris::snapshot, restore, persistence::write_snapshot/write_atomic/read_snapshot outside tests; server_main.cpp includes only networking.hpp and runs WebSocketServer with no persistence include (native/src/server_main.cpp:1-41)", "status": "RED RISK R1"},
+    {"trigger": "test: direct snapshot()/restore()", "detail": "native/tests/core_tests.cpp:755,778,821,847 call the free functions on seeded simulations", "status": "library coverage only"},
+    {"trigger": "test: adapter round-trip + replace", "detail": "native/tests/core_tests.cpp:880-891 writes disposable snapshots to std::filesystem::temp_directory_path()/verdigris-task-0030.snapshot", "status": "disposable temp only"},
+    {"trigger": "implied future trigger per ADR-002", "detail": "platform layer owns files; one flat file per House, atomic temp+rename (docs/rebuild/ADR-002-persistence-seam.md:36-56)", "status": "unimplemented"}
+  ],
+  "serializationSeams": [
+    {"seam": "core schemaVersion=1 gate", "strictness": "hard fail-closed throw on mismatch; NO migration path", "tested": false, "cite": "native/src/core.cpp:1299-1301"},
+    {"seam": "unknown-key tolerance", "strictness": "ignored on restore; canonical re-save drops them", "tested": true, "cite": "native/src/core.cpp:1088-1090; native/tests/core_tests.cpp:769-775"},
+    {"seam": "duplicate-key policy", "strictness": "first occurrence wins", "tested": "partially - test appends only NEW keys, not duplicates of existing ones", "cite": "native/src/core.cpp:1088-1090"},
+    {"seam": "malformed known values", "strictness": "throw with key name (numbers core.cpp:1107-1119, booleans 1127-1137, hex strings 979-996)", "tested": false},
+    {"seam": "collection count cap", "strictness": ">1e6 throws (allocation DoS guard)", "tested": false, "cite": "native/src/core.cpp:1143-1147"},
+    {"seam": "chronicle JSON version", "strictness": "version=3 written on fresh chronicle, NEVER validated anywhere; stale versions silently accepted", "tested": false, "cite": "native/src/networking.cpp:2314-2323"},
+    {"seam": "passive-tree schemaVersion=2", "strictness": "server emits version 2 (networking.cpp:1219) but handle_skilltree_save stores any client object unvalidated; loader ignores missing keys and degrades to defaults", "tested": false, "cite": "native/src/networking.cpp:1204-1214,1229-1238"}
+  ],
+  "fileLocations": [
+    {"location": "(none defined)", "detail": "No production save path exists. The adapter takes caller-supplied paths; ADR-002 reserves 'one flat file per House' as future platform work.", "cite": "docs/rebuild/ADR-002-persistence-seam.md:52-55"},
+    {"location": "<os temp>/verdigris-task-0030.snapshot (+ .tmp sibling during writes)", "detail": "test-only disposable target", "cite": "native/tests/core_tests.cpp:883-889; adapter.hpp:25"}
+  ],
+  "atomicity": {
+    "mechanism": "write temp -> flush/close -> atomic replace (MoveFileExW REPLACE_EXISTING|WRITE_THROUGH on Windows because std::filesystem::rename cannot replace there; POSIX rename(2)); failed replace removes temp and throws",
+    "cite": "native/persistence/adapter.hpp:23-57",
+    "guarantees": ["no observer inside one process ever sees a half-written target (rename is atomic within the OS)"],
+    "violations": [
+      "OS crash / power loss before temp data reaches disk: rename can still be durable while data is not (no fsync/FlushFileBuffers of the temp stream) - adapter.hpp:27-47",
+      "concurrent writers share the single fixed .tmp path - last interleaved writer wins or both fail - adapter.hpp:25"
+    ],
+    "testsCovering": "happy path write/read/replace twice (native/tests/core_tests.cpp:880-891); no failure-path or concurrency tests exist"
+  },
+  "staleDataCompatibility": {
+    "forwardCompatible": "new unknown fields ignored; old builds keep loading newer files (tested, core_tests.cpp:769-775)",
+    "backwardBreaking": "removing/renaming/retyping any known required field throws with the key name (fail closed); schemaVersion bump rejects wholesale with no migration",
+    "lineEndings": "CRLF tolerated by parser (core.cpp:1084-1085)",
+    "policyInconsistency": "three version seams with three different policies: core hard-fails (untested), chronicle v3 never checked, skilltree v2 never checked (see serializationSeams)"
+  },
+  "reconnectSemantics": {
+    "identity": "player:login resolves identity from guestId/playtestGuestId else 'default-guest' (networking.cpp:2988)",
+    "disconnect": "socket loss removes only the Connection; sessions_ entry (the whole profile) survives in memory forever (networking.cpp:2990,2988)",
+    "reloginSameSocket": "hot re-login keeps the active instance including ground items (comment + test cite: networking.cpp:604-610; native/tests/networking_tests.cpp:268-283)",
+    "reloginNewSocket": "session adopted via replace_socket (networking.cpp:590) + reset_world_for_new_socket (604-651): transient state reset (tree_quest_points_, respawn wards, panes, node position), life restored to max, world back to town; inventory/wear/bank/house_store/passive tree/quest chain/chronicle/mortal oath persist IN MEMORY; permadead lifecycle is not resurrected (620-634); sworn oath re-derived from chronicle roster (626-633)",
+    "sessionReplacement": "old socket receives player:session-replaced then is closed (networking.cpp:2988 tail)",
+    "processRestartOrCrash": "sessions_ dies with the process; same identity gets a FRESH profile seeded deterministically from FNV(identity) (networking.cpp:2988 seed loop). Client-side Retrying->Ready across restart is proven (native/tests/session_tests.cpp:401-450) but the test asserts only identity + non-empty scene, NOT progress preservation - because none exists",
+    "inMemoryProof": "same-process chronicle reconnect journey asserts byte-identical House/Scion/relic record (native/tests/session_tests.cpp:1988-2013)"
+  },
+  "failureModes": [
+    {"mode": "server crash/restart", "effect": "total silent loss of all session-layer progress; fresh deterministic profile on next login", "guard": "none (R1)"},
+    {"mode": "partial write of save file", "effect": "cannot reach disk today (no writer); once wired: temp+rename contains it within a process, OS-crash window remains (R3)", "guard": "adapter design only"},
+    {"mode": "truncated/corrupt snapshot bytes", "effect": "restore throws fail-closed naming the first missing/invalid field", "guard": "implemented, UNTESTED"},
+    {"mode": "future-format file (schemaVersion>1)", "effect": "restore throws 'unsupported or missing snapshot schemaVersion'", "guard": "implemented, UNTESTED; no migration path"},
+    {"mode": "concurrent writers to one House file", "effect": ".tmp collision -> interleaving, lost update, or both writers failing", "guard": "none (R4)"},
+    {"mode": "memory growth from never-evicted sessions_", "effect": "unbounded per-identity retention on long-lived servers", "guard": "none (R6)"},
+    {"mode": "restore rebuilds player Actor", "effect": "first equipped carried item becomes equipped_item_id; multiple equipped flags collapse to one live mirror (data itself intact on Scion)", "guard": "by construction, cite core.cpp:1359-1373"}
+  ],
+  "faultMatrix": {
+    "contract": "All rows run against synthetic snapshots produced by a seeded Simulation and written under a fresh temp directory. No real owner profile is ever opened or mutated. Each row is deterministic unless marked ENV.",
+    "rows": [
+      {"id": "F-01", "inject": "truncate snapshot bytes mid-collection (count=N present, member k<N missing)", "expected": "restore throws 'missing snapshot field: <key>.<i>.id'", "coverageToday": "NONE", "smallestLockingTest": "serialize a sim with >=1 stored item; cut the buffer right after house.storedItems.count line; expect std::runtime_error"},
+      {"id": "F-02", "inject": "empty byte vector", "expected": "throw 'missing snapshot field: schemaVersion'", "coverageToday": "NONE", "smallestLockingTest": "restore({}) expects throw"},
+      {"id": "F-03", "inject": "schemaVersion=0 and schemaVersion=2 (stale-version case)", "expected": "throw 'unsupported or missing snapshot schemaVersion'; no partial state constructed", "coverageToday": "NONE - NAMED NEGATIVE CONTROL", "smallestLockingTest": "take a valid snapshot, rewrite its version line to 0 and to 2, expect throw both times"},
+      {"id": "F-04", "inject": "corrupt hex digit ('zz') in scion.name value", "expected": "throw 'invalid snapshot string'", "coverageToday": "NONE", "smallestLockingTest": "flip two chars of the hex payload of a valid snapshot; expect throw"},
+      {"id": "F-05", "inject": "negative number in unsigned field (rng.state=-1)", "expected": "from_chars fails -> throw 'invalid snapshot number: rng.state'", "coverageToday": "NONE", "smallestLockingTest": "rewrite rng.state line to -1; expect throw"},
+      {"id": "F-06", "inject": "house.storedItems.count=2000000", "expected": "throw 'snapshot collection is too large' before any allocation", "coverageToday": "NONE", "smallestLockingTest": "rewrite count line; expect throw"},
+      {"id": "F-07", "inject": "duplicate existing key appended with different value", "expected": "first occurrence wins; restored state equals original snapshot's semantics", "coverageToday": "PARTIAL (only brand-new unknown keys tested)", "smallestLockingTest": "append second house.name=<different hex>; expect restore equals baseline restore"},
+      {"id": "F-08", "inject": "CRLF line endings throughout", "expected": "parses identically to LF", "coverageToday": "NONE", "smallestLockingTest": "replace \\n with \\r\\n in valid bytes; expect successful restore equal to LF result"},
+      {"id": "F-09", "inject": "stale .tmp left beside target before next write", "expected": "write_atomic truncates and succeeds; read ignores tmp", "coverageToday": "NONE", "smallestLockingTest": "create target.tmp junk file; write_atomic; assert target content and success"},
+      {"id": "F-10", "inject": "two threads write_atomic different payloads to one target concurrently", "expected": "target always ends up byte-exact equal to ONE writer's full payload (never mixed/torn); failures are exceptions not corruption", "coverageToday": "NONE - REALISTIC PARTIAL-WRITE CONTROL", "smallestLockingTest": "N=50 alternating writes over disposable temp path; after each, read must match exactly one of the two payloads"},
+      {"id": "F-11", "inject": "read nonexistent path", "expected": "runtime_error 'unable to open snapshot file'; file not created", "coverageToday": "NONE", "smallestLockingTest": "expect throw on missing temp path"},
+      {"id": "F-12", "inject": "ENV: power loss after rename, before temp data flush", "expected": "DESIGN GAP: renamed target may hold empty/partial data (no fsync before rename)", "coverageToday": "STRUCTURAL - not unit-testable portably", "smallestLockingTest": "successor change: FlushFileBuffers/fsync the temp handle before rename + code-review lock"},
+      {"id": "F-13", "inject": "unknown extra field appended by newer build", "expected": "ignored; canonical re-save byte-identical to pre-augmentation snapshot", "coverageToday": "COVERED", "smallestLockingTest": "already locked: core_tests.cpp:769-775"},
+      {"id": "F-14", "inject": "snapshot taken mid-instance (crash during expedition)", "expected": "instance inactive on restore; carried items/trophies intact; surfaced candidates back in pending pools; RNG continues deterministically (no reroll)", "coverageToday": "COVERED (D-106/D-109 locking)", "smallestLockingTest": "already locked: core_tests.cpp:778-819, 847-878"}
+    ]
+  },
+  "negativeControl": {
+    "primaryStaleVersion": "F-03: a realistic rollback/newer-build snapshot (schemaVersion != 1) is rejected by implemented code (core.cpp:1299-1301) yet NO current test locks the rejection. A refactor that silently accepts foreign versions would pass the entire suite.",
+    "secondaryPartialWrite": "F-01/F-10: truncated-file rejection and concurrent-writer integrity are likewise implemented-or-designed but entirely untested; the fixed .tmp name makes F-10 a genuine torn-write vector the moment production saves land."
+  },
+  "redRisks": [
+    {"id": "R1", "severity": "P0", "risk": "No production save trigger: native server holds all profiles in process memory; crash/restart loses everything silently, contradicting D-109 across process death (holds today only because native server is dev-loop scoped).", "evidence": "server_main.cpp:1-41; networking.cpp:2988,2990"},
+    {"id": "R2", "severity": "P0", "risk": "Session-layer profile (inventory, bank, quests, passive tree, chronicle, XP, lifecycle) has no serialization seam at all; wiring core snapshot() alone would persist only the small Simulation slice.", "evidence": "networking.hpp:161-247 vs core.hpp:430-434"},
+    {"id": "R3", "severity": "P1", "risk": "Adapter lacks fsync/FlushFileBuffers before rename: power-loss can strand a durable rename over empty/partial data.", "evidence": "adapter.hpp:27-47"},
+    {"id": "R4", "severity": "P1", "risk": "Fixed '<target>.tmp' name: concurrent writers (server + tooling on one House file) can interleave or destroy each other's temp.", "evidence": "adapter.hpp:25"},
+    {"id": "R5", "severity": "P1", "risk": "Three inconsistent stale-version policies (core hard-fail untested; chronicle v3 and skilltree v2 never validated).", "evidence": "core.cpp:1299-1301; networking.cpp:1219,1229-1233,2314-2323"},
+    {"id": "R6", "severity": "P2", "risk": "sessions_ map never evicts identities: unbounded memory growth on long-lived servers.", "evidence": "networking.cpp:2988,2990"},
+    {"id": "R7", "severity": "P2", "risk": "restore() mirrors only the FIRST equipped carried item onto the live Actor; multi-equipped saves degrade the mirror (underlying Scion data intact).", "evidence": "core.cpp:1367-1372"}
+  ],
+  "smallestLockingTests": [
+    "L1 (locks F-03): expect throw when restoring schemaVersion=0 and =2 rewrites of a valid snapshot",
+    "L2 (locks F-01): expect throw when truncating bytes immediately after a count line",
+    "L3 (locks F-07): appended duplicate canonical key is ignored in favor of first occurrence",
+    "L4 (locks F-10): concurrent write_atomic pairs over one disposable temp target always leave one exact payload",
+    "L5 (locks F-11): reading a missing path throws and creates nothing",
+    "L6 (successor, post-R1/R2): server-restart durability - login, mutate, restart process seam, re-login, assert profile equality; today this test CANNOT pass, which is precisely the R1 gap"
+  ],
+  "commands": {
+    "acceptance": [
+      "rg -n \"persist|save|load|profile|serialize|version|reconnect|relic|House|Scion\" native/src native/include native/tests",
+      "node -e \"JSON.parse(require('fs').readFileSync('orchestration/tasks/TASK-0097-persistence-durability-audit/captures/persistence-contract.json','utf8')); console.log('persistence contract: PASS')\"",
+      "git diff --check",
+      "git diff --name-only"
+    ],
+    "scopePolicy": "Read-only capsule honored: no real save opened or modified, no ports bound, port 6500 untouched; evidence limited to orchestration/tasks/TASK-0097-persistence-durability-audit/**"
+  }
+}

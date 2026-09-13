@@ -1,0 +1,8 @@
+Use case: identity-preserve
+Make one separate pixel-art sprite variation based on the original pixel image supplied. Reference 1 is the approved character identity, scale, colors and pixel construction. Keep his anatomy, clothing, staff, pouch, palette and camera elevation consistent.
+
+Turn this SAME older civilian to face the upper-left corner, away from the viewer: a NORTHWEST standing pose showing his back and left-facing silhouette. We see the back of his grey-haired head and the rear-left side of his ochre robe. His head leans upper-left of his hips and his feet point upper-left. His face is hidden from the viewer. The walking staff stays in his right hand on his body's right side.
+
+Keep grounded adult proportions, the ochre linen robe, dark umber belt and pouch, sandals and plain wooden staff. Retain the original small pixel count: about64 logical pixels crown-to-sole, purposeful square clusters,24–32 flat colors and crisp stepped edges.
+
+Output ONE complete character in ONE pose, centered with generous empty margin and stable foot contact. Actual transparent alpha background. Atlas placement will be done separately.

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-PERF-006",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "31bac5649f3199e8a9440c3f82d6824748c9410c",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "hitch-warmup",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario hitch-warmup", "exit_code": 0}
+  ],
+  "assertions": [
+    "hiding the cold trace cannot pass",
+    "warm and prepared traces are required",
+    "warmup cannot drop required combat ops",
+    "prepared strike is not slower than the cold hit",
+    "live HUD names Warm glyphs and Cold trace"
+  ],
+  "negative_control": {
+    "name": "omitting the cold combat paint measurement",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/hitch-warmup-960x600.png",
+      "sha256": "c9ddad5e28bce43ce389c902dcc5ccf0503d2ffbb9a66c4912842a0a03c3d4e9",
+      "produced_by": "native/build/verdigris_client.exe --scenario hitch-warmup"
+    },
+    {
+      "kind": "log",
+      "path": "docs/execution/captures/art-wave/hitch-warmup-report.txt",
+      "sha256": "477c5b01aefa20187a2f2aa9cc62046930943757d2c8e18dc9ad33554511dd61",
+      "produced_by": "native/build/verdigris_client.exe --scenario hitch-warmup"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Glyph warmup before first strike. Not a shader PSO cache."
+  ]
+}

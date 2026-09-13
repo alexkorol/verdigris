@@ -1,0 +1,18 @@
+Using the uploaded character references, create a six-frame pixel-art melee animation sheet, 3 columns by 2 rows.
+
+CHARACTER AND REFERENCES
+Reference 1 is the authoritative character identity, lower-left facing, proportions, natural material colors and restrained pixel edge style. Keep this same grounded adult: brown tunic, full dark trousers, wrist wraps, bronze armor on the physical RIGHT shoulder, sash at the physical LEFT hip. Preserve the accepted smaller head and hair.
+Reference 2 supplies the six action beats and relative body scale only. Re-stage that action toward lower-left; do not copy its facing or heavier contours.
+
+ONE COHERENT ACTION
+All six poses face lower-left. Read left to right, then top to bottom:
+1. Ready stance.
+2. Anticipation: draw the physical LEFT fist back and load the body.
+3. Commit: drive that same left hand forward with coordinated torso and weight transfer.
+4. Contact peak: extend the left-hand strike toward lower-left.
+5. Follow-through: continue the same action and begin retracting that hand.
+6. Recovery: settle toward the first ready stance.
+The unarmored LEFT arm is the striking arm throughout, crossing toward lower-left as needed; the armored RIGHT arm remains the supporting guard. Do not mirror the costume or switch striking arms. Both hands remain empty because equipment is separate game art. No added powers or effects. Animate real pose and body mechanics rather than translating one unchanged sprite. Preparation, contact and recovery must read distinctly.
+
+PIXELS AND REGISTRATION
+Match reference 1's crisp pixel clusters, restrained palette and adult silhouette, approximately 64 logical pixels crown to sole. Keep camera elevation, apparent body scale and common ground registration fixed. Every cell contains exactly one complete body with enough margin for extended hands; no clipping or neighboring fragments. No text, frame numbers, grid lines or scenery. Return a PNG sheet with actual transparent alpha, not a painted checkerboard. Frame timing and file slicing will be handled separately.

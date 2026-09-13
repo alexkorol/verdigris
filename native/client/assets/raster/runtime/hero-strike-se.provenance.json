@@ -1,0 +1,666 @@
+{
+  "version": 1,
+  "manifest_sha256": "3e7d56908aa6e638574396f21f3f92e68d734f30d76a62df154c624dd89e7351",
+  "importer_sha256": "d59ef9d71a73740f15c8ef5ce5fad588273e2fb4856684985203b7501dfee7c2",
+  "engine": {
+    "project": "Pixel Respecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "root": "Z:/Code/Python/pixel-perfecter",
+    "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+    "git_dirty": true,
+    "source_sha256": {
+      "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+      "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+      "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+      "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+      "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+      "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+      "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+      "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+      "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+      "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+      "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+      "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+      "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+    },
+    "dependencies": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    }
+  },
+  "known_limitations": [
+    "V3 reduces head width to10-11native pixels while preserving commoncell7,80x96canvas and source origins. All six poses now use v3 with documented connected checker removal.",
+    "Darker contours, redder and busier material shading, and abrupt raised-hand entry remain known roughness versus idle. Production timing and idle transitions remain subject to live review.",
+    "Updated hand pixels require equipment socket remeasurement; prior v1/v2 socket measurements are not assumed exact."
+  ],
+  "sources": [
+    {
+      "source": "../../client/assets/raster/source/actors_hero-strike-se-identity-v3.png",
+      "sha256": "4b61b9a28a80358587227a80eb60834172d52022ba06f9da325671a424966581",
+      "size": [
+        1145,
+        1374
+      ],
+      "background_removal": {
+        "api": "pixel_perfecter.colors.make_border_connected_transparent",
+        "color": [
+          220,
+          220,
+          220
+        ],
+        "tolerance": 80,
+        "interior_windows": [
+          {
+            "source_box": [
+              614,
+              315,
+              645,
+              359
+            ],
+            "new_transparent_pixels": 0
+          }
+        ],
+        "transparent_pixels_after": 1269373
+      }
+    }
+  ],
+  "assets": [
+    {
+      "name": "hero_strike0_se",
+      "file": "hero_strike0_se.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-se-identity-v3.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        0,
+        0,
+        400,
+        687
+      ],
+      "cell_size": 7,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        57,
+        98
+      ],
+      "trim_box": [
+        12,
+        27,
+        45,
+        90
+      ],
+      "before_resize": [
+        33,
+        63
+      ],
+      "placed_size": [
+        33,
+        63
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        23,
+        33,
+        56,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        200,
+        630
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "bbc4bc8b68b26c4dc0c8ed944115357e5f1018e888197ad4b89064bfec4e8c70"
+    },
+    {
+      "name": "hero_strike1_se",
+      "file": "hero_strike1_se.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-se-identity-v3.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        400,
+        0,
+        775,
+        687
+      ],
+      "cell_size": 7,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 30,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        53,
+        98
+      ],
+      "trim_box": [
+        9,
+        27,
+        45,
+        90
+      ],
+      "before_resize": [
+        36,
+        63
+      ],
+      "placed_size": [
+        36,
+        63
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        22,
+        33,
+        58,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        190,
+        630
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "c804fc706f055d73d3a26daf53270c3d811a24a459d23f6c7a964cccae0762be"
+    },
+    {
+      "name": "hero_strike2_se",
+      "file": "hero_strike2_se.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-se-identity-v3.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        775,
+        0,
+        1145,
+        687
+      ],
+      "cell_size": 7,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        52,
+        98
+      ],
+      "trim_box": [
+        8,
+        28,
+        48,
+        90
+      ],
+      "before_resize": [
+        40,
+        62
+      ],
+      "placed_size": [
+        40,
+        62
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        22,
+        34,
+        62,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        185,
+        630
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "115abef9c1c8f2fc012b8f24df6c574637d881a9bfee9ca5ef0ea0cea9c6bb87"
+    },
+    {
+      "name": "hero_strike3_se",
+      "file": "hero_strike3_se.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-se-identity-v3.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        0,
+        687,
+        440,
+        1374
+      ],
+      "cell_size": 7,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        62,
+        98
+      ],
+      "trim_box": [
+        12,
+        16,
+        60,
+        78
+      ],
+      "before_resize": [
+        48,
+        62
+      ],
+      "placed_size": [
+        48,
+        62
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        23,
+        34,
+        71,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        200,
+        543
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "03bb669ac1420e9ae261e43f362948a2a77f40140f8d4be6498d45c8fc4c9281"
+    },
+    {
+      "name": "hero_strike4_se",
+      "file": "hero_strike4_se.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-se-identity-v3.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        440,
+        687,
+        780,
+        1374
+      ],
+      "cell_size": 7,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        48,
+        98
+      ],
+      "trim_box": [
+        2,
+        16,
+        39,
+        78
+      ],
+      "before_resize": [
+        37,
+        62
+      ],
+      "placed_size": [
+        37,
+        62
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        21,
+        34,
+        58,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        150,
+        543
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "c6f25820601df412c7af1d528f8208b35ee4c19ecb97144dfa28bdc275f01860"
+    },
+    {
+      "name": "hero_strike5_se",
+      "file": "hero_strike5_se.png",
+      "source": "../../client/assets/raster/source/actors_hero-strike-se-identity-v3.png",
+      "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10",
+      "source_box": [
+        780,
+        687,
+        1145,
+        1374
+      ],
+      "cell_size": 7,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 27,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        52,
+        98
+      ],
+      "trim_box": [
+        8,
+        15,
+        42,
+        78
+      ],
+      "before_resize": [
+        34,
+        63
+      ],
+      "placed_size": [
+        34,
+        63
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        22,
+        33,
+        56,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        180,
+        543
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "f23c06227ad6c45c109112c688ce38c078722dec2ac83a187d112ebb35f0dc39"
+    }
+  ],
+  "shared_palette": {
+    "api": "pixel_perfecter.palettes.reduce_colors",
+    "max_colors": 32,
+    "visible_colors_before": 623,
+    "visible_colors_after": 32,
+    "palette_rgb": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        24,
+        24,
+        23
+      ],
+      [
+        30,
+        0,
+        2
+      ],
+      [
+        39,
+        39,
+        56
+      ],
+      [
+        48,
+        58,
+        83
+      ],
+      [
+        55,
+        35,
+        26
+      ],
+      [
+        59,
+        10,
+        0
+      ],
+      [
+        62,
+        75,
+        112
+      ],
+      [
+        73,
+        56,
+        44
+      ],
+      [
+        97,
+        99,
+        97
+      ],
+      [
+        99,
+        78,
+        62
+      ],
+      [
+        100,
+        34,
+        21
+      ],
+      [
+        113,
+        51,
+        48
+      ],
+      [
+        139,
+        84,
+        49
+      ],
+      [
+        144,
+        66,
+        13
+      ],
+      [
+        151,
+        46,
+        47
+      ],
+      [
+        166,
+        166,
+        165
+      ],
+      [
+        175,
+        64,
+        30
+      ],
+      [
+        184,
+        114,
+        72
+      ],
+      [
+        187,
+        96,
+        36
+      ],
+      [
+        209,
+        83,
+        66
+      ],
+      [
+        217,
+        164,
+        106
+      ],
+      [
+        220,
+        123,
+        93
+      ],
+      [
+        224,
+        139,
+        39
+      ],
+      [
+        233,
+        113,
+        64
+      ],
+      [
+        245,
+        175,
+        140
+      ],
+      [
+        245,
+        188,
+        78
+      ],
+      [
+        246,
+        157,
+        63
+      ],
+      [
+        251,
+        233,
+        126
+      ],
+      [
+        252,
+        152,
+        103
+      ],
+      [
+        254,
+        238,
+        179
+      ],
+      [
+        255,
+        195,
+        117
+      ]
+    ],
+    "dithering": "none",
+    "scope": "all reconstructed frames in this manifest"
+  },
+  "integration_review": {
+    "date": "2026-09-10",
+    "reviewer": "root",
+    "scope": "Runtime integration and production captures reviewed for this iteration; not final visual polish.",
+    "native_build_and_core_suites": "passed",
+    "production_scenarios": {
+      "passed": 64,
+      "fullscreen_average_ms": 18.7,
+      "dense_average_ms": 9.4
+    },
+    "browser_checks": {
+      "passed": 32,
+      "total": 32
+    },
+    "capture_review": "Live3440x1440 window viewed and closed; actual SW/NW/NE walking frames and all three equipped strike contact captures viewed.",
+    "limitations_policy": "Existing identity,palette,registration and source-generation observations remain unchanged."
+  }
+}

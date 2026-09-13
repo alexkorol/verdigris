@@ -1,0 +1,147 @@
+{
+  "date": "2026-09-10",
+  "task": "NW adult raider walk candidate",
+  "initial_plus_repairs": 3,
+  "recipe": {
+    "original_url": "https://www.reddit.com/r/aigamedev/comments/1wbmvnm/gpt_image_25_nailed_a_16_frame_combat_sprite_sheet/?sort=top",
+    "original_opened_and_read": true,
+    "author": "Practical_Low29",
+    "published_prompt": "Make a simplified 128px pixel art combat motion sprite sheet of this character, transparent background if you can, arrange it 4x4.",
+    "adaptation": "Retained one reference character and a simplified motion sheet. Changed combat4x4 to an eight-frame upper-left/back walk4x2 and supplied actual raider clothing/axe invariants. After repeated support, reused the local successful SW pose-target appearance-replacement arrangement with validated ordered NW D2 poses. This pose-target repair and alpha-only edit are local adaptations, not creator-tested NW walking recipes.",
+    "critical_feedback_applied": "Audit swapped limbs, repeated phases, invented occluded anatomy and uneven timing independently of grid count."
+  },
+  "inspected_not_submitted": [
+    {
+      "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/client/assets/raster/source/raider-walk-sw-axe-v3.png",
+      "role": "accepted SW movement/axe study inspected for continuity and identity limits; not submitted as a direction reference",
+      "sha256": "bde72da59c4ba79380728d99d9002ac5d4e7585351cc9ace4aaa988af468c72d"
+    }
+  ],
+  "attempts": [
+    {
+      "name": "raider-walk-nw-v1",
+      "tool": "image_gen.imagegen built-in",
+      "model_selector_exposed": false,
+      "reported_model": null,
+      "generated_original": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-a5ed3541-19e0-424a-a906-ec726f0115ec.png",
+      "source": {
+        "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/client/assets/raster/source/raider-walk-nw-v1.png",
+        "role": "unchanged generated source",
+        "sha256": "111eeff120fd5ee0c0fb5784e4fa587ba5d6b417f2e3da9f9a954b7090a4013d"
+      },
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "partial_alpha_pixels": 426326,
+      "prompt": {
+        "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/client/assets/raster/prompts/raider-walk-nw-v1.txt",
+        "role": "exact submitted prompt",
+        "sha256": "7b3fc748cc757e6c293317ed0d3ec9ae2bbaeb1974caa382a8c02c71b747efaa"
+      },
+      "references": [
+        {
+          "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/client/assets/raster/runtime/raider_nw.png",
+          "role": "sole identity, back view and pixel style reference",
+          "sha256": "12d3c12796a2262c6f876d12caccb0536e6810d5bcec58fe0c3c797b00c93a74"
+        }
+      ],
+      "verdict": "Rejected as walk: near-repeated same supporting leg across eight frames. True source alpha but faint background residue."
+    },
+    {
+      "name": "raider-walk-nw-d2poses-v2",
+      "tool": "image_gen.imagegen built-in",
+      "model_selector_exposed": false,
+      "reported_model": null,
+      "generated_original": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-73e80f87-4c70-4dcb-845b-ec65f4ffe427.png",
+      "source": {
+        "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/client/assets/raster/source/raider-walk-nw-d2poses-v2.png",
+        "role": "unchanged generated source",
+        "sha256": "31c9e5de5cfbced1c7f1cecd4cc5d4a10235905635c622119d6bffe948139a5b"
+      },
+      "size": [
+        1575,
+        999
+      ],
+      "mode": "RGB",
+      "alpha_range": [
+        255,
+        255
+      ],
+      "partial_alpha_pixels": 0,
+      "prompt": {
+        "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/client/assets/raster/prompts/raider-walk-nw-d2poses-v2.txt",
+        "role": "exact submitted prompt",
+        "sha256": "38a3f62e03721136ef4788608a9582867337cfca85dc02dfc03e9d685ebb91b1"
+      },
+      "references": [
+        {
+          "path": "C:/Users/Alex/Documents/ChatGPT/diablo-reference-cache/motion-study-20260909/body-corrected-cof/nw-ordered-4x2-3x.png",
+          "role": "ordered NW body-pose edit target only; external original not copied into repository",
+          "sha256": "1269e5231c851fb8be6f8a8653e6bf8fb00279914d2b99c630f065ffbaa0e078"
+        },
+        {
+          "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/client/assets/raster/runtime/raider_nw.png",
+          "role": "appearance and pixel style only; standing pose excluded",
+          "sha256": "12d3c12796a2262c6f876d12caccb0536e6810d5bcec58fe0c3c797b00c93a74"
+        }
+      ],
+      "verdict": "Selected candidate after actual Pixel Respecter conversion. Distinct support and passing poses; source has opaque painted pattern, recorded cleanup required. Axe smaller than accepted idle."
+    },
+    {
+      "name": "raider-walk-nw-alpha-v3",
+      "tool": "image_gen.imagegen built-in",
+      "model_selector_exposed": false,
+      "reported_model": null,
+      "generated_original": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-2903ca72-886a-4367-b5df-538da1633148.png",
+      "source": {
+        "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/client/assets/raster/source/raider-walk-nw-alpha-v3.png",
+        "role": "unchanged generated source",
+        "sha256": "804f2aab668faac0180fdde873225bf902ae83d63e6b4aad50c3cf39aed402a1"
+      },
+      "size": [
+        1575,
+        999
+      ],
+      "mode": "RGB",
+      "alpha_range": [
+        255,
+        255
+      ],
+      "partial_alpha_pixels": 0,
+      "prompt": {
+        "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/client/assets/raster/prompts/raider-walk-nw-alpha-v3.txt",
+        "role": "exact submitted prompt",
+        "sha256": "a9f064e5b675126fab511c6b5145fac4bd22e3f34808559b462b99eff331a985"
+      },
+      "references": [
+        {
+          "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/client/assets/raster/source/raider-walk-nw-d2poses-v2.png",
+          "role": "edit target: remove background while preserving eight poses",
+          "sha256": "31c9e5de5cfbced1c7f1cecd4cc5d4a10235905635c622119d6bffe948139a5b"
+        },
+        {
+          "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/client/assets/raster/runtime/raider_nw.png",
+          "role": "original identity anchor",
+          "sha256": "12d3c12796a2262c6f876d12caccb0536e6810d5bcec58fe0c3c797b00c93a74"
+        }
+      ],
+      "verdict": "Rejected repair: alpha-only request still produced opaque RGB pattern; slight edge/shape redraw. Selected v2 instead."
+    }
+  ],
+  "selected_manifest": {
+    "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/tools/raster/raider-walk-nw-candidates/raider-walk-nw-candidate.json",
+    "role": "frozen candidate import recipe",
+    "sha256": "f72ef23323108a80c7a47af7dc5aeea593094498727a58ff9b184c1e55a94a3f"
+  },
+  "conversion_report": {
+    "path": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study/native/tools/raster/raider-walk-nw-candidates/selected/raider-walk-nw-candidate.provenance.json",
+    "role": "actual external Pixel Respecter engine/dependency/source hashes and alpha/geometry report",
+    "sha256": "b173bbf4dcf4a063f0c3983b23d492fa721f1cfe870f3818f2c373a7bc316a2e"
+  }
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "retained": "metrics-and-provenance.json",
+    "sha256": "a0bca53108a19e0c248ed1362f288761c9e76226ea10ae65a421078b50b8882e",
+    "source": ".ci-artifacts/terrain-wall-wave/edge-match-v1/metrics-and-provenance.json",
+    "source_sha256": "a0bca53108a19e0c248ed1362f288761c9e76226ea10ae65a421078b50b8882e"
+  },
+  {
+    "retained": "visual-review.json",
+    "sha256": "a1d0840fca6e6ba316b965549f4e9ff6d9701447f0c9f7c6f93304f6d158e9c0",
+    "source": ".ci-artifacts/terrain-wall-wave/edge-match-v1/visual-review.json",
+    "source_sha256": "a1d0840fca6e6ba316b965549f4e9ff6d9701447f0c9f7c6f93304f6d158e9c0"
+  },
+  {
+    "retained": "cell1-equivalence.json",
+    "sha256": "9b08d643835aa56b01c1f3df9be7fc4bdba83c64d01370e16ebc5316bd60fd06",
+    "source": ".ci-artifacts/terrain-wall-wave/edge-match-v1/cell1-equivalence.json",
+    "source_sha256": "9b08d643835aa56b01c1f3df9be7fc4bdba83c64d01370e16ebc5316bd60fd06"
+  },
+  {
+    "retained": "repeat-comparison-1x.png",
+    "sha256": "25e214c3e8346ba92ad8759ac46d8ce806a8063f4a3a708437c4bbeacbc39bcc",
+    "source": ".ci-artifacts/terrain-wall-wave/edge-match-v1/repeat-comparison-1x.png",
+    "source_sha256": "25e214c3e8346ba92ad8759ac46d8ce806a8063f4a3a708437c4bbeacbc39bcc"
+  },
+  {
+    "retained": "repeat-comparison-3x.png",
+    "sha256": "1b403acb8326edf46f975a8f681ebdc1307c05b3b49361af45ebb98cac25a978",
+    "source": ".ci-artifacts/terrain-wall-wave/edge-match-v1/repeat-comparison-3x.png",
+    "source_sha256": "1b403acb8326edf46f975a8f681ebdc1307c05b3b49361af45ebb98cac25a978"
+  },
+  {
+    "retained": "actors-comparison-1x.png",
+    "sha256": "f9777982aad14e36e647825e36685cfc486a15d407dfd92470b5b9de6ffa575a",
+    "source": ".ci-artifacts/terrain-wall-wave/edge-match-v1/actors-comparison-1x.png",
+    "source_sha256": "f9777982aad14e36e647825e36685cfc486a15d407dfd92470b5b9de6ffa575a"
+  },
+  {
+    "retained": "actors-comparison-3x.png",
+    "sha256": "84ec03bf49ec63bfae4d2ea1491cf19842c83dde1a862ecad8cf434e6344b8ee",
+    "source": ".ci-artifacts/terrain-wall-wave/edge-match-v1/actors-comparison-3x.png",
+    "source_sha256": "84ec03bf49ec63bfae4d2ea1491cf19842c83dde1a862ecad8cf434e6344b8ee"
+  },
+  {
+    "retained": "edge-width8.png",
+    "sha256": "0287aa75c4c7136a23c3f8eba58a94b817fea013c8af0ba548802da5b72c0d87",
+    "source": ".ci-artifacts/terrain-wall-wave/edge-match-v1/edge-width8.png",
+    "source_sha256": "0287aa75c4c7136a23c3f8eba58a94b817fea013c8af0ba548802da5b72c0d87"
+  }
+]

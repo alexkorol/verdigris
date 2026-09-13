@@ -1,0 +1,51 @@
+{
+  "status": "native_candidate_ready_for_root_review",
+  "source_and_native_reviewed": true,
+  "scales": [
+    1,
+    3
+  ],
+  "backgrounds": [
+    "dark",
+    "light"
+  ],
+  "browser_preview": "Opened animated native/3x preview and inspected the settled body; all four phase silhouettes also reviewed in native and 3x strips. This is not a production game capture.",
+  "phases": [
+    "recoil",
+    "buckle",
+    "fall",
+    "settled"
+  ],
+  "axe_hand": "same anatomical-right hand; screen-left arm in SW poses, blade ends beside hand",
+  "canvas": [
+    128,
+    112
+  ],
+  "pivot": [
+    64,
+    96
+  ],
+  "shared_colors": 32,
+  "standing_body_height": 61,
+  "idle_body_height": 57,
+  "idle_translation": [
+    24,
+    0
+  ],
+  "fallen_visible_bounds": [
+    17,
+    72,
+    100,
+    97
+  ],
+  "preview_action_durations_ms": [
+    100,
+    130,
+    110
+  ],
+  "settled_frame": 3,
+  "settled_hold": "indefinite in production;1000ms in repeating inspection preview",
+  "alpha": "binary RGBA; no remaining bright neutral gap pixels; zero chromatic pixels removed by scoped cleanup",
+  "runtime_written": false,
+  "production_review_pending": true
+}

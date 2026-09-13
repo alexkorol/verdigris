@@ -1,0 +1,8 @@
+Use case: precise-object-edit
+Image 1 is the hero identity anchor. Image 2 is the edit target: preserve its exact opposite-leg walk pose, torso, head, clothes, colors, pixel grid, scale and position.
+
+Fix ONLY the DIRECTION OF THE TWO BOOTS in image 2. Their toes currently point LEFT while the character faces RIGHT.
+Turn each boot at its ankle so its toe projects toward SCREEN-RIGHT.
+In particular the planted boot at the bottom-left must have its heel on the left and its toe extending RIGHT from the ankle, as a right-facing boot.
+The raised boot at the mid-right also points its toe RIGHT.
+Do not move the knees or hips or swap the legs. Keep the straight planted leg on screen-left and the bent raised leg on screen-right. Keep the face pointing right. Same entire full-body sprite, actual transparent background.

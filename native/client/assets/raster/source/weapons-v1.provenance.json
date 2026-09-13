@@ -1,0 +1,27 @@
+{
+  "generation_mode": "built-in imagegen",
+  "requested_model": "unspecified",
+  "source_file": "weapons-v1.png",
+  "source_sha256": "7fbaa9f91e3ee9ec484a583ea55e90e5d838959a26deb4eb6ff6d259949a57a6",
+  "prompt_file": "../prompts/weapons-v1.txt",
+  "source_width": 1774,
+  "source_height": 887,
+  "layout": {
+    "columns": 4,
+    "rows": 2,
+    "order": [
+      "weapon_axe",
+      "weapon_sword",
+      "weapon_staff",
+      "weapon_bow",
+      "weapon_club",
+      "item_shield",
+      "item_vessel",
+      "item_bundle"
+    ]
+  },
+  "requested_logical_cell": "64x64",
+  "requested_palette_max": 24,
+  "alpha_corner": 0,
+  "inspection": "All eight silhouettes present in requested order, vertical weapons, warm bronze/wood/linen/clay, no green. Source is generated pixel-art styled imagery with softened/high-color detail; exact pixel-grid and palette constraints must be applied and checked by import pipeline."
+}

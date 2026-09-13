@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "defaults": {
+    "cell_size": 12,
+    "alpha_mode": "crisp",
+    "max_colors": 32,
+    "canvas": [
+      64,
+      96
+    ],
+    "trim": true,
+    "require_transparency": true
+  },
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/environment-gate-v1.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "gate",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  ]
+}

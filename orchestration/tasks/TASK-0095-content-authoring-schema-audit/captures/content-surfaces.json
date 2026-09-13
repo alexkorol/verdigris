@@ -1,0 +1,416 @@
+{
+  "task": "TASK-0095-native-content-and-asset-authoring-schema-audit",
+  "lane": "ox-pc-bd",
+  "captured_at": "2026-08-23",
+  "base_commit": "d2423873c577d299b3b39c56024d1d840993c72b",
+  "audited_head": "6a57bece (worker/verdigris/pc/ox-pc-bd; base d2423873 is ancestor)",
+  "scope": {
+    "native_dirs": ["native/content", "native/src", "native/include"],
+    "reference_tree": ["server"],
+    "method": "read every native/content file; targeted reads of native/src/core.cpp, native/src/networking.cpp, native/include/verdigris/*.hpp; server JS data tables inspected as the authoring reference the native code mirrors"
+  },
+  "domains": ["zone", "layout", "actor", "skill", "item", "trophy", "quest", "presentation"],
+  "surfaces": [
+    {
+      "id": "zone.adventure-table.native",
+      "domain": "zone",
+      "surface": "adventure_zones() static table: 6 zones with id/display-name/template/layout pairs (old-barrow, verdant-grove, sunken-colonnade, weir-crypt, the-wilds, marsh-of-reeds)",
+      "authored_in": "native/src/core.cpp:1427-1438",
+      "form": "code-bound C++ static vector",
+      "consumers": [
+        "native/src/core.cpp:1440-1444 is_zone_template()",
+        "native/src/core.cpp:1447-1449 is_zone_layout() (layout enum hardcoded separately: warren/clearings/gauntlet)",
+        "native/src/core.cpp:1628-1653 WorldSimulation::zone_display_name() (HUD + transition payload display names)",
+        "native/src/core.cpp:1733 monster trash naming ('<Zone> Lurker')",
+        "native/src/networking.cpp:706-715 zone_id_for_instance() maps theme+layout back to a zone id for quests and transitions"
+      ],
+      "mirror_of": "server/core/party.js ADVENTURE_ZONES (browser reference)",
+      "externalizable": true,
+      "locking_risk": "zone ids are referenced by quest chain objectives and world-web node ids; reordering or renaming changes zone_id_for_instance fallbacks"
+    },
+    {
+      "id": "zone.graph-seam.native-content",
+      "domain": "zone",
+      "surface": "versioned content seam: schema.json entities.zone (template/layout enums, exits graph, visual_roles slot map) + seeds/zones.json example-hall/example-field/example-mire graph",
+      "authored_in": [
+        "native/content/schema.json:43-53 (zone entity), :29-30 (enums)",
+        "native/content/seeds/zones.json"
+      ],
+      "form": "JSON data, schema_version 1, validated by validate_content.py",
+      "consumers": [
+        "native/content/validate_content.py (structural validation, exit refs, reachability)",
+        "native/content/tests/run_negative_tests.py (positive control + negative suite)"
+      ],
+      "not_loaded_by_core_yet": true,
+      "note": "native/content/README.md:4-6 states nothing here is loaded by the C++ core yet; enums mirror is_zone_template/is_zone_layout accepted identifiers but no test enforces the mirror",
+      "externalizable": false,
+      "locking_risk": "already external by design; risk is drift between its enums and core.cpp acceptance sets"
+    },
+    {
+      "id": "layout.instance-geometry.native",
+      "domain": "layout",
+      "surface": "per-layout obstacle bodies in generate_instance(): warren wall ribs with fixed gaps, clearings fixed thicket coordinates, gauntlet corridor walls; 40x40 grid; stairs up {5,20}, stairs down {34,20}, spawn {6,20}; protected spawn clearing rect {2..10,16..24}",
+      "authored_in": "native/src/core.cpp:1455-1475 (constants kInstanceWidth/kInstanceHeight/kStairsUp/kStairsDown/kSpawn), :1485-1489 in_spawn_clearing(), :1655-1699 generate_instance()",
+      "form": "code-bound procedural stubs (N2 placeholder pending real generator)",
+      "consumers": [
+        "WorldSimulation movement/blocking (core.cpp:1503-1524)",
+        "monster scatter exclusion rules (core.cpp:1722-1724)",
+        "stair portal check (core.cpp:1571-1595)"
+      ],
+      "externalizable": true,
+      "locking_risk": "playtest scenarios assert walkability around spawn/stairs and monster population; any geometry change must keep connectivity guarantees"
+    },
+    {
+      "id": "layout.town-grid.native",
+      "domain": "layout",
+      "surface": "town collision geometry: open 200x200 walkable field, login spawn (38,115), scene id 'town:verdigris'",
+      "authored_in": "native/src/core.cpp:1493-1501 (ctor), :1603-1626 return_to_town(), :977 WorldPosition{38.0,115.0} default position in native/include/verdigris/core.hpp",
+      "form": "code-bound N2 stub; real tile tables deferred to N3+ (comment at core.cpp:1495-1497)",
+      "consumers": [
+        "fresh-admission reset_to_town()",
+        "road-gate tile checks networking.cpp:1589",
+        "Aldwyn NPC proximity talk networking.cpp:1620"
+      ],
+      "mirror_of": "server/maps/surface.tmx (~202 KB Tiled map) + server/maps/layers/*.json|tsx",
+      "externalizable": true,
+      "locking_risk": "town tile tables are the largest unported authored asset; porting changes collision parity with browser playtests"
+    },
+    {
+      "id": "layout.world-web.roads.native",
+      "domain": "layout",
+      "surface": "kRoads[4] road definitions (tin/salt/chalk/copper with direction, blurb, template+layout pair chains) plus kRoadFirsts/kRoadSeconds procedural node-name terroir tables",
+      "authored_in": "native/src/networking.cpp:719-741",
+      "form": "code-bound C arrays",
+      "consumers": [
+        "web_road_nodes()/web_tier_width() deterministic per-house chart generation networking.cpp:756-764+",
+        "enter_road_node / check_road_gates / emit_chart_screen networking.hpp:148-151",
+        "world:zone:enter handler networking.cpp:2386 parse_node_id '<road>:<tier>:<index>'"
+      ],
+      "mirror_of": "server/core/world-web.js ROADS + terroir tables (docs/crossroads-world-web.md lore contract)",
+      "externalizable": true,
+      "locking_risk": "node identity = hash(houseId|road|tier|index) over these strings; renaming roads or pairs silently regenerates every House chart"
+    },
+    {
+      "id": "actor.stat-schema.native",
+      "domain": "actor",
+      "surface": "single shared ActorStats struct (level, str/dex/int, life, resource, attack, defense, move_speed, attack_speed_ticks, resistances) used by players and monsters per constitution",
+      "authored_in": "native/include/verdigris/core.hpp:106-122",
+      "form": "code-bound struct; defaults are content-ish (10/10/10, life 100, resource 50)",
+      "consumers": [
+        "Actor struct core.hpp:140-161",
+        "make_monster/spawn_enemy scaling core.cpp",
+        "resolve_damage core.cpp (static, item_bonus parameter)",
+        "snapshot serializer (field keys are wire-stable) core.cpp:1042+"
+      ],
+      "externalizable": false,
+      "locking_risk": "constitution-level invariant; snapshot bytes and recorded command streams freeze the layout"
+    },
+    {
+      "id": "actor.monster-composition.native",
+      "domain": "actor",
+      "surface": "instance population recipe: theme->base level table (crypt=4, wilds=6, marsh=8, else 2), level formula (+2/floor, +1 per 7 placed), pack role recipes per theme (melee/ranged/buffer ratios), marsh rare/empowered rules, boss slot on last placement with hardcoded boss names ('The Elder Oak', 'The Pale Sovereign', 'Alpha of the Wilds', 'The Rotfather', 'Warden of the Deep'), trash id '<theme>-lurker', name '<Zone Display> Lurker', coins formula 10+5*level (x3 elite), grove beast tags",
+      "authored_in": "native/src/core.cpp:1700-1784 (generate_instance monster loop); boss names at :1759-1769; theme level table at :1712-1715",
+      "form": "code-bound inline logic mirroring server/core/map.js THEME_MONSTERS + spawn recipes",
+      "consumers": [
+        "tile combat start_player_attack/advance_combat core.cpp:1900+",
+        "loot drop_monster_loot core.cpp:3149+",
+        "quest slay-elite trigger matching monster.name networking.cpp:2111",
+        "wire snapshot m.* fields incl rewards.coins and tags core.cpp:2795-2798 header comment"
+      ],
+      "mirror_of": "server/core/data/monsters/index.js (full defs incl. surface spawn points), server/core/monsters/archetypes.js, rarities.js, behaviours/*.js",
+      "externalizable": true,
+      "locking_risk": "quest 'the-pale-crown'/'rot-in-the-reeds' match boss display NAMES as strings; externalizing names without locking those matches breaks two chain quests"
+    },
+    {
+      "id": "actor.spawn-seam.native",
+      "domain": "actor",
+      "surface": "public deterministic seam spawn_monster(position, level, elite) + pending_wave() pack materialization (owed roster materializes together kTelegraphTicks later on fixed anchors)",
+      "authored_in": "native/include/verdigris/core.hpp:340-350",
+      "form": "API surface (mechanics, not content)",
+      "consumers": ["tests", "future seasonal mechanics via SeasonalMechanic hooks core.hpp:352-354"],
+      "externalizable": false,
+      "locking_risk": "none (intentional extension seam)"
+    },
+    {
+      "id": "skill.action-vocabulary.native",
+      "domain": "skill",
+      "surface": "ActionType enum {Melee,Dash,Wait,Thrust,Sweep,WarCry} with frozen ordinals for recorded command streams; skill tuning constants (thrust/sweep/warcry costs, warcry bonus/duration, regen, telegraph ticks, dash ticks, D-114 world-scale table deriving ranges/colliders from 220 u/s walk cadence)",
+      "authored_in": [
+        "native/include/verdigris/core.hpp:25-32 (ActionType, kTelegraphTicks)",
+        "core.hpp:34-90 (tick cadence, world_scale namespace, presentation_constants namespace)",
+        "core.hpp:76 kDashMovementTicks"
+      ],
+      "form": "code-bound named constants; explicitly curated for presentation reuse (PresentationCatalog core.hpp:92-104, Simulation::presentation_catalog core.hpp:333-335)",
+      "consumers": [
+        "presentation clients read catalog instead of mirroring values (core.hpp:78-80 comment)",
+        "resolve_action pipeline core.cpp",
+        "renderer/audio timing"
+      ],
+      "mirror_of": "server/shared/skills/index.js SKILL_DEFINITIONS cooldowns/GCDs (browser reference; e.g. globalCooldownMs 350 == kN3PlayerAttackIntervalMs core.cpp:1469)",
+      "externalizable": false,
+      "locking_risk": "enum ordinal stability is a recorded-stream contract (comment core.hpp:25-26); numeric constants feed PresentationCatalog equality"
+    },
+    {
+      "id": "skill.wire-skill-id.native",
+      "domain": "skill",
+      "surface": "active_skill_id_ session state defaulting to 'primary-attack'; combat events carry skill_id='primary-attack'; player:skill:trigger accepts client-supplied skillId string unchecked against any registry",
+      "authored_in": [
+        "native/src/networking.cpp:643 (default)",
+        "native/src/core.cpp:1967 (event skill_id literal)",
+        "native/src/networking.cpp:2507 (player:skill:trigger handler)"
+      ],
+      "form": "code-bound string literals; no skill registry exists natively yet",
+      "consumers": ["combat event payloads to client HUD/animations"],
+      "mirror_of": "DEFAULT_SKILL_IDS in server/shared/combat.js + skills/index.js ids",
+      "externalizable": true,
+      "locking_risk": "client animation binding keyed on skill id strings"
+    },
+    {
+      "id": "item.catalogue.native",
+      "domain": "item",
+      "surface": "kItemCatalogue[] ~24 ItemDef rows (coins, rings/belts/amulet, bronze/iron/steel weapons, vessel-* rows) with channel ratings, slots, footprints, vessel form/material hints",
+      "authored_in": "native/src/core.cpp:2632-2674; lookup item_def() core.cpp:2741-2746",
+      "form": "code-bound array mirrored row-for-row from server/core/data/items/{general,jewelry,belts,weapons,verdigris,vessels}.js",
+      "consumers": [
+        "create_game_item factory core.cpp:2783+",
+        "inventory footprint resolution resolve_item_size core.cpp:2759-2781",
+        "wear/equip totals WearSet",
+        "networking item payload mapping networking.cpp:1071,1122",
+        "shop/bank screens networking.cpp:1836+"
+      ],
+      "externalizable": true,
+      "locking_risk": "channel rating numbers feed combat parity tests; bronze-dagger is a documented denylist exception kept for unchanged-harness law D-116"
+    },
+    {
+      "id": "item.loot-pool.native",
+      "domain": "item",
+      "surface": "gear_drop_pool(): 13 vessel-* ids in loot.js GEAR_DROP_POOL declaration order; pool index is rolled directly so ORDER IS LOAD-BEARING",
+      "authored_in": "native/src/core.cpp:2748-2757; rolled at core.cpp:3167-3198 region (drop_monster_loot rarity-gated gear roll)",
+      "form": "code-bound ordered vector",
+      "consumers": ["drop_monster_loot (kill drops)", "scatter_floor_treasure guaranteed hoard core.cpp:3160+"],
+      "negative_control": true,
+      "externalizable": true,
+      "locking_risk": "reordering the list reshuffles every rolled gear drop without any type error; needs a byte-order locking test before externalization"
+    },
+    {
+      "id": "item.vesselforge-pack.native",
+      "domain": "item",
+      "surface": "verdigris-pack.js tables ported verbatim: 12 PackMaterial rows (flint..rivetmail with tier/stat_mult/vessel+patience ranges/drop weights/tag weight multipliers), 15 PackForm rows (handaxe..curio with damage/aps/armour/implicits/material pools), 16 PackBrandMod rows (keen..strongback with label templates, tag gates, kind gates, weights, tier roll ranges), epithet pre/post word tables (10x8), brand tier/count weight vectors",
+      "authored_in": [
+        "native/src/core.cpp:2051-2099 (struct shapes)",
+        "core.cpp:2101-2117 pack_materials()",
+        "core.cpp:2119-2167 pack_forms()",
+        "core.cpp:2169-2212 pack_brand_mods()",
+        "core.cpp:2214-2223 pack_name_pre/post()",
+        "core.cpp:2225-2229 kMaxVessel/kBrandTierWeights/kBrandCountWeights/kAttuneBase"
+      ],
+      "form": "code-bound ordered vectors; iteration order is load-bearing for pick_weighted parity (comment core.cpp:2049-2050)",
+      "consumers": [
+        "VesselForge::generate_item/sear/tooltip/derive_combat core.cpp:2287-2600+",
+        "brand service (vesselforge-brand town action) networking.cpp:2028-2030",
+        "wire fields epithetName etc. networking.cpp:339-340"
+      ],
+      "mirror_of": "server/core/items/vesselforge/verdigris-pack.js + engine.js + adapter.js",
+      "externalizable": true,
+      "locking_risk": "same-order hazard as loot pool plus float weight semantics; any reorder or rounding change alters brand rolls deterministically-but-differently"
+    },
+    {
+      "id": "item.identity-rules.code-sensitive-mechanics",
+      "domain": "item",
+      "surface": "footprint sizing driven by id/name SUBSTRINGS (id_contains needles: halberd/spear/longbow/battleaxe/warhammer/dagger/knife/axe/mace/sword/pavise/shield/chainmail/cape/helm...) and equip seat expansion (ring -> ring/ring2)",
+      "authored_in": [
+        "native/src/core.cpp:2694-2706 id_contains()",
+        "core.cpp:2716-2737 weapon_size/armor_size",
+        "core.hpp:673-700 WearSet::seats_for_base"
+      ],
+      "form": "code-bound rules that READ content strings - mechanics/content coupling",
+      "consumers": ["PlayerInventory placement", "WearSet equip", "grid overflow spills"],
+      "mirror_of": "server/shared/inventory-footprints.js idContains + wear-slots.js",
+      "externalizable": false,
+      "locking_risk": "externalizing items whose ids lack expected substrings silently changes their backpack size/equip seats; new catalogue entries need substring-contract tests"
+    },
+    {
+      "id": "trophy.drop-reward.native",
+      "domain": "trophy",
+      "surface": "warden kill trophy: id from rng token stream prefix 'trophy', display name hardcoded \"Warden's ember\"",
+      "authored_in": "native/src/core.cpp:781-784 drop_reward()",
+      "form": "code-bound literal",
+      "consumers": [
+        "TrophyDropped/PickedUp/Extracted event text payloads",
+        "House stored_trophies/lost_trophies persistence",
+        "EmberHunt seasonal objective/reward narrative seasonal.cpp:5-13"
+      ],
+      "externalizable": true,
+      "locking_risk": "low mechanically (name is display-only today) but it is the constitution's 'one trophy' proof content; owner-owned naming"
+    },
+    {
+      "id": "trophy.relic-circulation.native",
+      "domain": "trophy",
+      "surface": "lost-trophy resurfacing pool: lost_trophies -> resurfaced TrophyResurfaced events with route provenance; relic item circulation carries source scion id/name fields on ground items",
+      "authored_in": [
+        "native/src/core.cpp:769-777 (resurface loop)",
+        "core.hpp:183-184,414-423 (state fields)",
+        "core.hpp:705-715 GroundItem relic_record_id/provenance fields"
+      ],
+      "form": "mechanics with stable wire keys (legacyRelicId documented denylist exception)",
+      "consumers": ["chronicles payloads networking.cpp:212-228", "add_relic_ground_item core.hpp:941-946"],
+      "mirror_of": "server/core/services/chronicles.js drawCirculatingRelic",
+      "externalizable": false,
+      "locking_risk": "wire keys frozen by unchanged-harness parity gate D-116"
+    },
+    {
+      "id": "quest.chain.native",
+      "domain": "quest",
+      "surface": "kQuestChain[4]: aldwyns-charge, proof-of-temper, the-pale-crown, rot-in-the-reeds with ordered trigger objectives (move/attack/slay/loot/delve/slay-elite/loot-vessel/equip-vessel/return-surface), min depths, renown deeds, and STRING-MATCHED targets: zone ids ('weir-crypt','marsh-of-reeds') and boss display names ('The Pale Sovereign','The Rotfather')",
+      "authored_in": "native/src/networking.cpp:691-705; fired from quest_trigger call sites networking.cpp:1140,1546,1722-1723,2106-2111,2197,2386-2389,2559",
+      "form": "code-bound table",
+      "consumers": [
+        "quests_json activeQuestId/objectives payloads networking.cpp:1152",
+        "deed/renown progression into house_renown_",
+        "first-goal machine networking.cpp:1378,1637-1666"
+      ],
+      "mirror_of": "server/shared/quests.js QUEST_DEFINITIONS + server/core/services/quest-service.js",
+      "externalizable": true,
+      "locking_risk": "objectives bind quest content to actor.monster-composition boss names and zone table ids across three surfaces; externalizing one without the others breaks chain completion"
+    },
+    {
+      "id": "presentation.catalog.native",
+      "domain": "presentation",
+      "surface": "PresentationCatalog read-only export of combat constants; telegraph window contract; ExpeditionPhase descriptive telemetry",
+      "authored_in": [
+        "native/include/verdigris/core.hpp:92-104 (struct), :294-312 (ExpeditionPhase/InstanceState)",
+        "core.hpp:333-335 static accessor"
+      ],
+      "form": "deliberately curated code-bound API (clients must not mirror values, core.hpp:78-80)",
+      "consumers": ["native/client presentation_state/render_list consumers", "remote_play client"],
+      "externalizable": false,
+      "locking_risk": "equality-compared in tests; part of simulation contract"
+    },
+    {
+      "id": "presentation.visual-roles.seam",
+      "domain": "presentation",
+      "surface": "visual_role enum (actor.combatant/warden, effect.telegraph/treasure, prop.blocking/decorative, terrain.blocking/exit/floor/fluid) x visual_slot enum (actors/effects/exits/floor/props/walls) carried as slot_role_map on zones and encounters",
+      "authored_in": "native/content/schema.json:16-28,63-66; seeds apply them zones.json visual_roles / encounters.json visual_roles",
+      "form": "schema-versioned JSON enums (the only presentation-content vocabulary outside code)",
+      "consumers": ["validator E_UNKNOWN_SLOT/E_UNKNOWN_ROLE checks validate_content.py:344-356", "future renderer asset binding"],
+      "externalizable": false,
+      "locking_risk": "grows only; removals are breaking per versioning policy (native/content/README.md:82-87)"
+    },
+    {
+      "id": "presentation.assets.dir.native",
+      "domain": "presentation",
+      "surface": "native/client/assets directory + audio module + triage captures; renderer consumes render_list built from simulation snapshots",
+      "authored_in": ["native/client/assets/", "native/tests/audio_mixer_tests.cpp consumer evidence"],
+      "form": "asset files outside the headless core (allowed: presentation side only)",
+      "consumers": ["local_session/renderer", "audio mixer"],
+      "externalizable": true,
+      "locking_risk": "licensing and exact porting language remain open owner decisions (constitution WIZARD section)"
+    }
+  ],
+  "seed_boundaries": [
+    {
+      "boundary": "Simulation ctor seed (uint64, default house name)",
+      "location": "native/include/verdigris/core.hpp:316",
+      "drives": "Rng token streams (ids), combat rolls, reward drops; snapshot-canonical bytes"
+    },
+    {
+      "boundary": "instance seed derivation fnv1a(theme+':'+layout, world_seed); floor chains append ':floor-N'",
+      "location": "native/src/core.cpp:1802, 3222",
+      "drives": "xorshift LCG monster scatter (state seeded from metadata_.seed, core.cpp:1705-1711); identical theme+layout+depth+world seed reproduces floor population exactly"
+    },
+    {
+      "boundary": "world_random_state_ constant 0x9e3779b97f4a7c15",
+      "location": "native/include/verdigris/core.hpp:1013",
+      "drives": "treasure scatter, forge reseeds (core.cpp:3174-3175, 3201-3202): each gear roll reseeds VesselForge Mulberry32 from one world-random draw"
+    },
+    {
+      "boundary": "VesselForge Mulberry32 (uint32, JS Math.imul parity)",
+      "location": "native/include/verdigris/core.hpp:450-459; native/src/core.cpp:2036+",
+      "drives": "material/form/brand/count/name rolls; persistent stream advances via sear(); session singleton parity with JS module scope"
+    },
+    {
+      "boundary": "session_rng_ unseeded unless request payload carries explicit numeric seed",
+      "location": "native/src/networking.cpp:1064-1067, 1095-1098",
+      "drives": "dev grant endpoints; explicit seed makes a single grant reproducible without touching the session stream"
+    },
+    {
+      "boundary": "world-web node identity web_hash FNV-1a 32-bit over house|road|tier|index",
+      "location": "native/src/networking.cpp:746-762",
+      "drives": "deterministic per-House charts with zero stored layout state; only cleared warden facts persist"
+    },
+    {
+      "boundary": "snapshot boundary retires live instance state under D-109",
+      "location": "native/include/verdigris/core.hpp:430-433; serializer excludes instance/pending_wave (core.cpp:1265 comment)",
+      "drives": "no floor content survives save/load; recovery pools (pending_relic_*) do"
+    },
+    {
+      "boundary": "content seam validation is RNG-free and byte-stable",
+      "location": "native/content/validate_content.py finish() sorted diagnostics; README byte-identical repeated-output claim",
+      "drives": "authoring-time determinism separate from runtime seeded generation"
+    }
+  ],
+  "stable_ids": [
+    {"family": "ActionType/EventType ordinals", "contract": "append-only; recorded command streams and stored event ordinals keep historical codes", "cite": "core.hpp:25-27, 249-252"},
+    {"family": "wire envelope {event,data} and snapshot field keys", "contract": "frozen; handlers receive payload at data.data", "cite": "AGENTS.md; networking.cpp put/read helpers"},
+    {"family": "identifier grammar ^[a-z][a-z0-9]*(-[a-z0-9]+)*$ max 64", "contract": "content seam public contract; validator E_ID_FORMAT", "cite": "native/content/schema.json:5-8"},
+    {"family": "zone identity = template_id+layout resolved through adventure_zones()", "contract": "zone_id_for_instance falls back theme-only then 'old-barrow'", "cite": "networking.cpp:706-715"},
+    {"family": "web node id '<road>:<tier>:<index>'", "contract": "parsed into road/tier/index; route:* ids dispatch into Simulation", "cite": "networking.cpp:2386"},
+    {"family": "item uuid '00000000-0000-4000-8000-<serial %012llx>'", "contract": "process-wide serial uniqueness only", "cite": "core.cpp:2678-2686"},
+    {"family": "monster uuid 'monster-<serial>-<placed>'", "contract": "scene-scoped uniqueness", "cite": "core.cpp:1731"},
+    {"family": "vessel gen ids 'vf'+base36(counter)+base36(rand)", "contract": "forge-local uniqueness; counter order affects id sequence not rolls", "cite": "core.cpp:2289-2293"},
+    {"family": "rng token prefixes ('trophy', ...)", "contract": "token(prefix) draws from Rng; prefix visible in persisted ids", "cite": "core.hpp:367; core.cpp:781"},
+    {"family": "error codes E_* / W_*", "contract": "validator diagnostics codes are stable public contract; messages may be reworded", "cite": "native/content/README.md:77-80"}
+  ],
+  "validation_gaps": [
+    {"gap": "no cross-language enum lock: schema.json zone_template/zone_layout enums mirror is_zone_template/is_zone_layout + adventure_zones by convention only", "evidence": "native/content/README.md:64-66 claim vs core.cpp:1427-1449 implementation", "severity": "high"},
+    {"gap": "no locking test pins gear_drop_pool ORDER although the rolled index selects by position", "evidence": "core.cpp:2748-2757 vs roll sites core.cpp:3167,3198", "severity": "high"},
+    {"gap": "no locking test pins pack_materials/pack_forms/pack_brand_mods iteration order or float weights despite load-bearing order comment", "evidence": "core.cpp:2049-2050, 2101-2212", "severity": "high"},
+    {"gap": "quest objectives string-match boss names and zone ids owned by OTHER surfaces; no referential integrity check anywhere", "evidence": "networking.cpp:701-703 vs core.cpp:1759-1769 vs core.cpp:1427-1438", "severity": "high"},
+    {"gap": "content seam models only zone+encounter; no versioned shape for actors/stats, items/catalogue, brands, skills, quests, roads, loot pools, trophies, seasonal definitions", "evidence": "native/content/schema.json entities section", "severity": "medium"},
+    {"gap": "schema_version migration tooling absent (policy text only)", "evidence": "native/content/README.md:82-87", "severity": "medium"},
+    {"gap": "W_UNREACHABLE_ZONE is non-fatal while E_UNREACHABLE_ENCOUNTER errors; asymmetric graph policy undocumented as deliberate", "evidence": "validate_content.py:638-679", "severity": "low"},
+    {"gap": "no validation that seed display_names avoid denylist vocabulary beyond the generic .json scanner (which does cover native/content since only tests/tools are excluded)", "evidence": "native/tools/check_legacy_denylist.py EXCLUDED_PARTS/EXTENSIONS", "severity": "low"}
+  ],
+  "negative_control": {
+    "claim": "gear_drop_pool() element ORDER cannot be safely externalized to JSON without a locking test",
+    "why": "the gear roll draws a pool INDEX and indexes positionally; JSON round-trips preserve value but not declared-order guarantees once tooling rewrites keys, sorts, or merges files - every elite/trash drop outcome would silently shift with zero type or unit failures",
+    "required_before_externalization": "byte-order locking test asserting pool contents AND order, plus a parity fixture rolling drops across all rarities/depths before and after the data move",
+    "cites": ["native/src/core.cpp:2748-2757", "native/src/core.cpp:3167", "native/src/core.cpp:3198"]
+  },
+  "successor_proposal": {
+    "title": "Versioned content schema/tool pipeline (design only - not implemented here)",
+    "schema_direction": {
+      "version": "keep single integer schema_version with append-only enum growth; breaking changes ship dual-validator during migration window only",
+      "entities_existing": ["zone (done)", "encounter (done)"],
+      "entities_next": [
+        "actor-def: stats deltas + behaviour_type/rarity/tags referencing shared stat schema; NO balance values until owner pass",
+        "monster-pack: theme->role recipes + level curves replacing inline generate_instance logic",
+        "item-base: ItemDef rows + footprint hints; substring-size rules replaced by explicit size fields with a compatibility lint",
+        "brand-pool: materials/forms/mods with EXPLICIT order index field so file order stops being semantic",
+        "loot-pool: ordered id lists carrying explicit 'order' integers validated dense+unique",
+        "quest-chain: objectives referencing zone ids and actor ids BY REFERENCE (never display-name strings)",
+        "road-chart: roads + name terroir tables",
+        "skill-def: activation/cooldown/quickbar metadata mirroring createSkillDefinition shape"
+      ]
+    },
+    "tool_pipeline": [
+      "validate_content.py stays the dependency-free gate; add entity kinds behind the same envelope {schema_version,kind,items}",
+      "new lockstep checker (stdlib Python, run in CI next to check_legacy_denylist.py): extracts adventure_zones/gear_drop_pool/pack tables/kQuestChain literals from C++ sources and asserts JSON seeds match byte-for-byte (order included) - this is the locking validator that de-risks externalization",
+      "referential integrity pass: quest refs -> zone ids + actor ids; encounter.zone -> zones; exits -> zones (exists); extend to item-base vessel_form -> pack forms",
+      "denylist scan already covers native/content JSON; add display-name lint hook for owner lore intake",
+      "loader boundary: when the core first loads seeds, do it OUTSIDE the headless sim (platform layer parses, sim receives typed structs) preserving determinism and the no-I/O core rule"
+    ],
+    "migration_risks": [
+      "positional RNG contracts (pool order, pack table order, Mulberry32 draw sequence) - every externalization needs before/after parity fixtures",
+      "quest name-string coupling to boss display names - fix references first or lock jointly",
+      "JS/C++ double maintenance while browser reference lives - single-source JSON consumed by both eventually, but parity harness D-116 forbids changing browser behavior casually",
+      "float weights in brand pool must serialize losslessly (store numerator/denominator or decimal strings, never binary floats in JSON diffs)",
+      "owner-only lane: names, lore, drops, balance stay out of all schemas until the approval matrix admits them (constitution + spec stop line)"
+    ],
+    "owner_vs_mechanical": {
+      "owner_only": ["display names, lore text, epithet word lists, boss names, trophy names", "stat/balance numbers, drop rates, coin formulas", "which zones/roads/quests exist at all"],
+      "mechanical_now": ["ID grammar, enum membership growth, referential integrity, reachability, order-locking, schema versioning, validator determinism"]
+    }
+  },
+  "acceptance_evidence": "see REPORT.md transcripts; rg command run literally from repo root"
+}

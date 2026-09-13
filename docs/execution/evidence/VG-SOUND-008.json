@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-SOUND-008",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "874b8604",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "music-phase",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario music-phase", "exit_code": 0}
+  ],
+  "assertions": [
+    "slay-wardens with living foes schedules music:combat",
+    "live HUD paints Theme Combat",
+    "carry-to-exit schedules music:recovery",
+    "unloaded scene sets music:none and mutes the music bus",
+    "muted unload cannot voice a leftover combat loop",
+    "live HUD names Theme Combat and Music none",
+    "Theme Combat stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Theme Combat is the anti-pattern"
+  ],
+  "negative_control": {
+    "name": "paused/unloaded scene leaving a competing music send, or Theme Combat covering WASD/objective/Tin village/Life",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/music-phase-960x600.png",
+      "sha256": "0ac776d818f90830ad2a33b56cdb562d5c626c9969b00c95093d7caeb621a74b",
+      "produced_by": "native/build/verdigris_client.exe --scenario music-phase"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Device remains muted in the harness; proof is mixer Theme Combat plus Loop Tin village wind, not a heard track.",
+    "Owner strip paints Theme Combat / Music none and parks off WASD, the objective, Tin village, and Life. Leftover loop cannot certify. Covering those combat surfaces cannot certify. STORY phase authority stays with Kimi."
+  ]
+}

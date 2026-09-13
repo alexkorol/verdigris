@@ -1,0 +1,48 @@
+{
+  "baseline_commit": "ce20ca900",
+  "main_review_sha256": "316d93858eb36242888505121c895c07a8b1a23911b6701d765a1ef819835a4e",
+  "selector": "native/client/raster_scenery.hpp",
+  "main_integration_patch": ".ci-artifacts/scenery-variants-current/main-integration.patch",
+  "changes": [
+    {
+      "route": "town:*",
+      "existing_landmark": "Mara general stall",
+      "world_point": "round(49*tile_units),round(102*tile_units)",
+      "from": "hut",
+      "to": "storehut"
+    },
+    {
+      "route": "*:1:* village layouts",
+      "existing_landmark": "Foreground dwelling",
+      "world_point": [
+        -420,
+        180
+      ],
+      "from": "hut",
+      "to": "storehut"
+    }
+  ],
+  "unchanged": "All other dwellings and every non-dwelling keep current art. Existing item position, scale, solid flag, dressing flag, radius, collision, topology and count remain unchanged.",
+  "native_review": "Viewed native1x and3x contact sheets; storehut and hut use the current192x256 canvases and32-color palette, coherent camera, thatch and warm timber/clay material.",
+  "gameplay_review": "Viewed separate600px/1440px-viewport scale comparisons using the existing visible-height formula, full-canvas pivot and nearest sampling. Root will inspect actual production captures. At equal visible height, storehut body is about6% wider than hut; object collision footprint remains unchanged.",
+  "deferred": {
+    "dead_tree": "53x76 visible body on64x96 old import; current tree is122x127 on192x256. Equal world height magnifies old pixels127/76=1.67 times more. No height reduction, source reimport or tree selection was implemented.",
+    "other_props": "Rock/wall are substantially shorter and wider than the existing standing-column landmark. Swapping them into Ruin would change the visual footprint/height meaning. Chest/grass/brazier are dressing or loot rather than dwelling/tree replacements; no new objects added."
+  },
+  "assets": {
+    "hut": {
+      "sha256": "a88c850579a6d7123f0561a13dbb2d2809cb00ae4d6b4375d97a8f556dcf55d2"
+    },
+    "storehut": {
+      "sha256": "137b9c735cd64b4c9088f263f316cb295d4c849986a11138ca5fbdd0d7be2de5"
+    },
+    "tree": {
+      "sha256": "8669936450b2d88206f3567f81e99db0bedfe6b5d0adc3cca4de0a66f44a6a38"
+    },
+    "dead_tree": {
+      "sha256": "65d1243156818fdd491a09502ad77ca84c58f32a60b57daa23150aca5a25ade4"
+    }
+  },
+  "acceptance": "Source/native/scale review complete; selector and unapplied integration patch handed to root for production captures and gates.",
+  "main_patch_line_endings": "Preserve each integration site and its existing mixed line endings; no main mutation performed."
+}

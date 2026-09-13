@@ -1,0 +1,3095 @@
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+core.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\src\core.cpp(1944): warning C4100: 'player_level': unreferenced formal parameter
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+seasonal.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+networking.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\src\networking.cpp(2929): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+core_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+networking_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+camera2d_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+local_session.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+remote_session.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\remote_session.cpp(364): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+presentation_state.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+session_tests.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\tests\session_tests.cpp(859): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+presentation_events_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+cue_spec.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+event_cues.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+audio_mixer.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+audio_mixer_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+server_main.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\src\server_main.cpp(16): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\src\server_main.cpp(22): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+main.cpp
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusHeaders.h(701): warning C4458: declaration of 'nativeCap' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusHeaders.h(716): note: see declaration of 'Gdiplus::CustomLineCap::nativeCap'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusImageAttributes.h(368): warning C4458: declaration of 'nativeImageAttr' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusImageAttributes.h(382): note: see declaration of 'Gdiplus::ImageAttributes::nativeImageAttr'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusMatrix.h(301): warning C4458: declaration of 'nativeMatrix' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusMatrix.h(315): note: see declaration of 'Gdiplus::Matrix::nativeMatrix'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusBrush.h(95): warning C4458: declaration of 'nativeBrush' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusBrush.h(108): note: see declaration of 'Gdiplus::Brush::nativeBrush'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPen.h(467): warning C4458: declaration of 'nativePen' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPen.h(481): note: see declaration of 'Gdiplus::Pen::nativePen'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(891): warning C4458: declaration of 'nativePath' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(905): note: see declaration of 'Gdiplus::GraphicsPath::nativePath'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(1078): warning C4458: declaration of 'nativeIterator' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(1092): note: see declaration of 'Gdiplus::GraphicsPathIterator::nativeIterator'
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(3564): warning C4100: 'bounds': unreferenced formal parameter
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(5371): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(11456): warning C4456: declaration of 'expect_x' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(11450): note: see declaration of 'expect_x'
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(11457): warning C4456: declaration of 'expect_y' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(11451): note: see declaration of 'expect_y'
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(11792): warning C4456: declaration of 'route' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(11751): note: see declaration of 'route'
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(13880): warning C4456: declaration of 'trace_find' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(13396): note: see declaration of 'trace_find'
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(14621): warning C4456: declaration of 'strip' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(14583): note: see declaration of 'strip'
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(20257): warning C4456: declaration of 'here' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\native\client\main.cpp(20209): note: see declaration of 'here'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+remote_play.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+native legacy denylist: PASS
+== scenario move-and-camera ==
+    ok: move-and-camera: scenery present in render list
+    ok: move-and-camera: Floor op recorded
+    ok: move-and-camera: floor is textured (plates or vector kit)
+    ok: move-and-camera: terrain tiles present in render list
+    ok: move-and-camera: life and resource orbs recorded
+    ok: move-and-camera: quickbar slots recorded
+    ok: move-and-camera: minimap panel recorded
+    ok: move-and-camera: every scenery entity shifts by one uniform delta
+    ok: move-and-camera: uniform delta equals camera shift * zoom
+    ok: move-and-camera: overlapping terrain tiles across camera moves
+    ok: move-and-camera: every overlapping terrain tile shifts by one uniform delta
+    ok: move-and-camera: terrain delta equals camera shift * zoom
+    ok: move-and-camera: every scenery entity shifts by one uniform delta
+    ok: move-and-camera: uniform delta equals camera shift * zoom
+    ok: move-and-camera: overlapping terrain tiles across camera moves
+    ok: move-and-camera: every overlapping terrain tile shifts by one uniform delta
+    ok: move-and-camera: terrain delta equals camera shift * zoom
+    ok: move-and-camera: every scenery entity shifts by one uniform delta
+    ok: move-and-camera: uniform delta equals camera shift * zoom
+    ok: move-and-camera: overlapping terrain tiles across camera moves
+    ok: move-and-camera: every overlapping terrain tile shifts by one uniform delta
+    ok: move-and-camera: terrain delta equals camera shift * zoom
+    ok: move-and-camera: every scenery entity shifts by one uniform delta
+    ok: move-and-camera: uniform delta equals camera shift * zoom
+    ok: move-and-camera: overlapping terrain tiles across camera moves
+    ok: move-and-camera: every overlapping terrain tile shifts by one uniform delta
+    ok: move-and-camera: terrain delta equals camera shift * zoom
+    ok: move-and-camera: owner HUD capture written
+    ok: move-and-camera: live HUD names Kit lock and Same delta
+    ok: move-and-camera: live HUD rejects sliding kit
+    ok: move-and-camera: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: move-and-camera: Kit lock stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario first-fight ==
+    ok: first-fight: loaded billboards do not paint a skeleton art chip
+    ok: first-fight: art status matches what actually loaded
+    ok: first-fight: missing art still warns on the owner HUD
+    ok: first-fight: an objective strip is on the HUD
+    ok: first-fight: the extraction pad is marked stairs-up
+    ok: first-fight: the Scion silhouette is recorded
+    ok: first-fight: owner HUD capture written
+    ok: first-fight: live HUD names Jointed warden and Snout claws
+    ok: first-fight: live HUD rejects crate foe
+    ok: first-fight: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: first-fight: Jointed warden stays off WASD, the objective, Tin village, and Life
+    ok: first-fight: vector fallback reports itself honestly
+    ok: first-fight: vector terrain keeps the floor tiled
+    ok: first-fight: vector motif tiles are drawn
+    ok: first-fight: vector scenery silhouettes are drawn
+    ok: first-fight: vector Scion silhouette is drawn
+    ok: first-fight: a crate-shaped foe cannot certify the fight
+    ok: first-fight: town wardens are not hip-to-foot crates
+    ok: first-fight: a swing is drawn
+    ok: first-fight: a floating damage number is spawned
+    ok: first-fight: a death ring is drawn
+    ok: first-fight: the drop becomes visible
+    ok: first-fight: the dead monster is removed from the render list
+   PASS (0 failures)
+== scenario combat-audio ==
+    ok: combat-audio: ordinary fight voices a hit cue
+    ok: combat-audio: ordinary fight voices a death cue
+    ok: combat-audio: replaying the same event cannot double-play
+    ok: combat-audio: two hits for one event fail review
+    ok: combat-audio: a single hit for one event certifies mapping
+    ok: combat-audio: dense cosmetics cannot starve the loss warning
+    ok: combat-audio: a starved warning fails review
+    ok: combat-audio: a held warning certifies the voice budget
+    ok: combat-audio: twelve cosmetics exceed the SFX voice cap
+    ok: combat-audio: rapid reentry does not stack ambience
+    ok: combat-audio: duplicate ambience submit is a no-op
+    ok: combat-audio: voice-budget capture written
+    ok: combat-audio: owner strip paints Warning held
+    ok: combat-audio: Voices 8 strip is traced
+    ok: combat-audio: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: combat-audio: Voices 8 stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario hud-scale-floor ==
+    ok: hud-scale-floor: scale 0 is rejected instead of shrinking type
+    ok: hud-scale-floor: small glyphs stay at or above the floor
+    ok: hud-scale-floor: body glyphs stay at or above the floor
+    ok: hud-scale-floor: scion actor exists
+    ok: hud-scale-floor: low life has a non-color chevron
+    ok: hud-scale-floor: hover tooltip fits over a living foe
+    ok: hud-scale-floor: tooltip stays inside the 960 frame
+    ok: hud-scale-floor: foe tooltip has a non-color mark
+    ok: hud-scale-floor: tooltip title uses ink-on-panel contrast
+    ok: hud-scale-floor: shrinking type is not the contrast fix
+    ok: hud-scale-floor: a 640x480 window still respects the type floor
+    ok: hud-scale-floor: live HUD capture written
+    ok: hud-scale-floor: live HUD names Type floor and Ink contrast
+    ok: hud-scale-floor: live HUD rejects shrink type
+    ok: hud-scale-floor: Type floor strip is traced
+    ok: hud-scale-floor: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: hud-scale-floor: Type floor stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario hud-chrome ==
+    ok: hud-chrome: production bounds report opened
+    ok: hud-chrome: text measurement DC created
+    ok: hud-chrome-3440x1440-unmuted: production capture written
+    ok: hud-chrome-3440x1440-unmuted: every requested HUD region was placed
+    ok: hud-chrome-3440x1440-unmuted: minimap painted
+    ok: hud-chrome-3440x1440-unmuted: route-card painted
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip painted
+    ok: hud-chrome-3440x1440-unmuted: orb-life painted
+    ok: hud-chrome-3440x1440-unmuted: orb-resource painted
+    ok: hud-chrome-3440x1440-unmuted: identity painted
+    ok: hud-chrome-3440x1440-unmuted: objective painted
+    ok: hud-chrome-3440x1440-unmuted: controls painted
+    ok: hud-chrome-3440x1440-unmuted: audio-mixer painted
+    ok: hud-chrome-3440x1440-unmuted: mute chip follows actual mute state
+    ok: hud-chrome-3440x1440-unmuted: minimap inside viewport
+    ok: hud-chrome-3440x1440-unmuted: route-card inside viewport
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip inside viewport
+    ok: hud-chrome-3440x1440-unmuted: orb-life inside viewport
+    ok: hud-chrome-3440x1440-unmuted: orb-resource inside viewport
+    ok: hud-chrome-3440x1440-unmuted: identity inside viewport
+    ok: hud-chrome-3440x1440-unmuted: objective inside viewport
+    ok: hud-chrome-3440x1440-unmuted: controls inside viewport
+    ok: hud-chrome-3440x1440-unmuted: audio-mixer inside viewport
+    ok: hud-chrome-3440x1440-unmuted: minimap clears route-card
+    ok: hud-chrome-3440x1440-unmuted: minimap clears quickbar-strip
+    ok: hud-chrome-3440x1440-unmuted: minimap clears orb-life
+    ok: hud-chrome-3440x1440-unmuted: minimap clears orb-resource
+    ok: hud-chrome-3440x1440-unmuted: minimap clears identity
+    ok: hud-chrome-3440x1440-unmuted: minimap clears objective
+    ok: hud-chrome-3440x1440-unmuted: minimap clears controls
+    ok: hud-chrome-3440x1440-unmuted: minimap clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: route-card clears quickbar-strip
+    ok: hud-chrome-3440x1440-unmuted: route-card clears orb-life
+    ok: hud-chrome-3440x1440-unmuted: route-card clears orb-resource
+    ok: hud-chrome-3440x1440-unmuted: route-card clears identity
+    ok: hud-chrome-3440x1440-unmuted: route-card clears objective
+    ok: hud-chrome-3440x1440-unmuted: route-card clears controls
+    ok: hud-chrome-3440x1440-unmuted: route-card clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip clears orb-life
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip clears orb-resource
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip clears identity
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip clears objective
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip clears controls
+    ok: hud-chrome-3440x1440-unmuted: quickbar-strip clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: orb-life clears orb-resource
+    ok: hud-chrome-3440x1440-unmuted: orb-life clears identity
+    ok: hud-chrome-3440x1440-unmuted: orb-life clears objective
+    ok: hud-chrome-3440x1440-unmuted: orb-life clears controls
+    ok: hud-chrome-3440x1440-unmuted: orb-life clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: orb-resource clears identity
+    ok: hud-chrome-3440x1440-unmuted: orb-resource clears objective
+    ok: hud-chrome-3440x1440-unmuted: orb-resource clears controls
+    ok: hud-chrome-3440x1440-unmuted: orb-resource clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: identity clears objective
+    ok: hud-chrome-3440x1440-unmuted: identity clears controls
+    ok: hud-chrome-3440x1440-unmuted: identity clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: objective clears controls
+    ok: hud-chrome-3440x1440-unmuted: objective clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: controls clears audio-mixer
+    ok: hud-chrome-3440x1440-unmuted: mixer trace matches measured production text
+    ok: hud-chrome-3440x1440-unmuted: every route and return row fits without shrinking
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-unmuted: full HUD typography uses the authored Segoe sizes
+    ok: hud-chrome-3440x1440-unmuted: action labels fit the unchanged slots
+    ok: hud-chrome-3440x1440-unmuted: original owner actions remain in the production HUD
+    ok: hud-chrome-3440x1440-muted: production capture written
+    ok: hud-chrome-3440x1440-muted: every requested HUD region was placed
+    ok: hud-chrome-3440x1440-muted: minimap painted
+    ok: hud-chrome-3440x1440-muted: route-card painted
+    ok: hud-chrome-3440x1440-muted: quickbar-strip painted
+    ok: hud-chrome-3440x1440-muted: orb-life painted
+    ok: hud-chrome-3440x1440-muted: orb-resource painted
+    ok: hud-chrome-3440x1440-muted: identity painted
+    ok: hud-chrome-3440x1440-muted: objective painted
+    ok: hud-chrome-3440x1440-muted: controls painted
+    ok: hud-chrome-3440x1440-muted: audio-mixer painted
+    ok: hud-chrome-3440x1440-muted: mute chip follows actual mute state
+    ok: hud-chrome-3440x1440-muted: minimap inside viewport
+    ok: hud-chrome-3440x1440-muted: route-card inside viewport
+    ok: hud-chrome-3440x1440-muted: quickbar-strip inside viewport
+    ok: hud-chrome-3440x1440-muted: orb-life inside viewport
+    ok: hud-chrome-3440x1440-muted: orb-resource inside viewport
+    ok: hud-chrome-3440x1440-muted: identity inside viewport
+    ok: hud-chrome-3440x1440-muted: objective inside viewport
+    ok: hud-chrome-3440x1440-muted: controls inside viewport
+    ok: hud-chrome-3440x1440-muted: audio-mixer inside viewport
+    ok: hud-chrome-3440x1440-muted: audio-muted inside viewport
+    ok: hud-chrome-3440x1440-muted: minimap clears route-card
+    ok: hud-chrome-3440x1440-muted: minimap clears quickbar-strip
+    ok: hud-chrome-3440x1440-muted: minimap clears orb-life
+    ok: hud-chrome-3440x1440-muted: minimap clears orb-resource
+    ok: hud-chrome-3440x1440-muted: minimap clears identity
+    ok: hud-chrome-3440x1440-muted: minimap clears objective
+    ok: hud-chrome-3440x1440-muted: minimap clears controls
+    ok: hud-chrome-3440x1440-muted: minimap clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: minimap clears audio-muted
+    ok: hud-chrome-3440x1440-muted: route-card clears quickbar-strip
+    ok: hud-chrome-3440x1440-muted: route-card clears orb-life
+    ok: hud-chrome-3440x1440-muted: route-card clears orb-resource
+    ok: hud-chrome-3440x1440-muted: route-card clears identity
+    ok: hud-chrome-3440x1440-muted: route-card clears objective
+    ok: hud-chrome-3440x1440-muted: route-card clears controls
+    ok: hud-chrome-3440x1440-muted: route-card clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: route-card clears audio-muted
+    ok: hud-chrome-3440x1440-muted: quickbar-strip clears orb-life
+    ok: hud-chrome-3440x1440-muted: quickbar-strip clears orb-resource
+    ok: hud-chrome-3440x1440-muted: quickbar-strip clears identity
+    ok: hud-chrome-3440x1440-muted: quickbar-strip clears objective
+    ok: hud-chrome-3440x1440-muted: quickbar-strip clears controls
+    ok: hud-chrome-3440x1440-muted: quickbar-strip clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: quickbar-strip clears audio-muted
+    ok: hud-chrome-3440x1440-muted: orb-life clears orb-resource
+    ok: hud-chrome-3440x1440-muted: orb-life clears identity
+    ok: hud-chrome-3440x1440-muted: orb-life clears objective
+    ok: hud-chrome-3440x1440-muted: orb-life clears controls
+    ok: hud-chrome-3440x1440-muted: orb-life clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: orb-life clears audio-muted
+    ok: hud-chrome-3440x1440-muted: orb-resource clears identity
+    ok: hud-chrome-3440x1440-muted: orb-resource clears objective
+    ok: hud-chrome-3440x1440-muted: orb-resource clears controls
+    ok: hud-chrome-3440x1440-muted: orb-resource clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: orb-resource clears audio-muted
+    ok: hud-chrome-3440x1440-muted: identity clears objective
+    ok: hud-chrome-3440x1440-muted: identity clears controls
+    ok: hud-chrome-3440x1440-muted: identity clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: identity clears audio-muted
+    ok: hud-chrome-3440x1440-muted: objective clears controls
+    ok: hud-chrome-3440x1440-muted: objective clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: objective clears audio-muted
+    ok: hud-chrome-3440x1440-muted: controls clears audio-mixer
+    ok: hud-chrome-3440x1440-muted: controls clears audio-muted
+    ok: hud-chrome-3440x1440-muted: audio-mixer clears audio-muted
+    ok: hud-chrome-3440x1440-muted: mixer trace matches measured production text
+    ok: hud-chrome-3440x1440-muted: every route and return row fits without shrinking
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: measured row is inside its text card
+    ok: hud-chrome-3440x1440-muted: full HUD typography uses the authored Segoe sizes
+    ok: hud-chrome-3440x1440-muted: action labels fit the unchanged slots
+    ok: hud-chrome-3440x1440-muted: original owner actions remain in the production HUD
+    ok: hud-chrome-1366x768-unmuted: production capture written
+    ok: hud-chrome-1366x768-unmuted: every requested HUD region was placed
+    ok: hud-chrome-1366x768-unmuted: minimap painted
+    ok: hud-chrome-1366x768-unmuted: route-card painted
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip painted
+    ok: hud-chrome-1366x768-unmuted: orb-life painted
+    ok: hud-chrome-1366x768-unmuted: orb-resource painted
+    ok: hud-chrome-1366x768-unmuted: identity painted
+    ok: hud-chrome-1366x768-unmuted: objective painted
+    ok: hud-chrome-1366x768-unmuted: controls painted
+    ok: hud-chrome-1366x768-unmuted: audio-mixer painted
+    ok: hud-chrome-1366x768-unmuted: mute chip follows actual mute state
+    ok: hud-chrome-1366x768-unmuted: minimap inside viewport
+    ok: hud-chrome-1366x768-unmuted: route-card inside viewport
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip inside viewport
+    ok: hud-chrome-1366x768-unmuted: orb-life inside viewport
+    ok: hud-chrome-1366x768-unmuted: orb-resource inside viewport
+    ok: hud-chrome-1366x768-unmuted: identity inside viewport
+    ok: hud-chrome-1366x768-unmuted: objective inside viewport
+    ok: hud-chrome-1366x768-unmuted: controls inside viewport
+    ok: hud-chrome-1366x768-unmuted: audio-mixer inside viewport
+    ok: hud-chrome-1366x768-unmuted: minimap clears route-card
+    ok: hud-chrome-1366x768-unmuted: minimap clears quickbar-strip
+    ok: hud-chrome-1366x768-unmuted: minimap clears orb-life
+    ok: hud-chrome-1366x768-unmuted: minimap clears orb-resource
+    ok: hud-chrome-1366x768-unmuted: minimap clears identity
+    ok: hud-chrome-1366x768-unmuted: minimap clears objective
+    ok: hud-chrome-1366x768-unmuted: minimap clears controls
+    ok: hud-chrome-1366x768-unmuted: minimap clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: route-card clears quickbar-strip
+    ok: hud-chrome-1366x768-unmuted: route-card clears orb-life
+    ok: hud-chrome-1366x768-unmuted: route-card clears orb-resource
+    ok: hud-chrome-1366x768-unmuted: route-card clears identity
+    ok: hud-chrome-1366x768-unmuted: route-card clears objective
+    ok: hud-chrome-1366x768-unmuted: route-card clears controls
+    ok: hud-chrome-1366x768-unmuted: route-card clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip clears orb-life
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip clears orb-resource
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip clears identity
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip clears objective
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip clears controls
+    ok: hud-chrome-1366x768-unmuted: quickbar-strip clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: orb-life clears orb-resource
+    ok: hud-chrome-1366x768-unmuted: orb-life clears identity
+    ok: hud-chrome-1366x768-unmuted: orb-life clears objective
+    ok: hud-chrome-1366x768-unmuted: orb-life clears controls
+    ok: hud-chrome-1366x768-unmuted: orb-life clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: orb-resource clears identity
+    ok: hud-chrome-1366x768-unmuted: orb-resource clears objective
+    ok: hud-chrome-1366x768-unmuted: orb-resource clears controls
+    ok: hud-chrome-1366x768-unmuted: orb-resource clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: identity clears objective
+    ok: hud-chrome-1366x768-unmuted: identity clears controls
+    ok: hud-chrome-1366x768-unmuted: identity clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: objective clears controls
+    ok: hud-chrome-1366x768-unmuted: objective clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: controls clears audio-mixer
+    ok: hud-chrome-1366x768-unmuted: mixer trace matches measured production text
+    ok: hud-chrome-1366x768-unmuted: every route and return row fits without shrinking
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: measured row is inside its text card
+    ok: hud-chrome-1366x768-unmuted: full HUD typography uses the authored Segoe sizes
+    ok: hud-chrome-1366x768-unmuted: action labels fit the unchanged slots
+    ok: hud-chrome-1366x768-unmuted: original owner actions remain in the production HUD
+    ok: hud-chrome-1366x768-muted: production capture written
+    ok: hud-chrome-1366x768-muted: every requested HUD region was placed
+    ok: hud-chrome-1366x768-muted: minimap painted
+    ok: hud-chrome-1366x768-muted: route-card painted
+    ok: hud-chrome-1366x768-muted: quickbar-strip painted
+    ok: hud-chrome-1366x768-muted: orb-life painted
+    ok: hud-chrome-1366x768-muted: orb-resource painted
+    ok: hud-chrome-1366x768-muted: identity painted
+    ok: hud-chrome-1366x768-muted: objective painted
+    ok: hud-chrome-1366x768-muted: controls painted
+    ok: hud-chrome-1366x768-muted: audio-mixer painted
+    ok: hud-chrome-1366x768-muted: mute chip follows actual mute state
+    ok: hud-chrome-1366x768-muted: minimap inside viewport
+    ok: hud-chrome-1366x768-muted: route-card inside viewport
+    ok: hud-chrome-1366x768-muted: quickbar-strip inside viewport
+    ok: hud-chrome-1366x768-muted: orb-life inside viewport
+    ok: hud-chrome-1366x768-muted: orb-resource inside viewport
+    ok: hud-chrome-1366x768-muted: identity inside viewport
+    ok: hud-chrome-1366x768-muted: objective inside viewport
+    ok: hud-chrome-1366x768-muted: controls inside viewport
+    ok: hud-chrome-1366x768-muted: audio-mixer inside viewport
+    ok: hud-chrome-1366x768-muted: audio-muted inside viewport
+    ok: hud-chrome-1366x768-muted: minimap clears route-card
+    ok: hud-chrome-1366x768-muted: minimap clears quickbar-strip
+    ok: hud-chrome-1366x768-muted: minimap clears orb-life
+    ok: hud-chrome-1366x768-muted: minimap clears orb-resource
+    ok: hud-chrome-1366x768-muted: minimap clears identity
+    ok: hud-chrome-1366x768-muted: minimap clears objective
+    ok: hud-chrome-1366x768-muted: minimap clears controls
+    ok: hud-chrome-1366x768-muted: minimap clears audio-mixer
+    ok: hud-chrome-1366x768-muted: minimap clears audio-muted
+    ok: hud-chrome-1366x768-muted: route-card clears quickbar-strip
+    ok: hud-chrome-1366x768-muted: route-card clears orb-life
+    ok: hud-chrome-1366x768-muted: route-card clears orb-resource
+    ok: hud-chrome-1366x768-muted: route-card clears identity
+    ok: hud-chrome-1366x768-muted: route-card clears objective
+    ok: hud-chrome-1366x768-muted: route-card clears controls
+    ok: hud-chrome-1366x768-muted: route-card clears audio-mixer
+    ok: hud-chrome-1366x768-muted: route-card clears audio-muted
+    ok: hud-chrome-1366x768-muted: quickbar-strip clears orb-life
+    ok: hud-chrome-1366x768-muted: quickbar-strip clears orb-resource
+    ok: hud-chrome-1366x768-muted: quickbar-strip clears identity
+    ok: hud-chrome-1366x768-muted: quickbar-strip clears objective
+    ok: hud-chrome-1366x768-muted: quickbar-strip clears controls
+    ok: hud-chrome-1366x768-muted: quickbar-strip clears audio-mixer
+    ok: hud-chrome-1366x768-muted: quickbar-strip clears audio-muted
+    ok: hud-chrome-1366x768-muted: orb-life clears orb-resource
+    ok: hud-chrome-1366x768-muted: orb-life clears identity
+    ok: hud-chrome-1366x768-muted: orb-life clears objective
+    ok: hud-chrome-1366x768-muted: orb-life clears controls
+    ok: hud-chrome-1366x768-muted: orb-life clears audio-mixer
+    ok: hud-chrome-1366x768-muted: orb-life clears audio-muted
+    ok: hud-chrome-1366x768-muted: orb-resource clears identity
+    ok: hud-chrome-1366x768-muted: orb-resource clears objective
+    ok: hud-chrome-1366x768-muted: orb-resource clears controls
+    ok: hud-chrome-1366x768-muted: orb-resource clears audio-mixer
+    ok: hud-chrome-1366x768-muted: orb-resource clears audio-muted
+    ok: hud-chrome-1366x768-muted: identity clears objective
+    ok: hud-chrome-1366x768-muted: identity clears controls
+    ok: hud-chrome-1366x768-muted: identity clears audio-mixer
+    ok: hud-chrome-1366x768-muted: identity clears audio-muted
+    ok: hud-chrome-1366x768-muted: objective clears controls
+    ok: hud-chrome-1366x768-muted: objective clears audio-mixer
+    ok: hud-chrome-1366x768-muted: objective clears audio-muted
+    ok: hud-chrome-1366x768-muted: controls clears audio-mixer
+    ok: hud-chrome-1366x768-muted: controls clears audio-muted
+    ok: hud-chrome-1366x768-muted: audio-mixer clears audio-muted
+    ok: hud-chrome-1366x768-muted: mixer trace matches measured production text
+    ok: hud-chrome-1366x768-muted: every route and return row fits without shrinking
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: measured row is inside its text card
+    ok: hud-chrome-1366x768-muted: full HUD typography uses the authored Segoe sizes
+    ok: hud-chrome-1366x768-muted: action labels fit the unchanged slots
+    ok: hud-chrome-1366x768-muted: original owner actions remain in the production HUD
+    ok: hud-chrome-960x600-unmuted: production capture written
+    ok: hud-chrome-960x600-unmuted: every requested HUD region was placed
+    ok: hud-chrome-960x600-unmuted: minimap painted
+    ok: hud-chrome-960x600-unmuted: route-card painted
+    ok: hud-chrome-960x600-unmuted: quickbar-strip painted
+    ok: hud-chrome-960x600-unmuted: orb-life painted
+    ok: hud-chrome-960x600-unmuted: orb-resource painted
+    ok: hud-chrome-960x600-unmuted: identity painted
+    ok: hud-chrome-960x600-unmuted: objective painted
+    ok: hud-chrome-960x600-unmuted: controls painted
+    ok: hud-chrome-960x600-unmuted: audio-mixer painted
+    ok: hud-chrome-960x600-unmuted: mute chip follows actual mute state
+    ok: hud-chrome-960x600-unmuted: minimap inside viewport
+    ok: hud-chrome-960x600-unmuted: route-card inside viewport
+    ok: hud-chrome-960x600-unmuted: quickbar-strip inside viewport
+    ok: hud-chrome-960x600-unmuted: orb-life inside viewport
+    ok: hud-chrome-960x600-unmuted: orb-resource inside viewport
+    ok: hud-chrome-960x600-unmuted: identity inside viewport
+    ok: hud-chrome-960x600-unmuted: objective inside viewport
+    ok: hud-chrome-960x600-unmuted: controls inside viewport
+    ok: hud-chrome-960x600-unmuted: audio-mixer inside viewport
+    ok: hud-chrome-960x600-unmuted: minimap clears route-card
+    ok: hud-chrome-960x600-unmuted: minimap clears quickbar-strip
+    ok: hud-chrome-960x600-unmuted: minimap clears orb-life
+    ok: hud-chrome-960x600-unmuted: minimap clears orb-resource
+    ok: hud-chrome-960x600-unmuted: minimap clears identity
+    ok: hud-chrome-960x600-unmuted: minimap clears objective
+    ok: hud-chrome-960x600-unmuted: minimap clears controls
+    ok: hud-chrome-960x600-unmuted: minimap clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: route-card clears quickbar-strip
+    ok: hud-chrome-960x600-unmuted: route-card clears orb-life
+    ok: hud-chrome-960x600-unmuted: route-card clears orb-resource
+    ok: hud-chrome-960x600-unmuted: route-card clears identity
+    ok: hud-chrome-960x600-unmuted: route-card clears objective
+    ok: hud-chrome-960x600-unmuted: route-card clears controls
+    ok: hud-chrome-960x600-unmuted: route-card clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: quickbar-strip clears orb-life
+    ok: hud-chrome-960x600-unmuted: quickbar-strip clears orb-resource
+    ok: hud-chrome-960x600-unmuted: quickbar-strip clears identity
+    ok: hud-chrome-960x600-unmuted: quickbar-strip clears objective
+    ok: hud-chrome-960x600-unmuted: quickbar-strip clears controls
+    ok: hud-chrome-960x600-unmuted: quickbar-strip clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: orb-life clears orb-resource
+    ok: hud-chrome-960x600-unmuted: orb-life clears identity
+    ok: hud-chrome-960x600-unmuted: orb-life clears objective
+    ok: hud-chrome-960x600-unmuted: orb-life clears controls
+    ok: hud-chrome-960x600-unmuted: orb-life clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: orb-resource clears identity
+    ok: hud-chrome-960x600-unmuted: orb-resource clears objective
+    ok: hud-chrome-960x600-unmuted: orb-resource clears controls
+    ok: hud-chrome-960x600-unmuted: orb-resource clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: identity clears objective
+    ok: hud-chrome-960x600-unmuted: identity clears controls
+    ok: hud-chrome-960x600-unmuted: identity clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: objective clears controls
+    ok: hud-chrome-960x600-unmuted: objective clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: controls clears audio-mixer
+    ok: hud-chrome-960x600-unmuted: mixer trace matches measured production text
+    ok: hud-chrome-960x600-unmuted: every route and return row fits without shrinking
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: measured row is inside its text card
+    ok: hud-chrome-960x600-unmuted: full HUD typography uses the authored Segoe sizes
+    ok: hud-chrome-960x600-unmuted: action labels fit the unchanged slots
+    ok: hud-chrome-960x600-unmuted: original owner actions remain in the production HUD
+    ok: hud-chrome-960x600-muted: production capture written
+    ok: hud-chrome-960x600-muted: every requested HUD region was placed
+    ok: hud-chrome-960x600-muted: minimap painted
+    ok: hud-chrome-960x600-muted: route-card painted
+    ok: hud-chrome-960x600-muted: quickbar-strip painted
+    ok: hud-chrome-960x600-muted: orb-life painted
+    ok: hud-chrome-960x600-muted: orb-resource painted
+    ok: hud-chrome-960x600-muted: identity painted
+    ok: hud-chrome-960x600-muted: objective painted
+    ok: hud-chrome-960x600-muted: controls painted
+    ok: hud-chrome-960x600-muted: audio-mixer painted
+    ok: hud-chrome-960x600-muted: mute chip follows actual mute state
+    ok: hud-chrome-960x600-muted: minimap inside viewport
+    ok: hud-chrome-960x600-muted: route-card inside viewport
+    ok: hud-chrome-960x600-muted: quickbar-strip inside viewport
+    ok: hud-chrome-960x600-muted: orb-life inside viewport
+    ok: hud-chrome-960x600-muted: orb-resource inside viewport
+    ok: hud-chrome-960x600-muted: identity inside viewport
+    ok: hud-chrome-960x600-muted: objective inside viewport
+    ok: hud-chrome-960x600-muted: controls inside viewport
+    ok: hud-chrome-960x600-muted: audio-mixer inside viewport
+    ok: hud-chrome-960x600-muted: audio-muted inside viewport
+    ok: hud-chrome-960x600-muted: minimap clears route-card
+    ok: hud-chrome-960x600-muted: minimap clears quickbar-strip
+    ok: hud-chrome-960x600-muted: minimap clears orb-life
+    ok: hud-chrome-960x600-muted: minimap clears orb-resource
+    ok: hud-chrome-960x600-muted: minimap clears identity
+    ok: hud-chrome-960x600-muted: minimap clears objective
+    ok: hud-chrome-960x600-muted: minimap clears controls
+    ok: hud-chrome-960x600-muted: minimap clears audio-mixer
+    ok: hud-chrome-960x600-muted: minimap clears audio-muted
+    ok: hud-chrome-960x600-muted: route-card clears quickbar-strip
+    ok: hud-chrome-960x600-muted: route-card clears orb-life
+    ok: hud-chrome-960x600-muted: route-card clears orb-resource
+    ok: hud-chrome-960x600-muted: route-card clears identity
+    ok: hud-chrome-960x600-muted: route-card clears objective
+    ok: hud-chrome-960x600-muted: route-card clears controls
+    ok: hud-chrome-960x600-muted: route-card clears audio-mixer
+    ok: hud-chrome-960x600-muted: route-card clears audio-muted
+    ok: hud-chrome-960x600-muted: quickbar-strip clears orb-life
+    ok: hud-chrome-960x600-muted: quickbar-strip clears orb-resource
+    ok: hud-chrome-960x600-muted: quickbar-strip clears identity
+    ok: hud-chrome-960x600-muted: quickbar-strip clears objective
+    ok: hud-chrome-960x600-muted: quickbar-strip clears controls
+    ok: hud-chrome-960x600-muted: quickbar-strip clears audio-mixer
+    ok: hud-chrome-960x600-muted: quickbar-strip clears audio-muted
+    ok: hud-chrome-960x600-muted: orb-life clears orb-resource
+    ok: hud-chrome-960x600-muted: orb-life clears identity
+    ok: hud-chrome-960x600-muted: orb-life clears objective
+    ok: hud-chrome-960x600-muted: orb-life clears controls
+    ok: hud-chrome-960x600-muted: orb-life clears audio-mixer
+    ok: hud-chrome-960x600-muted: orb-life clears audio-muted
+    ok: hud-chrome-960x600-muted: orb-resource clears identity
+    ok: hud-chrome-960x600-muted: orb-resource clears objective
+    ok: hud-chrome-960x600-muted: orb-resource clears controls
+    ok: hud-chrome-960x600-muted: orb-resource clears audio-mixer
+    ok: hud-chrome-960x600-muted: orb-resource clears audio-muted
+    ok: hud-chrome-960x600-muted: identity clears objective
+    ok: hud-chrome-960x600-muted: identity clears controls
+    ok: hud-chrome-960x600-muted: identity clears audio-mixer
+    ok: hud-chrome-960x600-muted: identity clears audio-muted
+    ok: hud-chrome-960x600-muted: objective clears controls
+    ok: hud-chrome-960x600-muted: objective clears audio-mixer
+    ok: hud-chrome-960x600-muted: objective clears audio-muted
+    ok: hud-chrome-960x600-muted: controls clears audio-mixer
+    ok: hud-chrome-960x600-muted: controls clears audio-muted
+    ok: hud-chrome-960x600-muted: audio-mixer clears audio-muted
+    ok: hud-chrome-960x600-muted: mixer trace matches measured production text
+    ok: hud-chrome-960x600-muted: every route and return row fits without shrinking
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: measured row is inside its text card
+    ok: hud-chrome-960x600-muted: full HUD typography uses the authored Segoe sizes
+    ok: hud-chrome-960x600-muted: action labels fit the unchanged slots
+    ok: hud-chrome-960x600-muted: original owner actions remain in the production HUD
+   PASS (0 failures)
+== scenario xp-meter ==
+    ok: xp-meter: local HUD still publishes the meter
+    ok: xp-meter: a fresh scion starts at the floor, not a fake fill
+    ok: xp-meter: kill XP fills the current level span
+    ok: xp-meter: a 0% strip cannot count as a filled meter
+    ok: xp-meter: xp-bar is on the HUD
+    ok: xp-meter: xp-bar is on the HUD
+    ok: xp-meter: offscreen presents succeeded
+    ok: xp-meter: an empty pit cannot pass as ledger gold
+    ok: xp-meter: filled meter paints gold, not a black hairline
+    xp-meter: empty_gold=0 filled_gold=570 fraction=0.493
+    ok: xp-meter: filled HUD capture written
+    ok: xp-meter: live HUD names Kill fill and Gold pit
+    ok: xp-meter: live HUD rejects VG-ID count
+   PASS (0 failures)
+== scenario raster-world ==
+    ok: raster-world: directional sprite decodes: hero_se
+    ok: raster-world: directional sprite decodes: hero_sw
+    ok: raster-world: directional sprite decodes: hero_ne
+    ok: raster-world: directional sprite decodes: hero_nw
+    ok: raster-world: directional sprite decodes: raider_se
+    ok: raster-world: directional sprite decodes: raider_sw
+    ok: raster-world: directional sprite decodes: raider_ne
+    ok: raster-world: directional sprite decodes: raider_nw
+    ok: raster-world: directional sprite decodes: beast_se
+    ok: raster-world: directional sprite decodes: beast_sw
+    ok: raster-world: directional sprite decodes: beast_ne
+    ok: raster-world: directional sprite decodes: beast_nw
+    ok: raster-world: directional sprite decodes: wight_se
+    ok: raster-world: directional sprite decodes: wight_sw
+    ok: raster-world: directional sprite decodes: wight_ne
+    ok: raster-world: directional sprite decodes: wight_nw
+    ok: raster-world: directional sprite decodes: archer_se
+    ok: raster-world: directional sprite decodes: archer_sw
+    ok: raster-world: directional sprite decodes: archer_ne
+    ok: raster-world: directional sprite decodes: archer_nw
+    ok: raster-world: directional sprite decodes: artisan_se
+    ok: raster-world: directional sprite decodes: artisan_sw
+    ok: raster-world: directional sprite decodes: artisan_ne
+    ok: raster-world: directional sprite decodes: artisan_nw
+    ok: raster-world: scenery decodes: tree
+    ok: raster-world: scenery decodes: hut
+    ok: raster-world: scenery decodes: column
+    ok: raster-world: scenery decodes: shrine
+    ok: raster-world: scenery decodes: gate
+    ok: raster-world: scenery decodes: brazier
+    ok: raster-world: scenery decodes: exit_stairs
+    ok: raster-world: scenery decodes: effect_hit_spark
+    ok: raster-world: scenery decodes: terrain_packed_earth
+    ok: raster-world: scenery decodes: terrain_dark
+    ok: raster-world: scenery decodes: terrain_moss
+    ok: raster-world: scenery decodes: terrain_stone
+    ok: raster-world: walk frame decodes: hero_walk0_se
+    ok: raster-world: walk frame decodes: hero_walk1_se
+    ok: raster-world: walk frame decodes: hero_walk2_se
+    ok: raster-world: walk frame decodes: hero_walk3_se
+    ok: raster-world: walk frame decodes: hero_walk0_sw
+    ok: raster-world: walk frame decodes: hero_walk1_sw
+    ok: raster-world: walk frame decodes: hero_walk2_sw
+    ok: raster-world: walk frame decodes: hero_walk3_sw
+    ok: raster-world: walk frame decodes: hero_walk4_sw
+    ok: raster-world: walk frame decodes: hero_walk5_sw
+    ok: raster-world: walk frame decodes: hero_walk6_sw
+    ok: raster-world: walk frame decodes: hero_walk7_sw
+    ok: raster-world: walk frame decodes: hero_walk0_ne
+    ok: raster-world: walk frame decodes: hero_walk1_ne
+    ok: raster-world: walk frame decodes: hero_walk2_ne
+    ok: raster-world: walk frame decodes: hero_walk3_ne
+    ok: raster-world: walk frame decodes: hero_walk4_ne
+    ok: raster-world: walk frame decodes: hero_walk5_ne
+    ok: raster-world: walk frame decodes: hero_walk6_ne
+    ok: raster-world: walk frame decodes: hero_walk7_ne
+    ok: raster-world: walk frame decodes: hero_walk0_nw
+    ok: raster-world: walk frame decodes: hero_walk1_nw
+    ok: raster-world: walk frame decodes: hero_walk2_nw
+    ok: raster-world: walk frame decodes: hero_walk3_nw
+    ok: raster-world: walk frame decodes: hero_walk4_nw
+    ok: raster-world: walk frame decodes: hero_walk5_nw
+    ok: raster-world: walk frame decodes: hero_walk6_nw
+    ok: raster-world: walk frame decodes: hero_walk7_nw
+    ok: raster-world: animation paint surface allocated
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: moving actor paints the authored frame without idle fallback
+    ok: raster-world: each directional gait phase changes the rendered pixels
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: each completed directional strike returns to idle
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: each completed directional strike returns to idle
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: each completed directional strike returns to idle
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: a strike paints its authored pose ahead of walking
+    ok: raster-world: strike phases paint distinct body poses
+    ok: raster-world: each completed directional strike returns to idle
+    ok: raster-world: stopped motion tail returns to the idle pose
+    ok: raster-world: a finished strike returns to the idle pose
+    ok: raster-world: actual orb masks retain red life and blue resource
+    ok: raster-world: reference color swatch exported
+    ok: raster-world: exported PNG preserves live RGB channels
+    ok: raster-world: capture root accepted
+    ok: raster-world: production scene captured
+    ok: raster-world: player, enemy and scenery all use raster draws
+    ok: raster-world: the extraction landmark paints pixel stairs
+   PASS (0 failures)
+== scenario raster-loot ==
+    ok: raster-loot: local session has an authoritative player
+    ok: raster-loot: supplied display names choose pike and bowl without a bow substring collision
+    ok: raster-loot: capture root accepted
+    ok: raster-loot: named drop families captured through production drawing
+    ok: raster-loot: physical silhouette matches Bronze Pike
+    ok: raster-loot: physical silhouette matches Bronze Axe
+    ok: raster-loot: physical silhouette matches Bronze Dagger
+    ok: raster-loot: physical silhouette matches Reed Bow
+    ok: raster-loot: physical silhouette matches Ash Staff
+    ok: raster-loot: physical silhouette matches Wooden Club
+    ok: raster-loot: physical silhouette matches Fur Boots
+    ok: raster-loot: physical silhouette matches Bronze Armor
+    ok: raster-loot: physical silhouette matches Carving Knife
+    ok: raster-loot: physical silhouette matches Life Draught
+    ok: raster-loot: physical silhouette matches Blood Omen
+    ok: raster-loot: physical silhouette matches Offering Bowl
+    ok: raster-loot: drawing preserves supplied drops and creates no authoritative rewards
+   PASS (0 failures)
+== scenario raider-strike ==
+    ok: raider-strike: real player exists
+    ok: raider-strike: capture root accepted
+    ok: raider-strike: event-driven production frame captured
+    ok: raider-strike: idle does not select strike frame zero
+    ok: raider-strike: event-driven production frame captured
+    ok: raider-strike: real warning shows only preparation before damage
+    ok: raider-strike: event-driven production frame captured
+    ok: raider-strike: real warning shows only preparation before damage
+    ok: raider-strike: event-driven production frame captured
+    ok: raider-strike: real warning shows only preparation before damage
+    ok: raider-strike: event-driven production frame captured
+    ok: raider-strike: first confirmed enemy damage paints contact frame three and impact
+    ok: raider-strike: real elite action reaches warning and confirmed hit
+    ok: raider-strike: event-driven production frame captured
+    ok: raider-strike: event-driven production frame captured
+    ok: raider-strike: event-driven production frame captured
+    ok: raider-strike: event-driven production frame captured
+    ok: raider-strike: confirmed action passes followthrough and recovery then returns to idle
+   PASS (0 failures)
+== scenario raster-motion ==
+    ok: raster-motion: capture root accepted
+    ok: raster-motion: authoritative player exists
+    ok: raster-motion: full review corridor clears unchanged scenery
+    ok: raster-motion: motion trace opened
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: held se input moves the authoritative actor
+    ok: raster-motion: actual se travel paints every authored gait phase
+    ok: raster-motion: walking begins on the first confirmed movement paint
+    ok: raster-motion: released input settles into the idle frame
+    ok: raster-motion: authoritative player exists
+    ok: raster-motion: full review corridor clears unchanged scenery
+    ok: raster-motion: motion trace opened
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: held sw input moves the authoritative actor
+    ok: raster-motion: actual sw travel paints every authored gait phase
+    ok: raster-motion: walking begins on the first confirmed movement paint
+    ok: raster-motion: released input settles into the idle frame
+    ok: raster-motion: authoritative player exists
+    ok: raster-motion: full review corridor clears unchanged scenery
+    ok: raster-motion: motion trace opened
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: held ne input moves the authoritative actor
+    ok: raster-motion: actual ne travel paints every authored gait phase
+    ok: raster-motion: walking begins on the first confirmed movement paint
+    ok: raster-motion: released input settles into the idle frame
+    ok: raster-motion: authoritative player exists
+    ok: raster-motion: full review corridor clears unchanged scenery
+    ok: raster-motion: motion trace opened
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: production motion frame captured
+    ok: raster-motion: held nw input moves the authoritative actor
+    ok: raster-motion: actual nw travel paints every authored gait phase
+    ok: raster-motion: walking begins on the first confirmed movement paint
+    ok: raster-motion: released input settles into the idle frame
+   PASS (0 failures)
+== scenario raider-motion ==
+    ok: raider-motion: capture root accepted
+    raider-motion: SCRIPTED asset-review positions; this does not verify enemy AI pursuit or navigation.
+    ok: raider-motion: authoritative player exists
+    ok: raider-motion: scripted review corridor clears unchanged scenery
+    ok: raider-motion: review raider exists
+    ok: raider-motion: actor-speed script has a clear complete path
+    ok: raider-motion: scripted asset-review trace opened
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted step respects scenery collision
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: scripted actor survives the fixed tick
+    ok: raider-motion: production render of scripted asset-review frame captured
+    ok: raider-motion: scripted actor-speed positions complete southwest travel
+    ok: raider-motion: scripted travel renders and captures all eight authored poses
+    ok: raider-motion: stopped scripted positions settle through production smoothing to idle
+    ok: raider-motion: the player remains alive through the motion review
+   PASS (0 failures)
+== scenario loot-to-bank ==
+    ok: loot-to-bank: drop visible before pickup
+    ok: loot-to-bank: pickup fills the carried grid
+    ok: loot-to-bank: world actor is unarmed before equip
+    ok: loot-to-bank: grid cell rendered in the pane
+    ok: loot-to-bank: compare plate over carried item
+    ok: loot-to-bank: pack grid placed the carried item
+    ok: loot-to-bank: valid pack drop moves the item
+    ok: loot-to-bank: moved cell is painted at 2,1
+    ok: loot-to-bank: rejected drop neither loses nor duplicates
+    ok: loot-to-bank: rejected drop does not silently equip
+    ok: loot-to-bank: weapon seat empty before equip
+    ok: loot-to-bank: equip fills the weapon seat
+    ok: loot-to-bank: equipped bonus appears in the stat readout
+    ok: loot-to-bank: world actor holds the equipped item
+    ok: loot-to-bank: owner HUD capture written
+    ok: loot-to-bank: live HUD names Unarmed first and World hold
+    ok: loot-to-bank: live HUD rejects paper doll
+    ok: loot-to-bank: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: loot-to-bank: Unarmed first stays off WASD, the objective, Tin village, and Life
+    ok: loot-to-bank: attack source breakdown is on the sheet
+    ok: loot-to-bank: dormant conditional is labeled inactive
+    ok: loot-to-bank: dormant values are not folded into Attack
+    ok: loot-to-bank: objective strip points at the EXIT while carrying
+    ok: loot-to-bank: extraction banks the item
+    ok: loot-to-bank: extraction banks the trophy
+    ok: loot-to-bank: banked footer reflects the extraction
+    ok: loot-to-bank: objective strip guides back to the extraction
+   PASS (0 failures)
+== scenario telegraph-dodge ==
+    ok: telegraph-dodge: elite telegraph is drawn
+    ok: telegraph-dodge: telegraph stays outside HUD reserve
+    ok: telegraph-dodge: moving out avoids the telegraphed damage
+    ok: telegraph-dodge: owner HUD capture written
+    ok: telegraph-dodge: live HUD names Dodge clear and Life holds
+    ok: telegraph-dodge: live HUD rejects ghost hit
+    ok: telegraph-dodge: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: telegraph-dodge: Dodge clear stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario combat-juice ==
+    ok: combat-juice: target sprite flashes on the hit
+    ok: combat-juice: a floating damage number is spawned
+    ok: combat-juice: owner HUD capture written
+    ok: combat-juice: live HUD names Hit flash and Number fade
+    ok: combat-juice: live HUD rejects silent hit
+    ok: combat-juice: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: combat-juice: Hit flash stays off WASD, the objective, Tin village, and Life
+    ok: combat-juice: number present right after the hit
+    ok: combat-juice: number still visible ~300ms in
+    ok: combat-juice: number faded out after ~650ms
+    ok: combat-juice: screen-edge red pulse on player damage
+[swing] tgt=monster-1-9 now=1789034352810 next=1789034352810 range-ok
+[swing] tgt=monster-1-9 now=1789034352950 next=1789034353160 range-ok
+    ok: combat-juice: player damage number is player-tagged
+   PASS (0 failures)
+== scenario remote-render-list ==
+    ok: remote-render-list: bound cursor-capsule server
+    ok: remote-render-list: session start
+    ok: remote-render-list: handshake ready
+    ok: remote-render-list: Floor op in paint_scene render list
+    ok: remote-render-list: Tile ops in paint_scene render list
+    ok: remote-render-list: vital orbs in paint_scene render list
+    ok: remote-render-list: quickbar slots in paint_scene render list
+    ok: remote-render-list: minimap in paint_scene render list
+    ok: remote-render-list: Extraction pad marked stairs-up
+    ok: remote-render-list: connection chip uses connection_state_label
+    ok: remote-render-list: Monster op in paint_scene render list
+    ok: remote-render-list: Swing op in paint_scene render list
+    ok: remote-render-list: Drop op in paint_scene render list
+    ok: remote-render-list: remote present uses no Simulation
+   PASS (0 failures)
+== scenario zoom-invariance ==
+    ok: zoom-invariance: scenery present in render list
+    ok: zoom-invariance: terrain tiles present in render list
+    ok: zoom-invariance: uniform delta at min zoom
+    ok: zoom-invariance: delta scales with the zoom factor
+    ok: zoom-invariance: overlapping terrain tiles across camera shift
+    ok: zoom-invariance: overlapping terrain tiles shift uniformly at zoom level
+    ok: zoom-invariance: scenery present in render list
+    ok: zoom-invariance: terrain tiles present in render list
+    ok: zoom-invariance: uniform delta at default zoom
+    ok: zoom-invariance: delta scales with the zoom factor
+    ok: zoom-invariance: overlapping terrain tiles across camera shift
+    ok: zoom-invariance: overlapping terrain tiles shift uniformly at zoom level
+    ok: zoom-invariance: scenery present in render list
+    ok: zoom-invariance: terrain tiles present in render list
+    ok: zoom-invariance: uniform delta at max zoom
+    ok: zoom-invariance: delta scales with the zoom factor
+    ok: zoom-invariance: overlapping terrain tiles across camera shift
+    ok: zoom-invariance: overlapping terrain tiles shift uniformly at zoom level
+    ok: zoom-invariance: owner HUD capture written
+    ok: zoom-invariance: live HUD names Uniform pan and Zoom lock
+    ok: zoom-invariance: live HUD rejects free tile
+    ok: zoom-invariance: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: zoom-invariance: Uniform pan stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario chronicles-gate-b ==
+    ok: chronicles-gate-b: bound ox-pc-i capsule server
+    ok: chronicles-gate-b: session start
+    ok: front door: the account chronicle opens the door
+    ok: front door: the Chronicles title is on screen
+    ok: front door: founding a House is an actionable control
+    ok: front door: founding renders the House roster
+    ok: front door: the new House is named on screen
+    ok: front door: naming a Scion is offered
+    ok: front door: the first Scion joins the roster
+    ok: front door: set-out is actionable for the new Scion
+    ok: front door: the mortal-oath field renders its soft state
+    ok: front door: the mortal-oath field arms on demand
+    ok: admission: the mortal-oath select lands in the world
+    ok: admission: the front door is dismissed
+    ok: admission: the expedition names the House and Scion
+    ok: expedition: the road instance is entered
+    ok: expedition: the route renders with the existing presentation
+    ok: expedition: earned gear enters the inventory
+    ok: consequence: scion-fallen names the fallen Scion
+    ok: consequence: the fall returns the owner to the chronicles
+    ok: consequence: the fall is recorded on the front door
+    ok: consequence: the fallen Scion rests in the crypt
+    ok: succession: naming a successor is actionable after the fall
+    ok: evidence: front-door capture written
+    ok: succession: the heir joins the living roster
+    ok: succession: heirship admission is actionable without the oath
+    ok: succession: the heirship select admits the successor
+    ok: succession: the heir takes a healed field
+    ok: succession: the identity chip names the heir
+    ok: recovery: the surfaced heirloom carries its provenance
+    ok: recovery: the crypt record flips lost to recovered
+    ok: recovery: the recovery toast names the fallen
+    ok: recovery: the expedition HUD announces the recovery
+    ok: reconnect: session restarts
+    ok: reconnect: House, heir, and crypt render on return
+    ok: reconnect: the living heir is listed
+    ok: reconnect: re-admission returns to the expedition
+    ok: evidence: expedition HUD capture written
+   PASS (0 failures)
+== scenario first-session-clarity ==
+    ok: first-session-clarity: strip names the authoritative slay phase
+    ok: first-session-clarity: controls hint includes dash on the normal HUD
+    ok: first-session-clarity: controls hint visible with F3 disabled
+    ok: first-session-clarity: owner HUD capture written
+    ok: first-session-clarity: live HUD names Slay wardens and Dash hint
+    ok: first-session-clarity: live HUD rejects walk-on
+    ok: first-session-clarity: Slay wardens strip is traced
+    ok: first-session-clarity: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: first-session-clarity: Slay wardens stays off WASD, the objective, Tin village, and Life
+    ok: first-session-clarity: phase follows the core to carry-to-exit
+    ok: first-session-clarity: extract strip points at the EXIT locally
+    ok: first-session-clarity: local strip gives the press-F contract
+    ok: first-session-clarity: local strip never shows the walk-on phrase
+    ok: first-session-clarity: gear pane renders when opened
+    ok: first-session-clarity: first Esc closes the pane, client stays alive
+    ok: first-session-clarity: dismissed pane leaves the render list
+    ok: first-session-clarity: bare Escape requests application exit
+    ok: first-session-clarity: bound shared capsule server (if busy, another worker holds 6580-6599 — retry after it clears)
+    ok: first-session-clarity: remote start
+    ok: first-session-clarity: remote handshake ready
+    ok: first-session-clarity: instance with authoritative foes reached
+    ok: first-session-clarity: remote strip mirrors the foe snapshot phase
+    ok: first-session-clarity: NEGATIVE CONTROL - remote HUD never says press F
+    ok: first-session-clarity: authoritative snapshot clears the floor
+    ok: first-session-clarity: remote extract strip gives the walk-on contract
+    ok: first-session-clarity: remote strip still never says press F after clearing
+   PASS (0 failures)
+== scenario animation-vfx-phase-a ==
+    ok: animation-vfx-phase-a: route snapshot has living foes
+    ok: animation-vfx-phase-a: one materialization beat per first sighting
+    ok: animation-vfx-phase-a: spawn beat recorded in the render list
+    ok: animation-vfx-phase-a: materialization expires exactly at its ttl
+    ok: animation-vfx-phase-a: seen foes never re-materialize
+    ok: animation-vfx-phase-a: beats leave tick/actors/store untouched
+    ok: animation-vfx-phase-a: beats leave scion life untouched
+    ok: animation-vfx-phase-a: critical and ordinary numbers differ in timing
+    ok: animation-vfx-phase-a: buff expiry logs its readable beat
+    ok: animation-vfx-phase-a: fade arrives with the buff window
+    ok: animation-vfx-phase-a: fade lifetime comes from the constants table
+    ok: animation-vfx-phase-a: fade recorded with its distinct label
+    ok: animation-vfx-phase-a: fade clears deterministically
+    ok: animation-vfx-phase-a: scion loss produces the loss beat
+    ok: animation-vfx-phase-a: loss beat matches an authoritative death
+    ok: animation-vfx-phase-a: loss pulse uses the constants table
+    ok: animation-vfx-phase-a: loss beat recorded with its distinct label
+    ok: animation-vfx-phase-a: loss beat clears exactly at its ttl
+    ok: animation-vfx-phase-a: capture staging cleared the route
+    ok: animation-vfx-phase-a: capture relocated to open field
+    ok: animation-vfx-phase-a: capture holds the real war-cry fade
+    ok: animation-vfx-phase-a: capture frame holds a live materialization beat
+    ok: animation-vfx-phase-a: capture frame holds an ordinary hit number
+    ok: animation-vfx-phase-a: capture frame holds the critical treatment
+    ok: animation-vfx-phase-a: capture frame holds the buff-expiry treatment
+    ok: animation-vfx-phase-a: capture frame holds the loss treatment
+    ok: animation-vfx-phase-a: capture frame records the spawn beat
+    ok: animation-vfx-phase-a: 960x600 PNG written
+    ok: animation-vfx-phase-a: 1366x768 PNG written
+    ok: animation-vfx-phase-a: capture readable
+    capture: C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\.ci-artifacts\raster-actions-final\animation-vfx-phase-a-960x600.png (301671 bytes)
+    ok: animation-vfx-phase-a: capture is non-trivial
+    ok: animation-vfx-phase-a: capture readable
+    capture: C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\.ci-artifacts\raster-actions-final\animation-vfx-phase-a-1366x768.png (456106 bytes)
+    ok: animation-vfx-phase-a: capture is non-trivial
+    ok: animation-vfx-phase-a: owner spawn capture written
+    ok: animation-vfx-phase-a: live HUD names Spawn once and Fade ttl
+    ok: animation-vfx-phase-a: live HUD rejects re-spawn
+    ok: animation-vfx-phase-a: art-wave capture readable
+    ok: animation-vfx-phase-a: art-wave capture is non-trivial
+   PASS (0 failures)
+== scenario progression-surface ==
+    ok: progression-surface: bound ox-pc-aa capsule server
+    ok: absent: no passiveTree payload has arrived
+    ok: absent: the gear pane states absence, not zeros
+    ok: progression-surface: owner absence capture written
+    ok: absent: owner strip never replaces the TREE protocol string
+    ok: progression-surface: live HUD names Skill tree and No data yet
+    ok: progression-surface: live HUD rejects TREE jargon
+    ok: nonzero: session start
+    ok: nonzero: handshake ready
+    ok: nonzero: expedition entered
+    ok: nonzero: authoritative payload mirrored into the model
+    ok: nonzero: unspent and earned points are nonzero
+    ok: nonzero: unspent never exceeds earned
+    ok: nonzero: the committed node count mirrors the payload
+    ok: nonzero: the pane text shows the authoritative points
+    ok: nonzero: a present payload never renders as absence
+    ok: zero: the committed mirror shows zero unspent points
+    ok: zero: genuine zeros are rendered as zeros
+    ok: zero: zero is not rendered as absence
+    ok: progression-surface: capture readable
+    capture: C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\.ci-artifacts\raster-actions-final\progression-surface-nonzero-960x600.png (210339 bytes)
+    ok: progression-surface: capture is non-trivial
+    ok: progression-surface: capture readable
+    capture: C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\.ci-artifacts\raster-actions-final\progression-surface-zero-1366x768.png (297005 bytes)
+    ok: progression-surface: capture is non-trivial
+   PASS (0 failures)
+== scenario hud-pane-readability ==
+    ok: hud-pane-readability: closed HUD regions recorded (960x600)
+    ok: hud-pane-readability: xp bar is on the local HUD (960x600)
+    ok: hud-pane-readability: route card is on the local HUD (960x600)
+    ok: hud-pane-readability: minimap zoom is client-only (960x600)
+    ok: hud-pane-readability: tight minimap zoom applied (960x600)
+    ok: hud-pane-readability: identity vs controls stays clear (960x600)
+    ok: hud-pane-readability: identity vs objective stays clear (960x600)
+    ok: hud-pane-readability: identity vs art stays clear (960x600)
+    ok: hud-pane-readability: identity vs minimap stays clear (960x600)
+    ok: hud-pane-readability: identity vs route-card stays clear (960x600)
+    ok: hud-pane-readability: identity vs quickbar-strip stays clear (960x600)
+    ok: hud-pane-readability: identity vs audio-mixer stays clear (960x600)
+    ok: hud-pane-readability: identity vs orb-life stays clear (960x600)
+    ok: hud-pane-readability: controls vs objective stays clear (960x600)
+    ok: hud-pane-readability: controls vs art stays clear (960x600)
+    ok: hud-pane-readability: controls vs minimap stays clear (960x600)
+    ok: hud-pane-readability: controls vs route-card stays clear (960x600)
+    ok: hud-pane-readability: controls vs quickbar-strip stays clear (960x600)
+    ok: hud-pane-readability: controls vs audio-mixer stays clear (960x600)
+    ok: hud-pane-readability: controls vs orb-life stays clear (960x600)
+    ok: hud-pane-readability: objective vs art stays clear (960x600)
+    ok: hud-pane-readability: objective vs minimap stays clear (960x600)
+    ok: hud-pane-readability: objective vs route-card stays clear (960x600)
+    ok: hud-pane-readability: objective vs quickbar-strip stays clear (960x600)
+    ok: hud-pane-readability: objective vs audio-mixer stays clear (960x600)
+    ok: hud-pane-readability: objective vs orb-life stays clear (960x600)
+    ok: hud-pane-readability: art vs minimap stays clear (960x600)
+    ok: hud-pane-readability: art vs route-card stays clear (960x600)
+    ok: hud-pane-readability: art vs quickbar-strip stays clear (960x600)
+    ok: hud-pane-readability: art vs audio-mixer stays clear (960x600)
+    ok: hud-pane-readability: art vs orb-life stays clear (960x600)
+    ok: hud-pane-readability: minimap vs route-card stays clear (960x600)
+    ok: hud-pane-readability: minimap vs quickbar-strip stays clear (960x600)
+    ok: hud-pane-readability: minimap vs audio-mixer stays clear (960x600)
+    ok: hud-pane-readability: minimap vs orb-life stays clear (960x600)
+    ok: hud-pane-readability: route-card vs quickbar-strip stays clear (960x600)
+    ok: hud-pane-readability: route-card vs audio-mixer stays clear (960x600)
+    ok: hud-pane-readability: route-card vs orb-life stays clear (960x600)
+    ok: hud-pane-readability: quickbar-strip vs audio-mixer stays clear (960x600)
+    ok: hud-pane-readability: quickbar-strip vs orb-life stays clear (960x600)
+    ok: hud-pane-readability: audio-mixer vs orb-life stays clear (960x600)
+    ok: hud-pane-readability: gear pane opened through the production seam
+    ok: hud-pane-readability: pane content rendered (960x600)
+    ok: hud-pane-readability: pane frame recorded
+    ok: hud-pane-readability: identity never enters the gear pane (960x600)
+    ok: hud-pane-readability: controls never enters the gear pane (960x600)
+    ok: hud-pane-readability: objective never enters the gear pane (960x600)
+    ok: hud-pane-readability: art never enters the gear pane (960x600)
+    ok: hud-pane-readability: minimap never enters the gear pane (960x600)
+    ok: hud-pane-readability: quickbar-strip never enters the gear pane (960x600)
+    ok: hud-pane-readability: audio-mixer never enters the gear pane (960x600)
+    ok: hud-pane-readability: orb-life never enters the gear pane (960x600)
+    ok: hud-pane-readability: orb-resource never enters the gear pane (960x600)
+    ok: hud-pane-open: identity vs controls stays clear (960x600)
+    ok: hud-pane-open: identity vs objective stays clear (960x600)
+    ok: hud-pane-open: identity vs art stays clear (960x600)
+    ok: hud-pane-open: identity vs minimap stays clear (960x600)
+    ok: hud-pane-open: identity vs quickbar-strip stays clear (960x600)
+    ok: hud-pane-open: identity vs audio-mixer stays clear (960x600)
+    ok: hud-pane-open: identity vs orb-life stays clear (960x600)
+    ok: hud-pane-open: controls vs objective stays clear (960x600)
+    ok: hud-pane-open: controls vs art stays clear (960x600)
+    ok: hud-pane-open: controls vs minimap stays clear (960x600)
+    ok: hud-pane-open: controls vs quickbar-strip stays clear (960x600)
+    ok: hud-pane-open: controls vs audio-mixer stays clear (960x600)
+    ok: hud-pane-open: controls vs orb-life stays clear (960x600)
+    ok: hud-pane-open: objective vs art stays clear (960x600)
+    ok: hud-pane-open: objective vs minimap stays clear (960x600)
+    ok: hud-pane-open: objective vs quickbar-strip stays clear (960x600)
+    ok: hud-pane-open: objective vs audio-mixer stays clear (960x600)
+    ok: hud-pane-open: objective vs orb-life stays clear (960x600)
+    ok: hud-pane-open: art vs minimap stays clear (960x600)
+    ok: hud-pane-open: art vs quickbar-strip stays clear (960x600)
+    ok: hud-pane-open: art vs audio-mixer stays clear (960x600)
+    ok: hud-pane-open: art vs orb-life stays clear (960x600)
+    ok: hud-pane-open: minimap vs quickbar-strip stays clear (960x600)
+    ok: hud-pane-open: minimap vs audio-mixer stays clear (960x600)
+    ok: hud-pane-open: minimap vs orb-life stays clear (960x600)
+    ok: hud-pane-open: quickbar-strip vs audio-mixer stays clear (960x600)
+    ok: hud-pane-open: quickbar-strip vs orb-life stays clear (960x600)
+    ok: hud-pane-open: audio-mixer vs orb-life stays clear (960x600)
+    ok: hud-pane-readability: controls-second clears every global region (960x600)
+    ok: hud-pane-readability: pane-title vs pane-stats stays clear (960x600)
+    ok: hud-pane-readability: pane-title vs pane-stats-combat stays clear (960x600)
+    ok: hud-pane-readability: pane-title vs pane-seat stays clear (960x600)
+    ok: hud-pane-readability: pane-title vs pane-banked stays clear (960x600)
+    ok: hud-pane-readability: pane-title vs pane-progression stays clear (960x600)
+    ok: hud-pane-readability: pane-title vs pane-footer-place stays clear (960x600)
+    ok: hud-pane-readability: pane-title vs pane-footer stays clear (960x600)
+    ok: hud-pane-readability: pane-stats vs pane-stats-combat stays clear (960x600)
+    ok: hud-pane-readability: pane-stats vs pane-seat stays clear (960x600)
+    ok: hud-pane-readability: pane-stats vs pane-banked stays clear (960x600)
+    ok: hud-pane-readability: pane-stats vs pane-progression stays clear (960x600)
+    ok: hud-pane-readability: pane-stats vs pane-footer-place stays clear (960x600)
+    ok: hud-pane-readability: pane-stats vs pane-footer stays clear (960x600)
+    ok: hud-pane-readability: pane-stats-combat vs pane-seat stays clear (960x600)
+    ok: hud-pane-readability: pane-stats-combat vs pane-banked stays clear (960x600)
+    ok: hud-pane-readability: pane-stats-combat vs pane-progression stays clear (960x600)
+    ok: hud-pane-readability: pane-stats-combat vs pane-footer-place stays clear (960x600)
+    ok: hud-pane-readability: pane-stats-combat vs pane-footer stays clear (960x600)
+    ok: hud-pane-readability: pane-seat vs pane-banked stays clear (960x600)
+    ok: hud-pane-readability: pane-seat vs pane-progression stays clear (960x600)
+    ok: hud-pane-readability: pane-seat vs pane-footer-place stays clear (960x600)
+    ok: hud-pane-readability: pane-seat vs pane-footer stays clear (960x600)
+    ok: hud-pane-readability: pane-banked vs pane-progression stays clear (960x600)
+    ok: hud-pane-readability: pane-banked vs pane-footer-place stays clear (960x600)
+    ok: hud-pane-readability: pane-banked vs pane-footer stays clear (960x600)
+    ok: hud-pane-readability: pane-progression vs pane-footer-place stays clear (960x600)
+    ok: hud-pane-readability: pane-progression vs pane-footer stays clear (960x600)
+    ok: hud-pane-readability: pane-footer-place vs pane-footer stays clear (960x600)
+    ok: hud-pane-readability: backpack cells clear of pane chrome (960x600)
+    ok: hud-pane-readability: gear close hint is measured (960x600)
+    ok: hud-pane-readability: gear footer stays inside the pane (960x600)
+    ok: hud-pane-readability: a clipped gear footer is the anti-pattern
+    ok: hud-pane-readability: I or Esc closes stays inside the gear pane (960x600)
+    ok: hud-pane-readability: live HUD names the gear footer (960x600)
+    ok: hud-pane-readability: Enter equips and I or Esc closes is the production gear footer (960x600)
+    ok: hud-pane-readability: gear DEF/LVL line is measured (960x600)
+    ok: hud-pane-readability: gear stats stay inside the pane (960x600)
+    ok: hud-pane-readability: clipped DEF/LVL is the anti-pattern
+    ok: hud-pane-readability: DEF and LVL stay inside the gear pane (960x600)
+    ok: hud-pane-readability: live HUD names DEF and LVL (960x600)
+    ok: hud-pane-readability: DEF on the gear pane is the production readout (960x600)
+    ok: hud-pane-readability: identity keeps its single House prefix
+    ok: hud-pane-readability: controls, banked, and progression truth all remain
+    ok: hud-pane-readability: first Escape closes the pane
+    ok: hud-pane-readability: dismissed pane leaves the render list
+    ok: hud-pane-readability: bare Escape requests exit
+    ok: hud-pane-readability: capture readable (960x600)
+    capture: C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\.ci-artifacts\raster-actions-final\hud-pane-readability-closed-960x600.png (297231 bytes)
+    ok: hud-pane-readability: capture non-trivial (960x600)
+    ok: hud-pane-readability: capture readable (960x600)
+    capture: C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\.ci-artifacts\raster-actions-final\hud-pane-readability-open-960x600.png (265286 bytes)
+    ok: hud-pane-readability: capture non-trivial (960x600)
+    ok: hud-pane-readability: closed HUD regions recorded (1366x768)
+    ok: hud-pane-readability: xp bar is on the local HUD (1366x768)
+    ok: hud-pane-readability: route card is on the local HUD (1366x768)
+    ok: hud-pane-readability: minimap zoom is client-only (1366x768)
+    ok: hud-pane-readability: tight minimap zoom applied (1366x768)
+    ok: hud-pane-readability: identity vs controls stays clear (1366x768)
+    ok: hud-pane-readability: identity vs objective stays clear (1366x768)
+    ok: hud-pane-readability: identity vs art stays clear (1366x768)
+    ok: hud-pane-readability: identity vs minimap stays clear (1366x768)
+    ok: hud-pane-readability: identity vs route-card stays clear (1366x768)
+    ok: hud-pane-readability: identity vs quickbar-strip stays clear (1366x768)
+    ok: hud-pane-readability: identity vs audio-mixer stays clear (1366x768)
+    ok: hud-pane-readability: identity vs orb-life stays clear (1366x768)
+    ok: hud-pane-readability: controls vs objective stays clear (1366x768)
+    ok: hud-pane-readability: controls vs art stays clear (1366x768)
+    ok: hud-pane-readability: controls vs minimap stays clear (1366x768)
+    ok: hud-pane-readability: controls vs route-card stays clear (1366x768)
+    ok: hud-pane-readability: controls vs quickbar-strip stays clear (1366x768)
+    ok: hud-pane-readability: controls vs audio-mixer stays clear (1366x768)
+    ok: hud-pane-readability: controls vs orb-life stays clear (1366x768)
+    ok: hud-pane-readability: objective vs art stays clear (1366x768)
+    ok: hud-pane-readability: objective vs minimap stays clear (1366x768)
+    ok: hud-pane-readability: objective vs route-card stays clear (1366x768)
+    ok: hud-pane-readability: objective vs quickbar-strip stays clear (1366x768)
+    ok: hud-pane-readability: objective vs audio-mixer stays clear (1366x768)
+    ok: hud-pane-readability: objective vs orb-life stays clear (1366x768)
+    ok: hud-pane-readability: art vs minimap stays clear (1366x768)
+    ok: hud-pane-readability: art vs route-card stays clear (1366x768)
+    ok: hud-pane-readability: art vs quickbar-strip stays clear (1366x768)
+    ok: hud-pane-readability: art vs audio-mixer stays clear (1366x768)
+    ok: hud-pane-readability: art vs orb-life stays clear (1366x768)
+    ok: hud-pane-readability: minimap vs route-card stays clear (1366x768)
+    ok: hud-pane-readability: minimap vs quickbar-strip stays clear (1366x768)
+    ok: hud-pane-readability: minimap vs audio-mixer stays clear (1366x768)
+    ok: hud-pane-readability: minimap vs orb-life stays clear (1366x768)
+    ok: hud-pane-readability: route-card vs quickbar-strip stays clear (1366x768)
+    ok: hud-pane-readability: route-card vs audio-mixer stays clear (1366x768)
+    ok: hud-pane-readability: route-card vs orb-life stays clear (1366x768)
+    ok: hud-pane-readability: quickbar-strip vs audio-mixer stays clear (1366x768)
+    ok: hud-pane-readability: quickbar-strip vs orb-life stays clear (1366x768)
+    ok: hud-pane-readability: audio-mixer vs orb-life stays clear (1366x768)
+    ok: hud-pane-readability: gear pane opened through the production seam
+    ok: hud-pane-readability: pane content rendered (1366x768)
+    ok: hud-pane-readability: pane frame recorded
+    ok: hud-pane-readability: identity never enters the gear pane (1366x768)
+    ok: hud-pane-readability: controls never enters the gear pane (1366x768)
+    ok: hud-pane-readability: objective never enters the gear pane (1366x768)
+    ok: hud-pane-readability: art never enters the gear pane (1366x768)
+    ok: hud-pane-readability: minimap never enters the gear pane (1366x768)
+    ok: hud-pane-readability: quickbar-strip never enters the gear pane (1366x768)
+    ok: hud-pane-readability: audio-mixer never enters the gear pane (1366x768)
+    ok: hud-pane-readability: orb-life never enters the gear pane (1366x768)
+    ok: hud-pane-readability: orb-resource never enters the gear pane (1366x768)
+    ok: hud-pane-open: identity vs controls stays clear (1366x768)
+    ok: hud-pane-open: identity vs objective stays clear (1366x768)
+    ok: hud-pane-open: identity vs art stays clear (1366x768)
+    ok: hud-pane-open: identity vs minimap stays clear (1366x768)
+    ok: hud-pane-open: identity vs quickbar-strip stays clear (1366x768)
+    ok: hud-pane-open: identity vs audio-mixer stays clear (1366x768)
+    ok: hud-pane-open: identity vs orb-life stays clear (1366x768)
+    ok: hud-pane-open: controls vs objective stays clear (1366x768)
+    ok: hud-pane-open: controls vs art stays clear (1366x768)
+    ok: hud-pane-open: controls vs minimap stays clear (1366x768)
+    ok: hud-pane-open: controls vs quickbar-strip stays clear (1366x768)
+    ok: hud-pane-open: controls vs audio-mixer stays clear (1366x768)
+    ok: hud-pane-open: controls vs orb-life stays clear (1366x768)
+    ok: hud-pane-open: objective vs art stays clear (1366x768)
+    ok: hud-pane-open: objective vs minimap stays clear (1366x768)
+    ok: hud-pane-open: objective vs quickbar-strip stays clear (1366x768)
+    ok: hud-pane-open: objective vs audio-mixer stays clear (1366x768)
+    ok: hud-pane-open: objective vs orb-life stays clear (1366x768)
+    ok: hud-pane-open: art vs minimap stays clear (1366x768)
+    ok: hud-pane-open: art vs quickbar-strip stays clear (1366x768)
+    ok: hud-pane-open: art vs audio-mixer stays clear (1366x768)
+    ok: hud-pane-open: art vs orb-life stays clear (1366x768)
+    ok: hud-pane-open: minimap vs quickbar-strip stays clear (1366x768)
+    ok: hud-pane-open: minimap vs audio-mixer stays clear (1366x768)
+    ok: hud-pane-open: minimap vs orb-life stays clear (1366x768)
+    ok: hud-pane-open: quickbar-strip vs audio-mixer stays clear (1366x768)
+    ok: hud-pane-open: quickbar-strip vs orb-life stays clear (1366x768)
+    ok: hud-pane-open: audio-mixer vs orb-life stays clear (1366x768)
+    ok: hud-pane-readability: controls-second clears every global region (1366x768)
+    ok: hud-pane-readability: pane-title vs pane-stats stays clear (1366x768)
+    ok: hud-pane-readability: pane-title vs pane-stats-combat stays clear (1366x768)
+    ok: hud-pane-readability: pane-title vs pane-seat stays clear (1366x768)
+    ok: hud-pane-readability: pane-title vs pane-banked stays clear (1366x768)
+    ok: hud-pane-readability: pane-title vs pane-progression stays clear (1366x768)
+    ok: hud-pane-readability: pane-title vs pane-footer-place stays clear (1366x768)
+    ok: hud-pane-readability: pane-title vs pane-footer stays clear (1366x768)
+    ok: hud-pane-readability: pane-stats vs pane-stats-combat stays clear (1366x768)
+    ok: hud-pane-readability: pane-stats vs pane-seat stays clear (1366x768)
+    ok: hud-pane-readability: pane-stats vs pane-banked stays clear (1366x768)
+    ok: hud-pane-readability: pane-stats vs pane-progression stays clear (1366x768)
+    ok: hud-pane-readability: pane-stats vs pane-footer-place stays clear (1366x768)
+    ok: hud-pane-readability: pane-stats vs pane-footer stays clear (1366x768)
+    ok: hud-pane-readability: pane-stats-combat vs pane-seat stays clear (1366x768)
+    ok: hud-pane-readability: pane-stats-combat vs pane-banked stays clear (1366x768)
+    ok: hud-pane-readability: pane-stats-combat vs pane-progression stays clear (1366x768)
+    ok: hud-pane-readability: pane-stats-combat vs pane-footer-place stays clear (1366x768)
+    ok: hud-pane-readability: pane-stats-combat vs pane-footer stays clear (1366x768)
+    ok: hud-pane-readability: pane-seat vs pane-banked stays clear (1366x768)
+    ok: hud-pane-readability: pane-seat vs pane-progression stays clear (1366x768)
+    ok: hud-pane-readability: pane-seat vs pane-footer-place stays clear (1366x768)
+    ok: hud-pane-readability: pane-seat vs pane-footer stays clear (1366x768)
+    ok: hud-pane-readability: pane-banked vs pane-progression stays clear (1366x768)
+    ok: hud-pane-readability: pane-banked vs pane-footer-place stays clear (1366x768)
+    ok: hud-pane-readability: pane-banked vs pane-footer stays clear (1366x768)
+    ok: hud-pane-readability: pane-progression vs pane-footer-place stays clear (1366x768)
+    ok: hud-pane-readability: pane-progression vs pane-footer stays clear (1366x768)
+    ok: hud-pane-readability: pane-footer-place vs pane-footer stays clear (1366x768)
+    ok: hud-pane-readability: backpack cells clear of pane chrome (1366x768)
+    ok: hud-pane-readability: gear close hint is measured (1366x768)
+    ok: hud-pane-readability: gear footer stays inside the pane (1366x768)
+    ok: hud-pane-readability: a clipped gear footer is the anti-pattern
+    ok: hud-pane-readability: I or Esc closes stays inside the gear pane (1366x768)
+    ok: hud-pane-readability: live HUD names the gear footer (1366x768)
+    ok: hud-pane-readability: Enter equips and I or Esc closes is the production gear footer (1366x768)
+    ok: hud-pane-readability: gear DEF/LVL line is measured (1366x768)
+    ok: hud-pane-readability: gear stats stay inside the pane (1366x768)
+    ok: hud-pane-readability: clipped DEF/LVL is the anti-pattern
+    ok: hud-pane-readability: DEF and LVL stay inside the gear pane (1366x768)
+    ok: hud-pane-readability: live HUD names DEF and LVL (1366x768)
+    ok: hud-pane-readability: DEF on the gear pane is the production readout (1366x768)
+    ok: hud-pane-readability: identity keeps its single House prefix
+    ok: hud-pane-readability: controls, banked, and progression truth all remain
+    ok: hud-pane-readability: first Escape closes the pane
+    ok: hud-pane-readability: dismissed pane leaves the render list
+    ok: hud-pane-readability: bare Escape requests exit
+    ok: hud-pane-readability: capture readable (1366x768)
+    capture: C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\.ci-artifacts\raster-actions-final\hud-pane-readability-closed-1366x768.png (475568 bytes)
+    ok: hud-pane-readability: capture non-trivial (1366x768)
+    ok: hud-pane-readability: capture readable (1366x768)
+    capture: C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\.ci-artifacts\raster-actions-final\hud-pane-readability-open-1366x768.png (455671 bytes)
+    ok: hud-pane-readability: capture non-trivial (1366x768)
+    ok: hud-pane-readability: closed HUD regions recorded (3440x1440)
+    ok: hud-pane-readability: xp bar is on the local HUD (3440x1440)
+    ok: hud-pane-readability: route card is on the local HUD (3440x1440)
+    ok: hud-pane-readability: minimap zoom is client-only (3440x1440)
+    ok: hud-pane-readability: tight minimap zoom applied (3440x1440)
+    ok: hud-pane-readability: identity vs controls stays clear (3440x1440)
+    ok: hud-pane-readability: identity vs objective stays clear (3440x1440)
+    ok: hud-pane-readability: identity vs art stays clear (3440x1440)
+    ok: hud-pane-readability: identity vs minimap stays clear (3440x1440)
+    ok: hud-pane-readability: identity vs route-card stays clear (3440x1440)
+    ok: hud-pane-readability: identity vs quickbar-strip stays clear (3440x1440)
+    ok: hud-pane-readability: identity vs audio-mixer stays clear (3440x1440)
+    ok: hud-pane-readability: identity vs orb-life stays clear (3440x1440)
+    ok: hud-pane-readability: controls vs objective stays clear (3440x1440)
+    ok: hud-pane-readability: controls vs art stays clear (3440x1440)
+    ok: hud-pane-readability: controls vs minimap stays clear (3440x1440)
+    ok: hud-pane-readability: controls vs route-card stays clear (3440x1440)
+    ok: hud-pane-readability: controls vs quickbar-strip stays clear (3440x1440)
+    ok: hud-pane-readability: controls vs audio-mixer stays clear (3440x1440)
+    ok: hud-pane-readability: controls vs orb-life stays clear (3440x1440)
+    ok: hud-pane-readability: objective vs art stays clear (3440x1440)
+    ok: hud-pane-readability: objective vs minimap stays clear (3440x1440)
+    ok: hud-pane-readability: objective vs route-card stays clear (3440x1440)
+    ok: hud-pane-readability: objective vs quickbar-strip stays clear (3440x1440)
+    ok: hud-pane-readability: objective vs audio-mixer stays clear (3440x1440)
+    ok: hud-pane-readability: objective vs orb-life stays clear (3440x1440)
+    ok: hud-pane-readability: art vs minimap stays clear (3440x1440)
+    ok: hud-pane-readability: art vs route-card stays clear (3440x1440)
+    ok: hud-pane-readability: art vs quickbar-strip stays clear (3440x1440)
+    ok: hud-pane-readability: art vs audio-mixer stays clear (3440x1440)
+    ok: hud-pane-readability: art vs orb-life stays clear (3440x1440)
+    ok: hud-pane-readability: minimap vs route-card stays clear (3440x1440)
+    ok: hud-pane-readability: minimap vs quickbar-strip stays clear (3440x1440)
+    ok: hud-pane-readability: minimap vs audio-mixer stays clear (3440x1440)
+    ok: hud-pane-readability: minimap vs orb-life stays clear (3440x1440)
+    ok: hud-pane-readability: route-card vs quickbar-strip stays clear (3440x1440)
+    ok: hud-pane-readability: route-card vs audio-mixer stays clear (3440x1440)
+    ok: hud-pane-readability: route-card vs orb-life stays clear (3440x1440)
+    ok: hud-pane-readability: quickbar-strip vs audio-mixer stays clear (3440x1440)
+    ok: hud-pane-readability: quickbar-strip vs orb-life stays clear (3440x1440)
+    ok: hud-pane-readability: audio-mixer vs orb-life stays clear (3440x1440)
+    ok: hud-pane-readability: gear pane opened through the production seam
+    ok: hud-pane-readability: pane content rendered (3440x1440)
+    ok: hud-pane-readability: pane frame recorded
+    ok: hud-pane-readability: identity never enters the gear pane (3440x1440)
+    ok: hud-pane-readability: controls never enters the gear pane (3440x1440)
+    ok: hud-pane-readability: objective never enters the gear pane (3440x1440)
+    ok: hud-pane-readability: art never enters the gear pane (3440x1440)
+    ok: hud-pane-readability: minimap never enters the gear pane (3440x1440)
+    ok: hud-pane-readability: quickbar-strip never enters the gear pane (3440x1440)
+    ok: hud-pane-readability: audio-mixer never enters the gear pane (3440x1440)
+    ok: hud-pane-readability: orb-life never enters the gear pane (3440x1440)
+    ok: hud-pane-readability: orb-resource never enters the gear pane (3440x1440)
+    ok: hud-pane-open: identity vs controls stays clear (3440x1440)
+    ok: hud-pane-open: identity vs objective stays clear (3440x1440)
+    ok: hud-pane-open: identity vs art stays clear (3440x1440)
+    ok: hud-pane-open: identity vs minimap stays clear (3440x1440)
+    ok: hud-pane-open: identity vs quickbar-strip stays clear (3440x1440)
+    ok: hud-pane-open: identity vs audio-mixer stays clear (3440x1440)
+    ok: hud-pane-open: identity vs orb-life stays clear (3440x1440)
+    ok: hud-pane-open: controls vs objective stays clear (3440x1440)
+    ok: hud-pane-open: controls vs art stays clear (3440x1440)
+    ok: hud-pane-open: controls vs minimap stays clear (3440x1440)
+    ok: hud-pane-open: controls vs quickbar-strip stays clear (3440x1440)
+    ok: hud-pane-open: controls vs audio-mixer stays clear (3440x1440)
+    ok: hud-pane-open: controls vs orb-life stays clear (3440x1440)
+    ok: hud-pane-open: objective vs art stays clear (3440x1440)
+    ok: hud-pane-open: objective vs minimap stays clear (3440x1440)
+    ok: hud-pane-open: objective vs quickbar-strip stays clear (3440x1440)
+    ok: hud-pane-open: objective vs audio-mixer stays clear (3440x1440)
+    ok: hud-pane-open: objective vs orb-life stays clear (3440x1440)
+    ok: hud-pane-open: art vs minimap stays clear (3440x1440)
+    ok: hud-pane-open: art vs quickbar-strip stays clear (3440x1440)
+    ok: hud-pane-open: art vs audio-mixer stays clear (3440x1440)
+    ok: hud-pane-open: art vs orb-life stays clear (3440x1440)
+    ok: hud-pane-open: minimap vs quickbar-strip stays clear (3440x1440)
+    ok: hud-pane-open: minimap vs audio-mixer stays clear (3440x1440)
+    ok: hud-pane-open: minimap vs orb-life stays clear (3440x1440)
+    ok: hud-pane-open: quickbar-strip vs audio-mixer stays clear (3440x1440)
+    ok: hud-pane-open: quickbar-strip vs orb-life stays clear (3440x1440)
+    ok: hud-pane-open: audio-mixer vs orb-life stays clear (3440x1440)
+    ok: hud-pane-readability: controls-second clears every global region (3440x1440)
+    ok: hud-pane-readability: pane-title vs pane-stats stays clear (3440x1440)
+    ok: hud-pane-readability: pane-title vs pane-stats-combat stays clear (3440x1440)
+    ok: hud-pane-readability: pane-title vs pane-seat stays clear (3440x1440)
+    ok: hud-pane-readability: pane-title vs pane-banked stays clear (3440x1440)
+    ok: hud-pane-readability: pane-title vs pane-progression stays clear (3440x1440)
+    ok: hud-pane-readability: pane-title vs pane-footer-place stays clear (3440x1440)
+    ok: hud-pane-readability: pane-title vs pane-footer stays clear (3440x1440)
+    ok: hud-pane-readability: pane-stats vs pane-stats-combat stays clear (3440x1440)
+    ok: hud-pane-readability: pane-stats vs pane-seat stays clear (3440x1440)
+    ok: hud-pane-readability: pane-stats vs pane-banked stays clear (3440x1440)
+    ok: hud-pane-readability: pane-stats vs pane-progression stays clear (3440x1440)
+    ok: hud-pane-readability: pane-stats vs pane-footer-place stays clear (3440x1440)
+    ok: hud-pane-readability: pane-stats vs pane-footer stays clear (3440x1440)
+    ok: hud-pane-readability: pane-stats-combat vs pane-seat stays clear (3440x1440)
+    ok: hud-pane-readability: pane-stats-combat vs pane-banked stays clear (3440x1440)
+    ok: hud-pane-readability: pane-stats-combat vs pane-progression stays clear (3440x1440)
+    ok: hud-pane-readability: pane-stats-combat vs pane-footer-place stays clear (3440x1440)
+    ok: hud-pane-readability: pane-stats-combat vs pane-footer stays clear (3440x1440)
+    ok: hud-pane-readability: pane-seat vs pane-banked stays clear (3440x1440)
+    ok: hud-pane-readability: pane-seat vs pane-progression stays clear (3440x1440)
+    ok: hud-pane-readability: pane-seat vs pane-footer-place stays clear (3440x1440)
+    ok: hud-pane-readability: pane-seat vs pane-footer stays clear (3440x1440)
+    ok: hud-pane-readability: pane-banked vs pane-progression stays clear (3440x1440)
+    ok: hud-pane-readability: pane-banked vs pane-footer-place stays clear (3440x1440)
+    ok: hud-pane-readability: pane-banked vs pane-footer stays clear (3440x1440)
+    ok: hud-pane-readability: pane-progression vs pane-footer-place stays clear (3440x1440)
+    ok: hud-pane-readability: pane-progression vs pane-footer stays clear (3440x1440)
+    ok: hud-pane-readability: pane-footer-place vs pane-footer stays clear (3440x1440)
+    ok: hud-pane-readability: backpack cells clear of pane chrome (3440x1440)
+    ok: hud-pane-readability: gear close hint is measured (3440x1440)
+    ok: hud-pane-readability: gear footer stays inside the pane (3440x1440)
+    ok: hud-pane-readability: a clipped gear footer is the anti-pattern
+    ok: hud-pane-readability: I or Esc closes stays inside the gear pane (3440x1440)
+    ok: hud-pane-readability: live HUD names the gear footer (3440x1440)
+    ok: hud-pane-readability: Enter equips and I or Esc closes is the production gear footer (3440x1440)
+    ok: hud-pane-readability: gear DEF/LVL line is measured (3440x1440)
+    ok: hud-pane-readability: gear stats stay inside the pane (3440x1440)
+    ok: hud-pane-readability: clipped DEF/LVL is the anti-pattern
+    ok: hud-pane-readability: DEF and LVL stay inside the gear pane (3440x1440)
+    ok: hud-pane-readability: live HUD names DEF and LVL (3440x1440)
+    ok: hud-pane-readability: DEF on the gear pane is the production readout (3440x1440)
+    ok: hud-pane-readability: identity keeps its single House prefix
+    ok: hud-pane-readability: controls, banked, and progression truth all remain
+    ok: hud-pane-readability: first Escape closes the pane
+    ok: hud-pane-readability: dismissed pane leaves the render list
+    ok: hud-pane-readability: bare Escape requests exit
+    ok: hud-pane-readability: capture readable (3440x1440)
+    capture: C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\.ci-artifacts\raster-actions-final\hud-pane-readability-closed-3440x1440.png (1076362 bytes)
+    ok: hud-pane-readability: capture non-trivial (3440x1440)
+    ok: hud-pane-readability: capture readable (3440x1440)
+    capture: C:\Users\Alex\Documents\ChatGPT\verdigris-diablo-study\.ci-artifacts\raster-actions-final\hud-pane-readability-open-3440x1440.png (1133850 bytes)
+    ok: hud-pane-readability: capture non-trivial (3440x1440)
+    ok: hud-pane-readability: tree-open capture written
+    ok: hud-pane-readability: tree pane frame recorded
+    ok: hud-pane-readability: identity never enters the tree pane
+    ok: hud-pane-readability: controls never enters the tree pane
+    ok: hud-pane-readability: objective never enters the tree pane
+    ok: hud-pane-readability: minimap never enters the tree pane
+    ok: hud-pane-readability: quickbar-strip never enters the tree pane
+    ok: hud-pane-readability: orb-life never enters the tree pane
+    ok: hud-pane-readability: orb-resource never enters the tree pane
+    ok: hud-pane-readability: controls-second never enters the tree pane
+    ok: hud-pane-readability: art/mute chip never enters the tree pane
+    ok: hud-pane-readability: tree-open still states absence without seats
+    ok: hud-pane-readability: tree capture readable
+    ok: hud-pane-readability: tree capture non-trivial
+    ok: hud-pane-readability: character-open capture written
+    ok: hud-pane-readability: character pane frame recorded
+    ok: hud-pane-readability: controls hint remains with the character sheet open
+    ok: hud-pane-readability: deleting WASD cannot certify the sheet
+    ok: hud-pane-readability: identity never enters the character pane
+    ok: hud-pane-readability: controls never enters the character pane
+    ok: hud-pane-readability: objective never enters the character pane
+    ok: hud-pane-readability: minimap never enters the character pane
+    ok: hud-pane-readability: orb-life never enters the character pane
+    ok: hud-pane-readability: quickbar-strip never enters the character pane
+    ok: hud-pane-readability: covering the minimap is the anti-pattern
+    ok: hud-pane-readability: a slot below the map is the production sheet
+    ok: hud-pane-readability: covering Life is the anti-pattern
+    ok: hud-pane-readability: a slot above Life is the production sheet
+    ok: hud-pane-readability: art/mute chip never enters the character pane
+    ok: hud-pane-readability: overlaying the sheet with WASD is the anti-pattern
+    ok: hud-pane-readability: relocated controls are the production sheet HUD
+    ok: hud-pane-readability: close hint is measured on the sheet
+    ok: hud-pane-readability: close hint stays inside the sheet slot
+    ok: hud-pane-readability: close hint never enters the life orb
+    ok: hud-pane-readability: live HUD names the close hint
+    ok: hud-pane-readability: a clipped close hint is the anti-pattern
+    ok: hud-pane-readability: C or Esc closes is the production footer
+    ok: hud-pane-readability: lowercase base/gear on Sources is the anti-pattern
+    ok: hud-pane-readability: compact Sources uses Base/Gear
+    ok: hud-pane-readability: compact sheet names Base/Gear on Sources
+    ok: hud-pane-readability: character capture readable
+    ok: hud-pane-readability: character capture non-trivial
+    ok: hud-pane-readability: bound ox-pc-z capsule server (if busy, another process holds 7100-7119)
+    ok: hud-pane-readability: remote start
+    ok: hud-pane-readability: remote handshake ready
+    ok: hud-pane-readability: remote expedition entered
+    ok: hud-pane-readability: remote pane and connection chip recorded
+    ok: hud-pane-readability: connection chip clears the open pane (960x600)
+    ok: hud-pane-readability: a skeleton loader chip is not required; a warning chip still clears the pane
+    ok: hud-pane-readability: identity clears the minimap on the remote path
+    ok: hud-pane-readability: dual-unmuted capture written
+    ok: hud-pane-readability: dual-pane HUD completely placed
+    ok: dual-unmuted: pane-frame painted
+    ok: dual-unmuted: character-pane-frame painted
+    ok: dual-unmuted: minimap painted
+    ok: dual-unmuted: quickbar-strip painted
+    ok: dual-unmuted: orb-life painted
+    ok: dual-unmuted: orb-resource painted
+    ok: dual-unmuted: identity painted
+    ok: dual-unmuted: objective painted
+    ok: dual-unmuted: controls painted
+    ok: dual-unmuted: audio-mixer painted
+    ok: hud-pane-readability: dual-pane mute remains truthful
+    ok: dual-unmuted: pane-frame inside viewport
+    ok: dual-unmuted: pane-frame clears character-pane-frame
+    ok: dual-unmuted: pane-frame clears minimap
+    ok: dual-unmuted: pane-frame clears quickbar-strip
+    ok: dual-unmuted: pane-frame clears orb-life
+    ok: dual-unmuted: pane-frame clears orb-resource
+    ok: dual-unmuted: pane-frame clears identity
+    ok: dual-unmuted: pane-frame clears objective
+    ok: dual-unmuted: pane-frame clears controls
+    ok: dual-unmuted: pane-frame clears audio-mixer
+    ok: dual-unmuted: pane-frame clears controls-second
+    ok: dual-unmuted: character-pane-frame inside viewport
+    ok: dual-unmuted: character-pane-frame clears minimap
+    ok: dual-unmuted: character-pane-frame clears quickbar-strip
+    ok: dual-unmuted: character-pane-frame clears orb-life
+    ok: dual-unmuted: character-pane-frame clears orb-resource
+    ok: dual-unmuted: character-pane-frame clears identity
+    ok: dual-unmuted: character-pane-frame clears objective
+    ok: dual-unmuted: character-pane-frame clears controls
+    ok: dual-unmuted: character-pane-frame clears audio-mixer
+    ok: dual-unmuted: character-pane-frame clears controls-second
+    ok: dual-unmuted: minimap inside viewport
+    ok: dual-unmuted: minimap clears quickbar-strip
+    ok: dual-unmuted: minimap clears orb-life
+    ok: dual-unmuted: minimap clears orb-resource
+    ok: dual-unmuted: minimap clears identity
+    ok: dual-unmuted: minimap clears objective
+    ok: dual-unmuted: minimap clears controls
+    ok: dual-unmuted: minimap clears audio-mixer
+    ok: dual-unmuted: minimap clears controls-second
+    ok: dual-unmuted: quickbar-strip inside viewport
+    ok: dual-unmuted: quickbar-strip clears orb-life
+    ok: dual-unmuted: quickbar-strip clears orb-resource
+    ok: dual-unmuted: quickbar-strip clears identity
+    ok: dual-unmuted: quickbar-strip clears objective
+    ok: dual-unmuted: quickbar-strip clears controls
+    ok: dual-unmuted: quickbar-strip clears audio-mixer
+    ok: dual-unmuted: quickbar-strip clears controls-second
+    ok: dual-unmuted: orb-life inside viewport
+    ok: dual-unmuted: orb-life clears orb-resource
+    ok: dual-unmuted: orb-life clears identity
+    ok: dual-unmuted: orb-life clears objective
+    ok: dual-unmuted: orb-life clears controls
+    ok: dual-unmuted: orb-life clears audio-mixer
+    ok: dual-unmuted: orb-life clears controls-second
+    ok: dual-unmuted: orb-resource inside viewport
+    ok: dual-unmuted: orb-resource clears identity
+    ok: dual-unmuted: orb-resource clears objective
+    ok: dual-unmuted: orb-resource clears controls
+    ok: dual-unmuted: orb-resource clears audio-mixer
+    ok: dual-unmuted: orb-resource clears controls-second
+    ok: dual-unmuted: identity inside viewport
+    ok: dual-unmuted: identity clears objective
+    ok: dual-unmuted: identity clears controls
+    ok: dual-unmuted: identity clears audio-mixer
+    ok: dual-unmuted: identity clears controls-second
+    ok: dual-unmuted: objective inside viewport
+    ok: dual-unmuted: objective clears controls
+    ok: dual-unmuted: objective clears audio-mixer
+    ok: dual-unmuted: objective clears controls-second
+    ok: dual-unmuted: controls inside viewport
+    ok: dual-unmuted: controls clears audio-mixer
+    ok: dual-unmuted: controls clears controls-second
+    ok: dual-unmuted: audio-mixer inside viewport
+    ok: dual-unmuted: audio-mixer clears controls-second
+    ok: dual-unmuted: controls-second inside viewport
+    ok: dual-unmuted: experience caption clears both panes
+    ok: dual-unmuted: audio-mixer clears experience readout
+    ok: dual-unmuted: controls clears experience readout
+    ok: dual-unmuted: controls-second clears experience readout
+    ok: hud-pane-readability: dual-muted capture written
+    ok: hud-pane-readability: dual-pane HUD completely placed
+    ok: dual-muted: pane-frame painted
+    ok: dual-muted: character-pane-frame painted
+    ok: dual-muted: minimap painted
+    ok: dual-muted: quickbar-strip painted
+    ok: dual-muted: orb-life painted
+    ok: dual-muted: orb-resource painted
+    ok: dual-muted: identity painted
+    ok: dual-muted: objective painted
+    ok: dual-muted: controls painted
+    ok: dual-muted: audio-mixer painted
+    ok: hud-pane-readability: dual-pane mute remains truthful
+    ok: dual-muted: pane-frame inside viewport
+    ok: dual-muted: pane-frame clears character-pane-frame
+    ok: dual-muted: pane-frame clears minimap
+    ok: dual-muted: pane-frame clears quickbar-strip
+    ok: dual-muted: pane-frame clears orb-life
+    ok: dual-muted: pane-frame clears orb-resource
+    ok: dual-muted: pane-frame clears identity
+    ok: dual-muted: pane-frame clears objective
+    ok: dual-muted: pane-frame clears controls
+    ok: dual-muted: pane-frame clears audio-mixer
+    ok: dual-muted: pane-frame clears controls-second
+    ok: dual-muted: pane-frame clears audio-muted
+    ok: dual-muted: character-pane-frame inside viewport
+    ok: dual-muted: character-pane-frame clears minimap
+    ok: dual-muted: character-pane-frame clears quickbar-strip
+    ok: dual-muted: character-pane-frame clears orb-life
+    ok: dual-muted: character-pane-frame clears orb-resource
+    ok: dual-muted: character-pane-frame clears identity
+    ok: dual-muted: character-pane-frame clears objective
+    ok: dual-muted: character-pane-frame clears controls
+    ok: dual-muted: character-pane-frame clears audio-mixer
+    ok: dual-muted: character-pane-frame clears controls-second
+    ok: dual-muted: character-pane-frame clears audio-muted
+    ok: dual-muted: minimap inside viewport
+    ok: dual-muted: minimap clears quickbar-strip
+    ok: dual-muted: minimap clears orb-life
+    ok: dual-muted: minimap clears orb-resource
+    ok: dual-muted: minimap clears identity
+    ok: dual-muted: minimap clears objective
+    ok: dual-muted: minimap clears controls
+    ok: dual-muted: minimap clears audio-mixer
+    ok: dual-muted: minimap clears controls-second
+    ok: dual-muted: minimap clears audio-muted
+    ok: dual-muted: quickbar-strip inside viewport
+    ok: dual-muted: quickbar-strip clears orb-life
+    ok: dual-muted: quickbar-strip clears orb-resource
+    ok: dual-muted: quickbar-strip clears identity
+    ok: dual-muted: quickbar-strip clears objective
+    ok: dual-muted: quickbar-strip clears controls
+    ok: dual-muted: quickbar-strip clears audio-mixer
+    ok: dual-muted: quickbar-strip clears controls-second
+    ok: dual-muted: quickbar-strip clears audio-muted
+    ok: dual-muted: orb-life inside viewport
+    ok: dual-muted: orb-life clears orb-resource
+    ok: dual-muted: orb-life clears identity
+    ok: dual-muted: orb-life clears objective
+    ok: dual-muted: orb-life clears controls
+    ok: dual-muted: orb-life clears audio-mixer
+    ok: dual-muted: orb-life clears controls-second
+    ok: dual-muted: orb-life clears audio-muted
+    ok: dual-muted: orb-resource inside viewport
+    ok: dual-muted: orb-resource clears identity
+    ok: dual-muted: orb-resource clears objective
+    ok: dual-muted: orb-resource clears controls
+    ok: dual-muted: orb-resource clears audio-mixer
+    ok: dual-muted: orb-resource clears controls-second
+    ok: dual-muted: orb-resource clears audio-muted
+    ok: dual-muted: identity inside viewport
+    ok: dual-muted: identity clears objective
+    ok: dual-muted: identity clears controls
+    ok: dual-muted: identity clears audio-mixer
+    ok: dual-muted: identity clears controls-second
+    ok: dual-muted: identity clears audio-muted
+    ok: dual-muted: objective inside viewport
+    ok: dual-muted: objective clears controls
+    ok: dual-muted: objective clears audio-mixer
+    ok: dual-muted: objective clears controls-second
+    ok: dual-muted: objective clears audio-muted
+    ok: dual-muted: controls inside viewport
+    ok: dual-muted: controls clears audio-mixer
+    ok: dual-muted: controls clears controls-second
+    ok: dual-muted: controls clears audio-muted
+    ok: dual-muted: audio-mixer inside viewport
+    ok: dual-muted: audio-mixer clears controls-second
+    ok: dual-muted: audio-mixer clears audio-muted
+    ok: dual-muted: controls-second inside viewport
+    ok: dual-muted: controls-second clears audio-muted
+    ok: dual-muted: audio-muted inside viewport
+    ok: dual-muted: experience caption clears both panes
+    ok: dual-muted: audio-mixer clears experience readout
+    ok: dual-muted: audio-muted clears experience readout
+    ok: dual-muted: controls clears experience readout
+    ok: dual-muted: controls-second clears experience readout
+   PASS (0 failures)
+== scenario loot-label-budget ==
+    ok: loot-label-budget: every dense pouch still draws as Drop
+    ok: loot-label-budget: a far pouch remains a Drop sprite
+    ok: loot-label-budget: the farthest pouch is not nameplated
+    ok: loot-label-budget: the nearest pouch keeps a readable name
+    ok: loot-label-budget: hiding every name to pass the cap fails
+    ok: loot-label-budget: nameplates stay at the 12-nearest cap
+    ok: loot-label-budget: labels off means zero loot-label ops
+    ok: loot-label-budget: capped nameplate capture written
+    ok: loot-label-budget: live HUD names Nearest 12 and Drop stays
+    ok: loot-label-budget: live HUD rejects cull pickup
+   PASS (0 failures)
+== scenario effect-batch ==
+    ok: effect-batch: every impact sprite still records an Impact op
+    ok: effect-batch: every swing arc still records a Swing op
+    ok: effect-batch: dropping the telegraph cannot pass the batch
+    ok: effect-batch: actors remain on the painter after the batch
+    effect-batch first paint: world 6.8 ms | pen hits 140 misses 3
+    effect-batch reuse paint: world 9.0 ms | pen hits 283 misses 3
+    ok: effect-batch: second pass reuses pens instead of CreatePen
+    ok: effect-batch: warning still present on the reuse pass
+    ok: effect-batch: report opened
+    ok: effect-batch: reused-pen capture written
+    ok: effect-batch: live HUD names Reuse pens and Keep warning
+    ok: effect-batch: live HUD rejects drop FX
+   PASS (0 failures)
+== scenario resource-envelope ==
+    ok: resource-envelope: one floor bitmap after the first paint
+    ok: resource-envelope: resize cycles keep a single floor bitmap
+    ok: resource-envelope: GDI pens stay inside the 128 cap
+    ok: resource-envelope: GDI brushes stay inside the 128 cap
+    ok: resource-envelope: resize cycles keep a single floor bitmap
+    ok: resource-envelope: GDI pens stay inside the 128 cap
+    ok: resource-envelope: GDI brushes stay inside the 128 cap
+    ok: resource-envelope: resize cycles keep a single floor bitmap
+    ok: resource-envelope: GDI pens stay inside the 128 cap
+    ok: resource-envelope: GDI brushes stay inside the 128 cap
+    ok: resource-envelope: resize cycles keep a single floor bitmap
+    ok: resource-envelope: GDI pens stay inside the 128 cap
+    ok: resource-envelope: GDI brushes stay inside the 128 cap
+    ok: resource-envelope: resize cycles keep a single floor bitmap
+    ok: resource-envelope: GDI pens stay inside the 128 cap
+    ok: resource-envelope: GDI brushes stay inside the 128 cap
+    ok: resource-envelope: resize cycles keep a single floor bitmap
+    ok: resource-envelope: GDI pens stay inside the 128 cap
+    ok: resource-envelope: GDI brushes stay inside the 128 cap
+    ok: resource-envelope: resize cycles keep a single floor bitmap
+    ok: resource-envelope: GDI pens stay inside the 128 cap
+    ok: resource-envelope: GDI brushes stay inside the 128 cap
+    ok: resource-envelope: resize cycles keep a single floor bitmap
+    ok: resource-envelope: GDI pens stay inside the 128 cap
+    ok: resource-envelope: GDI brushes stay inside the 128 cap
+    ok: resource-envelope: returning to 960 shrinks an oversized floor
+    ok: resource-envelope: floor width is not a second leaked bitmap
+    resource-envelope: floor 1737x1554 (1 bitmap) | pens 128 | brushes 39 | fx 128 | paint 10.6 ms
+    ok: resource-envelope: 300 spawned effects stay at the 128 cap
+    ok: resource-envelope: a cheap frame does not excuse a growing effect list
+    ok: resource-envelope: the cap is occupied, not emptied to pass
+    ok: resource-envelope: report opened
+    ok: resource-envelope: capped-effect capture written
+    ok: resource-envelope: live HUD names Cap 128 and One floor
+    ok: resource-envelope: live HUD rejects grow FX
+   PASS (0 failures)
+== scenario hitch-warmup ==
+    hitch-warmup cold combat paint: 7.5 ms (must be reported)
+    hitch-warmup warm combat paint: 7.1 ms
+    hitch-warmup prepared combat paint: 8.0 ms (glyphs warmed before the strike)
+    ok: hitch-warmup: hiding the cold trace cannot pass
+    ok: hitch-warmup: warm trace is required
+    ok: hitch-warmup: prepared trace is required
+    ok: hitch-warmup: cold combat still draws swing and damage
+    ok: hitch-warmup: warmup cannot drop required combat ops
+    ok: hitch-warmup: prepared strike is not slower than the cold hit
+    ok: hitch-warmup: report opened
+    ok: hitch-warmup: prepared-strike capture written
+    ok: hitch-warmup: live HUD names Warm glyphs and Cold trace
+    ok: hitch-warmup: live HUD rejects hide cold
+   PASS (0 failures)
+== scenario attack-poses ==
+    ok: attack-poses: standing Scion is labeled idle
+    ok: attack-poses: idle cannot wear the active strike pose
+    ok: attack-poses: windup is a distinct cocking pose
+    ok: attack-poses: windup still draws the swing arc
+    ok: attack-poses: active is a distinct committed pose
+    ok: attack-poses: recovery is a distinct settle pose
+    ok: attack-poses: dash dust during a swing is a cancel pose
+    ok: attack-poses: idle alone cannot certify the strike family
+    ok: attack-poses: distinct stages are not the idle anti-pattern
+    ok: attack-poses: a strike without a cocked windup cannot pass
+    ok: attack-poses: windup cocks and active extends a readable blade
+    ok: attack-poses: capture pose is the committed active strike
+    ok: attack-poses: native strip paints windup and active, not labels only
+    ok: attack-poses: windup/active/cancel family capture written
+    ok: attack-poses: live HUD names Strike poses and Windup
+    ok: attack-poses: live HUD rejects idle still
+    ok: attack-poses: Strike poses strip is traced
+    ok: attack-poses: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: attack-poses: Strike poses stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario kit-chunk ==
+    ok: kit-chunk: village kit includes tree, ruin, dwelling, shrine, gate
+    ok: kit-chunk: kit parts are in the production render list
+    ok: kit-chunk: every solid piece publishes a collision proxy
+    ok: kit-chunk: the dressing gate is not an unreported obstacle
+    ok: kit-chunk: scaled trees keep distinct proxy radii
+    ok: kit-chunk: a circle-on-stick is the lollipop negative
+    ok: kit-chunk: the shipped tree is not a lollipop
+    ok: kit-chunk: a scalloped stall cannot certify a dwelling
+    ok: kit-chunk: dwellings have walls, thatch, and a door
+    ok: kit-chunk: a covered wagon cannot certify a ruin
+    ok: kit-chunk: ruins have a broken wall and rubble, not wheels
+    ok: kit-chunk: a stone blob cannot certify a shrine
+    ok: kit-chunk: shrines have a basin, column, and water
+    ok: kit-chunk: a solid slab cannot certify a gate
+    ok: kit-chunk: gates have pillars, a lintel, and an opening
+    ok: kit-chunk: the shrine is inside the spawn capture
+    ok: kit-chunk: the dressing gate is inside the spawn capture
+    ok: kit-chunk: kit pieces do not stack on one pivot
+    ok: kit-chunk: spawn is outside published solid radii
+    ok: kit-chunk: collision uses the same solids as the render proxies
+    ok: kit-chunk: village kit capture written
+    ok: kit-chunk: live HUD names Village kit and Solid proxy
+    ok: kit-chunk: live HUD rejects a lollipop tree
+    ok: kit-chunk: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: kit-chunk: Village kit stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario weave-vfx ==
+    ok: weave-vfx: apply beat is labeled cast
+    ok: weave-vfx: cast still draws a WarCry ring
+    ok: weave-vfx: mid lifetime is the travel beat
+    ok: weave-vfx: late lifetime is the impact beat
+    ok: weave-vfx: impact radius stays inside the screen sixth cap
+    ok: weave-vfx: a large screen-filling ring cannot pass
+    ok: weave-vfx: fade is the cancellation beat
+    ok: weave-vfx: cancel keeps the TASK-0122 fade label
+    ok: weave-vfx: scion exists for telegraph overlap
+    ok: weave-vfx: enemy warning is present before the weave
+    ok: weave-vfx: spectacle cannot hide the telegraph
+    ok: weave-vfx: weave still records while the warning is up
+    ok: weave-vfx: overlapping weave still respects the radius cap
+    ok: weave-vfx: a blob without cast motes cannot certify the family
+    ok: weave-vfx: cast/travel/impact/cancel share bronze identity
+    ok: weave-vfx: native strip paints all four weave beats
+    ok: weave-vfx: capture pose is the travel beat at game scale
+    ok: weave-vfx: cast/impact family capture written
+    ok: weave-vfx: live HUD names War Cry weave and Travel
+    ok: weave-vfx: live HUD rejects screen fill
+    ok: weave-vfx: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: weave-vfx: War Cry weave stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario pad-path ==
+    ok: pad-path: mouse position does not count as a controller
+    ok: pad-path: mouse emulation cannot mint pad glyphs
+    ok: pad-path: connected pad publishes live glyphs
+    ok: pad-path: hotplug-in is recorded
+    ok: pad-path: left stick moves the Scion
+    ok: pad-path: A is strike, not a synthetic mouse click
+    ok: pad-path: inventory starts closed
+    ok: pad-path: Y focuses the gear inventory
+    ok: pad-path: disconnect clears the connected glyph
+    ok: pad-path: hotplug-out is recorded
+    ok: pad-path: controller HUD capture written
+    ok: pad-path: live HUD names Pad glyphs and A strike
+    ok: pad-path: live HUD rejects mouse pad
+    ok: pad-path: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: pad-path: Pad glyphs stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario legal-sounds ==
+    ok: legal-sounds: impact and warning cues carry SPDX provenance
+    ok: legal-sounds: swing-family windup attack-anticipate is sourced
+    ok: legal-sounds: missing provenance cannot ship even if audible
+    ok: legal-sounds: unlicensed-preview fails review
+    ok: legal-sounds: sourced anticipate is not treated as unlicensed
+    ok: legal-sounds: an ordinary fight actually voiced cues
+    ok: legal-sounds: every voiced combat cue is in the licensed family
+    ok: legal-sounds: the fight voiced the licensed swing windup
+    ok: legal-sounds: provenance table opened
+    ok: legal-sounds: fight capture written
+    ok: legal-sounds: live HUD names Family combat and Anticipate CC0
+    ok: legal-sounds: live HUD rejects unlicensed as a passing family
+    ok: legal-sounds: Family combat strip is traced
+    ok: legal-sounds: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: legal-sounds: Family combat stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario music-phase ==
+    ok: music-phase: device mute is an explicit HUD state
+    ok: music-phase: slay-wardens with living foes wants combat
+    ok: music-phase: live HUD paints Theme Combat, not a mute chip alone
+    ok: music-phase: a leftover combat send cannot certify unload
+    ok: music-phase: a loaded combat theme is not treated as leftover
+    ok: music-phase: combat theme is scheduled (device remains mute)
+    ok: music-phase: carry-to-exit is recovery music
+    ok: music-phase: recovery theme is scheduled
+    ok: music-phase: unloaded scene cannot leave a competing theme
+    ok: music-phase: paused/unloaded does not keep an active music send
+    ok: music-phase: unload mutes the music bus
+    ok: music-phase: muted unload cannot voice a leftover combat loop
+    ok: music-phase: combat-theme capture written
+    ok: music-phase: live HUD names Theme Combat and Music none
+    ok: music-phase: live HUD rejects leftover loop
+    ok: music-phase: Theme Combat strip is traced
+    ok: music-phase: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: music-phase: Theme Combat stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario gpu-sample ==
+    ok: gpu-sample: an unknown backend cannot pretend to be portable
+    ok: gpu-sample: software backend opens a 64x64 window buffer
+    ok: gpu-sample: the decision is software, not a Windows-only device
+    ok: gpu-sample: textured quad draws without a GPU device
+    ok: gpu-sample: quad samples the bronze/stone checker
+    ok: gpu-sample: clear color remains outside the quad
+    ok: gpu-sample: live HUD names the software backend
+    ok: gpu-sample: portable BMP written
+    ok: gpu-sample: shutdown releases the window buffer
+    ok: gpu-sample: drawing after shutdown fails closed
+    ok: gpu-sample: owner HUD capture written
+    ok: gpu-sample: live HUD names Software quad and No D3D
+    ok: gpu-sample: live HUD rejects unknown GPU
+    ok: gpu-sample: Software quad strip is traced
+    ok: gpu-sample: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: gpu-sample: Software quad stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario gpu-packets ==
+    ok: gpu-packets: scion exists
+    ok: gpu-packets: every semantic op becomes a packet
+    ok: gpu-packets: production packets carry no backend handles
+    ok: gpu-packets: Telegraph is the adapted draw class
+    ok: gpu-packets: snapshot text has no HDC/D3D/pointer tokens
+    ok: gpu-packets: headless packets stay deterministic without GPU state
+    ok: gpu-packets: a backend resource cannot enter a snapshot
+    ok: gpu-packets: snapshot file opened
+    ok: gpu-packets: Telegraph scene capture written
+    ok: gpu-packets: live HUD names Handle-free and Telegraph class
+    ok: gpu-packets: live HUD rejects backend handle
+    ok: gpu-packets: Handle-free strip is traced
+    ok: gpu-packets: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: gpu-packets: Handle-free stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario visual-target ==
+    ok: visual-target: in-game composition axes are named
+    ok: visual-target: an external concept image cannot substitute
+    ok: visual-target: the live rig uses an adult head ratio
+    ok: visual-target: a 1/3 head is the chibi negative
+    ok: visual-target: the shipped head cannot fail as chibi
+    ok: visual-target: a loader chip cannot count as the composition sheet
+    ok: visual-target: the composition sheet shows a filled XP meter
+    ok: visual-target: the composition sheet shows a held item
+    ok: visual-target: a paper-doll seat alone cannot certify the sheet
+    ok: visual-target: a circle-on-stick cannot certify the village kit
+    ok: visual-target: the live kit uses a forked clustered canopy
+    ok: visual-target: a scalloped stall cannot certify a dwelling
+    ok: visual-target: dwellings have walls, thatch, and a door
+    ok: visual-target: a covered wagon cannot certify a ruin
+    ok: visual-target: ruins have a broken wall and rubble, not wheels
+    ok: visual-target: a stone blob cannot certify a shrine
+    ok: visual-target: shrines have a basin, column, and water
+    ok: visual-target: a solid slab cannot certify a gate
+    ok: visual-target: gates have pillars, a lintel, and an opening
+    ok: visual-target: a crate-shaped foe cannot certify the sheet
+    ok: visual-target: town wardens use jointed legs, a snout, and claws
+    ok: visual-target: in-game sheet capture written
+    ok: visual-target: live HUD names Adult camera and Bronze palette
+    ok: visual-target: live HUD rejects chibi head
+    ok: visual-target: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: visual-target: Adult camera stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario bronze-stone ==
+    ok: bronze-stone: family has provenance and is not a placeholder fill
+    ok: bronze-stone: albedo map has both metals
+    ok: bronze-stone: rim map is a lighting response, not a copy of albedo
+    ok: bronze-stone: village kit scenery samples the cooked family
+    ok: bronze-stone: magenta placeholder fills cannot pass
+    ok: bronze-stone: cooked family capture written
+    ok: bronze-stone: live HUD names Bronze stone and Cooked CC0
+    ok: bronze-stone: live HUD rejects magenta
+   PASS (0 failures)
+== scenario shader-bindings ==
+    ok: shader-bindings: software layout v1 loads without a source path
+    ok: shader-bindings: stale layout fails instead of rendering silently
+    ok: shader-bindings: a D3D-only program cannot load on this sample
+    ok: shader-bindings: failed bindings do not draw a fallback fill
+    ok: shader-bindings: cooked albedo/rim program draws the quad
+    ok: shader-bindings: lit texel is family-shaded, not placeholder
+    ok: shader-bindings: cooked program capture written
+    ok: shader-bindings: owner HUD capture written
+    ok: shader-bindings: live HUD names Layout v1 and No source
+    ok: shader-bindings: live HUD rejects stale HLSL
+    ok: shader-bindings: Layout v1 strip is traced
+    ok: shader-bindings: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: shader-bindings: Layout v1 stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario gpu-reference ==
+    ok: gpu-reference: a disconnected textured-quad demo cannot pass
+    ok: gpu-reference: session has a scion
+    ok: gpu-reference: session packets carry actors, world, effects, HUD
+    ok: gpu-reference: composition matches the in-game target sheet
+    ok: gpu-reference: software present opens on both platforms' sample
+    ok: gpu-reference: packets without a live session cannot present
+    ok: gpu-reference: live packets present through the GPU bridge
+    ok: gpu-reference: session packets shaded the sample buffer
+    ok: gpu-reference: session-connected BMP written
+    ok: gpu-reference: live session capture written
+    ok: gpu-reference: live HUD names Live packets and Session present
+    ok: gpu-reference: live HUD rejects a quad demo
+    ok: gpu-reference: Live packets strip is traced
+    ok: gpu-reference: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: gpu-reference: Live packets stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario grounding ==
+    ok: grounding: session has a scion
+    ok: grounding: village gate is in the spawn frustum
+    ok: grounding: Y-sort and foot shadows are the named policy
+    ok: grounding: a threat telegraph is in the production list
+    ok: grounding: Sweep paints a readable disc on the village gate
+    ok: grounding: a foreground wall cannot erase the telegraph pass
+    ok: grounding: the overlay pass is named
+    ok: grounding: a HUD token without a telegraph cannot certify
+    ok: grounding: the painted Sweep, not a HUD token, certifies overlay
+    ok: grounding: a capture-black fill cannot certify Sweep
+    ok: grounding: red warning chroma is not treated as capture-black
+    ok: grounding: telegraph-over-scenery capture written
+    ok: grounding: live HUD names Y-sort and Sweep disc
+    ok: grounding: live HUD rejects wall hide
+    ok: grounding: Y-sort strip is traced
+    ok: grounding: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: grounding: Y-sort stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario material-light ==
+    ok: material-light: bronze/stone bindings load
+    ok: material-light: a moving light changes the material
+    ok: material-light: lighting cannot wash the family to white
+    ok: material-light: damage zone composites over the lit quad
+    ok: material-light: overbright additives cannot conceal damage zones
+    ok: material-light: a white wash cannot certify the family
+    ok: material-light: moving samples stay under the channel cap
+    ok: material-light: a HUD token without a pool cannot certify
+    ok: material-light: damage-zone quad capture written
+    ok: material-light: live HUD names the moving light
+    ok: material-light: live scene paints a bronze light pool
+    ok: material-light: the pool, not a HUD token, certifies the light
+    ok: material-light: live HUD capture written
+    ok: material-light: live HUD names Lantern pool and Bronze light
+    ok: material-light: live HUD rejects wash white
+    ok: material-light: Lantern pool strip is traced
+    ok: material-light: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: material-light: Lantern pool stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario gpu-capture ==
+    ok: gpu-capture: a semantic draw log is not pixel evidence
+    ok: gpu-capture: an R/B swapped still cannot certify pixels
+    ok: gpu-capture: matching channels are not treated as swapped
+    ok: gpu-capture: readback wrote image and provenance
+    ok: gpu-capture: the image file is a usable BMP
+    ok: gpu-capture: provenance names backend, content, and platform
+    ok: gpu-capture: live HUD names BMP readback and provenance
+    ok: gpu-capture: a packet log fails as pixel evidence
+    ok: gpu-capture: a semantic draw log cannot stand in for the BMP
+    ok: gpu-capture: painted scene wrote BMP, provenance, and PNG
+    ok: gpu-capture: the scene file is a usable BMP
+    ok: gpu-capture: scene provenance names GDI tin-village pixels
+    ok: gpu-capture: Pixel capture strip is traced
+    ok: gpu-capture: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: gpu-capture: Pixel capture stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario gpu-recover ==
+    ok: gpu-recover: first present allocates one pixel buffer
+    ok: gpu-recover: resize keeps a single live buffer
+    ok: gpu-recover: restore to 64 does not leak the larger buffer
+    ok: gpu-recover: minimize/restore cannot leak textures
+    ok: gpu-recover: minimize/restore cannot leak textures
+    ok: gpu-recover: minimize/restore cannot leak textures
+    ok: gpu-recover: minimize/restore cannot leak textures
+    ok: gpu-recover: minimize/restore cannot leak textures
+    ok: gpu-recover: minimize/restore cannot leak textures
+    ok: gpu-recover: minimize/restore cannot leak textures
+    ok: gpu-recover: minimize/restore cannot leak textures
+    ok: gpu-recover: minimize/restore cannot leak textures
+    ok: gpu-recover: minimize/restore cannot leak textures
+    ok: gpu-recover: minimize/restore cannot leak textures
+    ok: gpu-recover: minimize/restore cannot leak textures
+    ok: gpu-recover: minimize/restore cannot leak textures
+    ok: gpu-recover: minimize/restore cannot leak textures
+    ok: gpu-recover: minimize/restore cannot leak textures
+    ok: gpu-recover: minimize/restore cannot leak textures
+    ok: gpu-recover: restored buffer carries a survival mark
+    ok: gpu-recover: zero live buffers fail review
+    ok: gpu-recover: a single live buffer certifies restore
+    ok: gpu-recover: restored buffer capture written
+    ok: gpu-recover: owner restore strip capture written
+    ok: gpu-recover: live HUD names Live buffers 1
+    ok: gpu-recover: Restore strip is traced
+    ok: gpu-recover: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: gpu-recover: Restore stays off WASD, the objective, Tin village, and Life
+    ok: gpu-recover: a failed recreate shows gpu-error:recreate
+    ok: gpu-recover: failure releases the previous buffer instead of crashing
+    ok: gpu-recover: report opened
+   PASS (0 failures)
+== scenario sound-adapter ==
+    ok: sound-adapter: an unknown backend cannot pretend to be portable
+    ok: sound-adapter: a generated test tone plays on the software adapter
+    ok: sound-adapter: the decision is software, not a Windows-only device
+    ok: sound-adapter: shutdown releases the buffer
+    ok: sound-adapter: a scheduled cue without duration is not audible output
+    ok: sound-adapter: an unknown backend fails review
+    ok: sound-adapter: the software backend certifies portability
+    ok: sound-adapter: a 0 ms cue fails review
+    ok: sound-adapter: tone report opened
+    ok: sound-adapter: owner adapter capture written
+    ok: sound-adapter: live HUD names Adapter software and Tone 440 Hz
+    ok: sound-adapter: Adapter software strip is traced
+    ok: sound-adapter: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: sound-adapter: Adapter software stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario audio-prefs ==
+    ok: audio-prefs: category volumes persist
+    ok: audio-prefs: mute cannot reset unrelated category volumes
+    ok: audio-prefs: a mute chip without the mixer cannot certify
+    ok: audio-prefs: a zero-volume SFX category remains silent
+    ok: audio-prefs: live mixer paints persisted SFX and Music volumes
+    ok: audio-prefs: the mixer panel, not a mute chip, certifies prefs
+    ok: audio-prefs: muted HUD capture written
+    ok: audio-prefs: live HUD names Mixer prefs and SFX persist
+    ok: audio-prefs: live HUD rejects mute reset
+   PASS (0 failures)
+== scenario ambience-layer ==
+    ok: ambience-layer: live HUD names the current zone loop
+    ok: ambience-layer: owner chip paints Loop Tin village wind
+    ok: ambience-layer: a protocol token without the owner chip cannot certify
+    ok: ambience-layer: the owner chip certifies the loop
+    ok: ambience-layer: a raw ambience:route token cannot be the painted name
+    ok: ambience-layer: Loop Tin village wind is owner language
+    ok: ambience-layer: enter voices one region loop
+    ok: ambience-layer: three stacked loops fail review
+    ok: ambience-layer: a single enter loop is not treated as stacked
+    ok: ambience-layer: rapid zone reentry cannot stack loops
+    ok: ambience-layer: salt reentry is still owner language
+    ok: ambience-layer: zone-loop capture written
+    ok: ambience-layer: Zone loop strip is traced
+    ok: ambience-layer: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: ambience-layer: Zone loop stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario equipment ==
+    ok: equipment: a request is pending until the sim acknowledges
+    ok: equipment: pending cannot paint as an equipped success
+    ok: equipment: treating the pending id as equipped is the anti-pattern
+    ok: equipment: production compare cannot use that leak
+    ok: equipment: a rejected equip leaves the prior seat unchanged
+    ok: equipment: comparison uses the acknowledged attack
+    ok: equipment: compare baseline is the ack, not a world guess
+    ok: equipment: a helmet cannot occupy the main-hand seat
+    ok: equipment: live HUD cannot pretend a rejected request succeeded
+    ok: equipment: pickup yields a compare candidate
+    ok: equipment: pending compare cannot gold-frame as equipped
+    ok: equipment: ack paints equip:ok
+    ok: equipment: compare plate follows the acknowledged seat
+    ok: equipment: PaneStat still states TREE absence for TASK-0156
+    ok: equipment: owner paint is Skill tree absence, not TREE jargon
+    ok: equipment: pack cells paint a weapon glyph, not a grey crate
+    ok: equipment: a grey square cannot certify a carried weapon
+    ok: equipment: compare-plate capture written
+    ok: equipment: live HUD names Ack only and No pending
+    ok: equipment: live HUD rejects pending gold
+    ok: equipment: compare plate is measured
+    ok: equipment: compare plate stays off gear stats and footer
+    ok: equipment: covering DEF/LVL with the compare plate is the anti-pattern
+    ok: equipment: a plate left of the pane is the production compare HUD
+    ok: equipment: live HUD names the cleared compare plate
+    ok: equipment: DEF remains named on the gear pane
+    ok: equipment: a period-clipped pack name is the anti-pattern
+    ok: equipment: pack cells wrap Ember-edged axe instead of clipping
+    ok: equipment: live HUD names the full pack caption
+    ok: equipment: covering WASD or LIFE with the review strip is the anti-pattern
+    ok: equipment: Ack only stays off WASD and gear LIFE/ATK
+    ok: equipment: a semicolon compare hint is the anti-pattern
+    ok: equipment: compare hint uses Enter equips | U unequips
+    ok: equipment: live HUD names the ASCII compare hint
+   PASS (0 failures)
+== scenario memory-soak ==
+    memory-soak: cycles 32 | floor bitmaps 1 | fx 128 | pens 83
+    ok: memory-soak: a short scene cannot establish the envelope
+    ok: memory-soak: CPU/session resources stay inside the cap
+    ok: memory-soak: report opened
+    ok: memory-soak: owner HUD capture written
+    ok: memory-soak: live HUD names 32 cycles and Cap holds
+    ok: memory-soak: live HUD rejects short scene
+   PASS (0 failures)
+== scenario dense-mix ==
+    ok: dense-mix: an isolated tone preview cannot prove the combat mix
+    ok: dense-mix: session has a scion
+    dense-mix: cues 17 unique 6 peak 700 floor 160 ids ambience:route:tin:1:0,music:combat,hit,attack-anticipate,kill,scion-lost
+    ok: dense-mix: mixed pack records hit, kill, and a danger cue
+    ok: dense-mix: cue attribution names encounter voices, not a preview
+    ok: dense-mix: review record written
+    ok: dense-mix: mixed-pack capture written
+    ok: dense-mix: live HUD names Encounter mix and Hit + warning
+    ok: dense-mix: live HUD rejects isolated preview as the mix
+   PASS (0 failures)
+== scenario pane-stack ==
+    ok: pane-stack: helper depth without native paint/Escape is the anti-pattern
+    ok: pane-stack: native paint plus Escape can prove the journey
+    ok: pane-stack: gear and character are both owned
+    ok: pane-stack: native shell paints the gear pane
+    ok: pane-stack: live HUD names depth 2, not only the helper
+    ok: pane-stack: stacked-pane capture written
+    ok: pane-stack: live HUD names Stack 2 and Escape closes
+    ok: pane-stack: live HUD rejects helper depth as the journey
+    ok: pane-stack: covering First Scion or gear with Stack 2 is the anti-pattern
+    ok: pane-stack: Stack 2 stays in the world lane between the two panes
+    ok: pane-stack: covering WASD, the objective, or Life with Stack 2 is the anti-pattern
+    ok: pane-stack: Stack 2 stays off WASD, the objective, and Life
+    ok: pane-stack: character pane frame is measured
+    ok: pane-stack: controls hint remains with the character sheet open
+    ok: pane-stack: controls hint never enters the character pane
+    ok: pane-stack: wrapped controls never enter the character pane
+    ok: pane-stack: overlaying the sheet with WASD is the anti-pattern
+    ok: pane-stack: relocated controls are the production character HUD
+    ok: pane-stack: keeping the hint is the production HUD
+    ok: pane-stack: character pane never covers the minimap
+    ok: pane-stack: character pane never covers the life orb
+    ok: pane-stack: first Escape dismisses the top pane only
+    ok: pane-stack: gear remains after the character sheet closes
+    ok: pane-stack: HUD drops to depth 1 after Escape
+    ok: pane-stack: second Escape closes gear without quitting
+    ok: pane-stack: bare Escape requests application exit
+    ok: pane-stack: skill tree paints owner title and absence
+    ok: pane-stack: absent tree hides seats instead of inventing an origin
+    ok: pane-stack: absent tree cannot paint tree-seat node ids
+    ok: pane-stack: live HUD rejects invented origin
+    ok: pane-stack: painting a seat with no payload is the anti-pattern
+    ok: pane-stack: hidden seats are the production absence
+    ok: pane-stack: tree pane frame is measured
+    ok: pane-stack: controls hint never enters the tree pane
+    ok: pane-stack: identity never enters the tree pane
+    ok: pane-stack: objective never enters the tree pane
+    ok: pane-stack: wrapped controls never enter the tree pane
+    ok: pane-stack: overlaying the tree with WASD is the anti-pattern
+    ok: pane-stack: relocated controls are the production HUD
+    ok: pane-stack: skill-tree capture written
+   PASS (0 failures)
+== scenario pane-focus ==
+    ok: pane-focus: WASD moves when no pane holds focus
+    ok: pane-focus: empty stack publishes focus:none
+    ok: pane-focus: gear overlay is the focused surface
+    ok: pane-focus: click/drag over gear cannot move the Scion
+    ok: pane-focus: combat keys are consumed while gear is focused
+    ok: pane-focus: held attack is remembered as blocked
+    ok: pane-focus: text-entry sits above gear and swallows input
+    ok: pane-focus: Escape closes text without dropping gear
+    ok: pane-focus: gear closed after text
+    ok: pane-focus: closing a pane does not release a buffered attack
+    ok: pane-focus: a fresh attack after key-up reaches gameplay
+    ok: pane-focus: focused gear capture written
+    ok: pane-focus: live HUD names Focus gear and No buffer
+    ok: pane-focus: live HUD rejects held fire
+   PASS (0 failures)
+== scenario remap-binds ==
+    ok: remap-binds: Documents is classified as an owner profile
+    ok: remap-binds: owner Documents is never the test destination
+    ok: remap-binds: duplicate WASD/dash codes fail closed
+    ok: remap-binds: conflict is visible on the live HUD
+    ok: remap-binds: a refused remap cannot mutate the live set
+    ok: remap-binds: unknown device codes fail visibly
+    ok: remap-binds: invalid device is named on the HUD
+    ok: remap-binds: isolated test profile is not the owner profile
+    ok: remap-binds: dash can move to G
+    ok: remap-binds: remapped set writes to the isolated profile
+    ok: remap-binds: restart reloads the remapped dash
+    ok: remap-binds: default Space is inaccessible after remap
+    ok: remap-binds: remapped G still dashes after restart
+    ok: remap-binds: restore defaults returns Space dash
+    ok: remap-binds: restored set paints bind:ok
+    ok: remap-binds: restored-binding capture written
+    ok: remap-binds: live HUD names Isolated profile and Dash remap
+    ok: remap-binds: live HUD rejects Documents
+   PASS (0 failures)
+== scenario attack-beat ==
+    ok: attack-beat: idle session publishes none
+    ok: attack-beat: a swing sprite without events cannot mint a beat
+    ok: attack-beat: a fabricated swing fails review
+    ok: attack-beat: an event-driven beat is not treated as fabricated
+    ok: attack-beat: AttackStarted advances anticipation
+    ok: attack-beat: anticipation submits an attack-anticipate cue
+    ok: attack-beat: DamageApplied advances impact
+    ok: attack-beat: impact or aftermath remains on the live HUD
+    ok: attack-beat: dash during anticipation is cancel, not impact
+    ok: attack-beat: live beat capture written
+    ok: attack-beat: live HUD names Attack beat and Anticipate
+    ok: attack-beat: live HUD rejects a fabricated swing
+    ok: attack-beat: mapped-beats capture written
+    ok: attack-beat: live HUD names Beats mapped and Hit once
+    ok: attack-beat: live HUD rejects double-play
+   PASS (0 failures)
+== scenario strike-contact ==
+    ok: strike-contact: real actor fixture exists
+    ok: strike-contact: production frame captured
+    ok: strike-contact: an idle actor has no accidental strike pose
+    ok: strike-contact: production frame captured
+    ok: strike-contact: actual preparation paints the ready frame
+    ok: strike-contact: preparation renders windup before contact
+    ok: strike-contact: production frame captured
+    ok: strike-contact: production frame captured
+    ok: strike-contact: production frame captured
+    ok: strike-contact: first confirmed damage frame paints contact pose 3
+    ok: strike-contact: simulation actually resolved damage
+    ok: strike-contact: first damage frame presents active contact
+    ok: strike-contact: confirmation leaves exactly one player arc
+    ok: strike-contact: actual impact is visible on contact frame
+    ok: strike-contact: resolved hit paints the pixel spark and struck actor silhouette
+    ok: strike-contact: production frame captured
+    ok: strike-contact: contact flows into the authored follow-through
+    ok: strike-contact: production frame captured
+    ok: strike-contact: late recovery paints the final authored pose
+    ok: strike-contact: the same strike settles into recovery
+    ok: strike-contact: an enemy strike leaves the player in its idle pose
+    ok: strike-contact: enemy-only arc cannot pose player
+    ok: strike-contact: a strike without damage cannot flash either actor
+    ok: strike-contact: actual loot equips an axe for the motion review
+    ok: strike-contact: equipped confirmed contact captured through production paint
+    ok: strike-contact: equipped contact pose accompanies real resolved damage
+    ok: strike-contact: actual loot equips an axe for the motion review
+    ok: strike-contact: equipped confirmed contact captured through production paint
+    ok: strike-contact: equipped contact pose accompanies real resolved damage
+    ok: strike-contact: actual loot equips an axe for the motion review
+    ok: strike-contact: equipped confirmed contact captured through production paint
+    ok: strike-contact: equipped contact pose accompanies real resolved damage
+    ok: strike-contact: actual loot equips an axe for the motion review
+    ok: strike-contact: equipped confirmed contact captured through production paint
+    ok: strike-contact: equipped contact pose accompanies real resolved damage
+   PASS (0 failures)
+== scenario dressing-pass ==
+    ok: dressing-pass: version 1 is named on the HUD
+    ok: dressing-pass: dressing trees are labeled separately from solids
+    ok: dressing-pass: live topology hash matches the frozen layout
+    ok: dressing-pass: v1 plants two dressing trees
+    ok: dressing-pass: production dressing is never solid
+    ok: dressing-pass: a segment through the decorative trunk stays clear
+    ok: dressing-pass: a solid dressing tree is an unreported obstacle
+    ok: dressing-pass: illegally solid dressing would collide
+    ok: dressing-pass: art version cannot change collision topology
+    ok: dressing-pass: spawn is unchanged across dressing versions
+    ok: dressing-pass: reward/layout seed is unchanged
+    ok: dressing-pass: the decoration pass itself did change
+    ok: dressing-pass: version 2 is named on the HUD
+    ok: dressing-pass: versioned dressing capture written
+    ok: dressing-pass: live HUD names Dressing and Not solid
+    ok: dressing-pass: live HUD rejects tree solid
+   PASS (0 failures)
+== scenario loot-filter ==
+    ok: loot-filter: default filter publishes all categories
+    ok: loot-filter: ground drops publish safe category facts
+    ok: loot-filter: every pouch still draws as Drop
+    ok: loot-filter: unfiltered nameplates cover each category
+    ok: loot-filter: hiding trophies is named on the HUD
+    ok: loot-filter: hidden trophies still publish their fact
+    ok: loot-filter: hiding a label cannot delete the Drop sprite
+    ok: loot-filter: trophy nameplates are suppressed
+    ok: loot-filter: other categories stay readable
+    ok: loot-filter: hiding cannot change ground ownership
+    ok: loot-filter: matching ownership is not treated as a mutation
+    ok: loot-filter: a mutated ownership count fails review
+    ok: loot-filter: droprate/ownership tables stay untouched
+    ok: loot-filter: filtered nameplate capture written
+    ok: loot-filter: live HUD names Hide trophies
+    ok: loot-filter: live HUD rejects mutate ground
+   PASS (0 failures)
+== scenario build-fixtures ==
+    ok: build-fixtures: reach/pressure/magic are distinct loops
+    ok: build-fixtures: three tinted copies of melee fail review
+    ok: build-fixtures: character sheet names all three roles
+    ok: build-fixtures: distinct-loop and tint-fail HUD flags
+    ok: build-fixtures: reach lists tactics, weakness, gear, answer
+    ok: build-fixtures: pressure lists tactics, weakness, gear, answer
+    ok: build-fixtures: magic lists tactics, weakness, gear, answer
+    ok: build-fixtures: character-sheet capture written
+    ok: build-fixtures: live HUD names Three slices and Reach pike
+    ok: build-fixtures: live HUD rejects tint clones
+   PASS (0 failures)
+== scenario telegraph-spec ==
+    ok: telegraph-spec: local ticks and remote durationMs share the catalog window
+    ok: telegraph-spec: value/50 cannot invent a longer window
+    ok: telegraph-spec: duration and thrust reach are catalog-typed
+    ok: telegraph-spec: sweep uses the melee footprint
+    ok: telegraph-spec: remote consumer stores the catalog window
+    ok: telegraph-spec: AttackStarted cancels the warning
+    ok: telegraph-spec: expired remote warning leaves no footprint
+    ok: telegraph-spec: session has a scion
+    ok: telegraph-spec: live elite publishes a warning
+    ok: telegraph-spec: HUD names the typed window and reach
+    ok: telegraph-spec: owner window paints ticks and footprint
+    ok: telegraph-spec: a protocol HUD token without the window cannot certify
+    ok: telegraph-spec: the painted window, not a protocol token, certifies
+    ok: telegraph-spec: a ms/50 guess cannot certify the catalog window
+    ok: telegraph-spec: the ms/50 cone is the rejected control
+    ok: telegraph-spec: warning-window capture written
+    ok: telegraph-spec: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: telegraph-spec: Warning windows stays off WASD, the objective, Tin village, and Life
+    ok: telegraph-spec: an expired map entry cannot stay a silent cone
+    ok: telegraph-spec: prune drops expired warnings
+    ok: telegraph-spec: after prune there is no invisible damage telegraph
+   PASS (0 failures)
+== scenario ranged-warning ==
+    ok: ranged-warning: slam envelope is not a projectile windup
+    ok: ranged-warning: projectile windup stores a Telegraph
+    ok: ranged-warning: travelMs uses the authored 50ms tick
+    ok: ranged-warning: live list records Telegraph before the hit
+    ok: ranged-warning: hit lands as attributed Damage/Impact
+    ok: ranged-warning: incoming damage is attributed to flint-1
+    ok: ranged-warning: a hit without a warning cannot mint Telegraph
+    ok: ranged-warning: capture written
+   PASS (0 failures)
+== scenario headless-contract ==
+    ok: headless-contract: AttackStarted maps to a typed intent
+    ok: headless-contract: production bridge voices AttackStarted
+    ok: headless-contract: removing the bridge fails the fixture
+    ok: headless-contract: a mocked event is not a journey proof
+    ok: headless-contract: swing FX from a mock cannot prove the journey
+    ok: headless-contract: the simulation emitted AttackStarted
+    ok: headless-contract: real event reaches render and audio intent
+    ok: headless-contract: live contract capture written
+    ok: headless-contract: live HUD names Sim event and Intent swing
+    ok: headless-contract: live HUD rejects a mocked event
+   PASS (0 failures)
+== scenario input-latency ==
+    ok: input-latency: command time is not a photon label
+    ok: input-latency: the photon label is rejected for this method
+    ok: input-latency: paired input-to-present samples were recorded
+    ok: input-latency: p50/p95 are present-path milliseconds
+    ok: input-latency: the method is named present, not photon
+    ok: input-latency: photon must not appear on the HUD
+    ok: input-latency: p50 and p95 are published
+    input-latency machine: display 3440x1440 | 12 logical CPUs | OS Win32 | method input-to-present (not photon)
+    input-latency: p50 7.41 ms | p95 8.06 ms | n 24 | command-dispatch 0.004 ms (not photon)
+    ok: input-latency: present-path capture written
+    ok: input-latency: live HUD names To present and Input paint
+    ok: input-latency: live HUD rejects photon as this method
+    ok: input-latency: report file opened
+   PASS (0 failures)
+== scenario eight-way ==
+    ok: eight-way: all eight vectors encode without dropping an axis
+    ok: eight-way: northwest is up-left on the wire
+    ok: eight-way: a vertical-only encoder cannot pass a diagonal
+    ok: eight-way: diagonal names keep both axes
+    ok: eight-way: diagonal names keep both axes
+    ok: eight-way: diagonal names keep both axes
+    ok: eight-way: diagonal names keep both axes
+    ok: eight-way: diagonal names keep both axes
+    ok: eight-way: diagonal names keep both axes
+    ok: eight-way: diagonal names keep both axes
+    ok: eight-way: diagonal names keep both axes
+    ok: eight-way: production HUD names the eight-way encoder
+    ok: eight-way: capture written
+    ok: eight-way: live HUD names Eight-way and Up-left
+    ok: eight-way: live HUD rejects a vertical-only encoder
+   PASS (0 failures)
+== scenario aim-hold ==
+    ok: aim-hold: session has a scion
+    ok: aim-hold: east aim is stored
+    ok: aim-hold: core move would overwrite aim without the adapter
+    ok: aim-hold: adapter restores east aim after west locomotion
+    ok: aim-hold: production tick keeps east aim while walking west
+    ok: aim-hold: west WASD still displaces
+    ok: aim-hold: HUD names the held aim
+    ok: aim-hold: capture written
+    ok: aim-hold: live HUD names Aim hold and Face east
+    ok: aim-hold: live HUD rejects move facing as held aim
+   PASS (0 failures)
+== scenario vital-orbs ==
+    ok: vital-orbs: the blue crop cannot count as life
+    ok: vital-orbs: life uses the red crop on the sheet
+    ok: vital-orbs: scenarios still mute the sink
+    ok: vital-orbs: offscreen bitmap
+    ok: vital-orbs: life orb is left of mana
+    ok: vital-orbs: HUD names constitution roles
+    ok: vital-orbs: mute still has a non-color cue
+    ok: vital-orbs: mute cannot sit on the mana globe
+    vital-orbs: life rgb r=110 b=51 n=81 | mana r=24 b=126 n=86
+    ok: vital-orbs: left globe reads red, not blue
+    ok: vital-orbs: right globe reads blue, not orange
+    ok: vital-orbs: an R/B swapped still cannot certify life
+    ok: vital-orbs: capture written
+    ok: vital-orbs: live HUD names Life left and Mana right
+    ok: vital-orbs: live HUD rejects X on mana
+    ok: vital-orbs: Life left strip is traced
+    ok: vital-orbs: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: vital-orbs: Life left stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario death-disconnect ==
+    ok: death-disconnect: disconnect+uncommitted is the negative
+    ok: death-disconnect: that negative cannot paint extract:ok
+    ok: death-disconnect: disconnect HUD names uncommitted carry
+    ok: death-disconnect: already-banked extract:ok survives reconnect
+    ok: death-disconnect: committed extract is not a silent ack
+    ok: death-disconnect: death does not bank by HUD
+    ok: death-disconnect: live HUD publishes extract:uncommitted
+    ok: death-disconnect: live HUD cannot ack an uncommitted extract
+    ok: death-disconnect: capture written
+    ok: death-disconnect: live HUD names Carry open and No extract
+    ok: death-disconnect: live HUD rejects extract ok on disconnect
+   PASS (0 failures)
+== scenario route-map ==
+    ok: route-map: max zoom + off-snapshot is the leaky anti-pattern
+    ok: route-map: production overlay cannot use that leak
+    ok: route-map: snapshot-visible foes still paint at max zoom
+    ok: route-map: overlay settings are not world writes
+    ok: route-map: slay phase posts warden risk
+    ok: route-map: no pad still returns to town
+    ok: route-map: tin root paints as Tin village
+    ok: route-map: owner title cannot keep a protocol colon
+    ok: route-map: a display name without colons still shows
+    ok: route-map: town theme is a road name, not theme town
+    ok: route-map: owner risk line is Risk: wardens
+    ok: route-map: owner return line names the pad, not press F there
+    ok: route-map: zoom/opacity cannot move the player
+    ok: route-map: tight zoom cannot mint an off-snapshot blip
+    ok: route-map: a snapshot foe still has a map blip
+    ok: route-map: zoom and opacity publish as overlay settings
+    ok: route-map: route card names return/risk without foe ids
+    ok: route-map: live card titles Tin village, not the wire id
+    ok: route-map: a protocol route id cannot be the owner title
+    ok: route-map: HUD cannot name a server-hidden target
+    ok: route-map: capture written
+    ok: route-map: live HUD names Tin village and Risk wardens
+    ok: route-map: live HUD rejects route:tin
+    ok: route-map: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: route-map: Risk wardens stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario stat-explain ==
+    ok: stat-explain: active total is base+gear+passive
+    ok: stat-explain: folding dormant 9 into Attack is the anti-pattern
+    ok: stat-explain: the live total must reject that fold
+    ok: stat-explain: collapsed Attack excludes dormant
+    ok: stat-explain: dormant 9 cannot appear as Attack
+    ok: stat-explain: conditional stays labeled inactive
+    ok: stat-explain: lowercase base/gear on Sources is the anti-pattern
+    ok: stat-explain: compact Sources uses Base/Gear, not src jargon
+    ok: stat-explain: compact sheet names Base/Gear on Sources
+    ok: stat-explain: expanded sheet names base, gear, passive, cond
+    ok: stat-explain: expand flag and dormant-exclusion are on the HUD
+    ok: stat-explain: expanded sources paint Base/Gear, not src jargon
+    ok: stat-explain: two Conditional rows is the anti-pattern
+    ok: stat-explain: expanded sheet paints Conditional once
+    ok: stat-explain: expanded sheet drops the compact Conditional row
+    ok: stat-explain: live HUD names a single Conditional
+    ok: stat-explain: capture written
+    ok: stat-explain: live HUD names Base Gear and Cond off
+    ok: stat-explain: live HUD rejects dormant ATK
+    ok: stat-explain: covering the sheet or combat HUD with Base Gear is the anti-pattern
+    ok: stat-explain: Base Gear stays off the sheet, WASD, objective, and Life
+   PASS (0 failures)
+== scenario held-item ==
+    ok: held-item: a filled seat with no world hold is the anti-pattern
+    ok: held-item: held:none is not a world attachment
+    ok: held-item: a non-none held enum is a world attachment
+    ok: held-item: seat plus world hold can pass review
+    ok: held-item: pickup yields a carried weapon
+    ok: held-item: unequip clears the world attachment
+    ok: held-item: unequip clears the paper-doll seat
+    ok: held-item: ack equip changes the world actor layer
+    ok: held-item: paper-doll names the equipped weapon
+    ok: held-item: HUD publishes the world hold, not only the seat
+    ok: held-item: paper-doll alone cannot satisfy the journey
+    ok: held-item: world-hold capture written
+    ok: held-item: live HUD names World hold and Ack equip
+    ok: held-item: live HUD rejects paper doll
+    ok: held-item: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: held-item: World hold stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)
+== scenario pack-drag ==
+    ok: pack-drag: a failed preview is a reject
+    ok: pack-drag: losing the item on reject is the anti-pattern
+    ok: pack-drag: silent equip on reject is the anti-pattern
+    ok: pack-drag: production reject keeps the carried count
+    ok: pack-drag: HUD names a successful place
+    ok: pack-drag: pickup fills the pack
+    ok: pack-drag: grid has the carried item
+    ok: pack-drag: valid drop moves the item
+    ok: pack-drag: moved cell and drop HUD are painted
+    ok: pack-drag: reject neither loses nor duplicates
+    ok: pack-drag: reject does not silently equip
+    ok: pack-drag: reject occupancy matches the helper
+    ok: pack-drag: reject is visible on the gear HUD
+    ok: pack-drag: pack cells paint a weapon glyph, not a grey crate
+    ok: pack-drag: a grey square cannot certify a carried weapon
+    ok: pack-drag: a period-clipped pack name is the anti-pattern
+    ok: pack-drag: pack cells wrap Ember-edged axe instead of clipping
+    ok: pack-drag: live HUD names the full pack caption
+    ok: pack-drag: capture written
+    ok: pack-drag: live HUD names Pack place and Reject keeps
+    ok: pack-drag: live HUD rejects silent equip
+    ok: pack-drag: covering WASD or LIFE with the review strip is the anti-pattern
+    ok: pack-drag: Pack place stays off WASD and gear LIFE/ATK
+    ok: pack-drag: a semicolon compare hint is the anti-pattern
+    ok: pack-drag: compare hint uses Enter equips | U unequips
+    ok: pack-drag: live HUD names the ASCII compare hint
+   PASS (0 failures)
+== scenario frame-budget ==
+    ok: frame-budget: 32bpp surface allocated
+    frame-budget machine: display 3440x1440 | 12 logical CPUs | OS Win32 | present GDI (upload n/a)
+    frame-budget: 22.5 ms average over 20 frames at 3440x1440
+    frame-budget last paint: sim-sync in paint | floor 8.7 | world 9.6 | hud 4.1 | upload 0.0 | total 22.5 | net n/a
+    ok: frame-budget: fullscreen frame stays under 40 ms
+    ok: frame-budget: unnamed hardware cannot skip the paint fields
+    ok: frame-budget: movement corridor clears unchanged scenery
+    frame-budget moving[00]: 23.9 ms | floor 8.2 | world 11.7 | hud 4.0 | new ground tiles 0
+    frame-budget moving[01]: 24.6 ms | floor 8.5 | world 11.2 | hud 4.9 | new ground tiles 0
+    frame-budget moving[02]: 33.9 ms | floor 19.4 | world 10.3 | hud 4.1 | new ground tiles 16
+    frame-budget moving[03]: 28.9 ms | floor 13.6 | world 11.0 | hud 4.2 | new ground tiles 8
+    frame-budget moving[04]: 23.2 ms | floor 8.8 | world 10.4 | hud 4.0 | new ground tiles 0
+    frame-budget moving[05]: 24.8 ms | floor 8.3 | world 12.4 | hud 4.0 | new ground tiles 0
+    frame-budget moving[06]: 24.7 ms | floor 9.1 | world 11.6 | hud 4.0 | new ground tiles 0
+    frame-budget moving[07]: 23.8 ms | floor 8.8 | world 10.9 | hud 4.0 | new ground tiles 0
+    frame-budget moving[08]: 23.8 ms | floor 8.9 | world 10.7 | hud 4.2 | new ground tiles 0
+    frame-budget moving[09]: 23.0 ms | floor 8.4 | world 10.6 | hud 4.0 | new ground tiles 0
+    frame-budget moving[10]: 23.5 ms | floor 8.9 | world 10.1 | hud 4.4 | new ground tiles 0
+    frame-budget moving[11]: 23.7 ms | floor 8.7 | world 10.9 | hud 4.0 | new ground tiles 0
+    frame-budget moving[12]: 22.5 ms | floor 8.4 | world 10.1 | hud 4.0 | new ground tiles 0
+    frame-budget moving[13]: 22.5 ms | floor 8.8 | world 9.4 | hud 4.3 | new ground tiles 0
+    frame-budget moving[14]: 22.4 ms | floor 8.0 | world 10.4 | hud 4.0 | new ground tiles 0
+    frame-budget moving[15]: 22.2 ms | floor 8.7 | world 9.6 | hud 3.9 | new ground tiles 0
+    frame-budget moving[16]: 22.6 ms | floor 8.6 | world 9.7 | hud 4.3 | new ground tiles 0
+    frame-budget moving[17]: 22.0 ms | floor 8.1 | world 10.0 | hud 3.9 | new ground tiles 0
+    frame-budget moving[18]: 21.6 ms | floor 8.3 | world 9.3 | hud 3.9 | new ground tiles 0
+    frame-budget moving[19]: 22.2 ms | floor 8.8 | world 9.2 | hud 4.2 | new ground tiles 0
+    ok: frame-budget: movement preserves the loaded scenery layout
+    ok: frame-budget: measured paints follow actual authoritative travel
+    frame-budget moving: 24.0 ms average, 33.9 ms peak over 20 frames
+    ok: frame-budget: moving fullscreen frame stays under 40 ms
+    ok: frame-budget: report opened
+    ok: frame-budget: owner HUD capture written
+    ok: frame-budget: live HUD names Named machine and Paint fields
+    ok: frame-budget: live HUD rejects unnamed hardware
+   PASS (0 failures)

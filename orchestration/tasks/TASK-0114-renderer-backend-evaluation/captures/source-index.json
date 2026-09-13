@@ -1,0 +1,222 @@
+{
+  "task": "TASK-0114",
+  "title": "Stage-2 renderer backend evaluation matrix",
+  "lane": "ox-pc-bb",
+  "model": "openrouter/stealth/ox-alpha",
+  "base_commit": "d2423873c577d299b3b39c56024d1d840993c72b",
+  "branch": "worker/verdigris/pc/ox-pc-bb",
+  "evaluated_at": "2026-08-23",
+  "resource_capsule": "research-only; internet citations allowed; no downloads, builds, dependencies, or ports; port 6500 untouched",
+  "upstream_pins": [
+    {
+      "candidate": "direct3d11",
+      "artifact": "Direct3D 11 API (Windows SDK component)",
+      "version_pin": "Windows SDK documentation set current at access date; API minimum Windows 7; feature level 11_0 = shader model 5.0",
+      "pin_source_ids": ["S01", "S02"]
+    },
+    {
+      "candidate": "opengl33core",
+      "artifact": "OpenGL 3.3 Core Profile specification + Khronos registry headers",
+      "version_pin": "OpenGL 3.3 core spec glspec33.core.pdf (registry 'older specifications' section); current GL is 4.6 (May 5, 2022)",
+      "pin_source_ids": ["S08"]
+    },
+    {
+      "candidate": "sdl2",
+      "artifact": "libsdl-org/SDL release-2.32.10",
+      "version_pin": "tag release-2.32.10, published 2025-09-01T21:51:34Z; SDL mainline is now SDL3 (release-3.4.14 published 2026-08-03)",
+      "pin_source_ids": ["S14", "S15", "S16", "S17", "S18"]
+    },
+    {
+      "candidate": "sokol_gfx",
+      "artifact": "floooh/sokol master @ 7cee0ba17c358985e4744fe8ac20b6829d328229",
+      "version_pin": "commit dated 2026-08-18T17:47:22Z (merge of PR #1585)",
+      "pin_source_ids": ["S10", "S11", "S12", "S13"]
+    },
+    {
+      "candidate": "gdi-null",
+      "artifact": "Windows GDI / MSIMG32 (OS components)",
+      "version_pin": "Win32 API set current at access date; AlphaBlend requires Windows 2000+, Msimg32.dll",
+      "pin_source_ids": ["S06", "S07"]
+    }
+  ],
+  "sources": [
+    {
+      "id": "S01",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/direct3d11/atoc-dx-graphics-direct3d-11",
+      "title": "Direct3D 11 Graphics - Win32 apps | Microsoft Learn",
+      "publisher": "Microsoft",
+      "accessed": "2026-08-23",
+      "used_for": "D3D11 supported runtime environments ('Windows/C++'), minimum client Windows 7, C/C++ recommended language"
+    },
+    {
+      "id": "S02",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/direct3d11/overviews-direct3d-11-devices-downlevel-intro",
+      "title": "Direct3D feature levels - Win32 apps | Microsoft Learn",
+      "publisher": "Microsoft",
+      "accessed": "2026-08-23",
+      "used_for": "Feature-level model; FL 11_0 shader model 5.0 (SM 5.1+ only via D3D12); NPOT textures unconditional at 10_0+; per-level caps tables"
+    },
+    {
+      "id": "S03",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/direct3d11/overviews-direct3d-11-devices-limitations",
+      "title": "Limitations Creating WARP and Reference Devices - Win32 apps | Microsoft Learn",
+      "publisher": "Microsoft",
+      "accessed": "2026-08-23",
+      "used_for": "D3D_DRIVER_TYPE_WARP valid on all feature levels in Direct3D 11.1 (Windows 8+) - software rasterizer path for headless/GPU-less capture hosts"
+    },
+    {
+      "id": "S04",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/d3d11/nf-d3d11-id3d11devicecontext-map",
+      "title": "ID3D11DeviceContext::Map (d3d11.h) - Win32 apps | Microsoft Learn",
+      "publisher": "Microsoft",
+      "accessed": "2026-08-23",
+      "used_for": "CPU readback semantics (Map/D3D11_MAP), D3D11.lib link requirement, deferred-context map restrictions"
+    },
+    {
+      "id": "S05",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/directx-sdk--august-2009-",
+      "title": "Where is the DirectX SDK? - Win32 apps | Microsoft Learn",
+      "publisher": "Microsoft",
+      "accessed": "2026-08-23",
+      "used_for": "DirectX headers/libs folded into the Windows SDK since Windows 8; FXC HLSL compiler in SDK bin; D3DCompiler_47.dll redistributable as side-by-side DLL with applications"
+    },
+    {
+      "id": "S06",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/gdi/windows-gdi",
+      "title": "Windows GDI - Win32 apps | Microsoft Learn",
+      "publisher": "Microsoft",
+      "accessed": "2026-08-23",
+      "used_for": "GDI scope: graphics and formatted text on display and printer; applications do not access graphics hardware directly; C/C++ audience; all-Windows applicability"
+    },
+    {
+      "id": "S07",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-alphablend",
+      "title": "AlphaBlend function (wingdi.h) - Win32 apps | Microsoft Learn",
+      "publisher": "Microsoft",
+      "accessed": "2026-08-23",
+      "used_for": "Null-option sprite path: Msimg32.lib/DLL; blend functions currently limited to AC_SRC_OVER; SourceConstantAlpha combines with per-pixel alpha; all blending ops supported on a display DC"
+    },
+    {
+      "id": "S08",
+      "url": "https://registry.khronos.org/OpenGL/index_gl.php",
+      "title": "Khronos OpenGL Registry",
+      "publisher": "The Khronos Group",
+      "accessed": "2026-08-23",
+      "used_for": "OpenGL 3.3 core profile spec link (specs/gl/glspec33.core.pdf); current spec OpenGL 4.6 (May 5, 2022); GL/glcorearb.h header note - function pointer typedefs for dynamic runtime extension queries such as Linux and Microsoft Windows"
+    },
+    {
+      "id": "S09",
+      "url": "https://registry.khronos.org/OpenGL-Refpages/gl4/html/glReadPixels.xhtml",
+      "title": "glReadPixels - OpenGL 4 Reference Pages",
+      "publisher": "The Khronos Group",
+      "accessed": "2026-08-23",
+      "used_for": "GL offscreen/framebuffer-to-CPU pixel readback; GL_PIXEL_PACK_BUFFER indirection; pixel-store control"
+    },
+    {
+      "id": "S10",
+      "url": "https://github.com/floooh/sokol/blob/master/README.md",
+      "title": "Sokol headers README (master)",
+      "publisher": "Andre Weissflog (floooh/sokol)",
+      "accessed": "2026-08-23",
+      "used_for": "sokol_gfx.h backends (GLES3/WebGL2, GL3.3, D3D11, Metal, WebGPU); sokol_app.h platforms (Win32, macOS, Linux X11, iOS, WASM, Android, UWP) and 3D APIs (GL3.3 GLX/WGL, Metal, D3D11, GLES3/WebGL2); util headers sokol_gl.h / sokol_fontstash.h / sokol_debugtext.h / sokol_framebuffer.h; MSVC pragma-comment auto-linking; macOS/iOS Metal builds need Objective-C compilation unit"
+    },
+    {
+      "id": "S11",
+      "url": "https://api.github.com/repos/floooh/sokol/commits/master",
+      "title": "GitHub API: floooh/sokol commits/master",
+      "publisher": "GitHub",
+      "accessed": "2026-08-23",
+      "used_for": "Upstream pin: sha 7cee0ba17c358985e4744fe8ac20b6829d328229, author date 2026-08-18T17:47:22Z"
+    },
+    {
+      "id": "S12",
+      "url": "https://raw.githubusercontent.com/floooh/sokol/master/LICENSE",
+      "title": "floooh/sokol LICENSE (zlib/libpng)",
+      "publisher": "Andre Weissflog",
+      "accessed": "2026-08-23",
+      "used_for": "sokol license terms (zlib, copyright (c) 2018 Andre Weissflog)"
+    },
+    {
+      "id": "S13",
+      "url": "https://raw.githubusercontent.com/floooh/sokol/7cee0ba17c358985e4744fe8ac20b6829d328229/sokol_gfx.h",
+      "title": "sokol_gfx.h @ 7cee0ba1 (pinned)",
+      "publisher": "floooh/sokol",
+      "accessed": "2026-08-23",
+      "used_for": "Backend defines incl. SOKOL_DUMMY_BACKEND ('useful for writing tests that need to run on the command line'); does NOT create window/swapchain/context and does not present; D3D11 dynamically loads d3dcompiler_47.dll when given HLSL source; integrated GL loader on Windows; offscreen passes via attachment views into image objects; full-text search found NO public GPU->CPU pixel-readback function at this SHA"
+    },
+    {
+      "id": "S14",
+      "url": "https://api.github.com/repos/libsdl-org/SDL/releases?per_page=30",
+      "title": "GitHub API: libsdl-org/SDL releases",
+      "publisher": "GitHub / libsdl-org",
+      "accessed": "2026-08-23",
+      "used_for": "Latest SDL2 release tag release-2.32.10 published 2025-09-01T21:51:34Z; compressed asset sizes: SDL2-2.32.10-win32-x64.zip 608965 bytes, SDL2-devel-2.32.10-VC.zip 7172966 bytes; SDL3 mainline release-3.4.14 published 2026-08-03 (SDL2 branch activity signal)"
+    },
+    {
+      "id": "S15",
+      "url": "https://raw.githubusercontent.com/libsdl-org/SDL/release-2.32.10/LICENSE.txt",
+      "title": "libsdl-org/SDL LICENSE.txt @ release-2.32.10 (zlib)",
+      "publisher": "Sam Lantinga / libsdl-org",
+      "accessed": "2026-08-23",
+      "used_for": "SDL2 license terms (zlib, copyright (C) 1997-2025 Sam Lantinga)"
+    },
+    {
+      "id": "S16",
+      "url": "https://raw.githubusercontent.com/libsdl-org/SDL/release-2.32.10/docs/README-cmake.md",
+      "title": "SDL2 docs/README-cmake.md @ release-2.32.10",
+      "publisher": "libsdl-org",
+      "accessed": "2026-08-23",
+      "used_for": "First-party CMake support incl. Microsoft Visual C platform; vendored add_subdirectory(vendored/sdl EXCLUDE_FROM_ALL); find_package(SDL2 REQUIRED CONFIG REQUIRED COMPONENTS SDL2) with SDL2::SDL2 / SDL2::SDL2-static / SDL2::SDL2main targets"
+    },
+    {
+      "id": "S17",
+      "url": "https://wiki.libsdl.org/SDL2/SDL_RenderReadPixels",
+      "title": "SDL_RenderReadPixels - SDL2 Wiki",
+      "publisher": "libsdl-org (CC BY 4.0 wiki)",
+      "accessed": "2026-08-23",
+      "used_for": "Offscreen/backbuffer capture API: reads pixels from current render target; documented as very slow; call after rendering before SDL_RenderPresent; available since SDL 2.0.0"
+    },
+    {
+      "id": "S18",
+      "url": "https://wiki.libsdl.org/SDL2/SDL_RenderGeometry",
+      "title": "SDL_RenderGeometry - SDL2 Wiki",
+      "publisher": "libsdl-org (CC BY 4.0 wiki)",
+      "accessed": "2026-08-23",
+      "used_for": "Explicit batching layer basis: renders a list of triangles with optional texture and indices, per-vertex color/alpha; available since SDL 2.0.18"
+    },
+    {
+      "id": "S19",
+      "url": "https://raw.githubusercontent.com/Dav1dde/glad/master/LICENSE",
+      "title": "Dav1dde/glad LICENSE (MIT + Khronos Apache-2.0 headers)",
+      "publisher": "David Herberth / Khronos Group",
+      "accessed": "2026-08-23",
+      "used_for": "License posture of a candidate GL function loader if raw OpenGL 3.3 is chosen (MIT loader code; Khronos specification headers Apache-2.0)"
+    },
+    {
+      "id": "S20",
+      "url": "https://developer.apple.com/library/archive/releasenotes/General/RN-osx10.14/index.html",
+      "title": "[UNRETRIEVABLE AT ACCESS DATE] Apple macOS 10.14 Release Notes (expected source for OpenGL/OpenCL deprecation wording)",
+      "publisher": "Apple Inc.",
+      "accessed": "2026-08-23",
+      "used_for": "NEGATIVE CONTROL: live URL returns HTTP 404 and no Wayback Machine snapshot was located under library/archive or library/content paths during this evaluation; the commonly reported macOS OpenGL deprecation statement could NOT be re-verified from a primary source in this environment and is recorded as UNKNOWN (see EVALUATION.md unknowns U1)"
+    }
+  ],
+  "repository_evidence": [
+    {
+      "path": "native/client/render_list.hpp",
+      "note": "Semantic render::Op contract recorded next to each GDI draw (one List per presented frame); migration surface for any backend swap"
+    },
+    {
+      "path": "native/client/main.cpp",
+      "note": "Current GDI painting: memory DC + CreateCompatibleBitmap captures, StretchBlt sprites, msimg32 AlphaBlend via GetProcAddress, TextOutA text, FillRect panels"
+    },
+    {
+      "path": "native/CMakeLists.txt",
+      "note": "Plain CMake targets; WIN32 branch links user32 gdi32 only; zero third-party renderer deps today"
+    },
+    {
+      "path": "native/README.md",
+      "note": "Build gates: ./native/build.ps1 (MSVC helper) on Windows; cmake+ctest elsewhere; headless scenario runner asserts render lists"
+    }
+  ]
+}

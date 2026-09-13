@@ -1,0 +1,14 @@
+﻿orchestration/tasks/TASK-0079-browser-panel-inventory\SPEC.md:1:# TASK-0079 ΓÇö Browser panel + typography inventory (delta #4 feed)
+orchestration/tasks/TASK-0079-browser-panel-inventory\SPEC.md:9:browser's panels (expedition list, quest tracker, guide banner, chat,
+orchestration/tasks/TASK-0079-browser-panel-inventory\SPEC.md:10:context menus) and its typography. Before that native work is specced,
+orchestration/tasks/TASK-0079-browser-panel-inventory\SPEC.md:17:and situational UI panel in the browser client:
+orchestration/tasks/TASK-0079-browser-panel-inventory\SPEC.md:19:1. For each panel: name, trigger (always-on / hotkey / NPC / event),
+orchestration/tasks/TASK-0079-browser-panel-inventory\SPEC.md:20:   screen anchor + approximate size at 1920x1080, and the Vue component
+orchestration/tasks/TASK-0079-browser-panel-inventory\SPEC.md:22:2. Typography table: font family/size/weight/color for panel titles,
+orchestration/tasks/TASK-0079-browser-panel-inventory\SPEC.md:25:3. One capture per panel (capture harness from 0066; disposable port
+orchestration/tasks/TASK-0079-browser-panel-inventory\SPEC.md:27:   folder, filenames `panel-<name>.png`.
+orchestration/tasks/TASK-0079-browser-panel-inventory\SPEC.md:28:4. Rank panels by gameplay load-bearing-ness (what a player cannot
+orchestration/benchmarks\side-by-side-2026-08-20\browser-scenes.mjs:16:  page.screenshot({ path: path.join(outDir, `browser-${name}-1920x1080.png`) });
+orchestration/benchmarks\side-by-side-2026-08-20\BENCHMARK.md:12:2. HUD: browser has ornate orbs + iconed quickbar + minimap + panels;
+orchestration/benchmarks\side-by-side-2026-08-20\BENCHMARK.md:16:4. Panels/typography: expedition panel, guide banner, chat ΓÇö later.
+exit=0 lines=13

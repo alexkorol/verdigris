@@ -1,0 +1,13 @@
+[swing] tgt=monster-1-0 now=1000 next=1000 range-ok
+[swing] tgt=monster-1-0 now=1001 next=1350 range-ok
+[swing] tgt=monster-1-0 now=1349 next=1350 range-ok
+[swing] tgt=monster-1-0 now=1350 next=1350 range-ok
+[swing] tgt=monster-1-1 now=1351 next=1700 range-ok
+[swing] tgt=monster-1-1 now=1699 next=1700 range-ok
+[swing] tgt=monster-1-1 now=1700 next=1700 range-ok
+[swing] tgt=monster-1-1 now=1702 next=2050 range-ok
+[swing] tgt=monster-1-1 now=2049 next=2050 range-ok
+[swing] tgt=monster-1-1 now=2050 next=2050 range-ok
+[swing] tgt=monster-1-1 now=3000 next=3000 range-ok
+[swing] tgt=monster-1-1 now=3000 next=3350 range-ok
+verdigris core tests: PASS

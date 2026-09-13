@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "output_dir": "contact-right-v1",
+  "palette_reference": {
+    "source": "../../../client/assets/raster/runtime/raider_se.png",
+    "max_colors": 32
+  },
+  "defaults": {
+    "cell_size": 13,
+    "alpha_mode": "crisp",
+    "alpha_floor": 128,
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "pose_support_reviewed_identity_pending"
+  },
+  "sheets": [
+    {
+      "source": "../../../client/assets/raster/source/raider-walk-se-guided-contact-right-v1.png",
+      "assets": [
+        {
+          "name": "raider_walk2_se",
+          "source_box": [
+            200,
+            350,
+            850,
+            1240
+          ],
+          "anchor_source": [
+            375,
+            830
+          ]
+        }
+      ]
+    }
+  ]
+}

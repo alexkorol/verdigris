@@ -1,0 +1,3 @@
+Edit this accepted pixel-art character image. Make one small preparation movement: raise the existing unarmored elbow on the screen-left slightly outward to the left, and bend that same arm so its fist lifts beside its own screen-left shoulder. Keep the shoulder, elbow, wrist and fist visibly connected as one arm. Leave the bronze-guarded screen-right arm exactly as it is.
+
+Keep everything else unchanged: the original grounded adult proportions, head and hair, brown clothing, blue sash on screen-left, feet and their positions, upper-right/back camera, scale, palette, lighting and crisp square pixel clusters. No torso turn or body redesign. Return one complete figure with the same framing on actual transparent alpha; no checkerboard, scenery, text or extra limbs.

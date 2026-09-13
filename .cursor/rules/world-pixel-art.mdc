@@ -1,0 +1,13 @@
+---
+description: Generate consistent world pixel art with isolated reference images and verified runtime assets
+globs: native/client/assets/raster/**,native/tools/raster/**,native/client/raster_art.hpp
+alwaysApply: false
+---
+
+Read `native/client/assets/raster/AGENTS.md` and `PROMPTING.md` before
+generating world art; use `RESEARCH.md` for actual creator prompts and results.
+Use an accepted identity reference for one character/direction at a time.
+Try a demonstrated motion-sheet prompt or individual frames as appropriate;
+validate and assemble production atlases in code. Preserve natural material colors;
+the game name does not prescribe green oxidation. Inspect Pixel Respecter
+outputs and actual gameplay before accepting an asset or animation.

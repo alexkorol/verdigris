@@ -1,0 +1,123 @@
+{
+  "generator": "built-in image_gen",
+  "model_selection": "No model/variant control exposed; no specific version selected.",
+  "workflow": "Separate frames from an inspected isolated identity anchor, with an explicitly assigned prior pose reference. Production reconstruction and fixed origin handled by the actual Pixel Respecter pipeline.",
+  "identity_reference": "../../../../tools/raster/hero_se_reference_4x.png",
+  "runtime_anchor": "../runtime/hero_se.png",
+  "runtime_canvas": [
+    80,
+    96
+  ],
+  "proposed_common_source_pivot": [
+    572,
+    1344
+  ],
+  "pixel_pipeline": "native/tools/raster",
+  "review_status": "Preview-only acceptance: all four selected source poses and reconstructed 1x/4x strips visually inspected by asset worker and parent. Contact frames 0/2 and passing frames 1/3 are distinct. Full in-game cycle, other directions, and equipment review remain active goal work; this is not a completed animation claim.",
+  "preview_validation": {
+    "runtime_frames": 4,
+    "canvas": [80, 96],
+    "alpha_values_each_frame": [0, 255],
+    "gif_frame_duration_ms": 140,
+    "native_strip": "native/tools/raster/hero-walk-strip-1x.png",
+    "enlarged_strip": "native/tools/raster/hero-walk-strip-4x.png",
+    "preview_gif": "native/tools/raster/hero-walk-preview.gif",
+    "observed_limitations": "Subtle color/body registration shifts remain between frames; parent retained these for live-game evaluation. The single-frame workflow required explicit image-space leg silhouette correction and a separate toe-direction correction.",
+    "parent_reported_gates": "Parent reported production raster-world frame decode/distinct-paint checks passing, all 62 native scenarios passing with 16.6ms frame-budget result, and npm playtest 32/32. Asset worker did not independently rerun these integration gates."
+  },
+  "selected_frames": [
+    {
+      "frame": 0,
+      "source": "actors_hero-walk0-se-v1.png",
+      "prompt": "actors_hero-walk0-se-v1.txt",
+      "references": [
+        "native/tools/raster/hero_se_reference_4x.png"
+      ],
+      "size": [
+        1145,
+        1374
+      ],
+      "mode": "RGBA",
+      "observed_pose": "Near/screen-right leg long and planted forward; far/screen-left leg trails. Front/right hero facing; boots right.",
+      "runtime": "hero_walk0_se.png"
+    },
+    {
+      "frame": 1,
+      "source": "actors_hero-walk1-se-v1.png",
+      "prompt": "actors_hero-walk1-se-v1.txt",
+      "references": [
+        "native/tools/raster/hero_se_reference_4x.png",
+        "native/client/assets/raster/source/actors_hero-walk0-se-v1.png"
+      ],
+      "size": [
+        1145,
+        1374
+      ],
+      "mode": "RGB",
+      "raw_background": "Baked light checker; actual Pixel Respecter connected-background cleanup required and recorded by pipeline.",
+      "observed_pose": "Narrow passing pose, support on screen-right, far/screen-left boot raised near calf.",
+      "runtime": "hero_walk1_se.png"
+    },
+    {
+      "frame": 2,
+      "source": "actors_hero-walk2-se-v4.png",
+      "prompt": "actors_hero-walk2-se-v4.txt",
+      "references": [
+        "native/tools/raster/hero_se_reference_4x.png",
+        "native/client/assets/raster/source/actors_hero-walk2-se-v3.png"
+      ],
+      "size": [
+        1145,
+        1374
+      ],
+      "mode": "RGB",
+      "raw_background": "Near-black matte; actual Pixel Respecter connected-background cleanup required and recorded by pipeline.",
+      "observed_pose": "Opposite support: long screen-left leg planted low, bent screen-right leg raised, both boots corrected to point screen-right.",
+      "runtime": "hero_walk2_se.png"
+    },
+    {
+      "frame": 3,
+      "source": "actors_hero-walk3-se-v1.png",
+      "prompt": "actors_hero-walk3-se-v1.txt",
+      "references": [
+        "native/tools/raster/hero_se_reference_4x.png",
+        "native/client/assets/raster/source/actors_hero-walk2-se-v4.png"
+      ],
+      "size": [
+        1145,
+        1374
+      ],
+      "mode": "RGB",
+      "raw_background": "Baked light checker; actual Pixel Respecter cleanup required.",
+      "observed_pose": "Opposite narrow passing: support on screen-left under pelvis, screen-right boot raised near support calf. Crown rises ~2 logical pixels.",
+      "runtime": "hero_walk3_se.png"
+    }
+  ],
+  "rejected_attempts": [
+    {
+      "source": "actors_hero-walk2-se-v1.png",
+      "reason": "Repeated frame0 leading-leg order despite anatomical right-leg instruction.",
+      "references": [
+        "native/tools/raster/hero_se_reference_4x.png",
+        "native/client/assets/raster/source/actors_hero-walk0-se-v1.png"
+      ]
+    },
+    {
+      "source": "actors_hero-walk2-se-v2.png",
+      "reason": "Still retained original supporting side; too similar to passing frame1.",
+      "references": [
+        "native/tools/raster/hero_se_reference_4x.png",
+        "native/client/assets/raster/source/actors_hero-walk1-se-v1.png"
+      ]
+    },
+    {
+      "source": "actors_hero-walk2-se-v3.png",
+      "reason": "Successfully swapped support sides but both boots pointed left against body direction. Superseded by toe-only v4 edit.",
+      "references": [
+        "native/tools/raster/hero_se_reference_4x.png",
+        "native/client/assets/raster/runtime/hero_walk0_se.png"
+      ]
+    }
+  ],
+  "lesson": "Visible image-space silhouette instructions (leftmost boot low/planted, rightmost boot high/raised) corrected repeated anatomical left/right failures. A separate toe-direction correction was still necessary. Identity stability did not establish motion correctness."
+}

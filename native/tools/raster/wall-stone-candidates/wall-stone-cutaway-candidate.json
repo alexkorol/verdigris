@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "kind": "candidate_two_stage_assembly",
+  "name": "wall_stone_cutaway",
+  "canvas": [
+    64,
+    96
+  ],
+  "pivot": [
+    32,
+    96
+  ],
+  "ground_footprint": [
+    0,
+    32,
+    64,
+    96
+  ],
+  "plane_import_manifest": "wall-stone-cutaway-v2-planes.json",
+  "assembly_script": "assemble_review.py",
+  "parts": [
+    {
+      "file": "v2-planes/wall_stone_cutaway_cap.png",
+      "position": [
+        0,
+        0
+      ],
+      "sha256": "8e1a0cc864fc68b632b1c53aff66a2e7460dd618c21b8267b18e77b30aa1895f"
+    },
+    {
+      "file": "v2-planes/wall_stone_cutaway_face.png",
+      "position": [
+        0,
+        64
+      ],
+      "sha256": "ff6c68afa7c9deb6035a316780aa1bb7f2139280c50b6ed80de975e2bdc3ae93"
+    }
+  ],
+  "output": "selected/wall_stone_cutaway.png",
+  "output_sha256": "69d9bd08e777a9a17f45d11e09836fa81b6918fd076fd5e202a936a56c859e0b",
+  "acceptance": "candidate_only_pending_root_review",
+  "note": "This is assembly metadata, not a directly runnable import_assets.py manifest. Run plane importer then assemble_review.py."
+}

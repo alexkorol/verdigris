@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-ART-005",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "df544de7",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "held-item",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario held-item", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario loot-to-bank", "exit_code": 0}
+  ],
+  "assertions": [
+    "unequip clears world held:none and empty paper-doll seat",
+    "ack equip changes the Player held attachment",
+    "HUD publishes held-world not only held-seat",
+    "live HUD names World hold and Ack equip",
+    "World hold stays off WASD, the objective, Tin village, and Life",
+    "loot-to-bank starts unarmed, then world actor holds the equipped item",
+    "live HUD names Unarmed first and World hold",
+    "Unarmed first stays off WASD, the objective, Tin village, and Life"
+  ],
+  "negative_control": {
+    "name": "paper-doll seat filled while world remains held:none, or World hold covering WASD/objective/Tin village/Life",
+    "observed_result": "REJECTED as a passing journey"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/held-item-960x600.png",
+      "sha256": "88eb350b59c0f52b7f76e9d4225f6fdd0d263da964d862481d7e498ce4ff1288",
+      "produced_by": "native/build/verdigris_client.exe --scenario held-item"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/loot-to-bank-960x600.png",
+      "sha256": "410e375b2de44aa2e28a55dc93d2d6c060114e90a9f09a25cee3c8a73dbe1a04",
+      "produced_by": "native/build/verdigris_client.exe --scenario loot-to-bank"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Presentation bind only. ITEM identity and sim equip algebra stay Kimi.",
+    "held-item owner strip paints World hold / Ack equip and parks off WASD, the objective, Tin village, and Life. Paper doll cannot certify.",
+    "loot-to-bank owner strip paints Unarmed first / World hold and parks the same way. Paper doll cannot certify the pickup-to-equip journey.",
+    "Does not re-spec TASK-0108. No TASK numbers minted."
+  ]
+}

@@ -1,0 +1,9 @@
+Use case: identity-preserve
+Asset: one isolated southeast WALK animation frame of the same pixel-art hero.
+
+Reference 1 is the accepted identity anchor: preserve exactly the same grounded adult, clothes, face, warm bronze and russet/indigo palette, logical pixel scale, camera, and southeast front view.
+Reference 2 is the LEFT-foot-forward contact pose. Make the OPPOSITE contact pose, half a walking cycle later. Preserve its head, shoulders, pelvis position and overall body scale; change only the limbs, hanging hem and sash as required by the step.
+
+Frame 2 — RIGHT FOOT CONTACT: Reverse the fore/aft order of the two legs from reference 2. The character's RIGHT leg, the FAR leg beginning on the screen-left side of his hips, now stretches FORWARD diagonally toward screen lower-right with its heel touching down. The character's LEFT leg, the NEAR leg beginning on screen-right, now trails BACK toward screen upper-left, heel lifted. The forward foot must now visibly connect to the opposite hip from the forward foot in reference 2. This is not a mirrored image: keep the face, bronze shoulder guard and sash on their original sides. The left arm swings gently forward; right arm swings back. Empty hands.
+
+A clear ordinary walking stride, full silhouette visible. Preserve the same 64-logical-pixel adult scale and head height. Crisp flat pixel clusters and same limited palette, generous empty margins, one frame. Actual transparent alpha background.

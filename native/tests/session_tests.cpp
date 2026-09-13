@@ -76,8 +76,10 @@ void local_session_ready_and_deterministic() {
   const auto before_x = session.model().player.x;
   const auto before_y = session.model().player.y;
   session.submit(verdigris::client::ClientCommand::enter_zone("route:tin:1:0"));
+  session.advance_fixed_tick();
   for (int i = 0; i < 4; ++i) {
     session.submit(verdigris::client::ClientCommand::move(1, 0));
+    session.advance_fixed_tick();
   }
   session.poll();
   const bool moved = session.model().player.x != before_x ||
@@ -95,7 +97,319 @@ void local_session_ready_and_deterministic() {
         "local: shutdown reaches disconnected state");
 }
 
-void hunt_step(verdigris::client::IClientSession& session) {
+void local_fixed_step_is_independent_of_input_and_polling() {
+  using namespace verdigris::client;
+  LocalCoreSession session(0xF17EDULL);
+  check(session.start(), "local-clock: session starts");
+  auto* sim = session.simulation_for_scenarios();
+  const auto player_id = sim->scion().actor_id;
+  const auto foe_id = sim->spawn_monster({verdigris::world_scale::kMeleeRange * 4, 0});
+  auto* player = sim->actor(player_id);
+  player->stats.resource = 0;
+  player->cooldown_ticks = 4;
+  const auto foe_before = sim->actor(foe_id)->position;
+  for (int i = 0; i < 1000; ++i) {
+    session.submit(ClientCommand::aim(i % 2 ? 1 : -1, 0));
+    session.poll();
+  }
+  check(sim->tick() == 0 && sim->actor(foe_id)->position.x == foe_before.x &&
+            sim->actor(foe_id)->position.y == foe_before.y &&
+            player->stats.resource == 0 && player->cooldown_ticks == 4,
+        "local-clock: aim spam and polling advance neither pursuit nor timers");
+  IClientSession& seam = session;
+  seam.advance_fixed_tick();
+  const auto foe_after = sim->actor(foe_id)->position;
+  check(sim->tick() == 1 && foe_after.x < foe_before.x &&
+            player->stats.resource == verdigris::presentation_constants::kResourceRegenPerTick &&
+            player->cooldown_ticks == 3,
+        "local-clock: interface step advances pursuit and timers exactly once");
+  seam.advance_fixed_tick();
+  check(sim->tick() == 2 && sim->actor(foe_id)->position.x < foe_after.x &&
+            player->cooldown_ticks == 2,
+        "local-clock: empty input batch still advances idle enemies");
+
+  const auto position = player->position;
+  for (int i = 0; i < 1000; ++i) {
+    session.submit(ClientCommand::move(0, 1));
+    session.submit(ClientCommand::aim(-1, 0));
+  }
+  seam.advance_fixed_tick();
+  check(sim->tick() == 3 && player->position.x == position.x &&
+            player->position.y == position.y + verdigris::movement_step_per_tick(player->stats.move_speed) &&
+            player->facing.x == -1 && player->facing.y == 0,
+        "local-clock: move and aim bursts consume one movement step and keep held aim");
+  session.submit(ClientCommand::move(0, 1));
+  seam.advance_fixed_tick();
+  check(player->facing.x == -1 && player->facing.y == 0,
+        "local-clock: next tick movement preserves prior held aim");
+  session.submit(ClientCommand::move(1, 0));
+  session.shutdown();
+  check(session.start(), "local-clock: session restarts");
+  seam.advance_fixed_tick();
+  sim = session.simulation_for_scenarios();
+  const auto restarted_position = sim->actor(sim->scion().actor_id)->position;
+  check(sim->tick() == 1 && restarted_position.x == 0 && restarted_position.y == 0,
+        "local-clock: restart discards queued movement and old clock state");
+}
+
+void local_fixed_step_preserves_action_order_and_expiry() {
+  using namespace verdigris::client;
+  LocalCoreSession session(0xF17EDULL);
+  session.start();
+  auto* sim = session.simulation_for_scenarios();
+  const auto player_id = sim->scion().actor_id;
+  const int reach = verdigris::world_scale::kThrustRange - 1;
+  const auto east_id = sim->spawn_monster({reach, 0});
+  const auto west_id = sim->spawn_monster({-reach, 0});
+  auto* player = sim->actor(player_id);
+  player->stats.resource = player->stats.resource_max;
+  const int east_life = sim->actor(east_id)->stats.life;
+  const int west_life = sim->actor(west_id)->stats.life;
+  session.drain_events();
+  session.submit(ClientCommand::aim(1, 0));
+  session.submit(ClientCommand::use_action("thrust"));
+  session.submit(ClientCommand::aim(-1, 0));
+  session.poll();
+  check(sim->tick() == 0 && sim->actor(east_id)->stats.life == east_life,
+        "local-clock: queued attack remains unresolved before fixed step");
+  session.advance_fixed_tick();
+  check(sim->tick() == 1 && sim->actor(east_id)->stats.life < east_life &&
+            sim->actor(west_id)->stats.life == west_life &&
+            player->facing.x == -1 && player->facing.y == 0,
+        "local-clock: AimEast Attack AimWest hits east before final west aim");
+  int starts = 0;
+  int damage = 0;
+  bool ordered = true;
+  bool captured_east = false;
+  WorldView attack_world;
+  sync_world_from_model(attack_world, session.model());
+  PresentationFx attack_fx;
+  for (const auto& event : session.drain_events()) {
+    if (event.type == PresentationEventType::AttackStarted && event.actor_id == player_id) {
+      ++starts;
+      captured_east = event.has_actor_pose && event.actor_x == 0 && event.actor_y == 0 &&
+                      event.facing_x == 1 && event.facing_y == 0;
+    }
+    if (event.type == PresentationEventType::DamageApplied && event.actor_id == east_id) {
+      ++damage;
+      ordered = ordered && starts == 1;
+    }
+    apply_presentation_event(attack_fx, attack_world, event, sim->tick());
+  }
+  check(starts == 1 && damage == 1 && ordered &&
+            player->cooldown_ticks == player->stats.attack_speed_ticks - 1,
+        "local-clock: one confirmed attack precedes damage and one cooldown tick");
+  const auto* owned_strike = actor_strike(attack_fx.effects, player_id);
+  check(captured_east && attack_world.player.id == player_id && owned_strike &&
+            owned_strike->wx == 0 && owned_strike->wy == 0 &&
+            std::abs(owned_strike->angle) < 0.000001 && !owned_strike->speculative,
+        "local-clock: rendered owned strike keeps event-time east pose after final west aim");
+  const int after_hit = sim->actor(east_id)->stats.life;
+  for (int i = 0; i < 1000; ++i) {
+    session.submit(ClientCommand::use_action("thrust"));
+    session.poll();
+  }
+  check(sim->tick() == 1 && player->cooldown_ticks == player->stats.attack_speed_ticks - 1,
+        "local-clock: action spam cannot accelerate cooldown");
+  session.advance_fixed_tick();
+  check(sim->tick() == 2 && sim->actor(east_id)->stats.life == after_hit &&
+            sim->actor(west_id)->stats.life == west_life,
+        "local-clock: bounded attack batch cannot bypass active cooldown");
+
+  LocalCoreSession buff_session(0xB0FFULL);
+  buff_session.start();
+  auto* buff_sim = buff_session.simulation_for_scenarios();
+  buff_session.submit(ClientCommand::use_action("war-cry"));
+  buff_session.advance_fixed_tick();
+  const auto* buff_player = buff_sim->actor(buff_sim->scion().actor_id);
+  const int duration = verdigris::presentation_constants::kWarCryDurationTicks;
+  for (int i = 0; i < 100; ++i) buff_session.poll();
+  check(buff_sim->tick() == 1 && buff_player->war_cry_ticks_remaining == duration - 1,
+        "local-clock: polling cannot shorten the buff duration");
+  for (int i = 0; i < duration - 2; ++i) buff_session.advance_fixed_tick();
+  check(buff_player->war_cry_ticks_remaining == 1,
+        "local-clock: buff remains active until its last explicit step");
+  buff_session.advance_fixed_tick();
+  int expired = 0;
+  for (const auto& event : buff_session.drain_events())
+    if (event.type == PresentationEventType::BuffExpired && event.text == "war-cry") ++expired;
+  check(buff_sim->tick() == static_cast<std::uint64_t>(duration) &&
+            buff_player->war_cry_ticks_remaining == 0 && expired == 1,
+        "local-clock: idle steps publish buff expiry once at the authoritative tick");
+}
+
+void local_fixed_step_uses_authoritative_obstacles() {
+  using namespace verdigris::client;
+  LocalCoreSession session(0xC0111DEULL);
+  session.start();
+  session.submit(ClientCommand::enter_zone("route:tin:1:0"));
+  session.advance_fixed_tick();
+  auto* sim = session.simulation_for_scenarios();
+  const auto initial_tick = sim->tick();
+  auto* player = sim->actor(sim->scion().actor_id);
+  const int step = verdigris::movement_step_per_tick(player->stats.move_speed);
+  const int radius = 5;
+  const int wall = verdigris::world_scale::kActorColliderRadius + radius + step / 2;
+  session.set_navigation_obstacles({{{wall, 0}, radius}});
+  for (int i = 0; i < 100; ++i) session.submit(ClientCommand::move(1, 0));
+  session.advance_fixed_tick();
+  check(sim->tick() == initial_tick + 1 && player->position.x == 0 && player->position.y == 0,
+        "local-clock: batched player movement obeys local authority obstacles");
+  session.set_navigation_obstacles({{{step * verdigris::kDashMovementTicks / 2, 0}, radius}});
+  session.submit(ClientCommand::aim(1, 0));
+  session.submit(ClientCommand::use_action("dash"));
+  session.advance_fixed_tick();
+  check(sim->tick() == initial_tick + 2 && !sim->movement_blocked({0, 0}, player->position) &&
+            player->position.x < step * verdigris::kDashMovementTicks / 2,
+        "local-clock: dash cannot tunnel through authority obstacles");
+  const auto before = player->position;
+  session.set_navigation_obstacles({});
+  session.submit(ClientCommand::move(1, 0));
+  session.advance_fixed_tick();
+  check(sim->tick() == initial_tick + 3 && player->position.x == before.x + step,
+        "local-clock: replacing local obstacles restores one ordinary movement step");
+}
+
+void local_model_round_trips_world_and_drop_anchors() {
+  using namespace verdigris::client;
+  LocalCoreSession session(0xA11C40ULL);
+  session.start();
+  session.submit(ClientCommand::enter_zone("route:tin:1:0"));
+  session.advance_fixed_tick();
+  auto* sim = session.simulation_for_scenarios();
+  const auto player_id = sim->scion().actor_id;
+  int index = 0;
+  for (const auto& actor : sim->actors())
+    if (actor.kind == verdigris::ActorKind::Monster)
+      sim->actor(actor.id)->position = {-10000 - index++ * 300, -10000};
+  const verdigris::Vec2 drop_at{-300, 219};
+  const auto foe_id = sim->spawn_monster(drop_at);
+  auto* player = sim->actor(player_id);
+  bool exact = true;
+  for (const auto position : {verdigris::Vec2{-371, 219}, {3157, -2409}, {0, 0}}) {
+    player->position = position;
+    player->facing = {-1, 1};
+    session.poll();
+    WorldView world;
+    sync_world_from_model(world, session.model());
+    const auto foe = std::find_if(world.monsters.begin(), world.monsters.end(),
+        [&](const WorldActor& actor) { return actor.id == foe_id; });
+    exact &= world.player.id == player_id && world.player.position.x == position.x &&
+             world.player.position.y == position.y && world.player.facing.x == -1 &&
+             world.player.facing.y == 1 && foe != world.monsters.end() &&
+             foe->position.x == drop_at.x && foe->position.y == drop_at.y &&
+             world.has_extraction && world.extraction.x == sim->instance().extraction_point.x &&
+             world.extraction.y == sim->instance().extraction_point.y;
+  }
+  check(exact, "local-mirror: signed player, monster, facing and extraction data round-trip world units");
+  check(session.model().player.uuid == player_id &&
+            session.model().chronicle.active_scion_id == sim->scion().id &&
+            session.model().player.uuid != session.model().chronicle.active_scion_id &&
+            session.model().player.scene_id == sim->instance().route_id &&
+            session.model().scene.type == "instance",
+        "local-mirror: live actor ownership, persistent Scion identity and scene identity stay distinct");
+  const auto anchors = session.navigation_anchors();
+  check(std::any_of(anchors.begin(), anchors.end(), [&](const verdigris::Vec2& anchor) {
+          return anchor.x == player->position.x && anchor.y == player->position.y;
+        }), "local-mirror: navigation keepouts expose current world coordinates");
+
+  player->position = {-371, 219};
+  sim->actor(foe_id)->stats.life = 1;
+  session.submit(ClientCommand::aim(1, 0));
+  session.submit(ClientCommand::use_action("melee"));
+  session.submit(ClientCommand::move(0, 1));
+  session.advance_fixed_tick();
+  bool ground_exact = !session.model().ground.empty() &&
+      session.model().ground.size() == sim->ground_items().size() + sim->ground_trophies().size();
+  for (const auto& item : session.model().ground)
+    ground_exact &= static_cast<int>(std::lround(protocol_to_world(item.x))) == drop_at.x &&
+                    static_cast<int>(std::lround(protocol_to_world(item.y))) == drop_at.y;
+  check(ground_exact && player->position.y != drop_at.y,
+        "local-mirror: item and trophy anchors keep the defeated actor position after later movement");
+  bool drop_event = false;
+  for (const auto& event : session.drain_events())
+    if (event.type == PresentationEventType::ItemDropped)
+      drop_event |= event.actor_id == foe_id && event.has_actor_pose &&
+                    event.actor_x == drop_at.x && event.actor_y == drop_at.y;
+  check(drop_event, "local-mirror: dropped item event carries its actor-owned world anchor");
+  if (!sim->ground_items().empty()) {
+    const auto item_id = sim->ground_items().front().id;
+    session.submit(ClientCommand::pick_up(item_id));
+    session.advance_fixed_tick();
+    check(std::none_of(session.model().ground.begin(), session.model().ground.end(),
+        [&](const ClientGroundItem& item) { return item.uuid == item_id; }),
+        "local-mirror: pickup removes the floor anchor from the mirror");
+  }
+  sim->actor(player_id)->position = sim->instance().extraction_point;
+  session.set_navigation_obstacles({{{1500, 1500}, 50}});
+  session.submit(ClientCommand::extract());
+  session.advance_fixed_tick();
+  check(!sim->instance().active && sim->navigation_obstacles().empty() &&
+            session.model().player.scene_id.empty() && session.model().scene.id == "surface" &&
+            !session.model().scene.has_stairs_up && session.model().ground.empty(),
+        "local-mirror: retirement clears scene identity, navigation, extraction and old loot anchors");
+  session.set_navigation_obstacles({{{1700, -1200}, 40}});
+  check(sim->navigation_obstacles().empty(),
+        "local-mirror: surface dressing cannot reinstall retired instance collision");
+  session.submit(ClientCommand::enter_zone("route:tin:1:0"));
+  session.advance_fixed_tick();
+  check(session.model().player.scene_id == "route:tin:1:0" &&
+            session.model().scene.has_stairs_up && sim->navigation_obstacles().empty(),
+        "local-mirror: next route publishes stationary geometry-install boundary");
+  session.set_navigation_obstacles({{{1700, -1200}, 40}});
+  check(sim->navigation_obstacles().size() == 1 && sim->navigation_obstacles()[0].center.x == 1700,
+        "local-mirror: next route accepts its own world-space geometry");
+  session.shutdown();
+  check(session.navigation_anchors().empty(), "local-mirror: stopped session exposes no stale keepouts");
+}
+
+void local_session_pursuit_mirror_obeys_world_obstacles() {
+  using namespace verdigris::client;
+  LocalCoreSession session(0xDE7012ULL);
+  session.start();
+  session.submit(ClientCommand::enter_zone("route:tin:1:0"));
+  session.advance_fixed_tick();
+  auto* sim = session.simulation_for_scenarios();
+  int index = 0;
+  for (const auto& actor : sim->actors())
+    if (actor.kind == verdigris::ActorKind::Monster)
+      sim->actor(actor.id)->position = {-10000 - index++ * 300, -10000};
+  const auto player_id = sim->scion().actor_id;
+  sim->actor(player_id)->position = {500, -100};
+  const auto foe_id = sim->spawn_monster({0, -100});
+  session.set_navigation_obstacles({{{260, -100}, verdigris::world_scale::kSceneryColliderRadius}});
+  const int initial_life = sim->actor(player_id)->stats.life;
+  bool exact = true, clear = true, incoming_feedback = false;
+  int lateral = 0;
+  for (int i = 0; i < 160 && sim->actor(player_id)->stats.life == initial_life; ++i) {
+    const auto before = sim->actor(foe_id)->position;
+    session.advance_fixed_tick();
+    const auto after = sim->actor(foe_id)->position;
+    clear &= !sim->movement_blocked(before, after);
+    lateral = (std::max)(lateral, std::abs(after.y + 100));
+    WorldView world;
+    sync_world_from_model(world, session.model());
+    const auto foe = std::find_if(world.monsters.begin(), world.monsters.end(),
+        [&](const WorldActor& actor) { return actor.id == foe_id; });
+    exact &= world.player.id == player_id && world.player.position.x == 500 &&
+             world.player.position.y == -100 && foe != world.monsters.end() &&
+             foe->position.x == after.x && foe->position.y == after.y;
+    PresentationFx fx;
+    for (const auto& event : session.drain_events()) apply_presentation_event(fx, world, event, sim->tick());
+    const auto* strike = actor_strike(fx.effects, foe_id);
+    incoming_feedback |= strike && !strike->speculative && fx.screen_pulse_ticks > 0 &&
+        std::any_of(fx.effects.begin(), fx.effects.end(), [&](const EffectFx& effect) {
+          return effect.kind == EffectFx::Kind::TargetFlash && effect.damage_to_player &&
+                 effect.actor_id == player_id && effect.wx == 500 && effect.wy == -100;
+        });
+  }
+  check(exact && clear && lateral >= verdigris::world_scale::kSceneryColliderRadius,
+        "local-mirror: real idle pursuit round-trips every detour position outside world-space circles");
+  check(sim->actor(player_id)->stats.life < initial_life && incoming_feedback,
+        "local-mirror: detour arrival produces owned strike and incoming player feedback at actual positions");
+}
+
+void hunt_step(verdigris::client::IClientSession& session, const char* action = "melee") {
   // The swing range gate (JS parity) means the driver must close distance:
   // walk toward the nearest live monster in the authoritative model, then
   // strike once adjacent-ish.
@@ -127,7 +441,7 @@ void hunt_step(verdigris::client::IClientSession& session) {
       session.submit(verdigris::client::ClientCommand::move(0, step_y));
     }
   }
-  session.submit(verdigris::client::ClientCommand::use_action("melee"));
+  session.submit(verdigris::client::ClientCommand::use_action(action));
 }
 std::uint16_t start_server(verdigris::networking::WebSocketServer*& out) {
   // This suite's assigned loopback capsule is 7160-7179 (TASK-0163
@@ -289,7 +603,33 @@ void remote_guest_journey() {
   bool lost = false;
 
   for (int step = 0; step < 480; ++step) {
-    hunt_step(session);
+    if (!incoming) {
+      // Take the first hit before the slaughter: pack contact carries a
+      // staggered first-strike windup now, so a swinging hunter kills each
+      // camped foe before it ever lands one. Close distance and stand.
+      const auto& camp_model = session.model();
+      const verdigris::client::ClientMonster* camp_target = nullptr;
+      double camp_best = 1e9;
+      for (const auto& monster : camp_model.monsters) {
+        if (!monster.alive) continue;
+        const double reach =
+            (std::max)(std::abs(monster.x - camp_model.player.x),
+                       std::abs(monster.y - camp_model.player.y));
+        if (reach < camp_best) { camp_best = reach; camp_target = &monster; }
+      }
+      if (camp_target && camp_best > 0.8) {
+        const int dx = camp_target->x > camp_model.player.x + 0.3   ? 1
+                       : camp_target->x < camp_model.player.x - 0.3 ? -1
+                                                                    : 0;
+        const int dy = camp_target->y > camp_model.player.y + 0.3   ? 1
+                       : camp_target->y < camp_model.player.y - 0.3 ? -1
+                                                                    : 0;
+        if (dx != 0 || dy != 0)
+          session.submit(verdigris::client::ClientCommand::move(dx, dy));
+      }
+    } else {
+      hunt_step(session);
+    }
     if (step % 3 == 0) session.submit(verdigris::client::ClientCommand::pick_up(""));
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
     session.poll();
@@ -353,18 +693,53 @@ void remote_guest_journey() {
   // Incoming hit and telegraph need adjacency to a live foe / boss. Keep
   // striking while easing east, then turn back for extract.
   for (int step = 0; step < 720 && !(incoming && telegraph); ++step) {
-    session.submit(verdigris::client::ClientCommand::use_action("melee"));
-    int dx = 1;
-    int dy = 0;
-    if (session.model().player.x > 26.0) dx = -1;
-    if (session.model().player.x < 10.0) dx = 1;
-    if (step % 14 == 0) dy = 1;
-    if (step % 14 == 7) dy = -1;
-    session.submit(verdigris::client::ClientCommand::move(dx, dy));
+    // Hold the blade until the first incoming hit lands: swinging kills a
+    // camped foe faster than its first-strike windup resolves, and this
+    // leg exists to prove the incoming path, not the outgoing one.
+    if (incoming)
+      session.submit(verdigris::client::ClientCommand::use_action("melee"));
+    // Pack contact now has a per-monster first-strike windup (staggered
+    // 400-1300 ms), so grazing past a foe no longer eats an instant hit.
+    // Seek the nearest living foe and CAMP inside its reach - the dwell a
+    // real fight has - instead of wandering a fixed band.
+    {
+      const auto& monsters = session.model().monsters;
+      const double px = session.model().player.x;
+      const double py = session.model().player.y;
+      const verdigris::client::ClientMonster* nearest = nullptr;
+      double best = 1e9;
+      for (const auto& monster : monsters) {
+        if (!monster.alive) continue;
+        const double reach =
+            (std::max)(std::abs(monster.x - px), std::abs(monster.y - py));
+        if (reach < best) { best = reach; nearest = &monster; }
+      }
+      if (nearest && best > 0.8) {
+        const int dx = nearest->x > px + 0.3 ? 1 : nearest->x < px - 0.3 ? -1 : 0;
+        const int dy = nearest->y > py + 0.3 ? 1 : nearest->y < py - 0.3 ? -1 : 0;
+        if (dx != 0 || dy != 0)
+          session.submit(verdigris::client::ClientCommand::move(dx, dy));
+      }
+      // Within reach: hold ground so the windup resolves into a hit.
+    }
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
     session.poll();
     collect_flags(session, outgoing, incoming, telegraph, kill, pickup, equipped, extracted,
                   lost);
+  }
+  if (!incoming) {
+    const auto& diag = session.model();
+    std::printf("    diag: player %.1f,%.1f life %d | monsters %zu\n",
+                diag.player.x, diag.player.y, diag.player.life,
+                diag.monsters.size());
+    double best = 1e9;
+    for (const auto& monster : diag.monsters) {
+      if (!monster.alive) continue;
+      const double reach = (std::max)(std::abs(monster.x - diag.player.x),
+                                      std::abs(monster.y - diag.player.y));
+      if (reach < best) best = reach;
+    }
+    std::printf("    diag: nearest living foe chebyshev %.2f\n", best);
   }
   check(incoming, "journey: incoming combat:hit reached the client");
   check(telegraph, "journey: monster:telegraph reached the client");
@@ -516,14 +891,32 @@ void remote_render_list_ops() {
   verdigris::client::PresentationFx fx;
   verdigris::client::WorldView world;
   bool saw_monster = false, saw_swing = false, saw_drop = false;
-  for (int step = 0; step < 240 && !(saw_monster && saw_swing && saw_drop); ++step) {
+  bool saw_reconciled_contact = false;
+  for (int step = 0; step < 240 && !(saw_monster && saw_swing && saw_drop && saw_reconciled_contact); ++step) {
+    verdigris::client::sync_world_from_model(world, session.model());
+    verdigris::client::present_strike(fx.effects, world.player.id,
+                                     world.player.position, 0.0, false, true);
     hunt_step(session);
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
     session.poll();
     verdigris::client::sync_world_from_model(world, session.model());
     ++world.tick;
-    for (const auto& event : session.drain_events())
+    for (const auto& event : session.drain_events()) {
       verdigris::client::apply_presentation_event(fx, world, event, world.tick);
+      if (event.type == verdigris::client::PresentationEventType::AttackStarted &&
+          event.actor_id == world.player.id) {
+        const auto* strike = verdigris::client::actor_strike(fx.effects, world.player.id);
+        int player_arcs = 0;
+        for (const auto& effect : fx.effects)
+          if (effect.actor_id == world.player.id &&
+              (effect.kind == verdigris::client::EffectFx::Kind::Swing ||
+               effect.kind == verdigris::client::EffectFx::Kind::SweepArc)) ++player_arcs;
+        check(player_arcs == 1 && strike && !strike->speculative &&
+                  verdigris::client::strike_phase(*strike) == 0.5,
+              "render-list: decoded server contact reconciles prediction to one active strike");
+        saw_reconciled_contact = true;
+      }
+    }
     verdigris::client::age_presentation_fx(fx);
     verdigris::client::sync_world_from_model(world, session.model());
     render::List list;
@@ -536,7 +929,40 @@ void remote_render_list_ops() {
   }
   check(saw_monster, "render-list: Monster op recorded from remote model");
   check(saw_swing, "render-list: Swing op recorded from AttackStarted");
+  check(saw_reconciled_contact, "render-list: actual server contact was reconciled");
   check(saw_drop, "render-list: Drop op recorded from kill loot");
+  // A real Sweep request must survive the server payload and decoder, not
+  // merely pass a hand-built PresentationEvent to the FX helper.
+  fx.effects.clear();
+  bool saw_sweep_contact = false;
+  for (int step = 0; step < 240 && !saw_sweep_contact; ++step) {
+    verdigris::client::sync_world_from_model(world, session.model());
+    verdigris::client::present_strike(fx.effects, world.player.id,
+                                     world.player.position, 0.0, true, true);
+    hunt_step(session, "sweep");
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    session.poll();
+    verdigris::client::sync_world_from_model(world, session.model());
+    ++world.tick;
+    for (const auto& event : session.drain_events()) {
+      verdigris::client::apply_presentation_event(fx, world, event, world.tick);
+      if (event.type != verdigris::client::PresentationEventType::AttackStarted ||
+          event.actor_id != world.player.id || event.text != "sweep") continue;
+      const auto* strike = verdigris::client::actor_strike(fx.effects, world.player.id);
+      int sweeps = 0, swings = 0;
+      for (const auto& effect : fx.effects) {
+        if (effect.actor_id != world.player.id) continue;
+        if (effect.kind == verdigris::client::EffectFx::Kind::SweepArc) ++sweeps;
+        if (effect.kind == verdigris::client::EffectFx::Kind::Swing) ++swings;
+      }
+      check(strike && !strike->speculative && sweeps == 1 && swings == 0 &&
+                verdigris::client::strike_phase(*strike) == 0.5,
+            "render-list: decoded Sweep contact preserves one active SweepArc and no Swing");
+      saw_sweep_contact = true;
+    }
+    verdigris::client::age_presentation_fx(fx);
+  }
+  check(saw_sweep_contact, "render-list: real remote Sweep skillId reaches presentation");
   session.shutdown();
   server->stop();
   delete server;
@@ -2080,6 +2506,827 @@ void gate_b_chronicles_reconnect_journey() {
   check(true, "gate-b: journey server stopped cleanly");
 }
 
+// ── TASK-0162: passive-tree payload hardening (scripted loopback wire) ────
+// apply_envelope is deliberately private; the production path from bytes to
+// mirror is reader_loop -> parse_envelope -> apply_envelope ->
+// apply_passive_tree. To prove the fail-closed contract end to end this
+// suite binds a tiny TEST-ONLY scripted WebSocket server that answers the
+// client's upgrade and then replays raw `{event,data}` envelopes — including
+// payloads the real verdigris_server would never emit. No server or wire
+// authority changes: the production client parses exactly what a hostile or
+// corrupting peer puts on the loopback wire (TASK-0163 capsule only).
+
+#ifdef _WIN32
+using PtSocket = SOCKET;
+static constexpr PtSocket kPtInvalidSocket = INVALID_SOCKET;
+static void pt_close_socket(PtSocket socket) { ::closesocket(socket); }
+#else
+using PtSocket = int;
+static constexpr PtSocket kPtInvalidSocket = -1;
+static void pt_close_socket(PtSocket socket) { ::close(socket); }
+#endif
+
+bool pt_send_all(PtSocket socket, const char* data, std::size_t size) {
+  std::size_t sent_total = 0;
+  while (sent_total < size) {
+    const int sent =
+        ::send(socket, data + sent_total, static_cast<int>(size - sent_total), 0);
+    if (sent <= 0) return false;
+    sent_total += static_cast<std::size_t>(sent);
+  }
+  return true;
+}
+
+// Server->client text frames are unmasked (RFC6455 5.1).
+bool pt_send_text_frame(PtSocket socket, const std::string& payload) {
+  std::string frame;
+  frame.push_back(static_cast<char>(0x81));
+  const std::size_t size = payload.size();
+  if (size < 126) {
+    frame.push_back(static_cast<char>(size));
+  } else if (size <= 0xFFFF) {
+    frame.push_back(static_cast<char>(126));
+    frame.push_back(static_cast<char>((size >> 8) & 0xff));
+    frame.push_back(static_cast<char>(size & 0xff));
+  } else {
+    frame.push_back(static_cast<char>(127));
+    for (int i = 7; i >= 0; --i)
+      frame.push_back(static_cast<char>(
+          (static_cast<std::uint64_t>(size) >> (i * 8)) & 0xff));
+  }
+  frame += payload;
+  return pt_send_all(socket, frame.data(), frame.size());
+}
+
+// Single-connection scripted server: serves exactly one client with the
+// scripted envelope stream, then exits so a client retry can never replay
+// the script against a second connection.
+class ScriptedEnvelopeServer {
+ public:
+  ScriptedEnvelopeServer() = default;
+  ~ScriptedEnvelopeServer() { stop(); }
+
+  ScriptedEnvelopeServer(const ScriptedEnvelopeServer&) = delete;
+  ScriptedEnvelopeServer& operator=(const ScriptedEnvelopeServer&) = delete;
+
+  bool start(std::string* error) {
+#ifdef _WIN32
+    WSADATA wsa{};
+    wsa_started_ = ::WSAStartup(MAKEWORD(2, 2), &wsa) == 0;
+    if (!wsa_started_) {
+      if (error) *error = "WSAStartup failed";
+      return false;
+    }
+#endif
+    // This suite's TASK-0163 loopback capsule is 7160-7179; port 6500 is
+    // never touched.
+    for (std::uint16_t port = 7160; port <= 7179; ++port) {
+      listener_ = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+      if (listener_ == kPtInvalidSocket) break;
+      sockaddr_in address{};
+      address.sin_family = AF_INET;
+      address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);  // loopback only
+      address.sin_port = htons(port);
+      if (::bind(listener_, reinterpret_cast<sockaddr*>(&address),
+                 sizeof(address)) == 0 &&
+          ::listen(listener_, 1) == 0) {
+        port_ = port;
+        break;
+      }
+      pt_close_socket(listener_);
+      listener_ = kPtInvalidSocket;
+    }
+    if (listener_ == kPtInvalidSocket) {
+      if (error) *error = "no free port in the TASK-0163 capsule";
+#ifdef _WIN32
+      if (wsa_started_) {
+        ::WSACleanup();
+        wsa_started_ = false;
+      }
+#endif
+      return false;
+    }
+    running_.store(true);
+    worker_ = std::thread(&ScriptedEnvelopeServer::serve, this);
+    return true;
+  }
+
+  void stop() {
+    running_.store(false);
+    if (listener_ != kPtInvalidSocket) {
+      pt_close_socket(listener_);
+      listener_ = kPtInvalidSocket;
+    }
+    if (worker_.joinable()) worker_.join();
+#ifdef _WIN32
+    if (wsa_started_) {
+      ::WSACleanup();
+      wsa_started_ = false;
+    }
+#endif
+  }
+
+  std::uint16_t port() const { return port_; }
+
+  // Frame pacing: frame 0 goes out right after the upgrade; every later
+  // frame waits for an explicit grant so each assertion block observes its
+  // own frame deterministically.
+  void grant_next_frame() { credits_.fetch_add(1); }
+
+  std::vector<std::string> script;
+
+ private:
+  void serve() {
+    while (running_.load()) {
+      fd_set readfds;
+      FD_ZERO(&readfds);
+      FD_SET(listener_, &readfds);
+      timeval timeout{};
+      timeout.tv_sec = 0;
+      timeout.tv_usec = 100000;
+#ifdef _WIN32
+      const int ready = ::select(0, &readfds, nullptr, nullptr, &timeout);
+#else
+      const int ready =
+          ::select(static_cast<int>(listener_) + 1, &readfds, nullptr, nullptr,
+                   &timeout);
+#endif
+      if (!running_.load()) return;
+      if (ready <= 0) continue;
+      const PtSocket connection = ::accept(listener_, nullptr, nullptr);
+      if (connection == kPtInvalidSocket) return;
+      serve_connection(connection);
+      pt_close_socket(connection);
+    }
+  }
+
+  void serve_connection(PtSocket connection) {
+    std::string request;
+    char buffer[1024];
+    while (request.find("\r\n\r\n") == std::string::npos && request.size() < 8192) {
+      const int got = ::recv(connection, buffer, sizeof(buffer), 0);
+      if (got <= 0) return;
+      request.append(buffer, buffer + got);
+    }
+    // Accept header paired with the fixed loopback key in
+    // RemoteProtocolSession (the RFC6455 example pair).
+    static const char kUpgrade[] =
+        "HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\n"
+        "Connection: Upgrade\r\nSec-WebSocket-Accept: "
+        "s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n\r\n";
+    if (!pt_send_all(connection, kUpgrade, sizeof(kUpgrade) - 1)) return;
+    for (std::size_t i = 0; i < script.size(); ++i) {
+      if (i > 0) {
+        const auto wait_deadline =
+            std::chrono::steady_clock::now() + std::chrono::seconds(10);
+        while (running_.load() && credits_.load() == 0 &&
+               std::chrono::steady_clock::now() < wait_deadline) {
+          std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        }
+        if (!running_.load() || credits_.load() == 0) return;
+        credits_.fetch_sub(1);
+      }
+      if (!pt_send_text_frame(connection, script[i])) return;
+      std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));  // drain window
+  }
+
+  PtSocket listener_ = kPtInvalidSocket;
+  std::atomic<bool> running_{false};
+  std::atomic<int> credits_{0};
+  std::thread worker_;
+  std::uint16_t port_ = 0;
+  bool wsa_started_ = false;
+};
+
+std::string pt_login_frame(const std::string& tree_json) {
+  std::string player =
+      "{\"uuid\":\"hardening-guest\",\"x\":10,\"y\":11,\"facing\":\"down\"";
+  if (!tree_json.empty()) player += ",\"passiveTree\":" + tree_json;
+  player += "}";
+  return "{\"event\":\"player:login\",\"data\":{\"player\":" + player +
+         ",\"scene\":{\"id\":\"town\",\"type\":\"town\",\"name\":"
+         "\"Verdigris Town\"}}}";
+}
+
+std::string pt_state_frame(const std::string& tree_json) {
+  return "{\"event\":\"dev:state\",\"data\":{\"state\":{\"lifecycle\":"
+         "\"alive\",\"passiveTree\":" +
+         tree_json + "}}}";
+}
+
+std::string pt_update_frame(const std::string& tree_json) {
+  return "{\"event\":\"player:skilltree:update\",\"data\":{\"passiveTree\":" +
+         tree_json + "}}";
+}
+
+bool progression_is(const verdigris::client::ClientModel& model, bool present,
+                    int unspent, int earned, int nodes, int conduits) {
+  const auto& p = model.progression;
+  return p.present == present && p.unspent_points == unspent &&
+         p.earned_points == earned && p.node_count == nodes &&
+         p.conduit_count == conduits;
+}
+
+template <typename Pred>
+bool pt_pump_until(verdigris::client::RemoteProtocolSession& session,
+                   std::vector<std::string>& errors, int timeout_ms, Pred done) {
+  const auto deadline =
+      std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
+  for (;;) {
+    session.poll();
+    for (const auto& event : session.drain_events())
+      if (event.type == verdigris::client::PresentationEventType::ProtocolError)
+        errors.push_back(event.text);
+    if (done()) return true;
+    if (std::chrono::steady_clock::now() >= deadline) return false;
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+}
+
+void remote_authored_crypt_pursuit_reaches_world_view() {
+  using namespace verdigris::client;
+  using JV = verdigris::networking::JsonValue;
+  verdigris::networking::WebSocketServer* server = nullptr;
+  const auto port = start_server(server);
+  check(port != 0, "crypt-remote: actual native server starts in test capsule");
+  if (!server) return;
+  RemoteProtocolSession session("127.0.0.1", port, "crypt-motion-authority-79", true);
+  std::string error;
+  const bool ready = session.start(&error) && wait_for_state(session, ConnectionState::Ready, 3000);
+  check(ready, "crypt-remote: normal RemoteProtocolSession handshake");
+  if (!ready) { session.shutdown(); server->stop(); delete server; return; }
+  session.send_raw("instance:enterSolo", JV::Object{{"template", "crypt"}, {"layout", "warren"}});
+  const bool admitted = wait_until(session, 3000, [&] {
+    return session.model().theme == "crypt" && session.model().scene.type == "instance" &&
+        !session.model().monsters.empty() && !session.model().map_walkable.empty() &&
+        session.model().map_scene_id == session.model().scene.id;
+  });
+  check(admitted, "crypt-remote: authored crypt roster and authoritative map arrive");
+  std::string id;
+  int px = 0, py = 0;
+  const auto& model = session.model();
+  auto open = [&](int x, int y) {
+    return x >= 0 && y >= 0 && x < model.map_width && y < model.map_height &&
+        model.map_walkable[std::size_t(y) * model.map_width + x] != 0;
+  };
+  for (const auto& monster : model.monsters) {
+    if (!monster.alive || monster.elite || monster.behaviour != "melee") continue;
+    const int mx = int(std::round(monster.x)), my = int(std::round(monster.y));
+    bool clear = true;
+    for (int oy = 0; oy <= 2; ++oy)
+      for (int ox = -3; ox <= 0; ++ox) clear = clear && open(mx + ox, my + oy);
+    if (model.scene.has_stairs_up && mx - 3 == model.scene.stairs_up_x && my + 2 == model.scene.stairs_up_y)
+      clear = false;
+    for (const auto& other : model.monsters)
+      if (other.id != monster.id && other.alive &&
+          std::hypot(other.x - (mx - 1.5), other.y - (my + 1.0)) < 3.0) clear = false;
+    if (clear) { id = monster.id; px = mx - 3; py = my + 2; break; }
+  }
+  check(!id.empty(), "crypt-remote: real roster provides an unobstructed SW approach");
+  if (!id.empty()) {
+    session.send_raw("dev:teleport", JV::Object{{"x", px}, {"y", py}});
+    // Keep the admitted baseline before the first movement packet can arrive.
+    session.drain_events();
+    bool movement = false, interpolated = false, damage = false, exact = true, family = true;
+    bool saw_first = false;
+    ClientMonster previous;
+    for (const auto& monster : session.model().monsters) if (monster.id == id) {
+      previous = monster; saw_first = true;
+    }
+    const double start_x = previous.x, start_y = previous.y;
+    int endpoint_updates = 0;
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(8);
+    auto after_hit = deadline;
+    while (std::chrono::steady_clock::now() < deadline &&
+           (!damage || std::chrono::steady_clock::now() < after_hit)) {
+      session.poll();
+      for (const auto& event : session.drain_events())
+        if (event.type == PresentationEventType::DamageApplied && event.actor_id == id &&
+            event.text == "incoming" && event.value > 0) { if (!damage) after_hit = std::chrono::steady_clock::now() + std::chrono::milliseconds(350); damage = true; }
+      WorldView world;
+      sync_world_from_model(world, session.model());
+      for (const auto& monster : session.model().monsters) if (monster.id == id) {
+        for (const auto& rendered : world.monsters) if (rendered.id == id) {
+          exact = exact && rendered.position.x == int(std::lround(protocol_to_world(monster.x))) &&
+              rendered.position.y == int(std::lround(protocol_to_world(monster.y)));
+          family = family && std::string(monster_art_family(rendered, world)) == "wight";
+        }
+        if (saw_first) {
+          if (monster.x != previous.x || monster.y != previous.y) {
+            ++endpoint_updates;
+            movement = movement || (monster.x < previous.x && monster.y > previous.y);
+          } else if (monster.has_display_position && previous.has_display_position &&
+                     monster.display_x < previous.display_x && monster.display_y > previous.display_y)
+            interpolated = true;
+        }
+        previous = monster; saw_first = true;
+      }
+      std::this_thread::sleep_for(std::chrono::milliseconds(15));
+    }
+    std::printf("crypt-remote trace: %s %.3f,%.3f -> %.3f,%.3f endpoints=%d southwest=%d\n",
+                id.c_str(), start_x, start_y, previous.x, previous.y, endpoint_updates, movement);
+    check(movement && endpoint_updates >= 2, "crypt-remote: ordinary ticks move real wight authority through deltas");
+    check(interpolated, "crypt-remote: 15ms polls advance display between unchanged authority endpoints");
+    check(exact && family, "crypt-remote: WorldView retains exact scaled authority and production wight resolver");
+    check(damage && session.model().player.life > 0,
+          "crypt-remote: real pursuit reaches incoming contact without inflated life");
+    check(previous.has_display_position && std::abs(previous.display_x - previous.x) < 1e-8 &&
+          std::abs(previous.display_y - previous.y) < 1e-8,
+          "crypt-remote: arrival display settles at authority endpoint");
+    check(previous.has_facing && previous.facing_x == -1 && previous.facing_y == 1,
+          "crypt-remote: actual SW facing survives incoming contact and stop");
+  }
+  session.shutdown(); server->stop(); delete server;
+}
+
+void remote_monster_delta_preserves_authority_and_interpolates() {
+  using namespace verdigris::client;
+  using JV = verdigris::networking::JsonValue;
+  using verdigris::networking::Envelope;
+  ScriptedEnvelopeServer server;
+  server.script.push_back(R"({"event":"player:login","data":{"player":{"uuid":"motion-guest","sceneId":"crypt:test","x":7,"y":13},"scene":{"id":"crypt:test","type":"instance","name":"Weir Crypt"}}})");
+  auto actor = [](const char* id, int sequence, double x, double y, int life = 30) {
+    return JV::Object{{"uuid", id}, {"id", "crypt-lurker"}, {"name", "Barrow Wight"},
+        {"x", x}, {"y", y}, {"behaviour", JV::Object{{"type", "melee"}}},
+        {"hp", JV::Object{{"current", life}, {"max", 30}}},
+        {"movementStep", JV::Object{{"sequence", sequence}, {"duration", sequence ? 150 : 0},
+                                   {"fromX", x + (sequence ? 0.3 : 0.0)},
+                                   {"fromY", y - (sequence ? 0.3 : 0.0)},
+                                   {"facingX", sequence ? -1 : 1},
+                                   {"facingY", sequence ? 1 : 0}}}};
+  };
+  auto add = [&](Envelope envelope, const char* label) {
+    server.script.push_back(verdigris::networking::emit_envelope(envelope));
+    server.script.push_back(verdigris::networking::emit_envelope(
+        Envelope{"game:send:message", JV::Object{{"text", label}}}));
+  };
+  auto delta = [&](const char* id, int sequence, double x, double y, const char* scene) {
+    Envelope result{"monster:state", JV::Array{JV(actor(id, sequence, x, y))}};
+    if (scene) result.meta = JV::Object{{"sceneId", scene}, {"sentAt", 1000 + sequence * 150}};
+    return result;
+  };
+  add(Envelope{"dev:state", JV::Object{{"state", JV::Object{{"theme", "crypt"},
+      {"monsters", JV::Array{JV(actor("wight", 0, 10.0, 10.0))}}}}}}, "admitted");
+  add(delta("wight", 1, 9.7, 10.3, "crypt:test"), "moving");
+  add(delta("wight", 0, 10.0, 10.0, "crypt:test"), "old-delta");
+  add(Envelope{"dev:state", JV::Object{{"state", JV::Object{
+      {"monsters", JV::Array{JV(actor("wight", 0, 10.0, 10.0))}}}}}}, "old-snapshot");
+  add(delta("wight", 1, 9.7, 10.3, "crypt:test"), "equal-sequence");
+  add(delta("wight", 2, 9.4, 10.6, "another-room"), "wrong-scene");
+  add(delta("wight", 2, 9.4, 10.6, nullptr), "unknown-scene");
+  add(delta("unknown", 2, 9.4, 10.6, "crypt:test"), "unknown-actor");
+  auto stopped_actor = actor("wight", 2, 9.7, 10.3);
+  stopped_actor["movementStep"] = JV::Object{{"sequence", 2}, {"duration", 0},
+      {"fromX", 9.7}, {"fromY", 10.3}, {"facingX", 0}, {"facingY", 0}};
+  Envelope stop{"monster:state", JV::Array{JV(std::move(stopped_actor))}};
+  stop.meta = JV::Object{{"sceneId", "crypt:test"}};
+  add(stop, "stopped");
+  add(Envelope{"combat:hit", JV::Object{{"attackerId", "motion-guest"},
+      {"targetId", "wight"}, {"targetType", "monster"}, {"amount", 30},
+      {"health", JV::Object{{"current", 0}, {"max", 30}}}, {"died", true},
+      {"skillId", "melee"}}}, "death");
+  add(Envelope{"party:scene:transition", JV::Object{
+      {"scene", JV::Object{{"id", "town"}, {"type", "town"}}},
+      {"playerState", JV::Object{{"uuid", "motion-guest"}, {"sceneId", "town"}}}}}, "retired");
+  add(delta("wight", 3, 9.1, 10.9, "crypt:test"), "late-room");
+  std::string error;
+  check(server.start(&error), "monster-delta: loopback endpoint starts");
+  if (server.port() == 0) return;
+  RemoteProtocolSession session("127.0.0.1", server.port(), "motion-guest", true);
+  check(session.start(&error) && wait_for_state(session, ConnectionState::Ready, 3000),
+        "monster-delta: actual remote handshake");
+  auto deliver = [&](const char* label) {
+    server.grant_next_frame(); server.grant_next_frame();
+    const bool received = wait_until(session, 2000, [&] { return session.model().last_message == label; });
+    check(received, (std::string("monster-delta: received ") + label).c_str());
+  };
+  deliver("admitted");
+  check(session.model().monsters.size() == 1 && session.model().theme == "crypt",
+        "monster-delta: snapshot admits real family facts");
+  deliver("moving");
+  if (!session.model().monsters.empty()) {
+    const auto first = session.model().monsters.front();
+    check(first.x == 9.7 && first.y == 10.3 && first.has_display_position &&
+          first.display_x > first.x && first.display_x < 10.0 &&
+          first.display_y > 10.0 && first.display_y < first.y,
+          "monster-delta: raw endpoint immediate, display inside accepted segment");
+    std::this_thread::sleep_for(std::chrono::milliseconds(30)); session.poll();
+    const auto later = session.model().monsters.front();
+    check(later.x == first.x && later.y == first.y && later.display_x < first.display_x &&
+          later.display_y > first.display_y,
+          "monster-delta: polling advances display without advancing authority");
+  }
+  deliver("old-delta"); deliver("old-snapshot"); deliver("equal-sequence");
+  std::this_thread::sleep_for(std::chrono::milliseconds(160)); session.poll();
+  if (!session.model().monsters.empty()) {
+    const auto& stopped = session.model().monsters.front();
+    check(stopped.x == 9.7 && stopped.y == 10.3 &&
+          std::abs(stopped.display_x - 9.7) < 1e-9 && std::abs(stopped.display_y - 10.3) < 1e-9,
+          "monster-delta: stale reconciliation cannot rewind/restart; no extrapolation");
+    check(stopped.has_facing && stopped.facing_x == -1 && stopped.facing_y == 1,
+          "monster-delta: older snapshot and equal sequence retain authoritative SW facing");
+  }
+  deliver("wrong-scene"); deliver("unknown-scene"); deliver("unknown-actor");
+  check(session.model().monsters.size() == 1 && session.model().monsters.front().x == 9.7,
+        "monster-delta: wrong/unknown room and unknown actor rejected");
+  deliver("stopped");
+  check(!session.model().monsters.empty() && session.model().monsters.front().has_facing &&
+        session.model().monsters.front().facing_x == -1 && session.model().monsters.front().facing_y == 1,
+        "monster-delta: zero stop facing retains prior authoritative direction");
+  deliver("death");
+  check(!session.model().monsters.empty() && !session.model().monsters.front().alive &&
+        !session.model().monsters.front().has_display_position,
+        "monster-delta: death clears display interpolation");
+  deliver("retired"); deliver("late-room");
+  check(session.model().monsters.empty(), "monster-delta: scene retirement rejects late actor data");
+  session.shutdown(); server.stop();
+}
+
+void remote_incoming_melee_actions_follow_wire_evidence() {
+  using namespace verdigris::client;
+  struct Case {
+    const char* label;
+    const char* attacker;
+    const char* skill_json;
+    const char* expected_action;
+    bool died = false;
+  };
+  const Case cases[] = {
+      {"generic melee", "melee-foe", "\"monster:attack\"", "melee"},
+      {"explicit melee", "explicit-foe", "\"melee\"", "melee"},
+      {"sweep", "melee-foe", "\"sweep\"", "sweep"},
+      {"thrust", "melee-foe", "\"thrust\"", "thrust"},
+      {"generic ranged", "ranged-foe", "\"monster:attack\"", ""},
+      {"ranged skill", "melee-foe", "\"ranged:volley\"", ""},
+      {"boss ground slam", "melee-foe", "\"boss:ground-slam\"", ""},
+      {"unknown behaviour", "unknown-foe", "\"monster:attack\"", ""},
+      {"unknown skill", "melee-foe", "\"new-attack\"", ""},
+      {"missing skill", "melee-foe", nullptr, ""},
+      {"non-string skill", "melee-foe", "7", ""},
+      {"missing attacker", nullptr, "\"melee\"", ""},
+      {"empty attacker", "", "\"sweep\"", ""},
+      {"player attacker", "hardening-guest", "\"melee\"", ""},
+      {"lethal melee", "melee-foe", "\"melee\"", "melee", true},
+  };
+  ScriptedEnvelopeServer server;
+  server.script.push_back(pt_login_frame(""));
+  server.script.push_back(
+      R"({"event":"dev:state","data":{"state":{"monsters":[)"
+      R"({"uuid":"melee-foe","rarity":"common","behaviour":{"type":"melee"},"x":10,"y":12,"hp":{"current":40,"max":40}},)"
+      R"({"uuid":"ranged-foe","behaviour":{"type":"ranged"},"x":12,"y":12,"hp":{"current":40,"max":40}}]}}})");
+  int amount = 10;
+  for (const auto& test : cases) {
+    ++amount;
+    std::string data = R"({"targetId":"hardening-guest","targetType":"player","amount":)" +
+        std::to_string(amount) + R"(,"attackStyle":"claw","health":{"current":)" +
+        std::to_string(test.died ? 0 : 100 - amount) + R"(,"max":100},"died":)" +
+        (test.died ? "true" : "false");
+    if (test.attacker) data += ",\"attackerId\":\"" + std::string(test.attacker) + "\"";
+    if (test.skill_json) data += ",\"skillId\":" + std::string(test.skill_json);
+    server.script.push_back("{\"event\":\"combat:hit\",\"data\":" + data + "}}");
+  }
+  std::string error;
+  check(server.start(&error), "incoming-action: scripted loopback server bound");
+  if (server.port() == 0) return;
+  RemoteProtocolSession session("127.0.0.1", server.port(), "incoming-action-guest", true);
+  const bool connected = session.start(&error);
+  check(connected, "incoming-action: real WebSocket handshake");
+  const bool ready = connected && wait_for_state(session, ConnectionState::Ready, 5000);
+  check(ready, "incoming-action: login acknowledged");
+  if (!ready) return;
+  session.drain_events();
+  server.grant_next_frame();
+  const bool snapshot = wait_until(session, 3000, [&] {
+    const auto& foes = session.model().monsters;
+    return foes.size() == 2 && foes[0].behaviour == "melee" && foes[1].behaviour == "ranged";
+  });
+  check(snapshot, "incoming-action: authoritative behaviour snapshot decoded");
+  if (!snapshot) return;
+  const auto known_melee_is_common = [&] {
+    for (const auto& actor : session.model().monsters)
+      if (actor.id == "melee-foe") return !actor.elite;
+    return false;
+  };
+  check(known_melee_is_common(), "incoming-action: native common rarity stays ordinary");
+  session.drain_events();
+  amount = 10;
+  for (const auto& test : cases) {
+    ++amount;
+    server.grant_next_frame();
+    std::vector<PresentationEvent> events;
+    const bool received = wait_until(session, 3000, [&] {
+      for (const auto& event : session.drain_events()) events.push_back(event);
+      for (const auto& event : events)
+        if (event.type == PresentationEventType::DamageApplied) return true;
+      return false;
+    });
+    const bool starts = test.expected_action[0] != '\0';
+    const std::size_t damage_index = starts ? 1 : 0;
+    const std::size_t expected_count = damage_index + 1 + (test.died ? 1 : 0);
+    const std::string actor = test.attacker ? test.attacker : "";
+    bool ordered = received && events.size() == expected_count;
+    if (ordered) {
+      ordered = events[damage_index].type == PresentationEventType::DamageApplied &&
+          events[damage_index].actor_id == actor && events[damage_index].text == "incoming" &&
+          events[damage_index].value == amount;
+      if (starts) ordered = ordered && events[0].type == PresentationEventType::AttackStarted &&
+          events[0].actor_id == actor && events[0].text == test.expected_action &&
+          events[0].value == amount;
+      if (test.died) ordered = ordered && events.back().type == PresentationEventType::ScionDied &&
+          events.back().actor_id == "hardening-guest";
+    }
+    const std::string label = std::string("incoming-action: ") + test.label;
+    check(ordered, (label + " preserves exact actor/action/damage/death order").c_str());
+    if (std::string(test.label) == "generic melee")
+      check(known_melee_is_common(), "incoming-action: known ordinary attacker keeps its body scale at contact");
+    check(session.model().last_incoming_hit == amount && session.model().player.life ==
+              (test.died ? 0 : 100 - amount) && session.model().player.life_max == 100,
+          (label + " preserves authoritative health and damage").c_str());
+    if (ordered && !test.died) {
+      WorldView world;
+      sync_world_from_model(world, session.model());
+      PresentationFx fx;
+      for (const auto& event : events) apply_presentation_event(fx, world, event, world.tick);
+      const auto* strike = actor_strike(fx.effects, actor);
+      check(starts ? strike && !strike->speculative && strike_phase(*strike) == 0.5 &&
+                        strike->kind == (std::string(test.expected_action) == "sweep"
+                            ? EffectFx::Kind::SweepArc : EffectFx::Kind::Swing)
+                   : strike == nullptr,
+            (label + " enters confirmed contact only for identified melee").c_str());
+    }
+  }
+  session.shutdown();
+  server.stop();
+}
+
+void remote_passive_tree_absence_stays_absent() {
+  ScriptedEnvelopeServer server;
+  server.script.push_back(pt_login_frame(""));
+  std::string error;
+  check(server.start(&error), "ptree-absent: scripted loopback server bound in capsule");
+  if (server.port() == 0) return;
+
+  verdigris::client::RemoteProtocolSession session("127.0.0.1", server.port(),
+                                                   "pt-absent-guest", true);
+  check(session.start(&error), "ptree-absent: connect + upgrade + login sent");
+  check(wait_for_state(session, verdigris::client::ConnectionState::Ready, 5000),
+        "ptree-absent: admission acknowledged");
+  std::vector<std::string> seen;
+  const auto deadline =
+      std::chrono::steady_clock::now() + std::chrono::milliseconds(400);
+  while (std::chrono::steady_clock::now() < deadline) {
+    session.poll();
+    for (const auto& event : session.drain_events())
+      if (event.type == verdigris::client::PresentationEventType::ProtocolError)
+        seen.push_back(event.text);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+  check(progression_is(session.model(), false, 0, 0, 0, 0),
+        "ptree-absent: no payload -> mirror stays absent, never rendered as zero");
+  check(seen.empty(), "ptree-absent: absent payload raises no diagnostic");
+  session.shutdown();
+  server.stop();
+}
+
+void remote_passive_tree_payload_hardening() {
+  using verdigris::client::RemoteProtocolSession;
+
+  ScriptedEnvelopeServer server;
+  std::string error;
+  check(server.start(&error), "ptree: scripted loopback server bound in capsule");
+  if (server.port() == 0) return;
+
+  const char* kPointsReason = "points.skill must be a nonnegative integer";
+  const char* kEarnedReason = "earned must be a nonnegative integer";
+  const char* kSchemaReason = "schemaVersion must be the number 2";
+
+  // Frame plan. Frame 0 ships with the upgrade; every later frame waits for
+  // one grant per assertion block so ordering stays deterministic.
+  server.script.push_back(pt_login_frame(""));  // 0: valid ABSENT admission
+  server.script.push_back(pt_state_frame(       // 1: valid ZERO tree
+      "{\"schemaVersion\":2,\"points\":{\"skill\":0},\"earned\":0,"
+      "\"nodes\":[\"0,0\"],\"conduits\":[]}"));
+  server.script.push_back(pt_update_frame(      // 2: valid NONZERO refresh
+      "{\"schemaVersion\":2,\"points\":{\"skill\":7},\"earned\":12,"
+      "\"nodes\":[\"n0\",\"n1\",\"n2\",\"n3\"],"
+      "\"conduits\":[\"c0\",\"c1\",\"c2\"]}"));
+
+  // Invalid battery (frames 3+). Channels rotate across all three production
+  // call sites: player:login, dev:state, player:skilltree:update.
+  struct RejectCase {
+    std::string envelope;
+    std::string expected_text;
+    const char* label;
+  };
+  const std::string fractional_earned_frame =
+      pt_update_frame("{\"schemaVersion\":2,\"points\":{\"skill\":7},"
+                      "\"earned\":11.5,\"nodes\":[\"n0\"],\"conduits\":[]}");
+  std::vector<RejectCase> rejects = {
+      // Missing fields.
+      {pt_update_frame("{\"schemaVersion\":2}"),
+       std::string("passiveTree rejected: ") + kPointsReason, "missing points"},
+      {pt_state_frame("{\"schemaVersion\":2,\"points\":{\"skill\":0},"
+                      "\"nodes\":[\"0,0\"],\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kEarnedReason, "missing earned"},
+      {pt_update_frame("{\"schemaVersion\":2,\"points\":{\"skill\":7},"
+                       "\"earned\":12,\"nodes\":[\"n0\"]}"),
+       "passiveTree rejected: conduits must be an array", "missing conduits"},
+      // Wrong types.
+      {pt_update_frame("{\"schemaVersion\":\"2\",\"points\":{\"skill\":7},"
+                       "\"earned\":12,\"nodes\":[\"n0\"],\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kSchemaReason,
+       "wrong-typed schemaVersion"},
+      {pt_update_frame("{\"schemaVersion\":2,\"points\":[1],\"earned\":12,"
+                       "\"nodes\":[\"n0\"],\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kPointsReason,
+       "wrong-typed points container"},
+      {pt_update_frame("{\"schemaVersion\":2,\"points\":{\"skill\":\"3\"},"
+                       "\"earned\":12,\"nodes\":[\"n0\"],\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kPointsReason,
+       "wrong-typed points.skill"},
+      {pt_update_frame("{\"schemaVersion\":2,\"points\":{\"skill\":7},"
+                       "\"earned\":true,\"nodes\":[\"n0\"],\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kEarnedReason,
+       "wrong-typed earned"},
+      {pt_update_frame("{\"schemaVersion\":2,\"points\":{\"skill\":7},"
+                       "\"earned\":12,\"nodes\":{},\"conduits\":[]}"),
+       "passiveTree rejected: nodes must be an array", "wrong-typed nodes"},
+      {pt_login_frame(
+           "{\"schemaVersion\":2,\"points\":{\"skill\":7},\"earned\":12,"
+           "\"nodes\":[\"n0\"],\"conduits\":\"none\"}"),
+       "passiveTree rejected: conduits must be an array",
+       "wrong-typed conduits on login"},
+      // Fractional values.
+      {pt_update_frame("{\"schemaVersion\":2,\"points\":{\"skill\":2.5},"
+                       "\"earned\":12,\"nodes\":[\"n0\"],\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kPointsReason,
+       "fractional points.skill"},
+      {fractional_earned_frame,
+       std::string("passiveTree rejected: ") + kEarnedReason,
+       "fractional earned"},
+      // Negative values.
+      {pt_update_frame("{\"schemaVersion\":2,\"points\":{\"skill\":-1},"
+                       "\"earned\":12,\"nodes\":[\"n0\"],\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kPointsReason,
+       "negative points.skill"},
+      {pt_state_frame("{\"schemaVersion\":2,\"points\":{\"skill\":7},"
+                      "\"earned\":-3,\"nodes\":[\"n0\"],\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kEarnedReason,
+       "negative earned"},
+      // Non-finite / overflow-like values (strtod accepts these literals).
+      {pt_state_frame("{\"schemaVersion\":2,\"points\":{\"skill\":Infinity},"
+                      "\"earned\":12,\"nodes\":[\"n0\"],\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kPointsReason,
+       "bare-Infinity points.skill"},
+      {pt_update_frame("{\"schemaVersion\":2,\"points\":{\"skill\":7},"
+                       "\"earned\":1e400,\"nodes\":[\"n0\"],\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kEarnedReason,
+       "exponent-overflow earned (inf)"},
+      {pt_update_frame("{\"schemaVersion\":2,\"points\":{\"skill\":7},"
+                       "\"earned\":2147483648,\"nodes\":[\"n0\"],"
+                       "\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kEarnedReason,
+       "int-cast overflow earned"},
+      // Unsupported schema version arrives on the admission channel.
+      {pt_login_frame(
+           "{\"schemaVersion\":3,\"points\":{\"skill\":1},\"earned\":1,"
+           "\"nodes\":[\"n0\"],\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kSchemaReason,
+       "future schemaVersion on login"},
+      // Top-level shape failure on the admission channel.
+      {pt_login_frame("[]"),
+       "passiveTree rejected: envelope must be an object",
+       "non-object passiveTree on login"},
+  };
+
+  // Oversized arrays: 65537 entries sits above the documented transport
+  // entry bound yet far below the 1 MiB reader frame ceiling, so rejection
+  // happens in the parser, not the transport (and each frame exercises the
+  // 64-bit length path).
+  {
+    std::string entries;
+    entries.reserve(65537 * 3);
+    for (int i = 0; i < 65537; ++i) {
+      if (i) entries += ",";
+      entries += "\"\"";
+    }
+    rejects.push_back({pt_update_frame(
+                           "{\"schemaVersion\":2,\"points\":{\"skill\":7},"
+                           "\"earned\":12,\"conduits\":[],\"nodes\":[" +
+                           entries + "]}"),
+                       "passiveTree rejected: nodes exceeds the passiveTree "
+                       "transport entry bound",
+                       "oversized nodes array"});
+    rejects.push_back(
+        {pt_state_frame("{\"schemaVersion\":2,\"points\":{\"skill\":7},"
+                        "\"earned\":12,\"nodes\":[\"0,0\"],\"conduits\":[" +
+                        entries + "]}"),
+         "passiveTree rejected: conduits exceeds the passiveTree transport "
+         "entry bound",
+         "oversized conduits array"});
+  }
+  const std::size_t kFractionalEarnedErrorIndex =
+      10;  // position of "fractional earned" in the table above
+  for (const auto& reject : rejects) server.script.push_back(reject.envelope);
+
+  // Stability probe: the exact fractional-earned payload repeats so the two
+  // diagnostics must be byte-identical.
+  server.script.push_back(rejects[kFractionalEarnedErrorIndex].envelope);
+
+  // Recovery: a valid refresh after the whole battery must still apply.
+  server.script.push_back(pt_update_frame(
+      "{\"schemaVersion\":2,\"points\":{\"skill\":5},\"earned\":11,"
+      "\"nodes\":[\"n0\",\"n1\",\"n2\"],\"conduits\":[\"c0\",\"c1\"]}"));
+
+  RemoteProtocolSession session("127.0.0.1", server.port(),
+                                "hardening-guest", true);
+  check(session.start(&error), "ptree: connect + upgrade + login sent");
+
+  std::vector<std::string> seen;
+  check(pt_pump_until(session, seen, 5000, [&] {
+          return session.connection_state() ==
+                 verdigris::client::ConnectionState::Ready;
+        }),
+        "ptree: valid absent login reaches Ready");
+  check(progression_is(session.model(), false, 0, 0, 0, 0),
+        "ptree: fresh admission starts absent (valid absent behavior)");
+
+  server.grant_next_frame();  // -> valid ZERO tree over dev:state
+  check(pt_pump_until(session, seen, 5000,
+                      [&] { return session.model().progression.present; }),
+        "ptree: VALID zero tree makes the mirror present");
+  check(progression_is(session.model(), true, 0, 0, 1, 0),
+        "ptree: zero tree mirrors verbatim zeros (valid zero behavior)");
+  check(seen.empty(), "ptree: valid payloads raise no diagnostic");
+
+  server.grant_next_frame();  // -> valid NONZERO refresh
+  check(pt_pump_until(session, seen, 5000, [&] {
+          return progression_is(session.model(), true, 7, 12, 4, 3);
+        }),
+        "ptree: VALID nonzero update mirrors verbatim (valid nonzero behavior)");
+  check(seen.empty(), "ptree: valid nonzero update raises no diagnostic");
+  const auto snapshot = session.model().progression;
+
+  for (std::size_t i = 0; i < rejects.size() + 2; ++i) {
+    const std::size_t baseline = seen.size();
+    server.grant_next_frame();
+    bool arrived = false;
+    if (i < rejects.size()) {
+      arrived = pt_pump_until(session, seen, 5000,
+                              [&] { return seen.size() > baseline; });
+      const std::string label = std::string("ptree: ") + rejects[i].label;
+      check(arrived, (label + ": diagnostic surfaced").c_str());
+      if (arrived)
+        check(seen[baseline] == rejects[i].expected_text,
+              (label + ": deterministic diagnostic text").c_str());
+    } else if (i == rejects.size()) {
+      arrived = pt_pump_until(session, seen, 5000,
+                              [&] { return seen.size() > baseline; });
+      check(arrived, "ptree: repeated invalid payload surfaces again");
+      if (arrived)
+        check(seen.back() == seen[kFractionalEarnedErrorIndex],
+              "ptree: diagnostic text is byte-stable across repeats");
+    } else {
+      arrived = pt_pump_until(
+          session, seen, 5000,
+          [&] { return progression_is(session.model(), true, 5, 11, 3, 2); });
+      check(arrived,
+            "ptree: valid refresh applies after rejects (session healthy)");
+    }
+    if (i != rejects.size() + 1) {
+      const auto& p = session.model().progression;
+      check(p.present == snapshot.present &&
+                p.unspent_points == snapshot.unspent_points &&
+                p.earned_points == snapshot.earned_points &&
+                p.node_count == snapshot.node_count &&
+                p.conduit_count == snapshot.conduit_count,
+            "ptree: invalid update left the last valid snapshot untouched");
+    }
+  }
+
+  const std::size_t quiet_baseline = seen.size();
+  const auto quiet_deadline =
+      std::chrono::steady_clock::now() + std::chrono::milliseconds(300);
+  bool quiet = true;
+  while (std::chrono::steady_clock::now() < quiet_deadline) {
+    session.poll();
+    for (const auto& event : session.drain_events())
+      if (event.type == verdigris::client::PresentationEventType::ProtocolError)
+        seen.push_back(event.text);
+    if (seen.size() != quiet_baseline) {
+      quiet = false;
+      break;
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+  check(quiet, "ptree: valid recovery raises no diagnostic");
+
+  session.shutdown();
+  server.stop();
+}
+
 }  // namespace
 
 int main() {
@@ -2088,12 +3335,22 @@ int main() {
   // at this volume.
   std::setvbuf(stdout, nullptr, _IONBF, 0);
   local_session_ready_and_deterministic();
+  local_fixed_step_is_independent_of_input_and_polling();
+  local_fixed_step_preserves_action_order_and_expiry();
+  local_fixed_step_uses_authoritative_obstacles();
+  local_model_round_trips_world_and_drop_anchors();
+  local_session_pursuit_mirror_obeys_world_obstacles();
   remote_dead_endpoint_is_a_visible_failure();
   remote_handshake_reaches_ready();
   remote_guest_journey();
   remote_mid_session_disconnect();
   remote_session_replaced();
   remote_render_list_ops();
+  remote_authored_crypt_pursuit_reaches_world_view();
+  remote_monster_delta_preserves_authority_and_interpolates();
+  remote_incoming_melee_actions_follow_wire_evidence();
+  remote_passive_tree_absence_stays_absent();
+  remote_passive_tree_payload_hardening();
   gateb_driver_state_machine_controls();
   gate_b_chronicles_reconnect_journey();
   if (failures == 0) {

@@ -1,0 +1,14 @@
+{
+  "before": "before-horizontal-preview-1x.png",
+  "before_flags": "/std:c++20 /EHsc /W4 /O2 /UNDEBUG",
+  "after": "logical-road-preview-1x.png",
+  "after_flags": "/std:c++20 /EHsc /W4 /UNDEBUG (MSVC optimization default, matches native/build.ps1)",
+  "same_shape": true,
+  "shape": [
+    1280,
+    1280,
+    4
+  ],
+  "changed_pixels": 0,
+  "max_channel_delta": 0
+}

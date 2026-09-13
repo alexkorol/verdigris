@@ -1,0 +1,7 @@
+Draw this character's walking motion in simplified pixel art, as eight chronological sprites in a four-column by two-row sheet.
+
+Image 1 is the edit target and a STRICT lower-body geometry, pose and order guide, not the character design. Preserve its eight successive leg positions, planted feet, opposite contacts, passing legs and weight shifts. Image 2 is the ONLY character and pixel-style reference: replace the hero with this adult skeletal wight, keeping its bare skull and ribs, thin bony arms and legs, skeletal feet, torn brown burial cloth, natural bone/brown palette and empty hands. Do not copy the hero's flesh, hair, clothes, boots or equipment.
+
+All eight wights face lower-left with the same elevated camera as the references. Keep the wight's apparent body height and thin proportions, consistent pixel pitch, fixed cell alignment and common ground baseline; let the torso and loose cloth move naturally with each step. The second half must use the opposite leading leg, following Image 1, so this reads as a complete walk rather than a swaying idle.
+
+One full wight per cell with clear margins. Deliberate sharp square pixel clusters, at most32 colors, about61 logical pixels from crown to sole. Actual transparent RGBA background, no painted checker, labels, grid, shadows, effects or new gear. Tools will handle slicing and playback.

@@ -1,0 +1,403 @@
+{
+  "task": "TASK-0091",
+  "title": "Native client protocol coverage sentinel design",
+  "generated_by": { "lane": "ox-pc-bc", "model": "openrouter/stealth/ox-alpha" },
+  "base_commit": "d2423873c577d299b3b39c56024d1d840993c72b",
+  "surveyed_head": "6c7d48e7a00caf3254755129e157d1c69e729dde",
+  "claim_commit": "64fab114ded129c12c8d16e996240e39ef823414",
+  "matrix_source": "docs/rebuild/NATIVE_CLIENT_PROTOCOL_MATRIX.md",
+  "matrix_edited": false,
+  "classification_legend": {
+    "COVERED": "all four columns resolve to real code AND an automated test asserts the step through its production path",
+    "PARTIAL": "step works end-to-end today but at least one column's evidence is indirect, synthetic, or unexercised; missing evidence stays red inside that cell",
+    "RED": "a required cell is missing outright (no code or no test anywhere)"
+  },
+  "summary": { "rows": 23, "covered": 19, "partial": 2, "red": 2 },
+  "rows": [
+    {
+      "id": "A01", "gate": "A", "journey_step": "Connect", "classification": "COVERED",
+      "server_handler": { "symbol": "WebSocketServer::handle_connection", "file": "native/src/networking.cpp", "line": 2828 },
+      "client_reducer": { "file": "native/client/remote_session.cpp", "lines": "248-297", "note": "connect_transport; Connected :293; ConnectionEstablished :294-295" },
+      "client_model": "ConnectionState::Connected",
+      "presentation_op": [ { "file": "native/client/presentation_events.hpp", "line": 13 }, { "file": "native/client/presentation_state.cpp", "line": 296 } ],
+      "automated_tests": [
+        { "file": "native/tests/session_tests.cpp", "line": 172, "label": "remote: connect + upgrade + login sent" },
+        { "file": "native/tests/session_tests.cpp", "line": 183, "label": "remote: SessionReady presentation event emitted" }
+      ],
+      "notes": []
+    },
+    {
+      "id": "A02", "gate": "A", "journey_step": "Guest login", "classification": "COVERED",
+      "server_handler": { "symbol": "WebSocketServer::handle_message login branch / ProtocolSession::handle player:login / emit_login", "file": "native/src/networking.cpp", "lines": "2984-2988,2753,2374" },
+      "client_reducer": { "file": "native/client/remote_session.cpp", "lines": "637-675", "note": "auto-login send :299-318; SessionReady :669-674" },
+      "client_model": "ClientPlayer uuid/x/y/facing/inventory + SessionReady",
+      "presentation_op": [ { "file": "native/client/presentation_events.hpp", "line": 15 }, { "file": "native/client/presentation_state.cpp", "line": 297 } ],
+      "automated_tests": [
+        { "file": "native/tests/session_tests.cpp", "line": 177, "label": "remote: scene snapshot mirrored" },
+        { "file": "native/tests/session_tests.cpp", "line": 183, "label": "remote: SessionReady presentation event emitted" }
+      ],
+      "notes": ["matrix-cited label 'remote: player:login acknowledged -> ready' no longer exists at this tip; superseded by the labels above"]
+    },
+    {
+      "id": "A03", "gate": "A", "journey_step": "Dead endpoint (negative)", "classification": "COVERED",
+      "server_handler": { "symbol": null, "note": "refusal is the authority signal" },
+      "client_reducer": { "file": "native/client/remote_session.cpp", "lines": "373-392", "note": "Rejected :384-390; fail() :971-975" },
+      "client_model": "ConnectionState::Rejected (no local fallback)",
+      "presentation_op": [ { "file": "native/client/presentation_state.cpp", "line": 291, "note": "ConnectionLost banner fx" } ],
+      "automated_tests": [
+        { "file": "native/tests/session_tests.cpp", "line": 155, "label": "remote-negative: dead endpoint fails start()" },
+        { "file": "native/tests/session_tests.cpp", "line": 157, "label": "remote-negative: state is rejected, not a silent local fallback" }
+      ],
+      "notes": []
+    },
+    {
+      "id": "A04", "gate": "A", "journey_step": "Session replaced", "classification": "COVERED",
+      "server_handler": { "symbol": "WebSocketServer::handle_message replacement flush", "file": "native/src/networking.cpp", "line": 2988 },
+      "client_reducer": { "file": "native/client/remote_session.cpp", "lines": "721-726" },
+      "client_model": "Disconnected; retry suppressed",
+      "presentation_op": [ { "file": "native/client/presentation_state.cpp", "line": 291, "note": "ConnectionLost via fail() :974" } ],
+      "automated_tests": [
+        { "file": "native/tests/session_tests.cpp", "line": 480, "label": "replaced: first session is disconnected" },
+        { "file": "native/tests/session_tests.cpp", "line": 481, "label": "replaced: ConnectionLost from player:session-replaced" },
+        { "file": "native/tests/session_tests.cpp", "line": 482, "label": "replaced: session-replaced does not enter Retrying" }
+      ],
+      "notes": []
+    },
+    {
+      "id": "A05", "gate": "A", "journey_step": "Zone entry", "classification": "COVERED",
+      "server_handler": { "symbol": "ProtocolSession::handle world:zone:enter", "file": "native/src/networking.cpp", "line": 2386 },
+      "client_reducer": { "file": "native/client/remote_session.cpp", "lines": "455-458,745-754", "note": "stairsUp parse :175-189; ClientScene client_model.hpp:61-68" },
+      "client_model": "ClientScene id/type/name/stairs_up",
+      "presentation_op": [ { "file": "native/client/main.cpp", "line": 3285 }, { "file": "native/client/presentation_state.cpp", "line": 374 } ],
+      "automated_tests": [
+        { "file": "native/tests/networking_tests.cpp", "line": 134, "label": "solo entry emits a scene transition" },
+        { "file": "native/tests/networking_tests.cpp", "line": 140, "label": "state reports instance" },
+        { "file": "native/tests/networking_tests.cpp", "line": 144, "label": "both stairs exist" },
+        { "file": "native/tests/session_tests.cpp", "line": 265, "label": "journey: zone enter mirrors instance scene" },
+        { "file": "native/tests/session_tests.cpp", "line": 266, "label": "journey: transition publishes exit stairs" }
+      ],
+      "notes": []
+    },
+    {
+      "id": "A06", "gate": "A", "journey_step": "Movement", "classification": "COVERED",
+      "server_handler": { "symbol": "ProtocolSession::handle player:move -> emit_movement", "file": "native/src/networking.cpp", "lines": "2388,2377" },
+      "client_reducer": { "file": "native/client/remote_session.cpp", "lines": "418-428,740-744" },
+      "client_model": "ClientPlayer x/y/facing",
+      "presentation_op": [ { "file": "native/client/presentation_state.cpp", "line": 80 }, { "file": "native/client/presentation_state.cpp", "line": 368 } ],
+      "automated_tests": [
+        { "file": "native/tests/networking_tests.cpp", "line": 111, "label": "applied sample broadcasts player:movement" },
+        { "file": "native/tests/networking_tests.cpp", "line": 114, "label": "right sample moves east" },
+        { "file": "native/tests/session_tests.cpp", "line": 276, "label": "journey: movement echo updates x" }
+      ],
+      "notes": []
+    },
+    {
+      "id": "A07", "gate": "A", "journey_step": "Aim", "classification": "COVERED",
+      "server_handler": { "symbol": null, "note": "presentation-local by design" },
+      "client_reducer": { "file": "native/client/remote_session.cpp", "lines": "430-439", "note": "sets facing, sends nothing" },
+      "client_model": "player.facing drives next skill direction",
+      "presentation_op": [ { "file": "native/client/main.cpp", "line": 1641 } ],
+      "automated_tests": [
+        { "file": "native/tests/session_tests.cpp", "line": 280, "label": "journey: aim updates facing" }
+      ],
+      "notes": []
+    },
+    {
+      "id": "A08", "gate": "A", "journey_step": "Primary action", "classification": "COVERED",
+      "server_handler": { "symbol": "ProtocolSession::handle player:skill:trigger", "file": "native/src/networking.cpp", "line": 2507 },
+      "client_reducer": { "file": "native/client/remote_session.cpp", "lines": "440-444,797-850" },
+      "client_model": "last_outgoing_hit :798",
+      "presentation_op": [ { "file": "native/client/presentation_state.cpp", "line": 401 }, { "file": "native/client/main.cpp", "line": 1641 }, { "file": "native/client/main.cpp", "line": 1685 }, { "file": "native/client/main.cpp", "line": 1728 } ],
+      "automated_tests": [
+        { "file": "native/tests/session_tests.cpp", "line": 300, "label": "journey: outgoing combat:hit reached the client" },
+        { "file": "native/tests/session_tests.cpp", "line": 538, "label": "render-list: Swing op recorded from AttackStarted" }
+      ],
+      "notes": []
+    },
+    {
+      "id": "A09", "gate": "A", "journey_step": "Telegraph", "classification": "COVERED",
+      "server_handler": { "symbol": "emit_combat_event telegraph arm (monster:telegraph)", "file": "native/src/networking.cpp", "line": 2066 },
+      "client_reducer": { "file": "native/client/remote_session.cpp", "lines": "756-769" },
+      "client_model": "upsert_monster + Telegraph event",
+      "presentation_op": [ { "file": "native/client/presentation_state.cpp", "line": 229 }, { "file": "native/client/presentation_state.cpp", "line": 394 }, { "file": "native/client/main.cpp", "line": 1527 } ],
+      "automated_tests": [
+        { "file": "native/tests/session_tests.cpp", "line": 370, "label": "journey: monster:telegraph reached the client" }
+      ],
+      "notes": []
+    },
+    {
+      "id": "A10", "gate": "A", "journey_step": "Damage in/out", "classification": "COVERED",
+      "server_handler": { "symbol": "process_combat / emit_combat_event combat:hit", "file": "native/src/networking.cpp", "lines": "2079,2077" },
+      "client_reducer": { "file": "native/client/remote_session.cpp", "lines": "770-851", "note": "incoming :778-796; outgoing :797-850" },
+      "client_model": "life/life_max, last_incoming_hit :790, last_outgoing_hit :798",
+      "presentation_op": [ { "file": "native/client/presentation_state.cpp", "line": 205 }, { "file": "native/client/presentation_state.cpp", "line": 414 }, { "file": "native/client/presentation_state.cpp", "line": 423 }, { "file": "native/client/presentation_state.cpp", "line": 438 } ],
+      "automated_tests": [
+        { "file": "native/tests/session_tests.cpp", "line": 300, "label": "journey: outgoing combat:hit reached the client" },
+        { "file": "native/tests/session_tests.cpp", "line": 369, "label": "journey: incoming combat:hit reached the client" },
+        { "file": "native/tests/presentation_events_tests.cpp", "line": 101, "label": "phase-a: render list labels critical hits with style" }
+      ],
+      "notes": []
+    },
+    {
+      "id": "A11", "gate": "A", "journey_step": "Enemy death", "classification": "COVERED",
+      "server_handler": { "symbol": "combat pipeline died flag on combat:hit", "file": "native/src/networking.cpp", "lines": "2070-2077" },
+      "client_reducer": { "file": "native/client/remote_session.cpp", "lines": "831-848", "note": "kills++ :832; ActorDied :835-840; synthesized kill-loot beat :841-847" },
+      "client_model": "kills++, foe.alive=false",
+      "presentation_op": [ { "file": "native/client/presentation_state.cpp", "line": 243 }, { "file": "native/client/presentation_state.cpp", "line": 419 }, { "file": "native/client/main.cpp", "line": 1692 } ],
+      "automated_tests": [
+        { "file": "native/tests/session_tests.cpp", "line": 301, "label": "journey: enemy death reached the client" },
+        { "file": "native/tests/session_tests.cpp", "line": 539, "label": "render-list: Drop op recorded from kill loot" }
+      ],
+      "notes": []
+    },
+    {
+      "id": "A12", "gate": "A", "journey_step": "Item drop", "classification": "PARTIAL",
+      "server_handler": { "symbol": "emit_ground_change (world:itemDropped :997; item:change :998)", "file": "native/src/networking.cpp", "lines": "995-998" },
+      "client_reducer": { "file": "native/client/remote_session.cpp", "lines": "514-520,895-910", "note": "NO consumer for world:itemDropped/item:change; ground list arrives via dev:state poll; kill-drop beat synthesized locally :841-847" },
+      "client_model": "model.ground populated only via dev:state groundItems ingest or local synthesis",
+      "presentation_op": [ { "file": "native/client/presentation_state.cpp", "line": 270 }, { "file": "native/client/presentation_state.cpp", "line": 389 }, { "file": "native/client/main.cpp", "line": 3497 } ],
+      "automated_tests": [
+        { "file": "native/tests/networking_tests.cpp", "line": 263, "label": "floor treasure emits item:change and world:itemDropped", "scope": "server wire only" },
+        { "file": "native/tests/networking_tests.cpp", "line": 266, "label": "ground envelope has uuid, id, name, x, y", "scope": "server wire only" },
+        { "file": "native/tests/session_tests.cpp", "line": 539, "label": "render-list: Drop op recorded from kill loot", "scope": "asserts locally synthesized kill loot, not a server drop delivery" }
+      ],
+      "required": {
+        "server_emits": ["world:itemDropped", "item:change"],
+        "client_consumes": [],
+        "deviation_note": "Native client consumes ground via dev:state snapshot polling (remote_session.cpp:514-520, :895-910); the named envelopes have zero references in native/client and no test drives them into RemoteProtocolSession. Sentinel must pin this as an explicit deviation.",
+        "test_labels": ["floor treasure emits item:change and world:itemDropped"]
+      },
+      "notes": ["negative control N-1 in FINDINGS.md", "smallest owner path: consume both envelopes in apply_envelope OR amend matrix row to declare dev:state.groundItems canonical"]
+    },
+    {
+      "id": "A13", "gate": "A", "journey_step": "Pickup", "classification": "COVERED",
+      "server_handler": { "symbol": "handle_take_underfoot / core:refresh:inventory emit / mark_relic_recovered", "file": "native/src/networking.cpp", "lines": "2564,989,1674" },
+      "client_reducer": { "file": "native/client/remote_session.cpp", "lines": "446-448,920-968", "note": "ItemPickedUp new-uuid diff :937-949" },
+      "client_model": "inventory slots refreshed",
+      "presentation_op": [ { "file": "native/client/presentation_state.cpp", "line": 283 } ],
+      "automated_tests": [
+        { "file": "native/tests/session_tests.cpp", "line": 334, "label": "journey: named item entered inventory (pickup)" },
+        { "file": "native/tests/session_tests.cpp", "line": 335, "label": "journey: ItemPickedUp or inventory growth" },
+        { "file": "native/tests/session_tests.cpp", "line": 1948, "label": "gate-b: exact relic uuid recovered underfoot" }
+      ],
+      "notes": ["ground-walk driver session_tests.cpp:306-325 also exercises dev:state ground sync feeding pickup targeting"]
+    },
+    {
+      "id": "A14", "gate": "A", "journey_step": "Equip", "classification": "COVERED",
+      "server_handler": { "symbol": "handle item:equip -> handle_equip -> player:equippedAnItem", "file": "native/src/networking.cpp", "lines": "2522,1009" },
+      "client_reducer": { "file": "native/client/remote_session.cpp", "lines": "449-454,950-966", "note": "completion inferred from core:refresh:inventory diff via pending_equip_uuid_; model_.equipped :959-960; ItemEquipped :961-963" },
+      "client_model": "equipped slot + stats from inventory slot parse (:68-95)",
+      "presentation_op": [ { "file": "native/client/render_list.hpp", "line": 39, "note": "PaneWeapon HUD op" }, { "file": "native/client/presentation_state.cpp", "line": 296 } ],
+      "automated_tests": [
+        { "file": "native/tests/networking_tests.cpp", "line": 402, "label": "item:equip emits player:equippedAnItem", "scope": "server wire" },
+        { "file": "native/tests/networking_tests.cpp", "line": 405, "label": "equip response includes wear-slot state", "scope": "server wire" },
+        { "file": "native/tests/networking_tests.cpp", "line": 412, "label": "snapshot wear matches the equip response", "scope": "server wire" },
+        { "file": "native/tests/session_tests.cpp", "line": 349, "label": "journey: equip removed the item from the backpack", "scope": "production client model" }
+      ],
+      "required": {
+        "server_emits": ["item:equip", "player:equippedAnItem"],
+        "client_consumes": [],
+        "deviation_note": "Client never parses player:equippedAnItem (zero references in native/client); equip completion inferred from core:refresh:inventory diff. A silent rename of the response would pass every client-side test - sentinel watch item.",
+        "test_labels": ["item:equip emits player:equippedAnItem", "journey: equip removed the item from the backpack"]
+      },
+      "notes": ["negative control N-2 in FINDINGS.md"]
+    },
+    {
+      "id": "A15", "gate": "A", "journey_step": "Extraction", "classification": "COVERED",
+      "server_handler": { "symbol": "stairs-up inside player:move -> finish_extraction (+ party:returnToTown :2553-2560; def :1011-1040; handler :2523)", "file": "native/src/networking.cpp", "lines": "2388,1011,1040" },
+      "client_reducer": { "file": "native/client/remote_session.cpp", "lines": "459-464,727-739", "note": "Extract command message-only guidance; surface-message detection sets extracted=true + ExtractionCompleted" },
+      "client_model": "extracted=true, town scene via transition",
+      "presentation_op": [ { "file": "native/client/presentation_state.cpp", "line": 287 }, { "file": "native/client/presentation_state.cpp", "line": 374 }, { "file": "native/client/main.cpp", "line": 2278, "note": "PaneBanked" } ],
+      "automated_tests": [
+        { "file": "native/tests/session_tests.cpp", "line": 392, "label": "journey: ExtractionCompleted from surface message" },
+        { "file": "native/tests/networking_tests.cpp", "line": 374, "label": "stairs-up emits the same player:extract bank summary" },
+        { "file": "native/tests/networking_tests.cpp", "line": 385, "label": "stairs-up and player:extract converge on the House store" }
+      ],
+      "notes": ["stale comment remote_session.cpp:460 claims no player:extract handler exists; networking.cpp:2523 implements one (behavior unaffected)"]
+    },
+    {
+      "id": "A16", "gate": "A", "journey_step": "Disconnect", "classification": "COVERED",
+      "server_handler": { "symbol": "transport close (WS close frame break)", "file": "native/src/networking.cpp", "line": 2828 },
+      "client_reducer": { "file": "native/client/remote_session.cpp", "lines": "628-633,333-352,971-975" },
+      "client_model": "Retrying after ever_ready; Disconnected otherwise",
+      "presentation_op": [ { "file": "native/client/presentation_state.cpp", "line": 291 } ],
+      "automated_tests": [
+        { "file": "native/tests/session_tests.cpp", "line": 427, "label": "reconnect: unexpected drop enters Retrying" },
+        { "file": "native/tests/session_tests.cpp", "line": 428, "label": "reconnect: ConnectionLost is visible (no silent local fallback)" }
+      ],
+      "notes": []
+    },
+    {
+      "id": "A17", "gate": "A", "journey_step": "Reconnect", "classification": "COVERED",
+      "server_handler": { "symbol": "identity-keyed session reuse in handle_message (replace_socket/reset_world_for_new_socket)", "file": "native/src/networking.cpp", "line": 2988 },
+      "client_reducer": { "file": "native/client/remote_session.cpp", "lines": "354-371,299-318" },
+      "client_model": "full model restore via fresh player:login reducer",
+      "presentation_op": [ { "file": "native/client/presentation_state.cpp", "line": 297 } ],
+      "automated_tests": [
+        { "file": "native/tests/session_tests.cpp", "line": 441, "label": "reconnect: Retrying then Ready after server restart" },
+        { "file": "native/tests/session_tests.cpp", "line": 442, "label": "reconnect: same guest identity re-logged in" },
+        { "file": "native/tests/session_tests.cpp", "line": 443, "label": "reconnect: login snapshot is authoritative" }
+      ],
+      "notes": []
+    },
+    {
+      "id": "A18", "gate": "A", "journey_step": "Persistence", "classification": "RED",
+      "server_handler": { "symbol": null, "note": "N5 durable House/Scion restore envelope absent; rg 'ofstream|ifstream|fopen|fwrite' native/src -> no matches (exit 1); persistence adapter stub unimplemented" },
+      "client_reducer": { "file": null, "note": "nothing to reduce; no restore envelope" },
+      "client_model": "no persisted-House restore path",
+      "presentation_op": [],
+      "automated_tests": [],
+      "required": {
+        "server_emits": [],
+        "client_consumes": [],
+        "deviation_note": "RED by absence: no durable store IO exists anywhere in native/src and no test asserts persisted House state across restart. Owner family TASK-0056 (N5). Missing evidence stays red.",
+        "test_labels": []
+      },
+      "notes": ["negative control N-4 in FINDINGS.md"]
+    },
+    {
+      "id": "B01", "gate": "B", "journey_step": "House lifecycle", "classification": "COVERED",
+      "server_handler": { "symbol": "chronicles:house:found -> chronicles:state (alt mutate :2635; awaitChronicles login branch :2753-2771)", "file": "native/src/networking.cpp", "lines": "2570-2579,2763,2771" },
+      "client_reducer": { "file": "native/client/remote_session.cpp", "lines": "465-468,676-698", "note": "apply_chronicle_object :196-237; ClientChronicle client_model.hpp:117-124" },
+      "client_model": "chronicle.houses/version/activeHouseId; chronicles_pending :689",
+      "presentation_op": [ { "file": "native/client/render_list.hpp", "line": 42 }, { "file": "native/client/main.cpp", "line": 3000 } ],
+      "automated_tests": [
+        { "file": "native/tests/session_tests.cpp", "line": 1723, "label": "gate-b: non-quick guest login admits chronicles:state", "scope": "wire-level loopback" },
+        { "file": "native/tests/session_tests.cpp", "line": 1733, "label": "gate-b: chronicles:house:found emits chronicles:state", "scope": "wire-level loopback" },
+        { "file": "native/client/main.cpp", "line": 4839, "label": "front door: the account chronicle opens the door", "scope": "production RemoteProtocolSession scenario (ctest verdigris_client_scenarios)" },
+        { "file": "native/client/main.cpp", "line": 4851, "label": "front door: founding renders the House roster", "scope": "production client scenario" }
+      ],
+      "notes": ["matrix's 'RED: no native test label' claim is stale at this tip"]
+    },
+    {
+      "id": "B02", "gate": "B", "journey_step": "Scion lifecycle", "classification": "COVERED",
+      "server_handler": { "symbol": "chronicles:scion:create :2581-2589; chronicles:scion:set-out :2592+; player:chronicles:select admission :2718+", "file": "native/src/networking.cpp", "lines": "2581-2589,2592,2718" },
+      "client_reducer": { "file": "native/client/remote_session.cpp", "lines": "469-477,479-500,502-505,642-649", "note": "admission lands via player:login reducer + Ready :669-674" },
+      "client_model": "chronicle.active_scion_id/active_house_id; chronicles_pending cleared :667",
+      "presentation_op": [ { "file": "native/client/render_list.hpp", "line": 44, "note": "HouseChip" }, { "file": "native/client/main.cpp", "line": 3731 } ],
+      "automated_tests": [
+        { "file": "native/tests/session_tests.cpp", "line": 1757, "label": "gate-b: chronicles:scion:create returns createdScionId" },
+        { "file": "native/tests/session_tests.cpp", "line": 1767, "label": "gate-b: chronicles:scion:set-out admits via player:login" },
+        { "file": "native/tests/session_tests.cpp", "line": 1874, "label": "gate-b: heir admitted through player:chronicles:select" },
+        { "file": "native/client/main.cpp", "line": 4864, "label": "front door: the first Scion joins the roster", "scope": "production client scenario" },
+        { "file": "native/client/main.cpp", "line": 4885, "label": "admission: the mortal-oath select lands in the world", "scope": "production client scenario" }
+      ],
+      "notes": []
+    },
+    {
+      "id": "B03", "gate": "B", "journey_step": "Death", "classification": "COVERED",
+      "server_handler": { "symbol": "process_combat trigger :2185 (+guard :2460); handle_final_death :2200-2269 (scion-fallen :2262; scion-witnessed broadcast :2269)", "file": "native/src/networking.cpp", "lines": "2185,2460,2200-2269" },
+      "client_reducer": { "file": "native/client/remote_session.cpp", "lines": "699-720", "note": "fallen struct :700-709; alive=false :712; ScionDied :713-715; Message :716-718" },
+      "client_model": "chronicle.fallen; lifecycle mirrored from dev:state :858-859",
+      "presentation_op": [ { "file": "native/client/presentation_state.cpp", "line": 243 }, { "file": "native/client/main.cpp", "line": 4929 } ],
+      "automated_tests": [
+        { "file": "native/tests/session_tests.cpp", "line": 1821, "label": "gate-b: ordinary combat reached the scion (incoming hit)" },
+        { "file": "native/tests/session_tests.cpp", "line": 1822, "label": "gate-b: fallen observed", "scope": "wire-level loopback view" },
+        { "file": "native/client/main.cpp", "line": 4924, "label": "consequence: scion-fallen names the fallen Scion", "scope": "production client scenario" },
+        { "file": "native/client/main.cpp", "line": 4926, "label": "consequence: the fall returns the owner to the chronicles", "scope": "production client scenario" }
+      ],
+      "watchlist": [
+        "chronicles:scion-witnessed (networking.cpp:2269): emitted but ZERO consumers/assertions anywhere (rg over native/client + native/tests -> no matches)",
+        "direct player:stats:update permadead push: unconsumed by name; client derives lifecycle from dev:state snapshot (remote_session.cpp:858-859)"
+      ]
+    },
+    {
+      "id": "B04", "gate": "B", "journey_step": "Successor", "classification": "PARTIAL",
+      "server_handler": { "symbol": "player:chronicles:return :2672-2715; recovery chain dev:release-relic :2483; chroniclesRelic ground field :479; mark_relic_recovered :1674", "file": "native/src/networking.cpp", "lines": "2672-2715,2483,479,1674" },
+      "client_reducer": { "file": "native/client/remote_session.cpp", "lines": "903-907,691-696", "note": "recovery leg green (relic provenance ingest + fallen-in-ready); RETURN LEG UNREACHABLE: ClientCommand::Type (session.hpp:40-55) has no return intent; zero references to \"player:chronicles:return\" in native/client" },
+      "client_model": "crypt relic status flips recovered; fallen surfaced in ready payload",
+      "presentation_op": [ { "file": "native/client/main.cpp", "line": 3015, "note": "relic toast" }, { "file": "native/client/main.cpp", "line": 4934, "note": "succession actions on front door" } ],
+      "automated_tests": [
+        { "file": "native/tests/session_tests.cpp", "line": 1846, "label": "gate-b: player:chronicles:return readies succession", "scope": "wire-level loopback only" },
+        { "file": "native/tests/session_tests.cpp", "line": 1861, "label": "gate-b: successor created through chronicles:scion:create" },
+        { "file": "native/tests/session_tests.cpp", "line": 1874, "label": "gate-b: heir admitted through player:chronicles:select" },
+        { "file": "native/tests/session_tests.cpp", "line": 1937, "label": "gate-b: slain elite surfaces the circulating heirloom" },
+        { "file": "native/tests/session_tests.cpp", "line": 1948, "label": "gate-b: exact relic uuid recovered underfoot" },
+        { "file": "native/client/main.cpp", "line": 5005, "label": "recovery: the crypt record flips lost to recovered", "scope": "production client scenario" }
+      ],
+      "required": {
+        "server_emits": ["player:chronicles:return"],
+        "client_consumes": [],
+        "deviation_note": "No production client input path can send player:chronicles:return (session.hpp:40-55 defines no return intent; literal grep no-match). Succession ships through player:chronicles:select directly (main.cpp:4946-4966), which carries a RECORDED RED workaround (select resets lifecycle but not actor life until fresh-socket heal; accepted dev:heal seam, comment main.cpp:4967+).",
+        "test_labels": ["gate-b: player:chronicles:return readies succession", "recovery: the crypt record flips lost to recovered"]
+      },
+      "notes": ["negative control N-3 in FINDINGS.md"]
+    },
+    {
+      "id": "B05", "gate": "B", "journey_step": "Persistence", "classification": "RED",
+      "server_handler": { "symbol": "in-process reuse via identity-keyed session adoption (handle_message :2988); DURABLE STORE ABSENT", "file": "native/src/networking.cpp", "line": 2988, "note": "rg 'ofstream|ifstream|fopen|fwrite' native/src -> no matches (exit 1); no quit/logout envelope" },
+      "client_reducer": { "file": "native/client/remote_session.cpp", "lines": "305-312,676-698", "note": "awaitChronicles login path + ready/state reducers restore roster within a live server" },
+      "client_model": "in-process: full ClientChronicle restored; cross-process: impossible today",
+      "presentation_op": [ { "file": "native/client/main.cpp", "line": 5033, "note": "roster renders on return (scenario)" } ],
+      "automated_tests": [
+        { "file": "native/tests/session_tests.cpp", "line": 1993, "label": "gate-b: reconnect upgrades same server" },
+        { "file": "native/tests/session_tests.cpp", "line": 2006, "label": "gate-b: reconnect restores the chronicle session" },
+        { "file": "native/tests/session_tests.cpp", "line": 2011, "label": "gate-b: identical House/Scion/relic record after reconnect" },
+        { "file": "native/tests/session_tests.cpp", "line": 2074, "label": "gate-b: mortal oath survives the reconnect" },
+        { "file": "native/client/main.cpp", "line": 5033, "label": "reconnect: House, heir, and crypt render on return", "scope": "production client scenario" }
+      ],
+      "required": {
+        "server_emits": [],
+        "client_consumes": [],
+        "deviation_note": "Durable cell RED by absence: no durable cross-process store (literal rg no-match for file IO in native/src), server restart loses Houses/Scions/crypt, no quit/logout envelope, no restart-survival test. In-process reuse legs above are labeled green. Owner family TASK-0056 (N5).",
+        "test_labels": ["gate-b: identical House/Scion/relic record after reconnect"]
+      },
+      "notes": ["negative control N-4 in FINDINGS.md"]
+    }
+  ],
+  "negative_controls": [
+    {
+      "id": "N-1", "grounds": ["A12 PARTIAL"],
+      "claim": "world:itemDropped and item:change have no native/client consumer",
+      "probe_command": "rg -n '\"world:itemDropped\"|\"item:change\"' native/client",
+      "observed": "(no output)",
+      "exit_code": 1,
+      "counter_evidence": "native/src/networking.cpp:997-998 emits both; networking_tests.cpp:263/:266 assert them server-side only"
+    },
+    {
+      "id": "N-2", "grounds": ["A14 deviation note"],
+      "claim": "player:equippedAnItem response is unconsumed by the native client",
+      "probe_command": "rg -n '\"player:equippedAnItem\"' native/client",
+      "observed": "(no output)",
+      "exit_code": 1,
+      "counter_evidence": "equip outcome inferred from core:refresh:inventory diff (remote_session.cpp:950-966); both halves individually labeled green"
+    },
+    {
+      "id": "N-3", "grounds": ["B04 PARTIAL"],
+      "claim": "no production client input path can send player:chronicles:return",
+      "probe_command": "rg -n '\"player:chronicles:return\"' native/client",
+      "observed": "(no output)",
+      "exit_code": 1,
+      "counter_evidence": "server handler networking.cpp:2672 exercised only wire-level via LoopbackClient (session_tests.cpp:1846)"
+    },
+    {
+      "id": "N-4", "grounds": ["A18 RED", "B05 durable cell RED"],
+      "claim": "no durable cross-process store exists",
+      "probe_command": "rg -n 'ofstream|ifstream|fopen|fwrite' native/src",
+      "observed": "(no output)",
+      "exit_code": 1,
+      "counter_evidence": "persistence/adapter.hpp is an unimplemented stub; no quit/logout envelope; no restart-survival test"
+    }
+  ],
+  "sentinel_interface": {
+    "status": "DESIGN ONLY - deliberately not implemented per spec",
+    "phase_1_static_readonly": {
+      "new_file": "native/tools/protocol_coverage_sentinel.cpp",
+      "namespace": "verdigris::sentinel",
+      "api": "int run_sentinel(const std::string& coverage_json_abs_path, const std::string& repo_root, Report* report); returns 0 iff violations empty; stdout-only; no sockets/servers/files-written",
+      "row_contract_fields": ["row_id", "server_emits[]", "client_consumes[] (empty => deviation_note mandatory)", "deviation_note", "test_labels[]"],
+      "violation_kinds": ["missing-server-emit", "missing-client-consume", "undeclared-deviation", "missing-test-label"],
+      "match_strategy": "literal strings (envelope names, test labels), never line numbers - this audit documents how line anchors drift while labels survive",
+      "wiring": "add_test(NAME verdigris_protocol_sentinel COMMAND ...) reading orchestration/tasks/TASK-0091-native-protocol-coverage-sentinel/captures/coverage.json; stdlib-only target",
+      "guarantees": "read-only over repo sources; binds no ports; starts no servers; resource capsule respected"
+    },
+    "phase_2_dynamic_optional": "reuse existing ephemeral loopback capsule pattern (session tests bind in-process ports; scenarios bind 6780-6799) driving RemoteProtocolSession through a scripted journey requiring >=1 PresentationEvent/model delta per COVERED row"
+  },
+  "successor_recommendation": [
+    "A12: consume item:change/world:itemDropped in RemoteProtocolSession (map onto model.ground + ItemDropped) OR amend the matrix row to name dev:state.groundItems as canonical; encode choice as sentinel deviation (owner family TASK-0077/TASK-0061)",
+    "A18/B05 durable leg: implement persistence behind native/persistence/adapter.hpp stub + decide quit/logout envelope + one restart-survival test asserting House/Scion/crypt survival (owner family TASK-0056/N5); stays RED until both code and label exist",
+    "B04: add ClientCommand::Type::ReturnToHouse translating to player:chronicles:return + one journey assertion, OR formally adopt select-direct succession and demote the return envelope in the matrix; also hand the select-lifecycle heal workaround (main.cpp:4967+) to the server owner",
+    "Adopt phase-1 sentinel wired to captures/coverage.json so any rename/removal of a required wire step flips CI red instead of drifting silently",
+    "Docs owner: refresh NATIVE_CLIENT_PROTOCOL_MATRIX.md stale line anchors and outdated Gate B 'no test label' preamble using FINDINGS.md (outside this lane's owned_paths)"
+  ]
+}

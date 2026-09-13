@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-GPU-008",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "96bf8d3a",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "gpu-recover",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario gpu-recover", "exit_code": 0}
+  ],
+  "assertions": [
+    "first present allocates one pixel buffer",
+    "resize keeps a single live buffer",
+    "minimize/restore cannot leak textures",
+    "restored buffer carries a survival mark distinct from gpu-sample",
+    "live HUD names Live buffers 1",
+    "failed recreate shows gpu-error:recreate and live_buffers=0",
+    "failure releases the previous buffer instead of crashing",
+    "Restore stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Restore is the anti-pattern"
+  ],
+  "negative_control": {
+    "name": "minimize/restore leaking textures or crashing; leak as a passing restore; Restore covering WASD/objective/Tin village/Life",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/gpu-recover-960x600.png",
+      "sha256": "d1cd275e2c87211d9341f0a4c70f4b3f4c64def2526a0f4267517ba65035c2c2",
+      "produced_by": "native/build/verdigris_client.exe --scenario gpu-recover"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/gpu-recover-quad.bmp",
+      "sha256": "889edf248136df714864cba393b06393f8df8fe6c1923a8f34ee015967a4b6a2",
+      "produced_by": "native/build/verdigris_client.exe --scenario gpu-recover"
+    },
+    {
+      "kind": "log",
+      "path": "docs/execution/captures/art-wave/gpu-recover-report.txt",
+      "sha256": "cd526a5b1c07814ba7eb64f603da6515f14d29665ae37356dd19c3c10f99bbcf",
+      "produced_by": "native/build/verdigris_client.exe --scenario gpu-recover"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Software sample recreate, not DXGI device-removed. VG-PERF-004 envelope stays a separate claim.",
+    "Owner strip paints Restore / Live buffers 1 and parks off WASD, the objective, Tin village, and Life. Leak cannot certify. Covering those combat surfaces cannot certify.",
+    "Quad BMP and report txt hashes unchanged. Restored quad is the bronze/stone checker plus an L-bracket survival mark. Not Owner Demo. Does not re-spec TASK-0108."
+  ]
+}

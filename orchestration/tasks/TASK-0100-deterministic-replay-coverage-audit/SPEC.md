@@ -1,7 +1,8 @@
 ---
 task: TASK-0100
 title: Deterministic replay coverage and divergence audit
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head 74e5dc17, 2026-08-23)
 packet: BOUNDED-DESIGN
 topology: INDEPENDENT
 job: BOUNDED-DESIGN

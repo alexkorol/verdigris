@@ -1,4 +1,4 @@
-﻿# Model scorecard (empirical; the unit is model Ã— harness Ã— task family)
+# Model scorecard (empirical; the unit is model Ã— harness Ã— task family)
 
 Small samples â€” treat every row as calibration-in-progress, not
 identity. Recalibrate after model/harness/prompt/acceptance changes.
@@ -20,6 +20,7 @@ identity. Recalibrate after model/harness/prompt/acceptance changes.
 | Codex Luna (MacBook) | docs/audit MECHANICAL (calibration) | 1 | 100% (0071) | 0 | precise file:line citations, honest gap tables; minor notes-file naming nit; MECHANICAL-only lane holds |
 | Fable (architect) | scaffolding/reviews/integration | â€” | â€” | 0 | control plane + D-120 scaffolds |
 | Fable (architect) | solo implementation (D-124 takeover) | 1 day | delivered 32/32 attach parity + 4 PRs | 0 | ANTI-PATTERN, see INC-012: correct output, wrong actor. Cost the owner a full billing week of Claude budget for work three cheaper lanes could have done. Retired from the fleet 2026-08-20. Do not repeat: a dark fleet is a stop condition, not a takeover trigger |
+| Ox Alpha fleet (OpenCode CLI 1.18.21 / openrouter/stealth/ox-alpha, variant max) | native/browser implementation + validator waves (0080-0164) | ~45 routed lanes | all 45 landed ACCEPTED + integrated; 0 false greens remain on the board | 0 open | strong frozen-head evidence discipline (literal gates, committed captures, negative controls); a minority needed a numbered revision cycle before acceptance (0081, 0101, 0128, 0149, 0152, 0157, 0164) — the independent review gate caught each; a few claims needed activation-controller format repairs. Fleet currently provisioned/dormant awaiting owner launch |
 
 ## Calibration notes
 

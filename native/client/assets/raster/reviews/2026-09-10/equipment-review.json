@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "review": "Final 54-pose production equipment probe",
+  "run_date_local": "2026-09-10",
+  "timezone": "America/Los_Angeles",
+  "command": "./native/tools/raster/test_equipment.ps1 -Python (Get-Command python).Source",
+  "working_directory": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study",
+  "exit_code": 0,
+  "execution_provenance": {
+    "capture_kind": "Codex tool terminal output retained in conversation; this JSON records that completed run",
+    "launch_tool": "functions.exec -> tools.exec_command",
+    "launch_output_chunk_id": "4a6988",
+    "terminal_session_id": 66147,
+    "completion_tool": "functions.exec -> tools.write_stdin",
+    "completion_output_chunk_id": "c70543",
+    "test_rerun_for_evidence": false,
+    "full_terminal_transcript": false,
+    "excerpt_note": "The strings below reproduce the final run's reported checks and artifact results verbatim. Compiler filenames and Windows SDK C4458 warnings are omitted; no test failure was omitted."
+  },
+  "stdout_excerpt_verbatim": [
+    "PASS: all six V3 hand-region fingerprints and measured palm texels match the reviewed sockets.",
+    "PASS: 36 reviewed directional hand neighborhoods and palm texels match their measured sockets.",
+    "Stable repeat: 90 strike placements x 100 plus idle; image-load delta 0, bitmap-build delta 0, GDI handles 251 -> 251; cache 122 bitmaps / 22635640 bytes.",
+    "PASS: 54 poses x 5 weapons at three scales; grip error <=0.5 px, exact actor occlusion, unchanged zero-angle pixels, direct PARGB nearest samples, normalized angle identity, 360-angle bounded eviction, stable full-strike repeat cache/GDI handles and invalid-parameter rejection.",
+    "h96 w80 measured=(49,65,52,69) ceil edges=(49,65,52,69) half edges=(49,65,52,69)",
+    "h97 w81 measured=(50,66,53,70) ceil edges=(50,66,53,70) half edges=(50,66,53,70)",
+    "h111 w93 measured=(57,75,60,80) ceil edges=(57,76,61,80) half edges=(57,75,60,80)",
+    "h173 w144 measured=(88,117,94,124) ceil edges=(89,118,94,125) half edges=(88,117,94,124)",
+    "h192 w160 measured=(98,130,104,138) ceil edges=(98,130,104,138) half edges=(98,130,104,138)",
+    "h205 w171 measured=(105,139,111,147) ceil edges=(105,139,112,148) half edges=(105,139,111,147)",
+    "h287 w239 measured=(146,194,155,206) ceil edges=(147,195,156,207) half edges=(146,194,155,206)",
+    "h288 w240 measured=(147,195,156,207) ceil edges=(147,195,156,207) half edges=(147,195,156,207)",
+    "PASS: measured GDI+ nearest-neighbor source coordinates match helper finger clipping at all eight tested sizes.",
+    "Wrote strike-action-review-3x.gif from production-rendered frames.",
+    "Wrote strike-nw-action-review-3x.gif from production-rendered frames.",
+    "Wrote strike-sw-action-review-3x.gif from production-rendered frames.",
+    "Wrote walk-sw-action-review-1x.gif from production-rendered frames.",
+    "Wrote walk-sw-action-review-3x.gif from production-rendered frames.",
+    "Wrote walk-nw-action-review-1x.gif from production-rendered frames.",
+    "Wrote walk-nw-action-review-3x.gif from production-rendered frames.",
+    "Wrote walk-ne-action-review-1x.gif from production-rendered frames.",
+    "Wrote walk-ne-action-review-3x.gif from production-rendered frames.",
+    "Equipment checks passed. Contact sheets, strike animation and sampling fixtures: C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-diablo-study\\.ci-artifacts\\raster-equipment"
+  ],
+  "source_sha256_recorded_after_freeze": {
+    "native/client/raster_equipment.hpp": "8690fcb0de2aacbeb7d0997a58106e25386a5640fd3e4f636800112f18dc54fa",
+    "native/tools/raster/test_equipment.cpp": "62b8f18f83e926b76460f1a48956210d48818c41791a77b3fed66c5a18f43415",
+    "native/tools/raster/test_equipment.ps1": "d612dc066d486a05f7ef87b0a810b293c4252f7362cc56bb1141ed5f25891f03"
+  },
+  "visual_review": {
+    "reviewer": "/root/motion_references",
+    "method": "Viewed actual production-rendered contact sheets with view_image at native and 3x scale, alongside nearest-neighbor enlarged source sprites and coordinate grids.",
+    "reviewed_new_composites": 180,
+    "new_pose_groups": ["walk-sw: 8", "walk-nw: 8", "walk-ne: 8", "strike-nw: 6", "strike-sw: 6"],
+    "limitations": [
+      "This is equipment attachment/rendering evidence, not a live gameplay or simulation-contact-timing result.",
+      "NE walk frames 6 and 7 expose only a narrow far-hand skin edge; grips use that observed edge with actor-body occlusion.",
+      "Bow and staff retain carry orientation during melee body poses; these are not weapon-specific bow or staff attack animations."
+    ]
+  },
+  "artifact_directory": ".ci-artifacts/raster-equipment",
+  "related_artifacts": [
+    "equipment-coverage.txt",
+    "walk-sockets.csv",
+    "directional-strike-sockets.csv",
+    "strike-sockets-v3.csv",
+    "walk-sw-action-review.html",
+    "walk-nw-action-review.html",
+    "walk-ne-action-review.html",
+    "strike-nw-action-review.html",
+    "strike-sw-action-review.html"
+  ],
+  "older_logs_are_not_this_run": [
+    "latest-equipment-check.log: last write 2026-09-09 22:35:32 local",
+    "test-equipment-last-run.log: last write 2026-09-09 22:57:59 local",
+    "v3-equipment-regression.log: last write 2026-09-09 23:31:51 local"
+  ]
+}

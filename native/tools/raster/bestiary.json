@@ -1,0 +1,166 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "defaults": {
+    "cell_size": 5,
+    "alpha_mode": "crisp",
+    "max_colors": 32,
+    "canvas": [
+      80,
+      96
+    ],
+    "trim": true,
+    "require_transparency": true,
+    "preserve_scale": true
+  },
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/bestiary-directions-v4.png",
+      "assets": [
+        {
+          "name": "beast_se",
+          "source_box": [
+            0,
+            0,
+            314,
+            290
+          ],
+          "anchor_x_source": 157
+        },
+        {
+          "name": "beast_sw",
+          "source_box": [
+            314,
+            0,
+            627,
+            290
+          ],
+          "anchor_x_source": 157
+        },
+        {
+          "name": "beast_nw",
+          "source_box": [
+            627,
+            0,
+            941,
+            290
+          ],
+          "anchor_x_source": 157
+        },
+        {
+          "name": "beast_ne",
+          "source_box": [
+            941,
+            0,
+            1254,
+            290
+          ],
+          "anchor_x_source": 157
+        },
+        {
+          "name": "wight_se",
+          "source_box": [
+            0,
+            290,
+            314,
+            611
+          ],
+          "anchor_x_source": 157
+        },
+        {
+          "name": "wight_sw",
+          "source_box": [
+            314,
+            290,
+            627,
+            611
+          ],
+          "anchor_x_source": 157
+        },
+        {
+          "name": "wight_ne",
+          "source_box": [
+            941,
+            290,
+            1254,
+            611
+          ],
+          "anchor_x_source": 157
+        },
+        {
+          "name": "archer_se",
+          "source_box": [
+            0,
+            611,
+            314,
+            926
+          ],
+          "anchor_x_source": 157
+        },
+        {
+          "name": "archer_sw",
+          "source_box": [
+            314,
+            611,
+            627,
+            926
+          ],
+          "anchor_x_source": 157
+        },
+        {
+          "name": "archer_nw",
+          "source_box": [
+            627,
+            611,
+            941,
+            926
+          ],
+          "anchor_x_source": 157
+        },
+        {
+          "name": "archer_ne",
+          "source_box": [
+            941,
+            611,
+            1254,
+            926
+          ],
+          "anchor_x_source": 157
+        },
+        {
+          "name": "artisan_se",
+          "source_box": [
+            0,
+            926,
+            314,
+            1254
+          ],
+          "anchor_x_source": 157
+        },
+        {
+          "name": "artisan_sw",
+          "source_box": [
+            314,
+            926,
+            627,
+            1254
+          ],
+          "anchor_x_source": 157
+        },
+        {
+          "name": "artisan_ne",
+          "source_box": [
+            941,
+            926,
+            1254,
+            1254
+          ],
+          "anchor_x_source": 157
+        }
+      ]
+    }
+  ],
+  "known_limitations": [
+    "Archer rear diagonals require live-game directional review."
+  ]
+}

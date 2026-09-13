@@ -1,7 +1,8 @@
 ---
 task: TASK-0121
 title: Owner art, lore, naming, balance, economy, and content approval matrix
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head 587ce281, 2026-08-23)
 packet: MECHANICAL
 topology: INDEPENDENT
 job: MECHANICAL

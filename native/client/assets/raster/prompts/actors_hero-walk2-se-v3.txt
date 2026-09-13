@@ -1,0 +1,11 @@
+Edit this adult pixel-art hero into ONE opposite-foot walking pose, preserving the exact identity, clothes, colors, direction, camera and pixel art.
+
+Use reference 1 as the identity anchor, reference 2 as the body-position anchor.
+
+Change the LEG SILHOUETTE clearly:
+The long STRAIGHT weight-bearing leg and its LOW grounded boot must now be on the SCREEN-LEFT side of the image, below the bronze-shoulder side of the torso.
+The BENT trailing leg and its RAISED boot must now be on the SCREEN-RIGHT side of the image, below the blue-sash side of the torso.
+Thus the LEFTMOST boot is LOW and planted forward; the RIGHTMOST boot is HIGH and lifted back. This is the opposite of reference 2, whose rightmost boot is low. Do not preserve the old leg pose.
+Both boot toes still point screen-right, matching the hero's southeast-facing chest and face. This is the opposite contact phase of a normal walk. Empty hands swing gently opposite the legs.
+
+Keep the head, torso, outfit and bronze shoulder guard exactly as referenced. One full-body sprite, same mature adult proportions, same low-resolution square pixels, same scale and generous margin. Transparent alpha background.

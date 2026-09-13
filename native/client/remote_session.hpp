@@ -13,6 +13,7 @@
 #include <mutex>
 #include <string>
 #include <thread>
+#include <unordered_map>
 #include <vector>
 
 #include "session.hpp"
@@ -50,6 +51,19 @@ class RemoteProtocolSession final : public IClientSession {
   void pump_retry();
   void reader_loop();
   void apply_envelope(const verdigris::networking::Envelope& envelope);
+  bool apply_monster_movement(ClientMonster& monster,
+                             const verdigris::networking::JsonValue& source);
+  void sample_monster_display();
+  void clear_monster_display();
+  struct MonsterMovement {
+    std::uint64_t sequence = 0;
+    double from_x = 0.0, from_y = 0.0, to_x = 0.0, to_y = 0.0;
+    int duration_ms = 0;
+    bool has_facing = false;
+    int facing_x = 0, facing_y = 0;
+    std::chrono::steady_clock::time_point received_at{};
+  };
+  std::unordered_map<std::string, MonsterMovement> monster_movement_;
   void fail(ConnectionState state, const std::string& error);
 
   std::string host_;
@@ -77,6 +91,8 @@ class RemoteProtocolSession final : public IClientSession {
   std::vector<PresentationEvent> pending_events_;
   std::string last_error_;
   std::string last_facing_{"down"};
+  std::string last_move_dir_;
+  bool aim_held_ = false;
   std::string pending_equip_uuid_;
 };
 

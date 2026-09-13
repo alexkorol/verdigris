@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-GPU-001",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "35d8d1fa",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "gpu-sample",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario gpu-sample", "exit_code": 0}
+  ],
+  "assertions": [
+    "software backend opens a 64x64 window buffer",
+    "textured bronze/stone quad draws without a GPU device",
+    "unknown backend cannot pretend to be portable",
+    "shutdown releases the buffer",
+    "live HUD names Software quad and No D3D",
+    "Software quad stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Software quad is the anti-pattern"
+  ],
+  "negative_control": {
+    "name": "Windows-only / unknown backend as the cross-platform trial, or Software quad covering WASD/objective/Tin village/Life",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/gpu-sample-quad.bmp",
+      "sha256": "2f1c2cc46b412712e2c5d9c7501d96450de7304b5af08a692bd8d8f8eba25c4d",
+      "produced_by": "native/build/verdigris_client.exe --scenario gpu-sample"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/gpu-sample-960x600.png",
+      "sha256": "9bb8eb4d1ba9e72166feedce68d6dfd4c02e0ae90c6f68cde46bfd974949937f",
+      "produced_by": "native/build/verdigris_client.exe --scenario gpu-sample"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Software sample is the portable trial per VG-GOV-005. Not a Metal/D3D presenter. Owner strip paints Software quad / No D3D and parks off WASD, the objective, Tin village, and Life. Unknown GPU cannot certify. Covering those combat surfaces cannot certify.",
+    "gpu-sample-quad.bmp is prior evidence; not recaptured in this packet.",
+    "Does not mint TASK numbers or edit native/src/core.cpp."
+  ]
+}

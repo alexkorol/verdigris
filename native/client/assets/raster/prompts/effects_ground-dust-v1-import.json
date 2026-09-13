@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "shared_palette_max_colors": 24,
+  "output_dir": "../source/effects_ground-dust-v1-candidate",
+  "defaults": {"cell_size": 12, "alpha_mode": "crisp", "max_colors": 24, "canvas": [64, 48], "padding": 6, "preserve_scale": true, "require_transparency": true, "acceptance": "candidate dust phases for root runtime review"},
+  "known_limitations": ["Source transparent RGB channels contain a soft-looking halo, but reconstruction uses actual alpha. Verify native output on earth before acceptance. Common source-cell origin384,384 and pitch12 preserve all phase offsets without individual fitting."],
+  "sheets": [{"source": "../source/effects_ground-dust-v1.png", "grid": [2, 2], "assets": [
+    {"name": "effect_dust0", "cell": [0, 0], "anchor_source": [384, 384]},
+    {"name": "effect_dust1", "cell": [1, 0], "anchor_source": [384, 384]},
+    {"name": "effect_dust2", "cell": [0, 1], "anchor_source": [384, 384]},
+    {"name": "effect_dust3", "cell": [1, 1], "anchor_source": [384, 384]}
+  ]}]
+}

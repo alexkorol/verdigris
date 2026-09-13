@@ -1,0 +1,890 @@
+{
+  "version": 1,
+  "manifest_sha256": "3a08f114d73923b43bb4bab36310ba93e8549d626b9114baac03d4f340be09a5",
+  "importer_sha256": "4ea3788b6d7916b0567d387da4698548460bc1779ff760c2215a24e52368a427",
+  "engine": {
+    "project": "Pixel Respecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "root": "Z:/Code/Python/pixel-perfecter",
+    "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+    "git_dirty": true,
+    "source_sha256": {
+      "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+      "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+      "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+      "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+      "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+      "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+      "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+      "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+      "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+      "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+      "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+      "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+      "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+    },
+    "dependencies": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    }
+  },
+  "known_limitations": [],
+  "sources": [
+    {
+      "source": "../../client/assets/wizard/items/dagger_bronze.png",
+      "sha256": "a5fed373ddbbf2e17628294e50db7bbf6d07cce0688125513e671c805d9b2fa4",
+      "size": [
+        344,
+        512
+      ]
+    },
+    {
+      "source": "../../client/assets/wizard/items/boar_pike.png",
+      "sha256": "28601e63fa6dc665c169e34bb0c1895a1b74a1dea293f84778fb4fd9d535687c",
+      "size": [
+        204,
+        512
+      ]
+    },
+    {
+      "source": "../../client/assets/wizard/items/astral_plate.png",
+      "sha256": "c4227d4f5ca0242c022ac753f9b805f8ca4f1d601c6414ac9b987d218d5b4e84",
+      "size": [
+        421,
+        512
+      ]
+    },
+    {
+      "source": "../../client/assets/wizard/items/boots_fur.png",
+      "sha256": "df45c89d69fab7877c7574cc1b7de78ec3b4f3f9d19d107adf1527a791855763",
+      "size": [
+        471,
+        512
+      ]
+    },
+    {
+      "source": "../../client/assets/wizard/items/cur_chisel.png",
+      "sha256": "11350462d69643c5810b5b647b1aaa826be87a0b217ea56eea5caaee566924c4",
+      "size": [
+        84,
+        512
+      ]
+    },
+    {
+      "source": "../../client/assets/wizard/items/cur_knife.png",
+      "sha256": "d6fadd4bf27fa9e5452726c75e78dab22ef9304ecba6623e50b54883b0c6df74",
+      "size": [
+        470,
+        512
+      ]
+    },
+    {
+      "source": "../../client/assets/wizard/items/cur_draught.png",
+      "sha256": "14996e08c3398c9e8a69c4b1b4c4e9109b61efaddee9f3cbe012debe43e5402e",
+      "size": [
+        376,
+        512
+      ]
+    },
+    {
+      "source": "../../client/assets/wizard/items/cur_orb.png",
+      "sha256": "f5e75a8f2bc1343c23f03c587f09fed113752e9dfb40588a7e3878fefeb54de6",
+      "size": [
+        416,
+        512
+      ]
+    },
+    {
+      "source": "../../client/assets/wizard/items/bird_omen.png",
+      "sha256": "276acac57329b0870889f74ab0d9ee33a04c5f1e085fecfa74fd531f2c1459e1",
+      "size": [
+        339,
+        512
+      ]
+    },
+    {
+      "source": "../../client/assets/wizard/items/blood_omen.png",
+      "sha256": "5f71ff943b599bb79550d78f4283c188811644397e8d097392092b6488bbb78f",
+      "size": [
+        512,
+        381
+      ]
+    },
+    {
+      "source": "../../client/assets/wizard/items/ember_shell.png",
+      "sha256": "bbd2e67adc91b108a53085ff6dad517d3ef86d1a00638e406073c5b3ced825eb",
+      "size": [
+        399,
+        512
+      ]
+    },
+    {
+      "source": "../../client/assets/wizard/items/bowl_bronze_offering.png",
+      "sha256": "26823b0f4f584aa4e740381c299394e0a0d3555f82892a11532fad5cbd33068c",
+      "size": [
+        512,
+        323
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "name": "item_dagger",
+      "file": "item_dagger.png",
+      "source": "../../client/assets/wizard/items/dagger_bronze.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        344,
+        512
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        43,
+        64
+      ],
+      "trim_box": [
+        0,
+        0,
+        42,
+        63
+      ],
+      "before_resize": [
+        42,
+        63
+      ],
+      "placed_size": [
+        42,
+        63
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        3,
+        1,
+        45,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "27e20ab8965efc8d28a32ef122bc7aa141ec6cf82f933be8c53a6eb595a83518"
+    },
+    {
+      "name": "item_pike",
+      "file": "item_pike.png",
+      "source": "../../client/assets/wizard/items/boar_pike.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        204,
+        512
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 25,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        25,
+        64
+      ],
+      "trim_box": [
+        1,
+        1,
+        25,
+        63
+      ],
+      "before_resize": [
+        24,
+        62
+      ],
+      "placed_size": [
+        24,
+        62
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        12,
+        2,
+        36,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "8eaf98c66b093a1335cd53727907e703d54fff2d0ca0af8422bc9f57430907a4"
+    },
+    {
+      "name": "item_armor",
+      "file": "item_armor.png",
+      "source": "../../client/assets/wizard/items/astral_plate.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        421,
+        512
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        52,
+        64
+      ],
+      "trim_box": [
+        1,
+        1,
+        52,
+        63
+      ],
+      "before_resize": [
+        51,
+        62
+      ],
+      "placed_size": [
+        48,
+        58
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        0,
+        6,
+        48,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "7031609e488f76c4257b4140b2e60bd98ee71c74429cc291ad0e7ba25833e1a8"
+    },
+    {
+      "name": "item_boots",
+      "file": "item_boots.png",
+      "source": "../../client/assets/wizard/items/boots_fur.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        471,
+        512
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        58,
+        64
+      ],
+      "trim_box": [
+        1,
+        1,
+        58,
+        63
+      ],
+      "before_resize": [
+        57,
+        62
+      ],
+      "placed_size": [
+        48,
+        52
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        0,
+        12,
+        48,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "140d44523e847383d8542d55d4c5e995ae44cd0e1f69b099f27b5f730d359986"
+    },
+    {
+      "name": "item_chisel",
+      "file": "item_chisel.png",
+      "source": "../../client/assets/wizard/items/cur_chisel.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        84,
+        512
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        10,
+        64
+      ],
+      "trim_box": [
+        1,
+        1,
+        10,
+        63
+      ],
+      "before_resize": [
+        9,
+        62
+      ],
+      "placed_size": [
+        9,
+        62
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        19,
+        2,
+        28,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "2674beb23754754bad3d965502daf5a31378a70e5af6bbb01a87007272611596"
+    },
+    {
+      "name": "item_knife",
+      "file": "item_knife.png",
+      "source": "../../client/assets/wizard/items/cur_knife.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        470,
+        512
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 23,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        58,
+        64
+      ],
+      "trim_box": [
+        1,
+        1,
+        58,
+        63
+      ],
+      "before_resize": [
+        57,
+        62
+      ],
+      "placed_size": [
+        48,
+        52
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        0,
+        12,
+        48,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "f95af632fcddf6edb15eefde3bb234780a34588a262a7620455bbe01e33c057e"
+    },
+    {
+      "name": "item_draught",
+      "file": "item_draught.png",
+      "source": "../../client/assets/wizard/items/cur_draught.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        376,
+        512
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        47,
+        64
+      ],
+      "trim_box": [
+        1,
+        1,
+        46,
+        63
+      ],
+      "before_resize": [
+        45,
+        62
+      ],
+      "placed_size": [
+        45,
+        62
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        1,
+        2,
+        46,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "36c3535d9c766b644dabc2f141744379f89b6f55468b573fdcd3764c4d99d84e"
+    },
+    {
+      "name": "item_orb",
+      "file": "item_orb.png",
+      "source": "../../client/assets/wizard/items/cur_orb.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        416,
+        512
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        52,
+        64
+      ],
+      "trim_box": [
+        1,
+        1,
+        51,
+        63
+      ],
+      "before_resize": [
+        50,
+        62
+      ],
+      "placed_size": [
+        48,
+        60
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        0,
+        4,
+        48,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "28c0ae633e8e4218d11b8b4558da7d3e76a5841f244fe8d4cf9745b4f952f647"
+    },
+    {
+      "name": "item_bird",
+      "file": "item_bird.png",
+      "source": "../../client/assets/wizard/items/bird_omen.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        339,
+        512
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        42,
+        64
+      ],
+      "trim_box": [
+        1,
+        1,
+        42,
+        63
+      ],
+      "before_resize": [
+        41,
+        62
+      ],
+      "placed_size": [
+        41,
+        62
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        3,
+        2,
+        44,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "aa2709a32862cbf03e76a08bc6b20cbcba86fec9e21e9939e0577be79aaf00af"
+    },
+    {
+      "name": "item_blood",
+      "file": "item_blood.png",
+      "source": "../../client/assets/wizard/items/blood_omen.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        512,
+        381
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        64,
+        47
+      ],
+      "trim_box": [
+        0,
+        0,
+        64,
+        47
+      ],
+      "before_resize": [
+        64,
+        47
+      ],
+      "placed_size": [
+        48,
+        35
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        0,
+        29,
+        48,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "75bc35d5490ff0458995ca1d7eee3d972f4760a4a46a914202affb0ba582b567"
+    },
+    {
+      "name": "item_shell",
+      "file": "item_shell.png",
+      "source": "../../client/assets/wizard/items/ember_shell.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        399,
+        512
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        49,
+        64
+      ],
+      "trim_box": [
+        1,
+        1,
+        49,
+        63
+      ],
+      "before_resize": [
+        48,
+        62
+      ],
+      "placed_size": [
+        48,
+        62
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        0,
+        2,
+        48,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "113d30219b9a54b905437f02a5e00fbc92b33c85a5464918bfc2c1c9a135afab"
+    },
+    {
+      "name": "item_bowl",
+      "file": "item_bowl.png",
+      "source": "../../client/assets/wizard/items/bowl_bronze_offering.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        512,
+        323
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 31,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        64,
+        40
+      ],
+      "trim_box": [
+        1,
+        1,
+        63,
+        39
+      ],
+      "before_resize": [
+        62,
+        38
+      ],
+      "placed_size": [
+        48,
+        29
+      ],
+      "canvas": [
+        48,
+        64
+      ],
+      "content_bounds": [
+        0,
+        35,
+        48,
+        64
+      ],
+      "anchor_px": [
+        24,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "cfdc7c41af6b4ef3c0ead7ece7c14850fd3339b0b80007d5d34e9673a18d54e6"
+    }
+  ]
+}

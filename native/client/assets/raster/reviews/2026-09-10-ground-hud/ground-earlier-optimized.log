@@ -1,0 +1,8 @@
+working_set=400 cap=512 cold_ms=91.787 warm_ms=3.414 warm_builds=0 hits=400 gdi_delta=800
+two_column_pan_new_tiles=40 pan_ms=13.369
+eviction_peak_gdi_delta=1024 clear_gdi_delta=0 negative_regeneration=identical
+negative_camera_pan_direct_vs_cached=identical_at_integer_pixel_scale
+material_name_reload=stable
+missing_root_after_asset_reset_draw=fallback
+same_name_asset_reload_4_cycles=pixels_identical_tiles_rebuilt
+PASS ground raster cache probe

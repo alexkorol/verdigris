@@ -1,0 +1,104 @@
+{
+  "approved_for_freeze": true,
+  "metadata": {
+    "milestone": "Normal native server pursuit, referenced SE4 raider and SW8 wight walks,174 assets",
+    "status": "Supported native build/all suites/all72 scenarios plus browser and asset checks pass; root viewed native and production pixels and normal live launch. Broad visual goal remains active.",
+    "acceptance": "root_production_monster_motion_reviewed_provisional_2026-09-10",
+    "acceptance_scope": "Twelve exact new PNGs, real WorldSimulation melee pursuit, scene-scoped transport, display-only interpolation, facing/contact/rarity retention. No complete manual fight or smooth-video acceptance.",
+    "pursuit_limits": "Ordinary melee only; existing tile contact bands retained. Other actor directions/actions and remote terrain/wall presentation remain incomplete."
+  },
+  "final_validation": {
+    "native_supported_build_all_scenarios": {
+      "exit_code": 0,
+      "passed": 72,
+      "total": 72,
+      "log": "native/client/assets/raster/reviews/2026-09-10-monster-motion/native-final-build-all.log",
+      "native_suites_passed": true
+    },
+    "browser_playtest": {
+      "exit_code": 0,
+      "passed": 32,
+      "total": 32,
+      "log": "native/client/assets/raster/reviews/2026-09-10-monster-motion/browser-32-of-32.log"
+    },
+    "importer": {
+      "exit_code": 0,
+      "passed": 10,
+      "total": 10,
+      "log": "native/client/assets/raster/reviews/2026-09-10-monster-motion/importer-10-of-10.log"
+    },
+    "equipment": {
+      "exit_code": 0,
+      "poses": 60,
+      "weapons": 5,
+      "scales": 3,
+      "fractional_sampling_passed": true,
+      "log": "native/client/assets/raster/reviews/2026-09-10-monster-motion/equipment.log"
+    },
+    "frame_budget": {
+      "width": 3440,
+      "height": 1440,
+      "frames": 20,
+      "static_avg_ms": 22.51,
+      "moving_avg_ms": 24.684,
+      "moving_peak_ms": 33.976,
+      "average_limit_ms": 40,
+      "report": "native/client/assets/raster/reviews/2026-09-10-monster-motion/frame-budget-report.txt"
+    },
+    "production_motion": {
+      "se_phases_observed": 4,
+      "wight_phases_observed": 7,
+      "wight_phase_not_seen_in_short_chase": 4,
+      "all_wight_phases_verified_by_raster_world": true,
+      "real_native_server_damage_stop_scene_transition": true,
+      "trace": "native/client/assets/raster/reviews/2026-09-10-monster-motion/remote-wight-motion.csv",
+      "contact": "native/client/assets/raster/reviews/2026-09-10-monster-motion/remote-wight-arrived.png"
+    },
+    "live": {
+      "supported_launch": "native/tools/play-native.ps1",
+      "house_and_scion_created": true,
+      "town_and_expedition_entered": true,
+      "f3_inspected": true,
+      "completed_manual_combat": false,
+      "short_movement_tap": "No visible displacement; not accepted as manual movement proof.",
+      "exit_code": 0,
+      "fresh_game_windows_empty": true,
+      "log": "native/client/assets/raster/reviews/2026-09-10-monster-motion/live-launch.log",
+      "capture": "native/client/assets/raster/reviews/2026-09-10-monster-motion/live-road.png",
+      "performance": "native/client/assets/raster/reviews/2026-09-10-monster-motion/live-performance.png"
+    }
+  },
+  "reviewed_source_sha256": {
+    "native/client/client_model.hpp": "c0ee84c37ce1f8d0887f91169ada272891c4fc8ef6b1facb4c6436debbc66c32",
+    "native/client/main.cpp": "9a3206dd543143a109bc925dd6b72c570daca163afe611f46310adab411ba8e5",
+    "native/client/presentation_state.cpp": "9cfad9859b0587492649ae587a0f7d6ec3a66a448249e1e8e802d2c8b6f7451b",
+    "native/client/presentation_state.hpp": "ef4b889d328afa506ca63404c9d3bf823f0026185edf296f79c0f487f9f9ef2b",
+    "native/client/remote_session.cpp": "edfd20599044a98a5d532207a318ea9f3b5efcaaf72a02d8e9f1307b79f2c455",
+    "native/client/remote_session.hpp": "8efd81bf9a2d023f5f2e905b2d4e0a314f8cd87f6b236cc2a1dcea19e995b113",
+    "native/include/verdigris/core.hpp": "3463804005006f2f87c45c9e238eeef8e75df550e8768685662328745bff93b7",
+    "native/include/verdigris/networking.hpp": "b723cb29973e6af213f682c7581c9ebd632190a9810e91863caee2ca053572e4",
+    "native/src/core.cpp": "013631e5bf3acb6c86a90eecd56a8fe43590f78f8fd003421633b725b0e64569",
+    "native/src/networking.cpp": "fb88ca510e6e807be091a63c201b05d24442525901e6597a92e9b55844d841d1",
+    "native/tests/core_tests.cpp": "380b965175ad6a16ed66ce48edd0867c18e054894ffbb8301ae315d8651e2752",
+    "native/tests/networking_tests.cpp": "6eaa5da217b7223c3e84b79ea408b7c06bc5cc801cfa31b56b152ce0348db0cb",
+    "native/tests/presentation_events_tests.cpp": "c94165cee8560b626ecee9db18aae180f9d2502bb12e815bc6a3b574dfe08849",
+    "native/tests/session_tests.cpp": "edf77b96898b7f47b926d0efd5529d71e7ac0c3bd734a0a42a3ae0ab969f3e36",
+    "native/tools/raster/build_catalog.py": "f2c12eac0015c65ec65fd608844b20f2e1190590c3226f89554e9417b9373365",
+    "native/tools/raster/import_all.ps1": "ceecec8166ad7854517d186bac9efd366c429e348e11dcaebe86d71d87a80d1a"
+  },
+  "reviewed_source_hash_policy": "canonical_lf",
+  "retained_evidence_manifests": [
+    "native/client/assets/raster/reviews/2026-09-10-monster-motion/retained-evidence.json"
+  ],
+  "review_paths": [
+    "native/client/assets/raster/reviews/2026-09-10-monster-motion/README.md",
+    "native/client/assets/raster/reviews/2026-09-10-monster-motion/crop-evidence.json"
+  ],
+  "additional_dependency_paths": [
+    "native/tools/raster/monster-motion-wave-dependencies.json",
+    "native/tools/raster/monster-motion-wave-paths.json",
+    "native/client/assets/raster/RESEARCH.md",
+    "native/client/assets/raster/PROMPTING.md",
+    "native/client/assets/raster/README.md"
+  ]
+}

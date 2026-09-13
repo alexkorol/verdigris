@@ -1,0 +1,7 @@
+Using this single character reference, create a six-frame pixel-art melee animation sheet arranged in 3 columns and 2 rows.
+
+Preserve this character's identity, adult proportions, head and hair size, brown tunic, full dark trousers, wrist wraps, bronze right shoulder armor, left-hip sash and natural palette. Match the reference's pixel scale and restrained material-colored edges.
+
+Show one coherent physical LEFT-hand melee swing toward the lower-left. All six cells keep the character facing lower-left with the same elevated camera. Read left to right, then top to bottom: ready; preparation drawing the left hand back; commitment with coordinated torso and weight transfer; contact at full extension toward lower-left; follow-through and retraction; recovery toward ready. Maintain the same anatomical hand throughout. Hands remain empty for separate game equipment. Use real body mechanics rather than moving an unchanged sprite.
+
+Keep apparent body size, camera and ground registration consistent. Exactly one full character per cell, with generous clearance for the whole motion and no clipping, labels, grid lines, effects or scenery. The final pose should settle toward the first. Return a PNG with actual transparent alpha, not a painted checkerboard. Frame timing and slicing will be handled separately.

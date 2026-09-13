@@ -1,0 +1,188 @@
+{
+  "acceptance": "Root native repeat/actor review permits integrated trial; not final seamless terrain acceptance.",
+  "source": "native\\tools\\raster\\quiet-stone-candidates\\v1\\terrain_quiet_stone.png",
+  "source_raw_sha256": "5d869d24b6714586b9f14598b99f33384005db385a369a2b0ab78ee2bcc5db56",
+  "source_import_report": "native/tools/raster/quiet-stone-candidates/v1/import.provenance.json",
+  "source_import_report_raw_sha256": "df408028aab73b1524e4d025f7ac9c969075c5de32212f2170bd92307a3f195d",
+  "algorithm": "Unmodified published seamless.edge_match_blend; no torus, crop, resize, model call or handwritten seam painting",
+  "published_commit": "19dbb4d5b655f8c4c0c8f979dd89baeb10237b0a",
+  "seam_code": {
+    "url": "https://raw.githubusercontent.com/ianlintner/ai-pixel-art-image-generation/19dbb4d5b655f8c4c0c8f979dd89baeb10237b0a/scripts/lib/seamless.py",
+    "local_copy": ".ci-artifacts/terrain-wall-wave/public-seam-review/seamless.py",
+    "raw_sha256": "75930b9ca88cb578636a7abce9c838364bef24ed1381efa5caca7033abd41a28"
+  },
+  "palette_code": {
+    "url": "https://raw.githubusercontent.com/ianlintner/ai-pixel-art-image-generation/19dbb4d5b655f8c4c0c8f979dd89baeb10237b0a/scripts/lib/palettes.py",
+    "commit": "19dbb4d5b655f8c4c0c8f979dd89baeb10237b0a",
+    "raw_sha256": "95f682a3b8d5972e7608be81b32835a8bef68c927e4026023b5221ff911b35c6",
+    "local_copy": ".ci-artifacts/terrain-wall-wave/public-seam-review/palettes.py"
+  },
+  "invocation_palette": "Exact visible v1 RGB colors registered in original palettes.PALETTES under a process-local name; original get_palette/build_palette_image retained. No installed files changed.",
+  "fixed_palette_hex": [
+    "#6e665b",
+    "#76695f",
+    "#7a7062",
+    "#7e746a",
+    "#837567",
+    "#847a6e",
+    "#887c72",
+    "#8b7f6e",
+    "#908276",
+    "#958675",
+    "#95897a",
+    "#9c8c7d",
+    "#9e917f",
+    "#a09285",
+    "#a49381",
+    "#a79688",
+    "#aa9e8b",
+    "#b0a291",
+    "#b7a996",
+    "#b9a692",
+    "#bcae98",
+    "#c0ac94",
+    "#c2b09d"
+  ],
+  "previews": "Mechanical compositions. All source/actor pixels1:1; literal3x3 tile repetition; optional uniform3x nearest-neighbor preview. Not production captures.",
+  "actor_pivots": [
+    [
+      60,
+      152
+    ],
+    [
+      144,
+      126
+    ]
+  ],
+  "actor_hashes": {
+    "hero_sw": "815aa38865fa79bdf9e9ee3bcf335a8cd3b8833d02ddeb50c237bb8703e064dd",
+    "wight_sw": "b2a71f83a721a4a6e9414706f4148b432f5a50acbcbd5d73b15a9980b8b8697d"
+  },
+  "variants": [
+    {
+      "name": "v1 unchanged",
+      "width": 0,
+      "file": "v1.png",
+      "raw_sha256": "5d869d24b6714586b9f14598b99f33384005db385a369a2b0ab78ee2bcc5db56",
+      "published_seam_diff": 26.001228308264984,
+      "opposite_edge_equal": {
+        "left_right": false,
+        "top_bottom": false
+      },
+      "left_right": {
+        "rgb_mae": 12.25,
+        "p95": 36.349999999999966,
+        "max": 63
+      },
+      "top_bottom": {
+        "rgb_mae": 17.255208333333332,
+        "p95": 50.0,
+        "max": 70
+      },
+      "changed_pixels": 0,
+      "changed_fraction": 0.0,
+      "delta": {
+        "rgb_mae": 0.0,
+        "p95": 0.0,
+        "max": 0
+      },
+      "unchanged_interior_box": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "interior_changed_pixels": 0,
+      "center48_changed_pixels": 0,
+      "visible_colors": 23,
+      "alpha_unchanged": true,
+      "palette_subset_of_v1": true
+    },
+    {
+      "name": "edge match width2",
+      "width": 2,
+      "file": "edge-width2.png",
+      "raw_sha256": "8dc78bbb0e473ed8153b6fe44646849dfe1f433964ce98127b5117ffe2a61e24",
+      "published_seam_diff": 0.0,
+      "opposite_edge_equal": {
+        "left_right": true,
+        "top_bottom": true
+      },
+      "left_right": {
+        "rgb_mae": 0.0,
+        "p95": 0.0,
+        "max": 0
+      },
+      "top_bottom": {
+        "rgb_mae": 0.0,
+        "p95": 0.0,
+        "max": 0
+      },
+      "changed_pixels": 414,
+      "changed_fraction": 0.10107421875,
+      "delta": {
+        "rgb_mae": 1.3462727864583333,
+        "p95": 12.0,
+        "max": 45
+      },
+      "unchanged_interior_box": [
+        2,
+        2,
+        62,
+        62
+      ],
+      "interior_changed_pixels": 0,
+      "center48_changed_pixels": 0,
+      "visible_colors": 23,
+      "alpha_unchanged": true,
+      "palette_subset_of_v1": true
+    },
+    {
+      "name": "edge match default8",
+      "width": 8,
+      "file": "edge-width8.png",
+      "raw_sha256": "0287aa75c4c7136a23c3f8eba58a94b817fea013c8af0ba548802da5b72c0d87",
+      "published_seam_diff": 0.0,
+      "opposite_edge_equal": {
+        "left_right": true,
+        "top_bottom": true
+      },
+      "left_right": {
+        "rgb_mae": 0.0,
+        "p95": 0.0,
+        "max": 0
+      },
+      "top_bottom": {
+        "rgb_mae": 0.0,
+        "p95": 0.0,
+        "max": 0
+      },
+      "changed_pixels": 1577,
+      "changed_fraction": 0.385009765625,
+      "delta": {
+        "rgb_mae": 6.501627604166667,
+        "p95": 31.0,
+        "max": 62
+      },
+      "unchanged_interior_box": [
+        8,
+        8,
+        56,
+        56
+      ],
+      "interior_changed_pixels": 0,
+      "center48_changed_pixels": 0,
+      "visible_colors": 23,
+      "alpha_unchanged": true,
+      "palette_subset_of_v1": true
+    }
+  ],
+  "palette_only_control_changed_pixels": 0,
+  "old_runtime_pngs_unchanged": 174,
+  "derived_source": "native/client/assets/raster/source/terrain-quiet-stone-v1-edge2.png",
+  "derived_source_sha256": "8dc78bbb0e473ed8153b6fe44646849dfe1f433964ce98127b5117ffe2a61e24",
+  "original_imagegen_source": "native/client/assets/raster/source/terrain-quiet-stone-v1.png",
+  "original_generation_provenance": "native/client/assets/raster/prompts/terrain-quiet-stone-v1.provenance.json",
+  "selected_border_width": 2,
+  "rejected_border_width": 8
+}

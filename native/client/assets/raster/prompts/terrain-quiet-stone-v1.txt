@@ -1,0 +1,7 @@
+Create one quiet stone floor patch as simplified 64px pixel art.
+
+Image 1 supplies ONLY the low detail density, broad calm value masses and restrained contrast. Image 2 supplies ONLY the natural warm-gray limestone material of its stone uprights, not the gate, wood or perspective. Give the references these separate jobs and create a new floor arrangement.
+
+Direct overhead square field, filled edge to edge by about five broad worn limestone slabs and a few sparse shallow joints. Most slab surfaces are calm flat pixel clusters in three or four neighboring muted warm-gray tones; let the joints be only slightly darker. No granular speckle, pores, debris, raised objects, edge border, cast shadows, green or patina. Keep clear square pixel construction at a logical64×64 scale, at most24 purposeful colors. The floor should sit quietly beneath detailed moving characters.
+
+Make the opposite edges continue naturally when the field is repeated, without a framing seam. Full opaque stone coverage, no transparency, labels or surrounding scene. Return only the square floor image; tools will reconstruct the native pixels and test repetition.

@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "purpose": "One compact authored pixel melee slash trail for presentation-only integration.",
+  "tool": "builtin image_gen.imagegen",
+  "model_selection": "No model selector exposed or supplied.",
+  "generation_calls": 1,
+  "focused_corrections": 0,
+  "exact_prompt_file": "effects-slash-trail-v1.txt",
+  "exact_prompt_sha256": "229630b0b5618b75cdfc08193a814ef8e10fc95d0e547b4eced07247bff5a412",
+  "reference": {
+    "workspace_path": "native/client/assets/raster/runtime/effect_hit_spark.png",
+    "sha256": "25c6ec7aa04bff6c6e22a77c97a325c1c9f0539942455692319eec5f91fc456f",
+    "role": "Only submitted reference: accepted pixel-cluster construction and pale ivory/warm gold palette. Source spark geometry was not requested.",
+    "viewed_before_call": true
+  },
+  "published_workflow_adaptation": {
+    "creator": "Practical_Low29",
+    "original_url": "https://www.reddit.com/r/aigamedev/comments/1wbmvnm/gpt_image_25_nailed_a_16_frame_combat_sprite_sheet/",
+    "original_read": "Direct source reopened for this task; posted prompt and reference-led process verified.",
+    "published_prompt": "Make a simplified 128px pixel art combat motion sprite sheet of this character, transparent background if you can, arrange it 4x4.",
+    "adaptation": "Preserved one supplied reference, simplified pixel motion subject and transparent output. Changed the requested subject from a character combat sheet to one isolated physical slash at its contact beat on a64px logical canvas. Pixel palette and curve geometry follow the parent brief. Native conversion, registration and event timing remain separate tooling work.",
+    "evidence_limit": "The creator did not publish or test this FX recipe. This is our original single-effect adaptation, not a reproduced creator effect workflow."
+  },
+  "source": {
+    "workspace_path": "native/client/assets/raster/source/effects-slash-trail-v1.png",
+    "sha256": "5b2c6e3ea39a6e3edf148e0906b2dfe4a800e41c8c998a9f4295419bf097d6ff",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "alpha_zero_to_255": true,
+    "partial_alpha_pixels": 71108,
+    "alpha128_bounds": [
+      390,
+      352,
+      1009,
+      920
+    ],
+    "original_generated_path": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-8696ad78-e0a0-4f0d-8f73-68a2f8d3f838.png",
+    "review": "One compact right-bowing curve with tapered ends, bright contact core and scattered chips. Source has genuine transparency with partial edge pixels and faint low-alpha remnants."
+  },
+  "conversion": {
+    "manifest": "native/tools/raster/slash-trail-v1.json",
+    "manifest_sha256": "6e6c784c8032799e253e939c5a72bd4af0d76a905146aed325686d6619965c2b",
+    "candidate": ".ci-artifacts/slash-trail-v1/effect_slash0.png",
+    "candidate_sha256": "29063f396be8f6167ca7402fb96300031315d2d933982efbf0edc269b7007b44",
+    "provenance": ".ci-artifacts/slash-trail-v1/slash-trail-v1.provenance.json",
+    "provenance_sha256": "b707531b59dd97f4a17ced4e7e3571b7d41d3c45fdfc50a43fdb3ffbe77e5f4e",
+    "engine": "pixel_perfecter.workspace.reconstruct",
+    "external_project": "Z:/Code/Python/pixel-perfecter",
+    "source_box": [
+      345,
+      300,
+      1050,
+      960
+    ],
+    "cell_size": 15,
+    "grid_offset": [
+      0,
+      0
+    ],
+    "reconstructed_size": [
+      47,
+      44
+    ],
+    "before_resize": [
+      41,
+      38
+    ],
+    "placed_size": [
+      41,
+      38
+    ],
+    "normalization": "Centered complete trimmed result on64x64, no post-reconstruction scaling. Genuine source alpha reconstructed in crisp mode; no background-color removal."
+  },
+  "native_review": {
+    "viewed": [
+      "effect_slash0.png at1x",
+      "native-3x.png",
+      "pivot-review-6x.png"
+    ],
+    "frame_count": 1,
+    "name": "effect_slash0",
+    "canvas": [
+      64,
+      64
+    ],
+    "visible_bounds": [
+      11,
+      13,
+      52,
+      51
+    ],
+    "visible_extent": [
+      41,
+      38
+    ],
+    "visible_colors": 16,
+    "alpha_range": [
+      0,
+      255
+    ],
+    "partial_alpha_pixels": 0,
+    "main_curve_pixels": 243,
+    "detached_components": 7,
+    "detached_pixels": 15,
+    "verdict": "Compact, readable curved slash with warm ivory edge and restrained gold trail. Balanced margins; no character, weapon, labels or matte remains. Source contact flare is thicker than the requested edge, but the native curve remains thin.",
+    "geometry": {
+      "canvas": [
+        64,
+        64
+      ],
+      "visible_bounds": [
+        11,
+        13,
+        52,
+        51
+      ],
+      "rotation_center_px": [
+        26.5,
+        32.5
+      ],
+      "contact_core_px": [
+        44.5,
+        32.5
+      ],
+      "forward_angle_degrees": 0,
+      "orientation": "Screen-right forward; crescent bows right and opens left. Rotation/contact anchors are in pixel-edge coordinates, so n+.5 denotes a pixel center.",
+      "rotation_center_measurement": "Main bright curved centerline fit away from contact protrusion estimated [26.78,32.65]; chosen nearby pixel center [26.5,32.5] was visually reviewed.",
+      "contact_measurement": "Bright right-middle component centroid [44.4,32.3], chosen nearby pixel center [44.5,32.5] was visually reviewed."
+    },
+    "acceptance": "Native and pivot review complete; root production render, cached rotation, event timing and sweep semantics remain pending.",
+    "sweep_limit": "One directional slash cannot represent an omnidirectional sweep area."
+  }
+}

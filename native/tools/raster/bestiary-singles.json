@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "defaults": {
+    "cell_size": 13,
+    "alpha_mode": "crisp",
+    "max_colors": 32,
+    "canvas": [
+      80,
+      96
+    ],
+    "trim": true,
+    "require_transparency": true,
+    "preserve_scale": true
+  },
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/bestiary_wight-nw-v1.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "wight_nw",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/bestiary_artisan-nw-v3.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "artisan_nw",
+          "cell": [
+            0,
+            0
+          ],
+          "cell_size": 12
+        }
+      ]
+    }
+  ],
+  "known_limitations": [
+    "Artisan NW is slightly brighter ochre than other directions; anatomical staff handedness remains uncertain."
+  ]
+}

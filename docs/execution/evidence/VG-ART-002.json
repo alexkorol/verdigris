@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-ART-002",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "d6f017cdd88e8c969cf4261c6e3be22dab10f95e",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "bronze-stone",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario bronze-stone", "exit_code": 0}
+  ],
+  "assertions": [
+    "family has SPDX CC0 provenance and is not a placeholder fill",
+    "albedo map has both bronze and stone",
+    "rim map is a lighting response, not a copy of albedo",
+    "village kit scenery samples the cooked family",
+    "magenta placeholder fills cannot pass",
+    "live HUD names Bronze stone and Cooked CC0"
+  ],
+  "negative_control": {
+    "name": "magenta placeholder fill as a finished material",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/bronze-stone-960x600.png",
+      "sha256": "2291a99336e8081665cdcb2b7bd41d6353f13bb617f92c0057d6bdcb93c041a9",
+      "produced_by": "native/build/verdigris_client.exe --scenario bronze-stone"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Cooked 8x8 albedo/rim maps, SPDX CC0-1.0. VG-TOOLS-003 cook pipeline stays Kimi.",
+    "Capture is the live tin village using the family, not a material-lab still."
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-GOV-003",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "5da955c0",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "xp-meter",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario xp-meter", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario first-session-clarity", "exit_code": 0}
+  ],
+  "assertions": [
+    "every scorecard dimension names a journey and measurement",
+    "feature or VG-ID counts cannot produce a pass",
+    "local XP meter starts at the floor; three level-1 kills fill ~49%",
+    "empty pit samples 0 gold pixels; filled meter samples ledger gold (805)",
+    "live HUD names Kill fill and Gold pit",
+    "first-session HUD names Slay the wardens and Space dash with F3 off",
+    "live HUD names Slay wardens and Dash hint",
+    "local first session rejects walk-on",
+    "Slay wardens stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Slay wardens is the anti-pattern"
+  ],
+  "negative_control": {
+    "name": "counting VG IDs as parity, an XP lv 1 label over a 0% black strip, a local first-session HUD that shows walk-on, or Slay wardens covering WASD/objective/Tin village/Life",
+    "observed_result": "REJECTED as a passing journey"
+  },
+  "artifacts": [
+    {
+      "kind": "decision",
+      "path": "docs/execution/decisions/freeze-the-parity-scorecard.md",
+      "produced_by": "Cursor Grok VG-GOV-003 draft"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/xp-meter-960x600.png",
+      "sha256": "86e29dbb873efcd7584fd5cb3b990c218f5e177a5fccd8368d5ac1198ce6b8f6",
+      "produced_by": "native/build/verdigris_client.exe --scenario xp-meter"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/first-session-clarity-960x600.png",
+      "sha256": "252124f4936f98b81d04d118f9b7b3a81c7dc8e6fbef03ead155687aac549ace",
+      "produced_by": "native/build/verdigris_client.exe --scenario first-session-clarity"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Local HUD tracks kill XP with the same RS curve as snapshot state.xp. Core still stores level only; this is not a second combat packet.",
+    "Owner strip paints Kill fill / Gold pit. VG-ID count cannot certify.",
+    "first-session-clarity owner strip paints Slay wardens / Dash hint and parks off WASD, the objective, Tin village, and Life so Space dash stays visible. Walk-on cannot certify local play. Covering those combat surfaces cannot certify. STORY copy stays Kimi. xp-meter capture is prior evidence; not recaptured in this packet.",
+    "Did not edit remote_session.cpp, networking.cpp, or native/src/core.cpp.",
+    "GDI+ PNG may shift gold chroma; DIB gold sample is the certification.",
+    "Scorecard thresholds still need an owner stamp. VG-GOV-002 remains unstamped.",
+    "No TASK numbers minted. Not TASK-0108 and not Owner Demo."
+  ]
+}

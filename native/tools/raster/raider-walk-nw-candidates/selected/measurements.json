@@ -1,0 +1,128 @@
+{
+  "canvas": [
+    80,
+    96
+  ],
+  "pivot": [
+    40,
+    96
+  ],
+  "body_heights": [
+    55,
+    55,
+    57,
+    59,
+    58,
+    55,
+    58,
+    54
+  ],
+  "frames": [
+    {
+      "index": 0,
+      "bounds": [
+        20,
+        38,
+        60,
+        93
+      ],
+      "visible_colors": 25,
+      "partial_alpha": 0,
+      "sha256": "1ec3e09192d5d669b1eec90a13a207674d2f05dcf66f9951f20534138e2df0a3",
+      "adjacent_pixel_changes": 877
+    },
+    {
+      "index": 1,
+      "bounds": [
+        21,
+        37,
+        60,
+        92
+      ],
+      "visible_colors": 27,
+      "partial_alpha": 0,
+      "sha256": "dab0e2bdfd6aacafb73e5764019c9af4b16c43c7d1bea67b7781d27466d2a634",
+      "adjacent_pixel_changes": 965
+    },
+    {
+      "index": 2,
+      "bounds": [
+        21,
+        36,
+        60,
+        93
+      ],
+      "visible_colors": 27,
+      "partial_alpha": 0,
+      "sha256": "e5bc6705f3a2c5de17de51d79e609274713ee17684c5994be412b662dd58c886",
+      "adjacent_pixel_changes": 862
+    },
+    {
+      "index": 3,
+      "bounds": [
+        20,
+        37,
+        59,
+        96
+      ],
+      "visible_colors": 25,
+      "partial_alpha": 0,
+      "sha256": "f059217063420816a5f0e5c3c8ff01320847d75b2224ed9d37b28f0affdbbf45",
+      "adjacent_pixel_changes": 946
+    },
+    {
+      "index": 4,
+      "bounds": [
+        21,
+        36,
+        61,
+        94
+      ],
+      "visible_colors": 27,
+      "partial_alpha": 0,
+      "sha256": "14a9fcea0e76cf6c15ea359fef5927500e9466d00b298c3602f0249467d7a116",
+      "adjacent_pixel_changes": 742
+    },
+    {
+      "index": 5,
+      "bounds": [
+        21,
+        36,
+        61,
+        91
+      ],
+      "visible_colors": 27,
+      "partial_alpha": 0,
+      "sha256": "eb03c4c09c71afb80b0f2d9d10c42f746139fb5a97083a0a8e116c464709abbb",
+      "adjacent_pixel_changes": 929
+    },
+    {
+      "index": 6,
+      "bounds": [
+        21,
+        35,
+        63,
+        93
+      ],
+      "visible_colors": 27,
+      "partial_alpha": 0,
+      "sha256": "8e6609679f0b79397dc0277baacc13f73b96a6fa1a9b1e491804dd597fab4231",
+      "adjacent_pixel_changes": 1200
+    },
+    {
+      "index": 7,
+      "bounds": [
+        19,
+        36,
+        60,
+        90
+      ],
+      "visible_colors": 26,
+      "partial_alpha": 0,
+      "sha256": "6ec9c432a3129ca3638cb70d9eb0d47c83472c6d5fb4e6ff82ce0626f71dfe0d",
+      "adjacent_pixel_changes": 1018
+    }
+  ],
+  "exact_duplicates": [],
+  "cycle_visible_colors": 30
+}

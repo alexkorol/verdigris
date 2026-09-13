@@ -8,6 +8,7 @@
 #include <map>
 #include <sstream>
 #include <stdexcept>
+#include <tuple>
 
 #include "verdigris/seasonal.hpp"
 
@@ -58,12 +59,35 @@ Vec2 movement_delta(int dx, int dy, int move_speed) {
   return {(dx * step) / length, (dy * step) / length};
 }
 
+Vec2 step_towards(Vec2 from, Vec2 to, int budget) {
+  const int dx = to.x - from.x;
+  const int dy = to.y - from.y;
+  const int length = std::abs(dx) + std::abs(dy);
+  if (length == 0 || budget <= 0) return from;
+  budget = std::min(budget, length);
+  Vec2 delta{static_cast<int>(static_cast<std::int64_t>(dx) * budget / length),
+             static_cast<int>(static_cast<std::int64_t>(dy) * budget / length)};
+  // Retain a shallow waypoint's minor axis. Truncating it to zero on every
+  // tick can alternate visibility sides forever instead of clearing a body.
+  if (budget > 1) {
+    if (dx != 0 && delta.x == 0) delta.x = direction_component(dx);
+    if (dy != 0 && delta.y == 0) delta.y = direction_component(dy);
+  }
+  // Integer division must not strand a final one-unit diagonal approach.
+  if (delta.x == 0 && delta.y == 0) {
+    if (std::abs(dx) >= std::abs(dy)) delta.x = direction_component(dx);
+    else delta.y = direction_component(dy);
+  }
+  return {from.x + delta.x, from.y + delta.y};
+}
+
 bool is_forward(const Vec2& facing, Vec2 delta) {
   // A strict half-plane keeps the boundary (dot == 0) out of a thrust cone.
   // All operands are bounded integer world-space values and the facing is
   // limited to -1/0/+1 components.
   return facing.x * delta.x + facing.y * delta.y > 0;
 }
+
 
 ActorStats player_stats() {
   ActorStats stats;
@@ -247,13 +271,18 @@ Actor* Simulation::actor(const std::string& id) {
 
 Actor Simulation::make_monster(Vec2 position, int level, bool elite) {
   const int bounded_level = std::max(1, level);
-  return Actor{rng_.token("actor"), ActorKind::Monster, enemy_stats(bounded_level), position,
-               true, 0, std::nullopt, elite};
+  Actor enemy{rng_.token("actor"), ActorKind::Monster, enemy_stats(bounded_level), position,
+              true, 0, std::nullopt, elite};
+  if (const Actor* player = actor(scion_.actor_id))
+    enemy.facing = quantize_direction(player->position.x - position.x,
+                                      player->position.y - position.y);
+  return enemy;
 }
 
 std::string Simulation::spawn_monster(Vec2 position, int level, bool elite) {
   Actor enemy = make_monster(position, level, elite);
   actors_.push_back(enemy);
+  enemies_active_ = true;
   return enemy.id;
 }
 
@@ -264,6 +293,11 @@ void Simulation::set_seasonal_mechanic(SeasonalMechanic* mechanic) {
 void Simulation::emit(EventType type, const std::string& actor_id, const std::string& item_id,
                       const std::string& trophy_id, const std::string& text, int value) {
   Event event{type, actor_id, item_id, trophy_id, text, value, tick_};
+  if (const Actor* subject = actor(actor_id)) {
+    event.has_actor_pose = true;
+    event.actor_position = subject->position;
+    event.actor_facing = subject->facing;
+  }
   events_.push_back(event);
   if (seasonal_mechanic_) seasonal_mechanic_->on_event(*this, event);
 }
@@ -297,16 +331,179 @@ void Simulation::record_legend(const std::string& kind, const std::string& subje
 }
 
 void Simulation::dispatch(const Command& command) {
-  if (command.type == CommandType::MoveIntent) resolve_move(command.dx, command.dy);
-  if (command.type == CommandType::AimIntent) resolve_aim(command.dx, command.dy);
-  if (command.type == CommandType::UseAction) resolve_action(command.action);
-  if (command.type == CommandType::Interact) resolve_interact(command.target);
-  if (command.type == CommandType::PickUp) resolve_pickup(command.target);
-  if (command.type == CommandType::Equip) resolve_equip(command.target);
-  if (command.type == CommandType::Unequip) resolve_unequip();
-  if (command.type == CommandType::EnterInstance) resolve_enter(command.target);
-  if (command.type == CommandType::ExtractToHouse) resolve_extract();
+  dispatch_tick({command});
+}
+
+void Simulation::dispatch_tick(const std::vector<Command>& commands) {
+  bool dash = false;
+  for (const auto& command : commands) {
+    if (command.type == CommandType::UseAction && command.action == ActionType::Dash) dash = true;
+  }
+  bool walked = false;
+  std::vector<ActionType> actions;
+  for (const auto& command : commands) {
+    if (command.type == CommandType::MoveIntent && !dash && !walked) {
+      resolve_move(command.dx, command.dy);
+      walked = true;
+    }
+    if (command.type == CommandType::AimIntent) resolve_aim(command.dx, command.dy);
+    if (command.type == CommandType::UseAction &&
+        std::find(actions.begin(), actions.end(), command.action) == actions.end()) {
+      resolve_action(command.action);
+      actions.push_back(command.action);
+    }
+    if (command.type == CommandType::Interact) resolve_interact(command.target);
+    if (command.type == CommandType::PickUp) resolve_pickup(command.target);
+    if (command.type == CommandType::Equip) resolve_equip(command.target);
+    if (command.type == CommandType::Unequip) resolve_unequip();
+    if (command.type == CommandType::EnterInstance) {
+      resolve_enter(command.target);
+      // Publish the new scene before accepting movement against its as-yet
+      // uninstalled content snapshot. Later queued intents belong to old UI.
+      if (defer_enemy_turn_) break;
+    }
+    if (command.type == CommandType::ExtractToHouse) {
+      const bool was_active = instance_.active;
+      resolve_extract();
+      if (was_active && !instance_.active) break;
+    }
+  }
   advance_tick();
+}
+
+bool Simulation::movement_blocked(Vec2 from, Vec2 to) const {
+  return navigation_segment_blocked(navigation_obstacles_, from, to);
+}
+
+std::vector<Vec2> Simulation::navigation_anchors() const {
+  std::vector<Vec2> anchors;
+  if (const Actor* player = actor(scion_.actor_id)) anchors.push_back(player->position);
+  anchors.push_back(instance_.extraction_point);
+  for (const Actor& candidate : actors_)
+    if (candidate.kind == ActorKind::Monster && candidate.alive) anchors.push_back(candidate.position);
+  for (const Actor& candidate : pending_wave_) anchors.push_back(candidate.position);
+  return anchors;
+}
+
+bool navigation_segment_blocked(const std::vector<NavigationObstacle>& obstacles,
+                                Vec2 from, Vec2 to) {
+  // Same swept-circle contract for walking, Dash, pursuit and contact sight.
+  // Products are formed in double so arbitrary integer command coordinates
+  // cannot overflow signed arithmetic; no normalization or random choice.
+  const double sx = static_cast<double>(to.x) - from.x;
+  const double sy = static_cast<double>(to.y) - from.y;
+  const double length_squared = sx * sx + sy * sy;
+  for (const auto& obstacle : obstacles) {
+    const double cx = static_cast<double>(obstacle.center.x) - from.x;
+    const double cy = static_cast<double>(obstacle.center.y) - from.y;
+    const double projection = length_squared == 0.0 ? 0.0 :
+        std::clamp((cx * sx + cy * sy) / length_squared, 0.0, 1.0);
+    const double dx = cx - sx * projection;
+    const double dy = cy - sy * projection;
+    const double radius = static_cast<double>(obstacle.radius) + world_scale::kActorColliderRadius;
+    if (dx * dx + dy * dy < radius * radius) return true;
+  }
+  return false;
+}
+
+void Simulation::set_navigation_obstacles(std::vector<NavigationObstacle> obstacles) {
+  if (obstacles.size() > kMaxNavigationObstacles)
+    throw std::invalid_argument("navigation obstacle capacity exceeded");
+  for (const auto& obstacle : obstacles) {
+    const std::int64_t margin = static_cast<std::int64_t>(obstacle.radius) +
+                                world_scale::kActorColliderRadius + 2;
+    if (obstacle.radius < 0 || margin > std::numeric_limits<int>::max() ||
+        std::abs(static_cast<std::int64_t>(obstacle.center.x)) + margin >
+            std::numeric_limits<int>::max() / 4 ||
+        std::abs(static_cast<std::int64_t>(obstacle.center.y)) + margin >
+            std::numeric_limits<int>::max() / 4)
+      throw std::invalid_argument("invalid navigation circle");
+  }
+  std::sort(obstacles.begin(), obstacles.end(), [](const auto& a, const auto& b) {
+    return std::tie(a.center.x, a.center.y, a.radius) < std::tie(b.center.x, b.center.y, b.radius);
+  });
+  obstacles.erase(std::unique(obstacles.begin(), obstacles.end(), [](const auto& a, const auto& b) {
+    return a.center.x == b.center.x && a.center.y == b.center.y && a.radius == b.radius;
+  }), obstacles.end());
+  navigation_obstacles_ = std::move(obstacles);
+  navigation_vertices_.clear();
+  // Four exterior square corners per inflated circle give a finite visibility
+  // graph. Every edge still tests all circles, including overlapping bodies.
+  for (const auto& obstacle : navigation_obstacles_) {
+    const int r = obstacle.radius + world_scale::kActorColliderRadius + 2;
+    for (int y : {-1, 1}) for (int x : {-1, 1}) {
+      const Vec2 vertex{obstacle.center.x + x * r, obstacle.center.y + y * r};
+      if (!movement_blocked(vertex, vertex)) navigation_vertices_.push_back(vertex);
+    }
+  }
+  const std::size_t count = navigation_vertices_.size();
+  navigation_edges_.assign(count, std::vector<int>(count, -1));
+  for (std::size_t i = 0; i < count; ++i) for (std::size_t j = i + 1; j < count; ++j) {
+    if (!movement_blocked(navigation_vertices_[i], navigation_vertices_[j])) {
+      navigation_edges_[i][j] = navigation_edges_[j][i] =
+          manhattan_distance(navigation_vertices_[i], navigation_vertices_[j]);
+    }
+  }
+}
+
+std::optional<Vec2> Simulation::pursuit_waypoint(Vec2 from, Vec2 target) const {
+  if (!movement_blocked(from, target)) return target;
+  if (movement_blocked(from, from) || movement_blocked(target, target)) return std::nullopt;
+  const std::size_t count = navigation_vertices_.size();
+  std::vector<int> to_goal(count, -1);
+  std::vector<std::int64_t> costs(count, std::numeric_limits<std::int64_t>::max());
+  std::vector<int> first(count, -1);
+  std::vector<bool> closed(count, false);
+  for (std::size_t i = 0; i < count; ++i) {
+    if (!movement_blocked(from, navigation_vertices_[i])) {
+      const int distance = manhattan_distance(from, navigation_vertices_[i]);
+      // Reaching a corner must select the next edge, not choose the current
+      // position as the first waypoint of an otherwise valid complete path.
+      if (distance > 0) {
+        costs[i] = distance;
+        first[i] = static_cast<int>(i);
+      }
+    }
+    if (!movement_blocked(navigation_vertices_[i], target))
+      to_goal[i] = manhattan_distance(navigation_vertices_[i], target);
+  }
+  std::int64_t best = std::numeric_limits<std::int64_t>::max();
+  int waypoint = -1;
+  for (std::size_t step = 0; step < count; ++step) {
+    int current = -1;
+    for (std::size_t i = 0; i < count; ++i)
+      if (!closed[i] && (current < 0 || costs[i] < costs[current])) current = static_cast<int>(i);
+    if (current < 0 || costs[current] >= best || first[current] < 0) break;
+    closed[current] = true;
+    if (to_goal[current] >= 0 && costs[current] + to_goal[current] < best) {
+      best = costs[current] + to_goal[current];
+      waypoint = first[current];
+    }
+    for (std::size_t i = 0; i < count; ++i) {
+      const int edge = navigation_edges_[current][i];
+      if (!closed[i] && edge >= 0 && costs[current] + edge < costs[i]) {
+        costs[i] = costs[current] + edge;
+        first[i] = first[current];
+      }
+    }
+  }
+  if (waypoint < 0) return std::nullopt;
+  return navigation_vertices_[waypoint];
+}
+
+void Simulation::pursue(Actor& enemy, const Actor& player, int contact_range) {
+  const auto waypoint = pursuit_waypoint(enemy.position, player.position);
+  if (!waypoint) return;
+  int budget = movement_step_per_tick(enemy.stats.move_speed);
+  if (waypoint->x == player.position.x && waypoint->y == player.position.y)
+    budget = std::min(budget, manhattan_distance(enemy.position, player.position) - contact_range);
+  const Vec2 destination = step_towards(enemy.position, *waypoint, budget);
+  if ((destination.x == enemy.position.x && destination.y == enemy.position.y) ||
+      movement_blocked(enemy.position, destination)) return;
+  enemy.facing = quantize_direction(destination.x - enemy.position.x,
+                                    destination.y - enemy.position.y);
+  enemy.position = destination;
+  emit(EventType::ActorMoved, enemy.id, {}, {}, "pursuit", enemy.position.x);
 }
 
 void Simulation::resolve_move(int dx, int dy) {
@@ -315,6 +512,8 @@ void Simulation::resolve_move(int dx, int dy) {
   const Vec2 direction = quantize_direction(dx, dy);
   if (direction.x != 0 || direction.y != 0) player->facing = direction;
   const Vec2 delta = movement_delta(dx, dy, player->stats.move_speed);
+  const Vec2 destination{player->position.x + delta.x, player->position.y + delta.y};
+  if (movement_blocked(player->position, destination)) return;
   player->position.x += delta.x;
   player->position.y += delta.y;
   emit(EventType::ActorMoved, player->id, {}, {}, {}, player->position.x);
@@ -338,8 +537,10 @@ void Simulation::resolve_actor_action(Actor& attacker, ActionType action) {
   if (action == ActionType::Dash) {
     const Vec2 delta = movement_delta(attacker.facing.x, attacker.facing.y,
                                       attacker.stats.move_speed);
-    attacker.position.x += delta.x * kDashMovementTicks;
-    attacker.position.y += delta.y * kDashMovementTicks;
+    const Vec2 destination{attacker.position.x + delta.x * kDashMovementTicks,
+                           attacker.position.y + delta.y * kDashMovementTicks};
+    if (movement_blocked(attacker.position, destination)) return;
+    attacker.position = destination;
     emit(EventType::ActorMoved, attacker.id, {}, {}, "dash", attacker.position.x);
     return;
   }
@@ -373,7 +574,7 @@ void Simulation::resolve_actor_action(Actor& attacker, ActionType action) {
     const int distance = manhattan_distance(attacker.position, candidate.position);
     const bool in_range = action == ActionType::Thrust ? distance <= kThrustRange
                                                        : distance <= kMeleeRange;
-    if (!in_range) continue;
+    if (!in_range || movement_blocked(attacker.position, candidate.position)) continue;
     if (action == ActionType::Thrust) {
       const Vec2 delta{candidate.position.x - attacker.position.x,
                        candidate.position.y - attacker.position.y};
@@ -545,6 +746,7 @@ void Simulation::resolve_enter(const std::string& route_id) {
   instance_.route_id = route_id;
   instance_.phase = ExpeditionPhase::SlayWardens;
   spawn_enemy();
+  defer_enemy_turn_ = true;
   for (const auto& relic : pending_relic_items_) {
     ground_items_.push_back(relic);
     instance_.ground_item_ids.push_back(relic.id);
@@ -561,6 +763,8 @@ void Simulation::resolve_enter(const std::string& route_id) {
 }
 
 void Simulation::retire_instance() {
+  set_navigation_obstacles({});
+  enemies_active_ = false;
   // Floor value belongs to the instance that produced it. Leaving by
   // extraction, death, or a route transition abandons all uncollected floor
   // items/trophies; carried value is handled separately by extraction or the
@@ -644,11 +848,12 @@ void Simulation::materialize_wave() {
   }
   pending_wave_.clear();
   wave_materialization_tick_ = 0;
+  defer_enemy_turn_ = true;
 }
 
 void Simulation::enemy_turn() {
   Actor* player = actor(scion_.actor_id);
-  if (!player || !player->alive || !scion_.alive) return;
+  if (!player || !player->alive || !scion_.alive || !enemies_active_) return;
   for (auto& enemy : actors_) {
     if (enemy.kind != ActorKind::Monster || !enemy.alive) continue;
 
@@ -671,13 +876,19 @@ void Simulation::enemy_turn() {
       continue;
     }
 
+    // Recovery owns the feet and facing just like a committed warning.
+    if (enemy.cooldown_ticks > 0) continue;
     const Vec2 pursuit{player->position.x - enemy.position.x,
                        player->position.y - enemy.position.y};
     const Vec2 direction = quantize_direction(pursuit.x, pursuit.y);
     if (direction.x != 0 || direction.y != 0) enemy.facing = direction;
-    if (enemy.cooldown_ticks > 0) continue;
 
     const int distance = manhattan_distance(enemy.position, player->position);
+    const int contact_range = enemy.elite ? kThrustRange : kMeleeRange;
+    if (distance > contact_range || movement_blocked(enemy.position, player->position)) {
+      pursue(enemy, *player, contact_range);
+      continue;
+    }
     if (enemy.elite) {
       const Vec2 delta{player->position.x - enemy.position.x,
                        player->position.y - enemy.position.y};
@@ -704,11 +915,12 @@ void Simulation::enemy_turn() {
 
     // Plain melee remains the original non-elite cadence. Elite monsters also
     // use it when they are in melee range but cannot fund Sweep. The shared
-    // movement_delta() derivation is used by any Actor action (player WASD
-    // and Dash alike); pursuit remains presentation-neutral until the native
-    // collision/navigation pass owns monster locomotion.
+    // stat-derived movement and scenery collision are shared with the player.
     if (distance > kMeleeRange) continue;
     enemy.cooldown_ticks = enemy.stats.attack_speed_ticks;
+    // Match the shared action resolver: name the attacker at committed contact
+    // before target-owned damage, without adding a windup or changing cadence.
+    emit(EventType::AttackStarted, enemy.id, {}, {}, "melee");
     const int damage = resolve_damage(enemy, *player);
     player->stats.life = std::max(0, player->stats.life - damage);
     emit(EventType::DamageApplied, player->id, {}, {}, "enemy-melee", damage);
@@ -735,10 +947,11 @@ void Simulation::advance_tick() {
       }
     }
   }
-  enemy_turn();
+  if (!defer_enemy_turn_) enemy_turn();
+  defer_enemy_turn_ = false;
 }
 
-void Simulation::drop_reward() {
+void Simulation::drop_reward(const std::string& defeated_actor_id) {
   Item item;
   item.id = rng_.token("item");
   item.name = "Ember-edged axe";
@@ -746,7 +959,7 @@ void Simulation::drop_reward() {
   item.history.push_back("forged by the expedition seed");
   ground_items_.push_back(item);
   instance_.ground_item_ids.push_back(item.id);
-  emit(EventType::ItemDropped, {}, item.id, {}, item.name, item.attack_bonus);
+  emit(EventType::ItemDropped, defeated_actor_id, item.id, {}, item.name, item.attack_bonus);
 
   // Relics re-enter only through the ordinary seeded reward stream.  The pool
   // is the proof that a Scion has already died with a meaningful item, and
@@ -758,7 +971,7 @@ void Simulation::drop_reward() {
     relic.history.push_back("resurfaced on route " + instance_.route_id);
     ground_items_.push_back(relic);
     instance_.ground_item_ids.push_back(relic.id);
-    emit(EventType::RelicResurfaced, {}, relic.id, {}, instance_.route_id);
+    emit(EventType::RelicResurfaced, defeated_actor_id, relic.id, {}, instance_.route_id);
     record_legend("relic_resurfaced", relic.id, "route=" + instance_.route_id, {},
                   instance_.route_id);
   }
@@ -773,7 +986,7 @@ void Simulation::drop_reward() {
     ground_trophies_.push_back(trophy);
     resurfaced_trophy_ids_.push_back(trophy.id);
     instance_.ground_trophy_ids.push_back(trophy.id);
-    emit(EventType::TrophyResurfaced, {}, {}, trophy.id, instance_.route_id);
+    emit(EventType::TrophyResurfaced, defeated_actor_id, {}, trophy.id, instance_.route_id);
     record_legend("trophy_resurfaced", trophy.id, "route=" + instance_.route_id, {},
                   instance_.route_id);
   }
@@ -781,7 +994,7 @@ void Simulation::drop_reward() {
   Trophy trophy{rng_.token("trophy"), "Warden's ember"};
   ground_trophies_.push_back(trophy);
   instance_.ground_trophy_ids.push_back(trophy.id);
-  emit(EventType::TrophyDropped, {}, {}, trophy.id, trophy.name);
+  emit(EventType::TrophyDropped, defeated_actor_id, {}, trophy.id, trophy.name);
 }
 
 void Simulation::clear_route_and_unlock_children() {
@@ -831,7 +1044,7 @@ void Simulation::handle_death(Actor& actor_value, const std::string& killer_id) 
                     instance_.route_id);
     }
     if (instance_.active) {
-      drop_reward();
+      drop_reward(actor_value.id);
       // A fallen warden alerts the rest of its pack: while roster entries
       // remain, the entire remaining pack materializes together one
       // telegraph window after this death. Pack-clear progression therefore
@@ -1601,6 +1814,7 @@ void WorldSimulation::reset_to_town() {
 }
 
 void WorldSimulation::return_to_town() {
+  last_pursuit_tick_ms_ = -1;
   scene_type_ = "town";
   scene_id_ = "town:verdigris";
   scene_name_ = "Verdigris";
@@ -1653,6 +1867,7 @@ std::string WorldSimulation::zone_display_name(const std::string& template_id,
 }
 
 void WorldSimulation::generate_instance() {
+  last_pursuit_tick_ms_ = -1;
   const std::string& layout = metadata_.layout;
   const std::string effective = layout.empty() ? "warren" : layout;
 
@@ -1731,8 +1946,23 @@ void WorldSimulation::generate_instance() {
     monster.uuid = "monster-" + std::to_string(serial_) + "-" + std::to_string(placed);
     monster.id = metadata_.theme + "-lurker";
     monster.name = zone_display_name(metadata_.theme, "", 1) + " Lurker";
+    // Named per-theme roster (owner content ruling 2026-08-31): each road
+    // fields melee/ranged/buffer kinds with their own names and ids so the
+    // bestiary reads as fauna, not one renamed lurker. Ids are stable
+    // (theme-role); rigs and future drops key off them.
+    struct RosterRow { const char* melee; const char* ranged; const char* buffer; };
+    const RosterRow roster =
+        metadata_.theme == "grove" ? RosterRow{"Thorn Stalker", "Sling Poacher", "Sapbinder"}
+        : metadata_.theme == "crypt" ? RosterRow{"Barrow Wight", "Grave Archer", "Candle Priest"}
+        : metadata_.theme == "wilds" ? RosterRow{"Ridge Wolf", "Crag Slinger", "Herd Caller"}
+        : metadata_.theme == "marsh" ? RosterRow{"Mire Ghast", "Bog Spitter", "Rot Shaman"}
+                                     : RosterRow{"Stone Lurker", "Flint Slinger", "Warden Caller"};
     monster.x = x;
     monster.y = y;
+    monster.continuous_position = {static_cast<double>(x), static_cast<double>(y)};
+    monster.has_continuous_position = true;
+    monster.movement_from = monster.continuous_position;
+    monster.pursuit_home = monster.continuous_position;
     // map.js: level = max(1, floor(1 + index*0.14)) + (depth-1)*2 + theme
     // bonus. Deeper floors are the authoritative difficulty wall.
     monster.level = level + (metadata_.depth - 1) * 2 + placed / 7;
@@ -1748,6 +1978,20 @@ void WorldSimulation::generate_instance() {
       monster.behaviour_type = (role_index == 5) ? "buffer" : (role_index % 2 ? "ranged" : "melee");
     } else {
       monster.behaviour_type = (role_index == 5) ? "buffer" : (role_index % 3 ? "melee" : "ranged");
+    }
+    if (monster.behaviour_type == "ranged") {
+      monster.id = metadata_.theme + "-ranged";
+      monster.name = roster.ranged;
+      monster.life = (std::max)(6, monster.life * 8 / 10);
+      monster.life_max = monster.life;
+    } else if (monster.behaviour_type == "buffer") {
+      monster.id = metadata_.theme + "-buffer";
+      monster.name = roster.buffer;
+      monster.life = (std::max)(6, monster.life * 9 / 10);
+      monster.life_max = monster.life;
+    } else {
+      monster.id = metadata_.theme + "-melee";
+      monster.name = roster.melee;
     }
     if (placed == 0 && metadata_.theme == "marsh") {
       monster.rarity = "rare";
@@ -1830,6 +2074,195 @@ void WorldSimulation::heal_player(int& player_life, int player_life_max) {
   player_life = player_life_max;
 }
 
+namespace {
+// Authoritative combat visibility follows the same tile grid that owns
+// movement collision. A target can be in range but still be behind a wall;
+// sampling the segment here prevents the client from hitting through scenery
+// while keeping the rule deterministic for every transport.
+bool grid_line_clear(const TileGrid& grid, Vec2 from, Vec2 to) {
+  int x = from.x;
+  int y = from.y;
+  const int dx = std::abs(to.x - from.x);
+  const int sx = from.x < to.x ? 1 : -1;
+  const int dy = -std::abs(to.y - from.y);
+  const int sy = from.y < to.y ? 1 : -1;
+  int err = dx + dy;
+  for (;;) {
+    if (!grid.in_bounds(x, y) || !grid.walkable_at(x, y)) return false;
+    if (x == to.x && y == to.y) return true;
+    const int twice = 2 * err;
+    if (twice >= dy) { err += dy; x += sx; }
+    if (twice <= dx) { err += dx; y += sy; }
+  }
+}
+}  // namespace
+
+namespace {
+double world_tile_distance(WorldPosition a, WorldPosition b) {
+  return std::max(std::abs(a.x - b.x), std::abs(a.y - b.y));
+}
+
+bool world_grid_step_clear(const TileGrid& grid, Vec2 from, Vec2 to) {
+  if (!grid.walkable_at(to.x, to.y)) return false;
+  // Match the player's existing diagonal rule: one open orthogonal tile
+  // permits a corner; two closed orthogonal tiles block it.
+  return from.x == to.x || from.y == to.y || grid.walkable_at(from.x, to.y) ||
+         grid.walkable_at(to.x, from.y);
+}
+}  // namespace
+
+bool WorldSimulation::monster_segment_clear(std::size_t mover, WorldPosition from,
+                                            WorldPosition to) const {
+  const double dx = to.x - from.x, dy = to.y - from.y;
+  const double length_squared = dx * dx + dy * dy;
+  const int samples = std::max(1, static_cast<int>(std::ceil(std::sqrt(length_squared) * 8)));
+  Vec2 previous = tile_movement::occupied_tile(from);
+  if (!grid_.walkable_at(previous.x, previous.y)) return false;
+  for (int step = 1; step <= samples; ++step) {
+    const double t = static_cast<double>(step) / samples;
+    const Vec2 tile = tile_movement::occupied_tile({from.x + dx * t, from.y + dy * t});
+    if (!world_grid_step_clear(grid_, previous, tile)) return false;
+    previous = tile;
+  }
+  // A whole tile separates authored spawn centres. Preserve that minimum
+  // continuously, including along the swept segment, so packs cannot merge.
+  for (std::size_t index = 0; index < monsters_.size(); ++index) {
+    if (index == mover || !monsters_[index].alive) continue;
+    const WorldPosition other = monsters_[index].world_position();
+    const double t = length_squared > 0 ? std::clamp(
+        ((other.x - from.x) * dx + (other.y - from.y) * dy) / length_squared, 0.0, 1.0) : 0.0;
+    const double gap_x = from.x + dx * t - other.x;
+    const double gap_y = from.y + dy * t - other.y;
+    if (gap_x * gap_x + gap_y * gap_y < 1.0 - 1e-9) return false;
+  }
+  return true;
+}
+
+std::optional<WorldPosition> WorldSimulation::monster_waypoint(std::size_t mover) const {
+  const WorldPosition from = monsters_[mover].world_position();
+  if (monster_segment_clear(mover, from, position_)) return position_;
+  const Vec2 start = tile_movement::occupied_tile(from);
+  const Vec2 goal = tile_movement::occupied_tile(position_);
+  if (!grid_.walkable_at(start.x, start.y) || !grid_.walkable_at(goal.x, goal.y)) return std::nullopt;
+  const auto cell = [&](Vec2 tile) { return tile.y * grid_.width + tile.x; };
+  const int cells = grid_.width * grid_.height;
+  std::vector<bool> occupied(static_cast<std::size_t>(cells), false);
+  for (std::size_t index = 0; index < monsters_.size(); ++index) {
+    if (index == mover || !monsters_[index].alive) continue;
+    const Vec2 tile = tile_movement::occupied_tile(monsters_[index].world_position());
+    if (grid_.in_bounds(tile.x, tile.y)) occupied[cell(tile)] = true;
+  }
+  constexpr Vec2 neighbours[]{{-1, 0}, {0, -1}, {1, 0}, {0, 1},
+                              {-1, -1}, {1, -1}, {1, 1}, {-1, 1}};
+  // Reverse breadth-first search is bounded by the current instance grid
+  // (40x40). Fixed neighbour and actor order make tied routes deterministic.
+  std::vector<int> distance(static_cast<std::size_t>(cells), -1);
+  std::vector<Vec2> queue{goal};
+  distance[cell(goal)] = 0;
+  for (std::size_t head = 0; head < queue.size() && distance[cell(start)] < 0; ++head) {
+    const Vec2 at = queue[head];
+    for (const Vec2 offset : neighbours) {
+      const Vec2 next{at.x + offset.x, at.y + offset.y};
+      if (!world_grid_step_clear(grid_, at, next) || occupied[cell(next)] || distance[cell(next)] >= 0) continue;
+      distance[cell(next)] = distance[cell(at)] + 1;
+      queue.push_back(next);
+    }
+  }
+  if (distance[cell(start)] <= 0) return std::nullopt;
+  for (const Vec2 offset : neighbours) {
+    const Vec2 next{start.x + offset.x, start.y + offset.y};
+    if (!world_grid_step_clear(grid_, start, next) || occupied[cell(next)] ||
+        distance[cell(next)] != distance[cell(start)] - 1) continue;
+    const WorldPosition waypoint{static_cast<double>(next.x), static_cast<double>(next.y)};
+    if (monster_segment_clear(mover, from, waypoint)) return waypoint;
+  }
+  // A rounded occupied tile can change before its centre is reached. Finish
+  // that centre alignment before turning around a wall or another body.
+  const WorldPosition centre{static_cast<double>(start.x), static_cast<double>(start.y)};
+  if (world_tile_distance(from, centre) > 1e-6 && monster_segment_clear(mover, from, centre)) return centre;
+  return std::nullopt;
+}
+
+void WorldSimulation::advance_monster_movement(std::int64_t now_ms, bool player_alive) {
+  now_ms = std::max<std::int64_t>(0, now_ms);
+  if (!in_instance() || !player_alive) {
+    last_pursuit_tick_ms_ = -1;
+    for (auto& monster : monsters_) {
+      monster.pursuit_active = false;
+      if (monster.movement_duration_ms == 0) continue;
+      ++monster.movement_sequence;
+      monster.movement_from = monster.world_position();
+      monster.movement_started_at_ms = now_ms;
+      monster.movement_duration_ms = 0;
+    }
+    return;
+  }
+  if (last_pursuit_tick_ms_ < 0) { last_pursuit_tick_ms_ = now_ms; return; }
+  if (now_ms <= last_pursuit_tick_ms_) return;
+  // Discard stale backlog after a suspended server; never launch a long
+  // burst through a room. Normal partial samples retain their remainder.
+  if (now_ms - last_pursuit_tick_ms_ > world_pursuit::kMaxCatchupMs)
+    last_pursuit_tick_ms_ = now_ms - world_pursuit::kMaxCatchupMs;
+  const std::int64_t begin = last_pursuit_tick_ms_;
+  const int steps = static_cast<int>((now_ms - begin) / world_pursuit::kStepMs);
+  if (steps == 0) return;
+  std::vector<WorldPosition> before;
+  before.reserve(monsters_.size());
+  for (const auto& monster : monsters_) before.push_back(monster.world_position());
+  for (int step = 0; step < steps; ++step) {
+    last_pursuit_tick_ms_ += world_pursuit::kStepMs;
+    const auto tick = static_cast<std::uint64_t>(last_pursuit_tick_ms_);
+    const Vec2 player_tile = tile_movement::occupied_tile(position_);
+    for (std::size_t index = 0; index < monsters_.size(); ++index) {
+      auto& monster = monsters_[index];
+      if (!monster.alive || monster.boss || monster.behaviour_type != "melee") continue;
+      if (monster.telegraph_until_ms != 0 || tick < monster.next_attack_ms) continue;
+      const WorldPosition from = monster.world_position();
+      const double distance = world_tile_distance(from, position_);
+      if (distance > world_pursuit::kRetainTiles ||
+          world_tile_distance(monster.pursuit_home, position_) > world_pursuit::kHomeLeashTiles) {
+        monster.pursuit_active = false;
+        continue;
+      }
+      const bool visible = grid_line_clear(grid_, {monster.x, monster.y}, player_tile);
+      if (!monster.pursuit_active && distance <= world_pursuit::kAcquireTiles && visible)
+        monster.pursuit_active = true;
+      if (!monster.pursuit_active) continue;
+      const int contact = active_target_ == monster.uuid ? 2 : 1;
+      if (visible && std::abs(monster.x - player_tile.x) <= contact &&
+          std::abs(monster.y - player_tile.y) <= contact) continue;
+      const auto waypoint = monster_waypoint(index);
+      if (!waypoint) continue;
+      const double dx = waypoint->x - from.x, dy = waypoint->y - from.y;
+      const double length = std::hypot(dx, dy);
+      if (length <= 1e-6) continue;
+      double amount = tile_movement::kMoveDistance * enemy_stats(monster.level).move_speed /
+                      world_scale::kPlayerMoveSpeed;
+      amount = std::min(amount, length);
+      if (waypoint->x == position_.x && waypoint->y == position_.y)
+        amount = std::min(amount, std::max(0.0, distance - contact) * length / distance);
+      const WorldPosition to{tile_movement::round_position(from.x + dx / length * amount),
+                             tile_movement::round_position(from.y + dy / length * amount)};
+      if (world_tile_distance(monster.pursuit_home, to) > world_pursuit::kHomeLeashTiles ||
+          world_tile_distance(from, to) <= 1e-6 || !monster_segment_clear(index, from, to)) continue;
+      monster.continuous_position = to;
+      monster.has_continuous_position = true;
+      const Vec2 tile = tile_movement::occupied_tile(to);
+      monster.x = tile.x; monster.y = tile.y;
+      monster.movement_facing = {dx < 0 ? -1 : dx > 0 ? 1 : 0, dy < 0 ? -1 : dy > 0 ? 1 : 0};
+    }
+  }
+  for (std::size_t index = 0; index < monsters_.size(); ++index) {
+    auto& monster = monsters_[index];
+    const bool moved = world_tile_distance(before[index], monster.world_position()) > 1e-6;
+    if (!moved && monster.movement_duration_ms == 0) continue;
+    ++monster.movement_sequence;
+    monster.movement_from = before[index];
+    monster.movement_started_at_ms = moved ? begin : last_pursuit_tick_ms_;
+    monster.movement_duration_ms = moved ? static_cast<int>(last_pursuit_tick_ms_ - begin) : 0;
+  }
+}
+
 std::vector<WorldCombatEvent> WorldSimulation::start_player_attack(int player_level,
                                                                     int player_attack,
                                                                     std::int64_t now_ms,
@@ -1844,13 +2277,17 @@ std::vector<WorldCombatEvent> WorldSimulation::start_player_attack(int player_le
   for (auto& monster : monsters_) {
     if (!monster.alive || !monster.boss) continue;
     const int distance = std::abs(monster.x - here.x) + std::abs(monster.y - here.y);
-    if (distance <= 2) { chosen = &monster; best = distance; break; }
+    if (distance <= 2 && grid_line_clear(grid_, here, {monster.x, monster.y})) {
+      chosen = &monster; best = distance; break;
+    }
   }
   if (!chosen) {
     for (auto& monster : monsters_) {
       if (!monster.alive || !monster.empowered) continue;
       const int distance = std::abs(monster.x - here.x) + std::abs(monster.y - here.y);
-      if (distance <= 2) { chosen = &monster; best = distance; break; }
+      if (distance <= 2 && grid_line_clear(grid_, here, {monster.x, monster.y})) {
+        chosen = &monster; best = distance; break;
+      }
     }
   }
   if (!chosen) {
@@ -1869,6 +2306,7 @@ std::vector<WorldCombatEvent> WorldSimulation::start_player_attack(int player_le
     for (auto& monster : monsters_) {
       if (!monster.alive) continue;
       const int distance = std::abs(monster.x - here.x) + std::abs(monster.y - here.y);
+      if (!grid_line_clear(grid_, here, {monster.x, monster.y})) continue;
       const int aim = aim_dx * (monster.x - here.x) + aim_dy * (monster.y - here.y);
       if (distance < best || (distance == best && aim > best_aim)) {
         best = distance; best_aim = aim; chosen = &monster;
@@ -1877,7 +2315,12 @@ std::vector<WorldCombatEvent> WorldSimulation::start_player_attack(int player_le
   }
   if (!chosen) return {};
   active_target_ = chosen->uuid;
-  next_player_attack_ms_ = static_cast<std::uint64_t>(now_ms);
+  // Input selects a target; only resolved contact advances the attack clock.
+  // Retriggers, target switches, and disengaging/re-engaging must not shorten
+  // the recovery already owed by the previous hit. A fresh attack is immediate.
+  next_player_attack_ms_ = std::max(
+      next_player_attack_ms_,
+      static_cast<std::uint64_t>(std::max<std::int64_t>(0, now_ms)));
   (void)player_attack;
   return {};
 }
@@ -1909,9 +2352,25 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
     for (auto& monster : monsters_) {
       if (!monster.alive || monster.boss) continue;
       if (std::abs(monster.x - here.x) > 1 || std::abs(monster.y - here.y) > 1) continue;
+      if (!grid_line_clear(grid_, here, {monster.x, monster.y})) continue;
+      if (monster.next_attack_ms == 0) {
+        // First contact: a short, per-monster staggered windup instead of
+        // the whole adjacent pack landing its opening hit on the same
+        // millisecond. The synchronised burst deleted a level-1 scion
+        // before the first telegraph could even read (owner ruling: the
+        // first stretch must be survivable and readable).
+        std::uint32_t stagger_hash = 2166136261u;
+        for (const char c : monster.uuid)
+          stagger_hash = (stagger_hash ^ static_cast<std::uint8_t>(c)) * 16777619u;
+        monster.next_attack_ms = now + 400 + stagger_hash % 900;
+        continue;
+      }
       if (now < monster.next_attack_ms) continue;
       monster.next_attack_ms = now + 1200;
-      const int damage = 4 + monster.level * 2;
+      // Owner balance ruling 2026-08-31: 4 + level*2 outpaced level-1 life
+      // by the third simultaneous attacker; contact pressure now scales at
+      // half the slope so early floors threaten without deleting.
+      const int damage = 2 + monster.level;
       player_life = std::max(0, player_life - damage);
       WorldCombatEvent impact;
       impact.type = "hit";
@@ -1934,6 +2393,10 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
     // not chase a target across the map (build-comparison parking relies on it).
     const Vec2 here = tile_movement::occupied_tile(position_);
     if (std::abs(target->x - here.x) > 4 || std::abs(target->y - here.y) > 4) {
+      active_target_.clear();
+      return events;
+    }
+    if (!grid_line_clear(grid_, here, {target->x, target->y})) {
       active_target_.clear();
       return events;
     }
@@ -1996,7 +2459,8 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       boss_warning_seen_ = true;
     } else if (target->telegraph_until_ms != 0 && now >= target->telegraph_until_ms) {
       const Vec2 p = tile_movement::occupied_tile(position_);
-      if (std::abs(p.x - target->x) <= kN3BossTelegraphRadius && std::abs(p.y - target->y) <= kN3BossTelegraphRadius) {
+      if (std::abs(p.x - target->x) <= kN3BossTelegraphRadius && std::abs(p.y - target->y) <= kN3BossTelegraphRadius &&
+          grid_line_clear(grid_, p, {target->x, target->y})) {
         player_life = std::max(0, player_life - kN3BossDamage);
         WorldCombatEvent impact; impact.type = "hit"; impact.attacker_id = target->uuid; impact.attacker_name = target->name;
         impact.target_id = player_uuid_; impact.target_name = "Adventurer"; impact.skill_id = "boss:ground-slam";
@@ -2010,7 +2474,8 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       next_boss_telegraph_ms_ = now;
     }
   } else if (now >= target->next_attack_ms && std::abs(target->x - tile_movement::occupied_tile(position_).x) <= 2
-             && std::abs(target->y - tile_movement::occupied_tile(position_).y) <= 2) {
+             && std::abs(target->y - tile_movement::occupied_tile(position_).y) <= 2 &&
+             grid_line_clear(grid_, tile_movement::occupied_tile(position_), {target->x, target->y})) {
     const int damage = target->empowered ? kN3MonsterDamage + 2 : kN3MonsterDamage;
     player_life = std::max(0, player_life - damage);
     WorldCombatEvent impact; impact.type = "hit"; impact.attacker_id = target->uuid; impact.attacker_name = target->name;

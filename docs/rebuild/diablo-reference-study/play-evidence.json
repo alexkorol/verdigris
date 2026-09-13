@@ -1,0 +1,52 @@
+{
+  "session": "2026-09-09",
+  "character": "verdigris",
+  "characterType": "offline Barbarian",
+  "clientResolution": [
+    1920,
+    1080
+  ],
+  "boundedCaptureResolution": [
+    1940,
+    1123
+  ],
+  "externalCache": "C:\\Users\\Alex\\Documents\\ChatGPT\\diablo-reference-cache\\play-session-20260909",
+  "method": "Foreground window-bounded PIL ImageGrab; Computer Use window-targeted input",
+  "limitations": [
+    "Sparse snapshot-driven play, not a continuous timing benchmark",
+    "Audio not measured",
+    "Other user input detected during later exploration; not all later kills attributable to agent"
+  ],
+  "files": [
+    {
+      "name": "blood-moor-entry.png",
+      "bytes": 3324365,
+      "sha256": "56b9d91084f886a1946f96c584abf685cb9cbbc6364bb79fcfc6f069dc1dee04",
+      "modifiedUtc": "2026-09-10T02:30:55.1664041Z"
+    },
+    {
+      "name": "waypoint.png",
+      "bytes": 3485725,
+      "sha256": "abe84a32dbbb60724019b3861e68556e9c44bb15613d897b9d02110d6cfb740b",
+      "modifiedUtc": "2026-09-10T02:28:30.1911247Z"
+    },
+    {
+      "name": "zombie-combat.png",
+      "bytes": 2847062,
+      "sha256": "bfba26828de6d8ff3b8a0b4bdfc3efb44e5351e95eb245bcb65b44b968a5b77b",
+      "modifiedUtc": "2026-09-10T02:34:45.3384411Z"
+    },
+    {
+      "name": "first-kill.png",
+      "bytes": 2980596,
+      "sha256": "23a2d2ed05fbcc66592c18f93e1eeeca02f02558e7f06a5240164280cc699599",
+      "modifiedUtc": "2026-09-10T02:44:59.4528142Z"
+    },
+    {
+      "name": "inventory-gold.png",
+      "bytes": 3432587,
+      "sha256": "b970deb773d310db41fed17b4833a5e6d1de193e9977c0df5227c587ab22b6bd",
+      "modifiedUtc": "2026-09-10T02:55:46.8608441Z"
+    }
+  ]
+}

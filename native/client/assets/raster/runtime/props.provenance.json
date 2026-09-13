@@ -1,0 +1,802 @@
+{
+  "version": 1,
+  "manifest_sha256": "986b6ae2f34973073eed9379f2f83ef810ea8aad2d3f17763f20316801797f9c",
+  "importer_sha256": "4ea3788b6d7916b0567d387da4698548460bc1779ff760c2215a24e52368a427",
+  "engine": {
+    "project": "Pixel Respecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "root": "Z:/Code/Python/pixel-perfecter",
+    "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+    "git_dirty": true,
+    "source_sha256": {
+      "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+      "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+      "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+      "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+      "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+      "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+      "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+      "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+      "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+      "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+      "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+      "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+      "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+    },
+    "dependencies": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    }
+  },
+  "known_limitations": [],
+  "sources": [
+    {
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "sha256": "f4484579248ccc1ae365867ab397b3bfe0246929f9e287e6342f7a188e699b47",
+      "size": [
+        1448,
+        1086
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "name": "tree",
+      "file": "tree.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        0,
+        386,
+        422
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        77,
+        84
+      ],
+      "trim_box": [
+        3,
+        3,
+        77,
+        80
+      ],
+      "before_resize": [
+        74,
+        77
+      ],
+      "placed_size": [
+        64,
+        67
+      ],
+      "canvas": [
+        64,
+        96
+      ],
+      "content_bounds": [
+        0,
+        29,
+        64,
+        96
+      ],
+      "anchor_px": [
+        32,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "4c5ff0d85a91ffbdb99fbd5521032f7b4db5a03494ad1a89ed334926486cb0ec"
+    },
+    {
+      "name": "dead_tree",
+      "file": "dead_tree.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        386,
+        0,
+        728,
+        422
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        68,
+        84
+      ],
+      "trim_box": [
+        12,
+        4,
+        65,
+        80
+      ],
+      "before_resize": [
+        53,
+        76
+      ],
+      "placed_size": [
+        53,
+        76
+      ],
+      "canvas": [
+        64,
+        96
+      ],
+      "content_bounds": [
+        5,
+        20,
+        58,
+        96
+      ],
+      "anchor_px": [
+        32,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "65d1243156818fdd491a09502ad77ca84c58f32a60b57daa23150aca5a25ade4"
+    },
+    {
+      "name": "rock",
+      "file": "rock.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        728,
+        0,
+        1060,
+        422
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        66,
+        84
+      ],
+      "trim_box": [
+        7,
+        35,
+        64,
+        82
+      ],
+      "before_resize": [
+        57,
+        47
+      ],
+      "placed_size": [
+        57,
+        47
+      ],
+      "canvas": [
+        64,
+        96
+      ],
+      "content_bounds": [
+        3,
+        49,
+        60,
+        96
+      ],
+      "anchor_px": [
+        32,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "345a51050f4cd696aac300b996e9266d6e71ea0c23b1e8a274f0bcbac74b53c8"
+    },
+    {
+      "name": "grass",
+      "file": "grass.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        1060,
+        0,
+        1448,
+        422
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        77,
+        84
+      ],
+      "trim_box": [
+        10,
+        34,
+        72,
+        82
+      ],
+      "before_resize": [
+        62,
+        48
+      ],
+      "placed_size": [
+        62,
+        48
+      ],
+      "canvas": [
+        64,
+        96
+      ],
+      "content_bounds": [
+        1,
+        48,
+        63,
+        96
+      ],
+      "anchor_px": [
+        32,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "dce96f585dec7c240a5b9586b3ea2224e57e44602bcd9262c0f94f4b813a3dd7"
+    },
+    {
+      "name": "hut",
+      "file": "hut.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        422,
+        386,
+        760
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        77,
+        67
+      ],
+      "trim_box": [
+        4,
+        4,
+        71,
+        65
+      ],
+      "before_resize": [
+        67,
+        61
+      ],
+      "placed_size": [
+        67,
+        61
+      ],
+      "canvas": [
+        96,
+        128
+      ],
+      "content_bounds": [
+        14,
+        67,
+        81,
+        128
+      ],
+      "anchor_px": [
+        48,
+        128
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "b477d04f784d51e7e87de86b2a4de530a87eeeb111107defa843d8ab53c161e0"
+    },
+    {
+      "name": "storehut",
+      "file": "storehut.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        386,
+        422,
+        728,
+        760
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        68,
+        67
+      ],
+      "trim_box": [
+        2,
+        5,
+        68,
+        60
+      ],
+      "before_resize": [
+        66,
+        55
+      ],
+      "placed_size": [
+        66,
+        55
+      ],
+      "canvas": [
+        96,
+        128
+      ],
+      "content_bounds": [
+        15,
+        73,
+        81,
+        128
+      ],
+      "anchor_px": [
+        48,
+        128
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "b341f0c6d8a8900bd0b0ee4c0e00d8f574ba5b7ed0494af9ca014dba5b826fb1"
+    },
+    {
+      "name": "column",
+      "file": "column.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        728,
+        422,
+        1060,
+        760
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        66,
+        67
+      ],
+      "trim_box": [
+        22,
+        3,
+        56,
+        62
+      ],
+      "before_resize": [
+        34,
+        59
+      ],
+      "placed_size": [
+        34,
+        59
+      ],
+      "canvas": [
+        64,
+        96
+      ],
+      "content_bounds": [
+        15,
+        37,
+        49,
+        96
+      ],
+      "anchor_px": [
+        32,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "ac340f6dfe70e513cc6f31f894f6b7536e7dbad0921cebbeead57e362868c497"
+    },
+    {
+      "name": "shrine",
+      "file": "shrine.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        1060,
+        422,
+        1448,
+        760
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        77,
+        67
+      ],
+      "trim_box": [
+        12,
+        19,
+        69,
+        65
+      ],
+      "before_resize": [
+        57,
+        46
+      ],
+      "placed_size": [
+        57,
+        46
+      ],
+      "canvas": [
+        64,
+        96
+      ],
+      "content_bounds": [
+        3,
+        50,
+        60,
+        96
+      ],
+      "anchor_px": [
+        32,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "20775f855f3b114029d3ecb10c910c7d761c4babc60849dc13be1f43267cd489"
+    },
+    {
+      "name": "chest",
+      "file": "chest.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        0,
+        760,
+        386,
+        1086
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        77,
+        65
+      ],
+      "trim_box": [
+        10,
+        9,
+        64,
+        57
+      ],
+      "before_resize": [
+        54,
+        48
+      ],
+      "placed_size": [
+        54,
+        48
+      ],
+      "canvas": [
+        64,
+        96
+      ],
+      "content_bounds": [
+        5,
+        48,
+        59,
+        96
+      ],
+      "anchor_px": [
+        32,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "97883631d0cfd184e92c236282bfa8e5c1f2a07fc74792e70f66a6f3ea4542b2"
+    },
+    {
+      "name": "brazier",
+      "file": "brazier.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        386,
+        760,
+        728,
+        1086
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        68,
+        65
+      ],
+      "trim_box": [
+        10,
+        2,
+        54,
+        56
+      ],
+      "before_resize": [
+        44,
+        54
+      ],
+      "placed_size": [
+        44,
+        54
+      ],
+      "canvas": [
+        64,
+        96
+      ],
+      "content_bounds": [
+        10,
+        42,
+        54,
+        96
+      ],
+      "anchor_px": [
+        32,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "f299515c5494d8236785820e9a929025a440f636679eb24495a5fd27997389fe"
+    },
+    {
+      "name": "pottery",
+      "file": "pottery.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        728,
+        760,
+        1060,
+        1086
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        66,
+        65
+      ],
+      "trim_box": [
+        7,
+        6,
+        62,
+        57
+      ],
+      "before_resize": [
+        55,
+        51
+      ],
+      "placed_size": [
+        55,
+        51
+      ],
+      "canvas": [
+        64,
+        96
+      ],
+      "content_bounds": [
+        4,
+        45,
+        59,
+        96
+      ],
+      "anchor_px": [
+        32,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "3e4219eaac993e7d51889eecbfd66918e1248e4deeb88d710a0eb0be37a76bca"
+    },
+    {
+      "name": "wall",
+      "file": "wall.png",
+      "source": "../../client/assets/raster/source/environment-props-warm-pixel-v4.png",
+      "acceptance": "preview_inspected_pending_live_game",
+      "source_box": [
+        1060,
+        760,
+        1448,
+        1086
+      ],
+      "cell_size": 5,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        77,
+        65
+      ],
+      "trim_box": [
+        8,
+        6,
+        70,
+        56
+      ],
+      "before_resize": [
+        62,
+        50
+      ],
+      "placed_size": [
+        62,
+        50
+      ],
+      "canvas": [
+        64,
+        96
+      ],
+      "content_bounds": [
+        1,
+        46,
+        63,
+        96
+      ],
+      "anchor_px": [
+        32,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "052a4bd1ad3d753bbbf8bfed32e197663be7c5e0d4f3554daac53e31def47590"
+    }
+  ]
+}

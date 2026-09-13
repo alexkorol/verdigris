@@ -1,7 +1,8 @@
 ---
 task: TASK-0162
 title: Native passive-tree payload hardening
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head 98068dfc, 2026-08-23)
 packet: IMPLEMENTATION
 topology: INDEPENDENT
 job: IMPLEMENTATION

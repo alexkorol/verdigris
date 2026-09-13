@@ -89,7 +89,9 @@ std::vector<std::string> relevant(const Simulation& sim) {
   for (const auto& event : sim.events()) {
     result.push_back(std::to_string(static_cast<int>(event.type)) + ":" + event.actor_id + ":" +
                      event.item_id + ":" + event.trophy_id + ":" + event.text + ":" +
-                     std::to_string(event.value));
+                     std::to_string(event.value) + ":" + std::to_string(event.has_actor_pose) + ":" +
+                     std::to_string(event.actor_position.x) + ":" + std::to_string(event.actor_position.y) + ":" +
+                     std::to_string(event.actor_facing.x) + ":" + std::to_string(event.actor_facing.y));
   }
   result.push_back(sim.house().id);
   result.push_back(sim.scion().id);
@@ -145,6 +147,18 @@ int living_monster_count(const Simulation& sim) {
     if (actor.kind == ActorKind::Monster && actor.alive) ++count;
   }
   return count;
+}
+
+bool drop_matches_death_pose(const Simulation& sim, const Event& drop) {
+  if (!drop.has_actor_pose || drop.actor_id.empty()) return false;
+  for (const Event& death : sim.events()) {
+    if (death.type == EventType::ActorDied && death.actor_id == drop.actor_id &&
+        death.tick == drop.tick && death.has_actor_pose &&
+        death.actor_position.x == drop.actor_position.x && death.actor_position.y == drop.actor_position.y &&
+        death.actor_facing.x == drop.actor_facing.x && death.actor_facing.y == drop.actor_facing.y)
+      return true;
+  }
+  return false;
 }
 
 void test_skill_resource_gating_and_thrust() {
@@ -336,6 +350,330 @@ void test_facing_replay_is_deterministic() {
   check(first_player && second_player && first_player->facing.x == second_player->facing.x &&
             first_player->facing.y == second_player->facing.y,
         "facing state remains identical under deterministic replay");
+}
+
+void test_fixed_tick_batches_preserve_order_and_bound_motion() {
+  Simulation sim(0xA020ULL);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  const std::string enemy_id = first_monster(sim)->id;
+  Actor* player = sim.actor(sim.scion().actor_id);
+  player->stats.resource = 0;
+  player->cooldown_ticks = 10;
+  const auto tick = sim.tick();
+  sim.dispatch_tick({Command::move(1, 0), Command::move(1, 0), Command::aim(0, 1),
+                     Command::aim(1, 0), Command::move(1, 0)});
+  check(sim.tick() == tick + 1 && player->position.x == world_scale::kPlayerStepPerTick &&
+            player->stats.resource == presentation_constants::kResourceRegenPerTick &&
+            player->cooldown_ticks == 9 &&
+            sim.actor(enemy_id)->position.x == world_scale::kEnemySpawnDistance - 12,
+        "many inputs spend one movement, pursuit, regeneration and cooldown tick");
+  const Vec2 before_dash = player->position;
+  sim.dispatch_tick({Command::move(1, 0), Command::action_use(ActionType::Dash),
+                     Command::action_use(ActionType::Dash), Command::aim(-1, 0)});
+  check(player->position.x == before_dash.x + world_scale::kPlayerStepPerTick * kDashMovementTicks &&
+            player->position.y == before_dash.y && player->facing.x == -1,
+        "one Dash replaces walking without duplicate displacement and later aim remains ordered");
+  const int resource_before = player->stats.resource;
+  sim.dispatch_tick({});
+  check(sim.tick() == tick + 3 && player->stats.resource ==
+            resource_before + presentation_constants::kResourceRegenPerTick,
+        "an empty input batch advances one idle authority tick");
+
+  Simulation ordered(0xA021ULL);
+  const std::string east = ordered.spawn_monster({world_scale::kMeleeRange + 1, 0});
+  const std::string west = ordered.spawn_monster({-world_scale::kMeleeRange - 1, 0});
+  const int life = ordered.actor(east)->stats.life;
+  ordered.dispatch_tick({Command::aim(1, 0), Command::action_use(ActionType::Thrust),
+                         Command::action_use(ActionType::Thrust), Command::aim(-1, 0)});
+  check(ordered.actor(east)->stats.life < life && ordered.actor(west)->stats.life == life &&
+            ordered.actor(ordered.scion().actor_id)->facing.x == -1 &&
+            count_events(ordered, EventType::AttackStarted, "thrust") == 1,
+        "aim east, attack, aim west hits east once and leaves facing west");
+  const Event* east_attack = last_event(ordered, EventType::AttackStarted, "thrust");
+  check(east_attack && east_attack->has_actor_pose && east_attack->actor_position.x == 0 &&
+            east_attack->actor_position.y == 0 && east_attack->actor_facing.x == 1 &&
+            east_attack->actor_facing.y == 0,
+        "the batched attack event retains east aim independently of the actor's final west aim");
+  Simulation cry(0xA022ULL);
+  cry.dispatch_tick({Command::action_use(ActionType::WarCry),
+                     Command::action_use(ActionType::WarCry)});
+  check(count_events(cry, EventType::BuffApplied) == 1 &&
+            cry.actor(cry.scion().actor_id)->stats.resource == 32,
+        "duplicate non-cooldown actions cannot spend their resource cost twice in one tick");
+}
+
+void test_event_poses_survive_later_movement_and_enemy_retargeting() {
+  const Event legacy{EventType::AttackStarted, "actor", {}, {}, "melee", 0, 7};
+  check(!legacy.has_actor_pose && legacy.actor_position.x == 0 && legacy.actor_facing.y == 0,
+        "existing aggregate event construction defaults to an explicitly unavailable pose");
+  Simulation moving(0xA02BULL);
+  moving.spawn_monster({world_scale::kMeleeRange, 0});
+  moving.dispatch_tick({Command::aim(1, 0), Command::action_use(ActionType::Melee),
+                        Command::move(0, 1)});
+  const Event* attack = last_event(moving, EventType::AttackStarted, "melee");
+  const Actor* player = moving.actor(moving.scion().actor_id);
+  check(attack && attack->actor_id == player->id && attack->has_actor_pose &&
+            attack->actor_position.x == 0 && attack->actor_position.y == 0 &&
+            attack->actor_facing.x == 1 && attack->actor_facing.y == 0 &&
+            player->position.y == world_scale::kPlayerStepPerTick && player->facing.y == 1,
+        "attack then walk preserves the emitted strike origin and direction before final movement");
+  const Event* move = last_event(moving, EventType::ActorMoved, "");
+  // The final event may be enemy pursuit, so locate the named player's move.
+  for (const Event& event : moving.events())
+    if (event.type == EventType::ActorMoved && event.actor_id == player->id) move = &event;
+  check(move && move->has_actor_pose && move->actor_position.y == world_scale::kPlayerStepPerTick &&
+            move->actor_facing.x == 0 && move->actor_facing.y == 1,
+        "movement events independently capture their post-move pose");
+
+  for (bool elite : {false, true}) {
+    Simulation sim(0xA02CULL);
+    const int x = world_scale::kMeleeRange + (elite ? 1 : 0);
+    const std::string enemy_id = sim.spawn_monster({x, 0}, 1, elite);
+    const std::size_t begin = sim.events().size();
+    sim.dispatch_tick({});
+    const EventType expected = elite ? EventType::AttackTelegraphed : EventType::AttackStarted;
+    check(sim.events()[begin].type == expected && sim.events()[begin].actor_id == enemy_id &&
+              sim.events()[begin].has_actor_pose && sim.events()[begin].actor_position.x == x &&
+              sim.events()[begin].actor_position.y == 0 && sim.events()[begin].actor_facing.x == -1 &&
+              sim.events()[begin].actor_facing.y == 0,
+          "ordinary contact and elite warning capture their actual attacker at emission");
+    sim.dispatch_tick({Command::aim(0, -1), Command::action_use(ActionType::Dash)});
+    for (int tick = 0; tick < 5; ++tick) sim.dispatch_tick({});
+    check(sim.actor(enemy_id)->position.y < 0 && sim.actor(enemy_id)->facing.y < 0 &&
+              sim.events()[begin].actor_position.x == x && sim.events()[begin].actor_position.y == 0 &&
+              sim.events()[begin].actor_facing.x == -1 && sim.events()[begin].actor_facing.y == 0,
+          "later enemy pursuit and retargeting cannot rewrite its stored warning or contact pose");
+  }
+}
+
+void test_drop_events_capture_the_defeated_actor_anchor() {
+  Simulation sim(0xA02DULL);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  Actor* enemy = first_monster(sim);
+  const std::string enemy_id = enemy->id;
+  const Vec2 corpse{100, 30};
+  enemy->position = corpse;
+  enemy->facing = {-1, -1};
+  enemy->stats.life = 1;
+  sim.dispatch_tick({Command::action_use(ActionType::Melee), Command::move(0, -1)});
+  check(!sim.actor(enemy_id)->alive && sim.ground_items().size() == 1 &&
+            sim.ground_trophies().size() == 1,
+        "an actual melee death still creates exactly its ordinary item and trophy");
+  for (EventType type : {EventType::ActorDied, EventType::ItemDropped, EventType::TrophyDropped}) {
+    const Event* event = last_event(sim, type);
+    check(event && event->actor_id == enemy_id && event->has_actor_pose &&
+              event->actor_position.x == corpse.x && event->actor_position.y == corpse.y &&
+              event->actor_facing.x == -1 && event->actor_facing.y == -1,
+          "death and floor rewards preserve the defeated actor's real pose after it is no longer alive");
+    check(event->actor_position.y != sim.actor(sim.scion().actor_id)->position.y,
+          "loot remains anchored to its corpse instead of the player's later batched position");
+  }
+  const Event* item = last_event(sim, EventType::ItemDropped);
+  const Event* trophy = last_event(sim, EventType::TrophyDropped);
+  check(item->item_id == sim.ground_items().front().id &&
+            item->value == sim.ground_items().front().attack_bonus &&
+            trophy->trophy_id == sim.ground_trophies().front().id &&
+            sim.ground_items().front().owner_id.empty(),
+        "drop anchors retain item identity, stats and unowned floor ownership");
+}
+
+void test_pursuit_reaches_real_contact_at_stat_speed() {
+  Simulation sim(0xA023ULL);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  const std::string id = first_monster(sim)->id;
+  const ActorStats original_stats = sim.actor(id)->stats;
+  check(sim.actor(id)->position.x == world_scale::kEnemySpawnDistance,
+        "instance entry publishes the stationary authored spawn before its first pursuit tick");
+  const auto birth_anchors = sim.navigation_anchors();
+  check(birth_anchors.size() == 5 && birth_anchors[0].x == 0 && birth_anchors[0].y == 0 &&
+            birth_anchors[1].x == sim.instance().extraction_point.x &&
+            birth_anchors[1].y == sim.instance().extraction_point.y &&
+            birth_anchors[2].x == world_scale::kEnemySpawnDistance &&
+            birth_anchors[3].x == sim.pending_wave()[0].position.x &&
+            birth_anchors[3].y == sim.pending_wave()[0].position.y &&
+            birth_anchors[4].x == sim.pending_wave()[1].position.x &&
+            birth_anchors[4].y == sim.pending_wave()[1].position.y,
+        "scene construction receives player, extraction, live and owed birth anchors");
+  int moved_ticks = 0;
+  while (manhattan_distance(sim.actor(id)->position, {0, 0}) > world_scale::kMeleeRange) {
+    const Vec2 before = sim.actor(id)->position;
+    const std::size_t begin = sim.events().size();
+    sim.dispatch_tick({});
+    const Actor* enemy = sim.actor(id);
+    const int expected = std::min(movement_step_per_tick(enemy->stats.move_speed),
+                                 before.x - world_scale::kMeleeRange);
+    check(before.x - enemy->position.x == expected && enemy->position.y == 0 &&
+              enemy->facing.x == -1 && enemy->cooldown_ticks == 0 &&
+              sim.events().size() == begin + 1 &&
+              sim.events().back().type == EventType::ActorMoved &&
+              sim.events().back().actor_id == id && sim.events().back().text == "pursuit",
+          "ordinary approach moves at the shared stat-derived speed and emits actual displacement");
+    check(++moved_ticks < 100, "the ordinary warden reaches the contact band in bounded time");
+  }
+  check(moved_ticks == 48 && count_events(sim, EventType::AttackStarted) == 0,
+        "the natural spawn needs 48 movement ticks and does not attack during its arrival step");
+  const auto moved_anchors = sim.navigation_anchors();
+  check(moved_anchors[2].x == world_scale::kMeleeRange &&
+            birth_anchors[2].x == world_scale::kEnemySpawnDistance &&
+            moved_anchors[3].x == birth_anchors[3].x && moved_anchors[3].y == birth_anchors[3].y &&
+            moved_anchors[4].x == birth_anchors[4].x && moved_anchors[4].y == birth_anchors[4].y,
+        "captured birth anchors stay immutable while later snapshots report live pursuit and owed spawns");
+  const Vec2 contact = sim.actor(id)->position;
+  const int life = sim.actor(sim.scion().actor_id)->stats.life;
+  const int damage = Simulation::resolve_damage(*sim.actor(id), *sim.actor(sim.scion().actor_id));
+  sim.dispatch_tick({});
+  check(sim.actor(id)->position.x == contact.x && sim.actor(id)->position.y == contact.y &&
+            sim.actor(id)->stats == original_stats &&
+            sim.actor(sim.scion().actor_id)->stats.life == life - damage &&
+            count_events(sim, EventType::AttackStarted, "melee") == 1,
+        "pursuit ends at real ordinary contact with unchanged combat stats and actual damage");
+}
+
+void test_pursuit_navigates_corners_and_overlapping_bodies_deterministically() {
+  const std::vector<std::vector<NavigationObstacle>> layouts = {
+      {{{350, 0}, 90}},
+      {{{350, -60}, 90}, {{350, 80}, 90}, {{480, 80}, 55}}};
+  for (auto obstacles : layouts) {
+    Simulation first(0xA024ULL), second(0xA024ULL);
+    first.dispatch(Command::enter("route:tin:1:0"));
+    second.dispatch(Command::enter("route:tin:1:0"));
+    first.set_navigation_obstacles(obstacles);
+    std::reverse(obstacles.begin(), obstacles.end());
+    second.set_navigation_obstacles(obstacles);
+    const std::string id = first_monster(first)->id;
+    bool detoured = false;
+    bool contacted = false;
+    for (int tick = 0; tick < 240; ++tick) {
+      const Vec2 from = first.actor(id)->position;
+      first.dispatch_tick({});
+      second.dispatch_tick({});
+      const Actor* a = first.actor(id);
+      const Actor* b = second.actor(id);
+      const int distance = manhattan_distance(from, a->position);
+      check(distance <= movement_step_per_tick(a->stats.move_speed) &&
+                !first.movement_blocked(from, a->position),
+            "every pursuit segment respects speed and all expanded solid circles");
+      check(a->position.x == b->position.x && a->position.y == b->position.y &&
+                a->facing.x == b->facing.x && a->facing.y == b->facing.y &&
+                a->cooldown_ticks == b->cooldown_ticks && relevant(first) == relevant(second),
+            "obstacle input order does not change the deterministic route or event stream");
+      detoured = detoured || a->position.y != 0;
+      if (count_events(first, EventType::DamageApplied, "enemy-melee") > 0) {
+        contacted = true;
+        check(!first.movement_blocked(a->position, {0, 0}) &&
+                  manhattan_distance(a->position, {0, 0}) <= world_scale::kMeleeRange,
+              "a detouring enemy only attacks with a clear real contact segment");
+        break;
+      }
+    }
+    check(detoured && contacted, "actual pursuit goes around the blocked approach into contact");
+    check(snapshot(first) == snapshot(second), "navigation preserves same-seed durable and RNG state");
+  }
+}
+
+void test_shared_collision_blocks_dash_corner_cutting_and_wall_attacks() {
+  Simulation sim(0xA025ULL);
+  sim.set_navigation_obstacles({{{40, 0}, 1}});
+  const int radius = 1 + world_scale::kActorColliderRadius;
+  check(!sim.movement_blocked({0, radius}, {80, radius}) &&
+            sim.movement_blocked({0, radius - 1}, {80, radius - 1}),
+        "shared swept collision preserves exact tangent clearance and blocks its inner neighbor");
+  sim.dispatch_tick({Command::move(1, 0)});
+  check(sim.actor(sim.scion().actor_id)->position.x == 11,
+        "walking can reach exact expanded-circle tangency");
+  sim.dispatch_tick({Command::move(1, 0)});
+  check(sim.actor(sim.scion().actor_id)->position.x == 11,
+        "ordinary player movement uses the same core obstacle authority");
+  sim.dispatch_tick({Command::action_use(ActionType::Dash)});
+  check(sim.actor(sim.scion().actor_id)->position.x == 11 &&
+            count_events(sim, EventType::ActorMoved, "dash") == 0,
+        "a Dash cannot tunnel through a circle even when its destination is clear");
+  check(navigation_segment_blocked({{{40, 40}, 1}}, {0, 0}, {80, 80}),
+        "a diagonal segment cannot cut through a solid corner between clear endpoints");
+
+  Simulation wall(0xA026ULL);
+  wall.spawn_monster({world_scale::kMeleeRange, 0});
+  wall.set_navigation_obstacles({{{71, 0}, 10}});
+  wall.dispatch_tick({Command::action_use(ActionType::Melee),
+                      Command::action_use(ActionType::Thrust),
+                      Command::action_use(ActionType::Sweep)});
+  check(count_events(wall, EventType::AttackStarted) == 0 &&
+            count_events(wall, EventType::DamageApplied) == 0 &&
+            wall.actor(wall.scion().actor_id)->stats.resource == 50,
+        "solid contact sight gates both sides and every shared melee action before cost or damage");
+}
+
+void test_pursuit_respects_warning_recovery_and_unreachable_goals() {
+  Simulation warning(0xA027ULL);
+  const std::string elite_id = warning.spawn_monster({world_scale::kMeleeRange + 1, 0}, 1, true);
+  warning.dispatch_tick({});
+  const Vec2 start = warning.actor(elite_id)->position;
+  const Vec2 facing = warning.actor(elite_id)->facing;
+  for (int tick = 0; tick < kTelegraphTicks; ++tick) {
+    if (tick == 0)
+      warning.dispatch_tick({Command::aim(0, -1), Command::action_use(ActionType::Dash)});
+    else warning.dispatch_tick({});
+    const Actor* elite = warning.actor(elite_id);
+    check(elite->position.x == start.x && elite->position.y == start.y &&
+              elite->facing.x == facing.x && elite->facing.y == facing.y,
+          "a warning holds the actor's exact feet and facing through the resolution tick");
+  }
+  check(count_events(warning, EventType::DamageApplied) == 0,
+        "escaping a committed warning still avoids its attack");
+  warning.dispatch_tick({});
+  check(manhattan_distance(start, warning.actor(elite_id)->position) > 0,
+        "pursuit resumes on the tick after an escaped warning resolves");
+
+  Simulation recovery(0xA028ULL);
+  const std::string id = recovery.spawn_monster({world_scale::kMeleeRange, 0});
+  recovery.dispatch_tick({});
+  const int cadence = recovery.actor(id)->stats.attack_speed_ticks;
+  for (int tick = 1; tick < cadence; ++tick) {
+    if (tick == 1)
+      recovery.dispatch_tick({Command::aim(0, -1), Command::action_use(ActionType::Dash)});
+    else recovery.dispatch_tick({});
+    check(recovery.actor(id)->position.x == world_scale::kMeleeRange &&
+              recovery.actor(id)->position.y == 0 && recovery.actor(id)->facing.y == 0,
+          "attack recovery plants enemy feet and facing while player movement remains free");
+  }
+  recovery.dispatch_tick({});
+  check(recovery.actor(id)->position.y < 0 &&
+            count_events(recovery, EventType::DamageApplied, "enemy-melee") == 1,
+        "recovery expiry resumes pursuit rather than causing an out-of-range duplicate hit");
+
+  Simulation trapped(0xA029ULL);
+  trapped.dispatch(Command::enter("route:tin:1:0"));
+  const std::string trapped_id = first_monster(trapped)->id;
+  trapped.set_navigation_obstacles({{{100, 0}, 50}, {{70, 70}, 50}, {{0, 100}, 50},
+                                    {{-70, 70}, 50}, {{-100, 0}, 50}, {{-70, -70}, 50},
+                                    {{0, -100}, 50}, {{70, -70}, 50}});
+  const auto events = trapped.events().size();
+  for (int tick = 0; tick < 40; ++tick) trapped.dispatch_tick({});
+  check(trapped.actor(trapped_id)->position.x == world_scale::kEnemySpawnDistance &&
+            trapped.actor(trapped_id)->position.y == 0 && trapped.events().size() == events,
+        "an enclosed goal makes pursuit wait without clipping, teleporting or phantom movement");
+}
+
+void test_navigation_obstacles_retire_with_the_scene() {
+  Simulation sim(0xA02AULL);
+  sim.set_navigation_obstacles({{{40, 0}, 10}});
+  sim.dispatch_tick({Command::enter("route:tin:1:0"), Command::move(1, 0),
+                     Command::action_use(ActionType::Dash)});
+  check(sim.navigation_obstacles().empty(), "entry discards the preceding scene's obstacle snapshot");
+  check(sim.actor(sim.scion().actor_id)->position.x == 0 &&
+            first_monster(sim)->position.x == world_scale::kEnemySpawnDistance &&
+            count_events(sim, EventType::ActorMoved) == 0,
+        "scene entry publishes stationary actors before accepting any stale movement intent");
+  sim.set_navigation_obstacles({{{350, 0}, 90}});
+  const std::string id = first_monster(sim)->id;
+  sim.dispatch(Command::extract());
+  const Vec2 left_behind = sim.actor(id)->position;
+  check(!sim.instance().active && sim.navigation_obstacles().empty(),
+        "extraction clears the floor's collision and retires its active scene");
+  for (int i = 0; i < 80; ++i) sim.dispatch_tick({});
+  check(sim.actor(id)->position.x == left_behind.x && sim.actor(id)->position.y == left_behind.y &&
+            count_events(sim, EventType::AttackStarted) == 0,
+        "abandoned wardens cannot pursue or attack across the House boundary");
 }
 
 void test_sweep_hits_multiple_targets_and_gates_resource() {
@@ -535,22 +873,120 @@ void test_elite_skill_replay_is_deterministic() {
 
 void test_non_elite_melee_cadence_is_unchanged() {
   Simulation sim(0xA018ULL);
+  Simulation out_of_range_control(0xA018ULL);
+  for (Simulation* state : {&sim, &out_of_range_control}) {
+    state->dispatch(Command::enter("route:tin:1:0"));
+    Actor* player = state->actor(state->scion().actor_id);
+    player->position = {0, 0};
+    player->stats.life = player->stats.life_max = 1000;
+  }
+  first_monster(sim)->position = {world_scale::kMeleeRange + 1, 0};
+  const std::string monster_id = first_monster(sim)->id;
   Actor* player = sim.actor(sim.scion().actor_id);
-  player->position = {0, 0};
-  player->stats.life = 1000;
-   const std::string monster_id =
-       sim.spawn_monster({world_scale::kMeleeRange - 1, 0}, 1, false);
   Actor* monster = sim.actor(monster_id);
   check(monster && !monster->elite, "non-elite cadence test creates a plain monster");
-  sim.dispatch(Command::action_use(ActionType::Wait));
-  player = sim.actor(sim.scion().actor_id);
-  monster = sim.actor(monster_id);
+  const auto wait_both = [&] {
+    sim.dispatch(Command::action_use(ActionType::Wait));
+    out_of_range_control.dispatch(Command::action_use(ActionType::Wait));
+  };
+  const std::size_t before_miss = sim.events().size();
+  wait_both();
+  check(sim.events().size() == before_miss + 1 &&
+            sim.events().back().type == EventType::ActorMoved &&
+            sim.events().back().actor_id == monster_id && player->stats.life == 1000 &&
+            monster->cooldown_ticks == 0,
+        "out-of-range ordinary melee approaches but emits no attack or spends cooldown");
+
+  // Equality is the contact boundary. The control takes the same ticks while
+  // remaining outside it, so later rewards expose any accidental RNG draws.
+  monster->position = {world_scale::kMeleeRange, 0};
+  const int cadence = monster->stats.attack_speed_ticks;
+  const int resource = monster->stats.resource;
+  const int damage = Simulation::resolve_damage(*monster, *player);
+  check(damage > 0 && cadence > 1, "ordinary melee fixture has real damage and a cooldown");
+  const std::uint64_t first_contact_tick = sim.tick() + 1;
+  const auto check_contact = [&](std::size_t begin, std::uint64_t tick, int life_before) {
+    check(sim.events().size() == begin + 2,
+          "one ordinary contact emits exactly one start followed by one damage event");
+    const Event& started = sim.events()[begin];
+    const Event& applied = sim.events()[begin + 1];
+    check(started.type == EventType::AttackStarted && started.actor_id == monster_id &&
+              started.text == "melee" && started.tick == tick && started.value == 0 &&
+              started.item_id.empty() && started.trophy_id.empty(),
+          "ordinary AttackStarted identifies the attacker with shared melee semantics");
+    check(applied.type == EventType::DamageApplied && applied.actor_id == player->id &&
+              applied.text == "enemy-melee" && applied.tick == tick && applied.value == damage &&
+              player->stats.life == life_before - damage,
+          "ordinary damage retains its target, tick, payload and real life subtraction");
+    check(monster->cooldown_ticks == cadence && monster->stats.resource == resource,
+          "ordinary contact preserves its cooldown and resource cost");
+  };
+  const std::size_t first_begin = sim.events().size();
+  wait_both();
+  check_contact(first_begin, first_contact_tick, 1000);
+  const std::size_t after_first = sim.events().size();
+  for (int elapsed = 1; elapsed < cadence; ++elapsed) {
+    wait_both();
+    check(sim.events().size() == after_first && player->stats.life == 1000 - damage &&
+              monster->cooldown_ticks == cadence - elapsed,
+          "cooldown ticks neither duplicate an ordinary start nor apply damage early");
+  }
+  wait_both();
+  check_contact(after_first, first_contact_tick + cadence, 1000 - damage);
   check(count_events(sim, EventType::AttackTelegraphed) == 0,
         "non-elite melee emits no telegraph");
-  check(count_events(sim, EventType::DamageApplied, "enemy-melee") == 1,
-        "non-elite monster still performs its ordinary melee attack");
-  check(monster->cooldown_ticks == monster->stats.attack_speed_ticks,
-        "non-elite melee cooldown cadence remains unchanged");
+  check(snapshot(sim) == snapshot(out_of_range_control),
+        "ordinary contacts leave durable state and RNG equal to the same-seed miss control");
+
+  for (Simulation* state : {&sim, &out_of_range_control}) {
+    Actor* target = state->actor(monster_id);
+    target->position = {world_scale::kMeleeRange, 0};
+    target->stats.life = 1;
+    state->dispatch(Command::action_use(ActionType::Melee));
+  }
+  check(sim.ground_items().size() == 1 && sim.ground_trophies().size() == 1 &&
+            out_of_range_control.ground_items().size() == 1 &&
+            out_of_range_control.ground_trophies().size() == 1,
+        "ordinary combat still produces one item and trophy when its attacker is defeated");
+  check(sim.ground_items().front().id == out_of_range_control.ground_items().front().id &&
+            sim.ground_items().front().attack_bonus ==
+                out_of_range_control.ground_items().front().attack_bonus &&
+            sim.ground_trophies().front().id == out_of_range_control.ground_trophies().front().id &&
+            snapshot(sim) == snapshot(out_of_range_control),
+        "ordinary start events do not change seeded rewards or durable progression");
+}
+
+void test_ordinary_melee_start_precedes_lethal_damage_and_stops_on_death() {
+  for (bool elite_without_resource : {false, true}) {
+    Simulation sim(0xA01AULL);
+    const std::string first = sim.spawn_monster({world_scale::kMeleeRange, 0}, 1,
+                                               elite_without_resource);
+    const std::string second = sim.spawn_monster({0, world_scale::kMeleeRange}, 1, false);
+    Actor* player = sim.actor(sim.scion().actor_id);
+    player->stats.life = 1;
+    if (elite_without_resource) {
+      sim.actor(first)->stats.resource = sim.actor(first)->stats.resource_max = 0;
+    }
+    const std::size_t begin = sim.events().size();
+    sim.dispatch(Command::action_use(ActionType::Wait));
+    check(sim.events().size() >= begin + 3 &&
+              sim.events()[begin].type == EventType::AttackStarted &&
+              sim.events()[begin].actor_id == first && sim.events()[begin].text == "melee" &&
+              sim.events()[begin + 1].type == EventType::DamageApplied &&
+              sim.events()[begin + 1].actor_id == player->id &&
+              sim.events()[begin + 2].type == EventType::ActorDied &&
+              !player->alive && player->stats.life == 0,
+          "ordinary and resource-starved elite melee announce their attacker before lethal damage");
+    check(count_events(sim, EventType::AttackStarted) == 1 &&
+              count_events(sim, EventType::DamageApplied, "enemy-melee") == 1 &&
+              count_events(sim, EventType::AttackTelegraphed) == 0 &&
+              sim.actor(second)->cooldown_ticks == 0,
+          "the next ordinary enemy never announces or strikes an already dead player");
+    const std::size_t after_death = sim.events().size();
+    sim.dispatch(Command::action_use(ActionType::Wait));
+    check(sim.events().size() == after_death,
+          "later dead-player ticks do not duplicate ordinary start or damage events");
+  }
 }
 
 void test_war_cry_buff_expiry_and_replay_determinism() {
@@ -684,6 +1120,8 @@ void test_relic_resurface_round_trip() {
   for (const auto& event : sim.events()) {
     if (event.type == EventType::RelicResurfaced && event.item_id == relic_id &&
         event.text == "route:tin:1:0") {
+      check(drop_matches_death_pose(sim, event),
+            "a resurfaced relic retains the actual death anchor of the reward that produced it");
       saw_resurfaced_event = true;
       break;
     }
@@ -1533,6 +1971,10 @@ void test_d106_recovery_is_ordered_and_deterministic() {
   const bool saw_trophy_event =
       count_events(first, EventType::TrophyResurfaced) >= 1;
   check(saw_trophy_event, "trophy resurfacing emits a dedicated recovery event");
+  for (const Event& event : first.events())
+    if (event.type == EventType::TrophyResurfaced)
+      check(drop_matches_death_pose(first, event),
+            "every recovered trophy carries the original defeated actor's immutable drop anchor");
   if (!first.house().lost_trophies.empty()) {
     force_trophy_resurface(first, "route:tin:1:0", first.house().lost_trophies.front().id);
   }
@@ -1760,6 +2202,301 @@ void test_n2_world_simulation_rules() {
   check(!world.in_instance(), "N2 entry stairs leave the instance");
   check(world.position().x == pre_entry.x && world.position().y == pre_entry.y,
         "N2 stair return restores the pre-entry position");
+}
+
+double world_distance(WorldPosition a, WorldPosition b) {
+  return std::hypot(a.x - b.x, a.y - b.y);
+}
+
+WorldSimulation crypt_pursuit_fixture(Vec2 player_tile) {
+  WorldSimulation world(42, "world-pursuit");
+  world.enter_solo_instance("crypt", "gauntlet");
+  check(world.monsters().size() == 20 && world.monsters()[14].x == 22 &&
+        world.monsters()[14].y == 31 && world.monsters()[14].life == 40,
+        "pursuit fixture uses the real deterministic crypt roster and original life");
+  check(world.grid().walkable_at(player_tile.x, player_tile.y), "pursuit player destination is walkable");
+  world.teleport(player_tile.x, player_tile.y, 0);
+  world.advance_monster_movement(0);
+  return world;
+}
+
+void check_world_pack_clear(const WorldSimulation& world) {
+  for (std::size_t index = 0; index < world.monsters().size(); ++index) {
+    const auto& monster = world.monsters()[index];
+    if (!monster.alive) continue;
+    const Vec2 tile = tile_movement::occupied_tile(monster.world_position());
+    check(tile.x == monster.x && tile.y == monster.y && world.grid().walkable_at(tile.x, tile.y),
+          "continuous monster position retains a walkable rounded collision tile");
+    for (std::size_t other = index + 1; other < world.monsters().size(); ++other)
+      if (world.monsters()[other].alive)
+        check(world_distance(monster.world_position(), world.monsters()[other].world_position()) >= 1.0 - 1e-6,
+              "living pack bodies never overlap during pursuit");
+  }
+}
+
+void test_world_pursuit_clock_is_authoritative_and_bounded() {
+  auto fine = crypt_pursuit_fixture({23, 28});
+  auto ordinary = fine;
+  auto irregular = fine;
+  int life = 100;
+  const auto original = fine.monsters();
+  for (int poll = 0; poll < 1000; ++poll) fine.advance_combat(1, 0, life, 100, poll * 50);
+  check(life == 100 && fine.monsters()[14].movement_sequence == 0,
+        "combat polling alone cannot tick real server pursuit");
+  for (int now = 50; now <= 300; now += 50) fine.advance_monster_movement(now);
+  ordinary.advance_monster_movement(150);
+  ordinary.advance_monster_movement(300);
+  for (const int now : {17, 63, 100, 149, 199, 240, 299, 300}) irregular.advance_monster_movement(now);
+  for (std::size_t index = 0; index < original.size(); ++index) {
+    check(world_distance(fine.monsters()[index].world_position(), ordinary.monsters()[index].world_position()) == 0 &&
+          world_distance(fine.monsters()[index].world_position(), irregular.monsters()[index].world_position()) == 0,
+          "50ms,150ms and partial clock partitions produce identical authoritative endpoints");
+  }
+  const auto moved = ordinary.monsters()[14];
+  check(moved.movement_sequence > 0 && std::abs(moved.world_position().x - moved.x) > 0.01,
+        "server pursuit publishes continuous sub-tile positions rather than tile teleports");
+  for (int poll = 0; poll < 1000; ++poll) {
+    ordinary.advance_monster_movement(300);
+    ordinary.advance_monster_movement(200);
+  }
+  check(world_distance(ordinary.monsters()[14].world_position(), moved.world_position()) == 0 &&
+        ordinary.monsters()[14].movement_sequence == moved.movement_sequence &&
+        ordinary.monsters()[14].movement_started_at_ms == moved.movement_started_at_ms,
+        "duplicate and older shared-session ticks neither travel nor restart a segment");
+  auto delayed = crypt_pursuit_fixture({23, 28});
+  delayed.advance_monster_movement(10000);
+  auto one_tick = crypt_pursuit_fixture({23, 28});
+  one_tick.advance_monster_movement(150);
+  check(world_distance(delayed.monsters()[14].world_position(), one_tick.monsters()[14].world_position()) == 0 &&
+        delayed.monsters()[14].movement_duration_ms == 150,
+        "a suspended server discards backlog beyond one ordinary150ms tick");
+  WorldSimulation fresh(42, "world-pursuit");
+  fresh.enter_solo_instance("crypt", "gauntlet");
+  fresh.teleport(23, 28, 0);
+  fresh.advance_monster_movement(900000);
+  check(fresh.monsters()[14].movement_sequence == 0,
+        "first movement sample establishes its time baseline without elapsed travel");
+}
+
+void test_world_pursuit_contact_recovery_and_retirement() {
+  auto world = crypt_pursuit_fixture({23, 28});
+  const auto original = world.monsters();
+  int life = 100;
+  for (int now = 150; now <= 300; now += 150) {
+    world.advance_monster_movement(now);
+    check(world.advance_combat(1, 0, life, 100, now).empty(), "approach and first windup cause no early damage");
+  }
+  const auto contact = world.monsters()[14];
+  check(contact.next_attack_ms > 300 && world_distance(contact.world_position(), original[14].world_position()) > 1.5,
+        "actual crypt wight travels into contact and schedules its original opening windup");
+  for (int now = 450; now <= 1350; now += 150) {
+    world.advance_monster_movement(now);
+    check(world.advance_combat(1, 0, life, 100, now).empty(), "contact windup retains its authored deadline");
+    check(world_distance(world.monsters()[14].world_position(), contact.world_position()) == 0,
+          "a committed contact warning keeps feet stationary");
+  }
+  const auto stopped = world.monsters()[14];
+  check(stopped.movement_duration_ms == 0 && stopped.movement_sequence == contact.movement_sequence + 1 &&
+        world_distance(stopped.movement_from, stopped.world_position()) == 0,
+        "arrival publishes exactly one stopped segment anchored at the endpoint");
+  world.advance_monster_movement(1500);
+  const auto events = world.advance_combat(1, 0, life, 100, 1500);
+  check(events.size() == 1 && events.front().attacker_id == contact.uuid &&
+        events.front().target_id == "world-pursuit" && events.front().amount == 2 + contact.level &&
+        life == 100 - events.front().amount,
+        "real pursuit reaches an ordinary attributed hit with unchanged damage and normal player life");
+  world.teleport(25, 28, 1501);
+  for (int now = 1650; now <= 2550; now += 150) {
+    world.advance_monster_movement(now);
+    world.advance_combat(1, 0, life, 100, now);
+    check(world_distance(world.monsters()[14].world_position(), contact.world_position()) == 0,
+          "ordinary attack recovery remains planted when its target moves away");
+  }
+  world.advance_monster_movement(2700);
+  check(world_distance(world.monsters()[14].world_position(), contact.world_position()) > 0,
+        "pursuit resumes after the original ordinary recovery expires");
+  const auto before_death = world.monsters()[14].world_position();
+  world.advance_monster_movement(2850, false);
+  world.advance_monster_movement(5000, false);
+  check(world_distance(world.monsters()[14].world_position(), before_death) == 0 &&
+        world.monsters()[14].movement_duration_ms == 0,
+        "player death cancels pursuit without spending stale elapsed time");
+  world.return_to_surface();
+  check(!world.in_instance() && world.monsters().empty(), "instance exit retires pursuing actors");
+  world.enter_solo_instance("crypt", "warren");
+  world.advance_monster_movement(9000);
+  for (const auto& monster : world.monsters())
+    check(monster.movement_sequence == 0 && !monster.pursuit_active,
+          "new scene actors start stationary with a fresh movement clock");
+
+  auto lethal = crypt_pursuit_fixture({23, 28});
+  int normal_life = 100;
+  lethal.advance_monster_movement(150);
+  lethal.advance_monster_movement(300);
+  lethal.start_player_attack(1, 20, 300, "down");
+  lethal.advance_combat(1, 20, normal_life, 100, 300);
+  lethal.advance_monster_movement(450);
+  lethal.advance_monster_movement(600);
+  const auto lethal_events = lethal.advance_combat(1, 20, normal_life, 100, 650);
+  check(!lethal.monsters()[14].alive && normal_life > 0 &&
+        std::any_of(lethal_events.begin(), lethal_events.end(), [](const WorldCombatEvent& event) { return event.type == "death"; }),
+        "ordinary player attacks kill the pursuing wight at its original40life");
+  const auto dead_position = lethal.monsters()[14].world_position();
+  lethal.teleport(25, 28, 650);
+  for (int now = 750; now <= 2250; now += 150) lethal.advance_monster_movement(now);
+  check(world_distance(lethal.monsters()[14].world_position(), dead_position) == 0,
+        "dead enemies never resume pursuit after their former recovery");
+}
+
+void test_world_pursuit_nearby_bounds_and_wall_route() {
+  WorldSimulation entry(42, "world-pursuit");
+  entry.enter_solo_instance("crypt", "gauntlet");
+  const auto spawned = entry.monsters();
+  entry.advance_monster_movement(0);
+  int life = 100;
+  for (int now = 150; now <= 6000; now += 150) {
+    entry.advance_monster_movement(now);
+    entry.advance_combat(1, 0, life, 100, now);
+  }
+  for (std::size_t index = 0; index < spawned.size(); ++index)
+    check(world_distance(entry.monsters()[index].world_position(), spawned[index].world_position()) == 0,
+          "ordinary entry clearing cannot wake the distant floor");
+  check(life == 100, "entry remains safe at normal player life");
+
+  auto corner = crypt_pursuit_fixture({1, 11});
+  check(corner.monsters()[1].x == 1 && corner.monsters()[1].y == 14 &&
+        !corner.grid().walkable_at(2, 14), "wall route fixture uses the real gauntlet rib and its end gap");
+  corner.advance_monster_movement(150);
+  check(corner.monsters()[1].pursuit_active, "nearby visible wight acquires before the player rounds the wall");
+  corner.teleport(4, 16, 151);
+  bool reached = false, used_gap = false;
+  auto previous = corner.monsters()[1].world_position();
+  for (int now = 200; now <= 3000; now += 50) {
+    corner.advance_monster_movement(now);
+    const auto& monster = corner.monsters()[1];
+    const auto at = monster.world_position();
+    check(world_distance(previous, at) < 0.365,
+          "a wall detour advances in bounded continuous steps");
+    for (int sample = 0; sample <= 16; ++sample) {
+      const double t = sample / 16.0;
+      const auto tile = tile_movement::occupied_tile({previous.x + (at.x - previous.x) * t,
+                                                     previous.y + (at.y - previous.y) * t});
+      check(corner.grid().walkable_at(tile.x, tile.y), "wall detour never tunnels through an occupied wall tile");
+      used_gap = used_gap || (tile.x == 1 && tile.y == 14);
+    }
+    check_world_pack_clear(corner);
+    previous = at;
+    if (std::abs(monster.x - 4) <= 1 && std::abs(monster.y - 16) <= 1) { reached = true; break; }
+  }
+  check(reached && used_gap, "pursuit routes through an actual wall end gap to regain melee contact");
+  corner.teleport(20, 20, 3001);
+  const auto before_far = corner.monsters()[1].world_position();
+  corner.advance_monster_movement(3150);
+  check(!corner.monsters()[1].pursuit_active && world_distance(corner.monsters()[1].world_position(), before_far) == 0,
+        "a target beyond retention range stops pursuit instead of waking the floor");
+
+  auto unseen = crypt_pursuit_fixture({4, 15});
+  const auto unseen_start = unseen.monsters()[1].world_position();
+  for (int now = 150; now <= 1200; now += 150) unseen.advance_monster_movement(now);
+  check(!unseen.monsters()[1].pursuit_active &&
+        world_distance(unseen.monsters()[1].world_position(), unseen_start) == 0,
+        "a nearby target across an opaque rib cannot acquire through a wall");
+
+  auto leashed = crypt_pursuit_fixture({18, 2});
+  check(leashed.monsters()[8].x == 15 && leashed.monsters()[8].y == 2,
+        "home leash fixture uses an actual isolated crypt birth position");
+  for (int now = 150; now <= 600; now += 150) leashed.advance_monster_movement(now);
+  leashed.teleport(21, 2, 601);
+  for (int now = 750; now <= 1200; now += 150) leashed.advance_monster_movement(now);
+  const auto leash_edge = leashed.monsters()[8];
+  check(leash_edge.pursuit_active && leash_edge.world_position().x > 19,
+        "a target can lead an acquired wight beyond initial acquisition distance");
+  leashed.teleport(24, 2, 1201);
+  leashed.advance_monster_movement(1350);
+  check(!leashed.monsters()[8].pursuit_active &&
+        world_distance(leashed.monsters()[8].world_position(), leash_edge.world_position()) == 0,
+        "birth leash stops pursuit even while the player remains within retention distance");
+
+  auto warning = crypt_pursuit_fixture({19, 18});
+  int warning_life = 100;
+  const auto boss_origin = warning.monsters()[19].world_position();
+  const auto warning_events = warning.advance_combat(1, 1, warning_life, 100, 0);
+  check(std::any_of(warning_events.begin(), warning_events.end(), [](const WorldCombatEvent& event) {
+          return event.type == "telegraph";
+        }), "real boss warning is active in the movement footlock fixture");
+  warning.teleport(19, 19, 1);
+  for (int now = 150; now <= 1200; now += 150) {
+    warning.advance_monster_movement(now);
+    warning.advance_combat(1, 1, warning_life, 100, now);
+    check(world_distance(warning.monsters()[19].world_position(), boss_origin) == 0,
+          "announced boss ground contact never slides toward a dodging player");
+  }
+
+  auto pack = crypt_pursuit_fixture({25, 32});
+  const auto before_pack = pack.monsters();
+  for (int now = 50; now <= 2000; now += 50) { pack.advance_monster_movement(now); check_world_pack_clear(pack); }
+  check(pack.monsters()[6].movement_sequence > 0 && pack.monsters()[14].movement_sequence > 0,
+        "two real nearby pack members converge through authoritative movement");
+  for (std::size_t index = 0; index < before_pack.size(); ++index)
+    if (before_pack[index].boss || before_pack[index].behaviour_type != "melee")
+      check(world_distance(pack.monsters()[index].world_position(), before_pack[index].world_position()) == 0,
+            "boss, ranged and support actors preserve their existing stationary behaviour");
+}
+
+void test_world_attack_cadence_survives_retrigger_and_reengagement() {
+  const std::string player_id = "guest-attack-cadence";
+  WorldSimulation world(42, player_id);
+  world.enter_solo_instance("crypt", "gauntlet");
+  std::vector<WorldMonster> targets;
+  for (const auto& monster : world.monsters()) {
+    if (!monster.boss && !monster.empowered &&
+        (targets.empty() || monster.x != targets.front().x ||
+         monster.y != targets.front().y))
+      targets.push_back(monster);
+    if (targets.size() == 2) break;
+  }
+  check(targets.size() == 2, "attack cadence fixture has two distinct ordinary targets");
+  world.kill_all_monsters();
+  for (const auto& target : targets)
+    check(world.reset_monster(target.uuid, 10000), "attack cadence target is durable");
+  int life = 10000;
+  auto hits_at = [&](std::int64_t now) {
+    std::vector<WorldCombatEvent> hits;
+    for (const auto& event : world.advance_combat(1, 1, life, 10000, now))
+      if (event.type == "hit" && event.attacker_id == player_id) hits.push_back(event);
+    return hits;
+  };
+  auto trigger_at = [&](std::int64_t now) {
+    world.start_player_attack(1, 1, now, "right");
+    return hits_at(now);
+  };
+
+  world.teleport(targets[0].x, targets[0].y, 1000);
+  auto hits = trigger_at(1000);
+  check(hits.size() == 1 && hits.front().target_id == targets[0].uuid,
+        "first attack lands immediately on the selected target");
+  check(trigger_at(1001).empty(), "repeat input cannot bypass attack recovery");
+  check(trigger_at(1349).empty(), "repeat input remains gated until 350 ms");
+  check(hits_at(1350).size() == 1, "held attack repeats at its original deadline");
+
+  world.teleport(targets[1].x, targets[1].y, 1351);
+  check(trigger_at(1351).empty(), "changing target cannot bypass attack recovery");
+  check(hits_at(1699).empty(), "changed target remains gated before the deadline");
+  hits = hits_at(1700);
+  check(hits.size() == 1 && hits.front().target_id == targets[1].uuid,
+        "changed target receives the next scheduled hit");
+
+  // The production disengagement gate clears the target when the player
+  // leaves reach. Return before recovery ends and start again.
+  world.teleport(targets[1].x + 10, targets[1].y, 1701);
+  check(hits_at(1701).empty(), "leaving reach stops player contact");
+  world.teleport(targets[1].x, targets[1].y, 1702);
+  check(hits_at(1702).empty(), "returning to an ordinary target does not auto-attack");
+  check(trigger_at(1702).empty(), "restarting after disengagement preserves recovery");
+  check(trigger_at(2049).empty(), "restarted attack remains gated before its deadline");
+  check(hits_at(2050).size() == 1, "restarted attack lands at the preserved deadline");
+  check(trigger_at(3000).size() == 1, "an attack after idle recovery lands immediately");
+  check(hits_at(3000).empty(), "polling twice at one timestamp cannot duplicate contact");
 }
 
 void test_n2_diagonal_blocking_rule() {
@@ -2083,6 +2820,14 @@ int main() {
   test_dash_is_a_named_readable_burst();
   test_monster_facing_tracks_pursuit_target();
   test_facing_replay_is_deterministic();
+  test_fixed_tick_batches_preserve_order_and_bound_motion();
+  test_event_poses_survive_later_movement_and_enemy_retargeting();
+  test_drop_events_capture_the_defeated_actor_anchor();
+  test_pursuit_reaches_real_contact_at_stat_speed();
+  test_pursuit_navigates_corners_and_overlapping_bodies_deterministically();
+  test_shared_collision_blocks_dash_corner_cutting_and_wall_attacks();
+  test_pursuit_respects_warning_recovery_and_unreachable_goals();
+  test_navigation_obstacles_retire_with_the_scene();
   test_skill_resource_gating_and_thrust();
   test_sweep_hits_multiple_targets_and_gates_resource();
   test_elite_thrust_telegraph_timing();
@@ -2092,6 +2837,7 @@ int main() {
   test_elite_telegraph_cancels_on_death();
   test_elite_skill_replay_is_deterministic();
   test_non_elite_melee_cadence_is_unchanged();
+  test_ordinary_melee_start_precedes_lethal_damage_and_stops_on_death();
   test_war_cry_buff_expiry_and_replay_determinism();
   test_presentation_catalog_is_authoritative_and_stable();
   test_instance_lifecycle_rejects_stale_pickups();
@@ -2115,6 +2861,10 @@ int main() {
   test_d114_world_scale_table();
   test_n2_movement_constants_mirror_browser();
   test_n2_world_simulation_rules();
+  test_world_attack_cadence_survives_retrigger_and_reengagement();
+  test_world_pursuit_clock_is_authoritative_and_bounded();
+  test_world_pursuit_contact_recovery_and_retirement();
+  test_world_pursuit_nearby_bounds_and_wall_route();
   test_n2_diagonal_blocking_rule();
   test_relic_resurface_round_trip();
   test_relic_loss_again_returns_once();

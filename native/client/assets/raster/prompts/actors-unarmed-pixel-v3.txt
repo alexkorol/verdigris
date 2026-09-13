@@ -1,0 +1,10 @@
+Use case: background-extraction
+Asset type: game-ready transparent pixel-art sprite sheet.
+
+Edit input image 1. Preserve the sixteen sprites, all their pixel-art construction, all cell positions, poses, outlines, adult anatomy and scale. Preserve the empty hands of the hero in the top two rows.
+
+REQUIRED FIX 1: Completely REMOVE the grey-and-white checkerboard from every empty part of the image and replace it with REAL TRANSPARENCY in the PNG alpha channel. Output must be RGBA, not RGB. This is an actual alpha cutout deliverable. The checkerboard is an unwanted background to remove, not part of the design. Every pixel outside the character silhouettes and held raider axes must have alpha zero, including enclosed gaps between limbs. Colored sprite pixels should be opaque with crisp hard pixel edges. Do not draw a transparency indicator, checker pattern, solid-color matte, shadow or background.
+
+REQUIRED FIX 2: Recolor the green metal shoulder plates and green raider axe heads into clean NATURAL WARM BRONZE: deep warm brown shadows, burnt copper middle shades, small golden bronze highlights. NO green, NO turquoise, NO oxidized metal, NO patina. Change the hero's teal cloth sash into DEEP INDIGO BLUE fabric, using a few flat dark blue shades. Retain russet tunics, warm skin, dark leather, charcoal raider fabric, ochre raider sash and ivory bone mask. The game world's metal is well-maintained warm bronze.
+
+Do not alter anything else. Keep exactly the same 4-column x 4-row sheet. Retain clear square low-resolution pixel clusters and large staircase edges; no smoothing, no new detail, no extra colors or visual texture, no text.

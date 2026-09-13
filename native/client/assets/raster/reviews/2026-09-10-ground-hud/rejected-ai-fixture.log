@@ -1,0 +1,70 @@
+== scenario raider-motion ==
+    ok: raider-motion: capture root accepted
+    ok: raider-motion: authoritative player exists
+    ok: raider-motion: actual chase corridor clears scenery
+    ok: raider-motion: authoritative motion trace opened
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    ok: raider-motion: actual chase frame captured
+    FAIL: raider-motion: real enemy AI travels southwest toward the player
+    FAIL: raider-motion: real travel paints all eight authored poses
+    FAIL: raider-motion: approach can settle to the original idle
+    ok: raider-motion: the player remains alive through the motion review
+   FAIL (3 failures)

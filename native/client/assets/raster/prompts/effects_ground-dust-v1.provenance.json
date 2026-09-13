@@ -1,0 +1,381 @@
+{
+  "version": 1,
+  "status": "native effect phases reviewed on dark and accepted quiet earth; pending production integration",
+  "generation": {
+    "tool": "image_gen.imagegen",
+    "model": "tool default; no model selector or identity exposed",
+    "calls": 1,
+    "targeted_corrections": 0,
+    "prompt_file": "native\\client\\assets\\raster\\prompts\\effects_ground-dust-v1.txt",
+    "prompt_sha256": "94a485cc93ba301c857254036a3884283c994a2a54f134b4218b7168c68b18fb",
+    "source": "native\\client\\assets\\raster\\source\\effects_ground-dust-v1.png",
+    "source_sha256": "fb142c704de31429701a758d9d73c71def27e505868f7fc498a0a3bd680e5a35",
+    "source_size": [
+      1536,
+      1024
+    ],
+    "source_mode": "RGBA",
+    "source_alpha_extrema": [
+      0,
+      254
+    ],
+    "source_fully_transparent_pixels": 1392158,
+    "source_partial_alpha_pixels": 180706,
+    "original_tool_output": "C:/Users/Alex/.codex/generated_images/01a0896d-2712-78b1-8ee3-5e362a202349/exec-929e0d2c-4709-42c4-b891-66fd5db9eaef.png",
+    "reference_images": [
+      {
+        "path": "native\\client\\assets\\raster\\runtime\\effect_hit_spark.png",
+        "sha256": "25c6ec7aa04bff6c6e22a77c97a325c1c9f0539942455692319eec5f91fc456f",
+        "role": "reference1 crisp low-resolution effect style only; not flame identity",
+        "inspected_before_generation": true
+      },
+      {
+        "path": "native\\client\\assets\\raster\\runtime\\terrain_quiet_earth.png",
+        "sha256": "059b101504c96b84a3541f5021dfd1811a7bb1ddb81ebd40fd03be9dbad2af70",
+        "role": "reference2 earth-color and readability context only; no terrain included in generated sprite",
+        "inspected_before_generation": true
+      }
+    ]
+  },
+  "recipe_basis": {
+    "author": "Practical_Low29",
+    "url": "https://www.reddit.com/r/aigamedev/comments/1wbmvnm/gpt_image_25_nailed_a_16_frame_combat_sprite_sheet/",
+    "published_prompt": "Make a simplified 128px pixel art combat motion sprite sheet of this character, transparent background if you can, arrange it 4x4.",
+    "adaptation": "Retains the single-subject reference-led simplified pixel motion sheet structure. Changes subject to one ground-dust burst, target to48logical pixels, grid to2x2 and adds four dust phases. Dust is our adaptation, not a verified creator dust recipe.",
+    "evidence_limit": "Creator report and critical comments are documented in RESEARCH.md; the built-in tool does not expose which model variant generated our asset."
+  },
+  "processing": {
+    "manifest": "native\\client\\assets\\raster\\prompts\\effects_ground-dust-v1-import.json",
+    "manifest_sha256": "2c80ce6ec81b2e93aea1e8a0befc8670d24964f21e4f1be1a420fc0a37e4729c",
+    "importer": "native/tools/raster/import_assets.py",
+    "importer_sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+    "engine_provenance": "native\\client\\assets\\raster\\source\\effects_ground-dust-v1-candidate\\effects_ground-dust-v1-import.provenance.json",
+    "engine": {
+      "project": "Pixel Respecter",
+      "api": "pixel_perfecter.workspace.reconstruct",
+      "root": "Z:/Code/Python/pixel-perfecter",
+      "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+      "git_dirty": true,
+      "source_sha256": {
+        "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+        "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+        "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+        "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+        "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+        "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+        "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+        "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+        "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+        "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+        "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+        "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+        "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+      },
+      "dependencies": {
+        "python": "3.12.6",
+        "numpy": "2.2.2",
+        "Pillow": "10.4.0",
+        "opencv": "4.11.0"
+      }
+    },
+    "source_layout": [
+      2,
+      2
+    ],
+    "source_cell_size": [
+      768,
+      512
+    ],
+    "source_pitch": 12,
+    "source_cell_origin": [
+      384,
+      384
+    ],
+    "canvas": [
+      64,
+      48
+    ],
+    "output_pivot": [
+      32,
+      42
+    ],
+    "normalization": "Common scale and origin; no individual fitting or image resizing. Initial padding8 limit was too narrow for49px spread, so shared padding6 was used without changing any artwork.",
+    "alpha_cleanup": "None. Actual source alpha was consumed by Pixel Respecter crisp reconstruction; no matte fill, color-key removal, local masks or painted cleanup. Source fractional-alpha edges become binary0/255.",
+    "palette": {
+      "api": "pixel_perfecter.palettes.reduce_colors",
+      "max_colors": 24,
+      "visible_colors_before": 260,
+      "visible_colors_after": 24,
+      "palette_rgb": [
+        [
+          90,
+          71,
+          50
+        ],
+        [
+          105,
+          81,
+          53
+        ],
+        [
+          114,
+          93,
+          64
+        ],
+        [
+          125,
+          104,
+          71
+        ],
+        [
+          139,
+          116,
+          83
+        ],
+        [
+          141,
+          113,
+          73
+        ],
+        [
+          149,
+          125,
+          84
+        ],
+        [
+          159,
+          135,
+          94
+        ],
+        [
+          169,
+          146,
+          105
+        ],
+        [
+          181,
+          155,
+          112
+        ],
+        [
+          195,
+          168,
+          117
+        ],
+        [
+          204,
+          175,
+          125
+        ],
+        [
+          206,
+          178,
+          135
+        ],
+        [
+          212,
+          185,
+          140
+        ],
+        [
+          213,
+          181,
+          128
+        ],
+        [
+          221,
+          191,
+          136
+        ],
+        [
+          225,
+          195,
+          146
+        ],
+        [
+          227,
+          202,
+          154
+        ],
+        [
+          234,
+          201,
+          145
+        ],
+        [
+          235,
+          209,
+          158
+        ],
+        [
+          235,
+          210,
+          169
+        ],
+        [
+          246,
+          221,
+          169
+        ],
+        [
+          253,
+          233,
+          197
+        ],
+        [
+          254,
+          229,
+          182
+        ]
+      ],
+      "dithering": "none",
+      "scope": "all reconstructed frames in this manifest"
+    }
+  },
+  "native_review": {
+    "inspected": [
+      "saved source",
+      "all four native RGBA outputs",
+      "3x dark checker strip",
+      "native1x dark/earth strip",
+      "3x dark/earth strip"
+    ],
+    "observations": [
+      "Frame0 is compact lifted dust. Frame1 expands from30 to49px width with more visible material. Frame2 separates into clusters. Frame3 has75opaque pixels and a largely empty center, down from370 at peak.",
+      "Warm tan highlights remain readable on the accepted earth tile. Native output has no smooth halo, filled ring, green patina or pasted earth.",
+      "All frames share64x48canvas and pivot32,42 with preserved source offsets."
+    ],
+    "acceptance_scope": "Ready for root production trial; no runtime/catalog/code edits or live game acceptance in this asset task."
+  },
+  "assets": [
+    {
+      "name": "effect_dust0",
+      "phase": "lift",
+      "path": "native\\client\\assets\\raster\\source\\effects_ground-dust-v1-candidate\\effect_dust0.png",
+      "sha256": "fac617ca97aa102b7bf03722eeb150c8e9e4668563efd82a63d20c42a51b12ed",
+      "canvas": [
+        64,
+        48
+      ],
+      "anchor_px": [
+        32,
+        42
+      ],
+      "content_bounds": [
+        16,
+        24,
+        46,
+        45
+      ],
+      "opaque_pixels": 212,
+      "visible_colors": 20,
+      "alpha_values": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "effect_dust1",
+      "phase": "spread",
+      "path": "native\\client\\assets\\raster\\source\\effects_ground-dust-v1-candidate\\effect_dust1.png",
+      "sha256": "9cfd59d0d68be5a590edf44417467a4ab4acbd9f7922fa273830564b0f2758a0",
+      "canvas": [
+        64,
+        48
+      ],
+      "anchor_px": [
+        32,
+        42
+      ],
+      "content_bounds": [
+        6,
+        27,
+        55,
+        46
+      ],
+      "opaque_pixels": 370,
+      "visible_colors": 21,
+      "alpha_values": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "effect_dust2",
+      "phase": "break-up",
+      "path": "native\\client\\assets\\raster\\source\\effects_ground-dust-v1-candidate\\effect_dust2.png",
+      "sha256": "bd99d09c615313cb21558649e63b89c5062f601ee14813ee55c24fc555245262",
+      "canvas": [
+        64,
+        48
+      ],
+      "anchor_px": [
+        32,
+        42
+      ],
+      "content_bounds": [
+        11,
+        25,
+        54,
+        42
+      ],
+      "opaque_pixels": 245,
+      "visible_colors": 20,
+      "alpha_values": [
+        0,
+        255
+      ]
+    },
+    {
+      "name": "effect_dust3",
+      "phase": "sparse dissipation",
+      "path": "native\\client\\assets\\raster\\source\\effects_ground-dust-v1-candidate\\effect_dust3.png",
+      "sha256": "9ad269e814e8e6fd67f2d086ad39c4f2e0b2e6f668d6403a7283493a20f921ca",
+      "canvas": [
+        64,
+        48
+      ],
+      "anchor_px": [
+        32,
+        42
+      ],
+      "content_bounds": [
+        8,
+        27,
+        53,
+        42
+      ],
+      "opaque_pixels": 75,
+      "visible_colors": 15,
+      "alpha_values": [
+        0,
+        255
+      ]
+    }
+  ],
+  "preview": {
+    "gif": "native\\client\\assets\\raster\\source\\effects_ground-dust-v1-candidate\\effects_ground-dust-v1-review.gif",
+    "duration_ms": [
+      50,
+      60,
+      70,
+      100,
+      300
+    ],
+    "last_frame": "blank review-only end hold, not an additional asset",
+    "timing_scope": "offline preview suggestion; root owns production effect-age mapping and opacity fade"
+  },
+  "dependencies": {
+    "generation": "Built-in imagegen only; no API key or external generation package.",
+    "reconstruction_python": "Z:/Code/Python/pixel-perfecter/.venv/Scripts/python.exe",
+    "external_project": "Z:/Code/Python/pixel-perfecter",
+    "runtime_asset_dependencies": "Only the four generated PNGs after root integration. Reference images and Python tools are authoring-time inputs only.",
+    "installed_packages": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    },
+    "new_packages_installed": []
+  }
+}

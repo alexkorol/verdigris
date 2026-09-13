@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "tool": "image_gen.imagegen",
+  "model": "tool default; no selector or model identification exposed",
+  "calls": 1,
+  "source": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-diablo-study\\native\\client\\assets\\raster\\source\\actors_hero-strike-ne-recovery-v1.png",
+  "source_sha256": "83e379b710b8a8e04159e15d008436e6ede4606196716f31928e42f99a520796",
+  "source_size": [
+    1145,
+    1374
+  ],
+  "source_mode": "RGB",
+  "source_alpha_extrema": null,
+  "original_tool_output": "C:/Users/Alex/.codex/generated_images/01a0896d-2712-78b1-8ee3-5e362a202349/exec-24727109-85c2-4c8b-a1d5-f8aaeaee957c.png",
+  "prompt_file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-diablo-study\\native\\client\\assets\\raster\\prompts\\actors_hero-strike-ne-recovery-v1.txt",
+  "prompt_sha256": "a8917af251237521e8fbf30657f4e2e9ebbfbf16b14d59c79422ffc07d64a55e",
+  "reference_images": [
+    {
+      "path": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-diablo-study\\native\\client\\assets\\raster\\source\\actors_hero-strike-ne-reference-followthrough12.png",
+      "sha256": "c25d45289113a2ceaa57fdfde449d0fd049824a503d8c2a0fe5f09245075e1a9",
+      "role": "reviewed follow-through with local checker repair; reference 1",
+      "inspected_before_generation": true,
+      "supplied_path_at_generation": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-diablo-study\\native\\client\\assets\\raster\\source\\actors_hero-strike-ne-candidate\\followthrough.png",
+      "note": "Snapshot retained before the final shared cycle palette was applied."
+    },
+    {
+      "path": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-diablo-study\\native\\client\\assets\\raster\\runtime\\hero_ne.png",
+      "sha256": "aafeeed5b41a4ee6cad27d6331b0dec4e121ba711c86380ca2a83228a322c0c5",
+      "role": "original accepted character identity, camera and palette anchor; reference 2",
+      "inspected_before_generation": true
+    }
+  ],
+  "published_workflow": {
+    "url": "https://www.flixly.ai/blog/stop-motion-chatgpt-images-2-5",
+    "method": "Previous reviewed frame first, original identity second, one focused physical change.",
+    "adaptation": "Single-frame adult NE melee phases; this is our repair experiment, not the original fox prompt or a verified published sprite recipe."
+  },
+  "status": "candidate recovery",
+  "visual_verdict": "Arms settle toward idle with NE facing. Left wrist wrap becomes dark while right wrap is pale; material continuity is not accepted.",
+  "runtime_acceptance": false,
+  "conversion_manifest": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-diablo-study\\native\\client\\assets\\raster\\prompts\\actors_hero-strike-ne-repair-candidate.json"
+}

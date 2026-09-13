@@ -1,0 +1,147 @@
+{
+  "date": "2026-09-10",
+  "state": "root_native_review_accepted_for_import_game_review_pending",
+  "selection": "All eight original v1 poses in original row-major order; no v2/v3 splice.",
+  "source_sha256": "6817135c9ea8f4eefcb35b583f8bfdc3d858d123e8b17c0fc3a7f6635f3e2c90",
+  "manifest_sha256": "065d567075e74998ed904d6f37c3f7116ee717c96091424281ccac369b5b03a0",
+  "report_sha256": "83c9421037d2c0bbfe107ddbe21b66a7d5cb1d711416e57bb0a21b9e87487055",
+  "canvas": [
+    80,
+    96
+  ],
+  "pivot": [
+    40,
+    96
+  ],
+  "source_cell_size": 6,
+  "source_origin": [
+    210,
+    486
+  ],
+  "column_stride": 405,
+  "row_stride": 450,
+  "frame_order": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "preview_frame_ms": 100,
+  "preview_idle_hold_ms": 320,
+  "production_timing": "Parent selects actual runtime cadence.",
+  "native_body_height_range": [
+    59,
+    63
+  ],
+  "idle_body_height": 61,
+  "palette": "30 visible colors, all drawn from accepted wight_sw palette of at most32.",
+  "source_alpha": "RGB painted checker; reconstructed via actual engine with reviewed neutral interior windows, no retained RGB changes.",
+  "frozen_pngs": [
+    {
+      "name": "wight_walk0_sw",
+      "bounds": [
+        26,
+        32,
+        56,
+        95
+      ],
+      "sha256": "e629505dd6ded21886aac68d5050e278e30758963fabaa76c2daedd9022d2c74",
+      "partial_alpha_pixels": 0
+    },
+    {
+      "name": "wight_walk1_sw",
+      "bounds": [
+        26,
+        32,
+        57,
+        94
+      ],
+      "sha256": "27af4bf637fa8b1d4627e3d5c3509748a3090713d9e8c83c0434043c89a4257e",
+      "partial_alpha_pixels": 0
+    },
+    {
+      "name": "wight_walk2_sw",
+      "bounds": [
+        29,
+        32,
+        55,
+        94
+      ],
+      "sha256": "80045fe9fcc4cca57ad204d2a88e66914ffe243628357c6c481c14401b636475",
+      "partial_alpha_pixels": 0
+    },
+    {
+      "name": "wight_walk3_sw",
+      "bounds": [
+        21,
+        32,
+        60,
+        94
+      ],
+      "sha256": "22c7bd06c790fa99eccac701cd44bb9341d34f525abea45732d1c432e5035d4e",
+      "partial_alpha_pixels": 0
+    },
+    {
+      "name": "wight_walk4_sw",
+      "bounds": [
+        22,
+        34,
+        58,
+        93
+      ],
+      "sha256": "b18f2542c7fcf744265123cdd629bc99681503fb5401c6b9986fb4f035db80d5",
+      "partial_alpha_pixels": 0
+    },
+    {
+      "name": "wight_walk5_sw",
+      "bounds": [
+        25,
+        34,
+        62,
+        94
+      ],
+      "sha256": "ce2dc2315ece93a284ee5946715a30493e2de5200616e0fa0246978d9925083d",
+      "partial_alpha_pixels": 0
+    },
+    {
+      "name": "wight_walk6_sw",
+      "bounds": [
+        29,
+        33,
+        53,
+        94
+      ],
+      "sha256": "998568b7326ccbd99e4d8f2b71c316e7ada1dc7ee4721da6fa2dce6af416d6a5",
+      "partial_alpha_pixels": 0
+    },
+    {
+      "name": "wight_walk7_sw",
+      "bounds": [
+        23,
+        34,
+        53,
+        95
+      ],
+      "sha256": "18606fe5684cb36f6e0bb05ca62e7fa9b577f1c65811592d76a3de6c7c7274a9",
+      "partial_alpha_pixels": 0
+    }
+  ],
+  "visual_checks": [
+    "Original and selected alpha pairs reviewed for all eight poses.",
+    "Phase1 pale skeletal hand survives; enclosed arm/finger gaps are transparent.",
+    "All eight native poses and1x/3x idle transitions viewed.",
+    "Browser1x/3x ordered playback uses fixed canvas and original order."
+  ],
+  "caveats": [
+    "Narrower torso and more exposed legs than accepted idle.",
+    "Hip-to-knee ownership is partly obscured by cloth; do not claim perfect alternating anatomy.",
+    "Phases0/1 and4/5 are relatively close; actual production motion remains the acceptance gate.",
+    "Native ground bottoms93–95 versus idle96; preserve shared source registration and phase lift rather than snapping each pose."
+  ],
+  "root_authorization": "Root viewed selected native1x/3x strips and approved exact cleaned v1SW8 for production import/runtime review. Renderer owns active manifest/runtime/catalog; this lane changes none of those.",
+  "final_gameplay_review": false
+}

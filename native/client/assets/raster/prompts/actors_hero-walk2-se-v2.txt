@@ -1,0 +1,8 @@
+Use case: identity-preserve
+Create one separate next walk frame of the hero in these images.
+Image 1 supplies the exact hero identity, colors, adult proportions and camera.
+Image 2 shows a right-leg passing pose. Advance THAT RAISED LEG to heel contact.
+
+The RIGHT leg is the leg visible on the LEFT side of the picture, under the bronze shoulder. Straighten this raised leg forward and down so its boot plants low near the center. At the same time bend the OTHER leg back, visibly lifting its heel behind the body toward upper-left. The near leg must now be the bent backward leg and the far leg must be the straight forward leg. The knees overlap in the opposite order from a left-foot-forward stride. Make this opposite-foot step unmistakable.
+
+Keep the upper body facing lower-right, exact same outfit and head, same mature anatomy, same pixel grid, same scale. Arms swing naturally opposite the legs. Empty hands. Only one full-body pixel-art sprite on actual transparent alpha, with margin around every extremity.

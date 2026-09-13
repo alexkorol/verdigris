@@ -1,0 +1,303 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "defaults": {
+    "cell_size": 5,
+    "alpha_mode": "crisp",
+    "max_colors": 32,
+    "canvas": [
+      80,
+      96
+    ],
+    "trim": true,
+    "require_transparency": true,
+    "preserve_scale": true,
+    "acceptance": "preview_inspected_pending_live_game"
+  },
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/actors-unarmed-pixel-v3.png",
+      "border_background": {
+        "color": [
+          231,
+          231,
+          233
+        ],
+        "tolerance": 68,
+        "interior_windows": [
+          [
+            1031,
+            165,
+            1051,
+            210
+          ],
+          [
+            1120,
+            179,
+            1126,
+            189
+          ],
+          [
+            830,
+            214,
+            835,
+            218
+          ],
+          [
+            736,
+            244,
+            739,
+            248
+          ],
+          [
+            730,
+            248,
+            734,
+            253
+          ],
+          [
+            724,
+            254,
+            729,
+            259
+          ],
+          [
+            562,
+            532,
+            565,
+            537
+          ],
+          [
+            744,
+            548,
+            755,
+            558
+          ],
+          [
+            1072,
+            715,
+            1076,
+            719
+          ],
+          [
+            108,
+            773,
+            135,
+            827
+          ],
+          [
+            206,
+            783,
+            229,
+            832
+          ],
+          [
+            519,
+            782,
+            546,
+            831
+          ],
+          [
+            743,
+            787,
+            760,
+            821
+          ],
+          [
+            1050,
+            788,
+            1058,
+            810
+          ],
+          [
+            1045,
+            807,
+            1050,
+            821
+          ],
+          [
+            1135,
+            822,
+            1146,
+            842
+          ],
+          [
+            1038,
+            832,
+            1040,
+            836
+          ],
+          [
+            729,
+            869,
+            734,
+            874
+          ]
+        ]
+      },
+      "assets": [
+        {
+          "name": "hero_se",
+          "source_box": [
+            0,
+            0,
+            314,
+            351
+          ],
+          "anchor_x_source": 157
+        },
+        {
+          "name": "hero_sw",
+          "source_box": [
+            314,
+            0,
+            628,
+            351
+          ],
+          "anchor_x_source": 157
+        },
+        {
+          "name": "hero_nw",
+          "source_box": [
+            628,
+            0,
+            942,
+            351
+          ],
+          "anchor_x_source": 157
+        },
+        {
+          "name": "hero_ne",
+          "source_box": [
+            942,
+            0,
+            1254,
+            351
+          ],
+          "anchor_x_source": 156
+        },
+        {
+          "name": "hero_attack_se",
+          "source_box": [
+            0,
+            351,
+            314,
+            651
+          ],
+          "anchor_x_source": 157
+        },
+        {
+          "name": "hero_attack_sw",
+          "source_box": [
+            314,
+            351,
+            628,
+            651
+          ],
+          "anchor_x_source": 157
+        },
+        {
+          "name": "hero_attack_nw",
+          "source_box": [
+            628,
+            351,
+            942,
+            651
+          ],
+          "anchor_x_source": 157
+        },
+        {
+          "name": "hero_attack_ne",
+          "source_box": [
+            942,
+            351,
+            1254,
+            651
+          ],
+          "anchor_x_source": 156
+        },
+        {
+          "name": "raider_se",
+          "source_box": [
+            0,
+            651,
+            314,
+            955
+          ],
+          "anchor_x_source": 157
+        },
+        {
+          "name": "raider_sw",
+          "source_box": [
+            314,
+            651,
+            628,
+            955
+          ],
+          "anchor_x_source": 157
+        },
+        {
+          "name": "raider_nw",
+          "source_box": [
+            628,
+            651,
+            942,
+            955
+          ],
+          "anchor_x_source": 157
+        },
+        {
+          "name": "raider_ne",
+          "source_box": [
+            942,
+            651,
+            1254,
+            955
+          ],
+          "anchor_x_source": 156
+        },
+        {
+          "name": "raider_attack_se",
+          "source_box": [
+            0,
+            955,
+            342,
+            1254
+          ],
+          "anchor_x_source": 171
+        },
+        {
+          "name": "raider_attack_sw",
+          "source_box": [
+            342,
+            955,
+            644,
+            1254
+          ],
+          "anchor_x_source": 151
+        },
+        {
+          "name": "raider_attack_nw",
+          "source_box": [
+            644,
+            955,
+            959,
+            1254
+          ],
+          "anchor_x_source": 158
+        },
+        {
+          "name": "raider_attack_ne",
+          "source_box": [
+            959,
+            955,
+            1254,
+            1254
+          ],
+          "anchor_x_source": 148
+        }
+      ]
+    }
+  ],
+  "known_limitations": []
+}

@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-UI-004",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "bf861b75",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "stat-explain",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario stat-explain", "exit_code": 0}
+  ],
+  "assertions": [
+    "Attack total is base+gear+passive while Cond is inactive",
+    "expanded sheet names src base, gear, passive, cond on HUD ops",
+    "char:atk-dormant-excluded is on the HUD",
+    "owner paint uses Base/Gear/Passive/Conditional, not src jargon",
+    "compact Sources paints Base N | Gear signed, not lowercase base/gear",
+    "expanded sheet paints Conditional once; a duplicate Conditional cannot certify",
+    "expanded sheet drops the compact Cond row",
+    "Base Gear review strip stays off the sheet, WASD, objective, and Life",
+    "covering the sheet or combat HUD with Base Gear is the anti-pattern",
+    "live HUD names Base Gear and Cond off",
+    "controls hint remains and does not enter the character sheet",
+    "character pane never covers the minimap or life orb",
+    "character sheet close hint C or Esc closes stays inside the slot"
+  ],
+  "negative_control": {
+    "name": "fold dormant conditional into painted Attack, paint Conditional twice on the expanded sheet, or cover the sheet/WASD/objective/Life with the Base Gear strip",
+    "observed_result": "REJECTED as a passing journey"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/stat-explain-960x600.png",
+      "sha256": "9abfd847f412b10ec4d39c7a1935e79120b3381fdeea00bc667c258a9be6c6f1",
+      "produced_by": "native/build/verdigris_client.exe --scenario stat-explain"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Presentation sheet only. Owner strip paints Base Gear / Cond off and parks in the world lane right of the C-key sheet. Covering First Scion, WASD, the objective, or Life cannot certify. Dormant ATK cannot certify. Compact Sources uses owner Base/Gear with ASCII |. Expanded sheet paints one Conditional. Core STAT contribution algebra stays Kimi.",
+    "WASD stays off the character sheet. The sheet sits below the minimap and above Life. C or Esc closes stays in the slot. Owner Base Gear strip is review overlay, not production chrome. HUD ops keep char:src * protocol labels. Not Owner Demo. No TASK numbers minted."
+  ]
+}

@@ -1,0 +1,677 @@
+playtest/scenarios/quest.mjs:223:    assert(state.sceneName === 'Weir Crypt', 'the named campaign delve enters Weir Crypt');
+playtest/scenarios/quest.mjs:251:    }, { timeoutMs: 30000, intervalMs: 350, label: 'Pale Sovereign campaign boss' });
+playtest/scenarios/quest.mjs:253:      'only the named crypt sovereign breaks the campaign seal');
+playtest/scenarios/quest.mjs:255:    const stairsDown = state.sceneMetadata.stairsDown;
+playtest/scenarios/quest.mjs:256:    assert(stairsDown, 'the broken seal exposes stairs to the deeper realm');
+playtest/scenarios/quest.mjs:257:    p.devTeleport(stairsDown.x, stairsDown.y);
+playtest/scenarios/quest.mjs:270:    assert(crownedHouse.renown === 30, 'the campaign chain grants thirty House renown');
+playtest/scenarios/quest.mjs:321:    }, { timeoutMs: 30000, intervalMs: 350, label: 'Rotfather campaign boss' });
+playtest/scenarios/quest.mjs:325:    const marshExit = state.sceneMetadata.stairsUp;
+playtest/scenarios/quest.mjs:326:    assert(marshExit, 'the cleared marsh retains its route to the surface');
+playtest/scenarios/world-web.mjs:2: * World-web contract (docs/crossroads-world-web.md): a road gate opens the
+playtest/scenarios/world-web.mjs:16:    p.devTeleport(37, 94); // tin road gate sits beside the village's north portal
+playtest/scenarios/world-web.mjs:19:      label: 'road gate opens the Wayfinder\'s Chart',
+playtest/scenarios/world-web.mjs:22:    assert(chart.roadId === 'tin', 'the north gate reads the Tin Road');
+playtest/scenarios/world-web.mjs:23:    const root = chart.nodes.find(node => node.tier === 1);
+playtest/scenarios/world-web.mjs:25:    assert(chart.nodes.filter(node => node.tier === 2).length === 0,
+playtest/scenarios/world-web.mjs:28:    // 2. Travel to the root node: a private instance of the node.
+playtest/scenarios/world-web.mjs:31:    p.emit('world:zone:enter', { nodeId: root.id });
+playtest/scenarios/world-web.mjs:34:      return current.sceneType === 'instance' && current.sceneMetadata.nodeId === root.id
+playtest/scenarios/world-web.mjs:40:    assert(zone.monsters.some(monster => monster.name === root.wardenName),
+playtest/scenarios/world-web.mjs:41:      `the ${root.wardenName} keeps the ground`);
+playtest/scenarios/world-web.mjs:42:    assert(zone.sceneMetadata.entryGate, 'the entry waymark is recorded');
+playtest/scenarios/world-web.mjs:46:    // 3. No road holds past a living Warden.
+playtest/scenarios/world-web.mjs:51:      /No road holds past a living Warden/i.test(message)
+playtest/scenarios/world-web.mjs:54:    assert(held.sceneMetadata.nodeId === root.id, 'the gate held the player in place');
+playtest/scenarios/world-web.mjs:74:    assert(child.sceneMetadata.nodeId === gate.nodeId,
+playtest/scenarios/world-web.mjs:75:      `pressed on into ${gate.name} (${child.sceneMetadata.nodeId})`);
+playtest/scenarios/world-web.mjs:79:    p.emit('world:road:chart', { roadId: 'tin' });
+playtest/scenarios/world-web.mjs:82:      return latest.nodes.some(node => node.id === root.id && node.status === 'cleared')
+playtest/scenarios/world-web.mjs:86:    assert(chart.nodes.filter(node => node.tier === 2).every(node => node.status !== 'barred'),
+playtest/scenarios/world-web.mjs:89:    // 7. Walk back to the Crossroads through the entry waymark.
+playtest/scenarios/world-web.mjs:95:      label: 'entry waymark returns to the Crossroads',
+playtest/scenarios/world-web.mjs:101:    p.emit('world:zone:enter', { nodeId: root.id });
+playtest/scenarios/world-web.mjs:104:      return current.sceneType === 'instance' && current.sceneMetadata.nodeId === root.id
+playtest/scenarios/world-web.mjs:110:    assert(revisit.sceneMetadata.wardenDead === true, 'the Warden stays down inside the linger window');
+native/tests\session_tests.cpp:78:  session.submit(verdigris::client::ClientCommand::enter_zone("route:tin:1:0"));
+native/tests\session_tests.cpp:217:                   bool& telegraph, bool& kill, bool& pickup, bool& equipped, bool& extracted,
+native/tests\session_tests.cpp:227:    if (event.type == T::ExtractionCompleted) extracted = true;
+native/tests\session_tests.cpp:253:    // per-house world-web node behind enter_zone has its own attach coverage.
+native/tests\session_tests.cpp:266:  check(session.model().scene.has_stairs_up, "journey: transition publishes exit stairs");
+native/tests\session_tests.cpp:288:  bool extracted = false;
+native/tests\session_tests.cpp:296:    collect_flags(session, outgoing, incoming, telegraph, kill, pickup, equipped, extracted,
+native/tests\session_tests.cpp:330:    collect_flags(session, outgoing, incoming, telegraph, kill, pickup, equipped, extracted,
+native/tests\session_tests.cpp:344:      collect_flags(session, outgoing, incoming, telegraph, kill, pickup, equipped, extracted,
+native/tests\session_tests.cpp:354:  // striking while easing east, then turn back for extract.
+native/tests\session_tests.cpp:366:    collect_flags(session, outgoing, incoming, telegraph, kill, pickup, equipped, extracted,
+native/tests\session_tests.cpp:372:  for (int step = 0; step < 360 && !session.model().extracted; ++step) {
+native/tests\session_tests.cpp:375:    if (session.model().scene.has_stairs_up) {
+native/tests\session_tests.cpp:376:      const double target_y = session.model().scene.stairs_up_y;
+native/tests\session_tests.cpp:386:    collect_flags(session, outgoing, incoming, telegraph, kill, pickup, equipped, extracted,
+native/tests\session_tests.cpp:389:  check(session.model().extracted || session.model().scene.type == "town" ||
+native/tests\session_tests.cpp:391:        "journey: walking onto stairs-up returns to the surface (extract)");
+native/tests\session_tests.cpp:392:  check(session.model().extracted, "journey: ExtractionCompleted from surface message");
+native/tests\session_tests.cpp:503:    // per-house world-web node behind enter_zone has its own attach coverage.
+native/tests\session_tests.cpp:631:  bool has_stairs = false;
+native/tests\session_tests.cpp:632:  int stairs_up_x = -1, stairs_up_y = -1;
+native/tests\session_tests.cpp:633:  int stairs_down_x = -1, stairs_down_y = -1;
+native/tests\session_tests.cpp:657:        view.has_stairs = true;
+native/tests\session_tests.cpp:658:        if (const JV* up = metadata->get("stairsUp")) {
+native/tests\session_tests.cpp:659:          view.stairs_up_x = static_cast<int>(gateb_num(*up, "x", -1));
+native/tests\session_tests.cpp:660:          view.stairs_up_y = static_cast<int>(gateb_num(*up, "y", -1));
+native/tests\session_tests.cpp:662:        if (const JV* down = metadata->get("stairsDown")) {
+native/tests\session_tests.cpp:663:          view.stairs_down_x = static_cast<int>(gateb_num(*down, "x", -1));
+native/tests\session_tests.cpp:664:          view.stairs_down_y = static_cast<int>(gateb_num(*down, "y", -1));
+native/tests\session_tests.cpp:1062:bool gateb_on_stairs(const GateBView& view, int tile_x, int tile_y) {
+native/tests\session_tests.cpp:1063:  if (!view.has_stairs) return false;
+native/tests\session_tests.cpp:1064:  if (tile_x == view.stairs_up_x && tile_y == view.stairs_up_y) return true;
+native/tests\session_tests.cpp:1065:  if (tile_x == view.stairs_down_x && tile_y == view.stairs_down_y) return true;
+native/tests\session_tests.cpp:1177:    if (gateb_on_stairs(view, next_x, next_y)) {
+native/tests\session_tests.cpp:1342:  // broadcast to every client, so the driver may aim at and dodge the elite
+native/tests\session_tests.cpp:1456:        if (gateb_on_stairs(view, nx, ny)) continue;
+native/tests\session_tests.cpp:1782:    // 4) Earn an identifiable item through ordinary play: the road purse
+native/tests\presentation_events_tests.cpp:143:  session.submit(verdigris::client::ClientCommand::enter_zone("route:tin:1:0"));
+native/tests\presentation_events_tests.cpp:213:  session.submit(verdigris::client::ClientCommand::enter_zone("route:tin:1:0"));
+native/src\networking.cpp:645:  current_node_id_.clear();
+native/src\networking.cpp:652:void ProtocolSession::set_broadcast(std::function<void(const Envelope&)> broadcast) { std::lock_guard<std::recursive_mutex> lock(mutex_); broadcast_=std::move(broadcast); }
+native/src\networking.cpp:716:// server/core/world-web.js - deterministic per-house road chart. The hash
+native/src\networking.cpp:717:// need not match JS bit-for-bit: node identity only has to be stable and
+native/src\networking.cpp:742:int road_index(const std::string& road_id) {
+native/src\networking.cpp:743:  for (int i = 0; i < 4; ++i) if (road_id == kRoads[i].id) return i;
+native/src\networking.cpp:752:  std::string id, name, template_id, layout, parent_id, warden_name;
+native/src\networking.cpp:756:int web_tier_width(const std::string& house, const std::string& road, int tier) {
+native/src\networking.cpp:758:  const int previous = web_tier_width(house, road, tier - 1);
+native/src\networking.cpp:759:  const int step_pick = static_cast<int>(web_hash(house + "|" + road + "|" + std::to_string(tier) + "|width") % 4);
+native/src\networking.cpp:763:std::vector<RoadNode> web_road_nodes(const std::string& house, const std::string& road_id, int max_tier) {
+native/src\networking.cpp:764:  std::vector<RoadNode> nodes;
+native/src\networking.cpp:765:  const int ri = road_index(road_id);
+native/src\networking.cpp:766:  if (ri < 0) return nodes;
+native/src\networking.cpp:767:  std::vector<int> previous_tier;  // indices into nodes
+native/src\networking.cpp:770:    const int width = web_tier_width(house, road_id, tier);
+native/src\networking.cpp:773:      const std::uint32_t h = web_hash(house + "|" + road_id + "|" + std::to_string(tier) + "|" + std::to_string(index));
+native/src\networking.cpp:774:      RoadNode node;
+native/src\networking.cpp:775:      node.id = road_id + ":" + std::to_string(tier) + ":" + std::to_string(index);
+native/src\networking.cpp:776:      node.tier = tier;
+native/src\networking.cpp:777:      node.index = index;
+native/src\networking.cpp:779:      node.template_id = pair[0];
+native/src\networking.cpp:780:      node.layout = pair[1];
+native/src\networking.cpp:784:      node.name = name;
+native/src\networking.cpp:785:      node.warden_name = "Warden of " + name;
+native/src\networking.cpp:789:        node.parent_id = nodes[previous_tier[static_cast<std::size_t>(parent_pick)]].id;
+native/src\networking.cpp:791:      current_tier.push_back(static_cast<int>(nodes.size()));
+native/src\networking.cpp:792:      nodes.push_back(std::move(node));
+native/src\networking.cpp:794:    for (int node_index : current_tier) {
+native/src\networking.cpp:795:      if (!nodes[node_index].parent_id.empty()) {
+native/src\networking.cpp:796:        for (auto& candidate : nodes) {
+native/src\networking.cpp:797:          if (candidate.id == nodes[node_index].parent_id) { candidate.child_ids.push_back(nodes[node_index].id); break; }
+native/src\networking.cpp:803:  return nodes;
+native/src\networking.cpp:805:bool parse_node_id(const std::string& id, std::string* road, int* tier, int* index) {
+native/src\networking.cpp:809:  *road = id.substr(0, first);
+native/src\networking.cpp:810:  if (road_index(*road) < 0) return false;
+native/src\networking.cpp:823:struct RoadGateTile { int x; int y; const char* road; };
+native/src\networking.cpp:831:// server/core/data/npcs.js - the Crossroads roster.
+native/src\networking.cpp:833:    {1, "Aldwyn the Guide", "A weathered wayfinder who watches over the Crossroads' newest scions.", 34, 116, {"talk", "examine"}, 2},
+native/src\networking.cpp:834:    {2, "Mara, General Trader", "Keeps the general stall at the Crossroads bazaar. Buys most things, sells the rest.", 49, 103, {"trade", "examine"}, 2},
+native/src\networking.cpp:835:    {3, "Ludovicus, Weapons Trader", "Sells iron for the road. Claims every axe on his boards outlived its first three owners.", 19, 113, {"examine", "trade"}, 2},
+native/src\networking.cpp:856:    JsonValue::Object up; put(up,"x",meta.stairs_up.x); put(up,"y",meta.stairs_up.y); put(metadata,"stairsUp",std::move(up));
+native/src\networking.cpp:857:    JsonValue::Object down; put(down,"x",meta.stairs_down.x); put(down,"y",meta.stairs_down.y); put(metadata,"stairsDown",std::move(down));
+native/src\networking.cpp:859:    if (!current_node_id_.empty()) {
+native/src\networking.cpp:860:      put(metadata, "nodeId", current_node_id_);
+native/src\networking.cpp:861:      put(metadata, "tier", current_node_tier_);
+native/src\networking.cpp:862:      JsonValue::Object entry_gate; put(entry_gate, "x", meta.stairs_up.x); put(entry_gate, "y", meta.stairs_up.y);
+native/src\networking.cpp:866:        JsonValue::Object gate; put(gate, "x", meta.stairs_down.x); put(gate, "y", meta.stairs_down.y);
+native/src\networking.cpp:867:        put(gate, "nodeId", current_child_id_); put(gate, "name", current_child_name_);
+native/src\networking.cpp:871:      put(metadata, "wardenDead", cleared_nodes_.count(current_node_id_) > 0);
+native/src\networking.cpp:891:    // per-node attribute identity from the 271-node graph is approximated
+native/src\networking.cpp:892:    // as +2/attr per allocated node beyond the root until the geometric
+native/src\networking.cpp:937:    JsonValue::Object up; put(up,"x",meta.stairs_up.x); put(up,"y",meta.stairs_up.y); put(metadata,"stairsUp",std::move(up));
+native/src\networking.cpp:938:    JsonValue::Object down; put(down,"x",meta.stairs_down.x); put(down,"y",meta.stairs_down.y); put(metadata,"stairsDown",std::move(down));
+native/src\networking.cpp:940:    if (!current_node_id_.empty()) {
+native/src\networking.cpp:941:      put(metadata, "nodeId", current_node_id_);
+native/src\networking.cpp:942:      put(metadata, "tier", current_node_tier_);
+native/src\networking.cpp:943:      JsonValue::Object entry_gate; put(entry_gate, "x", meta.stairs_up.x); put(entry_gate, "y", meta.stairs_up.y);
+native/src\networking.cpp:947:        JsonValue::Object gate; put(gate, "x", meta.stairs_down.x); put(gate, "y", meta.stairs_down.y);
+native/src\networking.cpp:948:        put(gate, "nodeId", current_child_id_); put(gate, "name", current_child_name_);
+native/src\networking.cpp:952:      put(metadata, "wardenDead", cleared_nodes_.count(current_node_id_) > 0);
+native/src\networking.cpp:992:  // JS server/player/handlers/actions/index.js broadcasts scene.items as both
+native/src\networking.cpp:1011:void ProtocolSession::finish_extraction(const std::function<void(const Envelope&)>& emit) {
+native/src\networking.cpp:1012:  // Drain backpack + wear into the House store. JS has no player:extract;
+native/src\networking.cpp:1040:  emit(Envelope{"player:extract", JsonValue(std::move(summary))});
+native/src\networking.cpp:1165:  // verdigris-geometric-tree.js: the tree is GEOMETRIC - node "q,r" ids sit
+native/src\networking.cpp:1167:  // allocated node feeds the attribute whose axis it best aligns with.
+native/src\networking.cpp:1170:    if (const auto* nodes = passive_tree_.get("nodes"); nodes && nodes->array()) {
+native/src\networking.cpp:1171:      for (const auto& entry : *nodes->array()) {
+native/src\networking.cpp:1199:  JsonValue::Array nodes;
+native/src\networking.cpp:1205:    if (const auto* saved_nodes = passive_tree_.get("nodes"); saved_nodes && saved_nodes->array()) {
+native/src\networking.cpp:1206:      nodes = *saved_nodes->array();
+native/src\networking.cpp:1207:      spent = (std::max)(0, static_cast<int>(nodes.size()) - 1);  // root is free
+native/src\networking.cpp:1216:    nodes.emplace_back("0,0");
+native/src\networking.cpp:1220:  put(tree, "nodes", std::move(nodes));
+native/src\networking.cpp:1376:      " cleared! Rewards distributed - find the stairs to descend, or take the entry stairs to leave.");
+native/src\networking.cpp:1379:    emit_message(emit, "The floor is cleared. Return to Aldwyn at the Crossroads for your reward.");
+native/src\networking.cpp:1482:void ProtocolSession::emit_chart_screen(const std::string& road_id, const std::function<void(const Envelope&)>& emit) const {
+native/src\networking.cpp:1483:  const int ri = road_index(road_id);
+native/src\networking.cpp:1487:  for (const auto& cleared : cleared_nodes_) {
+native/src\networking.cpp:1488:    std::string road; int tier = 0; int index = 0;
+native/src\networking.cpp:1489:    if (parse_node_id(cleared, &road, &tier, &index) && road == road_id) frontier = (std::max)(frontier, tier + 1);
+native/src\networking.cpp:1491:  const auto nodes = web_road_nodes(house, road_id, frontier);
+native/src\networking.cpp:1492:  JsonValue::Array node_rows;
+native/src\networking.cpp:1493:  for (const auto& node : nodes) {
+native/src\networking.cpp:1494:    const bool is_cleared = cleared_nodes_.count(node.id) > 0;
+native/src\networking.cpp:1495:    const bool unlocked = node.tier == 1 || (!node.parent_id.empty() && cleared_nodes_.count(node.parent_id) > 0);
+native/src\networking.cpp:1497:    put(row, "id", node.id); put(row, "name", node.name);
+native/src\networking.cpp:1498:    put(row, "tier", node.tier); put(row, "index", node.index);
+native/src\networking.cpp:1499:    put(row, "roadId", road_id); put(row, "roadName", kRoads[ri].name);
+native/src\networking.cpp:1500:    put(row, "template", node.template_id); put(row, "layout", node.layout);
+native/src\networking.cpp:1501:    put(row, "wardenName", node.warden_name);
+native/src\networking.cpp:1502:    put(row, "parentId", node.parent_id.empty() ? JsonValue(nullptr) : JsonValue(node.parent_id));
+native/src\networking.cpp:1504:    node_rows.emplace_back(std::move(row));
+native/src\networking.cpp:1507:  put(payload, "roadId", road_id); put(payload, "roadName", kRoads[ri].name);
+native/src\networking.cpp:1509:  put(payload, "nodes", std::move(node_rows));
+native/src\networking.cpp:1517:void ProtocolSession::enter_road_node(const std::string& node_id, const std::function<void(const Envelope&)>& emit) {
+native/src\networking.cpp:1518:  std::string road; int tier = 0; int index = 0;
+native/src\networking.cpp:1519:  if (!parse_node_id(node_id, &road, &tier, &index)) return;
+native/src\networking.cpp:1521:  const auto nodes = web_road_nodes(house, road, tier + 1);
+native/src\networking.cpp:1522:  const RoadNode* node = nullptr;
+native/src\networking.cpp:1523:  for (const auto& candidate : nodes) if (candidate.id == node_id) { node = &candidate; break; }
+native/src\networking.cpp:1524:  if (!node) return;
+native/src\networking.cpp:1525:  current_node_id_ = node->id;
+native/src\networking.cpp:1526:  current_node_tier_ = node->tier;
+native/src\networking.cpp:1527:  current_node_name_ = node->name;
+native/src\networking.cpp:1528:  current_child_id_ = node->child_ids.empty() ? std::string() : node->child_ids.front();
+native/src\networking.cpp:1531:    for (const auto& candidate : nodes) if (candidate.id == current_child_id_) { current_child_name_ = candidate.name; break; }
+native/src\networking.cpp:1533:  node_warden_dead_on_entry_ = cleared_nodes_.count(node->id) > 0;
+native/src\networking.cpp:1534:  world_->set_boss_name_override(node->warden_name);
+native/src\networking.cpp:1535:  world_->set_spawn_suppressed(node_warden_dead_on_entry_);
+native/src\networking.cpp:1536:  world_->enter_solo_instance(node->template_id, node->layout);
+native/src\networking.cpp:1539:  world_->set_block_stairs_down(!node_warden_dead_on_entry_);
+native/src\networking.cpp:1540:  world_->set_scene_name(current_node_name_);
+native/src\networking.cpp:1541:  world_->set_stairs_up_returns_to_town(true);
+native/src\networking.cpp:1551:  current_node_id_.clear();
+native/src\networking.cpp:1552:  world_->set_block_stairs_down(false);
+native/src\networking.cpp:1553:  world_->set_stairs_up_returns_to_town(false);
+native/src\networking.cpp:1588:void ProtocolSession::check_road_gates(const std::function<void(const Envelope&)>& emit) {
+native/src\networking.cpp:1589:  // gates.mjs: standing on a road-gate tile in town opens that chart.
+native/src\networking.cpp:1591:    // node instances: landing on the stairs-down gate while the Warden
+native/src\networking.cpp:1592:    // lives holds the road (world-web.mjs section 3).
+native/src\networking.cpp:1593:    if (!current_node_id_.empty()) {
+native/src\networking.cpp:1596:      if (tile.x == meta.stairs_down.x && tile.y == meta.stairs_down.y) {
+native/src\networking.cpp:1597:        bool warden_alive = false;
+native/src\networking.cpp:1598:        for (const auto& monster : world_->monsters()) if (monster.alive && monster.boss) { warden_alive = true; break; }
+native/src\networking.cpp:1599:        if (warden_alive) emit_message(emit, "No road holds past a living Warden.");
+native/src\networking.cpp:1606:    if (gate.x == tile.x && gate.y == tile.y) { emit_chart_screen(gate.road, emit); break; }
+native/src\networking.cpp:1629:    emit_message(emit, "No road holds past a living Warden. Take any gate out - the first stretch of every road is on your House's chart - put its Warden down, and come back to me.");
+native/src\networking.cpp:2134:      // world-web: the node Warden falls - dead stays dead, the road opens.
+native/src\networking.cpp:2135:      if (!current_node_id_.empty()) {
+native/src\networking.cpp:2138:          cleared_nodes_.insert(current_node_id_);
+native/src\networking.cpp:2139:          world_->set_block_stairs_down(false);
+native/src\networking.cpp:2140:          emit_message(emit, "The " + std::string("Warden of ") + current_node_name_ + " is down. The road runs on.");
+native/src\networking.cpp:2149:            emit_message(emit, "Your first Warden is down. Return to Aldwyn at the Crossroads for your reward.");
+native/src\networking.cpp:2188:void ProtocolSession::handle_extract(const std::function<void(const Envelope&)>& emit) {
+native/src\networking.cpp:2190:    emit_message(emit, "There is no extraction here.");
+native/src\networking.cpp:2196:  finish_extraction(emit);
+native/src\networking.cpp:2263:  if (broadcast_) {
+native/src\networking.cpp:2269:    broadcast_(Envelope{"chronicles:scion-witnessed", JsonValue(std::move(witnessed))});
+native/src\networking.cpp:2271:  // lifecycle.js broadcastStats: the mortal death is authoritative state.
+native/src\networking.cpp:2375:void ProtocolSession::emit_world(const Envelope& envelope, const std::function<void(const Envelope&)>& emit) const { if (broadcast_) broadcast_(envelope); else emit(envelope); }
+native/src\networking.cpp:2386:  if (envelope.event=="world:zone:enter") { const auto node=as_string(payload?payload->get("nodeId"):nullptr,"tin:1:0"); simulation_->dispatch(Command::enter(node.rfind("route:",0)==0?node:"route:"+node)); { std::string web_road; int web_tier=0; int web_index=0; if (parse_node_id(node,&web_road,&web_tier,&web_index)) { enter_road_node(node, emit); return; } } current_node_id_.clear(); world_->set_block_stairs_down(false); world_->set_stairs_up_returns_to_town(false); world_->enter_solo_instance("dungeon",""); emit_transition(emit,"world:scene:transition"); emit_ground_change(emit); last_instance_theme_ = world_->metadata().theme; last_instance_layout_ = world_->metadata().layout; quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); return; }
+native/src\networking.cpp:2387:  if (envelope.event=="instance:enterSolo") { current_node_id_.clear(); world_->set_block_stairs_down(false); world_->set_stairs_up_returns_to_town(false); world_->enter_solo_instance(as_string(payload?payload->get("template"):nullptr,"dungeon"),as_string(payload?payload->get("layout"):nullptr,"")); emit_transition(emit,"party:scene:transition"); emit_ground_change(emit); last_instance_theme_ = world_->metadata().theme; last_instance_layout_ = world_->metadata().layout; quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); return; }
+native/src\networking.cpp:2388:  if (envelope.event=="player:move") { const auto direction=as_string(payload?payload->get("direction"):nullptr); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); if (world_->apply_movement_sample(direction,now_ms())) { emit_movement(emit); auto_pickup_gold(emit); quest_trigger("move", emit); check_road_gates(emit); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool scene_changed=world_->scene_id()!=scene_before; if (depth_changed||scene_changed) { if (was_instance&&!world_->in_instance()) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); maybe_complete_first_goal(emit); quest_trigger("return-surface", emit, zone_id_for_instance(last_instance_theme_, last_instance_layout_), last_instance_theme_); } if (depth_changed) quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); if (depth_changed && !current_node_id_.empty() && !current_child_id_.empty()) { current_node_id_ = current_child_id_; current_node_tier_ += 1; current_node_name_ = current_child_name_.empty() ? current_node_name_ : current_child_name_; current_child_id_.clear(); world_->set_block_stairs_down(true); } emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) emit_ground_change(emit); } } return; }
+native/src\networking.cpp:2389:  if (envelope.event=="dev:teleport") { if (!payload) return; const auto* x=payload->get("x"); const auto* y=payload->get("y"); if (!x||!x->number()||!y||!y->number()) return; const int tx=static_cast<int>(*x->number()); const int ty=static_cast<int>(*y->number()); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); world_->teleport(tx,ty,now_ms()); const bool returned=was_instance&&!world_->in_instance(); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool transitioned=returned||depth_changed||world_->scene_id()!=scene_before; emit_movement(emit); emit_message(emit,"Teleported to "+std::to_string(tx)+", "+std::to_string(ty)+(transitioned?" (portal followed).":".")); check_road_gates(emit); if (returned) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); maybe_complete_first_goal(emit); quest_trigger("return-surface", emit, zone_id_for_instance(last_instance_theme_, last_instance_layout_), last_instance_theme_); } if (transitioned) emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) { if (depth_changed) { emit_ground_change(emit); quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); if (!current_node_id_.empty() && !current_child_id_.empty()) { current_node_id_ = current_child_id_; current_node_tier_ += 1; if (!current_child_name_.empty()) { current_node_name_ = current_child_name_; world_->set_scene_name(current_node_name_); } current_child_id_.clear(); world_->set_block_stairs_down(true); } } process_combat(now_ms(),emit); } return; }
+native/src\networking.cpp:2392:  if (envelope.event=="world:road:chart") { emit_chart_screen(as_string(payload?payload->get("roadId"):nullptr,"tin"), emit); return; }
+native/src\networking.cpp:2444:      emit_message(emit,"Cool water. The road ahead feels lighter.");
+native/src\networking.cpp:2523:  if (envelope.event=="player:extract") { handle_extract(emit); return; }
+native/src\networking.cpp:2538:      bool warden_was_alive = false;
+native/src\networking.cpp:2539:      for (const auto& monster : world_->monsters()) if (monster.alive && monster.boss) { warden_was_alive = true; break; }
+native/src\networking.cpp:2541:      if (warden_was_alive && !current_node_id_.empty()) {
+native/src\networking.cpp:2542:        cleared_nodes_.insert(current_node_id_);
+native/src\networking.cpp:2543:        world_->set_block_stairs_down(false);
+native/src\networking.cpp:2544:        emit_message(emit, "The Warden of " + current_node_name_ + " is down. The road runs on.");
+native/src\networking.cpp:2558:      finish_extraction(emit);
+native/src\networking.cpp:2609:    // crossroads: the scion spawns beside their House wagon pitch, and the
+native/src\networking.cpp:2610:    // first set-out of the day claims the road purse into the ledger.
+native/src\networking.cpp:2619:      emit_message(emit, "Your House's wagon rolls in with the dawn market. The quartermaster counts 100 gold into the ledger - the day's road purse.");
+native/src\networking.cpp:2766:    // guestId routes into the Chronicle-auth flow: emit chronicles:state and
+native/src\networking.cpp:2988:const bool quick=as_bool(envelope.data.get("quickGuest"));const auto* playtest_guest=envelope.data.get("playtestGuestId");if(playtest_guest&&playtest_guest->string())identity=*playtest_guest->string();const auto* playtest_name=envelope.data.get("playtestGuestName");std::shared_ptr<ProtocolSession> session;std::shared_ptr<Connection> old;{std::lock_guard lock(mutex_);auto it=sessions_.find(identity);if(it!=sessions_.end()){for(const auto& candidate:connections_)if(candidate->session==it->second&&candidate!=connection&&!candidate->closed){old=candidate;break;}session=it->second;}if(!session){std::uint64_t seed=1469598103934665603ULL;for(unsigned char c:identity)seed=(seed^c)*1099511628211ULL;session=std::make_shared<ProtocolSession>(identity,connection->id,seed,quick);sessions_[identity]=session;}else { const bool adopted = connection->session != session; session->replace_socket(connection->id); if (adopted) session->reset_world_for_new_socket(); } connection->session=session;}session->set_broadcast([this](const Envelope& event){broadcast(event);});if(playtest_name&&playtest_name->string())session->set_username(*playtest_name->string());session->set_direct_emit([connection](const Envelope& event){connection->send_text(emit_envelope(event));});if(old){old->send_text(emit_envelope(Envelope{"player:session-replaced",JsonValue::Object{{"player",JsonValue::Object{{"socket_id",old->id}}}}}));old->shutdown_send();old->close();}session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});return;} auto session=connection->session;if(!session)return;if(envelope.event.rfind("party:",0)==0&&handle_party_event(connection,envelope))return;session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});}
+native/src\networking.cpp:2989:void WebSocketServer::broadcast(const Envelope& envelope){ std::vector<std::shared_ptr<Connection>> targets; {std::lock_guard lock(mutex_);targets=connections_;} const auto wire=emit_envelope(envelope); for(const auto& candidate:targets) if(candidate->session&&!candidate->closed) candidate->send_text(wire); }
+native/include\verdigris\networking.hpp:92:  // World events (movement, scene transitions) are broadcast to every live
+native/include\verdigris\networking.hpp:93:  // connection, mirroring the JS server's room broadcast.  Unit tests leave
+native/include\verdigris\networking.hpp:95:  void set_broadcast(std::function<void(const Envelope&)> broadcast);
+native/include\verdigris\networking.hpp:127:  void finish_extraction(const std::function<void(const Envelope&)>& emit);
+native/include\verdigris\networking.hpp:131:  void handle_extract(const std::function<void(const Envelope&)>& emit);
+native/include\verdigris\networking.hpp:148:  void emit_chart_screen(const std::string& road_id, const std::function<void(const Envelope&)>& emit) const;
+native/include\verdigris\networking.hpp:149:  void enter_road_node(const std::string& node_id, const std::function<void(const Envelope&)>& emit);
+native/include\verdigris\networking.hpp:151:  void check_road_gates(const std::function<void(const Envelope&)>& emit);
+native/include\verdigris\networking.hpp:197:  // N6 world-web (server/core/world-web.js): per-house deterministic road
+native/include\verdigris\networking.hpp:198:  // chart; cleared wardens persist for the session (dead stays dead).
+native/include\verdigris\networking.hpp:199:  std::set<std::string> cleared_nodes_;
+native/include\verdigris\networking.hpp:200:  std::string current_node_id_;
+native/include\verdigris\networking.hpp:201:  int current_node_tier_ = 0;
+native/include\verdigris\networking.hpp:202:  std::string current_node_name_;
+native/include\verdigris\networking.hpp:205:  bool node_warden_dead_on_entry_ = false;
+native/include\verdigris\networking.hpp:237:  // Protocol House bank (JS has no player:extract; core Simulation::house is
+native/include\verdigris\networking.hpp:238:  // const from this layer). Extraction and stairs-up both drain here.
+native/include\verdigris\networking.hpp:245:  std::function<void(const Envelope&)> broadcast_;
+native/include\verdigris\networking.hpp:268:  void broadcast(const Envelope& envelope);
+native/tests\networking_tests.cpp:44:  session.handle(Envelope{"world:zone:enter", JsonValue::Object{{"nodeId", "tin:1:0"}}}, [&](const Envelope& event) {
+native/tests\networking_tests.cpp:107:  // A movement broadcast carries the player payload plus the step metadata.
+native/tests\networking_tests.cpp:111:  check(movement && movement->event == "player:movement", "applied sample broadcasts player:movement");
+native/tests\networking_tests.cpp:124:void test_instance_entry_and_stairs() {
+native/tests\networking_tests.cpp:143:  check(in_zone["state"]["sceneMetadata"]["stairsUp"].is_object()
+native/tests\networking_tests.cpp:144:        && in_zone["state"]["sceneMetadata"]["stairsDown"].is_object(), "both stairs exist");
+native/tests\networking_tests.cpp:165:  // Teleporting onto the entry stairs returns to the pre-entry town tile.
+native/tests\networking_tests.cpp:166:  const double stairs_x = in_zone["state"]["sceneMetadata"]["stairsUp"]["x"].number().value_or(0);
+native/tests\networking_tests.cpp:167:  const double stairs_y = in_zone["state"]["sceneMetadata"]["stairsUp"]["y"].number().value_or(0);
+native/tests\networking_tests.cpp:168:  session.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", stairs_x}, {"y", stairs_y}}}, capture);
+native/tests\networking_tests.cpp:171:        "entry stairs return to town");
+native/tests\networking_tests.cpp:333:void test_gate_a_extract_and_stairs() {
+native/tests\networking_tests.cpp:334:  ProtocolSession extract_session("guest-0063-extract", "socket-ex", 23, false);
+native/tests\networking_tests.cpp:335:  extract_session.handle(Envelope{"dev:give", JsonValue::Object{{"itemId", "garnet-amulet"}, {"qty", 1}}},
+native/tests\networking_tests.cpp:337:  extract_session.handle(Envelope{"instance:enterSolo",
+native/tests\networking_tests.cpp:340:  check(!inventory_uuid_for(request_state(extract_session, "ex-0"), "garnet-amulet").empty(),
+native/tests\networking_tests.cpp:341:        "amulet is carried before extract");
+native/tests\networking_tests.cpp:344:  extract_session.handle(Envelope{"player:extract", JsonValue::Object{}}, [&](const Envelope& event) {
+native/tests\networking_tests.cpp:345:    if (event.event == "player:extract") summary = event;
+native/tests\networking_tests.cpp:347:  check(summary.has_value(), "player:extract emits a bank summary");
+native/tests\networking_tests.cpp:348:  check(summary->data["items"].number().value_or(0) >= 1, "extract banks at least the amulet");
+native/tests\networking_tests.cpp:349:  const auto after = request_state(extract_session, "ex-1");
+native/tests\networking_tests.cpp:351:        "extract returns to town");
+native/tests\networking_tests.cpp:352:  check(inventory_uuid_for(after, "garnet-amulet").empty(), "extract clears the amulet from the backpack");
+native/tests\networking_tests.cpp:359:  check(stored, "extract places the amulet in the House store");
+native/tests\networking_tests.cpp:361:  ProtocolSession stairs("guest-0063-stairs", "socket-st", 29, false);
+native/tests\networking_tests.cpp:362:  stairs.handle(Envelope{"dev:give", JsonValue::Object{{"itemId", "bronze-sword"}, {"qty", 1}}},
+native/tests\networking_tests.cpp:364:  stairs.handle(Envelope{"instance:enterSolo", JsonValue::Object{{"template", "dungeon"}, {"layout", "warren"}}},
+native/tests\networking_tests.cpp:366:  const auto in_zone = request_state(stairs, "st-1");
+native/tests\networking_tests.cpp:367:  const double stairs_x = in_zone["state"]["sceneMetadata"]["stairsUp"]["x"].number().value_or(0);
+native/tests\networking_tests.cpp:368:  const double stairs_y = in_zone["state"]["sceneMetadata"]["stairsUp"]["y"].number().value_or(0);
+native/tests\networking_tests.cpp:369:  std::optional<Envelope> stairs_summary;
+native/tests\networking_tests.cpp:370:  stairs.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", stairs_x}, {"y", stairs_y}}},
+native/tests\networking_tests.cpp:372:                  if (event.event == "player:extract") stairs_summary = event;
+native/tests\networking_tests.cpp:374:  check(stairs_summary.has_value(), "stairs-up emits the same player:extract bank summary");
+native/tests\networking_tests.cpp:375:  const auto back = request_state(stairs, "st-2");
+native/tests\networking_tests.cpp:377:        "stairs-up still returns to town");
+native/tests\networking_tests.cpp:378:  check(inventory_uuid_for(back, "bronze-sword").empty(), "stairs-up banks carried items");
+native/tests\networking_tests.cpp:385:  check(sword_stored, "stairs-up and player:extract converge on the House store");
+native/tests\networking_tests.cpp:439:    test_instance_entry_and_stairs();
+native/tests\networking_tests.cpp:442:    test_gate_a_extract_and_stairs();
+native/include\verdigris\core.hpp:52://   extraction interaction   8 walk ticks                       88 u / .40 s
+native/include\verdigris\core.hpp:60:// extraction, and grounded scenery to share the same relative scale.
+native/include\verdigris\core.hpp:175:  std::vector<RouteNode> routes;
+native/include\verdigris\core.hpp:176:  std::vector<std::string> unlocked_routes;
+native/include\verdigris\core.hpp:177:  std::vector<std::string> cleared_routes;
+native/include\verdigris\core.hpp:187:  bool campaign_complete = false;
+native/include\verdigris\core.hpp:189:  bool route_unlocked(const std::string& route_id) const;
+native/include\verdigris\core.hpp:190:  bool route_cleared(const std::string& route_id) const;
+native/include\verdigris\core.hpp:204:  std::string route_id;
+native/include\verdigris\core.hpp:290:  static Command enter(const std::string& route_id);
+native/include\verdigris\core.hpp:291:  static Command extract();
+native/include\verdigris\core.hpp:295:// every warden on the floor, then carry the value back to the extraction
+native/include\verdigris\core.hpp:298:// The phase is descriptive telemetry, never a command gate: extraction rules
+native/include\verdigris\core.hpp:305:  std::string route_id;
+native/include\verdigris\core.hpp:306:  Vec2 extraction_point{0, 0};
+native/include\verdigris\core.hpp:383:  void resolve_enter(const std::string& route_id);
+native/include\verdigris\core.hpp:384:  void resolve_extract();
+native/include\verdigris\core.hpp:393:  void clear_route_and_unlock_children();
+native/include\verdigris\core.hpp:397:                     const std::string& route_id = {}, bool founding = false);
+native/include\verdigris\core.hpp:399:  bool at_extraction() const;
+native/include\verdigris\core.hpp:407:  // Unmaterialized warden roster of the active instance (see pending_wave()).
+native/include\verdigris\core.hpp:831:  Vec2 stairs_up{0, 0};
+native/include\verdigris\core.hpp:832:  Vec2 stairs_down{0, 0};
+native/include\verdigris\core.hpp:876:  // world-web node instances: the boss carries the node warden name; a
+native/include\verdigris\core.hpp:877:  // cleared node spawns no monsters at all (dead stays dead).
+native/include\verdigris\core.hpp:901:  // (landing on the entry stairs returns to town, like the JS game loop).
+native/include\verdigris\core.hpp:910:  // Same resolution as walking the depth-1 entry stairs: retire the instance
+native/include\verdigris\core.hpp:911:  // and restore the stashed town scene. player:extract and stairs-up both
+native/include\verdigris\core.hpp:989:  bool block_stairs_down_ = false;
+native/include\verdigris\core.hpp:990:  bool stairs_up_returns_to_town_ = false;
+native/include\verdigris\core.hpp:993:  void set_block_stairs_down(bool value) { block_stairs_down_ = value; }
+native/include\verdigris\core.hpp:994:  void set_stairs_up_returns_to_town(bool value) { stairs_up_returns_to_town_ = value; }
+native/src\core.cpp:128:         detail == other.detail && killer_id == other.killer_id && route_id == other.route_id &&
+native/src\core.cpp:132:bool House::route_unlocked(const std::string& route_id) const {
+native/src\core.cpp:133:  return std::find(unlocked_routes.begin(), unlocked_routes.end(), route_id) != unlocked_routes.end();
+native/src\core.cpp:136:bool House::route_cleared(const std::string& route_id) const {
+native/src\core.cpp:137:  return std::find(cleared_routes.begin(), cleared_routes.end(), route_id) != cleared_routes.end();
+native/src\core.cpp:184:Command Command::enter(const std::string& route_id) {
+native/src\core.cpp:185:  return {CommandType::EnterInstance, 0, 0, ActionType::Wait, route_id};
+native/src\core.cpp:188:Command Command::extract() {
+native/src\core.cpp:195:  house_.routes = {
+native/src\core.cpp:196:      {"route:tin:1:0", "", {"route:tin:2:0"}, false},
+native/src\core.cpp:197:      {"route:tin:2:0", "route:tin:1:0", {}, false},
+native/src\core.cpp:198:      {"branch:ash", "route:tin:1:0", {}, true},
+native/src\core.cpp:200:  house_.unlocked_routes.push_back("route:tin:1:0");
+native/src\core.cpp:273:                               const std::string& route_id, bool founding) {
+native/src\core.cpp:283:  entry.route_id = route_id;
+native/src\core.cpp:295:       kind == "relic_extracted" ? subject : std::string{}, {}, kind,
+native/src\core.cpp:308:  if (command.type == CommandType::ExtractToHouse) resolve_extract();
+native/src\core.cpp:461:  if (target == "branch:ash" && house_.route_cleared("route:tin:1:0") &&
+native/src\core.cpp:466:    record_legend("branch_unlocked", target, "specialization=ash");
+native/src\core.cpp:540:void Simulation::resolve_enter(const std::string& route_id) {
+native/src\core.cpp:541:  if (!house_.route_unlocked(route_id) || !scion_.alive) return;
+native/src\core.cpp:545:  instance_.route_id = route_id;
+native/src\core.cpp:559:  emit(EventType::InstanceEntered, scion_.actor_id, {}, {}, route_id);
+native/src\core.cpp:565:  // extraction, death, or a route transition abandons all uncollected floor
+native/src\core.cpp:566:  // items/trophies; carried value is handled separately by extraction or the
+native/src\core.cpp:567:  // death recovery path. Preserve route_id until the caller has recorded any
+native/src\core.cpp:599:  // Unmaterialized pack wardens belong to the instance that summoned them.
+native/src\core.cpp:600:  // Leaving by extraction, death, or a route transition discards the roster
+native/src\core.cpp:608:  const bool deep = instance_.route_id == "route:tin:2:0";
+native/src\core.cpp:617:  // warden holds the D-114 spawn point; its two pack mates wait in the
+native/src\core.cpp:619:  // warden falls, so the player faces a converged normal/elite pack. Every
+native/src\core.cpp:623:  // normal flanks one melee range off it. The deep route keeps its single
+native/src\core.cpp:758:    relic.history.push_back("resurfaced on route " + instance_.route_id);
+native/src\core.cpp:761:    emit(EventType::RelicResurfaced, {}, relic.id, {}, instance_.route_id);
+native/src\core.cpp:762:    record_legend("relic_resurfaced", relic.id, "route=" + instance_.route_id, {},
+native/src\core.cpp:763:                  instance_.route_id);
+native/src\core.cpp:768:  // House storage. This keeps extraction risk meaningful while preserving
+native/src\core.cpp:776:    emit(EventType::TrophyResurfaced, {}, {}, trophy.id, instance_.route_id);
+native/src\core.cpp:777:    record_legend("trophy_resurfaced", trophy.id, "route=" + instance_.route_id, {},
+native/src\core.cpp:778:                  instance_.route_id);
+native/src\core.cpp:787:void Simulation::clear_route_and_unlock_children() {
+native/src\core.cpp:789:      std::find(house_.cleared_routes.begin(), house_.cleared_routes.end(), instance_.route_id) ==
+native/src\core.cpp:790:      house_.cleared_routes.end();
+native/src\core.cpp:792:    house_.cleared_routes.push_back(instance_.route_id);
+native/src\core.cpp:793:    record_legend("route_cleared", instance_.route_id, "first_clear");
+native/src\core.cpp:795:  for (const auto& route : house_.routes) {
+native/src\core.cpp:796:    if (route.parent_id == instance_.route_id && !house_.route_unlocked(route.id)) {
+native/src\core.cpp:797:      house_.unlocked_routes.push_back(route.id);
+native/src\core.cpp:798:      emit(EventType::RouteUnlocked, {}, {}, {}, route.id);
+native/src\core.cpp:799:      record_legend("route_unlocked", route.id, "parent=" + instance_.route_id);
+native/src\core.cpp:802:  if (!house_.campaign_complete) {
+native/src\core.cpp:803:    house_.campaign_complete = true;
+native/src\core.cpp:804:    record_legend("campaign_complete", house_.id, "route=" + instance_.route_id, {},
+native/src\core.cpp:805:                  instance_.route_id, true);
+native/src\core.cpp:830:                    "killer=" + killer_id + ";route=" + instance_.route_id, killer_id,
+native/src\core.cpp:831:                    instance_.route_id);
+native/src\core.cpp:835:      // A fallen warden alerts the rest of its pack: while roster entries
+native/src\core.cpp:838:      // waits for both the living wardens and any unmaterialized roster
+native/src\core.cpp:849:      if (!pack_remains) clear_route_and_unlock_children();
+native/src\core.cpp:850:      // The expedition objective flips to extraction only once the floor is
+native/src\core.cpp:851:      // empty of living wardens and no roster entry is still owed; a later
+native/src\core.cpp:859:             next_phase == ExpeditionPhase::SlayWardens ? "slay-wardens"
+native/src\core.cpp:860:                                                        : "extract-carried-value",
+native/src\core.cpp:869:  // historical registration wording; pack items receive an equivalent route
+native/src\core.cpp:879:                                : "lost at " + instance_.route_id + ", awaiting recovery");
+native/src\core.cpp:882:                  instance_.route_id);
+native/src\core.cpp:887:                  instance_.route_id);
+native/src\core.cpp:896:                    ";route=" + instance_.route_id,
+native/src\core.cpp:897:                killer_id, instance_.route_id);
+native/src\core.cpp:901:void Simulation::resolve_extract() {
+native/src\core.cpp:903:  if (!player || !player->alive || !instance_.active || !at_extraction()) return;
+native/src\core.cpp:908:      record_legend("relic_extracted", item.id, "name=" + item.name, player->id,
+native/src\core.cpp:909:                    instance_.route_id);
+native/src\core.cpp:919:  emit(EventType::HouseStoreChanged, {}, {}, {}, "extraction");
+native/src\core.cpp:922:bool Simulation::at_extraction() const {
+native/src\core.cpp:924:  return player && manhattan_distance(player->position, instance_.extraction_point) <= kExtractionRange;
+native/src\core.cpp:1075:  put_text(output, key + ".routeId", legend.route_id);
+native/src\core.cpp:1219:  legend.route_id = required_text(fields, key + ".routeId");
+native/src\core.cpp:1236:  put_number(output, "house.routes.count", simulation.house_.routes.size());
+native/src\core.cpp:1237:  for (std::size_t index = 0; index < simulation.house_.routes.size(); ++index) {
+native/src\core.cpp:1238:    const auto& route = simulation.house_.routes[index];
+native/src\core.cpp:1239:    const std::string key = "house.routes." + std::to_string(index);
+native/src\core.cpp:1240:    put_text(output, key + ".id", route.id);
+native/src\core.cpp:1241:    put_text(output, key + ".parentId", route.parent_id);
+native/src\core.cpp:1242:    put_bool(output, key + ".optional", route.optional);
+native/src\core.cpp:1243:    put_texts(output, key + ".children", route.children);
+native/src\core.cpp:1245:  put_texts(output, "house.unlockedRoutes", simulation.house_.unlocked_routes);
+native/src\core.cpp:1246:  put_texts(output, "house.clearedRoutes", simulation.house_.cleared_routes);
+native/src\core.cpp:1257:  put_bool(output, "house.campaignComplete", simulation.house_.campaign_complete);
+native/src\core.cpp:1315:  const std::size_t route_count = required_count(fields, "house.routes");
+native/src\core.cpp:1316:  simulation.house_.routes.reserve(route_count);
+native/src\core.cpp:1317:  for (std::size_t index = 0; index < route_count; ++index) {
+native/src\core.cpp:1318:    const std::string key = "house.routes." + std::to_string(index);
+native/src\core.cpp:1319:    RouteNode route;
+native/src\core.cpp:1320:    route.id = required_text(fields, key + ".id");
+native/src\core.cpp:1321:    route.parent_id = required_text(fields, key + ".parentId");
+native/src\core.cpp:1322:    route.optional = required_bool(fields, key + ".optional");
+native/src\core.cpp:1323:    route.children = read_texts(fields, key + ".children");
+native/src\core.cpp:1324:    simulation.house_.routes.push_back(std::move(route));
+native/src\core.cpp:1326:  simulation.house_.unlocked_routes = read_texts(fields, "house.unlockedRoutes");
+native/src\core.cpp:1327:  simulation.house_.cleared_routes = read_texts(fields, "house.clearedRoutes");
+native/src\core.cpp:1340:  simulation.house_.campaign_complete = required_bool(fields, "house.campaignComplete");
+native/src\core.cpp:1574:  // party.js checkStairTransitions: stairsDown descends a floor, stairsUp
+native/src\core.cpp:1576:  if (tile.x == metadata_.stairs_down.x && tile.y == metadata_.stairs_down.y) {
+native/src\core.cpp:1577:    if (block_stairs_down_) return;  // "No road holds past a living Warden."
+native/src\core.cpp:1581:  if (tile.x == metadata_.stairs_up.x && tile.y == metadata_.stairs_up.y) {
+native/src\core.cpp:1582:    if (metadata_.depth <= 1 || stairs_up_returns_to_town_) {
+native/src\core.cpp:1583:      // world-web: a node's entry waymark walks back to the Crossroads from
+native/src\core.cpp:1584:      // any stage of the road.
+native/src\core.cpp:1697:  metadata_.stairs_up = kStairsUp;
+native/src\core.cpp:1698:  metadata_.stairs_down = kStairsDown;
+native/src\core.cpp:1702:  // walkable tiles well away from the entry clearing and stairs are used so
+native/src\core.cpp:2760:  // inventory-footprints.js resolveItemSize. Two JS branches are omitted as
+native/src\core.cpp:2762:  // resource id rule (currency is caught by the stackable branch first) and
+native/src\core.cpp:3121:  // loot.js resolveLootLocation: never on stairs/portals or blocked tiles;
+native/src\core.cpp:3126:    if (tx == metadata_.stairs_up.x && ty == metadata_.stairs_up.y) return false;
+native/src\core.cpp:3127:    if (tx == metadata_.stairs_down.x && ty == metadata_.stairs_down.y) return false;
+native/tests\core_tests.cpp:26:  // changing arena scale cannot leave extraction tests stranded out of reach.
+native/tests\core_tests.cpp:28:  // warden, hold position through the one-telegraph window in which the
+native/tests\core_tests.cpp:29:  // whole reserve pack converges, and only stop once no warden remains
+native/tests\core_tests.cpp:49:      // Fresh duel, fresh Scion: each warden is fought from full life so a
+native/tests\core_tests.cpp:64:  check(sim.pending_wave().empty(), "no warden of the pack remains unmaterialized");
+native/tests\core_tests.cpp:76:void extract_from_start(Simulation& sim) {
+native/tests\core_tests.cpp:79:    if (!player || (player->position.x == sim.instance().extraction_point.x &&
+native/tests\core_tests.cpp:80:                    player->position.y == sim.instance().extraction_point.y))
+native/tests\core_tests.cpp:84:  sim.dispatch(Command::extract());
+native/tests\core_tests.cpp:101:                     legend.route_id + ":" + (legend.founding ? "founding" : "ordinary"));
+native/tests\core_tests.cpp:152:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:220:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:250:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:274:  first.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:275:  second.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:307:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:325:      Command::enter("route:tin:1:0"), Command::move(-1, 1), Command::aim(-1, 0),
+native/tests\core_tests.cpp:343:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:560:    sim->dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:601:void force_relic_resurface(Simulation& sim, const std::string& route,
+native/tests\core_tests.cpp:613:    sim.dispatch(Command::enter(route));
+native/tests\core_tests.cpp:635:void force_trophy_resurface(Simulation& sim, const std::string& route,
+native/tests\core_tests.cpp:643:    sim.dispatch(Command::enter(route));
+native/tests\core_tests.cpp:663:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:671:  force_relic_resurface(sim, "route:tin:1:0");
+native/tests\core_tests.cpp:681:                "resurfaced on route route:tin:1:0",
+native/tests\core_tests.cpp:682:        "resurfacing appends a route history line");
+native/tests\core_tests.cpp:686:        event.text == "route:tin:1:0") {
+native/tests\core_tests.cpp:691:  check(saw_resurfaced_event, "resurfacing emits the named event with item and route");
+native/tests\core_tests.cpp:698:  extract_from_start(sim);
+native/tests\core_tests.cpp:700:        "resurfaced relic extracts into House storage");
+native/tests\core_tests.cpp:701:  check(find_legend(sim, "relic_extracted") != nullptr,
+native/tests\core_tests.cpp:702:        "extraction records the existing relic legend");
+native/tests\core_tests.cpp:704:        "pickup history is preserved through extraction");
+native/tests\core_tests.cpp:709:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:715:  force_relic_resurface(sim, "route:tin:1:0");
+native/tests\core_tests.cpp:725:            "lost at route:tin:1:0, awaiting recovery",
+native/tests\core_tests.cpp:726:        "pack relic death records its route recovery history line");
+native/tests\core_tests.cpp:732:  first.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:733:  second.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:744:  force_relic_resurface(first, "route:tin:1:0");
+native/tests\core_tests.cpp:745:  force_relic_resurface(second, "route:tin:1:0");
+native/tests\core_tests.cpp:757:  original.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:780:  mid_instance.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:796:  restored.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:799:  // Start from an extracted (non-instance) boundary so both simulations have
+native/tests\core_tests.cpp:804:  baseline.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:807:  extract_from_start(baseline);
+native/tests\core_tests.cpp:809:  baseline.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:810:  replay.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:823:  source.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:849:  source.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:860:  force_relic_resurface(source, "route:tin:1:0");
+native/tests\core_tests.cpp:861:  force_trophy_resurface(source, "route:tin:1:0", trophy_id);
+native/tests\core_tests.cpp:872:  restored.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:897:  first.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:898:  second.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:912:  extract_from_start(first);
+native/tests\core_tests.cpp:913:  extract_from_start(second);
+native/tests\core_tests.cpp:919:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:980:  Simulation extracted(0x2501ULL);
+native/tests\core_tests.cpp:981:  extracted.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:982:  defeat_enemy(extracted);
+native/tests\core_tests.cpp:983:  const std::string extracted_item = extracted.ground_items().front().id;
+native/tests\core_tests.cpp:984:  const std::string extracted_trophy = extracted.ground_trophies().front().id;
+native/tests\core_tests.cpp:985:  extract_from_start(extracted);
+native/tests\core_tests.cpp:986:  check(!extracted.instance().active && extracted.ground_items().empty() &&
+native/tests\core_tests.cpp:987:            extracted.ground_trophies().empty(),
+native/tests\core_tests.cpp:988:        "extraction retires all uncollected floor value");
+native/tests\core_tests.cpp:989:  const int pickup_events_before = count_events(extracted, EventType::ItemPickedUp) +
+native/tests\core_tests.cpp:990:                                   count_events(extracted, EventType::TrophyPickedUp);
+native/tests\core_tests.cpp:991:  extracted.dispatch(Command::pick_up(extracted_item));
+native/tests\core_tests.cpp:992:  extracted.dispatch(Command::pick_up(extracted_trophy));
+native/tests\core_tests.cpp:993:  check(extracted.scion().carried_items.empty() && extracted.scion().carried_trophies.empty() &&
+native/tests\core_tests.cpp:994:            count_events(extracted, EventType::ItemPickedUp) +
+native/tests\core_tests.cpp:995:                    count_events(extracted, EventType::TrophyPickedUp) ==
+native/tests\core_tests.cpp:997:        "post-extraction pickup is rejected at the inactive-instance boundary");
+native/tests\core_tests.cpp:999:  Simulation cross_route(0x2502ULL);
+native/tests\core_tests.cpp:1000:  cross_route.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1001:  defeat_enemy(cross_route);
+native/tests\core_tests.cpp:1002:  const std::string stale_item = cross_route.ground_items().front().id;
+native/tests\core_tests.cpp:1003:  cross_route.dispatch(Command::enter("route:tin:2:0"));
+native/tests\core_tests.cpp:1004:  cross_route.dispatch(Command::pick_up(stale_item));
+native/tests\core_tests.cpp:1005:  check(cross_route.instance().route_id == "route:tin:2:0" &&
+native/tests\core_tests.cpp:1006:            cross_route.scion().carried_items.empty(),
+native/tests\core_tests.cpp:1007:        "cross-route stale pickup is rejected after the previous instance retires");
+native/tests\core_tests.cpp:1010:  reentry.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1014:  reentry.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1022:        "leftover floor value does not survive same-route re-entry");
+native/tests\core_tests.cpp:1031:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1052:    sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1057:          "the entry warden holds the line while two pack mates wait in reserve");
+native/tests\core_tests.cpp:1066:  // first of the kTelegraphTicks ticks), proves no reserve warden is alive
+native/tests\core_tests.cpp:1069:    check(!sim.pending_wave().empty(), "materialization setup has a pending warden");
+native/tests\core_tests.cpp:1073:          "immediately before the reinforcement deadline no reserve warden is alive");
+native/tests\core_tests.cpp:1081:    check(player && target && target->alive, "strike setup has a living warden");
+native/tests\core_tests.cpp:1082:    // Bring the warden into the Scion's reach instead of moving the Scion:
+native/tests\core_tests.cpp:1084:    // shared extraction helper still walks home exactly.
+native/tests\core_tests.cpp:1090:    check(!sim.actor(target_id)->alive, "the struck warden falls");
+native/tests\core_tests.cpp:1098:  check(!first.actor(entry_id)->alive, "first pack kill fells the entry warden");
+native/tests\core_tests.cpp:1101:  check(!first.house().route_cleared("route:tin:1:0") &&
+native/tests\core_tests.cpp:1102:            !first.house().route_unlocked("route:tin:2:0") &&
+native/tests\core_tests.cpp:1103:            !first.house().campaign_complete,
+native/tests\core_tests.cpp:1104:        "first pack kill does not clear the route or campaign");
+native/tests\core_tests.cpp:1107:        "an owed warden keeps the slay objective even with an empty floor");
+native/tests\core_tests.cpp:1114:        "both reserve wardens are alive concurrently at the shared deadline");
+native/tests\core_tests.cpp:1127:  check(!first.house().route_cleared("route:tin:1:0") &&
+native/tests\core_tests.cpp:1128:            !first.house().route_unlocked("route:tin:2:0") &&
+native/tests\core_tests.cpp:1129:            !first.house().campaign_complete,
+native/tests\core_tests.cpp:1130:        "a living flanker keeps the route uncleared");
+native/tests\core_tests.cpp:1137:        "the last kill leaves neither a living nor an owed warden");
+native/tests\core_tests.cpp:1138:  check(first.house().route_cleared("route:tin:1:0") &&
+native/tests\core_tests.cpp:1139:            first.house().route_unlocked("route:tin:2:0") && first.house().campaign_complete,
+native/tests\core_tests.cpp:1140:        "last pack kill clears the route and completes campaign progression");
+native/tests\core_tests.cpp:1146:        "pack rewards remain per-kill after delayed route clear");
+native/tests\core_tests.cpp:1158:            first.house().cleared_routes == second.house().cleared_routes &&
+native/tests\core_tests.cpp:1168:    sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1171:          "entering a route opens the authoritative slay objective");
+native/tests\core_tests.cpp:1177:    check(player && entry, "expedition setup has a player and a warden");
+native/tests\core_tests.cpp:1189:          "the first kill leaves no living warden but an owed pack");
+native/tests\core_tests.cpp:1192:          "an owed warden keeps the slay objective with no transition");
+native/tests\core_tests.cpp:1197:          "immediately before the reinforcement deadline no reserve warden is alive");
+native/tests\core_tests.cpp:1203:          "both reserve wardens materialize together at the shared deadline");
+native/tests\core_tests.cpp:1213:    // Strike the elite down through the shared pipeline. The warden is
+native/tests\core_tests.cpp:1237:          "the last kill flips the objective to extraction");
+native/tests\core_tests.cpp:1239:    check(transition && transition->text == "extract-carried-value" &&
+native/tests\core_tests.cpp:1244:    extract_from_start(sim);
+native/tests\core_tests.cpp:1245:    check(!sim.instance().active, "extraction closes the expedition");
+native/tests\core_tests.cpp:1258:  replay_a.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1264:  // The phase is telemetry, not a gate: extraction rules are unchanged.
+native/tests\core_tests.cpp:1266:  ungated.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1269:  ungated.dispatch(Command::extract());
+native/tests\core_tests.cpp:1271:        "extraction remains available without a phase gate");
+native/tests\core_tests.cpp:1278:    sim->dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1280:    check(entry && entry->kind == ActorKind::Monster, "the entry warden exists");
+native/tests\core_tests.cpp:1282:          "the entry warden holds the D-114 spawn point");
+native/tests\core_tests.cpp:1284:          "the entry warden keeps the established level-1 sentry identity");
+native/tests\core_tests.cpp:1286:          "the first expedition fields a three-warden pack");
+native/tests\core_tests.cpp:1298:          "pack wardens use the shared authoritative stat table with no new balance");
+native/tests\core_tests.cpp:1303:        "same-seed expeditions produce identical warden identities");
+native/tests\core_tests.cpp:1306:  other.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1320:    sim->dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1324:          "every fallen warden drops its own reward pair");
+native/tests\core_tests.cpp:1326:    extract_from_start(*sim);
+native/tests\core_tests.cpp:1330:  check(first.house().cleared_routes == second.house().cleared_routes &&
+native/tests\core_tests.cpp:1338:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1347:        "the entry warden falls owing its pack with the reinforcement armed");
+native/tests\core_tests.cpp:1366:        "no reserve warden materializes after the instance has retired");
+native/tests\core_tests.cpp:1374:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1398:void test_extraction() {
+native/tests\core_tests.cpp:1400:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1403:  extract_from_start(sim);
+native/tests\core_tests.cpp:1404:  check(!sim.instance().active, "extraction closes the instance");
+native/tests\core_tests.cpp:1405:  check(sim.house().stored_trophies.size() == 1, "extracted trophy enters durable House storage");
+native/tests\core_tests.cpp:1406:  check(sim.house().stored_items.size() == 1, "extracted item enters durable House storage");
+native/tests\core_tests.cpp:1407:  check(sim.scion().carried_trophies.empty(), "extracted trophy leaves the Scion");
+native/tests\core_tests.cpp:1412:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1416:  const std::string route = "route:tin:2:0";
+native/tests\core_tests.cpp:1419:  check(sim.house().stored_trophies.empty(), "unextracted trophy is not durable House storage");
+native/tests\core_tests.cpp:1421:        "unextracted trophy enters the recoverable pool");
+native/tests\core_tests.cpp:1424:  check(sim.house().route_unlocked(route), "House route progress survives Scion death");
+native/tests\core_tests.cpp:1433:  check(death->killer_id == "hazard:death" && death->route_id == "route:tin:1:0",
+native/tests\core_tests.cpp:1434:        "death legend records a stable killer and route");
+native/tests\core_tests.cpp:1443:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1453:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1465:        "death does not bypass extraction into durable House storage");
+native/tests\core_tests.cpp:1474:            "lost at route:tin:1:0, awaiting recovery",
+native/tests\core_tests.cpp:1475:        "pack item receives an equivalent route recovery history");
+native/tests\core_tests.cpp:1494:    sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1498:    sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1511:  force_relic_resurface(first, "route:tin:1:0", first_item);
+native/tests\core_tests.cpp:1512:  force_trophy_resurface(first, "route:tin:1:0", first_trophy);
+native/tests\core_tests.cpp:1524:    force_relic_resurface(first, "route:tin:1:0", second_item);
+native/tests\core_tests.cpp:1528:            recovered_pack->history.back() == "resurfaced on route route:tin:1:0",
+native/tests\core_tests.cpp:1537:    force_trophy_resurface(first, "route:tin:1:0", first.house().lost_trophies.front().id);
+native/tests\core_tests.cpp:1543:void test_item_identity_and_branch() {
+native/tests\core_tests.cpp:1545:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1565:  sim.dispatch(Command::interact("branch:ash"));
+native/tests\core_tests.cpp:1567:        "optional branch grants a House access unlock, not a rigid character class");
+native/tests\core_tests.cpp:1570:void test_campaign_and_seasonal_extension() {
+native/tests\core_tests.cpp:1574:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1579:  check(sim.house().route_cleared("route:tin:1:0"), "campaign graph ownership is House-level");
+native/tests\core_tests.cpp:1580:  sim.dispatch(Command::interact("branch:ash"));
+native/tests\core_tests.cpp:1581:  check(sim.house().specializations.size() == 1, "optional branch grants a House specialization");
+native/tests\core_tests.cpp:1582:  check(sim.house().route_unlocked("route:tin:2:0"), "clearing a route unlocks its child");
+native/tests\core_tests.cpp:1587:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1589:  sim.dispatch(Command::enter("route:tin:2:0"));
+native/tests\core_tests.cpp:1600:void test_legends_cover_unlocks_and_campaign_milestone() {
+native/tests\core_tests.cpp:1602:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1604:  const LegendEntry* route = find_legend(sim, "route_cleared");
+native/tests\core_tests.cpp:1605:  const LegendEntry* unlock = find_legend(sim, "route_unlocked");
+native/tests\core_tests.cpp:1606:  const LegendEntry* campaign = find_legend(sim, "campaign_complete");
+native/tests\core_tests.cpp:1607:  check(route && route->subject == "route:tin:1:0", "first route clear records its stable route id");
+native/tests\core_tests.cpp:1608:  check(unlock && unlock->subject == "route:tin:2:0", "route unlock records its stable route id");
+native/tests\core_tests.cpp:1609:  check(campaign && campaign->founding && campaign->subject == sim.house().id,
+native/tests\core_tests.cpp:1610:        "campaign completion is a founding-equivalent legend");
+native/tests\core_tests.cpp:1611:  sim.dispatch(Command::interact("branch:ash"));
+native/tests\core_tests.cpp:1612:  const LegendEntry* branch = find_legend(sim, "branch_unlocked");
+native/tests\core_tests.cpp:1613:  check(branch && branch->subject == "branch:ash", "branch unlock records its stable branch id");
+native/tests\core_tests.cpp:1619:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1621:  sim.dispatch(Command::enter("route:tin:2:0"));
+native/tests\core_tests.cpp:1624:  // now carries elite kills from both routes; this proof targets the deep
+native/tests\core_tests.cpp:1625:  // route's recorded kill.
+native/tests\core_tests.cpp:1628:    if (candidate.kind == "elite_kill" && candidate.route_id == "route:tin:2:0") {
+native/tests\core_tests.cpp:1633:  check(elite != nullptr, "elite kill records the route");
+native/tests\core_tests.cpp:1648:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1650:  const LegendEntry* campaign = find_legend(sim, "campaign_complete");
+native/tests\core_tests.cpp:1651:  check(campaign != nullptr, "cap test has a founding milestone to preserve");
+native/tests\core_tests.cpp:1652:  const std::uint64_t campaign_ordinal = campaign->ordinal;
+native/tests\core_tests.cpp:1659:  check(sim.legends().front().ordinal == campaign_ordinal,
+native/tests\core_tests.cpp:1671:      Command::enter("route:tin:1:0"), Command::move(1, 0), Command::move(1, 0),
+native/tests\core_tests.cpp:1687:    if (legend.kind == "route_cleared") {
+native/tests\core_tests.cpp:1688:      check(legend.subject.rfind("route:", 0) == 0, "route legend uses a stable route id");
+native/tests\core_tests.cpp:1706:        "D-114 extraction interaction derives from walking ticks");
+native/tests\core_tests.cpp:1751:  check(world.grid().walkable_at(world.metadata().stairs_up.x, world.metadata().stairs_up.y)
+native/tests\core_tests.cpp:1752:        && world.grid().walkable_at(world.metadata().stairs_down.x, world.metadata().stairs_down.y),
+native/tests\core_tests.cpp:1758:  // Entry position round-trips through the stairs.
+native/tests\core_tests.cpp:1759:  world.teleport(world.metadata().stairs_up.x, world.metadata().stairs_up.y, 2000);
+native/tests\core_tests.cpp:1760:  check(!world.in_instance(), "N2 entry stairs leave the instance");
+native/tests\core_tests.cpp:2018:      check(!(tx == world.metadata().stairs_up.x && ty == world.metadata().stairs_up.y) &&
+native/tests\core_tests.cpp:2019:                !(tx == world.metadata().stairs_down.x && ty == world.metadata().stairs_down.y),
+native/tests\core_tests.cpp:2020:            "N4 loot never lands on stairs");
+native/tests\core_tests.cpp:2044:    const Vec2 down = world.metadata().stairs_down;
+native/tests\core_tests.cpp:2046:    check(world.in_instance() && world.metadata().depth == depth, "N4 stairs descend one floor");
+native/tests\core_tests.cpp:2056:  const Vec2 up = world.metadata().stairs_up;
+native/tests\core_tests.cpp:2058:  check(world.in_instance() && world.metadata().depth == 4, "N4 stairs climb one floor");
+native/tests\core_tests.cpp:2060:    const Vec2 again = world.metadata().stairs_up;
+native/tests\core_tests.cpp:2063:  const Vec2 surface = world.metadata().stairs_up;
+native/tests\core_tests.cpp:2104:  test_extraction();
+native/tests\core_tests.cpp:2108:  test_item_identity_and_branch();
+native/tests\core_tests.cpp:2109:  test_campaign_and_seasonal_extension();
+native/tests\core_tests.cpp:2111:  test_legends_cover_unlocks_and_campaign_milestone();

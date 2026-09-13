@@ -1,0 +1,74 @@
+{
+  "status": "root_native_review_approved_provisional_production_integration_pending_game_check",
+  "frame_count": 6,
+  "order": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "phases": [
+    "right-foot contact with left trailing",
+    "left passing over right support",
+    "left reach/opposite-leg opening",
+    "left contact with right trailing",
+    "right passing over left support",
+    "right reach back toward opening contact"
+  ],
+  "body_view": "Actual back faces upper-right; face and mask remain hidden.",
+  "equipment": "Baked anatomical-right/screen-right axe; ordinary monster sprite, no hero overlay.",
+  "canvas": [
+    80,
+    96
+  ],
+  "pivot": [
+    40,
+    96
+  ],
+  "cell_size": 7,
+  "source_origin": [
+    315,
+    483
+  ],
+  "column_stride": 455,
+  "row_stride": 490,
+  "visible_body_heights": [
+    56,
+    56,
+    57,
+    58,
+    53,
+    57
+  ],
+  "visible_alpha_bottoms": [
+    95,
+    95,
+    96,
+    95,
+    92,
+    95
+  ],
+  "idle_body_height": 57,
+  "idle_alpha_bottom": 96,
+  "palette": "One shared32-color palette; cloth blue-charcoal, natural bronze/leather/ochre.",
+  "preview_frame_ms": 100,
+  "preview_loop_ms": 600,
+  "reviews": [
+    "Original source and focused correction inspected",
+    "Native1x and integer3x ordered strips, including idle transition, reviewed on dark and light backgrounds",
+    "Source/cleaned comparison inspected for hair, arms and leg gaps",
+    "Animated browser preview rendered at1x/3x; opposite-contact phase3 inspected",
+    "Root explicitly accepted provisional integration after viewing native1x/3x and alpha comparison"
+  ],
+  "limits": [
+    "Smaller near edge-on axe blade than accepted idle",
+    "Narrower walking body/stance than idle",
+    "Close phase5 to0 transition and modest arm/torso animation",
+    "Actual game movement, frame timing, occlusion and frame budget remain unverified in this lane"
+  ],
+  "source_calls": 2,
+  "further_generation": "None after root acceptance",
+  "runtime_modified_by_this_lane": false
+}

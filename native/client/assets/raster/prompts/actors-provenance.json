@@ -1,0 +1,71 @@
+{
+  "generator": "built-in image_gen",
+  "model_selection": "The tool exposes no model parameter; no specific model version was selected.",
+  "current_anchor": "../source/actors_hero-se-idle-v1.png",
+  "entries": [
+    {
+      "source": "actors-v1.png",
+      "prompt": "actors-v1.txt",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "rejected",
+      "reason": "Detail density too high for requested game-world pixel art; green patina disallowed by later user correction."
+    },
+    {
+      "source": "actors-unarmed-pixel-v2.png",
+      "prompt": "actors-unarmed-pixel-v2.txt",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "status": "rejected",
+      "reason": "Baked checkerboard, green patina, uneven sheet packing."
+    },
+    {
+      "source": "actors-unarmed-pixel-v3.png",
+      "prompt": "actors-unarmed-pixel-v3.txt",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "status": "processing-candidate",
+      "reason": "Warm bronze and indigo palette correct, empty hero hands and more visible pixel clusters. Baked checkerboard and uneven cells require documented extraction; multi-sheet generation superseded."
+    },
+    {
+      "source": "actors_walk-v1.png",
+      "prompt": "actors_walk-v1.txt",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "status": "rejected",
+      "reason": "Rows 1/3 do not swap leading legs, rows 2/4 near-identical. Not a functional four-frame walk cycle. Baked checkerboard and uneven packing."
+    },
+    {
+      "source": "actors_hero-se-idle-v1.png",
+      "prompt": "actors_hero-se-idle-v1.txt",
+      "size": [
+        971,
+        1619
+      ],
+      "mode": "RGBA",
+      "status": "anchor-candidate",
+      "alphaZeroPixels": 1079142,
+      "alpha192Bounds": [
+        173,
+        84,
+        803,
+        1533
+      ],
+      "reason": "Single front-right idle hero with warm bronze, indigo sash and visible pixel blocks. Needs gameplay-scale processing and visual acceptance."
+    }
+  ],
+  "unused_prompt": "actors-unarmed-v1.txt was prepared but never submitted; later pixel/palette user corrections superseded it.",
+  "workflow_update": "No further multi-pose or multi-direction sheet generation. Establish one isolated accepted anchor; use actual image reference for one actor, one direction, one temporal pose per call; assemble atlases in code. Preserve shared scale and pivot and inspect actual loop before claiming animation."
+}

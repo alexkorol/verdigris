@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "defaults": {
+    "cell_size": 8,
+    "alpha_mode": "crisp",
+    "max_colors": 32,
+    "require_transparency": true,
+    "canvas": [48, 64],
+    "trim": true,
+    "align": "bottom_center"
+  },
+  "sheets": [
+    {"source": "../../client/assets/wizard/items/dagger_bronze.png", "grid": [1, 1], "assets": [{"name": "item_dagger", "cell": [0, 0]}]},
+    {"source": "../../client/assets/wizard/items/boar_pike.png", "grid": [1, 1], "assets": [{"name": "item_pike", "cell": [0, 0]}]},
+    {"source": "../../client/assets/wizard/items/astral_plate.png", "grid": [1, 1], "assets": [{"name": "item_armor", "cell": [0, 0]}]},
+    {"source": "../../client/assets/wizard/items/boots_fur.png", "grid": [1, 1], "assets": [{"name": "item_boots", "cell": [0, 0]}]},
+    {"source": "../../client/assets/wizard/items/cur_chisel.png", "grid": [1, 1], "assets": [{"name": "item_chisel", "cell": [0, 0]}]},
+    {"source": "../../client/assets/wizard/items/cur_knife.png", "grid": [1, 1], "assets": [{"name": "item_knife", "cell": [0, 0]}]},
+    {"source": "../../client/assets/wizard/items/cur_draught.png", "grid": [1, 1], "assets": [{"name": "item_draught", "cell": [0, 0]}]},
+    {"source": "../../client/assets/wizard/items/cur_orb.png", "grid": [1, 1], "assets": [{"name": "item_orb", "cell": [0, 0]}]},
+    {"source": "../../client/assets/wizard/items/bird_omen.png", "grid": [1, 1], "assets": [{"name": "item_bird", "cell": [0, 0]}]},
+    {"source": "../../client/assets/wizard/items/blood_omen.png", "grid": [1, 1], "assets": [{"name": "item_blood", "cell": [0, 0]}]},
+    {"source": "../../client/assets/wizard/items/ember_shell.png", "grid": [1, 1], "assets": [{"name": "item_shell", "cell": [0, 0]}]},
+    {"source": "../../client/assets/wizard/items/bowl_bronze_offering.png", "grid": [1, 1], "assets": [{"name": "item_bowl", "cell": [0, 0]}]}
+  ]
+}

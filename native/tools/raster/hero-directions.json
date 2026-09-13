@@ -1,0 +1,11 @@
+{
+  "version":1,
+  "output_dir":"../../client/assets/raster/runtime",
+  "defaults":{"cell_size":17,"alpha_mode":"crisp","max_colors":32,"canvas":[80,96],"trim":true,"preserve_scale":true,"require_transparency":true},
+  "known_limitations":["The three isolated SW/NE/NW idle sources replace the older sheet directions. Their costume and direction are preview inspected; live turn transitions still require inspection.","SW/NE/NW sources contain baked checker backgrounds. Border-connected fill and individually reviewed enclosed windows are documented in source provenance; matching foreground colors are not globally masked."],
+  "sheets":[
+    {"source":"../../client/assets/raster/source/actors_hero-sw-idle-v1.png","grid":[1,1],"border_background":{"color":[231,231,231],"tolerance":75,"interior_windows":[[685,517,759,731]]},"assets":[{"name":"hero_sw","cell":[0,0]}]},
+    {"source":"../../client/assets/raster/source/actors_hero-ne-idle-v1.png","grid":[1,1],"border_background":{"color":[179,179,179],"tolerance":90,"interior_windows":[[440,521,505,671]]},"assets":[{"name":"hero_ne","cell":[0,0]}]},
+    {"source":"../../client/assets/raster/source/actors_hero-nw-idle-v1.png","grid":[1,1],"border_background":{"color":[170,170,170],"tolerance":90,"interior_windows":[[650,517,714,676],[615,324,627,334]]},"assets":[{"name":"hero_nw","cell":[0,0]}]}
+  ]
+}

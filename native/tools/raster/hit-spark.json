@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "defaults": {
+    "cell_size": 12,
+    "alpha_mode": "crisp",
+    "max_colors": 12,
+    "canvas": [
+      48,
+      48
+    ],
+    "align": "center",
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "integrated_for_iteration_production_captures_reviewed_2026-09-10"
+  },
+  "known_limitations": [
+    "One static contact spark fades in the renderer; this is not an authored multi-frame burst.",
+    "The contact origin is measured on the reconstructed sprite, not inferred from its transparent canvas center."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/effects_hit-spark-v1.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "effect_hit_spark",
+          "source_box": [
+            420,
+            396,
+            900,
+            852
+          ]
+        }
+      ]
+    }
+  ],
+  "integration_review": {
+    "date": "2026-09-10",
+    "reviewer": "root",
+    "scope": "Runtime integration and production captures reviewed for this iteration; not final visual polish.",
+    "native_build_and_core_suites": "passed",
+    "production_scenarios": {
+      "passed": 64,
+      "fullscreen_average_ms": 18.7,
+      "dense_average_ms": 9.4
+    },
+    "browser_checks": {
+      "passed": 32,
+      "total": 32
+    },
+    "capture_review": "Live3440x1440 window viewed and closed; actual SW/NW/NE walking frames and all three equipped strike contact captures viewed.",
+    "limitations_policy": "Existing identity,palette,registration and source-generation observations remain unchanged."
+  }
+}
