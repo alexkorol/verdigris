@@ -32,9 +32,9 @@
     }
   },
   "files": {
-    "native\\client\\assets\\wizard\\inventory\\source\\handstone-color.png": "d7725d4fe0ac9e44ea83a3af42b54f979b40c48347ac7f4595930f962f21753f",
-    "native\\client\\assets\\wizard\\inventory\\source\\handstone-mask.png": "52e2748cb73496b255f822de0f33dcd3d1bc0e0f4002fa47e8d1dbad377bbb61",
-    "native\\client\\assets\\wizard\\inventory\\handstone_flint.png": "ab31e7affd59806a69fd69468100b4afc6bd18f887345a20f5b19939c8b5f6df",
-    "native\\client\\assets\\raster\\runtime\\weapon_handstone.png": "67feba7a041b7a46e4102ac642f53b1d1c07a647bf7fc09771efdee1b5e75ce0"
+    "native/client/assets/wizard/inventory/source/handstone-color.png": "d7725d4fe0ac9e44ea83a3af42b54f979b40c48347ac7f4595930f962f21753f",
+    "native/client/assets/wizard/inventory/source/handstone-mask.png": "52e2748cb73496b255f822de0f33dcd3d1bc0e0f4002fa47e8d1dbad377bbb61",
+    "native/client/assets/wizard/inventory/handstone_flint.png": "ab31e7affd59806a69fd69468100b4afc6bd18f887345a20f5b19939c8b5f6df",
+    "native/client/assets/raster/runtime/weapon_handstone.png": "67feba7a041b7a46e4102ac642f53b1d1c07a647bf7fc09771efdee1b5e75ce0"
   }
 }

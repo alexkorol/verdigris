@@ -30,7 +30,7 @@ manifest={'source':'Generated color and generated silhouette mask; image_gen',
           'alpha':'zero background, 255 interior, bounded antialiased mask edge',
           'world_attachment':'12x18 at existing actor scale; grip (5.5,14.5)',
           'pixel_respecter':engine_provenance(DEFAULT_PROJECT),
-          'files':{str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest()
+          'files':{p.relative_to(root).as_posix():hashlib.sha256(p.read_bytes()).hexdigest()
                    for p in [folder/'source/handstone-color.png',folder/'source/handstone-mask.png',folder/'handstone_flint.png',runtime/'weapon_handstone.png']}}
 (folder/'handstone-provenance.json').write_text(json.dumps(manifest,indent=2)+'\n')
 catalog=runtime/'catalog.json';data=json.loads(catalog.read_text())
