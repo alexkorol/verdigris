@@ -1,0 +1,93 @@
+[
+  {
+    "file": "originals/bowl-01-bronze.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1302584,
+    "sha256": "bde15babc737a2f63d47b686555f7318715953df28bb1f7261fa188d10ba1db9",
+    "pixelFormat": "Format32bppArgb",
+    "exteriorCornerAlpha": 0,
+    "centerAlpha": 252,
+    "triage": "proposal",
+    "approval": "awaiting_user_art_approval",
+    "runtimeIntegrated": false
+  },
+  {
+    "file": "originals/bowl-02-clay.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1332490,
+    "sha256": "af9699676312d9b70f07d4a6608bfb21e5762e848c45cb0c7b0727f81f61884a",
+    "pixelFormat": "Format32bppArgb",
+    "exteriorCornerAlpha": 0,
+    "centerAlpha": 253,
+    "triage": "proposal",
+    "approval": "awaiting_user_art_approval",
+    "runtimeIntegrated": false
+  },
+  {
+    "file": "originals/tree-01-dense.png",
+    "width": 887,
+    "height": 1774,
+    "bytes": 1059988,
+    "sha256": "da73ce18ef19f8a2e2a3c6fe4c34009d267d199f4245da662b4b81b0ab4c1a2e",
+    "pixelFormat": "Format32bppArgb",
+    "exteriorCornerAlpha": 0,
+    "centerAlpha": 252,
+    "triage": "proposal",
+    "approval": "awaiting_user_art_approval",
+    "runtimeIntegrated": false
+  },
+  {
+    "file": "originals/tree-02-airy.png",
+    "width": 887,
+    "height": 1774,
+    "bytes": 1041261,
+    "sha256": "2b511da587f6ee6e73affc1758a60cf57cbf2ed1bad7750aa6ec75d7ce00bf82",
+    "pixelFormat": "Format32bppArgb",
+    "exteriorCornerAlpha": 0,
+    "centerAlpha": 252,
+    "triage": "needs_visual_review",
+    "approval": "awaiting_user_art_approval",
+    "runtimeIntegrated": false
+  },
+  {
+    "file": "originals/ui-01-button.png",
+    "width": 1985,
+    "height": 792,
+    "bytes": 1520035,
+    "sha256": "805490e9d279e898b5c081699e57f048c9965f5bec1de0050b73490807141ae0",
+    "pixelFormat": "Format32bppArgb",
+    "exteriorCornerAlpha": 0,
+    "centerAlpha": 253,
+    "triage": "needs_visual_review",
+    "approval": "awaiting_user_art_approval",
+    "runtimeIntegrated": false
+  },
+  {
+    "file": "originals/ui-02-panel-alpha-retry.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 2262418,
+    "sha256": "ffe86a78a09ec8284ac8037b1d4d4fdb9edb900da3b579e27c2b993d0e012e58",
+    "pixelFormat": "Format24bppRgb",
+    "exteriorCornerAlpha": 255,
+    "centerAlpha": 255,
+    "triage": "reject_for_runtime_baked_checkerboard",
+    "approval": "awaiting_user_art_approval",
+    "runtimeIntegrated": false
+  },
+  {
+    "file": "originals/ui-02-panel.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 2396262,
+    "sha256": "0ca4d484f5e2395e9c573be8dec9aad98ea0111ae8a2e792255ce23533f8948c",
+    "pixelFormat": "Format24bppRgb",
+    "exteriorCornerAlpha": 255,
+    "centerAlpha": 255,
+    "triage": "reject_for_runtime_baked_checkerboard",
+    "approval": "awaiting_user_art_approval",
+    "runtimeIntegrated": false
+  }
+]

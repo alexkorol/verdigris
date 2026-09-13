@@ -1,5 +1,27 @@
 # Native reconstitution handoff
 
+## 2026-09-13 � Native application consolidation
+
+Owner-authorized integration in `codex/native-consolidated-20260913`, based on
+`5c388d9fd` with recovered history `443fb2503` merged in full. The perspective
+renderer, actor assets/attachments, camera and gameplay fixes are preserved.
+Title/settings/pause now connect to the existing character cards rather than
+the old text ledger. Added names, House selection for creation, keyboard focus,
+character management after admission, and returning-player Continue.
+
+Build identity is embedded by both MSVC and CMake and checked against the
+package manifest. Normal remote startup validates all 96 authored poses and
+logs its actual asset root. Existing checkouts/saves and the normal launch
+entry were not changed. Unfinished playable-checkout inventory/equipment work
+remains preserved there; its useful build identity work was integrated.
+
+The full development gate (native build, core/network/camera/session/events/
+audio/settings tests, all client scenarios, existing performance bounds) passed.
+The newly added `consolidated-flow` covers production Win32 button/name input
+and real socket admission/reconnect. Final clean-package and live desktop
+acceptance are recorded separately in the consolidation REPORT; a development
+pass alone is not package acceptance.
+
 ## 2026-09-11 — Level, close melee, and starting movement
 
 Owner-authorized narrow fixes in `verdigris-fable-renderer`:
@@ -72,6 +94,19 @@ claim a manual completed expedition or full Fable art/UI parity.
 [Exact lineage evidence and captures](../../native/client/assets/raster/reviews/2026-09-10-lineage/README.md),
 [source/import record](hero-lineage-20260910.md), and
 [Fable implementation](fable-integration.md).
+
+## 2026-09-12 — Standing commit/push preference
+
+The owner reported recurring friction from blanket push bans. `AGENTS.md`
+now makes normal working-branch pushes part of authorized implementation,
+unless the user explicitly requests local-only work. PROTOCOL, BUS, the lane
+map, old lease rules, the draft governance decision, and the reusable
+coordinator prompt now defer to that policy. Preserve it in future sprint
+prompts and handoffs. Historical reports are evidence, not new restrictions.
+
+This milestone changes instructions only. Validation: reviewed the complete
+diff, checked whitespace and lease JSON, and searched active guidance for
+conflicting push restrictions. No gameplay behavior changed or was tested.
 
 ## 2026-09-10 — Terrain/wall integration; owner-requested ship and pause
 
@@ -410,6 +445,40 @@ establish acceptance of the current native changes.
   remain explicitly unmeasured. No visual overhaul is claimed.
 - Local integration branch: `codex/diablo-reference-study-20260908` in
   `C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study`. No push or merge.
+## 2026-09-12 — Native title, Settings, and return flow (Codex Lane A)
+
+- `native/client/main.cpp` connects the owner launch to a title with House &
+  Scion, Settings, and Quit. The existing authoritative Chronicles actions now
+  have clickable rows, arrow/Tab focus, Enter/Space confirmation, and Back.
+  Escape dismisses gameplay panes before opening the session menu. Return to
+  title retains the current session; Continue Scion resumes it without a second
+  admission or purse request. Online menus explicitly say the world continues.
+- Settings uses Lane B's per-user persistence API for mute and separate effects
+  and music volumes. Minus/plus buttons and arrow keys apply and save the real
+  audio preferences, including visible load/save errors. Existing WIZARD splash
+  texture, Framekit chrome, and skin controls are reused; no art was invented.
+- `--scenario frontend-flow` passes 13 checks through a real hidden Win32 input
+  target, including mouse, keyboard, controller, quit cancellation, and blocked
+  gameplay input. The full 62-scenario run had one resource-envelope timing
+  failure under concurrent live/build/session load (69.6 ms); isolated rerun
+  passed at 15.1 ms. Frame-budget passed at 26.2 ms / 3440x1440.
+- MSVC compilation, denylist, core, networking, camera, presentation-event,
+  audio-mixer, and settings tests pass. The first concurrent session suite ended
+  with one failed check; the isolated complete rerun passed. Its initial label
+  was lost in truncated console output, so its cause is not established.
+- Live `play-native.ps1 -Port 6537` used disposable save/preferences paths under
+  `native/build/frontend-evidence`, completed title -> House -> Scion -> game ->
+  session menu -> title -> Quit, and exited 0 with no orphan process PIDs.
+  Captures `title-live.png`, `settings-live.png`, `chronicles-live.png`,
+  `house-live.png`, `scion-live.png`, `game-live.png`, `pause-live.png`, and
+  `returned-title-live.png` were viewed at 3440x1440. Logs are
+  `scenarios-all.txt`, `resource-envelope-isolated.txt`, and
+  `session-isolated.txt` in that evidence directory. The clicked Effects minus
+  button persisted `sfx=900` in its isolated `settings.ini`.
+- Checkout began 15 commits behind origin with an unrelated dirty loop journal;
+  the coordinator explicitly directed scoped work without reset/fast-forward.
+  No owner-save edits or push were performed. Parent coordinator owns the
+  browser playtest and overall integration decision.
 
 ## 2026-09-07 — Owner playtest persistence/combat/UI fix pass (Codex)
 

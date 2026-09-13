@@ -78,10 +78,22 @@ fully green suite. These rules close that hole:
 
 ## Historical browser reference
 
-The Vue/Node game remains a playable reference and design laboratory. Do not
-mechanically port it or restore Delaford defaults merely to satisfy a legacy
-test. Browser changes still require the existing `npm run playtest` gate; native
-changes require the commands documented in `native/README.md`.
+The Vue/Node game remains a historical playable reference and design
+laboratory. Do not mechanically port it or restore Delaford defaults merely to
+satisfy a legacy test. Browser changes still require the existing
+`npm run playtest` gate; native changes require the commands documented in
+`native/README.md`.
+
+For a native-only task, the acceptance product is the native package and its
+actual client. The default `npm run verify` now delegates to
+`powershell -NoProfile -ExecutionPolicy Bypass -File
+native/tools/verify-native.ps1` (also available as `npm run verify:native`). It
+builds the native executables, runs native tests and the client scenario suite,
+and keeps scenario evidence in a contained native build folder. Do not run
+`npm run playtest` as a native acceptance gate: it is the historical
+JavaScript/browser protocol harness. Run it only when browser files or an
+explicit browser/parity task are in scope. The former browser chain remains
+available only as the opt-in `npm run verify:legacy` workflow.
 
 Before claiming a browser gameplay change works, run the real protocol harness
 (`npm run playtest`) and, for client/UI changes, the browser gate
@@ -100,7 +112,24 @@ Work in coherent milestones, commit each green milestone, and update
 `docs/rebuild/HANDOFF.md` after each one. Never leave the only meaningful work
 uncommitted.
 
-When the user asks to ship, sync, or push, commit the requested work and push
-the current branch to its configured origin upstream. Explicit user
-authorization takes precedence over older no-push guidance. Verify the remote
-branch after pushing; do not force-push unless explicitly authorized.
+## Commit and push policy (owner preference, 2026-09-12)
+
+Authorized implementation includes committing completed, verified work and
+pushing the task's working branch to its configured origin upstream, unless
+the user explicitly requests local-only work or a pause before pushing. Ship,
+sync, and push requests require no second confirmation. Read-only reviews do
+not authorize unrelated implementation or publication.
+
+This policy supersedes older blanket push bans in workspace wrappers,
+PROTOCOL, draft decisions, leases, archived plans, and copied prompts. Carry
+it into sprint prompts, worker dispatches, and handoffs; do not invent a new
+push ban or turn a task-specific local-only request into a permanent rule.
+Workers publish their own branches; integration still follows path ownership
+and review requirements. A branch push does not establish an exclusive claim.
+
+Preserve unrelated work and use a clean isolated worktree when needed. Run
+checks appropriate to the change, push normally, and verify the remote branch
+contains the commit before reporting it pushed. Report actual blockers and
+distinguish local commits from remote completion. This does not authorize
+force-pushes, branch deletion, protected/default-branch merges, deployment,
+or release publication.

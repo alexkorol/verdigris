@@ -78,8 +78,11 @@ also: BLOCKED, SUPERSEDED
 4. Write `REPORT.md`: executive summary, approach, changed files, public
    interfaces added/changed, test commands + outcomes, manual verification,
    commit SHAs, deviations, unresolved questions, risks, follow-ups.
-5. Commit locally on the current program branch or a worker branch merged to
-   it. NEVER push; the owner pushes.
+5. Commit completed, verified work and push the task's working branch under
+   the standing owner preference in `AGENTS.md`, unless the user explicitly
+   requests local-only work. Workers push their own branches; integration
+   follows the existing review and ownership rules. Verify the remote commit.
+   Preserve this policy in dispatches and handoffs without extra approval.
 6. On any stop condition in the spec: set BLOCKED, file a question, halt.
 
 ## Architect obligations per completed task
@@ -97,4 +100,8 @@ ACCEPTED / REVISE / BLOCKED / SUPERSEDED and numbered, testable corrections.
   overlapping foundational files always force sequential ordering via
   dependencies. When in doubt, fewer.
 - Browser-game changes still require the repo's `npm run playtest` gate;
-  native changes require the commands in `native/README.md`.
+  native changes require the native-only acceptance command in
+  `native/README.md`. For a native-only task, do not run `npm run playtest` as
+  an acceptance gate: it starts the historical JavaScript/browser protocol
+  harness. Run it only when browser files or an explicitly named browser/parity
+  task is in scope.

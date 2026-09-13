@@ -39,6 +39,13 @@ if ($CaptureRoot -ne "") {
 
 $buildRoot = Join-Path $nativeRoot "build"
 New-Item -ItemType Directory -Force -Path $buildRoot | Out-Null
+$buildSourceCommit = (& git -C $nativeRoot rev-parse HEAD).Trim()
+if ($LASTEXITCODE -ne 0 -or $buildSourceCommit -notmatch '^[0-9a-f]{40}$') { throw 'Cannot identify native build source.' }
+$buildSourceStatus = @(& git -C $nativeRoot status --porcelain --untracked-files=normal)
+if ($LASTEXITCODE -ne 0) { throw 'Cannot identify native source status.' }
+$buildSourceDirty = if ($buildSourceStatus.Count) { 1 } else { 0 }
+@("#pragma once", "#define VERDIGRIS_BUILD_ID `"$buildSourceCommit`"", "#define VERDIGRIS_BUILD_DIRTY $buildSourceDirty") |
+  Set-Content -LiteralPath (Join-Path $buildRoot 'verdigris_build_generated.hpp') -Encoding ASCII
 
 # Prefer the supported Visual Studio installation query, then retain a
 # deterministic fallback for machines where vswhere is unavailable.  Keep the
@@ -99,6 +106,7 @@ $networkingTestExe = Join-Path $buildRoot "verdigris_networking_tests.exe"
 $sessionTestExe = Join-Path $buildRoot "verdigris_session_tests.exe"
 $presentationEventsTestExe = Join-Path $buildRoot "verdigris_presentation_events_tests.exe"
 $audioTestExe = Join-Path $buildRoot "verdigris_audio_mixer_tests.exe"
+$settingsTestExe = Join-Path $buildRoot "verdigris_user_settings_tests.exe"
 $camera2dTestExe = Join-Path $buildRoot "camera2d_tests.exe"
 $fableCameraTestExe = Join-Path $buildRoot "fable_camera_tests.exe"
 $serverExe = Join-Path $buildRoot "verdigris_server.exe"
@@ -139,9 +147,10 @@ Invoke-Msvc ('/c "' + $nativeRoot + '\audio\cue_spec.cpp" /I"' + $nativeRoot + '
 Invoke-Msvc ('/c "' + $nativeRoot + '\audio\event_cues.cpp" /I"' + $nativeRoot + '\audio" /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\audio_event_cues.obj"')
 Invoke-Msvc ('/c "' + $nativeRoot + '\audio\audio_mixer.cpp" /I"' + $nativeRoot + '\audio" /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\audio_audio_mixer.obj"')
 Invoke-Msvc ('/c "' + $nativeRoot + '\tests\audio_mixer_tests.cpp" /I"' + $nativeRoot + '\audio" /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\audio_mixer_tests.obj"')
+Invoke-Msvc ('/c "' + $nativeRoot + '\tests\user_settings_tests.cpp" /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\user_settings_tests.obj"')
 $serverCompileArguments = '/c "' + $nativeRoot + '\src\server_main.cpp" /Fo"' + $buildRoot + '\server.obj"'
 Invoke-Msvc $serverCompileArguments
-$clientCompileArguments = '/c "' + $nativeRoot + '\client\main.cpp" /DVERDIGRIS_NATIVE_WINDOWS=1 /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\client.obj"'
+$clientCompileArguments = '/c "' + $nativeRoot + '\client\main.cpp" /DVERDIGRIS_NATIVE_WINDOWS=1 /I"' + $nativeRoot + '\client" /I"' + $buildRoot + '" /Fo"' + $buildRoot + '\client.obj"'
 # Guard the compile command itself so dropping the define cannot silently
 # regress the Windows client into its console fallback.  This is intentionally
 # script-side; the native client sources are outside this task's ownership.
@@ -158,6 +167,7 @@ Invoke-Msvc ('"' + $buildRoot + '\fable_camera_tests.obj" /Fe"' + $fableCameraTe
 Invoke-Msvc ('"' + $buildRoot + '\session_tests.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $sessionTestExe + '" /link ws2_32.lib')
 Invoke-Msvc ('"' + $buildRoot + '\presentation_events_tests.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $presentationEventsTestExe + '" /link ws2_32.lib')
 Invoke-Msvc ('"' + $buildRoot + '\audio_mixer_tests.obj" "' + $buildRoot + '\audio_cue_spec.obj" "' + $buildRoot + '\audio_event_cues.obj" "' + $buildRoot + '\audio_audio_mixer.obj" /Fe"' + $audioTestExe + '"')
+Invoke-Msvc ('"' + $buildRoot + '\user_settings_tests.obj" "' + $buildRoot + '\audio_cue_spec.obj" "' + $buildRoot + '\audio_event_cues.obj" "' + $buildRoot + '\audio_audio_mixer.obj" /Fe"' + $settingsTestExe + '"')
 
 python (Join-Path $nativeRoot "tools\check_legacy_denylist.py")
 if ($LASTEXITCODE -ne 0) { throw "legacy denylist failed" }
@@ -168,6 +178,7 @@ if ($RunTests) { & $fableCameraTestExe; if ($LASTEXITCODE -ne 0) { throw "fable 
 if ($RunTests) { & $sessionTestExe; if ($LASTEXITCODE -ne 0) { throw "session tests failed" } }
 if ($RunTests) { & $presentationEventsTestExe; if ($LASTEXITCODE -ne 0) { throw "presentation events tests failed" } }
 if ($RunTests) { & $audioTestExe; if ($LASTEXITCODE -ne 0) { throw "audio mixer tests failed" } }
+if ($RunTests) { & $settingsTestExe; if ($LASTEXITCODE -ne 0) { throw "user settings tests failed" } }
 if ($RunClient) { & $clientExe --headless }
 if ($RunClientScenarios) {
   # TASK-0161: hand the validated contained capture root to the client seam

@@ -615,7 +615,7 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
       envelope.data = JsonValue::Object{{"name", JsonValue(command.target)}};
       break;
     case ClientCommand::Type::CreateScion: {
-      std::string house_id = model_.chronicle.active_house_id;
+      std::string house_id = command.house_id.empty() ? model_.chronicle.active_house_id : command.house_id;
       if (find_chronicle_house(model_.chronicle, house_id) == nullptr &&
           !model_.chronicle.houses.empty())
         house_id = model_.chronicle.houses.front().id;
@@ -1019,7 +1019,30 @@ bool RemoteProtocolSession::apply_monster_movement(ClientMonster& monster,
   if (sequence == 0.0 || std::hypot(motion.to_x - motion.from_x,
                                    motion.to_y - motion.from_y) > 4.0)
     motion.duration_ms = 0;
-  motion.received_at = std::chrono::steady_clock::now();
+  const auto received_at = std::chrono::steady_clock::now();
+  // A server stop packet can arrive in the same client poll as the movement
+  // packet that reaches that endpoint.  Replacing the active segment with a
+  // zero-duration stop would make the actor visibly snap before a single
+  // presentation frame, even though the authoritative path was valid.  Keep
+  // the active segment's clock until it naturally completes; the newer
+  // sequence and endpoint still remain authoritative for collision/combat.
+  const bool prior_segment_active = prior != monster_movement_.end() &&
+      prior->second.duration_ms > 0 &&
+      std::chrono::duration_cast<std::chrono::milliseconds>(
+          received_at - prior->second.received_at).count() < prior->second.duration_ms;
+  if (prior_segment_active && motion.duration_ms == 0 &&
+      std::hypot(motion.to_x - prior->second.to_x,
+                 motion.to_y - prior->second.to_y) <= 1e-6) {
+    prior->second.sequence = motion.sequence;
+    prior->second.to_x = motion.to_x;
+    prior->second.to_y = motion.to_y;
+    prior->second.has_facing = motion.has_facing;
+    prior->second.facing_x = motion.facing_x;
+    prior->second.facing_y = motion.facing_y;
+    copy_facing(prior->second);
+    return true;
+  }
+  motion.received_at = received_at;
   monster_movement_[monster.id] = motion;
   copy_facing(motion);
   return true;

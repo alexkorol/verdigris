@@ -65,6 +65,7 @@ struct ClientCommand {
   int dy = 0;
   int value = 0;
   std::string target;
+  std::string house_id; // Optional explicit House for CreateScion, validated by server.
   std::string extra;  // CreateScion: appearance; MenuAction: item id/uuid
 
   static ClientCommand login(std::string guest_id, bool quick_guest);
