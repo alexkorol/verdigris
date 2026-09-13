@@ -197,6 +197,9 @@ void LocalCoreSession::submit(const ClientCommand& command) {
     case ClientCommand::Type::Equip:
       queue_command(verdigris::Command::equip(command.target));
       break;
+    case ClientCommand::Type::Unequip:
+      queue_command(verdigris::Command::unequip());
+      break;
     case ClientCommand::Type::EnterZone:
       queue_command(verdigris::Command::enter(command.target));
       break;
@@ -288,6 +291,11 @@ void LocalCoreSession::refresh_model() {
     model_.player.resource = actor->stats.resource;
     model_.player.resource_max = actor->stats.resource_max;
     model_.player.attack = actor->stats.attack;
+    model_.player.defense = actor->stats.defense;
+    model_.player.combat_stats_present = true;
+    model_.player.gear_attack = 0;
+    for (const auto& item : simulation_->scion().carried_items)
+      if (item.equipped) model_.player.gear_attack = item.attack_bonus;
     model_.player.facing = local_model_facing(actor->facing);
   }
   const auto& instance = simulation_->instance();

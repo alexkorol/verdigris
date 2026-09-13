@@ -29,6 +29,9 @@ struct ClientPlayer {
   double display_x = 0.0;
   double display_y = 0.0;
   std::string appearance = "male";
+  int defense = 0;
+  int gear_attack = 0;
+  bool combat_stats_present = false;
 };
 
 struct ClientMonster {

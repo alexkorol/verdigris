@@ -1,5 +1,27 @@
 # Native reconstitution handoff
 
+## 2026-09-13 - Inventory and equipment integration
+
+Continued implementation on codex/native-consolidated-20260913 above 1d732241b,
+without waiting for launch promotion. The preserved unfinished checkout's
+footprint, seat and combat-field work has been integrated and completed:
+12x7 backpack with actual item rectangles; exact seat drops and both rings;
+remote U-to-unequip; authoritative acknowledgements and combat ratings; atomic
+rejection of incompatible or full-backpack operations. The newer renderer,
+animation, movement, melee and progression remain intact.
+
+All native test executables pass, including the death/succession/relic/reconnect
+journey. The new inventory-equipment scenario exercises real Win32 handlers
+against a native server. Regressions found in the wider scenario suite were
+fixed and their scenarios rerun. The exact package gate and evidence are in
+orchestration/recoveries/2026-09-13-inventory/REPORT.md.
+
+Owner saves, preserved checkouts and normal launch entries are unchanged.
+Separately, the earlier package's fresh-process Effects 90% check passed using
+the same QA profile; physical Escape left its other live walkthrough steps
+unfinished. That does not block authorized inventory development.
+
+
 ## 2026-09-13 — Packaged verification result
 
 The clean package from `3bd164d34f189d1438dc68990667312e8ecd721f` at

@@ -136,8 +136,25 @@ void apply_wear_details(const JsonValue& source, ClientModel& model) {
     if (worn.seat == "right_hand") model.equipped = worn.item;
     model.worn.push_back(std::move(worn));
   }
-  if (model.equipped.uuid.empty() && !model.worn.empty())
-    model.equipped = model.worn.front().item;
+}
+
+void apply_combat_fields(const JsonValue& combat, ClientPlayer& player) {
+  auto valid = [](const JsonValue* value) {
+    if (!value || !value->number()) return false;
+    const double n = *value->number();
+    return std::isfinite(n) && n >= 0 && n <= 1000000 && std::floor(n) == n;
+  };
+  const auto* attack = combat.get("baseAttack");
+  const auto* defense = combat.get("baseDefense");
+  const auto* gear = combat.get("gearAttack");
+  if (!valid(attack) || !valid(defense) || !valid(gear)) return;
+  const auto* gear_defense = combat.get("gearDefense");
+  if (gear_defense && !valid(gear_defense)) return;
+  player.attack = static_cast<int>(*attack->number());
+  player.defense = static_cast<int>(*defense->number());
+  if (gear_defense) player.defense += static_cast<int>(*gear_defense->number());
+  player.gear_attack = static_cast<int>(*gear->number());
+  player.combat_stats_present = true;
 }
 
 // TASK-0156: mirror the authoritative `passiveTree` envelope (schemaVersion
@@ -592,6 +609,12 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
       envelope.event = "item:equip";
       envelope.data = JsonValue::Object{
           {"item", JsonValue::Object{{"uuid", JsonValue(command.target)}}}};
+      if (!command.extra.empty())
+        (*(*envelope.data.object())["item"].object())["targetSlot"] = JsonValue(command.extra);
+      break;
+    case ClientCommand::Type::Unequip:
+      envelope.event = "item:unequip";
+      envelope.data = JsonValue::Object{{"seat", command.target}};
       break;
     case ClientCommand::Type::EnterZone:
       model_.chart.open = false;
@@ -1070,8 +1093,31 @@ void RemoteProtocolSession::sample_monster_display() {
 }
 
 void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
+  if (envelope.event == "item:equip:rejected") {
+    const std::string id = json_string(envelope.data.get("uuid")) ? *json_string(envelope.data.get("uuid")) : "";
+    const std::string reason = json_string(envelope.data.get("reason")) ? *json_string(envelope.data.get("reason")) : "Equip rejected";
+    if (pending_equip_uuid_ == id) pending_equip_uuid_.clear();
+    pending_events_.push_back({PresentationEventType::EquipRejected, model_.player.uuid, id, reason, 0});
+    return;
+  }
+  if (envelope.event == "player:equippedAnItem") {
+    const auto* actor = json_string(envelope.data.get("uuid"));
+    if (!actor || *actor != model_.player.uuid) return;
+    if (const auto* wear = envelope.data.get("wearDetails")) apply_wear_details(*wear, model_);
+    if (const auto* combat = envelope.data.get("combat")) apply_combat_fields(*combat, model_.player);
+    // A disappearing backpack item is not an equip acknowledgement.
+    for (const auto& worn : model_.worn) {
+      if (pending_equip_uuid_.empty() || worn.item.uuid != pending_equip_uuid_) continue;
+      pending_events_.push_back({PresentationEventType::ItemEquipped, model_.player.uuid,
+                                worn.item.uuid, worn.item.name, worn.item.attack_rating});
+      pending_equip_uuid_.clear();
+      break;
+    }
+    return;
+  }
   if (envelope.event == "player:login") {
     model_.player.appearance = "male";
+    model_.player.combat_stats_present = false;
     has_player_sequence_ = false;
     clear_monster_display();
     clear_player_display();
@@ -1089,6 +1135,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       }
       if (const auto* wear = player->get("wearDetails"))
         apply_wear_details(*wear, model_);
+      if (const auto* combat = player->get("combat"))
+        apply_combat_fields(*combat, model_.player);
       last_facing_ = model_.player.facing.empty() ? last_facing_ : model_.player.facing;
       model_.inventory.clear();
       if (const auto* inventory = player->get("inventory")) {
@@ -1439,6 +1487,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
   if (envelope.event == "dev:state") {
     const auto* state = envelope.data.get("state");
     if (!state) return;
+    if (const auto* combat = state->get("combat")) apply_combat_fields(*combat, model_.player);
     apply_player_level(model_.player, *state);
     if (const auto* appearance = json_string(state->get("appearance")))
       model_.player.appearance = verdigris::player_appearance_id(*appearance);
@@ -1561,13 +1610,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     const auto* slots = envelope.data.get("data");
     std::vector<std::string> before;
     before.reserve(model_.inventory.size());
-    ClientItemSlot equipped_snapshot;
-    for (const auto& item : model_.inventory) {
-      before.push_back(item.uuid);
-      if (!pending_equip_uuid_.empty() && item.uuid == pending_equip_uuid_) {
-        equipped_snapshot = item;
-      }
-    }
+    for (const auto& item : model_.inventory) before.push_back(item.uuid);
     model_.inventory.clear();
     if (slots && slots->array()) {
       for (const auto& entry : *slots->array()) {
@@ -1585,23 +1628,6 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       if (!known && !item.uuid.empty()) {
         pending_events_.push_back({PresentationEventType::ItemPickedUp, model_.player.uuid,
                                    item.uuid, item.name, 0});
-      }
-    }
-    if (!pending_equip_uuid_.empty()) {
-      bool still_carried = false;
-      for (const auto& item : model_.inventory) {
-        if (item.uuid == pending_equip_uuid_) {
-          still_carried = true;
-          break;
-        }
-      }
-      if (!still_carried) {
-        if (!equipped_snapshot.uuid.empty()) model_.equipped = equipped_snapshot;
-        else model_.equipped.uuid = pending_equip_uuid_;
-        pending_events_.push_back({PresentationEventType::ItemEquipped, model_.player.uuid,
-                                   model_.equipped.uuid, model_.equipped.name,
-                                   model_.equipped.attack_rating});
-        pending_equip_uuid_.clear();
       }
     }
     return;

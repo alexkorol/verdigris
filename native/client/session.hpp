@@ -44,6 +44,7 @@ struct ClientCommand {
     UseAction,      // `target` = action name ("melee", ...)
     PickUp,         // `target` = ground item uuid; empty => underfoot
     Equip,          // `target` = item uuid
+    Unequip,        // `target` = worn seat; server rejects if backpack is full
     EnterZone,      // `target` = route/node id
     Extract,
     // TASK-0145 Gate-B chronicles intents. The session translates them into

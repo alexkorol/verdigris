@@ -20,6 +20,13 @@ entry until that exact package has passed native and live visual acceptance.
 
 ## Boundaries
 
+Inventory uses the server's full 12x7 capacity and item footprints. Drag an item
+to a matching equipment seat; rings support either ring seat. Click worn gear
+and press U to return it to the backpack. The server acknowledges equipment,
+rejects two-handed conflicts, and keeps both items unchanged when a swap or
+unequip cannot fit. Attack and defense ratings come from the native server.
+`--scenario inventory-equipment` verifies these paths in the packaged client.
+
 - include/verdigris/core.hpp and src/core.cpp are the fixed-step, deterministic,
   headless simulation.
 - include/verdigris/seasonal.hpp and src/seasonal.cpp are the external

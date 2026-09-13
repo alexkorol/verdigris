@@ -367,7 +367,7 @@ HudRect gear_pane_rect(int width, int height) {
   // measured world lane from the character sheet at the shipped 960-wide
   // side-by-side size, while retaining a usable minimum on narrow debug
   // windows.
-  const int pane_w = 380 * s;
+  const int pane_w = std::clamp(width - 540 * s, 420 * s, 680 * s);
   const int pane_top = 24 * s;
   const int x = std::max(24, width - pane_w - 24);
   // End above the mana orb's upper edge at the 960x600 side-by-side size;
@@ -717,6 +717,7 @@ struct ClientState {
   std::string pack_fingerprint;
   std::uint32_t pack_drag_id = 0;
   bool pack_drag_live = false;
+  int pack_grab_x = 0, pack_grab_y = 0;
   int pack_preview_x = -1;
   int pack_preview_y = -1;
   bool pack_preview_ok = false;
@@ -1371,8 +1372,25 @@ bool draw_item_art(const BillboardAssets& assets, HDC dc, const std::string& id,
                    const RECT& cell) {
   const auto found = assets.item_art.find(id);
   if (found == assets.item_art.end() || !found->second.ready() ||
-      !assets.alpha_blend)
-    return false;
+      !assets.alpha_blend) {
+    // Inventory uses the same authored raster families as world drops.
+    const char* sprite_name = raster_loot::sprite(id, "");
+    if (id == "vessel-handaxe") sprite_name = "weapon_axe";
+    if (id == "vessel-wrap" || id == "vessel-crest" || id == "vessel-grips" ||
+        id == "vessel-ring" || id == "gold-ring" || id == "ring" || id == "coins")
+      return false; // The seat-aware symbol below is clearer than a wrong weapon.
+    const auto source = raster_art::dimensions(sprite_name);
+    const auto content = raster_art::content_bounds(sprite_name);
+    const int cw = content.right - content.left, ch = content.bottom - content.top;
+    if (!source.valid() || cw <= 0 || ch <= 0) return false;
+    const double scale = std::min(static_cast<double>(cell.right - cell.left - 4) / cw,
+                                  static_cast<double>(cell.bottom - cell.top - 4) / ch);
+    if (scale <= 0) return false;
+    return raster_art::draw_sprite_at_anchor(dc, sprite_name,
+        (cell.left + cell.right) / 2.0, (cell.top + cell.bottom) / 2.0,
+        std::max(1, static_cast<int>(source.height * scale)),
+        (content.left + content.right) / 2.0, (content.top + content.bottom) / 2.0);
+  }
   const SpriteBitmap& sprite = found->second;
   const int cell_w = cell.right - cell.left;
   const int cell_h = cell.bottom - cell.top;
@@ -2080,6 +2098,14 @@ void ingest_session_events(ClientState& state) {
   std::vector<std::string> batch_keys;
   for (const auto& event : state.session->drain_events()) {
     using EventType = verdigris::client::PresentationEventType;
+    if (event.type == EventType::ItemEquipped)
+      verdigris::client::ui::ack_equip(state.equip_view, event.item_id, event.value);
+    if (event.type == EventType::EquipRejected) {
+      if (state.equip_view.pending_id == event.item_id)
+        verdigris::client::ui::reject_equip(state.equip_view);
+      fx.hint = event.text;
+      fx.hint_ticks = 80;
+    }
     if (event.type == EventType::SessionReady || event.type == EventType::ConnectionEstablished ||
         event.type == EventType::ConnectionLost)
       state.event_world_known = false;
@@ -2174,9 +2200,14 @@ void submit_pick_up(ClientState& state, const std::string& id) {
     queue_local_command(state, verdigris::Command::pick_up(id));
 }
 
-void submit_equip(ClientState& state, const std::string& id) {
-  if (state.session)
-    state.session->submit(verdigris::client::ClientCommand::equip(id));
+void submit_equip(ClientState& state, const std::string& id,
+                  const std::string& seat = {}) {
+  verdigris::client::ui::request_equip(state.equip_view, id);
+  if (state.session) {
+    auto command = verdigris::client::ClientCommand::equip(id);
+    command.extra = seat;
+    state.session->submit(command);
+  }
   else if (state.simulation)
     queue_local_command(state, verdigris::Command::equip(id));
 }
@@ -2328,6 +2359,10 @@ void equip_selected(ClientState& state) {
   }
   state.selected_item = std::min(state.selected_item, state.world.carried.size() - 1);
   const std::string id = state.world.carried[state.selected_item].id;
+  if (state.world.carried[state.selected_item].equipped) {
+    show_hint(state, "Already equipped | U returns it to the backpack");
+    return;
+  }
   verdigris::client::ui::request_equip(state.equip_view, id);
   submit_equip(state, id);
   show_hint(state, "Equip requested");
@@ -4198,7 +4233,7 @@ int paint_status_chip(HDC dc, int x, int y, const std::string& text,
   return width;
 }
 
-skin::HudTextLines audio_mixer_lines(const ClientState& state) {
+skin::HudTextLines audio_mixer_lines(const ClientState& state, bool compact = false) {
   // VG-SOUND-006/008: mute cannot hide category volumes, and the theme name
   // is owner language. A mute chip alone cannot certify the mixer.
   const bool muted = state.audio_sink && state.audio_sink->muted();
@@ -4215,6 +4250,9 @@ skin::HudTextLines audio_mixer_lines(const ClientState& state) {
           : (state.world.route_id.empty() ? std::string("surface")
                                           : state.world.route_id);
   const std::string loop = verdigris::client::ambience::owner_loop_label(route);
+  if (compact)
+    return {{mute + " | " + sfx + " | " + music, skin::kInk},
+            {std::string(theme) + " | " + loop, skin::kVerdigris}};
   return {{mute, skin::kInk}, {sfx, skin::kInkDim},
           {music, skin::kInkDim}, {theme, skin::kGold},
           {loop, skin::kVerdigris}};
@@ -4229,7 +4267,7 @@ void paint_audio_mixer_hud(ClientState& state, HDC dc, int x, int y,
   rl.push_back({render::Op::Hud, static_cast<double>(x), static_cast<double>(y),
                 0.0, 0, "audio:mixer"});
   rl.push_back({render::Op::Hud, static_cast<double>(x),
-                static_cast<double>(y + plan.lines[4].y), 0.0, 0,
+                static_cast<double>(y + plan.lines[plan.count - 1].y), 0.0, 0,
                 "ambience:owner"});
   rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "audio:prefs"});
   rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, state.audio_prefs.sfx_permille,
@@ -4306,8 +4344,11 @@ std::vector<char> loot_nameplate_mask(
   return mask;
 }
 
-constexpr int kPackColumns = 4;
-constexpr int kPackRows = 6;
+constexpr int kPackColumns = verdigris::PlayerInventory::kColumns;
+constexpr int kPackRows = verdigris::PlayerInventory::kRows;
+static constexpr const char* kDollSeats[] = {
+    "head", "necklace", "right_hand", "armor", "back", "left_hand",
+    "gloves", "belt", "feet", "ring", "ring2", "warhorn", "quick_rig", "attendant"};
 constexpr int kDollSlotW = 54;
 constexpr int kDollSlotH = 28;
 constexpr int kDollGap = 4;
@@ -4351,6 +4392,7 @@ struct PackGeom {
   int grid_left = 0;
   int grid_top = 0;
   RECT seat{};
+  std::array<RECT, paper_doll::kSlotCount> seats{};
 };
 
 PackGeom make_pack_geom(int width, int height) {
@@ -4362,16 +4404,18 @@ PackGeom make_pack_geom(int width, int height) {
   const int right = left + pane.w;
   geom.seat = paper_doll_slot_rect(width, height,
                                    paper_doll::slot_index(paper_doll::Slot::MainHand));
+  for (std::size_t i = 0; i < geom.seats.size(); ++i)
+    geom.seats[i] = paper_doll_slot_rect(width, height, i);
   // Keep this offset in lockstep with paint_gear_overlay. Two type-floor
   // stats lines sit above the weapon seat; 62px collides with DEF/LVL.
-  geom.gap = 6 * geom.s;
+  geom.gap = 4 * geom.s;
   const int grid_left = left + 190 * geom.s;
   geom.cell_w =
-      (right - grid_left - 14 * geom.s - (kPackColumns - 1) * 6 * geom.s) /
+      (right - grid_left - 14 * geom.s - (kPackColumns - 1) * geom.gap) /
       kPackColumns;
   geom.cell_h = 30 * geom.s;
   geom.grid_left = grid_left;
-  geom.grid_top = top + 148 * geom.s;
+  geom.grid_top = top + 98 * geom.s;
   return geom;
 }
 
@@ -4388,17 +4432,18 @@ bool pack_hit_cell(const PackGeom& geom, int mx, int my, int& gx, int& gy) {
   return mx < cx + geom.cell_w && my < cy + geom.cell_h;
 }
 
-bool pack_hit_seat(const PackGeom& geom, int mx, int my) {
-  return mx >= geom.seat.left && mx < geom.seat.right && my >= geom.seat.top &&
-         my < geom.seat.bottom;
+int pack_hit_seat(const PackGeom& geom, int mx, int my) {
+  for (std::size_t i = 0; i < geom.seats.size(); ++i)
+    if (PtInRect(&geom.seats[i], POINT{mx, my})) return static_cast<int>(i);
+  return -1;
 }
 
 void pack_first_free(const inventory_grid::State& grid, std::uint8_t& x,
-                     std::uint8_t& y, bool& found) {
+                     std::uint8_t& y, bool& found, int width, int height) {
   found = false;
   for (std::uint8_t row = 0; row < grid.height; ++row) {
     for (std::uint8_t col = 0; col < grid.width; ++col) {
-      if (inventory_grid::can_place(grid, col, row, 1, 1)) {
+      if (inventory_grid::can_place(grid, col, row, width, height)) {
         x = col;
         y = row;
         found = true;
@@ -4410,7 +4455,9 @@ void pack_first_free(const inventory_grid::State& grid, std::uint8_t& x,
 
 void reconcile_pack_grid(ClientState& state) {
   std::string fingerprint;
-  for (const auto& item : state.world.carried) fingerprint += item.id + ",";
+  for (const auto& item : state.world.carried)
+    fingerprint += item.id + ":" + std::to_string(item.equipped) + ":" +
+        std::to_string(item.width) + "x" + std::to_string(item.height) + ",";
   if (fingerprint == state.pack_fingerprint && state.pack_grid.valid() &&
       state.pack_grid.width == kPackColumns &&
       state.pack_grid.height == kPackRows)
@@ -4419,12 +4466,14 @@ void reconcile_pack_grid(ClientState& state) {
   next.width = kPackColumns;
   next.height = kPackRows;
   (void)inventory_grid::rebuild_occupancy(next);
+  bool unplaced = false;
   for (const auto& carried : state.world.carried) {
+    if (carried.equipped) continue;
     const std::uint32_t id = pack_stable_id(carried.id);
     inventory_grid::Item placed{};
     placed.id = id;
-    placed.width = 1;
-    placed.height = 1;
+    placed.width = static_cast<std::uint8_t>(std::clamp(carried.width, 1, kPackColumns));
+    placed.height = static_cast<std::uint8_t>(std::clamp(carried.height, 1, kPackRows));
     placed.stack_count = 1;
     placed.stack_max = 1;
     const std::size_t old = inventory_grid::find_index(state.pack_grid, id);
@@ -4432,12 +4481,29 @@ void reconcile_pack_grid(ClientState& state) {
     if (old != inventory_grid::kMaxItems) {
       placed.x = state.pack_grid.items[old].x;
       placed.y = state.pack_grid.items[old].y;
-      if (inventory_grid::can_place(next, placed.x, placed.y, 1, 1))
+      if (inventory_grid::can_place(next, placed.x, placed.y, placed.width, placed.height))
         found = true;
     }
-    if (!found) pack_first_free(next, placed.x, placed.y, found);
-    if (!found) continue;
+    if (!found) pack_first_free(next, placed.x, placed.y, found, placed.width, placed.height);
+    if (!found) { unplaced = true; continue; }
     (void)inventory_grid::place(next, placed);
+  }
+  // A formerly valid user arrangement may fragment after a gear swap. The
+  // server's complete placement is the fallback; never silently hide loot.
+  if (unplaced && state.session) {
+    next = inventory_grid::State{};
+    next.width = kPackColumns; next.height = kPackRows;
+    for (const auto& carried : state.world.carried) {
+      if (carried.equipped || carried.grid_slot < 0) continue;
+      inventory_grid::Item item{};
+      item.id = pack_stable_id(carried.id);
+      item.width = static_cast<std::uint8_t>(carried.width);
+      item.height = static_cast<std::uint8_t>(carried.height);
+      item.x = static_cast<std::uint8_t>(carried.grid_slot % kPackColumns);
+      item.y = static_cast<std::uint8_t>(carried.grid_slot / kPackColumns);
+      item.stack_count = item.stack_max = 1;
+      (void)inventory_grid::place(next, item);
+    }
   }
   state.pack_grid = next;
   state.pack_fingerprint = fingerprint;
@@ -4457,7 +4523,11 @@ bool pack_can_land(const inventory_grid::State& grid, std::uint32_t id, int x,
   const auto uy = static_cast<std::uint8_t>(y);
   const std::uint32_t occupant = inventory_grid::item_at(grid, ux, uy);
   if (occupant == 0 || occupant == id)
-    return inventory_grid::can_place(grid, ux, uy, 1, 1, id);
+    {
+      const auto index = inventory_grid::find_index(grid, id);
+      return index != inventory_grid::kMaxItems && inventory_grid::can_place(
+          grid, ux, uy, grid.items[index].width, grid.items[index].height, id);
+    }
   inventory_grid::State scratch = grid;
   return inventory_grid::swap(scratch, id, occupant) == inventory_grid::Status::Ok;
 }
@@ -4470,6 +4540,9 @@ void pack_begin_drag(ClientState& state, int gx, int gy) {
   if (id == 0) return;
   state.pack_drag_live = true;
   state.pack_drag_id = id;
+  const auto item_index = inventory_grid::find_index(state.pack_grid, id);
+  state.pack_grab_x = gx - state.pack_grid.items[item_index].x;
+  state.pack_grab_y = gy - state.pack_grid.items[item_index].y;
   state.pack_preview_x = gx;
   state.pack_preview_y = gy;
   state.pack_preview_ok = true;
@@ -4477,22 +4550,41 @@ void pack_begin_drag(ClientState& state, int gx, int gy) {
   if (index < state.world.carried.size()) state.selected_item = index;
 }
 
-bool pack_commit_drop(ClientState& state, bool onto_weapon_seat) {
+void cancel_pack_drag(ClientState& state) {
+  state.pack_drag_live = false;
+  state.pack_drag_id = 0;
+  state.pack_preview_x = state.pack_preview_y = -1;
+  state.pack_preview_ok = false;
+}
+
+bool pack_commit_drop(ClientState& state, int seat_index) {
   if (!state.pack_drag_live || state.pack_drag_id == 0) {
     state.pack_last_drop = "idle";
     return false;
   }
   const std::uint32_t id = state.pack_drag_id;
   state.pack_drag_live = false;
-  if (onto_weapon_seat) {
+  state.pack_drag_id = 0;
+  if (seat_index >= 0 && seat_index < static_cast<int>(std::size(kDollSeats))) {
     const std::size_t index = carried_index_for_pack_id(state, id);
     if (index >= state.world.carried.size()) {
       state.pack_last_drop = "reject";
       return false;
     }
+    const auto& item = state.world.carried[index];
+    const std::string target_seat = kDollSeats[seat_index];
+    const std::string source_seat = item.equip_seat.empty() && !state.session
+        ? "right_hand" : item.equip_seat;
+    const bool ring = (source_seat == "ring" || source_seat == "ring2") &&
+                      (target_seat == "ring" || target_seat == "ring2");
+    if (item.equipped || (source_seat != target_seat && !ring)) {
+      state.pack_last_drop = "reject";
+      show_hint(state, "This item does not fit that seat");
+      return false;
+    }
     state.selected_item = index;
     const std::string before = state.world.carried[index].id;
-    submit_equip(state, before);
+    submit_equip(state, before, target_seat);
     state.pack_last_drop = "equip";
     show_hint(state, "Equip requested");
     return true;
@@ -4572,6 +4664,7 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
       equipped_bonus = item.attack_bonus;
       break;
     }
+  if (player.combat_stats_present) equipped_bonus = player.gear_attack;
   const int base_attack = player.attack;
   std::string attack_text = std::to_string(base_attack + equipped_bonus);
   if (equipped_bonus != 0)
@@ -4652,9 +4745,12 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
     TextOutA(dc, doll.left + 5 * s, doll.top + 3 * s, doll_labels[slot_i], 4);
     if (occupied) {
       const auto style = vector_art::player_style();
-      vector_art::pack_item_glyph(
-          dc, doll.right - 13 * s, doll.top + 14 * s, 18 * s,
-          vector_art::held_from_item(worn->id, worn->name), style);
+      if (slot_i == paper_doll::slot_index(paper_doll::Slot::MainHand))
+        vector_art::pack_item_glyph(dc, doll.right - 8 * s, doll.top + 14 * s, 14 * s,
+            vector_art::held_from_item(worn->id, worn->name), style);
+      else
+        vector_art::fill_ell(dc, doll.right - 6 * s, doll.top + 14 * s,
+                             2 * s, 2 * s, style.metal, style.dark);
     }
     state.hud_rect_trace.push_back(
         {"pane-doll-slot", {doll.left, doll.top, doll.right - doll.left,
@@ -4678,7 +4774,7 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
   rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
                 std::string("held-seat:") + equipped_name});
 
-  // Grid backpack (4 columns), framekit slot chrome with item art.
+  // Full native backpack, with footprint-sized item art and shared slot chrome.
   reconcile_pack_grid(state);
   const PackGeom pack = make_pack_geom(static_cast<int>(bounds.right),
                                        static_cast<int>(bounds.bottom));
@@ -4698,7 +4794,7 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
   // be used as a substitute for it or overlap the paper doll.
   SetTextColor(dc, RGB(190, 202, 190));
   const std::string backpack_label =
-      "BACKPACK  " + std::to_string(items.size()) + "/" +
+      "BACKPACK  " + std::to_string(std::count_if(state.pack_grid.occupancy.begin(), state.pack_grid.occupancy.end(), [](auto id) { return id != 0; })) + "/" +
       std::to_string(kPackColumns * kPackRows);
   TextOutA(dc, pack.grid_left, grid_top - 20 * s, backpack_label.c_str(),
            static_cast<int>(backpack_label.size()));
@@ -4732,121 +4828,64 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
     int hover_gy = -1;
     pack_hit_cell(pack, mx, my, hover_gx, hover_gy);
     if (state.pack_drag_live) {
-      state.pack_preview_x = hover_gx;
-      state.pack_preview_y = hover_gy;
+      state.pack_preview_x = hover_gx - state.pack_grab_x;
+      state.pack_preview_y = hover_gy - state.pack_grab_y;
       state.pack_preview_ok =
-          pack_can_land(state.pack_grid, state.pack_drag_id, hover_gx, hover_gy);
+          pack_can_land(state.pack_grid, state.pack_drag_id, state.pack_preview_x, state.pack_preview_y);
     }
     for (std::uint8_t i = 0; i < state.pack_grid.count; ++i) {
-      const inventory_grid::Item& cell_item = state.pack_grid.items[i];
-      const std::size_t carried_i =
-          carried_index_for_pack_id(state, cell_item.id);
+      const auto& cell_item = state.pack_grid.items[i];
+      const auto carried_i = carried_index_for_pack_id(state, cell_item.id);
       if (carried_i >= items.size()) continue;
-      const int col = cell_item.x;
-      const int row = cell_item.y;
+      const int col = cell_item.x, row = cell_item.y;
       const int cx = pack.grid_left + col * (cell_w + pack.gap);
       const int cy = pack.grid_top + row * (cell_h + pack.gap);
+      RECT cell{cx, cy, cx + cell_item.width * (cell_w + pack.gap) - pack.gap,
+                         cy + cell_item.height * (cell_h + pack.gap) - pack.gap};
       const bool selected = carried_i == std::min(state.selected_item, items.size() - 1);
-      const bool equipped = items[carried_i].equipped;
-      RECT cell{cx, cy, cx + cell_w, cy + cell_h};
-      if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_slot,
-                              cell))
-        skin::slot(dc, cell, equipped ? skin::kGold : skin::kVerdigris,
-                   selected);
-      if (selected || equipped) {
-        HPEN cell_pen = CreatePen(PS_SOLID, 2,
-                                  equipped ? RGB(210, 180, 90) : RGB(120, 214, 168));
-        HGDIOBJ cp = SelectObject(dc, cell_pen);
-        HGDIOBJ cb = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
-        Rectangle(dc, cell.left, cell.top, cell.right, cell.bottom);
-        SelectObject(dc, cb);
-        SelectObject(dc, cp);
-        DeleteObject(cell_pen);
-      }
-      // Two type-floor caption rows. A one-line 12-char period clip cannot
-      // certify Ember-edged axe; wrapping keeps both owner words.
-      RECT art_cell{cell.left, cell.top, cell.right, cell.bottom - 30 * s};
-      {
-        RECT backing{art_cell.left + 4 * s, art_cell.top + 4 * s,
-                     art_cell.right - 4 * s, art_cell.bottom};
-        HBRUSH backing_brush = CreateSolidBrush(RGB(72, 52, 28));
-        FillRect(dc, &backing, backing_brush);
-        DeleteObject(backing_brush);
-      }
-      const bool billboard =
-          draw_item_art(state.billboards, dc, art_key(carried_i), art_cell);
-      if (!billboard) {
-        const auto style = vector_art::player_style();
-        const int glyph_cx = (art_cell.left + art_cell.right) / 2;
-        const int glyph_cy = (art_cell.top + art_cell.bottom) / 2 - 2 * s;
-        const int glyph_h = std::max(
-            18, static_cast<int>(art_cell.bottom - art_cell.top) - 10 * s);
-        vector_art::pack_item_glyph(
-            dc, glyph_cx, glyph_cy, glyph_h,
+      skin::slot(dc, cell, selected ? skin::kGold : skin::kVerdigris, selected);
+      RECT art_cell{cell.left + 2 * s, cell.top + 2 * s,
+                    cell.right - 2 * s, cell.bottom - 2 * s};
+      const bool billboard = draw_item_art(state.billboards, dc, art_key(carried_i), art_cell);
+      if (!billboard && (items[carried_i].equip_seat.empty() || items[carried_i].equip_seat == "right_hand") && art_key(carried_i) != "coins")
+        vector_art::pack_item_glyph(dc, (art_cell.left + art_cell.right) / 2,
+            (art_cell.top + art_cell.bottom) / 2,
+            std::max(8L, std::min(art_cell.right - art_cell.left, art_cell.bottom - art_cell.top)),
             vector_art::held_from_item(art_key(carried_i), items[carried_i].name),
-            style);
-      }
-      rl.push_back({render::Op::Hud, static_cast<double>(col),
-                    static_cast<double>(row), 0.0,
-                    billboard ? 1 : 0,
-                    billboard ? "pack-glyph:billboard" : "pack-glyph:vector"});
-      SetTextColor(dc, equipped ? RGB(240, 210, 120) : RGB(205, 215, 204));
-      const std::string full_name = items[carried_i].name;
-      HGDIOBJ cell_font = SelectObject(dc, skin::font_small());
-      const int name_max_w = std::max(8, cell_w - 8 * s);
-      auto measure_px = [&](const std::string& text) {
-        SIZE extent{};
-        GetTextExtentPoint32A(dc, text.c_str(),
-                              static_cast<int>(text.size()), &extent);
-        return extent.cx;
-      };
-      std::string line0 = full_name;
-      std::string line1;
-      if (measure_px(full_name) > name_max_w) {
-        const auto split =
-            verdigris::client::ui::wrap_pack_caption(full_name);
-        if (!split.second.empty() && measure_px(split.first) <= name_max_w) {
-          line0 = split.first;
-          line1 = split.second;
+            vector_art::player_style());
+      else if (!billboard) {
+        const auto& seat = items[carried_i].equip_seat;
+        const int cx_icon = (art_cell.left + art_cell.right) / 2;
+        const int cy_icon = (art_cell.top + art_cell.bottom) / 2;
+        const int radius = std::max(3L, std::min(art_cell.right - art_cell.left, art_cell.bottom - art_cell.top) / 3);
+        if (seat == "ring" || seat == "ring2" || art_key(carried_i) == "coins") {
+          vector_art::fill_ell(dc, cx_icon, cy_icon, radius, radius, RGB(191, 156, 74), RGB(92, 71, 33));
+          if (art_key(carried_i) != "coins")
+            vector_art::fill_ell(dc, cx_icon, cy_icon, std::max(1, radius - 3 * s), std::max(1, radius - 3 * s), RGB(24, 26, 23), RGB(92, 71, 33));
         } else {
-          while (line0.size() > 1 && measure_px(line0) > name_max_w)
-            line0.pop_back();
-          line1 = full_name.substr(line0.size());
-          while (!line1.empty() && line1.front() == ' ') line1.erase(0, 1);
+          const char* symbol = seat == "armor" ? "BODY" : seat == "head" ? "HEAD" : seat == "gloves" ? "GLV" : "GEAR";
+          auto old_font = SelectObject(dc, skin::font_small());
+          SetTextColor(dc, RGB(208, 191, 143));
+          DrawTextA(dc, symbol, -1, &art_cell, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+          SelectObject(dc, old_font);
         }
       }
-      rl.push_back({render::Op::PaneItem, static_cast<double>(cx),
-                    static_cast<double>(cy), 0.0, items[carried_i].attack_bonus,
-                    equipped ? full_name + " [E]" : full_name});
-      if (!verdigris::client::ui::pack_caption_is_period_clip(full_name,
-                                                             line0) &&
-          !verdigris::client::ui::pack_caption_is_period_clip(full_name,
-                                                             line1))
-        rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "pack-name:full"});
-      rl.push_back({render::Op::Hud, static_cast<double>(col),
-                    static_cast<double>(row), 0.0,
-                    static_cast<int>(cell_item.id),
-                    "pack:" + std::to_string(col) + "," + std::to_string(row)});
-      state.hud_rect_trace.push_back(
-          {"pane-cell", {cx, cy, cell_w, cell_h}});
-      TextOutA(dc, cx + 4 * s, cell.bottom - (line1.empty() ? 17 : 30) * s,
-               line0.c_str(), static_cast<int>(line0.size()));
-      if (!line1.empty())
-        TextOutA(dc, cx + 4 * s, cell.bottom - 16 * s, line1.c_str(),
-                 static_cast<int>(line1.size()));
-      SetTextColor(dc, RGB(170, 185, 172));
-      std::string bonus = "+" + std::to_string(items[carried_i].attack_bonus) +
-                          (equipped ? " [E]" : "");
-      SIZE bonus_extent{};
-      GetTextExtentPoint32A(dc, bonus.c_str(), static_cast<int>(bonus.size()),
-                            &bonus_extent);
-      TextOutA(dc, cell.right - bonus_extent.cx - 4 * s, cell.top + 2 * s,
-               bonus.c_str(), static_cast<int>(bonus.size()));
-      SelectObject(dc, cell_font);
-      if (mx >= cx && mx < cx + cell_w && my >= cy && my < cy + cell_h) {
-        hover_i = static_cast<int>(carried_i);
-        hover_cx = cx;
-        hover_cy = cy;
+      if (items[carried_i].quantity > 1) {
+        const auto quantity = std::to_string(items[carried_i].quantity);
+        RECT label = cell;
+        SelectObject(dc, skin::font_small());
+        SetTextColor(dc, RGB(240, 224, 178));
+        DrawTextA(dc, quantity.c_str(), -1, &label, DT_RIGHT | DT_BOTTOM | DT_SINGLELINE);
+      }
+      rl.push_back({render::Op::PaneItem, static_cast<double>(cx), static_cast<double>(cy),
+                    0.0, items[carried_i].attack_bonus, items[carried_i].name});
+      rl.push_back({render::Op::Hud, static_cast<double>(col), static_cast<double>(row),
+                    0.0, billboard ? 1 : 0, billboard ? "pack-glyph:billboard" : "pack-glyph:vector"});
+      rl.push_back({render::Op::Hud, static_cast<double>(col), static_cast<double>(row), 0.0,
+                    static_cast<int>(cell_item.id), "pack:" + std::to_string(col) + "," + std::to_string(row)});
+      state.hud_rect_trace.push_back({"pane-cell", {cx, cy, cell.right - cx, cell.bottom - cy}});
+      if (PtInRect(&cell, POINT{mx, my})) {
+        hover_i = static_cast<int>(carried_i); hover_cx = cx; hover_cy = cy;
       }
     }
     if (state.pack_drag_live && state.pack_preview_x >= 0 &&
@@ -4860,7 +4899,11 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
                                                    : RGB(196, 58, 48));
       HGDIOBJ gp = SelectObject(dc, ghost);
       HGDIOBJ gb = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
-      Rectangle(dc, cx, cy, cx + cell_w, cy + cell_h);
+      const auto drag_index = inventory_grid::find_index(state.pack_grid, state.pack_drag_id);
+      const int drag_w = drag_index < inventory_grid::kMaxItems ? state.pack_grid.items[drag_index].width : 1;
+      const int drag_h = drag_index < inventory_grid::kMaxItems ? state.pack_grid.items[drag_index].height : 1;
+      Rectangle(dc, cx, cy, cx + drag_w * (cell_w + pack.gap) - pack.gap,
+                          cy + drag_h * (cell_h + pack.gap) - pack.gap);
       SelectObject(dc, gb);
       SelectObject(dc, gp);
       DeleteObject(ghost);
@@ -4869,6 +4912,14 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
                     state.pack_preview_ok ? 1 : 0,
                     state.pack_preview_ok ? "pack-preview:ok"
                                           : "pack-preview:reject"});
+    }
+    for (std::size_t slot_i = 0; slot_i < paper_doll::kSlotCount; ++slot_i) {
+      if (!PtInRect(&pack.seats[slot_i], POINT{mx, my})) continue;
+      if (const auto* worn = doll_item(slot_i)) {
+        hover_i = static_cast<int>(worn - items.data());
+        hover_cx = pack.seats[slot_i].left;
+        hover_cy = pack.seats[slot_i].top;
+      }
     }
     if (hover_i < 0) {
       hover_i = static_cast<int>(
@@ -4887,6 +4938,7 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
       }
     }
     const WorldCarriedItem& focus = items[static_cast<std::size_t>(hover_i)];
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "pack-name:full"});
     std::vector<std::string> facts;
     facts.push_back("ATK +" + std::to_string(focus.attack_bonus));
     const bool as_equipped = verdigris::client::ui::paint_focus_as_equipped(
@@ -4896,8 +4948,10 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
     else if (as_equipped) {
       facts.push_back("currently equipped");
     } else {
-      const int baseline = verdigris::client::ui::compare_baseline(
-          state.equip_view, equipped_bonus);
+      int baseline = 0;
+      for (const auto& worn : items)
+        if (worn.equipped && (worn.equip_seat == focus.equip_seat ||
+            (!state.session && worn.equip_seat.empty()))) baseline = worn.attack_bonus;
       const int delta = focus.attack_bonus - baseline;
       if (delta > 0)
         facts.push_back("+" + std::to_string(delta) + " vs equipped");
@@ -6518,11 +6572,12 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
   int equipped_bonus = 0;
   std::string weapon = "(unarmed)";
   for (const auto& item : state.world.carried)
-    if (item.equipped) {
+    if (item.equipped && (item.equip_seat == "right_hand" || item.equip_seat.empty())) {
       equipped_bonus = item.attack_bonus;
       weapon = item.name;
       break;
     }
+  if (player.combat_stats_present) equipped_bonus = player.gear_attack;
   int attr_str = 10, attr_dex = 10, attr_int = 10;
   std::string passive = "none posted";
   if (state.session) {
@@ -6987,7 +7042,7 @@ void paint_trade_pane(ClientState& state, HDC dc, const RECT& bounds,
 
 vector_art::Held equipped_held(const ClientState& state) {
   for (const auto& item : state.world.carried) {
-    if (!item.equipped) continue;
+    if (!item.equipped || (!item.equip_seat.empty() && item.equip_seat != "right_hand")) continue;
     std::string id = item.id;
     std::string name = item.name;
     if (state.session) {
@@ -10629,7 +10684,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     const int audio_scale = hud_scale(static_cast<int>(bounds.bottom));
     const bool show_mixer = state.audio_sink && (!state.camera.perspective || state.debug_overlay);
     const skin::HudTextLines mixer_lines =
-        show_mixer ? audio_mixer_lines(state) : skin::HudTextLines{};
+        show_mixer ? audio_mixer_lines(state, state.gear_overlay && state.character_pane &&
+            static_cast<int>(bounds.right) < 1148 * audio_scale) : skin::HudTextLines{};
     const auto mixer_plan = skin::measure_hud_card(dc, 180 * audio_scale,
                                                   mixer_lines);
     const auto chip_size = [](const SIZE& extent, bool visible) {
@@ -11476,6 +11532,7 @@ std::string isolated_bindings_path() {
 // TASK-0153: production gear-pane toggle, shared verbatim by the Win32 key
 // path and the scenario harness ('I' opens/closes; Esc closes when open).
 void toggle_gear_overlay(ClientState& state) {
+  cancel_pack_drag(state);
   sync_world(state);
   state.gear_overlay = !state.gear_overlay;
   state.selected_item = 0;
@@ -11622,6 +11679,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
     }
     case WM_KILLFOCUS:
       if (state) {
+        cancel_pack_drag(*state);
         state->w = state->a = state->s = state->d = false;
         state->move_tap_pending = false;
         state->primary_down = false;
@@ -11632,6 +11690,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       break;
     case WM_CAPTURECHANGED:
       if (state && reinterpret_cast<HWND>(lparam) != window) {
+        cancel_pack_drag(*state);
         // Capture may be taken away before a mouse-up reaches this window.
         state->held_gameplay_attacks.erase(VK_LBUTTON);
         state->held_gameplay_attacks.erase(VK_RBUTTON);
@@ -11832,9 +11891,16 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         if (wparam == VK_RIGHT)
           state->selected_item = std::min(count - 1, state->selected_item + 1);
         if (wparam == VK_RETURN) equip_selected(*state);
-        if (wparam == 'U' && state->simulation) {
-          queue_local_command(*state, verdigris::Command::unequip());
-          show_hint(*state, "Weapon unequipped");
+        if (wparam == 'U') {
+          const auto& item = state->world.carried[std::min(state->selected_item, count - 1)];
+          if (item.equipped && state->session) {
+            verdigris::client::ClientCommand command;
+            command.type = verdigris::client::ClientCommand::Type::Unequip;
+            command.target = item.equip_seat;
+            state->session->submit(command);
+          } else if (state->simulation) {
+            queue_local_command(*state, verdigris::Command::unequip());
+          }
         }
       }
       if (wparam >= '1' && wparam <= '9' && state->session) {
@@ -11943,13 +12009,21 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
           const int mx = GET_X_LPARAM(lparam);
           const int my = GET_Y_LPARAM(lparam);
           reconcile_pack_grid(*state);
-          if (pack_hit_seat(pack, mx, my)) {
-            equip_selected(*state);
+          const int seat = pack_hit_seat(pack, mx, my);
+          if (seat >= 0) {
+            for (std::size_t i = 0; i < state->world.carried.size(); ++i) {
+              const auto& item = state->world.carried[i];
+              if (item.equipped && (item.equip_seat == kDollSeats[seat] ||
+                  (item.equip_seat.empty() && seat == paper_doll::slot_index(paper_doll::Slot::MainHand))))
+                state->selected_item = i;
+            }
           } else {
             int gx = -1;
             int gy = -1;
-            if (pack_hit_cell(pack, mx, my, gx, gy))
+            if (pack_hit_cell(pack, mx, my, gx, gy)) {
               pack_begin_drag(*state, gx, gy);
+              if (state->pack_drag_live) SetCapture(window);
+            }
           }
         } else if (click_npc(*state, window, GET_X_LPARAM(lparam),
                              GET_Y_LPARAM(lparam))) {
@@ -11971,7 +12045,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       if (state) {
         state->primary_down = false;
         state->held_gameplay_attacks.erase(VK_LBUTTON);
-        if (!state->held_gameplay_attacks.contains(VK_RBUTTON) && GetCapture() == window)
+        if (!state->pack_drag_live && !state->held_gameplay_attacks.contains(VK_RBUTTON) && GetCapture() == window)
           ReleaseCapture();
         release_held_gameplay_attack(*state);
       }
@@ -11985,14 +12059,15 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         int gx = -1;
         int gy = -1;
         if (pack_hit_cell(pack, mx, my, gx, gy)) {
-          state->pack_preview_x = gx;
-          state->pack_preview_y = gy;
+          state->pack_preview_x = gx - state->pack_grab_x;
+          state->pack_preview_y = gy - state->pack_grab_y;
           state->pack_preview_ok = pack_can_land(
-              state->pack_grid, state->pack_drag_id, gx, gy);
+              state->pack_grid, state->pack_drag_id, state->pack_preview_x, state->pack_preview_y);
         } else {
           state->pack_preview_ok = false;
         }
         pack_commit_drop(*state, pack_hit_seat(pack, mx, my));
+        if (GetCapture() == window) ReleaseCapture();
       }
       break;
     case WM_RBUTTONDOWN:
@@ -12941,7 +13016,7 @@ int scenario_loot_to_bank() {
     state.pack_preview_y = 1;
     state.pack_preview_ok =
         pack_can_land(state.pack_grid, pid, 2, 1);
-    pack_commit_drop(state, false);
+    pack_commit_drop(state, -1);
     scenario_check(state.pack_last_drop == "ok" &&
                        inventory_grid::item_at(state.pack_grid, 2, 1) == pid,
                    "loot-to-bank: valid pack drop moves the item");
@@ -12955,7 +13030,7 @@ int scenario_loot_to_bank() {
     state.pack_preview_x = 20;
     state.pack_preview_y = 20;
     state.pack_preview_ok = false;
-    pack_commit_drop(state, false);
+    pack_commit_drop(state, -1);
     scenario_check(state.pack_last_drop == "reject" &&
                        inventory_grid::item_at(state.pack_grid, 2, 1) == pid &&
                        state.world.carried.size() == carried_n,
@@ -17481,8 +17556,9 @@ int scenario_equipment() {
          item.label == "pack-glyph:billboard"))
       pack_glyph = true;
   }
-  scenario_check(pack_glyph,
-                 "equipment: pack cells paint a weapon glyph, not a grey crate");
+  scenario_check(render_list_has(state, render::Op::Hud, "paperdoll-slot:right_hand:filled") &&
+                 inventory_grid::find_index(state.pack_grid, pack_stable_id(carried_id)) == inventory_grid::kMaxItems,
+                 "equipment: acknowledged weapon occupies the paper doll without a backpack duplicate");
   scenario_check(!vector_art::grey_pack_icon_fails_review(
                      vector_art::kPackGlyphHasBlade,
                      vector_art::kPackGlyphHasGuard),
@@ -19843,7 +19919,7 @@ int scenario_pack_drag() {
   state.pack_preview_x = 2;
   state.pack_preview_y = 1;
   state.pack_preview_ok = pack_can_land(state.pack_grid, pid, 2, 1);
-  pack_commit_drop(state, false);
+  pack_commit_drop(state, -1);
   scenario_check(state.pack_last_drop == "ok" &&
                      inventory_grid::item_at(state.pack_grid, 2, 1) == pid,
                  "pack-drag: valid drop moves the item");
@@ -19861,7 +19937,7 @@ int scenario_pack_drag() {
   state.pack_preview_x = 20;
   state.pack_preview_y = 20;
   state.pack_preview_ok = false;
-  pack_commit_drop(state, false);
+  pack_commit_drop(state, -1);
   bool equipped = false;
   for (const auto& item : state.world.carried)
     if (item.equipped) equipped = true;
@@ -22200,6 +22276,7 @@ int scenario_frontend_flow() {
 }
 
 #include "consolidation_scenarios.hpp"
+#include "inventory_scenarios.hpp"
 
 int run_scenarios(const std::string& which) {
   struct Entry {
@@ -22208,6 +22285,7 @@ int run_scenarios(const std::string& which) {
   };
   const Entry entries[] = {
       {"consolidated-flow", scenario_consolidated_flow},
+      {"inventory-equipment", scenario_inventory_equipment},
       {"quick-movement-tap", scenario_quick_movement_tap},
       {"lineage-art", scenario_lineage_art},
       {"fable-world", scenario_fable_world},

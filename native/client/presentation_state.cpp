@@ -142,6 +142,10 @@ void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& s
     world.player.resource_max = player->stats.resource_max;
     world.player.attack = player->stats.attack;
     world.player.defense = player->stats.defense;
+    world.player.combat_stats_present = true;
+    world.player.gear_attack = 0;
+    for (const auto& item : sim.scion().carried_items)
+      if (item.equipped) world.player.gear_attack = item.attack_bonus;
     world.player.level = player->stats.level;
     world.player.cooldown_ticks = player->cooldown_ticks;
     world.player.war_cry_ticks_remaining = player->war_cry_ticks_remaining;
@@ -232,6 +236,9 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
   world.player.resource = model.player.resource;
   world.player.resource_max = model.player.resource_max;
   world.player.attack = model.player.attack;
+  world.player.defense = model.player.defense;
+  world.player.gear_attack = model.player.gear_attack;
+  world.player.combat_stats_present = model.player.combat_stats_present;
   world.player.level = model.player.level;
   world.player.alive = model.player.alive;
   world.has_extraction = model.scene.has_stairs_up;
@@ -312,7 +319,7 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     const std::string label = item.name.empty() ? item.id : item.name;
     world.carried.push_back({item.uuid, label, item.attack_rating, false,
                              item.width, item.height, item.quantity,
-                             item.equip_slot, item.two_handed});
+                             item.equip_slot, item.two_handed, item.slot});
   }
   // Worn equipment is authoritative and lives outside the backpack. Keep it
   // in the same presentation collection so the gear pane can render the

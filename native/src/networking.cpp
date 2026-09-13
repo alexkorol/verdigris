@@ -454,6 +454,8 @@ int item_level_of(const GameItem& item) { return item.item_level(); }
 // dev.js snapshotItem.
 JsonValue snapshot_item_json(const GameItem& item) {
   JsonValue::Object out;
+  put(out, "equipSlot", item.equip_slot);
+  put(out, "twoHanded", item.two_handed);
   put(out, "id", item.id);
   put(out, "uuid", item.uuid);
   put(out, "name", item.name);
@@ -471,6 +473,8 @@ JsonValue snapshot_item_json(const GameItem& item) {
 // dev.js itemIdentity (server/shared item identity projection).
 JsonValue item_identity_json(const GameItem& item) {
   JsonValue::Object out;
+  put(out, "equipSlot", item.equip_slot);
+  put(out, "twoHanded", item.two_handed);
   put(out, "slot", item.slot >= 0 ? JsonValue(item.slot) : JsonValue(nullptr));
   put(out, "id", item.id);
   put(out, "uuid", item.uuid);
@@ -837,8 +841,10 @@ std::string ProtocolSession::player_payload() const {
   put(player,"uuid",identity_); put(player,"username",!username_.empty()?username_:(active_scion_name_.empty()?identity_:active_scion_name_)); put(player,"socket_id",socket_id_); put(player,"sceneId",world_->scene_id()); put(player,"x",position.x); put(player,"y",position.y); put(player,"facing",world_->facing());
   { const auto* actor=simulation_->actor(simulation_->scion().actor_id); put(player,"level",actor?actor->stats.level:1); }
   put(player,"passiveTree",passive_tree_json());
+  put(player,"wearDetails",wear_details_json());
+  put(player,"combat",combat_totals_json());
   put(player,"quests",quests_json());
-  JsonValue::Array slots; for (const auto& item:inventory_.items()) { JsonValue::Object value; put(value,"id",item.id); put(value,"uuid",item.uuid); put(value,"name",item.name); if(item.slot>=0) put(value,"slot",item.slot); else put(value,"slot",nullptr); slots.emplace_back(std::move(value)); }
+  JsonValue::Array slots; for (const auto& item:inventory_.items()) slots.emplace_back(item_identity_json(item));
   JsonValue::Object inventory; put(inventory,"slots",std::move(slots)); put(player,"inventory",std::move(inventory));
   JsonValue::Object chronicles; put(chronicles,"mortal",mortal_oath_); put(chronicles,"scionId",active_scion_id_.empty()?JsonValue(nullptr):JsonValue(active_scion_id_)); put(chronicles,"houseId",active_house_id_.empty()?JsonValue(nullptr):JsonValue(active_house_id_)); put(player,"chronicles",std::move(chronicles));
   return JsonValue(std::move(player)).stringify();
@@ -1023,6 +1029,15 @@ const TownNpc kTownNpcs[] = {
 JsonValue ProtocolSession::combat_totals_json() const {
   const auto totals = wear_.totals();
   JsonValue::Object combat;
+  if (const auto* actor = simulation_->actor(simulation_->scion().actor_id)) {
+    put(combat, "baseAttack", actor->stats.attack);
+    put(combat, "baseDefense", actor->stats.defense);
+    put(combat, "gearDefense", (std::max)(0, (std::max)((std::max)(totals.defense.stab, totals.defense.slash),
+                                                     (std::max)(totals.defense.crush, totals.defense.range))));
+    const int gear = (std::max)(0, (std::max)((std::max)(totals.attack.stab, totals.attack.slash),
+                                           (std::max)(totals.attack.crush, totals.attack.range)));
+    put(combat, "gearAttack", gear);
+  }
   put(combat, "attack", ratings_json(totals.attack));
   put(combat, "defense", ratings_json(totals.defense));
   put(combat, "blockChance", totals.modifiers.block_chance);
@@ -1387,34 +1402,43 @@ void ProtocolSession::handle_equip(const JsonValue& payload, const std::function
   const auto* item_data=payload.get("item");
   const std::string uuid=as_string(item_data?item_data->get("uuid"):nullptr);
   const std::string target=as_string(item_data?item_data->get("targetSlot"):nullptr);
-  GameItem item;
-  if (uuid.empty()||!inventory_.remove_by_uuid(uuid,&item)) {
-    // JS sendInventoryError: game:send:message + inventory refresh, no mutation.
-    emit_message(emit,"That item is no longer in your inventory.");
+  auto reject = [&](const std::string& reason) {
+    emit_message(emit, reason);
+    emit(Envelope{"item:equip:rejected", JsonValue::Object{{"uuid", uuid}, {"reason", reason}}});
     emit_inventory_refresh(emit);
-    return;
+  };
+  const GameItem* candidate = inventory_.find_by_uuid(uuid);
+  if (!candidate) { reject("That item is no longer in your inventory."); return; }
+  const ItemDef* def = item_def(candidate->id);
+  const std::string base = !candidate->equip_slot.empty() ? candidate->equip_slot : (def ? def->slot : "");
+  if (base.empty() || (!target.empty() && !WearSet::can_use_seat(base, target))) {
+    reject("This item does not fit that seat."); return;
   }
-  const ItemDef* def=item_def(item.id);
-  const std::string base=!item.equip_slot.empty()?item.equip_slot:(def?def->slot:"");
-  if (base.empty()) { inventory_.add(std::move(item)); emit_inventory_refresh(emit); return; }
-  const std::string seat=wear_.resolve_seat(base,target);
-  auto displaced=wear_.equip(std::move(item),seat);
-  bool spilled=false;
+  const std::string seat = wear_.resolve_seat(base, target);
+  const auto* main_hand = wear_.in_seat("right_hand");
+  if ((seat == "right_hand" && candidate->two_handed && wear_.in_seat("left_hand")) ||
+      (seat == "left_hand" && main_hand && main_hand->two_handed)) {
+    reject("A two-handed weapon needs both hands free."); return;
+  }
+  // Atomic swap: lack of room never spills an owned item onto the floor.
+  const auto inventory_before = inventory_;
+  const auto wear_before = wear_;
+  GameItem item;
+  inventory_.remove_by_uuid(uuid, &item);
+  auto displaced = wear_.equip(std::move(item), seat);
   if (displaced) {
-    displaced->slot=-1;
-    auto result=inventory_.add(std::move(*displaced));
-    // Full backpack mid-swap: the displaced piece spills bound at the feet
-    // (JS aborts the equip instead; documented N4 simplification — the
-    // scenario set never swaps onto a full grid).
-    const auto position=world_->position();
-    for (auto& spill:result.overflow) { world_->add_ground_item(std::move(spill),position.x,position.y); spilled=true; }
+    displaced->slot = -1;
+    if (!inventory_.add(std::move(*displaced)).overflow.empty()) {
+      inventory_ = inventory_before; wear_ = wear_before;
+      reject("Make room in your backpack before swapping equipment."); return;
+    }
   }
   sync_combat_mods();
   emit_inventory_refresh(emit);
   emit_equip_state(emit);
   quest_trigger("equip-vessel", emit);
-  if (spilled) emit_ground_change(emit);
 }
+
 JsonValue ProtocolSession::quests_json() const {
   JsonValue::Object first_goal;
   put(first_goal, "stage", first_goal_stage_);
@@ -2842,6 +2866,20 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     put(party,"id","native-party-"+std::to_string(party_serial++));
     put(party,"members",JsonValue::Array{});
     emit(Envelope{"party:update",JsonValue::Object{{"party",std::move(party)}}});
+    return;
+  }
+  if (envelope.event == "item:unequip") {
+    const std::string seat = as_string(payload ? payload->get("seat") : nullptr);
+    if (!wear_.in_seat(seat)) return;
+    const auto inventory_before = inventory_;
+    const auto wear_before = wear_;
+    auto item = wear_.unequip(seat);
+    item->slot = -1;
+    if (!inventory_.add(std::move(*item)).overflow.empty()) {
+      inventory_ = inventory_before; wear_ = wear_before;
+      emit_message(emit, "Make room in your backpack before unequipping.");
+    } else sync_combat_mods();
+    emit_inventory_refresh(emit); emit_equip_state(emit);
     return;
   }
   if (envelope.event=="item:equip") { if (payload) handle_equip(*payload,emit); return; }

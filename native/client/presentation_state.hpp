@@ -96,6 +96,8 @@ struct WorldActor {
   int resource_max = 0;
   int attack = 0;
   int defense = 0;
+  int gear_attack = 0;
+  bool combat_stats_present = false;
   int level = 1;
   int cooldown_ticks = 0;
   int war_cry_ticks_remaining = 0;
@@ -124,6 +126,7 @@ struct WorldCarriedItem {
   int quantity = 1;
   std::string equip_seat;
   bool two_handed = false;
+  int grid_slot = -1;
 };
 
 // A town NPC as the presentation sees it: authoritative roster entry with a

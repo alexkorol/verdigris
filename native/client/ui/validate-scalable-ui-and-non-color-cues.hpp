@@ -7,7 +7,7 @@
 namespace verdigris::client::ui {
 
 inline const char* owner_gear_footer_place_label() {
-  return "Drag to place | drop on Weapon";
+  return "Drag to place | drop on matching seat";
 }
 
 inline const char* owner_gear_close_label() {

@@ -12,14 +12,14 @@
 
 namespace inventory_grid {
 
-// WIZARD Brands & Bonds main backpack: horizontal 12x6.
+// Matches the authoritative native PlayerInventory: horizontal 12x7.
 inline constexpr std::uint8_t kDefaultWidth = 12;
-inline constexpr std::uint8_t kDefaultHeight = 6;
+inline constexpr std::uint8_t kDefaultHeight = 7;
 inline constexpr std::uint8_t kMaxGridWidth = 12;
-inline constexpr std::uint8_t kMaxGridHeight = 6;
+inline constexpr std::uint8_t kMaxGridHeight = 7;
 inline constexpr std::size_t kMaxCells =
     static_cast<std::size_t>(kMaxGridWidth) * kMaxGridHeight;
-inline constexpr std::size_t kMaxItems = 48;
+inline constexpr std::size_t kMaxItems = kMaxCells;
 
 struct Item {
   std::uint32_t id = 0;
