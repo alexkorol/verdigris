@@ -1,5 +1,18 @@
 # Native reconstitution handoff
 
+## 2026-09-12 — Standing commit/push preference
+
+The owner reported recurring friction from blanket push bans. `AGENTS.md`
+now makes normal working-branch pushes part of authorized implementation,
+unless the user explicitly requests local-only work. PROTOCOL, BUS, the lane
+map, old lease rules, the draft governance decision, and the reusable
+coordinator prompt now defer to that policy. Preserve it in future sprint
+prompts and handoffs. Historical reports are evidence, not new restrictions.
+
+This milestone changes instructions only. Validation: reviewed the complete
+diff, checked whitespace and lease JSON, and searched active guidance for
+conflicting push restrictions. No gameplay behavior changed or was tested.
+
 ## 2026-09-10 — Terrain/wall integration; owner-requested ship and pause
 
 Quiet earth now serves dungeons; the new quiet stone serves crypts. Raster
