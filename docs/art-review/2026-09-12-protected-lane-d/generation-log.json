@@ -1,0 +1,58 @@
+[
+  {
+    "generation": 1,
+    "id": "bowl01",
+    "mode": "built_in_image_gen",
+    "copiedTo": "originals/bowl-01-bronze.png",
+    "providerSaveNotice": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a0979e-69cd-7831-a79f-d7925a5d776e as C:\\Users\\Alex\\.codex\\generated_images\\01a0979e-69cd-7831-a79f-d7925a5d776e\\exec-85a33805-cb25-4f04-bd83-e6be791374b6.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "approved": false
+  },
+  {
+    "generation": 2,
+    "id": "bowl02",
+    "mode": "built_in_image_gen",
+    "copiedTo": "originals/bowl-02-clay.png",
+    "providerSaveNotice": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a0979e-69cd-7831-a79f-d7925a5d776e as C:\\Users\\Alex\\.codex\\generated_images\\01a0979e-69cd-7831-a79f-d7925a5d776e\\exec-4fc1ea99-945e-4e4a-971d-99cbeecd50e0.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "approved": false
+  },
+  {
+    "generation": 3,
+    "id": "tree01",
+    "mode": "built_in_image_gen",
+    "copiedTo": "originals/tree-01-dense.png",
+    "providerSaveNotice": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a0979e-69cd-7831-a79f-d7925a5d776e as C:\\Users\\Alex\\.codex\\generated_images\\01a0979e-69cd-7831-a79f-d7925a5d776e\\exec-19d639cb-de0a-431c-814b-3e4b67627792.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "approved": false
+  },
+  {
+    "generation": 4,
+    "id": "tree02",
+    "mode": "built_in_image_gen",
+    "copiedTo": "originals/tree-02-airy.png",
+    "providerSaveNotice": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a0979e-69cd-7831-a79f-d7925a5d776e as C:\\Users\\Alex\\.codex\\generated_images\\01a0979e-69cd-7831-a79f-d7925a5d776e\\exec-730d5741-adcb-436e-ad9c-98c96de49bb9.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "approved": false
+  },
+  {
+    "generation": 5,
+    "id": "ui01",
+    "mode": "built_in_image_gen",
+    "copiedTo": "originals/ui-01-button.png",
+    "providerSaveNotice": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a0979e-69cd-7831-a79f-d7925a5d776e as C:\\Users\\Alex\\.codex\\generated_images\\01a0979e-69cd-7831-a79f-d7925a5d776e\\exec-8af2db90-a0e4-49e1-8f85-1873321c52e6.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "approved": false
+  },
+  {
+    "generation": 6,
+    "id": "ui02",
+    "mode": "built_in_image_gen",
+    "copiedTo": "originals/ui-02-panel.png",
+    "providerSaveNotice": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a0979e-69cd-7831-a79f-d7925a5d776e as C:\\Users\\Alex\\.codex\\generated_images\\01a0979e-69cd-7831-a79f-d7925a5d776e\\exec-278fcb99-de91-40a6-b1a5-cfbe9f9b6038.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "approved": false
+  },
+  {
+    "generation": 7,
+    "id": "ui02retry",
+    "mode": "built_in_image_gen",
+    "copiedTo": "originals/ui-02-panel-alpha-retry.png",
+    "providerSaveNotice": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a0979e-69cd-7831-a79f-d7925a5d776e as C:\\Users\\Alex\\.codex\\generated_images\\01a0979e-69cd-7831-a79f-d7925a5d776e\\exec-dba8a727-43a6-4e21-82b4-e88596a7becf.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "approved": false
+  }
+]

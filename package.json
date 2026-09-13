@@ -29,13 +29,15 @@
     "test:e2e:built": "start-server-and-test start:e2e http://127.0.0.1:6500 \"playwright test\"",
     "format": "eslint . --fix",
     "playtest": "node playtest/run.mjs",
+    "verify:native": "powershell -NoProfile -ExecutionPolicy Bypass -File native/tools/verify-native.ps1",
+    "verify:legacy": "npm run lint && npm run lint:css && npm run test:unit && npm run build && npm run playtest && npm run test:e2e:built",
     "bench:instance": "node bench/instance-generation.mjs",
     "security:audit": "npm audit --omit=dev",
     "smoke:public": "node playtest/public-smoke.mjs",
     "smoke:production-local": "node playtest/local-production-smoke.mjs",
     "smoke:browser": "npm run build && start-server-and-test start:e2e http://127.0.0.1:6500 \"playwright test tests/e2e/browser-critical-loop.spec.mjs\"",
     "smoke:public-tunnel": "node playtest/public-tunnel-smoke.mjs",
-    "verify": "npm run lint && npm run lint:css && npm run test:unit && npm run build && npm run playtest && npm run test:e2e:built"
+    "verify": "npm run verify:native"
   },
   "dependencies": {
     "axios": "^1.7.7",

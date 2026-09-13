@@ -69,6 +69,9 @@ target_link_libraries(verdigris_presentation_events_tests PRIVATE verdigris_clie
 add_executable(verdigris_audio_mixer_tests tests/audio_mixer_tests.cpp)
 target_link_libraries(verdigris_audio_mixer_tests PRIVATE verdigris_audio)
 
+add_executable(verdigris_user_settings_tests tests/user_settings_tests.cpp)
+target_link_libraries(verdigris_user_settings_tests PRIVATE verdigris_audio)
+
 add_executable(verdigris_client client/main.cpp client/remote_play.cpp)
 target_include_directories(verdigris_client PRIVATE client)
 target_link_libraries(verdigris_client PRIVATE verdigris_core verdigris_client_session)
@@ -84,4 +87,5 @@ add_test(NAME camera2d_tests COMMAND camera2d_tests)
 add_test(NAME verdigris_session_tests COMMAND verdigris_session_tests)
 add_test(NAME verdigris_presentation_events_tests COMMAND verdigris_presentation_events_tests)
 add_test(NAME verdigris_audio_mixer_tests COMMAND verdigris_audio_mixer_tests)
+add_test(NAME verdigris_user_settings_tests COMMAND verdigris_user_settings_tests)
 add_test(NAME verdigris_client_scenarios COMMAND verdigris_client --scenario all)
