@@ -1,0 +1,71 @@
+{
+  "baseline": "baseline/tree-01-guide.blend",
+  "camera_unchanged": {
+    "matrix_world": [
+      [
+        0.8637788891792297,
+        -0.17063233256340027,
+        0.4740997850894928,
+        7.0
+      ],
+      [
+        0.5038710236549377,
+        0.2925124764442444,
+        -0.8127425312995911,
+        -12.0
+      ],
+      [
+        5.8105783296014124e-08,
+        0.9409149885177612,
+        0.33864277601242065,
+        8.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "ortho_scale": 7.300000190734863
+  },
+  "lighting_unchanged": true,
+  "retained_meshes": [
+    "Cone",
+    "Cone.001",
+    "Cone.002",
+    "Cone.003",
+    "Cone.004",
+    "Cone.005",
+    "Cone.006",
+    "Cone.007",
+    "Cone.008",
+    "Cone.009",
+    "Cone.010"
+  ],
+  "logical_canvas": [
+    136,
+    272
+  ],
+  "reference_hero_visible_rows": 63,
+  "adult_model_height_assumption": 1.8,
+  "projected_adult_fraction": 0.23200637102127075,
+  "scale_status": "Measured hero pixels; model-world adult height provisional. No canonical player-plane calibration found.",
+  "seed": 301,
+  "appearance_generation_performed": false,
+  "runtime_integrated": false,
+  "review_status": "unapproved model-stage revision",
+  "foliage_group_weights": [
+    1.0,
+    0.6,
+    1.12,
+    0.78,
+    0.4,
+    1.1,
+    0.7,
+    0.5,
+    1.05,
+    0.83,
+    0.86
+  ]
+}

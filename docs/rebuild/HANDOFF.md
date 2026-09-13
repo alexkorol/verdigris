@@ -2127,3 +2127,14 @@ Load-bearing findings for successors:
 
 Remaining axes: presentation deltas #3/#4 (surface density TASK-0078,
 panels/typography unspecced), Gate B Chronicles client (TASK-0077).
+
+## 2026-09-13: isolated Tree 01 model review
+
+Codex prepared `docs/art-review/2026-09-13-tree01-model/` from the recovered
+Tree 01 source. Original/revised model and logical-pixel/player comparisons
+are rendered and visually inspected. Real-alpha exact-4x reference is ready
+for model-stage critique; no appearance generation or runtime integration.
+Scale uses measured 63-row hero art and a provisional 1.8-unit adult.
+The owner has not approved this model or its scale. Recovered sprint native
+package verification remains paused at settings save/relaunch after the
+owner stopped Computer Use; this art branch does not publish that sprint.

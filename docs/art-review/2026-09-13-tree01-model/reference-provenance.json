@@ -1,0 +1,37 @@
+{
+  "reference_player": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-tree01-model-review-20260913\\native\\client\\assets\\raster\\runtime\\hero_se.png",
+  "reference_player_sha256": "56a882d079b83d942c42340ac9155b25ddbd923d436173019e8f2bd4ed5d28f7",
+  "player_crop": [
+    26,
+    33,
+    53,
+    96
+  ],
+  "logical_normalization": "16 gray levels, alpha threshold128; no resize",
+  "enlargement": {
+    "factor": 4,
+    "filter": "nearest-neighbor",
+    "path": "preappearance-reference-4x.png"
+  },
+  "reference_supplied_to_appearance_model": null,
+  "appearance_generation_performed": false,
+  "approval": "pending model-stage review",
+  "runtime_integrated": false,
+  "sha256": {
+    "baseline/tree-01-dense.png": "da73ce18ef19f8a2e2a3c6fe4c34009d267d199f4245da662b4b81b0ab4c1a2e",
+    "baseline/tree-01-guide.blend": "24f0e6d3af446b70e7db0fb0ec2f9e034328d9a311228bd0406c2232a860bb06",
+    "build_comparison.py": "cec26ef7337e006e844ad4a10cf0a7fa949cbae9a5f90ed52e3479fb7ac54db9",
+    "model-comparison.png": "ed8ba0475680ad009ecc072c9a9723f6fec2bbb11e5a43013da9e1aa22770b01",
+    "original-logical-raw.png": "081805768623d3de98e7ce19bd3ab9c32a38c7fd0d9109bd0114751362d6e042",
+    "original-logical.png": "868138fb9b722892ba96d185370de61d468ea6aeed02383b0e869393b43186c2",
+    "original-model.png": "e42f57dadf080417f5c77f660c6b4097bdffa51630ad8729294728320cbd5505",
+    "pixel-comparison.png": "bca8b63bd89d0ad5f14d8135aed5c1cb153ec765ab43e259c4f7bb8cd4d46e6b",
+    "preappearance-reference-4x.png": "329194a3e77a3711db51cbe6cfd6c11facc8f3e1b51e9d3b05532025d691a44c",
+    "revise_model.py": "4dcf5fa7031b8e6f2568d440452b1f804034a17edfb33014f167a445ed99d653",
+    "revised-branches.png": "e748add9655aea998e9d69c64409f63222b85add6e18927eb0dc4afcedf2ef5a",
+    "revised-logical-raw.png": "247fe05ce8908d6640f404aac9fd284b1883154e0080265815be84788ee1b554",
+    "revised-logical.png": "9d2c07895e3076bb741a388fd55dc6cf85b8b7d4e72ff9843e630bb402a6d73d",
+    "revised-model.png": "43ceb851d1f933ef88262c7c8e483b652c482e568d298918fde8dc2bac4b0f3a",
+    "tree-01-revised.blend": "ac325336eff132e279824f0aa1f15af5745e109fafc4cc4d2973b75dbeeaedb8"
+  }
+}
