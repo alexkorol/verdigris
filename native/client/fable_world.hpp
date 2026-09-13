@@ -129,7 +129,7 @@ struct Renderer {
     if (!size.valid()) return {};
     RECT canvas{0,0,size.width,size.height};
     if(held!=vector_art::Held::None) {
-      const char* weapon=held==vector_art::Held::Axe?"weapon_axe":held==vector_art::Held::Staff?"weapon_staff":
+      const char* weapon=held==vector_art::Held::Handstone?"weapon_handstone":held==vector_art::Held::Axe?"weapon_axe":held==vector_art::Held::Staff?"weapon_staff":
           held==vector_art::Held::Bow?"weapon_bow":held==vector_art::Held::Club?"weapon_club":"weapon_sword";
       const auto plan=raster_equipment::compute(name.c_str(),weapon,size.width/2,size.height,size.height);
       if(plan.valid()) {RECT combined{};UnionRect(&combined,&canvas,&plan.weapon_bounds);canvas=combined;}

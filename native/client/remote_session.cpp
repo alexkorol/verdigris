@@ -97,6 +97,13 @@ ClientItemSlot parse_item_slot(const JsonValue& entry) {
   if (const auto* equip_slot = json_string(entry.get("equipSlot")))
     slot.equip_slot = *equip_slot;
   slot.two_handed = json_bool(entry.get("twoHanded"), false);
+  if (const auto* vessel = entry.get("vessel")) {
+    if (const auto* item = vessel->get("item")) {
+      const auto* form = json_string(item->get("formId"));
+      const auto* material = json_string(item->get("materialId"));
+      if (form && material) slot.art_key = *form + "_" + *material;
+    }
+  }
   if (const auto* health = entry.get("resourceBonuses")) {
     slot.bonus_health = static_cast<int>(json_number(health->get("health")));
   }

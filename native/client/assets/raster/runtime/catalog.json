@@ -18912,6 +18912,12 @@
       "matte_repair": "neutral_checker_chroma18_min120_largest_connected_body",
       "directional_provenance": "hero-lineage-20260910/hero-female-nw.provenance.json",
       "provenance": "hero-lineage-20260910.provenance.json"
+    },
+    {
+      "name": "weapon_handstone",
+      "file": "weapon_handstone.png",
+      "source": "native/client/assets/wizard/inventory/source/handstone-color.png",
+      "acceptance": "package visual verification recorded in UI repair report"
     }
   ],
   "lineage_sequences": {

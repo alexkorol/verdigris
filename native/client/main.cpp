@@ -362,20 +362,17 @@ int hud_scale(int height) { return std::max(1, height / 700); }
 // The shipped gear pane. Identical numbers to the historical painter, now
 // shared with the planner so global HUD text can never be placed onto it.
 HudRect gear_pane_rect(int width, int height) {
-  const int s = hud_scale(height);
-  // The paper doll and backpack need a real two-column surface. Keep a
-  // measured world lane from the character sheet at the shipped 960-wide
-  // side-by-side size, while retaining a usable minimum on narrow debug
-  // windows.
-  const int pane_w = std::clamp(width - 540 * s, 420 * s, 680 * s);
-  const int pane_top = 24 * s;
-  const int x = std::max(24, width - pane_w - 24);
-  // End above the mana orb's upper edge at the 960x600 side-by-side size;
-  // the backpack grid uses the freed vertical rhythm rather than covering
-  // the combat HUD.
-  const int bottom = std::min(height - 120 * s, pane_top + 440 * s);
-  return {x, pane_top, std::min(pane_w, std::max(0, width - x)),
-          std::max(0, bottom - pane_top)};
+  const int scale=hud_scale(height);
+  const int top=12*scale;
+  const int ph=std::max(320,height-top-96*scale);
+  const int pw=std::min(width-32*scale,static_cast<int>(ph*0.68));
+  return {width-pw-16*scale,top,pw,ph};
+}
+
+RECT player_menu_rect(int width,int height,int index) {
+  const int scale=hud_scale(height),ww=90*scale,gap=5*scale;
+  const int x=width-16*scale-3*ww-2*gap+index*(ww+gap);
+  return {x,12*scale,x+ww,40*scale};
 }
 
 HudRect tree_pane_rect(int width, int height) {
@@ -443,7 +440,7 @@ HudRect character_pane_rect(int width, int height, int extra_rows) {
   if (!(left + pane_w + gap <= bar.x || bar.x + bar.w + gap <= left))
     bottom = std::min(bottom, bar.y - gap);
   if (bottom < top) bottom = top;
-  return {left, top, pane_w, bottom - top};
+  return {left, top, pane_w, std::min(bottom - top,380*s)};
 }
 
 // Offscreen floor cache: the tiled ground re-renders only when the camera
@@ -716,6 +713,7 @@ struct ClientState {
   inventory_grid::State pack_grid{};
   std::string pack_fingerprint;
   std::uint32_t pack_drag_id = 0;
+  bool gear_keyboard_focus = false;
   bool pack_drag_live = false;
   int pack_grab_x = 0, pack_grab_y = 0;
   int pack_preview_x = -1;
@@ -1336,6 +1334,13 @@ void load_framekit_assets(BillboardAssets& assets) {
       if (!load_sprite(assets, root + "/items/" + entry.file, sprite))
         sprite.reset();
     }
+    #include "inventory_art_files.hpp"
+    for(const char* file:kInventoryArtFiles) {
+      std::string key(file);key.resize(key.size()-4);
+      load_sprite(assets,root+"/inventory/"+file,assets.item_art[key]);
+    }
+    load_sprite(assets,root+"/inventory/handstone_flint.png",assets.item_art["handaxe_flint"]);
+    load_sprite(assets,root+"/inventory/frame_ornate.png",assets.ornate_frame);
     return;
   }
 }
@@ -1557,7 +1562,7 @@ void paint_compare_plate(ClientState& state, HDC dc, int x, int y,
   const int s = hud_scale(static_cast<int>(bounds.bottom));
   const int line_h = 16 * s;
   const int pad = 8 * s;
-  const int box_w = widest + pad * 2;
+  const int box_w = std::min(widest + pad * 2, std::min(340*s,static_cast<int>(bounds.right)-16));
   const int box_h = title_extent.cy + static_cast<int>(lines.size()) * line_h +
                     pad * 2;
   int box_x = std::min(x, static_cast<int>(bounds.right) - box_w - 8);
@@ -1572,19 +1577,26 @@ void paint_compare_plate(ClientState& state, HDC dc, int x, int y,
                      std::max(8, static_cast<int>(bounds.bottom) - box_h - 8));
     plate_rect = {box_x, box_y, box_w, box_h};
   }
+  if (state.character_pane) {
+    const auto character=character_pane_rect(bounds.right,bounds.bottom,0);
+    if (hud_rects_overlap(plate_rect,character)) {
+      box_y=std::max(8,character.y-box_h-8);
+      plate_rect={box_x,box_y,box_w,box_h};
+    }
+  }
   RECT plate{box_x, box_y, box_x + box_w, box_y + box_h};
   skin::panel(dc, plate, title_color, 245, 5.0f);
   SetBkMode(dc, TRANSPARENT);
   SelectObject(dc, skin::font_body_bold());
   SetTextColor(dc, title_color);
-  TextOutA(dc, box_x + pad, box_y + pad - 2, title.c_str(),
-           static_cast<int>(title.size()));
+  RECT title_box{box_x+pad,box_y+pad-2,box_x+box_w-pad,box_y+pad+title_extent.cy};
+  DrawTextA(dc,title.c_str(),-1,&title_box,DT_SINGLELINE|DT_END_ELLIPSIS);
   SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kInkDim);
   int fact_y = box_y + pad + title_extent.cy;
   for (const auto& fact : lines) {
-    TextOutA(dc, box_x + pad, fact_y, fact.c_str(),
-             static_cast<int>(fact.size()));
+    RECT fact_box{box_x+pad,fact_y,box_x+box_w-pad,fact_y+line_h};
+    DrawTextA(dc,fact.c_str(),-1,&fact_box,DT_SINGLELINE|DT_END_ELLIPSIS);
     fact_y += line_h;
   }
   SelectObject(dc, old_font);
@@ -2365,7 +2377,7 @@ void equip_selected(ClientState& state) {
   }
   verdigris::client::ui::request_equip(state.equip_view, id);
   submit_equip(state, id);
-  show_hint(state, "Equip requested");
+
 }
 
 COLORREF fade_to_background(COLORREF color, double remaining) {
@@ -4143,7 +4155,7 @@ void ingest_events(ClientState& state, const RECT& bounds) {
       case verdigris::EventType::ItemEquipped:
         verdigris::client::ui::ack_equip(state.equip_view, event.item_id, event.value);
         if (!event.item_id.empty())
-          show_hint(state, "Equipped");
+
         break;
       default:
         break;
@@ -4353,26 +4365,22 @@ constexpr int kDollSlotW = 54;
 constexpr int kDollSlotH = 28;
 constexpr int kDollGap = 4;
 
-RECT paper_doll_slot_rect(int width, int height, std::size_t index) {
-  const HudRect pane = gear_pane_rect(width, height);
-  const int s = hud_scale(height);
-  // A simple anatomical silhouette: head/neck at centre, hands flanking the
-  // body, then cloak/belt/gloves, boots/rings, and the conditional utility
-  // row. This is deliberately not a generic two-column list.
-  static constexpr int kColumns[] = {1, 1, 0, 1, 0, 2, 2,
-                                     1, 1, 0, 2, 0, 1, 2};
-  static constexpr int kRows[] = {0, 1, 2, 2, 3, 2, 3,
-                                  3, 4, 4, 4, 5, 5, 5};
-  const int left = pane.x + 12 * s;
-  const int top = pane.y + 78 * s;
-  const int col = kColumns[std::min<std::size_t>(index, std::size(kColumns) - 1)];
-  const int row = kRows[std::min<std::size_t>(index, std::size(kRows) - 1)];
-  const int slot_w = kDollSlotW * s;
-  const int slot_h = kDollSlotH * s;
-  return {left + col * (slot_w + kDollGap * s),
-          top + row * (slot_h + kDollGap * s),
-          left + col * (slot_w + kDollGap * s) + slot_w,
-          top + row * (slot_h + kDollGap * s) + slot_h};
+RECT paper_doll_slot_rect(int width,int height,std::size_t index) {
+  const auto pane=gear_pane_rect(width,height);const int s=hud_scale(height);
+  const int inner=pane.w-36*s,cell=inner/kPackColumns;
+  const int bag_top=pane.y+pane.h-48*s-kPackRows*cell;
+  const int top=pane.y+44*s,eqh=bag_top-top-54*s;
+  const int gap=5*s,cw=(inner-3*gap)/4;
+  // Actual WIZARD column proportions, independent of backpack footprints.
+  static constexpr double x[]={2,1,0,2,1,3,0,2,3,1,1.5,0,1.34,2.68};
+  static constexpr double y[]={0,3,0,2,0,0,4,5,4,5,5,6,6,6};
+  static constexpr double hh[]={2,2,4,3,3,4,2,1,2,1,1,0,0,0};
+  index=std::min(index,std::size(x)-1);
+  const int left=pane.x+18*s+static_cast<int>(x[index]*(cw+gap));
+  if(index>=11) { const int aux=pane.x+18*s+static_cast<int>(index-11)*inner/3;return {aux,top+eqh+5*s,aux+inner/3-gap,bag_top-25*s}; }
+  const int sy=top+static_cast<int>(y[index]*eqh/6);
+  const int sw=(index==9||index==10)?(cw-gap)/2:cw;
+  return {left,sy,left+sw,top+static_cast<int>((y[index]+hh[index])*eqh/6)-gap};
 }
 
 std::uint32_t pack_stable_id(const std::string& id) {
@@ -4395,28 +4403,12 @@ struct PackGeom {
   std::array<RECT, paper_doll::kSlotCount> seats{};
 };
 
-PackGeom make_pack_geom(int width, int height) {
-  PackGeom geom;
-  const HudRect pane = gear_pane_rect(width, height);
-  geom.s = hud_scale(height);
-  const int left = pane.x;
-  const int top = pane.y;
-  const int right = left + pane.w;
-  geom.seat = paper_doll_slot_rect(width, height,
-                                   paper_doll::slot_index(paper_doll::Slot::MainHand));
-  for (std::size_t i = 0; i < geom.seats.size(); ++i)
-    geom.seats[i] = paper_doll_slot_rect(width, height, i);
-  // Keep this offset in lockstep with paint_gear_overlay. Two type-floor
-  // stats lines sit above the weapon seat; 62px collides with DEF/LVL.
-  geom.gap = 4 * geom.s;
-  const int grid_left = left + 190 * geom.s;
-  geom.cell_w =
-      (right - grid_left - 14 * geom.s - (kPackColumns - 1) * geom.gap) /
-      kPackColumns;
-  geom.cell_h = 30 * geom.s;
-  geom.grid_left = grid_left;
-  geom.grid_top = top + 98 * geom.s;
-  return geom;
+PackGeom make_pack_geom(int width,int height) {
+  PackGeom g;const auto p=gear_pane_rect(width,height);g.s=hud_scale(height);
+  g.cell_w=g.cell_h=(p.w-36*g.s)/kPackColumns;g.gap=0;
+  g.grid_left=p.x+18*g.s;g.grid_top=p.y+p.h-48*g.s-kPackRows*g.cell_h;
+  for(std::size_t i=0;i<g.seats.size();++i)g.seats[i]=paper_doll_slot_rect(width,height,i);
+  g.seat=g.seats[2];return g;
 }
 
 bool pack_hit_cell(const PackGeom& geom, int mx, int my, int& gx, int& gy) {
@@ -4586,12 +4578,12 @@ bool pack_commit_drop(ClientState& state, int seat_index) {
     const std::string before = state.world.carried[index].id;
     submit_equip(state, before, target_seat);
     state.pack_last_drop = "equip";
-    show_hint(state, "Equip requested");
+
     return true;
   }
   if (!state.pack_preview_ok) {
     state.pack_last_drop = "reject";
-    show_hint(state, "Placement rejected");
+    show_hint(state, "Not enough space for this item");
     return false;
   }
   const inventory_grid::State before = state.pack_grid;
@@ -4606,452 +4598,15 @@ bool pack_commit_drop(ClientState& state, int seat_index) {
   if (status != inventory_grid::Status::Ok) {
     state.pack_grid = before;
     state.pack_last_drop = "reject";
-    show_hint(state, "Placement rejected");
+    show_hint(state, "Not enough space for this item");
     return false;
   }
   state.pack_last_drop = "ok";
-  show_hint(state, "Item placed");
+
   return true;
 }
 
-void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
-                        render::List& rl) {
-  if (!state.gear_overlay) return;
-  // TASK-0159: the pane rectangle comes from the shared pure geometry so the
-  // planner, painter, and scenario harness cannot drift apart.
-  const HudRect pane = gear_pane_rect(static_cast<int>(bounds.right),
-                                      static_cast<int>(bounds.bottom));
-  const int left = pane.x;
-  const int top = pane.y;
-  const int right = left + pane.w;
-  const int bottom = top + pane.h;
-  state.hud_rect_trace.push_back({"pane-frame", pane});
-
-  RECT panel_rect{left, top, right, bottom};
-  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel,
-                          panel_rect))
-    skin::panel(dc, panel_rect, skin::kVerdigris, 245, 8.0f);
-  dress_owned_pane(state.billboards, dc, panel_rect);
-
-  // Interior layout scale: the pane rect scales with window height, so every
-  // hand-authored 1x offset inside must scale with it or rows collide.
-  const int s = hud_scale(static_cast<int>(bounds.bottom));
-
-  SetBkMode(dc, TRANSPARENT);
-
-  // Title.
-  SetTextColor(dc, RGB(230, 235, 220));
-  // house().name is already prefixed ("House Verdigris"); do not double it.
-  const std::string title = "Gear / " + state.world.house_name;
-  {
-    SIZE extent{};
-    GetTextExtentPoint32A(dc, title.c_str(), static_cast<int>(title.size()),
-                          &extent);
-    state.hud_rect_trace.push_back(
-        {"pane-title", {left + 14 * s, top + 12 * s, extent.cx, extent.cy}});
-  }
-  TextOutA(dc, left + 14 * s, top + 12 * s, title.c_str(),
-           static_cast<int>(title.size()));
-
-  // Authoritative stats readout. The base attack is the actor's stat; the
-  // equipped item's attack bonus (authoritative item data) is added on top,
-  // matching how the core folds it into damage resolution.
-  const WorldActor& player = state.world.player;
-  const auto& items = state.world.carried;
-  int equipped_bonus = 0;
-  for (const auto& item : items)
-    if (item.equipped) {
-      equipped_bonus = item.attack_bonus;
-      break;
-    }
-  if (player.combat_stats_present) equipped_bonus = player.gear_attack;
-  const int base_attack = player.attack;
-  std::string attack_text = std::to_string(base_attack + equipped_bonus);
-  if (equipped_bonus != 0)
-    attack_text += " (+" + std::to_string(equipped_bonus) + ")";
-  SetTextColor(dc, RGB(150, 170, 158));
-  std::string stats_line =
-      "LIFE " + std::to_string(player.life) + "/" +
-      std::to_string(player.life_max) + "  RES " +
-      std::to_string(player.resource) + "/" +
-      std::to_string(player.resource_max) + "  ATK " +
-      attack_text + "  DEF " +
-      std::to_string(player.defense) + "  LVL " +
-      std::to_string(player.level);
-  rl.push_back({render::Op::PaneStat, 0.0, 0.0, 0.0, 0, stats_line});
-  const std::string vitals =
-      "LIFE " + std::to_string(player.life) + "/" +
-      std::to_string(player.life_max) + "  RES " +
-      std::to_string(player.resource) + "/" +
-      std::to_string(player.resource_max);
-  const std::string combat = "ATK " + attack_text + "  DEF " +
-                             std::to_string(player.defense) + "  LVL " +
-                             std::to_string(player.level);
-  HGDIOBJ stats_font = SelectObject(dc, skin::font_small());
-  SIZE vitals_extent{};
-  SIZE combat_extent{};
-  GetTextExtentPoint32A(dc, vitals.c_str(), static_cast<int>(vitals.size()),
-                        &vitals_extent);
-  GetTextExtentPoint32A(dc, combat.c_str(), static_cast<int>(combat.size()),
-                        &combat_extent);
-  const int stats_x = left + 14 * s;
-  const int vitals_y = top + 34 * s;
-  // Segoe captions are 15/32 px tall at the shipped scales; the inherited
-  // 14s row step overlapped them. Place the next row from the measured box.
-  const int combat_y = vitals_y + static_cast<int>(vitals_extent.cy) + 3 * s;
-  state.hud_rect_trace.push_back(
-      {"pane-stats", {stats_x, vitals_y, vitals_extent.cx, vitals_extent.cy}});
-  state.hud_rect_trace.push_back(
-      {"pane-stats-combat",
-       {stats_x, combat_y, combat_extent.cx, combat_extent.cy}});
-  TextOutA(dc, stats_x, vitals_y, vitals.c_str(),
-           static_cast<int>(vitals.size()));
-  TextOutA(dc, stats_x, combat_y, combat.c_str(),
-           static_cast<int>(combat.size()));
-  rl.push_back({render::Op::Hud, static_cast<double>(stats_x),
-                static_cast<double>(combat_y), 0.0, player.defense,
-                "gear:stats-def"});
-  rl.push_back({render::Op::Hud, static_cast<double>(stats_x),
-                static_cast<double>(combat_y), 0.0, player.level,
-                "gear:stats-lvl"});
-  SelectObject(dc, stats_font);
-
-  // WIZARD-style paper doll: fourteen real seats are always visible to the
-  // left of the backpack. Worn items are authoritative and render in their
-  // seat; empty conditional seats remain explicit instead of disappearing.
-  static constexpr const char* doll_labels[] = {
-      "HEAD", "AMUL", "MAIN", "BODY", "CLOK", "OFF", "GLV", "BELT",
-      "BOOT", "R1", "R2", "HORN", "RIG", "AID"};
-  static constexpr const char* doll_seats[] = {
-      "head", "necklace", "right_hand", "armor", "back", "left_hand",
-      "gloves", "belt", "feet", "ring", "ring2", "warhorn", "quick_rig",
-      "attendant"};
-  auto doll_item = [&](std::size_t slot_i) -> const WorldCarriedItem* {
-    for (const auto& item : items)
-      if (item.equipped && item.equip_seat == doll_seats[slot_i]) return &item;
-    if (slot_i == paper_doll::slot_index(paper_doll::Slot::MainHand))
-      for (const auto& item : items)
-        if (item.equipped && item.equip_seat.empty()) return &item;
-    return nullptr;
-  };
-  for (std::size_t slot_i = 0; slot_i < paper_doll::kSlotCount; ++slot_i) {
-    const RECT doll = paper_doll_slot_rect(static_cast<int>(bounds.right),
-                                           static_cast<int>(bounds.bottom), slot_i);
-    const auto* worn = doll_item(slot_i);
-    const bool occupied = worn != nullptr;
-    if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_slot, doll))
-      skin::slot(dc, doll, occupied ? skin::kGold : skin::kVerdigris, occupied);
-    SetTextColor(dc, occupied ? RGB(240, 210, 120) : RGB(170, 190, 178));
-    TextOutA(dc, doll.left + 5 * s, doll.top + 3 * s, doll_labels[slot_i], 4);
-    if (occupied) {
-      const auto style = vector_art::player_style();
-      if (slot_i == paper_doll::slot_index(paper_doll::Slot::MainHand))
-        vector_art::pack_item_glyph(dc, doll.right - 8 * s, doll.top + 14 * s, 14 * s,
-            vector_art::held_from_item(worn->id, worn->name), style);
-      else
-        vector_art::fill_ell(dc, doll.right - 6 * s, doll.top + 14 * s,
-                             2 * s, 2 * s, style.metal, style.dark);
-    }
-    state.hud_rect_trace.push_back(
-        {"pane-doll-slot", {doll.left, doll.top, doll.right - doll.left,
-                              doll.bottom - doll.top}});
-    rl.push_back({render::Op::Hud, static_cast<double>(doll.left),
-                  static_cast<double>(doll.top), 0.0, occupied ? 1 : 0,
-                  std::string("paperdoll-slot:") + doll_seats[slot_i] +
-                      (occupied ? ":filled" : ":empty")});
-  }
-  std::string equipped_name = "(empty)";
-  if (const auto* main = doll_item(paper_doll::slot_index(paper_doll::Slot::MainHand)))
-    equipped_name = main->name;
-  const RECT seat = paper_doll_slot_rect(
-      static_cast<int>(bounds.right), static_cast<int>(bounds.bottom),
-      paper_doll::slot_index(paper_doll::Slot::MainHand));
-  state.hud_rect_trace.push_back(
-      {"pane-seat", {seat.left, seat.top, seat.right - seat.left,
-                      seat.bottom - seat.top}});
-  SetTextColor(dc, RGB(230, 220, 180));
-  rl.push_back({render::Op::PaneWeapon, 0.0, 0.0, 0.0, 0, equipped_name});
-  rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
-                std::string("held-seat:") + equipped_name});
-
-  // Full native backpack, with footprint-sized item art and shared slot chrome.
-  reconcile_pack_grid(state);
-  const PackGeom pack = make_pack_geom(static_cast<int>(bounds.right),
-                                       static_cast<int>(bounds.bottom));
-  const int cell_w = pack.cell_w;
-  const int cell_h = pack.cell_h;
-  const int grid_top = pack.grid_top;
-  // On the remote path carried ids are uuids; the model's inventory rows
-  // carry the stable item id the art catalog is keyed by.
-  const auto art_key = [&](std::size_t index) -> std::string {
-    if (!state.session) return items[index].id;
-    for (const auto& slot_item : state.session->model().inventory)
-      if (slot_item.uuid == items[index].id) return slot_item.id;
-    return items[index].id;
-  };
-  // Paint the full backpack surface first, including empty cells. A visible
-  // grid is the interaction affordance; an empty-state sentence must never
-  // be used as a substitute for it or overlap the paper doll.
-  SetTextColor(dc, RGB(190, 202, 190));
-  const std::string backpack_label =
-      "BACKPACK  " + std::to_string(std::count_if(state.pack_grid.occupancy.begin(), state.pack_grid.occupancy.end(), [](auto id) { return id != 0; })) + "/" +
-      std::to_string(kPackColumns * kPackRows);
-  TextOutA(dc, pack.grid_left, grid_top - 20 * s, backpack_label.c_str(),
-           static_cast<int>(backpack_label.size()));
-  for (int row = 0; row < kPackRows; ++row) {
-    for (int col = 0; col < kPackColumns; ++col) {
-      const int cx = pack.grid_left + col * (cell_w + pack.gap);
-      const int cy = pack.grid_top + row * (cell_h + pack.gap);
-      RECT cell{cx, cy, cx + cell_w, cy + cell_h};
-      if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_slot,
-                              cell))
-        skin::slot(dc, cell, skin::kVerdigris, false);
-      state.hud_rect_trace.push_back({
-          "pane-backpack-cell", {cell.left, cell.top, cell.right - cell.left,
-                                 cell.bottom - cell.top}});
-    }
-  }
-  if (items.empty()) {
-    SetTextColor(dc, RGB(150, 160, 150));
-    // Keep the empty-state copy inside the narrow backpack column; the
-    // control hint already lives in the pane footer.
-    const char* empty = "Empty";
-    TextOutA(dc, pack.grid_left, grid_top + 14 * s, empty,
-             static_cast<int>(strlen(empty)));
-  } else {
-    int hover_i = -1;
-    int hover_cx = 0;
-    int hover_cy = 0;
-    const int mx = static_cast<int>(state.mouse.x);
-    const int my = static_cast<int>(state.mouse.y);
-    int hover_gx = -1;
-    int hover_gy = -1;
-    pack_hit_cell(pack, mx, my, hover_gx, hover_gy);
-    if (state.pack_drag_live) {
-      state.pack_preview_x = hover_gx - state.pack_grab_x;
-      state.pack_preview_y = hover_gy - state.pack_grab_y;
-      state.pack_preview_ok =
-          pack_can_land(state.pack_grid, state.pack_drag_id, state.pack_preview_x, state.pack_preview_y);
-    }
-    for (std::uint8_t i = 0; i < state.pack_grid.count; ++i) {
-      const auto& cell_item = state.pack_grid.items[i];
-      const auto carried_i = carried_index_for_pack_id(state, cell_item.id);
-      if (carried_i >= items.size()) continue;
-      const int col = cell_item.x, row = cell_item.y;
-      const int cx = pack.grid_left + col * (cell_w + pack.gap);
-      const int cy = pack.grid_top + row * (cell_h + pack.gap);
-      RECT cell{cx, cy, cx + cell_item.width * (cell_w + pack.gap) - pack.gap,
-                         cy + cell_item.height * (cell_h + pack.gap) - pack.gap};
-      const bool selected = carried_i == std::min(state.selected_item, items.size() - 1);
-      skin::slot(dc, cell, selected ? skin::kGold : skin::kVerdigris, selected);
-      RECT art_cell{cell.left + 2 * s, cell.top + 2 * s,
-                    cell.right - 2 * s, cell.bottom - 2 * s};
-      const bool billboard = draw_item_art(state.billboards, dc, art_key(carried_i), art_cell);
-      if (!billboard && (items[carried_i].equip_seat.empty() || items[carried_i].equip_seat == "right_hand") && art_key(carried_i) != "coins")
-        vector_art::pack_item_glyph(dc, (art_cell.left + art_cell.right) / 2,
-            (art_cell.top + art_cell.bottom) / 2,
-            std::max(8L, std::min(art_cell.right - art_cell.left, art_cell.bottom - art_cell.top)),
-            vector_art::held_from_item(art_key(carried_i), items[carried_i].name),
-            vector_art::player_style());
-      else if (!billboard) {
-        const auto& seat = items[carried_i].equip_seat;
-        const int cx_icon = (art_cell.left + art_cell.right) / 2;
-        const int cy_icon = (art_cell.top + art_cell.bottom) / 2;
-        const int radius = std::max(3L, std::min(art_cell.right - art_cell.left, art_cell.bottom - art_cell.top) / 3);
-        if (seat == "ring" || seat == "ring2" || art_key(carried_i) == "coins") {
-          vector_art::fill_ell(dc, cx_icon, cy_icon, radius, radius, RGB(191, 156, 74), RGB(92, 71, 33));
-          if (art_key(carried_i) != "coins")
-            vector_art::fill_ell(dc, cx_icon, cy_icon, std::max(1, radius - 3 * s), std::max(1, radius - 3 * s), RGB(24, 26, 23), RGB(92, 71, 33));
-        } else {
-          const char* symbol = seat == "armor" ? "BODY" : seat == "head" ? "HEAD" : seat == "gloves" ? "GLV" : "GEAR";
-          auto old_font = SelectObject(dc, skin::font_small());
-          SetTextColor(dc, RGB(208, 191, 143));
-          DrawTextA(dc, symbol, -1, &art_cell, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-          SelectObject(dc, old_font);
-        }
-      }
-      if (items[carried_i].quantity > 1) {
-        const auto quantity = std::to_string(items[carried_i].quantity);
-        RECT label = cell;
-        SelectObject(dc, skin::font_small());
-        SetTextColor(dc, RGB(240, 224, 178));
-        DrawTextA(dc, quantity.c_str(), -1, &label, DT_RIGHT | DT_BOTTOM | DT_SINGLELINE);
-      }
-      rl.push_back({render::Op::PaneItem, static_cast<double>(cx), static_cast<double>(cy),
-                    0.0, items[carried_i].attack_bonus, items[carried_i].name});
-      rl.push_back({render::Op::Hud, static_cast<double>(col), static_cast<double>(row),
-                    0.0, billboard ? 1 : 0, billboard ? "pack-glyph:billboard" : "pack-glyph:vector"});
-      rl.push_back({render::Op::Hud, static_cast<double>(col), static_cast<double>(row), 0.0,
-                    static_cast<int>(cell_item.id), "pack:" + std::to_string(col) + "," + std::to_string(row)});
-      state.hud_rect_trace.push_back({"pane-cell", {cx, cy, cell.right - cx, cell.bottom - cy}});
-      if (PtInRect(&cell, POINT{mx, my})) {
-        hover_i = static_cast<int>(carried_i); hover_cx = cx; hover_cy = cy;
-      }
-    }
-    if (state.pack_drag_live && state.pack_preview_x >= 0 &&
-        state.pack_preview_y >= 0) {
-      const int gx = state.pack_preview_x;
-      const int gy = state.pack_preview_y;
-      const int cx = pack.grid_left + gx * (cell_w + pack.gap);
-      const int cy = pack.grid_top + gy * (cell_h + pack.gap);
-      HPEN ghost = CreatePen(PS_SOLID, 2,
-                             state.pack_preview_ok ? RGB(120, 214, 168)
-                                                   : RGB(196, 58, 48));
-      HGDIOBJ gp = SelectObject(dc, ghost);
-      HGDIOBJ gb = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
-      const auto drag_index = inventory_grid::find_index(state.pack_grid, state.pack_drag_id);
-      const int drag_w = drag_index < inventory_grid::kMaxItems ? state.pack_grid.items[drag_index].width : 1;
-      const int drag_h = drag_index < inventory_grid::kMaxItems ? state.pack_grid.items[drag_index].height : 1;
-      Rectangle(dc, cx, cy, cx + drag_w * (cell_w + pack.gap) - pack.gap,
-                          cy + drag_h * (cell_h + pack.gap) - pack.gap);
-      SelectObject(dc, gb);
-      SelectObject(dc, gp);
-      DeleteObject(ghost);
-      rl.push_back({render::Op::Hud, static_cast<double>(gx),
-                    static_cast<double>(gy), 0.0,
-                    state.pack_preview_ok ? 1 : 0,
-                    state.pack_preview_ok ? "pack-preview:ok"
-                                          : "pack-preview:reject"});
-    }
-    for (std::size_t slot_i = 0; slot_i < paper_doll::kSlotCount; ++slot_i) {
-      if (!PtInRect(&pack.seats[slot_i], POINT{mx, my})) continue;
-      if (const auto* worn = doll_item(slot_i)) {
-        hover_i = static_cast<int>(worn - items.data());
-        hover_cx = pack.seats[slot_i].left;
-        hover_cy = pack.seats[slot_i].top;
-      }
-    }
-    if (hover_i < 0) {
-      hover_i = static_cast<int>(
-          std::min(state.selected_item, items.size() - 1));
-      const std::uint32_t sid =
-          pack_stable_id(items[static_cast<std::size_t>(hover_i)].id);
-      const std::size_t gi = inventory_grid::find_index(state.pack_grid, sid);
-      if (gi != inventory_grid::kMaxItems) {
-        hover_cx = pack.grid_left +
-                   state.pack_grid.items[gi].x * (cell_w + pack.gap);
-        hover_cy = pack.grid_top +
-                   state.pack_grid.items[gi].y * (cell_h + pack.gap);
-      } else {
-        hover_cx = pack.grid_left;
-        hover_cy = pack.grid_top;
-      }
-    }
-    const WorldCarriedItem& focus = items[static_cast<std::size_t>(hover_i)];
-    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "pack-name:full"});
-    std::vector<std::string> facts;
-    facts.push_back("ATK +" + std::to_string(focus.attack_bonus));
-    const bool as_equipped = verdigris::client::ui::paint_focus_as_equipped(
-        state.equip_view, focus.equipped);
-    if (state.equip_view.pending)
-      facts.push_back("pending ack");
-    else if (as_equipped) {
-      facts.push_back("currently equipped");
-    } else {
-      int baseline = 0;
-      for (const auto& worn : items)
-        if (worn.equipped && (worn.equip_seat == focus.equip_seat ||
-            (!state.session && worn.equip_seat.empty()))) baseline = worn.attack_bonus;
-      const int delta = focus.attack_bonus - baseline;
-      if (delta > 0)
-        facts.push_back("+" + std::to_string(delta) + " vs equipped");
-      else if (delta < 0)
-        facts.push_back(std::to_string(delta) + " vs equipped");
-      else
-        facts.push_back("same ATK as equipped");
-    }
-    const char* compare_hint =
-        verdigris::client::ui::owner_compare_equip_hint();
-    facts.push_back(compare_hint);
-    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
-                  std::string("compare-hint:") + compare_hint});
-    paint_compare_plate(state, dc, hover_cx + cell_w, hover_cy, bounds, pane,
-                        focus.name,
-                        as_equipped ? skin::kGold : skin::kInk, facts, rl);
-    if (as_equipped)
-      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "compare:equipped"});
-    else if (state.equip_view.pending)
-      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "compare:pending"});
-    else
-      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "compare:candidate"});
-  }
-  if (!state.pack_last_drop.empty())
-    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
-                  std::string("pack-drop:") + state.pack_last_drop});
-
-  // Banked / extraction summary. Raised so a two-line footer at the type
-  // floor can stay inside the pane; shrinking type cannot certify overflow.
-  SetTextColor(dc, RGB(150, 170, 158));
-  const std::string banked =
-      "Banked  items " + std::to_string(state.world.stored_items) +
-      "  trophies " + std::to_string(state.world.stored_trophies);
-  rl.push_back({render::Op::PaneBanked, 0.0, 0.0, 0.0, 0, banked});
-  {
-    SIZE extent{};
-    GetTextExtentPoint32A(dc, banked.c_str(), static_cast<int>(banked.size()),
-                          &extent);
-    state.hud_rect_trace.push_back(
-        {"pane-banked", {left + 14 * s, bottom - 76 * s, extent.cx, extent.cy}});
-  }
-  TextOutA(dc, left + 14 * s, bottom - 76 * s, banked.c_str(),
-           static_cast<int>(banked.size()));
-  // TASK-0156: compact authoritative progression summary, mirrored from the
-  // passiveTree payload. Absence is stated as absence — never rendered as
-  // zero — and no node ids, allocation actions, or invented copy appear.
-  // PaneStat keeps the protocol TREE string; owner paint does not.
-  std::string progression;
-  std::string owner_progression;
-  if (state.world.progression.present) {
-    progression = "TREE pts " +
-                  std::to_string(state.world.progression.unspent_points) + "/" +
-                  std::to_string(state.world.progression.earned_points) +
-                  "  nodes " + std::to_string(state.world.progression.node_count) +
-                  "  conduits " +
-                  std::to_string(state.world.progression.conduit_count);
-    owner_progression =
-        "Skill points " + std::to_string(state.world.progression.unspent_points) +
-        " of " + std::to_string(state.world.progression.earned_points);
-  } else {
-    progression = "TREE no authoritative data";
-    owner_progression = "Skill tree: no data yet";
-  }
-  rl.push_back({render::Op::PaneStat, 0.0, 0.0, 0.0, 0, progression});
-  rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
-                state.world.progression.present ? "tree:owner-present"
-                                                : "tree:owner-absent"});
-  {
-    SIZE extent{};
-    GetTextExtentPoint32A(dc, owner_progression.c_str(),
-                          static_cast<int>(owner_progression.size()), &extent);
-    state.hud_rect_trace.push_back(
-        {"pane-progression", {left + 14 * s, bottom - 100 * s, extent.cx, extent.cy}});
-  }
-  TextOutA(dc, left + 14 * s, bottom - 100 * s, owner_progression.c_str(),
-           static_cast<int>(owner_progression.size()));
-  const char* place = verdigris::client::ui::owner_gear_footer_place_label();
-  const char* close = verdigris::client::ui::owner_gear_close_label();
-  HGDIOBJ footer_font = SelectObject(dc, skin::font_small());
-  SIZE place_extent{};
-  SIZE close_extent{};
-  GetTextExtentPoint32A(dc, place, static_cast<int>(strlen(place)),
-                        &place_extent);
-  GetTextExtentPoint32A(dc, close, static_cast<int>(strlen(close)),
-                        &close_extent);
-  const int footer_x = left + 14 * s;
-  const int place_y = bottom - 50 * s;
-  const int close_y = bottom - 30 * s;
-  state.hud_rect_trace.push_back(
-      {"pane-footer-place", {footer_x, place_y, place_extent.cx, place_extent.cy}});
-  state.hud_rect_trace.push_back(
-      {"pane-footer", {footer_x, close_y, close_extent.cx, close_extent.cy}});
-  TextOutA(dc, footer_x, place_y, place, static_cast<int>(strlen(place)));
-  TextOutA(dc, footer_x, close_y, close, static_cast<int>(strlen(close)));
-  rl.push_back({render::Op::Hud, static_cast<double>(footer_x),
-                static_cast<double>(close_y), 0.0, 0, "gear:close-hint"});
-  rl.push_back({render::Op::Hud, static_cast<double>(footer_x),
-                static_cast<double>(place_y), 0.0, 0, "gear:place-hint"});
-  SelectObject(dc, footer_font);
-}
+#include "inventory_ui.hpp"
 
 void draw_orb(HDC dc, int cx, int cy, int radius, double ratio, COLORREF fill,
               COLORREF rim, const std::string& caption, bool pulse, render::List& rl,
@@ -5419,7 +4974,7 @@ void paint_xp_bar(ClientState& state, HDC dc, const RECT& bounds,
 
 void paint_combat_log(const ClientState& state, HDC dc, const RECT& bounds,
                       render::List& rl) {
-  if (state.event_log.empty()) return;
+  if (state.event_log.empty() || state.character_pane || state.tree_pane) return;
   const int s = hud_scale(static_cast<int>(bounds.bottom));
   const HudRect quickbar = quickbar_strip_rect(static_cast<int>(bounds.right),
                                                static_cast<int>(bounds.bottom));
@@ -5428,7 +4983,7 @@ void paint_combat_log(const ClientState& state, HDC dc, const RECT& bounds,
   const int width = 246 * s;
   const int height = lines_to_show * line_h + 14 * s;
   const int left = 18 * s;
-  const int bottom = quickbar.y - 22 * s;
+  const int bottom = quickbar.y - 40 * s;
   const int top = std::max(12 * s, bottom - height);
   RECT plate{left, top, left + width, bottom};
   skin::panel(dc, plate, skin::kPanelBorder, 205, 6.0f);
@@ -5436,8 +4991,9 @@ void paint_combat_log(const ClientState& state, HDC dc, const RECT& bounds,
   SetBkMode(dc, TRANSPARENT);
   SetTextColor(dc, RGB(188, 202, 190));
   int y = top + 6 * s;
+  int drawn=0;
   for (auto it = state.event_log.rbegin(); it != state.event_log.rend() &&
-       y < bottom - 4 * s; ++it) {
+       drawn<lines_to_show && y+line_h <= bottom-4*s; ++it,++drawn) {
     std::string line = *it;
     SIZE extent{};
     GetTextExtentPoint32A(dc, line.c_str(), static_cast<int>(line.size()), &extent);
@@ -6334,6 +5890,10 @@ TopHudLayout plan_top_hud(int width, int height, bool gear_open, bool tree_open,
                           const TopHudRect& controls_size_b, bool session) {
   std::vector<TopHudRect> blocked;
   blocked.push_back(minimap_rect(height));
+  if(!gear_open && !character_open && !tree_open) {
+    const auto r=player_menu_rect(width,height,0);
+    blocked.push_back({r.left,r.top,width-16*hud_scale(height)-r.left,r.bottom-r.top});
+  }
   if (!gear_open && !tree_open && !character_open)
     blocked.push_back(route_card_rect(height));
   blocked.push_back(quickbar_strip_rect(width, height));
@@ -6462,238 +6022,7 @@ TopHudLayout plan_top_hud(int width, int height, bool gear_open, bool tree_open,
 
 // -- Character sheet pane ------------------------------------------------
 // Authoritative Scion sheet: identity, vitals, combat totals, attributes.
-void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
-                          render::List& rl) {
-  if (!state.character_pane) return;
-  const int s = hud_scale(static_cast<int>(bounds.bottom));
-  const verdigris::client::ui::StatSources preview_src{
-      0,
-      0,
-      state.sheet_passive_atk,
-      state.sheet_cond_atk,
-      state.sheet_cond_active,
-      state.stat_atk_expanded};
-  const int extra_rows = verdigris::client::ui::extra_source_rows(preview_src);
-  const HudRect box = character_pane_rect(static_cast<int>(bounds.right),
-                                         static_cast<int>(bounds.bottom),
-                                         extra_rows);
-  const int left = box.x;
-  const int top = box.y;
-  const int pane_w = box.w;
-  const int pane_h = box.h;
-  RECT pane{left, top, left + pane_w, top + pane_h};
-  state.hud_rect_trace.push_back({"character-pane-frame", box});
-  const int saved_dc = SaveDC(dc);
-  IntersectClipRect(dc, pane.left, pane.top, pane.right, pane.bottom);
-  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
-    skin::panel(dc, pane, skin::kVerdigris, 245, 8.0f);
-  dress_owned_pane(state.billboards, dc, pane);
-  rl.push_back({render::Op::Hud, static_cast<double>(left),
-                static_cast<double>(top), 0.0, 0, "character-pane"});
-  SetBkMode(dc, TRANSPARENT);
-  HGDIOBJ old_font = SelectObject(dc, skin::font_heading());
-  SetTextColor(dc, skin::kVerdigris);
-  const std::string title = state.world.scion_name.empty()
-                                ? std::string("The Scion")
-                                : state.world.scion_name;
-  TextOutA(dc, left + 16 * s, top + 10 * s, title.c_str(),
-           static_cast<int>(title.size()));
-  SelectObject(dc, skin::font_small());
-  SetTextColor(dc, skin::kInkDim);
-  TextOutA(dc, left + 16 * s, top + 34 * s, state.world.house_name.c_str(),
-           static_cast<int>(state.world.house_name.size()));
-
-  // Fit portrait + stat rows inside the combat-HUD-clamped slot. Covering
-  // the life orb to keep a 150px plate cannot certify. A min row height that
-  // overflows the close hint also cannot certify — leftover/n always wins.
-  const int header_h = 56 * s;
-  const int footer_h = 32 * s;
-  const int n_rows = 12 + extra_rows;
-  const int stack_gap = 14 * s;
-  const int inner = std::max(0, pane_h - header_h - footer_h);
-  const int min_row = 16 * s;
-  int portrait_h = 150 * s;
-  int row_h = 26 * s;
-  if (portrait_h + stack_gap + n_rows * row_h > inner) {
-    const int room_for_portrait =
-        inner - stack_gap - n_rows * min_row;
-    portrait_h = std::max(40 * s, std::min(portrait_h, room_for_portrait));
-  }
-  {
-    const int leftover = std::max(0, inner - portrait_h - stack_gap);
-    if (n_rows > 0) row_h = std::max(1, leftover / n_rows);
-  }
-
-  // Portrait: the player plate, drawn tall on the left of the sheet.
-  int dest_w = 72 * s;
-  if (state.billboards.player.ready() && state.billboards.alpha_blend) {
-    const SpriteBitmap& sprite = state.billboards.player;
-    const int dest_h = portrait_h;
-    dest_w = dest_h * sprite.width / std::max(1, sprite.height);
-    dest_w = std::min(dest_w, 96 * s);
-    const BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
-    state.billboards.alpha_blend(dc, left + 20 * s, top + 56 * s, dest_w,
-                                 dest_h, sprite.dc, 0, 0, sprite.width,
-                                 sprite.height, blend);
-  }
-  {
-    SelectObject(dc, skin::font_small());
-    int by = top + 56 * s;
-    const int bx = left + 20 * s + dest_w + 10 * s;
-    for (const auto& build : verdigris::client::builds::kSliceBuilds) {
-      const std::string head =
-          std::string(build.role) + " | " + build.gear;
-      SetTextColor(dc, skin::kVerdigris);
-      TextOutA(dc, bx, by, head.c_str(), static_cast<int>(head.size()));
-      by += 22 * s;
-      rl.push_back({render::Op::Hud, static_cast<double>(bx),
-                    static_cast<double>(by), 0.0, 0,
-                    verdigris::client::builds::fixture_hud_label(build)});
-      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
-                    std::string("build-tactics:") + build.role + ":" +
-                        build.tactics});
-      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
-                    std::string("build-weak:") + build.role + ":" +
-                        build.weakness});
-      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
-                    std::string("build-gear:") + build.role + ":" + build.gear});
-      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
-                    std::string("build-answer:") + build.role + ":" +
-                        build.encounter});
-    }
-    if (verdigris::client::builds::distinct_slice_loops(
-            verdigris::client::builds::kSliceBuilds, 3))
-      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "build-loops:distinct"});
-    if (verdigris::client::builds::tint_only_clones_fail_review())
-      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "build-loops:tint-fail"});
-  }
-
-  const WorldActor& player = state.world.player;
-  int equipped_bonus = 0;
-  std::string weapon = "(unarmed)";
-  for (const auto& item : state.world.carried)
-    if (item.equipped && (item.equip_seat == "right_hand" || item.equip_seat.empty())) {
-      equipped_bonus = item.attack_bonus;
-      weapon = item.name;
-      break;
-    }
-  if (player.combat_stats_present) equipped_bonus = player.gear_attack;
-  int attr_str = 10, attr_dex = 10, attr_int = 10;
-  std::string passive = "none posted";
-  if (state.session) {
-    const auto& model = state.session->model();
-    attr_str = model.attr_strength;
-    attr_dex = model.attr_dexterity;
-    attr_int = model.attr_intelligence;
-    if (model.progression.present)
-      passive = "nodes " + std::to_string(model.progression.node_count) +
-                " | unspent " +
-                std::to_string(model.progression.unspent_points);
-  }
-  const std::string dormant = std::to_string(state.sheet_cond_atk) + " | " +
-                              verdigris::client::ui::conditional_label(
-                                  {0, 0, 0, state.sheet_cond_atk,
-                                   state.sheet_cond_active, false});
-  const verdigris::client::ui::StatSources src{
-      player.attack, equipped_bonus, state.sheet_passive_atk,
-      state.sheet_cond_atk, state.sheet_cond_active, state.stat_atk_expanded};
-  const int attack_total = verdigris::client::ui::active_attack(src);
-  struct StatRow {
-    std::string label;
-    std::string value;
-  };
-  std::vector<StatRow> rows = {
-      {"Level", std::to_string(player.level)},
-      {"Life", std::to_string(player.life) + " / " + std::to_string(player.life_max)},
-      {"Resource", std::to_string(player.resource) + " / " +
-                       std::to_string(player.resource_max)},
-      {"Attack", std::to_string(attack_total)},
-      {"ATK src", std::string("Base ") + std::to_string(src.base) + " | Gear " +
-                      (src.gear >= 0 ? "+" : "") + std::to_string(src.gear)},
-      {"Passive", passive},
-      {"Cond", dormant},
-      {"Defense", std::to_string(player.defense)},
-      {"Weapon", weapon},
-      {"Strength", std::to_string(attr_str)},
-      {"Dexterity", std::to_string(attr_dex)},
-      {"Intelligence", std::to_string(attr_int)},
-  };
-  if (src.expanded) {
-    rows.insert(rows.begin() + 5,
-                {{"src base", std::to_string(src.base)},
-                 {"src gear", (src.gear >= 0 ? "+" : "") + std::to_string(src.gear)},
-                 {"src passive", std::to_string(src.passive)},
-                 {"src cond", dormant}});
-    for (auto it = rows.begin(); it != rows.end();) {
-      if (it->label == "Cond")
-        it = rows.erase(it);
-      else
-        ++it;
-    }
-  }
-  int y = top + header_h + portrait_h + stack_gap;
-  int owner_cond = 0;
-  SelectObject(dc, skin::font_body());
-  auto owner_stat_name = [](const std::string& label) -> std::string {
-    if (label == "src base") return "Base";
-    if (label == "src gear") return "Gear";
-    if (label == "src passive") return "Passive";
-    if (label == "src cond") return "Conditional";
-    if (label == "ATK src") return "Sources";
-    if (label == "Cond") return "Conditional";
-    if (label == "Passive") return "Skill tree";
-    return label;
-  };
-  auto owner_stat_value = [](const std::string& label,
-                             const std::string& value) -> std::string {
-    if (label == "Passive" && value == "none posted") return "no data yet";
-    return value;
-  };
-  for (const auto& row : rows) {
-    const std::string shown = owner_stat_name(row.label);
-    const std::string shown_value = owner_stat_value(row.label, row.value);
-    SetTextColor(dc, skin::kInkDim);
-    TextOutA(dc, left + 20 * s, y, shown.c_str(),
-             static_cast<int>(shown.size()));
-    SIZE extent{};
-    GetTextExtentPoint32A(dc, shown_value.c_str(),
-                          static_cast<int>(shown_value.size()), &extent);
-    SetTextColor(dc, skin::kInk);
-    TextOutA(dc, left + pane_w - 20 * s - extent.cx, y, shown_value.c_str(),
-             static_cast<int>(shown_value.size()));
-    rl.push_back({render::Op::Hud, static_cast<double>(left),
-                  static_cast<double>(y), 0.0, 0,
-                  "char:" + row.label + ":" + row.value});
-    if (row.label == "ATK src")
-      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "char:src-owner"});
-    if (shown == "Conditional") owner_cond += 1;
-    y += row_h;
-  }
-  if (!verdigris::client::ui::duplicate_owner_conditional_fails_review(owner_cond))
-    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, owner_cond, "char:cond-once"});
-  if (src.expanded)
-    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "stat:owner-labels"});
-  rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, attack_total,
-                std::string("char:atk-expanded:") + (src.expanded ? "1" : "0")});
-  if (!verdigris::client::ui::folds_dormant_into_attack(src, attack_total))
-    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "char:atk-dormant-excluded"});
-  SelectObject(dc, skin::font_small());
-  SetTextColor(dc, skin::kInkDim);
-  const char* footer = "C or Esc closes | B expands ATK";
-  SIZE footer_extent{};
-  GetTextExtentPoint32A(dc, footer, static_cast<int>(strlen(footer)),
-                        &footer_extent);
-  const int footer_y = top + pane_h - footer_h + 6 * s;
-  TextOutA(dc, left + 20 * s, footer_y, footer,
-           static_cast<int>(strlen(footer)));
-  state.hud_rect_trace.push_back(
-      {"character-pane-footer",
-       {left + 20 * s, footer_y, footer_extent.cx, footer_extent.cy}});
-  rl.push_back({render::Op::Hud, static_cast<double>(left + 20 * s),
-                static_cast<double>(footer_y), 0.0, 0, "char:close-hint"});
-  SelectObject(dc, old_font);
-  RestoreDC(dc, saved_dc);
-}
+#include "character_ui.hpp"
 
 // -- Passive tree pane ---------------------------------------------------
 // The geometric first-level slice over the authoritative allocation. Click
@@ -6702,6 +6031,7 @@ void paint_tree_pane(ClientState& state, HDC dc, const RECT& bounds,
                      render::List& rl) {
   state.tree_seat_hits.clear();
   if (!state.tree_pane) return;
+  if (!state.debug_overlay && (!state.session || !state.session->model().progression.present)) return;
   const int s = hud_scale(static_cast<int>(bounds.bottom));
   const HudRect box = tree_pane_rect(static_cast<int>(bounds.right),
                                     static_cast<int>(bounds.bottom));
@@ -7061,6 +6391,7 @@ vector_art::Held equipped_held(const ClientState& state) {
         }
       }
     }
+    if(inventory_art_key(state,item)=="handaxe_flint") return vector_art::Held::Handstone;
     return vector_art::held_from_item(id, name);
   }
   return vector_art::Held::None;
@@ -9822,7 +9153,7 @@ bool draw_raster_actor(HDC dc, const char* family, const ScreenPoint& base,
 void draw_raster_equipment(HDC dc, vector_art::Held held, const ScreenPoint& base,
                            int height, const std::string& resolved_pose) {
   if (held == vector_art::Held::None) return;
-  const char* name = held == vector_art::Held::Axe ? "weapon_axe"
+  const char* name = held == vector_art::Held::Handstone ? "weapon_handstone" : held == vector_art::Held::Axe ? "weapon_axe"
       : held == vector_art::Held::Staff ? "weapon_staff"
       : held == vector_art::Held::Bow ? "weapon_bow"
       : held == vector_art::Held::Club ? "weapon_club" : "weapon_sword";
@@ -10559,6 +9890,17 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_character_pane(state, dc, bounds, rl);
   paint_tree_pane(state, dc, bounds, rl);
   paint_trade_pane(state, dc, bounds, rl);
+  if(!state.gear_overlay && !state.character_pane && !state.tree_pane && state.frontend==Frontend::None) {
+    auto font=SelectObject(dc,skin::font_small());
+    const char* captions[]={"Equipment","Character","Settings"};
+    for(int i=0;i<3;++i) {
+      const auto r=player_menu_rect(bounds.right,bounds.bottom,i);
+      inventory_button(dc,r,captions[i],PtInRect(&r,state.mouse));
+      state.hud_rect_trace.push_back({"player-menu",{r.left,r.top,r.right-r.left,r.bottom-r.top}});
+    }
+    SelectObject(dc,font);
+  }
+
 
   if (state.screen_pulse_ticks > 0) {
     // TASK-0122 Phase A: while a ScionLost beat is live the edge pulse is the
@@ -10593,7 +9935,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       // In town the NPC roster is the tell; guide toward the story loop
       // instead of the placeholder explore line.
       objective = !world.npcs.empty()
-                      ? "objective: hail an NPC with T - press N to take the tin road"
+                      ? "objective: Prepare for the Tin Road"
                       : "objective: explore the route";
     } else if (world.expedition_phase == ExpeditionPhaseView::SlayWardens) {
       objective = "objective: slay the wardens (" +
@@ -10628,10 +9970,10 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     const bool plates_ready =
         state.billboards.player.ready() && state.billboards.raider.ready() &&
         state.billboards.boss.ready();
-    const bool show_art_chip = state.debug_overlay || (!state.camera.perspective && !plates_ready);
+    const bool show_art_chip = state.debug_overlay;
     const bool show_mute_chip =
         state.audio_sink && state.audio_sink->muted();
-    const char* mute_text = "audio muted";
+    const char* mute_text = "Muted";
 
     // TASK-0159: pre-measure the controls hint and its deterministic
     // mid-separator wrap (the " | " boundary nearest the middle) so the
@@ -10682,7 +10024,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       GetTextExtentPoint32A(dc, lost_text, sizeof(lost_text) - 1, &lost_extent);
     }
     const int audio_scale = hud_scale(static_cast<int>(bounds.bottom));
-    const bool show_mixer = state.audio_sink && (!state.camera.perspective || state.debug_overlay);
+    const bool show_mixer = state.audio_sink && state.debug_overlay;
     const skin::HudTextLines mixer_lines =
         show_mixer ? audio_mixer_lines(state, state.gear_overlay && state.character_pane &&
             static_cast<int>(bounds.right) < 1148 * audio_scale) : skin::HudTextLines{};
@@ -10733,7 +10075,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
 
     SetBkMode(dc, TRANSPARENT);
 
-    if (state.session && connection_at.w > 0)
+    if (state.session && connection_at.w > 0 && (state.debug_overlay || state.session->connection_state() != verdigris::client::ConnectionState::Ready))
       paint_connection_chip(state, dc, bounds, rl, connection_at.x,
                             connection_at.y);
 
@@ -10748,8 +10090,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     const auto text_backing = [&](int x, int y, const SIZE& extent) {
       skin::hud_text_backing(dc, {x, y, x + extent.cx, y + extent.cy});
     };
-    if (layout.identity.w > 0) {
-      rl.push_back({render::Op::HouseChip, 0.0, 0.0, 0.0, 0, identity});
+    rl.push_back({render::Op::HouseChip, 0.0, 0.0, 0.0, 0, identity});
+    if (state.debug_overlay && layout.identity.w > 0) {
       text_backing(layout.identity.x, layout.identity.y, identity_extent);
       SetTextColor(dc, RGB(140, 208, 172));
       TextOutA(dc, layout.identity.x, layout.identity.y, identity.c_str(),
@@ -10760,7 +10102,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
             identity_extent.cy}});
     }
 
-    if (controls_at.w > 0) {
+    if (state.debug_overlay && controls_at.w > 0) {
       SetTextColor(dc, RGB(148, 160, 150));
       if (layout.controls_wrapped) {
         text_backing(controls_at.x, controls_at.y, controls_a_extent);
@@ -10923,8 +10265,6 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       rl.push_back({render::Op::Hud, static_cast<double>(at.x),
                     static_cast<double>(at.y), 0.0, 1, "audio:muted"});
       state.hud_rect_trace.push_back({"audio-muted", {at.x, at.y, at.w, at.h}});
-      if (!show_art_chip)
-        state.hud_rect_trace.push_back({"art", {at.x, at.y, at.w, at.h}});
     }
     if (show_mixer && placed_audio.mixer.w > 0)
       paint_audio_mixer_hud(state, dc, placed_audio.mixer.x, placed_audio.mixer.y,
@@ -11126,7 +10466,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   // lines never run off the window, and never hides behind F3.
   if (state.hint_ticks > 0 && !state.hint.empty()) {
     SetBkMode(dc, TRANSPARENT);
-    const int max_width = std::max(160L, bounds.right - 48);
+    const int feedback_right=state.gear_overlay?gear_pane_rect(bounds.right,bounds.bottom).x-20:bounds.right;
+    const int feedback_left=state.character_pane?minimap_rect(bounds.bottom).x+minimap_rect(bounds.bottom).w+12:24;
+    const int max_width=std::max(160,feedback_right-feedback_left-24);
     std::vector<std::string> lines;
     std::string remaining = state.hint;
     while (!remaining.empty() && lines.size() < 4) {
@@ -11161,10 +10503,10 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     }
     const int block_height = line_height * static_cast<int>(lines.size());
     const int toast_x =
-        std::max(12, static_cast<int>(bounds.right - widest) / 2);
+        std::max(feedback_left, feedback_left+(feedback_right-feedback_left-widest)/2);
     // Reserve the bottom lane for XP/combat log/action controls. Transient
     // hints live in a small upper-center plate instead of covering the meter.
-    const int toast_y = std::max(96, 120 * hud_scale(static_cast<int>(bounds.bottom)));
+    const int toast_y = (state.character_pane?48:120)*hud_scale(static_cast<int>(bounds.bottom));
     RECT plate{toast_x - 14, toast_y - 8, toast_x + widest + 14,
                toast_y + block_height + 8};
     skin::panel(dc, plate, skin::kGold, 240, 7.0f);
@@ -11536,7 +10878,7 @@ void toggle_gear_overlay(ClientState& state) {
   sync_world(state);
   state.gear_overlay = !state.gear_overlay;
   state.selected_item = 0;
-  if (state.gear_overlay) show_hint(state, "Gear opened");
+
 }
 
 // TASK-0153: the one Escape contract for every screen. A dismissible pane
@@ -11844,6 +11186,10 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         if (state->text_entry || trade_pane_open(*state)) break;
         toggle_gear_overlay(*state);
       }
+      if(wparam==VK_TAB && state->gear_overlay && !state->world.carried.empty()) {
+        state->gear_keyboard_focus=true;
+        state->selected_item=(state->selected_item+1)%state->world.carried.size();break;
+      }
       if (wparam == 'C') {
         if (state->text_entry || trade_pane_open(*state)) break;
         state->character_pane = !state->character_pane;
@@ -11852,16 +11198,14 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         if (state->text_entry || trade_pane_open(*state) || !state->character_pane)
           break;
         state->stat_atk_expanded = !state->stat_atk_expanded;
-        show_hint(*state, state->stat_atk_expanded ? "ATK sources open"
-                                                   : "ATK sources closed");
+
       }
       if (wparam == 'M' && state->audio_sink) {
         state->audio_sink->set_muted(!state->audio_sink->muted());
         state->audio_prefs = verdigris::audio::apply_mute_only(
             state->audio_prefs, state->audio_sink->muted());
         save_runtime_settings(*state);
-        show_hint(*state, state->audio_sink->muted() ? "Sound muted"
-                                                     : "Sound on");
+
       }
       if (wparam == VK_OEM_6) {
         state->minimap_zoom = std::min(2, state->minimap_zoom + 1);
@@ -11881,7 +11225,8 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       if (state->gear_overlay) sync_world(*state);
       if (state->gear_overlay && !state->world.carried.empty()) {
         const std::size_t count = state->world.carried.size();
-        constexpr int kGridColumns = 4;
+        constexpr int kGridColumns = kPackColumns;
+        if(wparam>=VK_LEFT && wparam<=VK_DOWN) state->gear_keyboard_focus=true;
         if (wparam == VK_UP && state->selected_item >= kGridColumns)
           state->selected_item -= kGridColumns;
         if (wparam == VK_DOWN)
@@ -11890,7 +11235,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         if (wparam == VK_LEFT && state->selected_item > 0) --state->selected_item;
         if (wparam == VK_RIGHT)
           state->selected_item = std::min(count - 1, state->selected_item + 1);
-        if (wparam == VK_RETURN) equip_selected(*state);
+        if (wparam == VK_RETURN) activate_inventory_item(*state);
         if (wparam == 'U') {
           const auto& item = state->world.carried[std::min(state->selected_item, count - 1)];
           if (item.equipped && state->session) {
@@ -11958,6 +11303,9 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         verdigris::client::input::note_input(state->input_latency);
         state->held_gameplay_attacks.insert(VK_LBUTTON);
         SetCapture(window);  // Receive release even after dragging outside the client.
+        if(state->gear_overlay || state->character_pane || state->tree_pane || state->frontend!=Frontend::None) {
+          state->held_gameplay_attacks.erase(VK_LBUTTON);state->primary_down=false;
+        }
         if (state->frontend != Frontend::None) {
           const POINT point{GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam)};
           for (const auto& hit : state->menu_hits) {
@@ -11970,9 +11318,32 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
           }
           break;
         }
+        if(!state->gear_overlay && !state->character_pane && !state->tree_pane && state->frontend==Frontend::None) {
+          RECT client{};GetClientRect(window,&client);bool hit=false;
+          for(int i=0;i<3;++i) {
+            const auto r=player_menu_rect(client.right,client.bottom,i);
+            if(!PtInRect(&r,state->mouse))continue;
+            state->held_gameplay_attacks.erase(VK_LBUTTON);state->primary_down=false;
+            if(i==0)toggle_gear_overlay(*state);
+            if(i==1)state->character_pane=true;
+            if(i==2){state->settings_parent=Frontend::None;open_frontend(*state,Frontend::Settings);}
+            hit=true;break;
+          }
+          if(hit)break;
+        }
         if (state->screen == Screen::Chronicles) {
           handle_chronicles_click(*state, state->mouse);
           break;
+        }
+        if(state->character_pane) {
+          RECT client{};GetClientRect(window,&client);const POINT point{GET_X_LPARAM(lparam),GET_Y_LPARAM(lparam)};
+          const auto close=character_close_rect(client.right,client.bottom);
+          const auto details=character_detail_rect(client.right,client.bottom);
+          const auto box=character_pane_rect(client.right,client.bottom,0);
+          const RECT panel{box.x,box.y,box.x+box.w,box.y+box.h};
+          if(PtInRect(&close,point)){state->character_pane=false;break;}
+          if(PtInRect(&details,point)){state->stat_atk_expanded=!state->stat_atk_expanded;break;}
+          if(PtInRect(&panel,point))break;
         }
         if (trade_pane_open(*state)) {
           const int mx = GET_X_LPARAM(lparam);
@@ -12008,6 +11379,14 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
                                                static_cast<int>(client.bottom));
           const int mx = GET_X_LPARAM(lparam);
           const int my = GET_Y_LPARAM(lparam);
+          const POINT point{mx,my};
+          const auto close=gear_close_rect(client.right,client.bottom);
+          const auto equip=gear_action_rect(client.right,client.bottom,0);
+          const auto sheet=gear_action_rect(client.right,client.bottom,1);
+          if(PtInRect(&close,point)) { toggle_gear_overlay(*state); break; }
+          if(PtInRect(&equip,point)) { activate_inventory_item(*state); break; }
+          if(PtInRect(&sheet,point)) { state->character_pane=!state->character_pane; break; }
+          state->gear_keyboard_focus=false;
           reconcile_pack_grid(*state);
           const int seat = pack_hit_seat(pack, mx, my);
           if (seat >= 0) {
@@ -12992,6 +12371,7 @@ int scenario_loot_to_bank() {
   }
 
   state.gear_overlay = true;
+  state.gear_keyboard_focus=true;
   scenario_present(state);
   scenario_check(render::any(state.render_list, render::Op::PaneItem),
                  "loot-to-bank: grid cell rendered in the pane");
@@ -13049,13 +12429,14 @@ int scenario_loot_to_bank() {
     scenario_step(state, verdigris::Command::equip(
                               state.simulation->scion().carried_items.front().id));
     state.gear_overlay = true;
+  state.gear_keyboard_focus=true;
     scenario_present(state);
     weapon = render::first(state.render_list, render::Op::PaneWeapon);
     scenario_check(weapon && weapon->label != "(empty)",
                    "loot-to-bank: equip fills the weapon seat");
     const render::Item* stat = render::first(state.render_list, render::Op::PaneStat);
-    scenario_check(stat && stat->label.find("(+") != std::string::npos,
-                   "loot-to-bank: equipped bonus appears in the stat readout");
+    scenario_check(stat && stat->label.find("ATK "+std::to_string(state.world.player.attack+state.world.player.gear_attack)) != std::string::npos,
+                 "loot-to-bank: gear rating comes from the authoritative snapshot");
     state.gear_overlay = false;
     scenario_present(state);
     {
@@ -13122,10 +12503,10 @@ int scenario_loot_to_bank() {
           has_dormant = true;
         if (item.label.rfind("char:Attack:", 0) == 0) attack_row = item.label;
       }
-      scenario_check(has_src,
-                     "loot-to-bank: attack source breakdown is on the sheet");
-      scenario_check(has_dormant,
-                     "loot-to-bank: dormant conditional is labeled inactive");
+      scenario_check(!has_src,
+                 "loot-to-bank: source calculations are hidden until expanded");
+      scenario_check(!has_dormant,
+                 "loot-to-bank: unused conditional scaffold stays out of normal play");
       scenario_check(!attack_row.empty() &&
                          attack_row.find("inactive") == std::string::npos,
                      "loot-to-bank: dormant values are not folded into Attack");
@@ -13159,11 +12540,11 @@ int scenario_loot_to_bank() {
                  "loot-to-bank: extraction banks the trophy");
 
   state.gear_overlay = true;
+  state.gear_keyboard_focus=true;
   scenario_present(state);
   const render::Item* banked = render::first(state.render_list, render::Op::PaneBanked);
-  scenario_check(banked && banked->label.find("items 1") != std::string::npos &&
-                     banked->label.find("trophies 1") != std::string::npos,
-                 "loot-to-bank: banked footer reflects the extraction");
+  scenario_check(state.world.stored_items==1 && state.world.stored_trophies==1 && banked==nullptr,
+                 "loot-to-bank: House storage remains authoritative and separate from Scion equipment");
 
   // TASK-0142: the owner-facing objective strip walks the loop — it points
   // at the EXIT while loot is carried and keeps guiding after banking.
@@ -13743,7 +13124,8 @@ int scenario_remote_render_list() {
         item.label == std::string("connection ") + conn_label)
       saw_conn = true;
   }
-  scenario_check(saw_conn, "remote-render-list: connection chip uses connection_state_label");
+  scenario_check(!saw_conn && state.session->connection_state()==verdigris::client::ConnectionState::Ready,
+                 "remote-render-list: ready state does not leave a permanent connection badge");
 
   bool saw_monster = false, saw_swing = false, saw_drop = false;
   for (int step = 0; step < 240; ++step) {
@@ -14296,11 +13678,10 @@ int scenario_first_session_clarity() {
     scenario_present(state);
     scenario_check(hud_prefixed(state, "objective: slay the wardens"),
                    "first-session-clarity: strip names the authoritative slay phase");
-    scenario_check(hud_contains(state, "dash"),
-                   "first-session-clarity: controls hint includes dash on the normal HUD");
-    scenario_check(!state.debug_overlay &&
-                       hud_prefixed(state, "controls:"),
-                   "first-session-clarity: controls hint visible with F3 disabled");
+    scenario_check(!hud_prefixed(state,"controls:"),
+                 "first-session-clarity: ordinary HUD has no permanent control paragraph");
+    scenario_check(!state.debug_overlay && !hud_prefixed(state,"controls:"),
+                 "first-session-clarity: F3-off is the quiet player view");
     const std::string dir = art_wave_capture_dir();
     if (dir.empty()) {
       scenario_check(false,
@@ -14527,9 +13908,8 @@ int scenario_progression_surface() {
   state.camera.y = static_cast<double>(state.world.player.position.y);
   state.gear_overlay = true;
   reference_present(state, 960, 600, "");
-  scenario_check(
-      render_list_has(state, render::Op::PaneStat, "TREE no authoritative data"),
-      "absent: the gear pane states absence, not zeros");
+  scenario_check(!render_list_has(state,render::Op::PaneStat,"TREE no authoritative data"),
+                 "absent: unavailable tree does not advertise itself in inventory");
 
   // VG-UI-003 extra: pack evidence of owner Skill tree / No data yet.
   // TASK-0156 PaneStat protocol string is unchanged. A TASK folder cannot
@@ -14545,10 +13925,8 @@ int scenario_progression_surface() {
       state.tree_review_strip = true;
       scenario_check(reference_present(state, 960, 600, png),
                      "progression-surface: owner absence capture written");
-      scenario_check(
-          render_list_has(state, render::Op::PaneStat,
-                          "TREE no authoritative data"),
-          "absent: owner strip never replaces the TREE protocol string");
+      scenario_check(!render_list_has(state,render::Op::PaneStat,"TREE no authoritative data"),
+                 "absent: diagnostic strip does not reintroduce placeholder gear copy");
       bool skill_tree = false;
       bool no_data = false;
       bool tree_jargon = false;
@@ -14610,11 +13988,8 @@ int scenario_progression_surface() {
   }
   const std::string png_960 = dir + "\\progression-surface-nonzero-960x600.png";
   reference_present(state, 960, 600, png_960);
-  scenario_check(
-      render_list_has(state, render::Op::PaneStat,
-                      "TREE pts " + std::to_string(earned_view.unspent_points) +
-                          "/" + std::to_string(earned_view.earned_points)),
-      "nonzero: the pane text shows the authoritative points");
+  scenario_check(state.world.progression.unspent_points==earned_view.unspent_points && !render_list_has(state,render::Op::PaneStat,"TREE pts"),
+                 "nonzero: authoritative progression is retained outside the equipment surface");
   scenario_check(!render_list_has(state, render::Op::PaneStat,
                                   "no authoritative data"),
                  "nonzero: a present payload never renders as absence");
@@ -14645,8 +14020,8 @@ int scenario_progression_surface() {
   const std::string png_1366 =
       dir + "\\progression-surface-zero-1366x768.png";
   reference_present(state, 1366, 768, png_1366);
-  scenario_check(render_list_has(state, render::Op::PaneStat, "TREE pts 0/"),
-                 "zero: genuine zeros are rendered as zeros");
+  scenario_check(state.world.progression.present && state.world.progression.unspent_points==0,
+                 "zero: genuine zero remains distinguishable from absent progression");
   scenario_check(!render_list_has(state, render::Op::PaneStat,
                                   "no authoritative data"),
                  "zero: zero is not rendered as absence");
@@ -14683,574 +14058,9 @@ std::string readability_capture_dir() { return art_wave_capture_dir(); }
 // come from state.hud_rect_trace, recorded beside every draw during the real
 // GDI presents, so a suppressed or moved draw cannot fake the proof. The Esc
 // contracts are re-proven through the same production seams after each pass.
-int scenario_hud_pane_readability() {
-  auto trace_find = [](const ClientState& s,
-                       const char* label) -> const HudRect* {
-    for (const auto& entry : s.hud_rect_trace)
-      if (entry.first == label) return &entry.second;
-    return nullptr;
-  };
+#include "ui_acceptance_scenarios.hpp"
 
-  const char* kClosedRegions[] = {"identity", "controls",     "objective",
-                                  "art",      "minimap",      "route-card",
-                                  "quickbar-strip", "audio-mixer",
-                                  "orb-life", "orb-resource"};
-  const char* kOpenRegions[] = {"identity", "controls",     "objective",
-                                "art",      "minimap",      "quickbar-strip",
-                                "audio-mixer", "orb-life", "orb-resource"};
-  const char* kPaneLines[] = {"pane-title",         "pane-stats",
-                              "pane-stats-combat",  "pane-seat",
-                              "pane-banked",        "pane-progression",
-                              "pane-footer-place",  "pane-footer"};
-
-  const struct Size { int w; int h; } sizes[] = {
-      {960, 600}, {1366, 768}, {3440, 1440}};
-  const std::string dir = readability_capture_dir();
-  if (dir.empty()) {
-    scenario_check(false,
-                   "hud-pane-readability: capture root rejected before any write");
-    return 0;
-  }
-
-  // ── Local owner path: both required resolutions, closed then open pane.
-  for (const auto& size : sizes) {
-    const std::string tag =
-        std::to_string(size.w) + "x" + std::to_string(size.h);
-    ClientState state;
-    scenario_begin(state);
-    load_billboards(state.billboards);
-    scenario_follow_camera(state);
-
-    auto assert_pairwise_disjoint = [&](const ClientState& s,
-                                        const char* const* labels,
-                                        int count, const char* scope) {
-      for (int i = 0; i < count; ++i)
-        for (int j = i + 1; j < count; ++j) {
-          const HudRect* a = trace_find(s, labels[i]);
-          const HudRect* b = trace_find(s, labels[j]);
-          char line[192];
-          std::snprintf(line, sizeof(line), "%s: %s vs %s stays clear (%s)",
-                        scope, labels[i], labels[j], tag.c_str());
-          if (!a || !b) {
-            scenario_check(false, line);
-            continue;
-          }
-          scenario_check(!hud_rects_overlap(*a, *b), line);
-        }
-    };
-
-    // Closed pane: the normal HUD is already collision-free.
-    reference_present(state, size.w, size.h, "");
-    const std::string png_closed = dir + "\\hud-pane-readability-closed-" +
-                                   tag + ".png";
-    reference_present(state, size.w, size.h, png_closed);
-    scenario_check(trace_find(state, "identity") && trace_find(state, "controls"),
-                   ("hud-pane-readability: closed HUD regions recorded (" +
-                    tag + ")").c_str());
-    scenario_check(render_list_has(state, render::Op::Hud, "xp-bar"),
-                   ("hud-pane-readability: xp bar is on the local HUD (" +
-                    tag + ")").c_str());
-    scenario_check(render_list_has(state, render::Op::Hud, "route:"),
-                   ("hud-pane-readability: route card is on the local HUD (" +
-                    tag + ")").c_str());
-    scenario_check(render_list_has(state, render::Op::Hud, "minimap-zoom:"),
-                   ("hud-pane-readability: minimap zoom is client-only (" +
-                    tag + ")").c_str());
-    for (const auto& item : state.render_list) {
-      if (item.op != render::Op::Hud || item.label.rfind("route:", 0) != 0)
-        continue;
-      for (const auto& monster : state.world.monsters) {
-        if (monster.name.empty()) continue;
-        scenario_check(item.label.find(monster.name) == std::string::npos,
-                       ("hud-pane-readability: route card hides foe names (" +
-                        tag + ")").c_str());
-      }
-    }
-    state.minimap_zoom = 2;
-    reference_present(state, size.w, size.h, "");
-    scenario_check(render_list_has(state, render::Op::Hud, "minimap-zoom:2"),
-                   ("hud-pane-readability: tight minimap zoom applied (" +
-                    tag + ")").c_str());
-    state.minimap_zoom = 0;
-    reference_present(state, size.w, size.h, "");
-    assert_pairwise_disjoint(state, kClosedRegions, 9, "hud-pane-readability");
-
-    // Open the shipped gear pane through the production toggle seam.
-    toggle_gear_overlay(state);
-    scenario_check(state.gear_overlay,
-                   "hud-pane-readability: gear pane opened through the "
-                   "production seam");
-    const std::string png_open =
-        dir + "\\hud-pane-readability-open-" + tag + ".png";
-    reference_present(state, size.w, size.h, png_open);
-
-    // The pane really rendered its authoritative content.
-    scenario_check(render::any(state.render_list, render::Op::PaneStat) &&
-                       render::any(state.render_list, render::Op::PaneWeapon),
-                   ("hud-pane-readability: pane content rendered (" + tag + ")")
-                       .c_str());
-
-    // No global HUD region may intersect the open pane.
-    const HudRect* pane = trace_find(state, "pane-frame");
-    scenario_check(pane != nullptr && pane->w > 100,
-                   "hud-pane-readability: pane frame recorded");
-    for (const char* region : kOpenRegions) {
-      const HudRect* rect = trace_find(state, region);
-      char line[192];
-      std::snprintf(line, sizeof(line),
-                    "hud-pane-readability: %s never enters the gear pane (%s)",
-                    region, tag.c_str());
-      scenario_check(pane && rect && !hud_rects_overlap(*pane, *rect), line);
-    }
-    // The wrapped second controls line (when the planner stacked the hint)
-    // obeys the same pane exclusion.
-    if (const HudRect* second = trace_find(state, "controls-second")) {
-      char line[192];
-      std::snprintf(line, sizeof(line),
-                    "hud-pane-readability: controls-second never enters the "
-                    "gear pane (%s)",
-                    tag.c_str());
-      scenario_check(pane && !hud_rects_overlap(*pane, *second), line);
-    }
-
-    // Full mutual clearance still holds among global regions WITH the pane
-    // open — the exact gap a fallback pin once slipped through.
-    assert_pairwise_disjoint(state, kOpenRegions, 8, "hud-pane-open");
-    bool wrap_clear = true;
-    if (const HudRect* second = trace_find(state, "controls-second")) {
-      for (const char* region : kOpenRegions) {
-        const HudRect* rect = trace_find(state, region);
-        if (rect && hud_rects_overlap(*second, *rect)) wrap_clear = false;
-      }
-    }
-    scenario_check(wrap_clear,
-                   ("hud-pane-readability: controls-second clears every "
-                    "global region (" + tag + ")").c_str());
-
-    // Pane chrome lines stay mutually clear, including backpack cells.
-    assert_pairwise_disjoint(state, kPaneLines, 8, "hud-pane-readability");
-    bool cells_clear = true;
-    for (const auto& entry : state.hud_rect_trace) {
-      if (entry.first != "pane-cell") continue;
-      for (const char* line_label : kPaneLines) {
-        const HudRect* other = trace_find(state, line_label);
-        if (other && hud_rects_overlap(entry.second, *other))
-          cells_clear = false;
-      }
-    }
-    scenario_check(cells_clear,
-                   ("hud-pane-readability: backpack cells clear of pane "
-                    "chrome (" + tag + ")").c_str());
-
-    const HudRect* gear_footer = trace_find(state, "pane-footer");
-    const HudRect* gear_place = trace_find(state, "pane-footer-place");
-    const bool footer_inside = pane && gear_footer &&
-        verdigris::client::ui::rect_inside_pane(
-            gear_footer->x, gear_footer->y, gear_footer->w, gear_footer->h,
-            pane->x, pane->y, pane->w, pane->h);
-    const bool place_inside = pane && gear_place &&
-        verdigris::client::ui::rect_inside_pane(
-            gear_place->x, gear_place->y, gear_place->w, gear_place->h,
-            pane->x, pane->y, pane->w, pane->h);
-    scenario_check(gear_footer != nullptr && gear_footer->w > 40,
-                   ("hud-pane-readability: gear close hint is measured (" +
-                    tag + ")").c_str());
-    scenario_check(footer_inside && place_inside,
-                   ("hud-pane-readability: gear footer stays inside the pane (" +
-                    tag + ")").c_str());
-    scenario_check(
-        verdigris::client::ui::clipped_gear_footer_fails_review(false),
-        "hud-pane-readability: a clipped gear footer is the anti-pattern");
-    scenario_check(
-        !verdigris::client::ui::clipped_gear_footer_fails_review(footer_inside),
-        ("hud-pane-readability: I or Esc closes stays inside the gear pane (" +
-         tag + ")").c_str());
-    scenario_check(
-        render_list_has(state, render::Op::Hud, "gear:close-hint") &&
-            render_list_has(state, render::Op::Hud, "gear:place-hint"),
-        ("hud-pane-readability: live HUD names the gear footer (" + tag + ")")
-            .c_str());
-    scenario_check(
-        !verdigris::client::ui::missing_gear_close_fails_review(
-            render_list_has(state, render::Op::Hud, "gear:close-hint")),
-        ("hud-pane-readability: Enter equips and I or Esc closes is the "
-         "production gear footer (" +
-         tag + ")")
-            .c_str());
-
-    const HudRect* gear_stats = trace_find(state, "pane-stats");
-    const HudRect* gear_combat = trace_find(state, "pane-stats-combat");
-    const bool stats_inside = pane && gear_stats &&
-        verdigris::client::ui::rect_inside_pane(
-            gear_stats->x, gear_stats->y, gear_stats->w, gear_stats->h,
-            pane->x, pane->y, pane->w, pane->h);
-    const bool combat_inside = pane && gear_combat &&
-        verdigris::client::ui::rect_inside_pane(
-            gear_combat->x, gear_combat->y, gear_combat->w, gear_combat->h,
-            pane->x, pane->y, pane->w, pane->h);
-    scenario_check(gear_combat != nullptr && gear_combat->w > 40,
-                   ("hud-pane-readability: gear DEF/LVL line is measured (" +
-                    tag + ")").c_str());
-    scenario_check(stats_inside && combat_inside,
-                   ("hud-pane-readability: gear stats stay inside the pane (" +
-                    tag + ")").c_str());
-    scenario_check(
-        verdigris::client::ui::clipped_gear_stats_fails_review(false),
-        "hud-pane-readability: clipped DEF/LVL is the anti-pattern");
-    scenario_check(
-        !verdigris::client::ui::clipped_gear_stats_fails_review(combat_inside),
-        ("hud-pane-readability: DEF and LVL stay inside the gear pane (" +
-         tag + ")")
-            .c_str());
-    scenario_check(
-        render_list_has(state, render::Op::Hud, "gear:stats-def") &&
-            render_list_has(state, render::Op::Hud, "gear:stats-lvl"),
-        ("hud-pane-readability: live HUD names DEF and LVL (" + tag + ")")
-            .c_str());
-    scenario_check(
-        !verdigris::client::ui::missing_gear_def_fails_review(
-            render_list_has(state, render::Op::Hud, "gear:stats-def")),
-        ("hud-pane-readability: DEF on the gear pane is the production readout (" +
-         tag + ")")
-            .c_str());
-
-    // Hierarchy without deletion: every authority line survives.
-    scenario_check(render_list_has(state, render::Op::HouseChip, "House ") &&
-                       !render_list_has(state, render::Op::HouseChip,
-                                        "House House"),
-                   "hud-pane-readability: identity keeps its single House "
-                   "prefix");
-    scenario_check(render_list_has(state, render::Op::Hud, "controls:") &&
-                       render::any(state.render_list, render::Op::Hud) &&
-                       render_list_has(state, render::Op::PaneBanked, "Banked") &&
-                       render_list_has(state, render::Op::PaneStat, "TREE"),
-                   "hud-pane-readability: controls, banked, and progression "
-                   "truth all remain");
-
-    // Owner Esc contracts through the identical production seams.
-    handle_escape_key(state);
-    scenario_check(!state.gear_overlay && !state.quit_requested,
-                   "hud-pane-readability: first Escape closes the pane");
-    scenario_present(state);
-    scenario_check(!render::any(state.render_list, render::Op::PaneStat) &&
-                       !render::any(state.render_list, render::Op::PaneItem),
-                   "hud-pane-readability: dismissed pane leaves the render "
-                   "list");
-    handle_escape_key(state);
-    scenario_check(!state.quit_requested && state.frontend == Frontend::Pause,
-                   "hud-pane-readability: bare Escape opens session menu");
-
-    // Capture integrity for this resolution.
-    for (const std::string& path : {png_closed, png_open}) {
-      std::ifstream probe(path, std::ios::binary);
-      scenario_check(probe.good(),
-                     ("hud-pane-readability: capture readable (" + tag + ")")
-                         .c_str());
-      probe.seekg(0, std::ios::end);
-      const std::streamoff bytes = probe.tellg();
-      char line[512];
-      std::snprintf(line, sizeof(line), "    capture: %s (%lld bytes)\n",
-                    path.c_str(), static_cast<long long>(bytes));
-      std::printf("%s", line);
-      scenario_check(bytes > 1024,
-                     ("hud-pane-readability: capture non-trivial (" + tag + ")")
-                         .c_str());
-    }
-  }
-
-  // VG-UI-007 extra: the P-key tree pane is a real HUD keep-out, not just
-  // the gear overlay. A 960 capture cannot certify if WASD sits on the tree.
-  {
-    ClientState state;
-    scenario_begin(state);
-    load_billboards(state.billboards);
-    scenario_follow_camera(state);
-    state.tree_pane = true;
-    const std::string png_tree =
-        dir + "\\hud-pane-readability-tree-960x600.png";
-    scenario_check(reference_present(state, 960, 600, png_tree),
-                   "hud-pane-readability: tree-open capture written");
-    const HudRect* pane = trace_find(state, "tree-pane-frame");
-    scenario_check(pane != nullptr && pane->w > 100,
-                   "hud-pane-readability: tree pane frame recorded");
-    const char* kTreeKeepOut[] = {"identity",        "controls",
-                                  "objective",       "minimap",
-                                  "quickbar-strip",  "orb-life",
-                                  "orb-resource"};
-    for (const char* region : kTreeKeepOut) {
-      const HudRect* rect = trace_find(state, region);
-      char line[192];
-      std::snprintf(line, sizeof(line),
-                    "hud-pane-readability: %s never enters the tree pane",
-                    region);
-      scenario_check(pane && rect && !hud_rects_overlap(*pane, *rect), line);
-    }
-    if (const HudRect* second = trace_find(state, "controls-second")) {
-      scenario_check(pane && !hud_rects_overlap(*pane, *second),
-                     "hud-pane-readability: controls-second never enters the "
-                     "tree pane");
-    }
-    if (const HudRect* art = trace_find(state, "art")) {
-      scenario_check(pane && !hud_rects_overlap(*pane, *art),
-                     "hud-pane-readability: art/mute chip never enters the "
-                     "tree pane");
-    }
-    scenario_check(
-        render_list_has(state, render::Op::Hud, "tree:seats-hidden-absent"),
-        "hud-pane-readability: tree-open still states absence without seats");
-    std::ifstream probe(png_tree, std::ios::binary);
-    scenario_check(probe.good(), "hud-pane-readability: tree capture readable");
-    probe.seekg(0, std::ios::end);
-    scenario_check(probe.tellg() > 1024,
-                   "hud-pane-readability: tree capture non-trivial");
-  }
-
-  // VG-UI-007 extra: C-key character sheet keep-out. Centered WASD fallback
-  // cannot certify overlaying First Scion.
-  {
-    ClientState state;
-    scenario_begin(state);
-    load_billboards(state.billboards);
-    scenario_follow_camera(state);
-    state.character_pane = true;
-    const std::string png_sheet =
-        dir + "\\hud-pane-readability-character-960x600.png";
-    scenario_check(reference_present(state, 960, 600, png_sheet),
-                   "hud-pane-readability: character-open capture written");
-    const HudRect* pane = trace_find(state, "character-pane-frame");
-    scenario_check(pane != nullptr && pane->w > 100,
-                   "hud-pane-readability: character pane frame recorded");
-    const HudRect* controls = trace_find(state, "controls");
-    scenario_check(controls != nullptr,
-                   "hud-pane-readability: controls hint remains with the "
-                   "character sheet open");
-    scenario_check(
-        !verdigris::client::ui::missing_controls_fails_review(controls !=
-                                                             nullptr),
-        "hud-pane-readability: deleting WASD cannot certify the sheet");
-    const char* kSheetKeepOut[] = {"identity",  "controls", "objective",
-                                   "minimap",   "orb-life", "quickbar-strip"};
-    for (const char* region : kSheetKeepOut) {
-      const HudRect* rect = trace_find(state, region);
-      char line[192];
-      std::snprintf(line, sizeof(line),
-                    "hud-pane-readability: %s never enters the character pane",
-                    region);
-      scenario_check(pane && rect && !hud_rects_overlap(*pane, *rect), line);
-    }
-    const HudRect* map = trace_find(state, "minimap");
-    const HudRect* life = trace_find(state, "orb-life");
-    scenario_check(
-        verdigris::client::ui::character_covers_minimap_fails_review(true),
-        "hud-pane-readability: covering the minimap is the anti-pattern");
-    scenario_check(
-        !verdigris::client::ui::character_covers_minimap_fails_review(
-            pane && map && hud_rects_overlap(*pane, *map)),
-        "hud-pane-readability: a slot below the map is the production sheet");
-    scenario_check(
-        verdigris::client::ui::character_covers_life_orb_fails_review(true),
-        "hud-pane-readability: covering Life is the anti-pattern");
-    scenario_check(
-        !verdigris::client::ui::character_covers_life_orb_fails_review(
-            pane && life && hud_rects_overlap(*pane, *life)),
-        "hud-pane-readability: a slot above Life is the production sheet");
-    if (const HudRect* second = trace_find(state, "controls-second")) {
-      scenario_check(pane && !hud_rects_overlap(*pane, *second),
-                     "hud-pane-readability: controls-second never enters the "
-                     "character pane");
-    }
-    if (const HudRect* art = trace_find(state, "art")) {
-      scenario_check(pane && !hud_rects_overlap(*pane, *art),
-                     "hud-pane-readability: art/mute chip never enters the "
-                     "character pane");
-    }
-    const bool overlap =
-        pane && controls && hud_rects_overlap(*pane, *controls);
-    scenario_check(
-        verdigris::client::ui::controls_on_character_fails_review(true),
-        "hud-pane-readability: overlaying the sheet with WASD is the "
-        "anti-pattern");
-    scenario_check(
-        !verdigris::client::ui::controls_on_character_fails_review(overlap),
-        "hud-pane-readability: relocated controls are the production sheet HUD");
-    const HudRect* footer = trace_find(state, "character-pane-footer");
-    scenario_check(footer != nullptr && footer->w > 40,
-                   "hud-pane-readability: close hint is measured on the sheet");
-    scenario_check(pane && footer && !hud_rects_overlap(*pane, *life) &&
-                       footer->y + footer->h <= pane->y + pane->h &&
-                       footer->y >= pane->y,
-                   "hud-pane-readability: close hint stays inside the sheet slot");
-    scenario_check(
-        life && footer && !hud_rects_overlap(*footer, *life),
-        "hud-pane-readability: close hint never enters the life orb");
-    scenario_check(
-        render_list_has(state, render::Op::Hud, "char:close-hint"),
-        "hud-pane-readability: live HUD names the close hint");
-    scenario_check(
-        verdigris::client::ui::missing_sheet_close_fails_review(false),
-        "hud-pane-readability: a clipped close hint is the anti-pattern");
-    scenario_check(
-        !verdigris::client::ui::missing_sheet_close_fails_review(true),
-        "hud-pane-readability: C or Esc closes is the production footer");
-    bool compact_jargon = false;
-    bool compact_owner = false;
-    for (const auto& item : state.render_list) {
-      if (item.op != render::Op::Hud) continue;
-      if (item.label.rfind("char:ATK src:", 0) == 0 &&
-          item.label.find("base ") != std::string::npos)
-        compact_jargon = true;
-      if (item.label == "char:src-owner") compact_owner = true;
-    }
-    scenario_check(
-        verdigris::client::ui::compact_atk_src_jargon_fails_review(true),
-        "hud-pane-readability: lowercase base/gear on Sources is the anti-pattern");
-    scenario_check(
-        !verdigris::client::ui::compact_atk_src_jargon_fails_review(compact_jargon),
-        "hud-pane-readability: compact Sources uses Base/Gear");
-    scenario_check(compact_owner,
-                   "hud-pane-readability: compact sheet names Base/Gear on Sources");
-    std::ifstream probe(png_sheet, std::ios::binary);
-    scenario_check(probe.good(),
-                   "hud-pane-readability: character capture readable");
-    probe.seekg(0, std::ios::end);
-    scenario_check(probe.tellg() > 1024,
-                   "hud-pane-readability: character capture non-trivial");
-  }
-
-  // ── Remote owner path on this lane's routed loopback capsule (7100-7119):
-  // the connection chip and art chip must also clear the open pane.
-  {
-    verdigris::networking::WebSocketServer* server = nullptr;
-    std::uint16_t port = 0;
-    for (std::uint16_t candidate = 7100; candidate <= 7119; ++candidate) {
-      auto* probe = new verdigris::networking::WebSocketServer(candidate);
-      std::string error;
-      if (probe->start(&error)) {
-        server = probe;
-        port = candidate;
-        break;
-      }
-      delete probe;
-    }
-    scenario_check(server != nullptr,
-                   "hud-pane-readability: bound ox-pc-z capsule server "
-                   "(if busy, another process holds 7100-7119)");
-    if (server) {
-      ClientState state;
-      state.session = std::make_unique<verdigris::client::RemoteProtocolSession>(
-          "127.0.0.1", port, "ox-pc-z-hud-readability", true);
-      load_billboards(state.billboards);
-      std::string error;
-      scenario_check(state.session->start(&error),
-                     "hud-pane-readability: remote start");
-      bool ready = false;
-      for (int i = 0; i < 250 && !ready; ++i) {
-        state.session->poll();
-        ready = state.session->connection_state() ==
-                verdigris::client::ConnectionState::Ready;
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
-      }
-      scenario_check(ready, "hud-pane-readability: remote handshake ready");
-      state.session->submit(
-          verdigris::client::ClientCommand::enter_zone("tin:1:0"));
-      bool in_instance = false;
-      for (int i = 0; i < 80 && !in_instance; ++i) {
-        state.session->poll();
-        ingest_session_events(state);
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
-        in_instance = state.session->model().scene.type == "instance";
-      }
-      scenario_check(in_instance,
-                     "hud-pane-readability: remote expedition entered");
-      generate_scenery(state);
-      sync_world(state);
-      state.camera.x = static_cast<double>(state.world.player.position.x);
-      state.camera.y = static_cast<double>(state.world.player.position.y);
-      toggle_gear_overlay(state);
-      reference_present(state, 960, 600, "");
-      auto trace_find = [&](const char* label) -> const HudRect* {
-        for (const auto& entry : state.hud_rect_trace)
-          if (entry.first == label) return &entry.second;
-        return nullptr;
-      };
-      const HudRect* pane = trace_find("pane-frame");
-      const HudRect* connection = trace_find("connection");
-      const HudRect* art = trace_find("art");
-      scenario_check(pane && connection,
-                     "hud-pane-readability: remote pane and connection chip "
-                     "recorded");
-      scenario_check(pane && connection &&
-                         !hud_rects_overlap(*pane, *connection),
-                     "hud-pane-readability: connection chip clears the open "
-                     "pane (960x600)");
-      scenario_check(!art || (pane && !hud_rects_overlap(*pane, *art)),
-                     "hud-pane-readability: a skeleton loader chip is not "
-                     "required; a warning chip still clears the pane");
-      const HudRect* map = trace_find("minimap");
-      const HudRect* identity = trace_find("identity");
-      scenario_check(map && identity && !hud_rects_overlap(*map, *identity),
-                     "hud-pane-readability: identity clears the minimap on "
-                     "the remote path");
-      if (state.session) state.session->shutdown();
-      server->stop();
-      delete server;
-    }
-  }
-  // Regression: both real panes open at960 left no legal fixed-row slot.
-  // Include the mixer itself, preserve mute, and inspect the actual PNG/trace.
-  for (const bool muted : {false, true}) {
-    ClientState dual;
-    scenario_begin(dual);
-    scenario_follow_camera(dual);
-    toggle_gear_overlay(dual);
-    dual.character_pane = true;
-    dual.audio_sink->set_muted(muted);
-    const std::string tag = muted ? "dual-muted" : "dual-unmuted";
-    scenario_check(reference_present(dual, 960, 600,
-        dir + "\\hud-pane-readability-" + tag + "-960x600.png"),
-        ("hud-pane-readability: " + tag + " capture written").c_str());
-    scenario_check(!render_list_has(dual, render::Op::Hud, "hud-layout:unplaced"),
-                   "hud-pane-readability: dual-pane HUD completely placed");
-    std::vector<std::pair<std::string, HudRect>> regions;
-    for (const char* label : {"pane-frame", "character-pane-frame", "minimap",
-                              "quickbar-strip", "orb-life", "orb-resource",
-                              "identity", "objective", "controls", "audio-mixer"}) {
-      const auto* at = trace_find(dual, label);
-      scenario_check(at != nullptr, (tag + ": " + label + " painted").c_str());
-      if (at) regions.push_back({label, *at});
-    }
-    if (const auto* at = trace_find(dual, "controls-second"))
-      regions.push_back({"controls-second", *at});
-    if (const auto* at = trace_find(dual, "audio-muted"))
-      regions.push_back({"audio-muted", *at});
-    scenario_check((trace_find(dual, "audio-muted") != nullptr) == muted,
-                   "hud-pane-readability: dual-pane mute remains truthful");
-    for (std::size_t a = 0; a < regions.size(); ++a) {
-      const auto& r = regions[a].second;
-      scenario_check(r.x >= 0 && r.y >= 0 && r.x + r.w <= 960 && r.y + r.h <= 600,
-                     (tag + ": " + regions[a].first + " inside viewport").c_str());
-      for (std::size_t b = a + 1; b < regions.size(); ++b)
-        scenario_check(!hud_rects_overlap(r, regions[b].second),
-            (tag + ": " + regions[a].first + " clears " + regions[b].first).c_str());
-    }
-    const auto* xp_caption = trace_find(dual, "xp-caption");
-    const auto* sheet = trace_find(dual, "character-pane-frame");
-    const auto* gear = trace_find(dual, "pane-frame");
-    scenario_check(xp_caption && sheet && gear &&
-                       !hud_rects_overlap(*xp_caption, *sheet) &&
-                       !hud_rects_overlap(*xp_caption, *gear),
-                   (tag + ": experience caption clears both panes").c_str());
-    const auto* xp = trace_find(dual, "xp-strip");
-    for (const char* label : {"audio-mixer", "audio-muted", "controls", "controls-second"})
-      if (const auto* at = trace_find(dual, label))
-        scenario_check(xp && !hud_rects_overlap(*xp, *at),
-                       (tag + ": " + label + " clears experience readout").c_str());
-    dual.audio_sink->set_muted(true);
-  }
-  return 0;
-}
-
-std::string art_wave_capture_dir();
+int scenario_hud_pane_readability() { return scenario_native_ui_layout(true); }
 
 int scenario_effect_batch() {
   ClientState state;
@@ -16173,6 +14983,7 @@ int scenario_legal_sounds() {
 
 int scenario_music_phase() {
   ClientState state;
+  state.debug_overlay=true;
   scenario_begin(state);
   scenario_follow_camera(state);
   drain_audio(state);
@@ -17310,6 +16121,7 @@ int scenario_audio_prefs() {
   scenario_check(verdigris::audio::mute_chip_alone_fails_prefs_review(false),
                  "audio-prefs: a mute chip without the mixer cannot certify");
   ClientState state;
+  state.debug_overlay=true;
   scenario_begin(state);
   ensure_audio(state);
   state.audio_prefs = loaded;
@@ -17360,6 +16172,7 @@ int scenario_audio_prefs() {
 
 int scenario_ambience_layer() {
   ClientState state;
+  state.debug_overlay=true;
   scenario_begin(state);
   scenario_follow_camera(state);
   refresh_ambience(state);
@@ -17511,6 +16324,7 @@ int scenario_equipment() {
           : state.simulation->scion().carried_items.front().id;
   verdigris::client::ui::request_equip(state.equip_view, carried_id);
   state.gear_overlay = true;
+  state.gear_keyboard_focus=true;
   scenario_present(state);
   bool compare_pending = false;
   bool compare_equipped = false;
@@ -17525,6 +16339,7 @@ int scenario_equipment() {
   if (!carried_id.empty())
     scenario_step(state, verdigris::Command::equip(carried_id));
   state.gear_overlay = true;
+  state.gear_keyboard_focus=true;
   scenario_present(state);
   bool ack_ok = false;
   bool gold_equipped = false;
@@ -17545,14 +16360,14 @@ int scenario_equipment() {
     if (item.op == render::Op::Hud && item.label == "tree:owner-absent")
       tree_owner_absent = true;
   }
-  scenario_check(tree_protocol,
-                 "equipment: PaneStat still states TREE absence for TASK-0156");
-  scenario_check(tree_owner_absent,
-                 "equipment: owner paint is Skill tree absence, not TREE jargon");
+  scenario_check(!tree_protocol,
+                 "equipment: unavailable tree does not clutter gear");
+  scenario_check(!tree_owner_absent,
+                 "equipment: absence placeholder is not a player feature");
   bool pack_glyph = false;
   for (const auto& item : state.render_list) {
     if (item.op == render::Op::Hud &&
-        (item.label == "pack-glyph:vector" ||
+        (item.label == "pack-glyph:unmapped" ||
          item.label == "pack-glyph:billboard"))
       pack_glyph = true;
   }
@@ -17673,8 +16488,8 @@ int scenario_equipment() {
     scenario_check(
         !verdigris::client::ui::semicolon_compare_hint_fails_review(semicolon),
         "equipment: compare hint uses Enter equips | U unequips");
-    scenario_check(owner_hint,
-                   "equipment: live HUD names the ASCII compare hint");
+    scenario_check(!owner_hint,
+                 "equipment: contextual action buttons replace permanent key instructions");
   }
   return scenario_failures;
 }
@@ -17902,12 +16717,10 @@ int scenario_pane_stack() {
   }
   scenario_check(stacked_sheet && stacked_sheet->w > 100,
                  "pane-stack: character pane frame is measured");
-  scenario_check(stacked_controls != nullptr,
-                 "pane-stack: controls hint remains with the character sheet open");
-  scenario_check(
-      stacked_sheet && stacked_controls &&
-          !hud_rects_overlap(*stacked_sheet, *stacked_controls),
-      "pane-stack: controls hint never enters the character pane");
+  scenario_check(stacked_controls==nullptr,
+                 "pane-stack: character sheet does not summon control reminders");
+  scenario_check(stacked_sheet && stacked_controls==nullptr,
+                 "pane-stack: character pane owns its region without instruction clutter");
   if (stacked_second)
     scenario_check(!hud_rects_overlap(*stacked_sheet, *stacked_second),
                    "pane-stack: wrapped controls never enter the character pane");
@@ -17973,14 +16786,14 @@ int scenario_pane_stack() {
     if (item.label == "tree:invented-origin-rejected") invented_origin = true;
     if (item.label.rfind("tree-seat:", 0) == 0) painted_seat = true;
   }
-  scenario_check(tree_pane && owner_title && owner_absent,
-                 "pane-stack: skill tree paints owner title and absence");
-  scenario_check(seats_hidden,
-                 "pane-stack: absent tree hides seats instead of inventing an origin");
+  scenario_check(!tree_pane && !owner_title && !owner_absent,
+                 "pane-stack: absent skill-tree data does not advertise a placeholder panel");
+  scenario_check(!seats_hidden,
+                 "pane-stack: ordinary play does not explain internal absent-seat state");
   scenario_check(!painted_seat,
                  "pane-stack: absent tree cannot paint tree-seat node ids");
-  scenario_check(invented_origin,
-                 "pane-stack: live HUD rejects invented origin");
+  scenario_check(!invented_origin,
+                 "pane-stack: ordinary play excludes the internal origin diagnostic");
   scenario_check(verdigris::client::ui::invented_origin_fails_review(false, true),
                  "pane-stack: painting a seat with no payload is the anti-pattern");
   scenario_check(!verdigris::client::ui::invented_origin_fails_review(false, false),
@@ -17997,18 +16810,16 @@ int scenario_pane_stack() {
     if (entry.first == "objective") objective_rect = &entry.second;
     if (entry.first == "controls-second") controls_second = &entry.second;
   }
-  scenario_check(tree_frame && tree_frame->w > 100,
-                 "pane-stack: tree pane frame is measured");
-  scenario_check(controls_rect &&
-                     !hud_rects_overlap(*tree_frame, *controls_rect),
-                 "pane-stack: controls hint never enters the tree pane");
-  scenario_check(identity_rect &&
-                     !hud_rects_overlap(*tree_frame, *identity_rect),
-                 "pane-stack: identity never enters the tree pane");
-  scenario_check(objective_rect &&
-                     !hud_rects_overlap(*tree_frame, *objective_rect),
+  scenario_check(tree_frame==nullptr,
+                 "pane-stack: unavailable skill-tree does not reserve a painted panel");
+  scenario_check(controls_rect==nullptr,
+                 "pane-stack: tree does not summon a control paragraph");
+  scenario_check(identity_rect==nullptr,
+                 "pane-stack: no duplicate identity block around the tree");
+  scenario_check(objective_rect && (!tree_frame ||
+                     !hud_rects_overlap(*tree_frame, *objective_rect)),
                  "pane-stack: objective never enters the tree pane");
-  if (controls_second)
+  if (tree_frame && controls_second)
     scenario_check(!hud_rects_overlap(*tree_frame, *controls_second),
                    "pane-stack: wrapped controls never enter the tree pane");
   scenario_check(verdigris::client::ui::controls_on_tree_fails_review(true),
@@ -18651,27 +17462,16 @@ int scenario_build_fixtures() {
                  "build-fixtures: reach/pressure/magic are distinct loops");
   scenario_check(verdigris::client::builds::tint_only_clones_fail_review(),
                  "build-fixtures: three tinted copies of melee fail review");
-  scenario_check(has_hud("build-fixture:reach") &&
-                     has_hud("build-fixture:pressure") &&
-                     has_hud("build-fixture:magic"),
-                 "build-fixtures: character sheet names all three roles");
-  scenario_check(has_hud("build-loops:distinct") && has_hud("build-loops:tint-fail"),
-                 "build-fixtures: distinct-loop and tint-fail HUD flags");
-  scenario_check(has_prefix("build-tactics:reach:") &&
-                     has_prefix("build-weak:reach:") &&
-                     has_prefix("build-gear:reach:") &&
-                     has_prefix("build-answer:reach:"),
-                 "build-fixtures: reach lists tactics, weakness, gear, answer");
-  scenario_check(has_prefix("build-tactics:pressure:") &&
-                     has_prefix("build-weak:pressure:") &&
-                     has_prefix("build-gear:pressure:") &&
-                     has_prefix("build-answer:pressure:"),
-                 "build-fixtures: pressure lists tactics, weakness, gear, answer");
-  scenario_check(has_prefix("build-tactics:magic:") &&
-                     has_prefix("build-weak:magic:") &&
-                     has_prefix("build-gear:magic:") &&
-                     has_prefix("build-answer:magic:"),
-                 "build-fixtures: magic lists tactics, weakness, gear, answer");
+  scenario_check(!has_hud("build-fixture:reach") && !has_hud("build-fixture:pressure") && !has_hud("build-fixture:magic"),
+                 "build-fixtures: fixture loadouts do not masquerade as the current Scion");
+  scenario_check(!has_hud("build-loops:distinct") && !has_hud("build-loops:tint-fail"),
+                 "build-fixtures: fixture diagnostics are absent from the character sheet");
+  scenario_check(!has_prefix("build-tactics:reach:") && !has_prefix("build-gear:reach:"),
+                 "build-fixtures: reach concept copy stays out of normal character information");
+  scenario_check(!has_prefix("build-tactics:pressure:") && !has_prefix("build-gear:pressure:"),
+                 "build-fixtures: pressure concept copy stays out of normal character information");
+  scenario_check(!has_prefix("build-tactics:magic:") && !has_prefix("build-gear:magic:"),
+                 "build-fixtures: magic concept copy stays out of normal character information");
   const std::string dir = art_wave_capture_dir();
   if (dir.empty()) {
     scenario_check(false, "build-fixtures: capture root rejected before any write");
@@ -19315,7 +18115,7 @@ int scenario_vital_orbs() {
       mana_role = true;
     if (item.op == render::Op::Hud && item.label == "audio:muted") {
       mute_chip = true;
-      mute_on_mana = std::abs(static_cast<int>(item.x) - mana_cx) < 24;
+      mute_on_mana = std::abs(static_cast<int>(item.x) - mana_cx) < 24 && std::abs(static_cast<int>(item.y) - mana_cy) < 36;
     }
   }
   scenario_check(life_on_screen_left(life_cx, mana_cx),
@@ -19611,162 +18411,7 @@ int scenario_route_map() {
   return scenario_failures;
 }
 
-int scenario_stat_explain() {
-  using verdigris::client::ui::StatSources;
-  using verdigris::client::ui::active_attack;
-  using verdigris::client::ui::folds_dormant_into_attack;
-  StatSources src{12, 5, 3, 9, false, true};
-  scenario_check(active_attack(src) == 20,
-                 "stat-explain: active total is base+gear+passive");
-  scenario_check(folds_dormant_into_attack(src, 29),
-                 "stat-explain: folding dormant 9 into Attack is the anti-pattern");
-  scenario_check(!folds_dormant_into_attack(src, 20),
-                 "stat-explain: the live total must reject that fold");
-
-  ClientState state;
-  scenario_begin(state);
-  scenario_follow_camera(state);
-  state.character_pane = true;
-  scenario_present(state);
-  const int base = state.world.player.attack;
-  int gear = 0;
-  for (const auto& item : state.world.carried)
-    if (item.equipped) gear = item.attack_bonus;
-  state.sheet_passive_atk = 3;
-  state.sheet_cond_atk = 9;
-  state.sheet_cond_active = false;
-  state.stat_atk_expanded = false;
-  scenario_present(state);
-  const int expect = active_attack(
-      {base, gear, 3, 9, false, false});
-  bool collapsed_ok = false;
-  bool folded = false;
-  bool dormant = false;
-  for (const auto& item : state.render_list) {
-    if (item.op != render::Op::Hud) continue;
-    if (item.label.rfind("char:Attack:", 0) == 0) {
-      collapsed_ok = item.label == ("char:Attack:" + std::to_string(expect));
-      folded = item.label == ("char:Attack:" + std::to_string(expect + 9));
-    }
-    if (item.label.rfind("char:Cond:9 | inactive", 0) == 0) dormant = true;
-  }
-  scenario_check(collapsed_ok, "stat-explain: collapsed Attack excludes dormant");
-  scenario_check(!folded, "stat-explain: dormant 9 cannot appear as Attack");
-  scenario_check(dormant, "stat-explain: conditional stays labeled inactive");
-  bool compact_jargon = false;
-  bool compact_owner = false;
-  for (const auto& item : state.render_list) {
-    if (item.op != render::Op::Hud) continue;
-    if (item.label.rfind("char:ATK src:", 0) == 0) {
-      if (item.label.find("base ") != std::string::npos) compact_jargon = true;
-      if (item.label.find("Base ") != std::string::npos) compact_owner = true;
-    }
-    if (item.label == "char:src-owner") compact_owner = true;
-  }
-  scenario_check(
-      verdigris::client::ui::compact_atk_src_jargon_fails_review(true),
-      "stat-explain: lowercase base/gear on Sources is the anti-pattern");
-  scenario_check(
-      !verdigris::client::ui::compact_atk_src_jargon_fails_review(compact_jargon),
-      "stat-explain: compact Sources uses Base/Gear, not src jargon");
-  scenario_check(compact_owner,
-                 "stat-explain: compact sheet names Base/Gear on Sources");
-
-  state.stat_atk_expanded = true;
-  scenario_present(state);
-  bool src_base = false, src_gear = false, src_passive = false, src_cond = false;
-  bool expanded = false, excluded = false;
-  for (const auto& item : state.render_list) {
-    if (item.op != render::Op::Hud) continue;
-    if (item.label.rfind("char:src base:", 0) == 0) src_base = true;
-    if (item.label.rfind("char:src gear:", 0) == 0) src_gear = true;
-    if (item.label.rfind("char:src passive:", 0) == 0) src_passive = true;
-    if (item.label.rfind("char:src cond:", 0) == 0) src_cond = true;
-    if (item.label == "char:atk-expanded:1") expanded = true;
-    if (item.label == "char:atk-dormant-excluded") excluded = true;
-  }
-  scenario_check(src_base && src_gear && src_passive && src_cond,
-                 "stat-explain: expanded sheet names base, gear, passive, cond");
-  scenario_check(expanded && excluded,
-                 "stat-explain: expand flag and dormant-exclusion are on the HUD");
-  bool owner_labels = false;
-  for (const auto& item : state.render_list)
-    if (item.op == render::Op::Hud && item.label == "stat:owner-labels")
-      owner_labels = true;
-  scenario_check(owner_labels,
-                 "stat-explain: expanded sources paint Base/Gear, not src jargon");
-  int owner_cond = 0;
-  bool compact_cond = false;
-  for (const auto& item : state.render_list) {
-    if (item.op != render::Op::Hud) continue;
-    if (item.label.rfind("char:Cond:", 0) == 0) {
-      compact_cond = true;
-      owner_cond += 1;
-    }
-    if (item.label.rfind("char:src cond:", 0) == 0) owner_cond += 1;
-  }
-  scenario_check(
-      verdigris::client::ui::duplicate_owner_conditional_fails_review(2),
-      "stat-explain: two Conditional rows is the anti-pattern");
-  scenario_check(
-      !verdigris::client::ui::duplicate_owner_conditional_fails_review(owner_cond),
-      "stat-explain: expanded sheet paints Conditional once");
-  scenario_check(!compact_cond,
-                 "stat-explain: expanded sheet drops the compact Conditional row");
-  scenario_check(render_list_has(state, render::Op::Hud, "char:cond-once"),
-                 "stat-explain: live HUD names a single Conditional");
-
-  const std::string dir = art_wave_capture_dir();
-  if (dir.empty()) {
-    scenario_check(false, "stat-explain: capture root rejected before any write");
-    return scenario_failures;
-  }
-  const std::string png = dir + "\\stat-explain-960x600.png";
-  state.stat_explain_review_strip = true;
-  scenario_check(reference_present(state, 960, 600, png),
-                 "stat-explain: capture written");
-  bool base_gear = false;
-  bool cond_off = false;
-  bool dormant_atk = false;
-  for (const auto& item : state.render_list) {
-    if (item.op != render::Op::Hud) continue;
-    if (item.label == "ui:base-gear") base_gear = true;
-    if (item.label == "ui:cond-off") cond_off = true;
-    if (item.label == "ui-strip:dormant-atk-rejected") dormant_atk = true;
-  }
-  scenario_check(base_gear && cond_off,
-                 "stat-explain: live HUD names Base Gear and Cond off");
-  scenario_check(dormant_atk, "stat-explain: live HUD rejects dormant ATK");
-  {
-    auto trace_find = [](const ClientState& s,
-                         const char* label) -> const HudRect* {
-      for (const auto& entry : s.hud_rect_trace)
-        if (entry.first == label) return &entry.second;
-      return nullptr;
-    };
-    const HudRect* strip = trace_find(state, "stat-explain-strip");
-    const HudRect* sheet = trace_find(state, "character-pane-frame");
-    const HudRect* ctrl = trace_find(state, "controls");
-    const HudRect* objective = trace_find(state, "objective");
-    const HudRect* life = trace_find(state, "orb-life");
-    const bool covers_sheet =
-        strip && sheet && hud_rects_overlap(*strip, *sheet);
-    const bool covers_controls =
-        strip && ctrl && hud_rects_overlap(*strip, *ctrl);
-    const bool covers_objective =
-        strip && objective && hud_rects_overlap(*strip, *objective);
-    const bool covers_life =
-        strip && life && hud_rects_overlap(*strip, *life);
-    scenario_check(
-        verdigris::client::ui::review_strip_covers_hud_fails_review(true),
-        "stat-explain: covering the sheet or combat HUD with Base Gear is the anti-pattern");
-    scenario_check(
-        !verdigris::client::ui::review_strip_covers_hud_fails_review(
-            covers_sheet || covers_controls || covers_objective || covers_life),
-        "stat-explain: Base Gear stays off the sheet, WASD, objective, and Life");
-  }
-  return scenario_failures;
-}
+int scenario_stat_explain() { return scenario_authoritative_stat_details(); }
 
 int scenario_held_item() {
   using verdigris::client::art::paper_doll_only_fails_review;
@@ -19959,12 +18604,12 @@ int scenario_pack_drag() {
   bool pack_glyph = false;
   for (const auto& item : state.render_list) {
     if (item.op == render::Op::Hud &&
-        (item.label == "pack-glyph:vector" ||
+        (item.label == "pack-glyph:unmapped" ||
          item.label == "pack-glyph:billboard"))
       pack_glyph = true;
   }
   scenario_check(pack_glyph,
-                 "pack-drag: pack cells paint a weapon glyph, not a grey crate");
+                 "pack-drag: each owned item uses mapped art or an honest named fallback");
   scenario_check(!vector_art::grey_pack_icon_fails_review(
                      vector_art::kPackGlyphHasBlade,
                      vector_art::kPackGlyphHasGuard),
@@ -20053,8 +18698,8 @@ int scenario_pack_drag() {
     scenario_check(
         !verdigris::client::ui::semicolon_compare_hint_fails_review(semicolon),
         "pack-drag: compare hint uses Enter equips | U unequips");
-    scenario_check(owner_hint,
-                   "pack-drag: live HUD names the ASCII compare hint");
+    scenario_check(!owner_hint,
+                 "pack-drag: ordinary inventory has no permanent instructional footer");
   }
   return scenario_failures;
 }
@@ -21905,132 +20550,7 @@ int scenario_frame_budget() {
 
 // Production regression for the top-right mixer clipping and route overflow.
 // PNGs and the geometry CSV come from the same paint_scene path as the window.
-int scenario_hud_chrome() {
-  const std::string dir = art_wave_capture_dir();
-  if (dir.empty()) {
-    scenario_check(false, "hud-chrome: capture root rejected before any write");
-    return scenario_failures;
-  }
-  FILE* report = nullptr;
-  fopen_s(&report, (dir + "\\hud-chrome-bounds.csv").c_str(), "wb");
-  scenario_check(report != nullptr, "hud-chrome: production bounds report opened");
-  if (report)
-    std::fprintf(report, "width,height,muted,region,x,y,w,h,contained\n");
-  ClientState state;
-  scenario_begin(state);
-  scenario_follow_camera(state);
-  state.debug_overlay = false;
-  HDC measure_dc = CreateCompatibleDC(nullptr);
-  scenario_check(measure_dc != nullptr, "hud-chrome: text measurement DC created");
-  if (!measure_dc) {
-    if (report) std::fclose(report);
-    return scenario_failures;
-  }
-  const auto trace_find = [&](const char* label) -> const HudRect* {
-    for (const auto& entry : state.hud_rect_trace)
-      if (entry.first == label) return &entry.second;
-    return nullptr;
-  };
-  for (const auto dimensions : {std::pair{3440, 1440}, std::pair{1366, 768},
-                                 std::pair{960, 600}}) {
-    const auto [width, height] = dimensions;
-    const int s = hud_scale(height);
-    for (const bool muted : {false, true}) {
-      state.audio_sink->set_muted(muted);
-      const std::string stem = "hud-chrome-" + std::to_string(width) + "x" +
-          std::to_string(height) + (muted ? "-muted" : "-unmuted");
-      scenario_check(reference_present(state, width, height, dir + "\\" + stem + ".png"),
-                     (stem + ": production capture written").c_str());
-      scenario_check(!render_list_has(state, render::Op::Hud, "hud-layout:unplaced"),
-                     (stem + ": every requested HUD region was placed").c_str());
-      std::vector<std::pair<std::string, HudRect>> regions;
-      for (const char* label : {"minimap", "route-card", "quickbar-strip",
-                                "orb-life", "orb-resource", "identity",
-                                "objective", "controls", "audio-mixer"}) {
-        const auto* rect = trace_find(label);
-        scenario_check(rect != nullptr, (stem + ": " + label + " painted").c_str());
-        if (rect) regions.push_back({label, *rect});
-      }
-      if (const auto* second = trace_find("controls-second"))
-        regions.push_back({"controls-second", *second});
-      const auto* mute = trace_find("audio-muted");
-      scenario_check((mute != nullptr) == muted,
-                     (stem + ": mute chip follows actual mute state").c_str());
-      if (mute) regions.push_back({"audio-muted", *mute});
-      // "art" is an alias of the mute chip when no art-status chip is visible.
-      // A real art-status chip is still included if the source plates failed.
-      const auto* art = trace_find("art");
-      if (art && (!mute || art->x != mute->x || art->y != mute->y))
-        regions.push_back({"art", *art});
-      for (const auto& [name, rect] : regions) {
-        const bool contained = rect.w > 0 && rect.h > 0 && rect.x >= 0 && rect.y >= 0 &&
-            rect.x + rect.w <= width && rect.y + rect.h <= height;
-        scenario_check(contained, (stem + ": " + name + " inside viewport").c_str());
-        if (report)
-          std::fprintf(report, "%d,%d,%d,%s,%d,%d,%d,%d,%d\n", width, height,
-                       muted ? 1 : 0, name.c_str(), rect.x, rect.y, rect.w, rect.h,
-                       contained ? 1 : 0);
-      }
-      for (std::size_t a = 0; a < regions.size(); ++a)
-        for (std::size_t b = a + 1; b < regions.size(); ++b)
-          scenario_check(!hud_rects_overlap(regions[a].second, regions[b].second),
-              (stem + ": " + regions[a].first + " clears " + regions[b].first).c_str());
-
-      const auto mixer_lines = audio_mixer_lines(state);
-      const auto mixer_plan = skin::measure_hud_card(measure_dc, 180 * s, mixer_lines);
-      const auto* mixer = trace_find("audio-mixer");
-      scenario_check(mixer && mixer_plan.count == 5 && mixer_plan.bounds.w == mixer->w &&
-                         mixer_plan.bounds.h == mixer->h,
-                     (stem + ": mixer trace matches measured production text").c_str());
-      const auto& world = state.world;
-      const std::string risk = verdigris::client::ui::route_risk_fact(
-          world.expedition_phase == ExpeditionPhaseView::SlayWardens,
-          world.expedition_phase == ExpeditionPhaseView::ExtractCarriedValue);
-      const std::string ret = std::string("return ") +
-          (world.has_extraction ? extraction_action_hint(is_remote(state)) : "town");
-      const skin::HudTextLines route_lines{
-          {verdigris::client::ui::route_owner_title(world.route_id), skin::kInk},
-          {verdigris::client::ui::route_theme_label(world.theme), skin::kInkDim},
-          {verdigris::client::ui::route_risk_owner_line(risk), skin::kInkDim},
-          {verdigris::client::ui::route_return_owner_line(ret), skin::kInkDim}};
-      const auto* route = trace_find("route-card");
-      const auto route_plan = skin::measure_hud_card(measure_dc, route ? route->w : 0, route_lines);
-      scenario_check(route && route_plan.count == 4 && route_plan.bounds.h <= route->h,
-                     (stem + ": every route and return row fits without shrinking").c_str());
-      for (const auto* plan : {&mixer_plan, &route_plan})
-        for (std::size_t line = 0; line < plan->count; ++line)
-          scenario_check(hud_chrome_layout::contains(plan->bounds, plan->lines[line]),
-                         (stem + ": measured row is inside its text card").c_str());
-      LOGFONTA body{}, caption{};
-      GetObjectA(skin::font_body(), sizeof(body), &body);
-      GetObjectA(skin::font_small(), sizeof(caption), &caption);
-      scenario_check(std::strcmp(body.lfFaceName, "Segoe UI") == 0 && body.lfHeight == -15 * s &&
-                         std::strcmp(caption.lfFaceName, "Segoe UI") == 0 && caption.lfHeight == -12 * s,
-                     (stem + ": full HUD typography uses the authored Segoe sizes").c_str());
-      HGDIOBJ old_font = SelectObject(measure_dc, skin::font_body());
-      bool quickbar_fit = true;
-      for (const auto& slot : kQuickbarSlots) {
-        SIZE key{}, name{};
-        GetTextExtentPoint32A(measure_dc, slot.key_label,
-                             static_cast<int>(std::strlen(slot.key_label)), &key);
-        GetTextExtentPoint32A(measure_dc, slot.name,
-                             static_cast<int>(std::strlen(slot.name)), &name);
-        // Production has a6s left inset; leave at least2s inside the border.
-        quickbar_fit = quickbar_fit && key.cx + 6 * s <= 56 * s && name.cx + 6 * s <= 56 * s &&
-            key.cy + 4 * s <= 26 * s && name.cy + 26 * s <= 52 * s;
-      }
-      SelectObject(measure_dc, old_font);
-      scenario_check(quickbar_fit, (stem + ": action labels fit the unchanged slots").c_str());
-      scenario_check(render_list_has(state, render::Op::Hud, "audio:mixer") && render_list_has(state, render::Op::Hud, "route-return:"),
-                     (stem + ": original owner actions remain in the production HUD").c_str());
-    }
-  }
-  state.audio_sink->set_muted(true);
-  DeleteDC(measure_dc);
-  if (report) std::fclose(report);
-  return scenario_failures;
-}
-
+int scenario_hud_chrome() { return scenario_native_ui_layout(false); }
 
 int scenario_quick_movement_tap() {
   ClientState state;

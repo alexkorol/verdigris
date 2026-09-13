@@ -30,8 +30,17 @@ int scenario_inventory_equipment() {
                  "inventory: admitted with authoritative combat fields");
   scenario_check(state.session->model().player.combat_stats_present, "inventory: login has combat stats");
   auto grant = [&](const char* item, int qty = 1) {
+    int seed=42;
+    // Choose an existing, art-backed head material for the visual fixture.
+    if(std::string(item)=="vessel-crest") {
+      for(int candidate=0;candidate<100;++candidate) {
+        verdigris::Mulberry32 rng(candidate);verdigris::VesselForge forge;verdigris::CreateItemOptions options;options.rng=&rng;options.item_level=12;options.forge=&forge;
+        auto trial=verdigris::create_game_item(item,options);
+        if(trial && trial->vessel && trial->vessel->item.material_id=="hide") {seed=candidate;break;}
+      }
+    }
     const auto before = state.session->model().inventory.size();
-    remote->send_raw("dev:give", JV::Object{{"itemId", item}, {"qty", qty}, {"seed", 42}, {"itemLevel", 12}});
+    remote->send_raw("dev:give", JV::Object{{"itemId", item}, {"qty", qty}, {"seed", seed}, {"itemLevel", 12}});
     scenario_check(pump([&] { return state.session->model().inventory.size() > before; }), "inventory: fixture reaches real backpack");
     for (const auto& row : state.session->model().inventory)
       if (row.id == item) return row.uuid;
@@ -44,6 +53,10 @@ int scenario_inventory_equipment() {
   const auto ring = grant("vessel-ring");
   const auto ring2 = grant("gold-ring");
   const auto axe = grant("vessel-handaxe");
+  const auto feet = grant("vessel-sandals");
+  const auto belt = grant("hide-girdle");
+  const auto neck = grant("vessel-gorget");
+  const auto hands = grant("bronze-gloves");
   load_billboards(state.billboards);
   state.gear_overlay = true;
   scenario_follow_camera(state);
@@ -57,6 +70,7 @@ int scenario_inventory_equipment() {
       if (item.item.uuid == id && item.seat == seat) return true;
     return false;
   };
+  int visual_drag=0;
   auto drag_to_seat = [&](const std::string& id, paper_doll::Slot seat) {
     sync_world(state); reconcile_pack_grid(state);
     const auto i = inventory_grid::find_index(state.pack_grid, pack_stable_id(id));
@@ -67,7 +81,17 @@ int scenario_inventory_equipment() {
     const int y = geom.grid_top + item.y * (geom.cell_h + geom.gap) + geom.cell_h / 2;
     const auto target = geom.seats[paper_doll::slot_index(seat)];
     SendMessage(window, WM_LBUTTONDOWN, 0, MAKELPARAM(x, y));
+    SendMessage(window, WM_MOUSEMOVE, MK_LBUTTON, MAKELPARAM((target.left+target.right)/2,(target.top+target.bottom)/2));
+    if(visual_drag<2) {
+      scenario_check(reference_present(state,1366,768,art_wave_capture_dir()+
+          (visual_drag==0?"/ui-invalid-destination.png":"/ui-valid-destination.png")),
+          "inventory: actual held drag and destination captured before the drop");
+    }
     SendMessage(window, WM_LBUTTONUP, 0, MAKELPARAM((target.left + target.right) / 2, (target.top + target.bottom) / 2));
+    if(visual_drag++==0)scenario_check(reference_present(state,1366,768,art_wave_capture_dir()+"/ui-placement-rejected.png"),
+        "inventory: real rejected placement and reason captured");
+    scenario_check(!state.primary_down && !state.held_gameplay_attacks.contains(VK_LBUTTON),
+        "inventory: UI drag and release do not leave an attack latched");
   };
   sync_world(state); reconcile_pack_grid(state);
   const auto si = inventory_grid::find_index(state.pack_grid, pack_stable_id(spear));
@@ -84,6 +108,8 @@ int scenario_inventory_equipment() {
                  "inventory: wrong seat rejects without sending a fake equip");
   for (const auto& pair : std::vector<std::pair<std::string, paper_doll::Slot>>{
        {wrap, paper_doll::Slot::Body}, {crest, paper_doll::Slot::Head},
+       {feet, paper_doll::Slot::Boots}, {belt, paper_doll::Slot::Belt},
+       {neck, paper_doll::Slot::Amulet}, {hands, paper_doll::Slot::Gloves},
        {ring, paper_doll::Slot::Ring1}, {ring2, paper_doll::Slot::Ring2}, {spear, paper_doll::Slot::MainHand}}) {
     drag_to_seat(pair.first, pair.second);
     scenario_check(pump([&] { return worn(pair.first, kDollSeats[paper_doll::slot_index(pair.second)]); }),
@@ -105,19 +131,33 @@ int scenario_inventory_equipment() {
   const auto main_seat = make_pack_geom(1366, 768).seat;
   const auto at = MAKELPARAM((main_seat.left + main_seat.right) / 2, (main_seat.top + main_seat.bottom) / 2);
   SendMessage(window, WM_LBUTTONDOWN, 0, at); SendMessage(window, WM_LBUTTONUP, 0, at);
-  SendMessage(window, WM_KEYDOWN, 'U', 0); SendMessage(window, WM_KEYUP, 'U', 0);
-  scenario_check(pump([&] { return !worn(spear, "right_hand"); }), "inventory: seat selection and U unequip through server");
+  const auto unequip_button=gear_action_rect(1366,768,0);
+  const auto button_at=MAKELPARAM((unequip_button.left+unequip_button.right)/2,(unequip_button.top+unequip_button.bottom)/2);
+  SendMessage(window,WM_LBUTTONDOWN,0,button_at);SendMessage(window,WM_LBUTTONUP,0,button_at);
+  scenario_check(pump([&] { return !worn(spear, "right_hand"); }), "inventory: visible Unequip button returns the selected item through server");
   drag_to_seat(shield, paper_doll::Slot::OffHand);
   scenario_check(pump([&] { return worn(shield, "left_hand"); }), "inventory: shield can use freed off hand");
-  drag_to_seat(axe, paper_doll::Slot::MainHand);
+  sync_world(state);reconcile_pack_grid(state);
+  const auto axe_index=inventory_grid::find_index(state.pack_grid,pack_stable_id(axe));
+  scenario_check(axe_index<inventory_grid::kMaxItems,"inventory: handstone is selectable in the backpack");
+  if(axe_index<inventory_grid::kMaxItems) {
+    const auto& item=state.pack_grid.items[axe_index];const auto g=make_pack_geom(1366,768);
+    const auto pick=MAKELPARAM(g.grid_left+item.x*g.cell_w+g.cell_w/2,g.grid_top+item.y*g.cell_h+g.cell_h/2);
+    SendMessage(window,WM_LBUTTONDOWN,0,pick);SendMessage(window,WM_LBUTTONUP,0,pick);
+    SendMessage(window,WM_LBUTTONDOWN,0,button_at);SendMessage(window,WM_LBUTTONUP,0,button_at);
+  }
   scenario_check(pump([&] { return worn(axe, "right_hand"); }), "inventory: one-handed weapon coexists with shield");
+  scenario_check(!state.primary_down && !state.held_gameplay_attacks.contains(VK_LBUTTON),"inventory: visible Equip button consumes combat input");
   sync_world(state);
   scenario_check(state.world.player.combat_stats_present &&
                  state.world.player.gear_attack == state.session->model().player.gear_attack &&
                  state.world.player.gear_attack > 0 && state.world.player.defense > 0,
                  "inventory: gear stats reach presentation from authority");
   const auto dir = art_wave_capture_dir();
-  for (const auto size : {std::pair{960, 600}, std::pair{1366, 768}, std::pair{3440, 1440}}) {
+  for(const auto& row : state.session->model().worn)
+    std::printf("    inventory art: %s -> %s (%s)\n",row.seat.c_str(),row.item.art_key.c_str(),row.item.name.c_str());
+  state.hint_ticks=0;state.mouse={0,0};state.debug_overlay=false;
+  for (const auto size : {std::pair{960, 600}, std::pair{1280, 800}, std::pair{1366, 768}, std::pair{3440, 1440}}) {
     state.camera.zoom = kCameraDefaultZoom * zoom_height_factor(size.second);
     scenario_check(reference_present(state, size.first, size.second,
         dir + "\\inventory-" + std::to_string(size.first) + ".png"), "inventory: actual production panel captured");
@@ -127,6 +167,37 @@ int scenario_inventory_equipment() {
           trace.second.x + trace.second.w <= pane.x + pane.w &&
           trace.second.y + trace.second.h <= pane.y + pane.h, "inventory: complete item rectangle stays inside panel");
   }
+  state.character_pane=true;
+  state.camera.zoom=kCameraDefaultZoom*zoom_height_factor(800);
+  scenario_check(reference_present(state,1280,800,dir+"/ui-equipment-and-stats.png"),"inventory: acknowledged equipment and authoritative stats captured together");
+  const auto hover_rect=make_pack_geom(1280,800).seats[1];
+  state.mouse={(hover_rect.left+hover_rect.right)/2,(hover_rect.top+hover_rect.bottom)/2};
+  scenario_check(reference_present(state,1280,800,dir+"/ui-contextual-tooltip.png"),"inventory: equipment tooltip and compact character sheet captured together");
+  const HudRect* tooltip=nullptr;const HudRect* sheet=nullptr;
+  for(const auto& entry:state.hud_rect_trace) {
+    if(entry.first=="compare-plate")tooltip=&entry.second;
+    if(entry.first=="character-pane-frame")sheet=&entry.second;
+  }
+  scenario_check(tooltip && sheet && !hud_rects_overlap(*tooltip,*sheet),"inventory: contextual tooltip does not cover character values");
+  state.character_pane=false;
+  // Actual button controls and drag cancellation in the production HWND.
+  const auto saved_count=state.session->model().inventory.size();
+  const auto geom=make_pack_geom(1366,768);
+  const auto first=state.pack_grid.items[0];
+  const int pickx=geom.grid_left+first.x*geom.cell_w+geom.cell_w/2;
+  const int picky=geom.grid_top+first.y*geom.cell_h+geom.cell_h/2;
+  SendMessage(window,WM_LBUTTONDOWN,0,MAKELPARAM(pickx,picky));
+  SendMessage(window,WM_KILLFOCUS,0,0);
+  scenario_check(!state.pack_drag_live && state.session->model().inventory.size()==saved_count,"inventory: focus-loss cancellation conserves authoritative inventory");
+  SendMessage(window,WM_LBUTTONUP,0,MAKELPARAM(pickx,picky));
+  const auto close=gear_close_rect(1366,768);
+  SendMessage(window,WM_LBUTTONDOWN,0,MAKELPARAM((close.left+close.right)/2,(close.top+close.bottom)/2));
+  SendMessage(window,WM_LBUTTONUP,0,0);
+  scenario_check(!state.gear_overlay && !state.primary_down,"inventory: clickable Close consumes input and closes the pane");
+  const auto open=player_menu_rect(1366,768,0);
+  SendMessage(window,WM_LBUTTONDOWN,0,MAKELPARAM((open.left+open.right)/2,(open.top+open.bottom)/2));
+  SendMessage(window,WM_LBUTTONUP,0,0);
+  scenario_check(state.gear_overlay && !state.primary_down,"inventory: Equipment button opens the same inventory without attacking");
   // A large worn spear cannot swap into the two cells freed by a sling.
   ClientCommand free_hand; free_hand.type = ClientCommand::Type::Unequip; free_hand.target = "left_hand";
   state.session->submit(free_hand);

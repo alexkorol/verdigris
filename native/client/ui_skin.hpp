@@ -76,6 +76,20 @@ inline Gdiplus::Color gp(COLORREF c, BYTE alpha = 255) {
   return Gdiplus::Color(alpha, GetRValue(c), GetGValue(c), GetBValue(c));
 }
 
+// WIZARD's quiet recessed inventory wells. These are surfaces, not buttons;
+// only selection/drop focus gains a strong border. Kept in the shared skin.
+inline void inventory_surface(HDC dc, const RECT& r, int focus = 0) {
+  Gdiplus::Graphics g(dc);
+  Gdiplus::LinearGradientBrush fill(Gdiplus::Point(r.left, r.top),
+      Gdiplus::Point(r.left, r.bottom), Gdiplus::Color(255, 22, 20, 17),
+      Gdiplus::Color(255, 9, 8, 7));
+  g.FillRectangle(&fill, Gdiplus::Rect(r.left,r.top,r.right-r.left,r.bottom-r.top));
+  Gdiplus::Pen line(focus < 0 ? Gdiplus::Color(255, 210, 110, 96) :
+      focus > 0 ? Gdiplus::Color(255, 209, 179, 105) : Gdiplus::Color(255, 57, 51, 40),
+      focus ? 2.0f : 1.0f);
+  g.DrawRectangle(&line, Gdiplus::Rect(r.left,r.top,r.right-r.left-1,r.bottom-r.top-1));
+}
+
 // ── GDI+ lifetime ──────────────────────────────────────────────────────
 // Started lazily on the first draw; shut down with the process. Headless
 // scenario runs through memory DCs work identically.

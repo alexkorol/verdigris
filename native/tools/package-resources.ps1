@@ -9,10 +9,29 @@ function Get-NativePackageResources([string]$Root) {
     'src/assets/orbs/wizard/mask_fullres.png', 'src/assets/orbs/wizard/empty_aligned.jpg',
     'native/client/assets/wizard/framekit/textures/panel.png', 'native/client/assets/wizard/framekit/textures/slot.png',
     'native/client/assets/wizard/splash/background_fallback.png',
-    'native/client/assets/raster/runtime/catalog.json'
+    'native/client/assets/raster/runtime/catalog.json',
+    'native/client/assets/wizard/inventory/manifest.json',
+    'native/client/assets/wizard/inventory/handstone_flint.png',
+    'native/client/assets/wizard/inventory/handstone-provenance.json'
   )
   foreach ($name in @('scion_str', 'raider', 'boss', 'tree', 'ruin', 'dwelling', 'shrine', 'terrain1', 'terrain4')) {
     $required += "prototypes/founding-slice/assets/$name.png"
+  }
+  $inventory = Get-Content -LiteralPath (Join-Path $Root 'native/client/assets/wizard/inventory/manifest.json') -Raw | ConvertFrom-Json
+  if (@($inventory.assets).Count -lt 30) { throw 'Inventory art manifest is incomplete.' }
+  foreach ($asset in $inventory.assets) {
+    if ($asset.file -match '[/\\:]' -or $asset.file -notmatch '\.png$') { throw 'Invalid inventory artwork filename.' }
+    $relative = 'native/client/assets/wizard/inventory/' + $asset.file
+    if ((Get-FileHash -LiteralPath (Join-Path $Root $relative) -Algorithm SHA256).Hash -ne $asset.sha256) {
+      throw "Inventory reference artwork hash mismatch: $relative"
+    }
+    $required += $relative
+  }
+  $handstone = Get-Content -LiteralPath (Join-Path $Root 'native/client/assets/wizard/inventory/handstone-provenance.json') -Raw | ConvertFrom-Json
+  foreach ($entry in $handstone.files.PSObject.Properties) {
+    if ($entry.Name -notmatch '^native/client/assets/(wizard/inventory/|raster/runtime/)[a-zA-Z0-9_./-]+\.png$' -or $entry.Name.Contains('..')) { throw 'Invalid handstone provenance path.' }
+    if ((Get-FileHash -LiteralPath (Join-Path $Root $entry.Name) -Algorithm SHA256).Hash -ne $entry.Value) { throw "Handstone conversion hash mismatch: $($entry.Name)" }
+    $required += $entry.Name
   }
   $catalog = Get-Content -LiteralPath (Join-Path $Root 'native/client/assets/raster/runtime/catalog.json') -Raw | ConvertFrom-Json
   if (@($catalog.assets).Count -eq 0) { throw 'Raster catalog has no assets.' }

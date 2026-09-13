@@ -68,6 +68,7 @@ struct ClientItemSlot {
   int quantity = 1;
   std::string equip_slot;
   bool two_handed = false;
+  std::string art_key; // Authoritative vessel form/material, presentation only.
 };
 
 struct ClientWornItem {

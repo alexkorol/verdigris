@@ -122,7 +122,7 @@ struct Style {
   COLORREF dark = RGB(24, 20, 16);
 };
 
-enum class Held : int { None, Axe, Sword, Staff, Bow, Scales, Ledger, Club };
+enum class Held : int { None, Axe, Sword, Staff, Bow, Scales, Ledger, Club, Handstone };
 
 inline Held held_from_item(const std::string& id, const std::string& name) {
   std::string key = id + " " + name;
@@ -151,6 +151,8 @@ inline Held held_from_item(const std::string& id, const std::string& name) {
 
 inline const char* held_label(Held held) {
   switch (held) {
+    case Held::Handstone:
+      return "held:handstone";
     case Held::Axe:
       return "held:axe";
     case Held::Sword:

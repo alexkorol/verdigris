@@ -139,6 +139,7 @@ inline constexpr PoseMetadata kPoses[] = {
 // right-facing actor. The staff has no distinct wrapped grip: its measured
 // mid-shaft contact leaves its bottom near the idle actor's ground line.
 inline constexpr WeaponMetadata kWeapons[] = {
+    {"weapon_handstone", {12, 18}, {5.5, 14.5}, false, true},
     {"weapon_axe", {32, 64}, {22.5, 57.5}, true, true},
     {"weapon_sword", {32, 64}, {15.5, 55.5}, false, true},
     {"weapon_staff", {32, 64}, {15.5, 35.5}, false},
