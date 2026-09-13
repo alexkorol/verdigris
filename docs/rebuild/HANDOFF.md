@@ -1,5 +1,23 @@
 # Native reconstitution handoff
 
+## 2026-09-13 - Native UI repair verified package
+
+Inventory and character presentation now follow the owner WIZARD composition.
+Native capacity/seats, perspective, authored animation and gameplay authority
+are preserved. Packaged source f8770d4e7ff493c49ee06122ca2c100f8e9aba26 passed
+79/79 packaged scenarios and all eight native test executables passed. The
+actual launcher completed button-based House/female Scion creation, movement,
+Return to title and Continue. Effects 90% persisted across a fresh process on
+the same package and isolated profile. A separately timed live attack-frame
+capture remains incomplete after a clean client exit; do not call it passed.
+
+Exact executable and committed before/after evidence:
+orchestration/recoveries/2026-09-13-ui-repair/REPORT.md
+Normal launch and owner saves remain unchanged. Continue implementation on
+codex/native-consolidated-20260913 with the standing commit/push authorization.
+Later report/handoff commits do not change the packaged game code.
+
+
 ## 2026-09-13 - Inventory and equipment integration
 
 Continued implementation on codex/native-consolidated-20260913 above 1d732241b,
