@@ -69,7 +69,7 @@ The initial outside-checkout scenario attempt failed because capture validation
 required repository markers. Commit 3bd164d34 fixed packaged-root containment;
 the rebuilt package's full 78-scenario run then passed. The first candidate at
 C:/Users/Alex/Documents/Verdigris Consolidated 2026-09-13 is superseded.
-The Computer Use screenshot helper also failed with SetIsBorderRequired / 
+The Computer Use screenshot helper also failed with SetIsBorderRequired /
 0x80004002; the repository capture-window.ps1 fallback produced viewed live
 captures. This was a tooling failure, not a renderer failure.
 
