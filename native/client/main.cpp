@@ -5983,8 +5983,10 @@ std::string repository_root_for_capture_validation() {
   for (const auto& base : bases) {
     std::string prefix = base;
     for (int depth = 0; depth <= 6; ++depth) {
+      const DWORD manifest = GetFileAttributesA((prefix + "\\package-manifest.json").c_str());
+      const bool packaged = manifest != INVALID_FILE_ATTRIBUTES && !(manifest & FILE_ATTRIBUTE_DIRECTORY);
       if (directory_exists(prefix + "\\native") &&
-          directory_exists(prefix + "\\orchestration"))
+          (directory_exists(prefix + "\\orchestration") || packaged))
         return prefix;
       prefix += "\\..";
     }
