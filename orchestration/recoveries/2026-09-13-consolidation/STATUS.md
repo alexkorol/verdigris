@@ -2,7 +2,7 @@
 
 coordinator: codex
 worker: codex-native-consolidation-20260913
-state: PACKAGE_VERIFICATION
+state: LIVE_VERIFICATION_INTERRUPTED
 branch: codex/native-consolidated-20260913
 worktree: C:/Users/Alex/Documents/ChatGPT/verdigris-consolidated-20260913
 
@@ -19,3 +19,7 @@ and combat-stat work is a distinct unfinished change with rejected patches;
 it remains intact in verdigris-playable rather than being silently adopted.
 Those inventory extensions are not necessary to combine the two requested
 revisions and are not claimed integrated or verified here.
+
+Automated package acceptance passed (78/78 scenarios). User stopped desktop
+control with physical Escape; live journey and same-executable settings restart
+remain incomplete. See REPORT.md. No normal launch was changed.

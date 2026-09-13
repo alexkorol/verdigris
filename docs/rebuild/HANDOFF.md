@@ -1,5 +1,17 @@
 # Native reconstitution handoff
 
+## 2026-09-13 — Packaged verification result
+
+The clean package from `3bd164d34f189d1438dc68990667312e8ecd721f` at
+`C:/Users/Alex/Documents/Verdigris Native 2026-09-13/Verdigris.exe` passed all
+78 packaged scenarios, resource/hash checks and embedded source identity.
+Live title/settings/card screens were viewed; 90% Effects was saved through
+the UI. The user stopped desktop control with Escape during live verification.
+The full live walkthrough and fresh-process settings reload remain incomplete;
+normal launch is unchanged. Exact hashes, evidence, preservation decisions and
+remaining acceptance are in
+`orchestration/recoveries/2026-09-13-consolidation/REPORT.md`.
+
 ## 2026-09-13 — Native application consolidation
 
 Owner-authorized integration in `codex/native-consolidated-20260913`, based on
