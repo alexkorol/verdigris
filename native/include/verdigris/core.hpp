@@ -704,6 +704,7 @@ class PlayerInventory {
   // overflows; other items place first-fit. One instance per call — callers
   // loop for multi-quantity grants so each roll gets its own rng draw.
   AddResult add(GameItem item);
+  bool add_at(GameItem item, int slot); // exact destination; leaves inventory unchanged on rejection
   bool remove_by_uuid(const std::string& uuid, GameItem* out);
   GameItem* find_by_uuid(const std::string& uuid);
   const GameItem* find_by_uuid(const std::string& uuid) const;

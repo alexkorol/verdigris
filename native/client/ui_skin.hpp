@@ -80,16 +80,37 @@ inline Gdiplus::Color gp(COLORREF c, BYTE alpha = 255) {
 
 // WIZARD's quiet recessed inventory wells. These are surfaces, not buttons;
 // only selection/drop focus gains a strong border. Kept in the shared skin.
-inline void inventory_surface(HDC dc, const RECT& r, int focus = 0) {
+inline void inventory_surface(HDC dc, const RECT& r, int focus = 0,
+                              HDC texture = nullptr, int tw = 0, int th = 0) {
+  if(r.right<=r.left || r.bottom<=r.top)return;
+  {
   Gdiplus::Graphics g(dc);
   Gdiplus::LinearGradientBrush fill(Gdiplus::Point(r.left, r.top),
       Gdiplus::Point(r.left, r.bottom), Gdiplus::Color(255, 22, 20, 17),
       Gdiplus::Color(255, 9, 8, 7));
   g.FillRectangle(&fill, Gdiplus::Rect(r.left,r.top,r.right-r.left,r.bottom-r.top));
   Gdiplus::Pen line(focus < 0 ? Gdiplus::Color(255, 210, 110, 96) :
-      focus > 0 ? Gdiplus::Color(255, 209, 179, 105) : Gdiplus::Color(255, 57, 51, 40),
+      focus > 0 ? Gdiplus::Color(255, 209, 179, 105) : Gdiplus::Color(255, 37, 33, 27),
       focus ? 2.0f : 1.0f);
   g.DrawRectangle(&line, Gdiplus::Rect(r.left,r.top,r.right-r.left-1,r.bottom-r.top-1));
+  }
+  if(texture && tw>0 && th>0) {
+    const BLENDFUNCTION blend{AC_SRC_OVER,0,100,0};
+    for(int y=r.top+1;y<r.bottom-1;y+=th)for(int x=r.left+1;x<r.right-1;x+=tw) {
+      const int width=std::min(tw,int(r.right)-1-x),height=std::min(th,int(r.bottom)-1-y);
+      AlphaBlend(dc,x,y,width,height,texture,0,0,width,height,blend);
+    }
+  }
+}
+
+inline void pane_close(HDC dc,const RECT& r,bool hover) {
+  if(hover)inventory_surface(dc,r,1);
+  Gdiplus::Graphics g(dc);
+  g.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+  const float cx=float(r.left+r.right)/2,cy=float(r.top+r.bottom)/2;
+  const float d=float(std::min(r.right-r.left,r.bottom-r.top))*.17f;
+  Gdiplus::Pen pen(gp(hover?kInk:kInkDim),1.3f);
+  g.DrawLine(&pen,cx-d,cy-d,cx+d,cy+d);g.DrawLine(&pen,cx-d,cy+d,cx+d,cy-d);
 }
 
 // â”€â”€ GDI+ lifetime â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

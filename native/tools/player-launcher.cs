@@ -87,14 +87,19 @@ internal static class PlayerLauncher
     [STAThread] static int Main(string[] args) {
         IntPtr job = IntPtr.Zero; Process server = null, client = null; FileStream profileLock = null;
         var ready = new ManualResetEvent(false);
+        string verifyLaunch = null;
         try {
             string root = AppDomain.CurrentDomain.BaseDirectory;
             string profile = Path.Combine(root, "profile"); bool isolated = false, quick = false;
             for (int i = 0; i < args.Length; ++i) {
                 if (args[i] == "--profile" && i + 1 < args.Length) { profile = Path.GetFullPath(args[++i]); isolated = true; }
                 else if (args[i] == "--quick") quick = true;
-                else throw new ArgumentException("Usage: Verdigris.exe [--profile <isolated review directory>] [--quick]");
+                else if (args[i] == "--verify-launch" && i + 1 < args.Length) verifyLaunch = args[++i];
+                else throw new ArgumentException("Usage: Verdigris.exe [--profile <isolated review directory>] [--quick] [--verify-launch save|reload]");
             }
+            if (verifyLaunch != null && (!isolated || (verifyLaunch != "save" && verifyLaunch != "reload") ||
+                string.Equals(profile.TrimEnd('\\'), Path.Combine(root, "profile").TrimEnd('\\'), StringComparison.OrdinalIgnoreCase)))
+                throw new ArgumentException("Launch verification requires a separate explicit QA profile and save or reload phase.");
             Directory.CreateDirectory(profile); Directory.CreateDirectory(Path.Combine(profile, "saves"));
             Directory.CreateDirectory(Path.Combine(profile, "logs"));
             // Lock the actual directory, so trailing separators and junction aliases
@@ -116,7 +121,8 @@ internal static class PlayerLauncher
                 server.BeginOutputReadLine(); server.BeginErrorReadLine();
                 if (!ready.WaitOne(12000) || server.HasExited) throw new InvalidOperationException("The local game server did not become ready. See " + logPath);
             }
-            client = Start(clientExe, "--remote 127.0.0.1 " + port + " review-player" + (quick ? " --quick" : ""), root, profile, isolated, job);
+            client = Start(clientExe, "--remote 127.0.0.1 " + port + " review-player" + (quick ? " --quick" : "") +
+                (verifyLaunch == null ? "" : " --verify-launch " + verifyLaunch), root, profile, isolated, job);
             client.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e) { if (e.Data != null) Log("client: " + e.Data); };
             client.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e) { if (e.Data != null) Log("client error: " + e.Data); };
             client.BeginOutputReadLine(); client.BeginErrorReadLine();
@@ -126,7 +132,7 @@ internal static class PlayerLauncher
             return 0;
         } catch (Exception error) {
             if (logPath != null) { try { Log("FAILED: " + error); } catch { } }
-            MessageBox.Show(error.Message, "Verdigris could not start", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            if (verifyLaunch == null) MessageBox.Show(error.Message, "Verdigris could not start", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return 1;
         } finally {
             try { Stop(client, false); } finally {

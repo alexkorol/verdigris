@@ -197,9 +197,11 @@ void LocalCoreSession::submit(const ClientCommand& command) {
     case ClientCommand::Type::Equip:
       queue_command(verdigris::Command::equip(command.target));
       break;
-    case ClientCommand::Type::MoveInventory:
-      break; // Local simulation fixtures have no persistent backpack grid.
-    case ClientCommand::Type::Unequip:
+      case ClientCommand::Type::MoveInventory:
+      case ClientCommand::Type::DropInventory:
+        break; // Local simulation fixtures have no persistent backpack grid.
+      case ClientCommand::Type::UnequipToInventory:
+      case ClientCommand::Type::Unequip:
       queue_command(verdigris::Command::unequip());
       break;
     case ClientCommand::Type::EnterZone:

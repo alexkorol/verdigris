@@ -46,6 +46,8 @@ struct ClientCommand {
     Equip,          // `target` = item uuid
     MoveInventory, // target UUID, value = destination backpack cell
     Unequip,        // `target` = worn seat; server rejects if backpack is full
+    UnequipToInventory, // target UUID, extra worn seat, value exact destination cell
+    DropInventory,  // target UUID, extra worn seat if equipped; authority drops at actor's feet
     EnterZone,      // `target` = route/node id
     Extract,
     // TASK-0145 Gate-B chronicles intents. The session translates them into

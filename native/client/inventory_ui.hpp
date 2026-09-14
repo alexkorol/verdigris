@@ -6,13 +6,7 @@ static constexpr const char* kEquipmentNames[] = {
 
 RECT gear_close_rect(int w, int h) {
   const auto p = gear_pane_rect(w,h); const int s = hud_scale(h);
-  return {p.x+p.w-38*s,p.y+12*s,p.x+p.w-12*s,p.y+36*s};
-}
-RECT gear_action_rect(int w, int h, int index) {
-  const auto p = gear_pane_rect(w,h); const int s = hud_scale(h);
-  const int mid = p.x+p.w/2;
-  return index == 0 ? RECT{p.x+18*s,p.y+p.h-40*s,mid-4*s,p.y+p.h-14*s}
-                    : RECT{mid+4*s,p.y+p.h-40*s,p.x+p.w-18*s,p.y+p.h-14*s};
+  return {p.x+p.w-30*s,p.y+10*s,p.x+p.w-12*s,p.y+28*s};
 }
 void inventory_text(HDC dc, RECT r, const std::string& text, COLORREF ink,
                     UINT flags = DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS) {
@@ -79,14 +73,14 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
   const RECT panel{pane.x,pane.y,pane.x+pane.w,pane.y+pane.h};
   const POINT pointer{state.mouse.x,state.mouse.y};
   const int saved=SaveDC(dc);
-  skin::inventory_surface(dc,panel);
+  const auto& texture=state.billboards.inventory_texture;
+  auto well=[&](RECT r,int focus=0){skin::inventory_surface(dc,r,focus,texture.dc,texture.width,texture.height);};
+  well(panel);
   dress_owned_pane(state.billboards,dc,panel);
   state.hud_rect_trace.push_back({"pane-frame",pane});
   auto font=SelectObject(dc,skin::font_small());
-  RECT title{pane.x+18*s,pane.y+12*s,pane.x+pane.w-48*s,pane.y+36*s};
-  inventory_text(dc,title,"Equipment",skin::kGold);
   const auto close=gear_close_rect(w,h);
-  inventory_button(dc,close,"x",PtInRect(&close,pointer));
+  skin::pane_close(dc,close,PtInRect(&close,pointer));
   reconcile_pack_grid(state);
   const auto& items=state.world.carried;
   int hover=-1; int hover_seat=-1; RECT anchor{};
@@ -127,9 +121,9 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
       const auto j=carried_index_for_pack_id(state,state.pack_drag_id);
       focus=j<items.size() && compatible_equipment(items[j],static_cast<int>(i)) ? 1 : -1;
     }
-    skin::inventory_surface(dc,r,focus);
+    well(r,focus);
     if (item) {
-      draw_object(*item,r);
+      if(!state.pack_drag_live || pack_stable_id(item->id)!=state.pack_drag_id)draw_object(*item,r);
       if (over || (state.gear_keyboard_focus && static_cast<std::size_t>(item-items.data())==state.selected_item)) {
         hover=static_cast<int>(item-items.data());anchor=r;
       }
@@ -147,14 +141,16 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
       state.hud_rect_trace.push_back({"pane-seat",{r.left,r.top,r.right-r.left,r.bottom-r.top}});
     }
   }
-  const int cells=static_cast<int>(std::count_if(state.pack_grid.occupancy.begin(),state.pack_grid.occupancy.end(),[](auto id){return id!=0;}));
+  int coins=0;
+  if(state.session)for(const auto& item:state.session->model().inventory)if(item.id=="coins")coins+=item.quantity;
   RECT bag_title{pack.grid_left,pack.grid_top-22*s,pack.grid_left+12*pack.cell_w,pack.grid_top-3*s};
   inventory_text(dc,bag_title,"Backpack",skin::kInkDim);
-  inventory_text(dc,bag_title,std::to_string(cells)+" / 84",skin::kInkDim,DT_RIGHT|DT_VCENTER|DT_SINGLELINE);
+  inventory_text(dc,bag_title,std::to_string(coins)+" coins",skin::kInk,DT_RIGHT|DT_VCENTER|DT_SINGLELINE);
+  rl.push_back({render::Op::Hud,0,0,0,coins,"inventory-coins:"+std::to_string(coins)});
   for (int y=0;y<kPackRows;++y) for (int x=0;x<kPackColumns;++x) {
     RECT r{pack.grid_left+x*pack.cell_w,pack.grid_top+y*pack.cell_h,
         pack.grid_left+(x+1)*pack.cell_w,pack.grid_top+(y+1)*pack.cell_h};
-    skin::inventory_surface(dc,r);
+    well(r);
     state.hud_rect_trace.push_back({"pane-backpack-cell",{r.left,r.top,pack.cell_w,pack.cell_h}});
   }
   for (std::uint8_t i=0;i<state.pack_grid.count;++i) {
@@ -164,8 +160,9 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
       pack.grid_left+(placed.x+placed.width)*pack.cell_w,pack.grid_top+(placed.y+placed.height)*pack.cell_h};
     const bool over=!state.gear_keyboard_focus && PtInRect(&r,pointer);
     const bool selected=items[j].id==state.selected_item_id;
-    skin::inventory_surface(dc,r,over||selected ? 1 : 0);
-    const bool art=draw_object(items[j],r);
+    well(r,over||selected ? 1 : 0);
+    const bool dragging=state.pack_drag_live && placed.id==state.pack_drag_id;
+    const bool art=dragging || draw_object(items[j],r);
     if (items[j].quantity>1) inventory_text(dc,r,std::to_string(items[j].quantity),skin::kInk,DT_RIGHT|DT_BOTTOM|DT_SINGLELINE|DT_END_ELLIPSIS);
     if(over || (selected && state.gear_keyboard_focus)) { hover=static_cast<int>(j);anchor=r; }
     state.hud_rect_trace.push_back({"pane-cell",{r.left,r.top,r.right-r.left,r.bottom-r.top}});
@@ -176,30 +173,27 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
   if(state.pack_drag_live) {
     int x=-1,y=-1;pack_hit_cell(pack,pointer.x,pointer.y,x,y);
     state.pack_preview_x=x-state.pack_grab_x;state.pack_preview_y=y-state.pack_grab_y;
-    state.pack_preview_ok=pack_can_land(state.pack_grid,state.pack_drag_id,state.pack_preview_x,state.pack_preview_y);
+    state.pack_preview_ok=pack_drag_can_land(state,state.pack_preview_x,state.pack_preview_y);
     const auto j=carried_index_for_pack_id(state,state.pack_drag_id);
     if(j<items.size()) {
-      RECT ghost{pointer.x-state.pack_grab_x*pack.cell_w,pointer.y-state.pack_grab_y*pack.cell_h,0,0};
+      RECT ghost{pointer.x-state.pack_grab_pixel_x,pointer.y-state.pack_grab_pixel_y,0,0};
       ghost.right=ghost.left+items[j].width*pack.cell_w;ghost.bottom=ghost.top+items[j].height*pack.cell_h;
-      const bool valid=hover_seat>=0 ? compatible_equipment(items[j],hover_seat) : state.pack_preview_ok;
+      const bool outside=!PtInRect(&panel,pointer) && !state.character_pane && !state.tree_pane;
+      const bool valid=outside || (hover_seat>=0 ? compatible_equipment(items[j],hover_seat) : state.pack_preview_ok);
       OffsetRect(&ghost,std::clamp(int(ghost.left),0,std::max(0,w-int(ghost.right-ghost.left)))-ghost.left,
           std::clamp(int(ghost.top),0,std::max(0,h-int(ghost.bottom-ghost.top)))-ghost.top);
-      skin::inventory_surface(dc,ghost,valid?1:-1);draw_object(items[j],ghost);
+      draw_object(items[j],ghost);
       RECT feedback{ghost.left,std::max(0L,ghost.top-22*s),std::min(LONG(w),ghost.left+160*s),std::max(0L,ghost.top-22*s)+20*s};
       skin::inventory_surface(dc,feedback,valid?1:-1);
-      inventory_text(dc,feedback,valid?"Fits":"Cannot place here",skin::kInk);
+      inventory_text(dc,feedback,outside?"Drop on ground":valid?"Fits":"Cannot place here",skin::kInk);
       rl.push_back({render::Op::Hud,double(x),double(y),0,valid?1:0,valid?"pack-preview:ok":"pack-preview:reject"});
     }
   }
-  const auto action=gear_action_rect(w,h,0),character=gear_action_rect(w,h,1);
   const bool selected=state.selected_item<items.size() && items[state.selected_item].id==state.selected_item_id;
-  const bool enabled=selected && !state.equip_view.pending && (!state.session || !items[state.selected_item].equip_seat.empty());
-  const std::string action_text=state.equip_view.pending?"Waiting for server...":!selected?"Select an item":!enabled?"Cannot equip":items[state.selected_item].equipped?"Unequip":"Equip";
-  inventory_button(dc,action,action_text,PtInRect(&action,pointer),enabled);
-  rl.push_back({render::Op::Hud,0,0,0,enabled?1:0,"inventory-action:"+action_text});
   if(selected) rl.push_back({render::Op::Hud,0,0,0,0,"inventory-selected:"+state.selected_item_id});
-  inventory_button(dc,character,"Character",PtInRect(&character,pointer));
   if(state.equip_view.pending) {
+    RECT pending{pane.x+18*s,pane.y+pane.h-38*s,pane.x+pane.w-18*s,pane.y+pane.h-14*s};
+    inventory_text(dc,pending,"Waiting for server...",skin::kInkDim);
     rl.push_back({render::Op::Hud,0,0,0,0,"compare:pending"});
   }
   // Stats are authoritative, compact, and available in the deliberate sheet.

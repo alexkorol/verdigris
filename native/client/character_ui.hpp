@@ -1,7 +1,7 @@
 // Character information is a deliberate companion to equipment management.
 RECT character_close_rect(int w,int h) {
   const auto p=character_pane_rect(w,h,0);const int s=hud_scale(h);
-  return {p.x+p.w-38*s,p.y+12*s,p.x+p.w-12*s,p.y+36*s};
+  return {p.x+p.w-30*s,p.y+10*s,p.x+p.w-12*s,p.y+28*s};
 }
 RECT character_detail_rect(int w,int h) {
   const auto p=character_pane_rect(w,h,0);const int s=hud_scale(h);
@@ -17,7 +17,7 @@ void paint_character_pane(ClientState& state,HDC dc,const RECT& bounds,render::L
   RECT title{p.x+18*s,p.y+12*s,p.x+p.w-44*s,p.y+36*s};
   inventory_text(dc,title,state.world.scion_name.empty()?"Character":state.world.scion_name,skin::kGold);
   const auto close=character_close_rect(bounds.right,bounds.bottom);
-  inventory_button(dc,close,"x",false);
+  skin::pane_close(dc,close,PtInRect(&close,state.mouse));
   const auto& a=state.world.player;
   std::vector<std::pair<std::string,std::string>> rows={
     {"Level",std::to_string(a.level)},

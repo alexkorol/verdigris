@@ -114,7 +114,8 @@ int scenario_inventory_equipment() {
   const auto identities_before=identity_snapshot();
   select_inventory_index(state,state.world.carried.size());
   scenario_present(state);
-  scenario_check(render_list_has(state,render::Op::Hud,"inventory-action:Select an item"),"handover: no invisible default item action");
+  scenario_check(!render_list_has(state,render::Op::Hud,"inventory-action:Select an item"),"inventory: redundant equipment action strip is removed");
+  scenario_check(std::none_of(state.world.carried.begin(),state.world.carried.end(),[](const auto& item){return item.name=="Coins";}),"inventory: currency is not draggable backpack content");
   state.character_pane=true;
   scenario_check(reference_present(state,1366,768,art_wave_capture_dir()+"/handover-before-equip.png"),"handover: actual server fixture before equipment");
   state.character_pane=false;
@@ -153,14 +154,25 @@ int scenario_inventory_equipment() {
   drag_to_seat(shield, paper_doll::Slot::OffHand);
   scenario_check(pump([&] { return !state.equip_view.pending; }) && !worn(shield, "left_hand") && worn(spear, "right_hand"),
                  "inventory: two-handed conflict retains both owned items");
-  // Click an equipped seat, then the shipped U key returns that exact item.
+  // Drag the worn item directly into a chosen free footprint using the same
+  // production window handlers as normal play; no Unequip button exists.
   const auto main_seat = make_pack_geom(1366, 768).seat;
   const auto at = MAKELPARAM((main_seat.left + main_seat.right) / 2, (main_seat.top + main_seat.bottom) / 2);
-  SendMessage(window, WM_LBUTTONDOWN, 0, at); SendMessage(window, WM_LBUTTONUP, 0, at);
-  const auto unequip_button=gear_action_rect(1366,768,0);
-  const auto button_at=MAKELPARAM((unequip_button.left+unequip_button.right)/2,(unequip_button.top+unequip_button.bottom)/2);
-  SendMessage(window,WM_LBUTTONDOWN,0,button_at);SendMessage(window,WM_LBUTTONUP,0,button_at);
-  scenario_check(pump([&] { return !worn(spear, "right_hand"); }), "inventory: visible Unequip button returns the selected item through server");
+  SendMessage(window, WM_LBUTTONDOWN, 0, at);
+  int destination=-1;
+  for(int cell=verdigris::PlayerInventory::kSlotCount-1;cell>=0;--cell)
+    if(pack_drag_can_land(state,cell%kPackColumns,cell/kPackColumns)){destination=cell;break;}
+  scenario_check(destination>=0 && state.pack_drag_live,"inventory: worn seat begins a drag and has an exact backpack destination");
+  const auto drag_geom=make_pack_geom(1366,768);
+  const auto pack_at=MAKELPARAM(drag_geom.grid_left+(destination%kPackColumns)*drag_geom.cell_w+state.pack_grab_pixel_x,
+      drag_geom.grid_top+(destination/kPackColumns)*drag_geom.cell_h+state.pack_grab_pixel_y);
+  SendMessage(window,WM_MOUSEMOVE,MK_LBUTTON,pack_at);
+  SendMessage(window,WM_LBUTTONUP,0,pack_at);
+  scenario_check(state.equip_view.pending,"inventory: seat-to-backpack drag waits for authority");
+  scenario_check(pump([&] { return !worn(spear, "right_hand"); }), "inventory: seat-to-backpack drag returns the exact item through server");
+  const auto landed=std::find_if(state.session->model().inventory.begin(),state.session->model().inventory.end(),[&](const auto& item){return item.uuid==spear;});
+  scenario_check(landed!=state.session->model().inventory.end() && landed->slot==destination,"inventory: server accepts the exact dragged destination");
+  scenario_check(identity_snapshot()==identities_before,"inventory: seat-to-backpack conserves identities and quantities");
   drag_to_seat(shield, paper_doll::Slot::OffHand);
   scenario_check(pump([&] { return worn(shield, "left_hand"); }), "inventory: shield can use freed off hand");
   sync_world(state);reconcile_pack_grid(state);
@@ -170,10 +182,10 @@ int scenario_inventory_equipment() {
     const auto& item=state.pack_grid.items[axe_index];const auto g=make_pack_geom(1366,768);
     const auto pick=MAKELPARAM(g.grid_left+item.x*g.cell_w+g.cell_w/2,g.grid_top+item.y*g.cell_h+g.cell_h/2);
     SendMessage(window,WM_LBUTTONDOWN,0,pick);SendMessage(window,WM_LBUTTONUP,0,pick);
-    SendMessage(window,WM_LBUTTONDOWN,0,button_at);SendMessage(window,WM_LBUTTONUP,0,button_at);
+    drag_to_seat(axe,paper_doll::Slot::MainHand);
   }
   scenario_check(pump([&] { return worn(axe, "right_hand"); }), "inventory: one-handed weapon coexists with shield");
-  scenario_check(!state.primary_down && !state.held_gameplay_attacks.contains(VK_LBUTTON),"inventory: visible Equip button consumes combat input");
+  scenario_check(!state.primary_down && !state.held_gameplay_attacks.contains(VK_LBUTTON),"inventory: drag equip consumes combat input");
   sync_world(state);
   scenario_check(state.combat_requests==attacks_before,"handover: equipment controls submit zero world attacks");
   scenario_check(state.session->model().player.total_ratings_present,"handover: server explicitly supplies displayed total ratings");
@@ -265,7 +277,7 @@ int scenario_inventory_equipment() {
   // Fill every remaining cell with 1x1 rings, then prove swaps and U cannot lose gear.
   grant("ring", 100);
   sync_world(state); reconcile_pack_grid(state);
-  scenario_check(state.pack_grid.count == state.session->model().inventory.size(),
+  scenario_check(state.pack_grid.count == std::count_if(state.session->model().inventory.begin(),state.session->model().inventory.end(),[](const auto& item){return item.id!="coins";}),
                  "inventory: full backpack exposes every authoritative item");
   const auto before_count = state.session->model().inventory.size();
   const auto before_ground = state.session->model().ground.size();
@@ -275,10 +287,11 @@ int scenario_inventory_equipment() {
                  state.session->model().ground.size() == before_ground,
                  "inventory: full-pack swap rejects atomically without spilling displaced gear");
   const auto body=make_pack_geom(1366,768).seats[3];
-  SendMessage(window,WM_LBUTTONDOWN,0,MAKELPARAM((body.left+body.right)/2,(body.top+body.bottom)/2));
-  SendMessage(window,WM_LBUTTONUP,0,0);
-  SendMessage(window,WM_LBUTTONDOWN,0,button_at);SendMessage(window,WM_LBUTTONUP,0,button_at);
-  scenario_check(state.equip_view.pending,"handover: visible Unequip waits for server, including full-pack rejection");
+  const auto body_at=MAKELPARAM((body.left+body.right)/2,(body.top+body.bottom)/2);
+  SendMessage(window,WM_LBUTTONDOWN,0,body_at);
+  SendMessage(window,WM_LBUTTONUP,0,body_at);
+  SendMessage(window,WM_KEYDOWN,'U',0);SendMessage(window,WM_KEYUP,'U',0);
+  scenario_check(state.equip_view.pending,"handover: keyboard unequip waits for server, including full-pack rejection");
   scenario_check(pump([&] { return state.session->model().last_message.find("Make room") != std::string::npos; }) &&
                  worn(wrap, "armor") && state.session->model().inventory.size() == before_count,
                  "inventory: full backpack rejects unequip without losing or spilling item");
@@ -313,14 +326,19 @@ int scenario_inventory_equipment() {
   };
   auto stress=std::make_unique<ReadabilitySnapshot>();stress->value=state.session->model();
   state.session->shutdown();
-  stress->value.inventory.front().name="An exceptionally long inventory item name with its distinguishing final words still available in the tooltip";
-  stress->value.inventory.front().quantity=12345678;
+  auto stress_item=std::find_if(stress->value.inventory.begin(),stress->value.inventory.end(),[](const auto& item){return item.id!="coins";});
+  scenario_check(stress_item!=stress->value.inventory.end(),"inventory: readability fixture uses an actual backpack item");
+  const auto stress_uuid=stress_item==stress->value.inventory.end()?std::string{}:stress_item->uuid;
+  if(stress_item!=stress->value.inventory.end()) {
+    stress_item->name="An exceptionally long inventory item name with its distinguishing final words still available in the tooltip";
+    stress_item->quantity=12345678;
+  }
   stress->value.attributes_present=true;
   stress->value.attr_strength=stress->value.attr_dexterity=stress->value.attr_intelligence=1000000;
   state.session=std::move(stress);state.hint_ticks=0;
   sync_world(state);reconcile_pack_grid(state);
   if(!state.world.carried.empty()) {
-    const auto index=carried_index_for_pack_id(state,state.pack_grid.items[0].id);
+    const auto index=carried_index_for_pack_id(state,pack_stable_id(stress_uuid));
     if(index<state.world.carried.size()) {
       state.gear_keyboard_focus=true;select_inventory_index(state,index);
       for(const auto size:{std::pair{960,600},std::pair{1280,800},std::pair{3440,1440}}) {

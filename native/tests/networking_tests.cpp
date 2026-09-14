@@ -22,6 +22,47 @@ void check(bool condition, const char* message) {
   if (!condition) throw std::runtime_error(message);
 }
 
+void test_inventory_drag_transactions() {
+  ProtocolSession session("drag-transactions","drag-socket",41,true);
+  auto ignore=[](const Envelope&){};
+  auto snapshot=[&] {JsonValue value;verdigris::networking::parse_json(session.state_payload("drag-check"),value);return value["state"];};
+  auto give=[&](const char* id) {
+    session.handle({"dev:give",JsonValue::Object{{"itemId",id},{"seed",42},{"itemLevel",12}}},ignore);
+    std::string uuid;const auto state=snapshot();
+    for(const auto& row:*state["inventoryDetails"].array())if(row["id"].string() && *row["id"].string()==id)uuid=*row["uuid"].string();
+    check(!uuid.empty(),"drag fixture granted");return uuid;
+  };
+  auto equip=[&](const std::string& uuid,const char* seat) {session.handle({"item:equip",JsonValue::Object{{"item",JsonValue::Object{{"uuid",uuid},{"targetSlot",seat}}}}},ignore);};
+  auto operation=[&](const char* action,const std::string& uuid,const char* seat,int slot) {
+    bool acknowledged=false,accepted=false;
+    session.handle({"player:inventory:commit",JsonValue::Object{{"action",action},{"item",JsonValue::Object{{"uuid",uuid}}},{"seat",seat},{"slot",slot}}},[&](const Envelope& e){
+      if(e.event=="inventory:operation"){acknowledged=true;accepted=e.data["accepted"].boolean().value_or(false);}
+    });
+    check(acknowledged,"each drag operation receives explicit authority acknowledgement");return accepted;
+  };
+  const auto wrap=give("vessel-wrap");
+  const auto ring=give("ring");
+  equip(wrap,"armor");
+  auto before=snapshot();const auto inventory_before=before["inventoryDetails"].stringify(),wear_before=before["wearDetails"].stringify();
+  check(!operation("unequip",wrap,"armor",83),"large worn footprint cannot overflow backpack");
+  check(snapshot()["inventoryDetails"].stringify()==inventory_before && snapshot()["wearDetails"].stringify()==wear_before,"rejected seat transfer preserves exact state");
+  check(!operation("unequip","stale-id","armor",60),"stale drag cannot remove another worn item");
+  check(operation("unequip",wrap,"armor",48),"worn item transfers into exact free backpack footprint");
+  const auto landed=snapshot();bool exact=false;for(const auto& row:*landed["inventoryDetails"].array())if(row["uuid"].string() && *row["uuid"].string()==wrap)exact=row["slot"].number().value_or(-1)==48;
+  check(exact,"authority keeps requested destination");
+  equip(wrap,"armor");
+  int ring_slot=-1;auto current=snapshot();for(const auto& row:*current["inventoryDetails"].array())if(row["uuid"].string() && *row["uuid"].string()==ring)ring_slot=static_cast<int>(row["slot"].number().value_or(-1));
+  check(!operation("unequip",wrap,"armor",ring_slot),"incompatible backpack occupant cannot replace worn armor");
+  check(operation("world-drop",wrap,"armor",-1),"drag outside inventory drops worn item through authority");
+  check(!operation("world-drop",wrap,"armor",-1),"repeated stale world drop cannot duplicate item");
+  current=snapshot();std::string purse;
+  for(const auto& row:*current["inventoryDetails"].array())if(row["id"].string() && *row["id"].string()=="coins") {
+    purse=*row["uuid"].string();check(!row["slot"].number(),"coin balance has no backpack cell");
+  }
+  check(!purse.empty() && !operation("move",purse,"",0) && !operation("world-drop",purse,"",-1),"purse cannot be moved or dropped as backpack item");
+  check(operation("world-drop",ring,"",-1),"backpack world drop is acknowledged");
+}
+
 void test_equipment_disk_and_scion_ownership() {
   const auto file=std::filesystem::temp_directory_path()/"verdigris-equipment-disk-repair.json";
   std::filesystem::remove(file);
@@ -1024,6 +1065,7 @@ void test_gate_a_equip_totals_and_unknown_uuid() {
 
 int main() {
   try {
+    test_inventory_drag_transactions();
     test_equipment_disk_and_scion_ownership();
     test_envelope_round_trip();
     test_session_lifecycle();

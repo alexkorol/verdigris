@@ -703,7 +703,10 @@ bool ProtocolSession::restore_loadout(const JsonValue& data) {
   PlayerInventory next;WearSet next_wear;std::set<std::string> ids;std::set<int> occupied;
   for(const auto& row:*pack->array()) {
     auto item=load_saved_item(row);
-    if(item.uuid.empty() || item.qty<=0 || !ids.insert(item.uuid).second || item.slot<0 || item.slot>=PlayerInventory::kSlotCount ||
+    if(item.uuid.empty() || item.qty<=0 || !ids.insert(item.uuid).second) return false;
+    // Migrate old purses out of the grid without changing identity or amount.
+    if(item.id=="coins") {item.slot=-1;next.items().push_back(std::move(item));continue;}
+    if(item.slot<0 || item.slot>=PlayerInventory::kSlotCount ||
        item.size.width<1 || item.size.height<1 || item.slot%12+item.size.width>12 || item.slot/12+item.size.height>7) return false;
     for(int y=0;y<item.size.height;++y)for(int x=0;x<item.size.width;++x)
       if(!occupied.insert(item.slot+y*12+x).second) return false;
@@ -2459,6 +2462,52 @@ void ProtocolSession::handle_menu_action(const JsonValue& payload, const std::fu
 void ProtocolSession::handle_inventory_commit(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) {
   // player:inventory:commit world-drop: the production inventory drop verb.
   const std::string action=as_string(payload.get("action"));
+  if(action=="unequip") {
+    const auto* ref=payload.get("item");
+    const auto uuid=as_string(ref?ref->get("uuid"):nullptr);
+    const auto seat=as_string(payload.get("seat"));
+    const auto* requested=payload.get("slot");
+    const bool valid=requested && requested->number() && std::isfinite(*requested->number()) &&
+        *requested->number()>=0 && *requested->number()<PlayerInventory::kSlotCount &&
+        std::floor(*requested->number())==*requested->number();
+    const auto* worn=wear_.in_seat(seat);
+    bool accepted=false;
+    std::string reason="That equipment changed; try again";
+    if(valid && worn && worn->uuid==uuid) {
+      const auto before_inventory=inventory_;
+      const auto before_wear=wear_;
+      const int slot=as_int(requested,-1);
+      std::string displaced_uuid;
+      for(const auto& candidate:inventory_.items()) {
+        if(candidate.slot<0)continue;
+        const int x=slot%PlayerInventory::kColumns,y=slot/PlayerInventory::kColumns;
+        const int cx=candidate.slot%PlayerInventory::kColumns,cy=candidate.slot/PlayerInventory::kColumns;
+        if(x>=cx && x<cx+candidate.size.width && y>=cy && y<cy+candidate.size.height) {
+          displaced_uuid=candidate.uuid;break;
+        }
+      }
+      auto incoming=wear_.unequip(seat);
+      int destination=slot;
+      bool compatible=true;
+      if(!displaced_uuid.empty()) {
+        GameItem displaced;
+        inventory_.remove_by_uuid(displaced_uuid,&displaced);
+        destination=displaced.slot;
+        const auto* main=wear_.in_seat("right_hand");
+        compatible=WearSet::can_use_seat(displaced.equip_slot,seat) &&
+            !(displaced.two_handed && seat=="right_hand" && wear_.in_seat("left_hand")) &&
+            !(seat=="left_hand" && main && main->two_handed);
+        if(compatible)wear_.equip(std::move(displaced),seat);
+      }
+      accepted=compatible && inventory_.add_at(std::move(*incoming),destination);
+      reason=compatible?"Not enough space for this item":"That item cannot replace this equipment";
+      if(!accepted){inventory_=before_inventory;wear_=before_wear;}
+      else sync_combat_mods();
+    } else if(!valid)reason="Drop inside the backpack";
+    emit_inventory_refresh(emit);emit_equip_state(emit);
+    emit(Envelope{"inventory:operation",JsonValue::Object{{"uuid",uuid},{"accepted",accepted},{"reason",accepted?"":reason}}});
+    return;
+  }
   if(action=="move") {
     const auto* ref=payload.get("item");
     const auto uuid=as_string(ref?ref->get("uuid"):nullptr);
@@ -2476,12 +2525,24 @@ void ProtocolSession::handle_inventory_commit(const JsonValue& payload, const st
   const auto* item_ref=payload.get("item");
   const std::string uuid=as_string(item_ref?item_ref->get("uuid"):nullptr);
   GameItem item;
-  if (uuid.empty()||!inventory_.remove_by_uuid(uuid,&item)) return;
+  const auto seat=as_string(payload.get("seat"));
+  bool accepted=false;
+  if(!uuid.empty() && !seat.empty()) {
+    const auto* worn=wear_.in_seat(seat);
+    if(worn && worn->uuid==uuid) {item=std::move(*wear_.unequip(seat));accepted=true;sync_combat_mods();}
+  } else if(const auto* carried=inventory_.find_by_uuid(uuid);carried && carried->id!="coins")
+    accepted=inventory_.remove_by_uuid(uuid,&item);
+  if(!accepted) {
+    emit(Envelope{"inventory:operation",JsonValue::Object{{"uuid",uuid},{"accepted",false},{"reason","That item cannot be dropped"}}});
+    return;
+  }
   item.slot=-1;
   const auto position=world_->position();
   world_->add_ground_item(std::move(item),position.x,position.y);
   emit_inventory_refresh(emit);
+  emit_equip_state(emit);
   emit_ground_change(emit);
+  emit(Envelope{"inventory:operation",JsonValue::Object{{"uuid",uuid},{"accepted",true},{"reason",""}}});
 }
 void ProtocolSession::emit_combat_event(const WorldCombatEvent& event, const std::function<void(const Envelope&)>& emit) {
   if (event.type == "telegraph") {

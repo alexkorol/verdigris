@@ -3355,6 +3355,7 @@ std::optional<GameItem> create_game_item(const std::string& item_id,
 // ── PlayerInventory (inventory.js + inventory-footprints.js) ─────────────
 
 bool PlayerInventory::fits_at(const GameItem& item, int slot) const {
+  if (slot < 0 || slot >= kSlotCount) return false;
   const int x0 = slot % kColumns;
   const int y0 = slot / kColumns;
   for (int dy = 0; dy < item.size.height; ++dy) {
@@ -3363,7 +3364,7 @@ bool PlayerInventory::fits_at(const GameItem& item, int slot) const {
       const int y = y0 + dy;
       if (x >= kColumns || y >= kRows) return false;
       for (const auto& other : items_) {
-        if (other.slot < 0) continue;  // unplaced stacks block nothing
+        if (other.slot < 0 || other.id == "coins") continue;
         const int ox = other.slot % kColumns;
         const int oy = other.slot / kColumns;
         if (x >= ox && x < ox + other.size.width && y >= oy && y < oy + other.size.height) {
@@ -3378,12 +3379,12 @@ bool PlayerInventory::fits_at(const GameItem& item, int slot) const {
 bool PlayerInventory::move_or_swap(const std::string& uuid, int slot) {
   if(slot<0 || slot>=kSlotCount) return false;
   auto* source=find_by_uuid(uuid);
-  if(!source || source->slot<0) return false;
+  if(!source || source->slot<0 || source->id=="coins") return false;
   const auto before=items_;
   const int old_slot=source->slot;
   GameItem* target=nullptr;
   for(auto& other:items_) {
-    if(other.uuid==uuid || other.slot<0) continue;
+    if(other.uuid==uuid || other.slot<0 || other.id=="coins") continue;
     const int x=slot%kColumns,y=slot/kColumns,ox=other.slot%kColumns,oy=other.slot/kColumns;
     if(x>=ox && x<ox+other.size.width && y>=oy && y<oy+other.size.height) { target=&other;break; }
   }
@@ -3415,13 +3416,14 @@ PlayerInventory::AddResult PlayerInventory::add(GameItem item) {
     for (auto& existing : items_) {
       if (existing.id == item.id) {
         existing.qty += item.qty;
+        if (existing.id == "coins") existing.slot = -1;
         result.added = item.qty;
         return result;
       }
     }
-    // JS parity: a new stack occupies a real backpack cell like any item;
-    // -1 only when the grid is genuinely full (the balance still counts).
-    item.slot = first_fit(item);
+    // Currency is a balance, never a backpack footprint. Other existing
+    // stack behavior is unchanged.
+    item.slot = item.id == "coins" ? -1 : first_fit(item);
     result.added = item.qty;
     items_.push_back(std::move(item));
     return result;
@@ -3435,6 +3437,13 @@ PlayerInventory::AddResult PlayerInventory::add(GameItem item) {
   result.added = 1;
   items_.push_back(std::move(item));
   return result;
+}
+
+bool PlayerInventory::add_at(GameItem item, int slot) {
+  if (find_by_uuid(item.uuid) || item.id == "coins" || !fits_at(item, slot)) return false;
+  item.slot = slot;
+  items_.push_back(std::move(item));
+  return true;
 }
 
 bool PlayerInventory::remove_by_uuid(const std::string& uuid, GameItem* out) {

@@ -316,6 +316,7 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
   }
   world.carried.clear();
   for (const auto& item : model.inventory) {
+    if (item.id == "coins") continue; // authoritative balance, not a draggable item
     const std::string label = item.name.empty() ? item.id : item.name;
     world.carried.push_back({item.uuid, label, item.attack_rating, false,
                              item.width, item.height, item.quantity,

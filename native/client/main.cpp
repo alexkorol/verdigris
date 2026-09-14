@@ -241,6 +241,7 @@ struct BillboardAssets {
   // panel/slot plates and the item-art sprites for inventory cells.
   SpriteBitmap fk_panel;
   SpriteBitmap fk_slot;
+  SpriteBitmap inventory_texture;
   SpriteBitmap splash;
   std::unordered_map<std::string, SpriteBitmap> item_art;
   // Web-client UI assets (src/assets): the wizard orb statue plate with its
@@ -717,6 +718,7 @@ struct ClientState {
   bool gear_keyboard_focus = false;
   bool pack_drag_live = false;
   int pack_grab_x = 0, pack_grab_y = 0;
+  int pack_grab_pixel_x = 0, pack_grab_pixel_y = 0;
   int pack_preview_x = -1;
   int pack_preview_y = -1;
   bool pack_preview_ok = false;
@@ -1313,6 +1315,7 @@ void load_framekit_assets(BillboardAssets& assets) {
   for (const auto& root : candidates) {
     if (!directory_exists(root)) continue;
     load_sprite(assets, root + "/splash/background_fallback.png", assets.splash);
+    load_sprite(assets, root + "/inventory/slot_texture.png", assets.inventory_texture);
     const bool chrome_loaded =
         load_sprite(assets, root + "/framekit/textures/panel.png",
                     assets.fk_panel) &&
@@ -4569,6 +4572,37 @@ void pack_begin_drag(ClientState& state, int gx, int gy) {
   if (index < state.world.carried.size()) select_inventory_index(state,index);
 }
 
+void pack_begin_equipment_drag(ClientState& state, std::size_t index, const PackGeom& geom,
+                               const RECT& seat, int mx, int my) {
+  if(state.equip_view.pending || index>=state.world.carried.size())return;
+  const auto& item=state.world.carried[index];
+  select_inventory_index(state,index);
+  state.pack_drag_live=true;state.pack_drag_id=pack_stable_id(item.id);
+  // Keep the grabbed point under the pointer when the large seat artwork
+  // becomes its backpack-sized drag image.
+  state.pack_grab_pixel_x=std::clamp((mx-int(seat.left))*item.width*geom.cell_w/std::max(1L,seat.right-seat.left),0L,LONG(item.width*geom.cell_w-1));
+  state.pack_grab_pixel_y=std::clamp((my-int(seat.top))*item.height*geom.cell_h/std::max(1L,seat.bottom-seat.top),0L,LONG(item.height*geom.cell_h-1));
+  state.pack_grab_x=state.pack_grab_pixel_x/geom.cell_w;
+  state.pack_grab_y=state.pack_grab_pixel_y/geom.cell_h;
+}
+
+bool pack_drag_can_land(const ClientState& state,int x,int y) {
+  const auto index=carried_index_for_pack_id(state,state.pack_drag_id);
+  if(index>=state.world.carried.size() || x<0 || y<0)return false;
+  const auto& item=state.world.carried[index];
+  if(!item.equipped)return pack_can_land(state.pack_grid,state.pack_drag_id,x,y);
+  if(x>=kPackColumns || y>=kPackRows)return false;
+  const auto occupant=inventory_grid::item_at(state.pack_grid,x,y);
+  if(!occupant)return inventory_grid::can_place(state.pack_grid,x,y,item.width,item.height);
+  const auto target=carried_index_for_pack_id(state,occupant);
+  if(target>=state.world.carried.size())return false;
+  const auto& other=state.world.carried[target];
+  if(!verdigris::WearSet::can_use_seat(other.equip_seat,item.equip_seat))return false;
+  const auto placed=inventory_grid::find_index(state.pack_grid,occupant);
+  return placed<inventory_grid::kMaxItems && inventory_grid::can_place(state.pack_grid,
+      state.pack_grid.items[placed].x,state.pack_grid.items[placed].y,item.width,item.height,occupant);
+}
+
 void cancel_pack_drag(ClientState& state) {
   state.pack_drag_live = false;
   state.pack_drag_id = 0;
@@ -4584,6 +4618,27 @@ bool pack_commit_drop(ClientState& state, int seat_index) {
   const std::uint32_t id = state.pack_drag_id;
   state.pack_drag_live = false;
   state.pack_drag_id = 0;
+  const auto dragged_index=carried_index_for_pack_id(state,id);
+  if(dragged_index>=state.world.carried.size())return false;
+  const auto& dragged=state.world.carried[dragged_index];
+  if(seat_index==-2 && state.session) {
+    verdigris::client::ClientCommand command;
+    command.type=verdigris::client::ClientCommand::Type::DropInventory;
+    command.target=dragged.id;command.extra=dragged.equipped?dragged.equip_seat:"";
+    verdigris::client::ui::request_equip(state.equip_view,command.target);
+    state.session->submit(command);state.pack_last_drop="pending";return true;
+  }
+  if(dragged.equipped && seat_index>=0 && seat_index<static_cast<int>(std::size(kDollSeats)) && dragged.equip_seat==kDollSeats[seat_index]) {
+    state.pack_last_drop="idle";return true;
+  }
+  if(dragged.equipped && seat_index<0 && state.pack_preview_ok && state.session) {
+    verdigris::client::ClientCommand command;
+    command.type=verdigris::client::ClientCommand::Type::UnequipToInventory;
+    command.target=dragged.id;command.extra=dragged.equip_seat;
+    command.value=state.pack_preview_y*kPackColumns+state.pack_preview_x;
+    verdigris::client::ui::request_equip(state.equip_view,command.target);
+    state.session->submit(command);state.pack_last_drop="pending";return true;
+  }
   if (seat_index >= 0 && seat_index < static_cast<int>(std::size(kDollSeats))) {
     const std::size_t index = carried_index_for_pack_id(state, id);
     if (index >= state.world.carried.size()) {
@@ -11430,11 +11485,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
           const int my = GET_Y_LPARAM(lparam);
           const POINT point{mx,my};
           const auto close=gear_close_rect(client.right,client.bottom);
-          const auto equip=gear_action_rect(client.right,client.bottom,0);
-          const auto sheet=gear_action_rect(client.right,client.bottom,1);
           if(PtInRect(&close,point)) { toggle_gear_overlay(*state); break; }
-          if(PtInRect(&equip,point)) { activate_inventory_item(*state); break; }
-          if(PtInRect(&sheet,point)) { state->character_pane=!state->character_pane; break; }
           state->gear_keyboard_focus=false;
           reconcile_pack_grid(*state);
           const int seat = pack_hit_seat(pack, mx, my);
@@ -11443,14 +11494,19 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
               const auto& item = state->world.carried[i];
               if (item.equipped && (item.equip_seat == kDollSeats[seat] ||
                   (item.equip_seat.empty() && seat == paper_doll::slot_index(paper_doll::Slot::MainHand))))
-                select_inventory_index(*state,i);
+                { pack_begin_equipment_drag(*state,i,pack,pack.seats[seat],mx,my);break; }
             }
+            if(state->pack_drag_live)SetCapture(window);
           } else {
             int gx = -1;
             int gy = -1;
             if (pack_hit_cell(pack, mx, my, gx, gy)) {
               pack_begin_drag(*state, gx, gy);
-              if (state->pack_drag_live) SetCapture(window);
+              if (state->pack_drag_live) {
+                state->pack_grab_pixel_x=state->pack_grab_x*pack.cell_w+(mx-pack.grid_left)%pack.cell_w;
+                state->pack_grab_pixel_y=state->pack_grab_y*pack.cell_h+(my-pack.grid_top)%pack.cell_h;
+                SetCapture(window);
+              }
             }
           }
         } else if (click_npc(*state, window, GET_X_LPARAM(lparam),
@@ -11489,12 +11545,21 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         if (pack_hit_cell(pack, mx, my, gx, gy)) {
           state->pack_preview_x = gx - state->pack_grab_x;
           state->pack_preview_y = gy - state->pack_grab_y;
-          state->pack_preview_ok = pack_can_land(
-              state->pack_grid, state->pack_drag_id, state->pack_preview_x, state->pack_preview_y);
+          state->pack_preview_ok = pack_drag_can_land(*state,state->pack_preview_x,state->pack_preview_y);
         } else {
           state->pack_preview_ok = false;
         }
-        pack_commit_drop(*state, pack_hit_seat(pack, mx, my));
+        int target=pack_hit_seat(pack,mx,my);
+        const auto pane=gear_pane_rect(client.right,client.bottom);
+        const RECT panel{pane.x,pane.y,pane.x+pane.w,pane.y+pane.h};
+        const POINT point{mx,my};
+        // A release outside the window cancels. A release over another UI
+        // pane also cancels; only uncovered world space is a world drop.
+        if(!PtInRect(&client,point))cancel_pack_drag(*state);
+        else {
+          if(!PtInRect(&panel,point) && !state->character_pane && !state->tree_pane && !trade_pane_open(*state))target=-2;
+          pack_commit_drop(*state,target);
+        }
         if (GetCapture() == window) ReleaseCapture();
       }
       break;
@@ -21669,7 +21734,7 @@ int run_reference_scenes(const std::string& which) {
 }  // namespace
 
 int run_remote_native_client(const char* host, unsigned short port, const char* guest_id,
-                             bool chronicles_mode) {
+                             bool chronicles_mode, const std::string& verify_launch = {}) {
   // The normal product path must never turn missing authored animation into
   // a silently accepted idle or geometric fallback.
   for (const char* sex : {"male", "female"})
@@ -21718,6 +21783,47 @@ int run_remote_native_client(const char* host, unsigned short port, const char* 
       chronicles_mode ? "Verdigris Chronicles" : "Verdigris Remote Guest",
       WS_POPUP, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN),
       nullptr, nullptr, instance, state.get());
+  if (!verify_launch.empty()) {
+    // Application-owned regression mode: hidden QA window, no desktop input,
+    // same remote session, renderer, settings and menu implementation.
+    const char* settings_path=std::getenv("VERDIGRIS_SETTINGS_PATH");
+    if(!settings_path || !*settings_path || (verify_launch!="save" && verify_launch!="reload")) {
+      std::fprintf(stderr,"launch-check: isolated settings path and valid phase required\n");
+      state->session->shutdown();DestroyWindow(window);return 2;
+    }
+    const int failures_before=scenario_failures;
+    scenario_check(chronicles_pump(*state,300,[&]{return state->session->model().chronicle.present;}),
+        "launch-check: actual launcher-owned server supplies Chronicle");
+    scenario_check(state->frontend==Frontend::Title && state->camera.perspective,
+        "launch-check: normal title and perspective configuration");
+    const auto captures=std::filesystem::path(settings_path).parent_path();
+    scenario_check(reference_present(*state,1280,800,(captures/(verify_launch+"-title.png")).string()),
+        "launch-check: production title renders with packaged assets");
+    handle_frontend_key(*state,VK_DOWN);handle_frontend_key(*state,VK_RETURN);
+    scenario_check(state->frontend==Frontend::Settings,"launch-check: menu navigation opens Settings");
+    if(verify_launch=="save") {
+      handle_frontend_key(*state,VK_DOWN);
+      for(int attempt=0;attempt<11 && state->audio_prefs.sfx_permille!=700;++attempt)
+        handle_frontend_key(*state,VK_RETURN);
+    }
+    scenario_check(state->audio_prefs.sfx_permille==700,
+        verify_launch=="save"?"launch-check: settings control saves Effects 70%":"launch-check: fresh process restores Effects 70% in same profile");
+    scenario_check(reference_present(*state,1280,800,(captures/(verify_launch+"-settings.png")).string()),
+        "launch-check: production Settings renders");
+    // Use the actual Back and Quit actions, without manipulating an existing
+    // player window or injecting OS keyboard/mouse messages.
+    for(int attempt=0;attempt<4 && state->menu_selected!=3;++attempt)handle_frontend_key(*state,VK_DOWN);
+    handle_frontend_key(*state,VK_RETURN);
+    handle_frontend_key(*state,VK_DOWN);handle_frontend_key(*state,VK_DOWN);handle_frontend_key(*state,VK_RETURN);
+    scenario_check(state->frontend==Frontend::ConfirmQuit && !state->quit_requested,
+        "launch-check: Quit requires confirmation");
+    handle_frontend_key(*state,VK_DOWN);handle_frontend_key(*state,VK_RETURN);
+    scenario_check(state->quit_requested,"launch-check: confirmation requests clean exit");
+    state->session->shutdown();DestroyWindow(window);
+    const bool passed=scenario_failures==failures_before;
+    std::printf("launch-check: %s phase=%s source=%s\n",passed?"PASS":"FAIL",verify_launch.c_str(),VERDIGRIS_BUILD_ID);
+    return passed?0:1;
+  }
   ShowWindow(window, SW_SHOW);
   SetTimer(window, 1, 15, nullptr);
 
@@ -21792,7 +21898,9 @@ int main(int argc, char** argv) {
       bool chronicles_mode = true;
       for (int k = 1; k < argc; ++k)
         if (std::strcmp(argv[k], "--quick") == 0) chronicles_mode = false;
-      return run_remote_native_client(host, port, guest, chronicles_mode);
+      std::string verify_launch;
+      for(int k=1;k+1<argc;++k)if(std::strcmp(argv[k],"--verify-launch")==0)verify_launch=argv[k+1];
+      return run_remote_native_client(host, port, guest, chronicles_mode,verify_launch);
     }
   }
   HINSTANCE instance = GetModuleHandle(nullptr);

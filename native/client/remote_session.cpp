@@ -630,6 +630,16 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
       envelope.event = "item:unequip";
       envelope.data = JsonValue::Object{{"seat", command.target},{"uuid",command.extra}};
       break;
+    case ClientCommand::Type::UnequipToInventory:
+      envelope.event="player:inventory:commit";
+      envelope.data=JsonValue::Object{{"action","unequip"},{"item",JsonValue::Object{{"uuid",command.target}}},
+          {"seat",command.extra},{"slot",command.value}};
+      break;
+    case ClientCommand::Type::DropInventory:
+      envelope.event="player:inventory:commit";
+      envelope.data=JsonValue::Object{{"action","world-drop"},{"item",JsonValue::Object{{"uuid",command.target}}},
+          {"seat",command.extra}};
+      break;
     case ClientCommand::Type::EnterZone:
       model_.chart.open = false;
       envelope.event = "world:zone:enter";
