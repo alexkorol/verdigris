@@ -742,6 +742,7 @@ struct ClientState {
   std::string selected_house_id;
   std::string house_name_input;
   std::string scion_name_input;
+  skin::TextEntry chronicle_cursor;
   std::string chronicle_edit; // house-name or scion-name; consumed before gameplay keys
   bool manage_lineage = false;
 
@@ -1550,13 +1551,13 @@ void paint_compare_plate(ClientState& state, HDC dc, int x, int y,
   if (title.empty()) return;
   HGDIOBJ old_font = SelectObject(dc, skin::font_body_bold());
   SIZE title_extent{};
-  GetTextExtentPoint32A(dc, title.c_str(), static_cast<int>(title.size()),
+  skin::text_extent(dc, title.c_str(), static_cast<int>(title.size()),
                         &title_extent);
   int widest = title_extent.cx;
   SelectObject(dc, skin::font_small());
   for (const auto& fact : lines) {
     SIZE extent{};
-    GetTextExtentPoint32A(dc, fact.c_str(), static_cast<int>(fact.size()),
+    skin::text_extent(dc, fact.c_str(), static_cast<int>(fact.size()),
                           &extent);
     widest = std::max(widest, static_cast<int>(extent.cx));
   }
@@ -1566,7 +1567,7 @@ void paint_compare_plate(ClientState& state, HDC dc, int x, int y,
   const int box_w = std::min(widest + pad * 2, std::min(340*s,static_cast<int>(bounds.right)-16));
   SelectObject(dc,skin::font_body_bold());
   RECT measure{0,0,box_w-2*pad,0};
-  DrawTextA(dc,title.c_str(),-1,&measure,DT_WORDBREAK|DT_CALCRECT|DT_NOPREFIX);
+  skin::draw_text(dc,title.c_str(),-1,&measure,DT_WORDBREAK|DT_CALCRECT|DT_NOPREFIX);
   const int title_h=std::min(int(measure.bottom),std::max(line_h,int(bounds.bottom)/3));
   const int box_h = title_h + static_cast<int>(lines.size()) * line_h + pad * 2;
   int box_x = std::min(x, static_cast<int>(bounds.right) - box_w - 8);
@@ -1594,13 +1595,13 @@ void paint_compare_plate(ClientState& state, HDC dc, int x, int y,
   SelectObject(dc, skin::font_body_bold());
   SetTextColor(dc, title_color);
   RECT title_box{box_x+pad,box_y+pad-2,box_x+box_w-pad,box_y+pad+title_h};
-  DrawTextA(dc,title.c_str(),-1,&title_box,DT_WORDBREAK|DT_END_ELLIPSIS|DT_NOPREFIX);
+  skin::draw_text(dc,title.c_str(),-1,&title_box,DT_WORDBREAK|DT_END_ELLIPSIS|DT_NOPREFIX);
   SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kInkDim);
   int fact_y = box_y + pad + title_h;
   for (const auto& fact : lines) {
     RECT fact_box{box_x+pad,fact_y,box_x+box_w-pad,fact_y+line_h};
-    DrawTextA(dc,fact.c_str(),-1,&fact_box,DT_SINGLELINE|DT_END_ELLIPSIS);
+    skin::draw_text(dc,fact.c_str(),-1,&fact_box,DT_SINGLELINE|DT_END_ELLIPSIS);
     fact_y += line_h;
   }
   SelectObject(dc, old_font);
@@ -2518,16 +2519,8 @@ HBRUSH cached_brush(COLORREF color) {
   return brush;
 }
 
-HFONT cached_damage_font(int font_h) {
-  font_h = std::clamp(font_h, 8, 32);
-  static HFONT fonts[33]{};
-  if (!fonts[font_h]) {
-    fonts[font_h] = CreateFontA(font_h, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
-                                DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
-                                CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_SWISS,
-                                "Verdana");
-  }
-  return fonts[font_h];
+HFONT cached_damage_font(int) {
+  return skin::font(skin::TextRole::Compact);
 }
 
 struct PresentationResources {
@@ -2623,7 +2616,7 @@ void warm_combat_glyphs() {
   SelectObject(dc, cached_damage_font(16));
   SetBkMode(dc, TRANSPARENT);
   SetTextColor(dc, RGB(240, 218, 132));
-  TextOutA(dc, 8, 8, "12", 2);
+  skin::text_out(dc, 8, 8, "12", 2);
   fill_ellipse(dc, 32, 40, 6, 6, RGB(255, 214, 120));
   draw_line(dc, 8, 40, 56, 40, RGB(226, 220, 180), 3);
   SelectObject(dc, old);
@@ -3476,17 +3469,17 @@ void paint_telegraph_owner_chip(HDC dc, int cx, int top,
   const std::string window = verdigris::client::actions::owner_window_line(spec);
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SIZE a{}, b{};
-  GetTextExtentPoint32A(dc, title, static_cast<int>(std::strlen(title)), &a);
-  GetTextExtentPoint32A(dc, window.c_str(), static_cast<int>(window.size()), &b);
+  skin::text_extent(dc, title, static_cast<int>(std::strlen(title)), &a);
+  skin::text_extent(dc, window.c_str(), static_cast<int>(window.size()), &b);
   const int w = std::max(a.cx, b.cx) + 16;
   const int h = a.cy + b.cy + 10;
   RECT plate{cx - w / 2, top, cx + w / 2, top + h};
   skin::chip(dc, plate, RGB(238, 112, 82));
   SetBkMode(dc, TRANSPARENT);
   SetTextColor(dc, skin::kInk);
-  TextOutA(dc, plate.left + 8, plate.top + 3, title, static_cast<int>(std::strlen(title)));
+  skin::text_out(dc, plate.left + 8, plate.top + 3, title, static_cast<int>(std::strlen(title)));
   SetTextColor(dc, skin::kInkDim);
-  TextOutA(dc, plate.left + 8, plate.top + 3 + a.cy, window.c_str(),
+  skin::text_out(dc, plate.left + 8, plate.top + 3 + a.cy, window.c_str(),
            static_cast<int>(window.size()));
   SelectObject(dc, old_font);
   rl.push_back({render::Op::Hud, static_cast<double>(cx), static_cast<double>(top),
@@ -3838,7 +3831,7 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       // Rise AND fade toward the background over the effect lifetime.
       const std::string text = std::to_string(fx.value);
       SIZE text_size{};
-      GetTextExtentPoint32A(dc, text.c_str(), static_cast<int>(text.size()), &text_size);
+      skin::text_extent(dc, text.c_str(), static_cast<int>(text.size()), &text_size);
       // The lift locates the label's bottom, so glyphs grow upward instead
       // of crossing the target's head and life bar.
       const int text_y = base.y - lift - text_size.cy;
@@ -3855,10 +3848,10 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       }
       const int text_x = base.x - text_size.cx / 2;
       SetTextColor(dc, fade_to_background(RGB(24, 19, 16), life));
-      TextOutA(dc, text_x + 1, text_y + 1, text.c_str(),
+      skin::text_out(dc, text_x + 1, text_y + 1, text.c_str(),
                static_cast<int>(text.size()));
       SetTextColor(dc, fade_to_background(color, life));
-      TextOutA(dc, text_x, text_y, text.c_str(), static_cast<int>(text.size()));
+      skin::text_out(dc, text_x, text_y, text.c_str(), static_cast<int>(text.size()));
       SelectObject(dc, old_number_font);
       break;
     }
@@ -4262,14 +4255,14 @@ int paint_status_chip(HDC dc, int x, int y, const std::string& text,
                       COLORREF accent, render::List& rl,
                       const std::string& hud_label = {}) {
   SIZE extent{};
-  GetTextExtentPoint32A(dc, text.c_str(), static_cast<int>(text.size()), &extent);
+  skin::text_extent(dc, text.c_str(), static_cast<int>(text.size()), &extent);
   const int width = extent.cx + 20;
   const int height = extent.cy + 10;
   RECT rect{x, y, x + width, y + height};
   skin::chip(dc, rect, accent);
   SetBkMode(dc, TRANSPARENT);
   SetTextColor(dc, accent);
-  TextOutA(dc, x + 12, y + 5, text.c_str(), static_cast<int>(text.size()));
+  skin::text_out(dc, x + 12, y + 5, text.c_str(), static_cast<int>(text.size()));
   rl.push_back({render::Op::Hud, static_cast<double>(x), static_cast<double>(y),
                 0.0, 0, hud_label.empty() ? text : hud_label});
   return width;
@@ -4668,9 +4661,9 @@ void draw_orb(HDC dc, int cx, int cy, int radius, double ratio, COLORREF fill,
   SetTextColor(dc, skin::kInk);
   HGDIOBJ old_font = SelectObject(dc, skin::font_body_bold());
   SIZE caption_extent{};
-  GetTextExtentPoint32A(dc, caption.c_str(), static_cast<int>(caption.size()),
+  skin::text_extent(dc, caption.c_str(), static_cast<int>(caption.size()),
                         &caption_extent);
-  TextOutA(dc, cx - caption_extent.cx / 2, cy - caption_extent.cy / 2,
+  skin::text_out(dc, cx - caption_extent.cx / 2, cy - caption_extent.cy / 2,
            caption.c_str(), static_cast<int>(caption.size()));
   SelectObject(dc, old_font);
 }
@@ -4822,10 +4815,10 @@ void paint_quickbar(ClientState& state, HDC dc, const RECT& bounds, render::List
 
     SetBkMode(dc, TRANSPARENT);
     SetTextColor(dc, RGB(239, 208, 116));
-    TextOutA(dc, box.left + 6 * s, box.top + 4 * s, slot.key_label,
+    skin::text_out(dc, box.left + 6 * s, box.top + 4 * s, slot.key_label,
              static_cast<int>(strlen(slot.key_label)));
     SetTextColor(dc, available ? RGB(205, 221, 207) : RGB(112, 119, 115));
-    TextOutA(dc, box.left + 6 * s, box.top + 26 * s, slot.name,
+    skin::text_out(dc, box.left + 6 * s, box.top + 26 * s, slot.name,
              static_cast<int>(strlen(slot.name)));
   }
 }
@@ -4899,13 +4892,13 @@ void paint_hover_tooltip(ClientState& state, HDC dc, const RECT& bounds,
 
   HGDIOBJ old_font = SelectObject(dc, skin::font_body_bold());
   SIZE title_extent{};
-  GetTextExtentPoint32A(dc, title.c_str(), static_cast<int>(title.size()),
+  skin::text_extent(dc, title.c_str(), static_cast<int>(title.size()),
                         &title_extent);
   int widest = title_extent.cx;
   SelectObject(dc, skin::font_small());
   for (const auto& fact : lines) {
     SIZE extent{};
-    GetTextExtentPoint32A(dc, fact.c_str(), static_cast<int>(fact.size()),
+    skin::text_extent(dc, fact.c_str(), static_cast<int>(fact.size()),
                           &extent);
     widest = std::max(widest, static_cast<int>(extent.cx));
   }
@@ -4915,7 +4908,7 @@ void paint_hover_tooltip(ClientState& state, HDC dc, const RECT& bounds,
   const int box_w = widest + pad * 2 + mark;
   SelectObject(dc,skin::font_body_bold());
   RECT measure{0,0,box_w-2*pad,0};
-  DrawTextA(dc,title.c_str(),-1,&measure,DT_WORDBREAK|DT_CALCRECT|DT_NOPREFIX);
+  skin::draw_text(dc,title.c_str(),-1,&measure,DT_WORDBREAK|DT_CALCRECT|DT_NOPREFIX);
   const int title_h=std::min(int(measure.bottom),std::max(line_h,int(bounds.bottom)/3));
   const int box_h = title_h + static_cast<int>(lines.size()) * line_h + pad * 2;
   int box_x = mx + 18;
@@ -4938,13 +4931,13 @@ void paint_hover_tooltip(ClientState& state, HDC dc, const RECT& bounds,
   SetBkMode(dc, TRANSPARENT);
   SelectObject(dc, skin::font_body_bold());
   SetTextColor(dc, skin::kInk);
-  TextOutA(dc, box_x + pad + mark, box_y + pad - 2, title.c_str(),
+  skin::text_out(dc, box_x + pad + mark, box_y + pad - 2, title.c_str(),
            static_cast<int>(title.size()));
   SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kInk);
   int fact_y = box_y + pad + title_h;
   for (const auto& fact : lines) {
-    TextOutA(dc, box_x + pad + mark, fact_y, fact.c_str(),
+    skin::text_out(dc, box_x + pad + mark, fact_y, fact.c_str(),
              static_cast<int>(fact.size()));
     fact_y += line_h;
   }
@@ -4985,7 +4978,7 @@ void paint_xp_bar(ClientState& state, HDC dc, const RECT& bounds,
   SetBkMode(dc, TRANSPARENT);
   SetTextColor(dc, skin::kInk);
   SIZE extent{};
-  GetTextExtentPoint32A(dc, cap.c_str(), static_cast<int>(cap.size()), &extent);
+  skin::text_extent(dc, cap.c_str(), static_cast<int>(cap.size()), &extent);
   int caption_x = left + 4 * s;
   const int caption_y = top - extent.cy + 1;
   const HudRect caption_at{caption_x, caption_y, extent.cx, extent.cy};
@@ -4996,7 +4989,7 @@ void paint_xp_bar(ClientState& state, HDC dc, const RECT& bounds,
                               {0, 0, state.sheet_passive_atk, state.sheet_cond_atk,
                                state.sheet_cond_active, state.stat_atk_expanded}))))
     caption_x = (left + right - extent.cx) / 2;
-  TextOutA(dc, caption_x, caption_y, cap.c_str(), static_cast<int>(cap.size()));
+  skin::text_out(dc, caption_x, caption_y, cap.c_str(), static_cast<int>(cap.size()));
   state.hud_rect_trace.push_back(
       {"xp-caption", {caption_x, caption_y, extent.cx, extent.cy}});
   SelectObject(dc, old_font);
@@ -5009,7 +5002,7 @@ void paint_xp_bar(ClientState& state, HDC dc, const RECT& bounds,
     skin::slot(dc, badge, skin::kGold, true);
     SetTextColor(dc, skin::kGold);
     SetBkMode(dc, TRANSPARENT);
-    TextOutA(dc, badge.left + 5 * s, badge.top + 1 * s, "+", 1);
+    skin::text_out(dc, badge.left + 5 * s, badge.top + 1 * s, "+", 1);
     rl.push_back({render::Op::Hud, static_cast<double>(badge.left),
                   static_cast<double>(badge.top), 0.0,
                   state.world.progression.unspent_points, "skill-points-plus"});
@@ -5028,38 +5021,30 @@ void paint_combat_log(const ClientState& state, HDC dc, const RECT& bounds,
   const int s = hud_scale(static_cast<int>(bounds.bottom));
   const HudRect quickbar = quickbar_strip_rect(static_cast<int>(bounds.right),
                                                static_cast<int>(bounds.bottom));
-  const int lines_to_show = std::min(4, static_cast<int>(state.event_log.size()));
-  const int line_h = 16 * s;
-  const int width = 246 * s;
-  const int height = lines_to_show * line_h + 14 * s;
-  const int left = 18 * s;
-  const int bottom = quickbar.y - 40 * s;
-  const int top = std::max(12 * s, bottom - height);
-  RECT plate{left, top, left + width, bottom};
-  skin::panel(dc, plate, skin::kPanelBorder, 205, 6.0f);
-  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
-  SetBkMode(dc, TRANSPARENT);
-  SetTextColor(dc, RGB(188, 202, 190));
-  int y = top + 6 * s;
-  int drawn=0;
-  for (auto it = state.event_log.rbegin(); it != state.event_log.rend() &&
-       drawn<lines_to_show && y+line_h <= bottom-4*s; ++it,++drawn) {
-    std::string line = *it;
-    SIZE extent{};
-    GetTextExtentPoint32A(dc, line.c_str(), static_cast<int>(line.size()), &extent);
-    if (extent.cx > width - 16 * s) {
-      const std::size_t fit = line.size() * static_cast<std::size_t>(width - 16 * s) /
-                              static_cast<std::size_t>(std::max<int>(1, static_cast<int>(extent.cx)));
-      line.resize(std::max<std::size_t>(1, fit));
-      line += "…";
-    }
-    TextOutA(dc, left + 8 * s, y, line.c_str(), static_cast<int>(line.size()));
-    y += line_h;
+  const int width=246*s;
+  const int left=18*s,bottom=quickbar.y-40*s;
+  const int saved=SaveDC(dc);SelectObject(dc,skin::font_body());SetBkMode(dc,TRANSPARENT);
+  std::vector<std::pair<std::string,int>> rows;
+  int height=12*s;
+  for(auto it=state.event_log.rbegin();it!=state.event_log.rend()&&rows.size()<4;++it) {
+    RECT measured{0,0,width-16*s,0};
+    skin::draw_text(dc,it->c_str(),static_cast<int>(it->size()),&measured,DT_WORDBREAK|DT_CALCRECT|DT_NOPREFIX);
+    const int row_h=measured.bottom+4*s;
+    if(height+row_h>bottom-12*s)break;
+    rows.push_back({*it,row_h});height+=row_h;
   }
-  SelectObject(dc, old_font);
-  rl.push_back({render::Op::Hud, static_cast<double>(left),
-                static_cast<double>(top), static_cast<double>(width),
-                lines_to_show, "combat-log"});
+  const int top=bottom-height;
+  RECT plate{left,top,left+width,bottom};
+  skin::panel(dc,plate,skin::kPanelBorder,205,6.0f);
+  SetTextColor(dc,skin::kInk);
+  int y=top+6*s;
+  for(const auto& row:rows) {
+    RECT box{left+8*s,y,left+width-8*s,y+row.second};
+    skin::draw_text(dc,row.first.c_str(),static_cast<int>(row.first.size()),&box,DT_WORDBREAK|DT_NOPREFIX);
+    y+=row.second;
+  }
+  RestoreDC(dc,saved);
+  rl.push_back({render::Op::Hud,double(left),double(top),double(width),int(rows.size()),"combat-log"});
 }
 
 void paint_minimap(ClientState& state, HDC dc, const RECT& bounds, render::List& rl) {
@@ -5377,6 +5362,7 @@ void submit_chronicle_action(ClientState& state, const ChronicleAction& action) 
     state.selected_appearance=action.arg=="female"?"female":"male";
   } else if (action.command == "house-name" || action.command == "scion-name") {
     state.chronicle_edit = action.command;
+    state.chronicle_cursor.focus(action.command=="house-name"?state.house_name_input:state.scion_name_input);
   } else if (action.command == "house-select") {
     state.selected_house_id = action.arg;
     state.chronicle_page = 0;
@@ -5411,9 +5397,12 @@ void handle_chronicles_key(ClientState& state, WPARAM key) {
     state.chronicles_selected = (state.chronicles_selected + (previous ? count - 1 : 1)) % count;
     const auto& action = state.chronicle_hits[state.chronicles_selected].action;
     state.chronicle_edit = action.command == "house-name" || action.command == "scion-name" ? action.command : "";
+    state.chronicle_cursor.focus(state.chronicle_edit=="house-name"?state.house_name_input:state.scion_name_input);
     return;
   }
   if (!state.chronicle_edit.empty()) {
+    auto& value=state.chronicle_edit=="house-name"?state.house_name_input:state.scion_name_input;
+    state.chronicle_cursor.key(value,key,(GetKeyState(VK_SHIFT)&0x8000)!=0,(GetKeyState(VK_CONTROL)&0x8000)!=0);
     if (key == VK_RETURN) {
       const auto command = state.chronicle_edit == "house-name" ? "found-house" : "create-scion";
       submit_chronicle_action(state, {"", command, "", ""});
@@ -5566,7 +5555,7 @@ void paint_frontend(ClientState& state, HDC dc, const RECT& bounds, render::List
   SetBkMode(dc, TRANSPARENT);
   SelectObject(dc, skin::font_title());
   SetTextColor(dc, skin::kInk);
-  TextOutA(dc, left + 28 * scale, top + 24 * scale, heading, static_cast<int>(std::strlen(heading)));
+  skin::text_out(dc, left + 28 * scale, top + 24 * scale, heading, static_cast<int>(std::strlen(heading)));
   rl.push_back({render::Op::Hud, double(left), double(top), 0, 0, std::string("frontend:") + heading});
   const auto rows = frontend_rows(state);
   state.menu_hits.clear();
@@ -5577,9 +5566,9 @@ void paint_frontend(ClientState& state, HDC dc, const RECT& bounds, render::List
     RECT button{left + 24 * scale, y, left + width - 24 * scale, y + 42 * scale};
     const bool selected = i == state.menu_selected;
     skin::panel(dc, button, selected ? skin::kInk : skin::kPanelBorder, 245, 4.0f);
-    SetTextColor(dc, selected ? skin::kInk : RGB(180, 192, 181));
+    SetTextColor(dc, selected ? skin::kGold : skin::kInk);
     const std::string text = (selected ? "> " : "  ") + rows[i];
-    TextOutA(dc, button.left + 12 * scale, y + 9 * scale, text.c_str(), static_cast<int>(text.size()));
+    skin::text_out(dc, button.left + 12 * scale, y + 9 * scale, text.c_str(), static_cast<int>(text.size()));
     if (state.frontend == Frontend::Settings && (i == 1 || i == 2)) {
       for (int step : {-1, 1}) {
         const int offset = step < 0 ? 100 : 48;
@@ -5587,7 +5576,7 @@ void paint_frontend(ClientState& state, HDC dc, const RECT& bounds, render::List
                     button.right - (offset - 40) * scale, button.bottom - 4 * scale};
         skin::panel(dc, adjust, skin::kInk, 250, 3.0f);
         const char* label = step < 0 ? "-" : "+";
-        TextOutA(dc, adjust.left + 14 * scale, adjust.top + 5 * scale, label, 1);
+        skin::text_out(dc, adjust.left + 14 * scale, adjust.top + 5 * scale, label, 1);
         state.menu_hits.push_back({adjust, i, step});
       }
     }
@@ -5595,7 +5584,7 @@ void paint_frontend(ClientState& state, HDC dc, const RECT& bounds, render::List
     rl.push_back({render::Op::Hud, double(button.left), double(y), 0, 0, "menu:" + rows[i]});
   }
   SelectObject(dc, skin::font_body());
-  SetTextColor(dc, RGB(190, 203, 193));
+  SetTextColor(dc, skin::kInkDim);
   const std::string help = state.frontend == Frontend::Settings
       ? "Left / Right adjust  |  Enter select  |  Esc back"
       : "Arrows / Tab focus  |  Enter select  |  Esc back";
@@ -5608,7 +5597,7 @@ void paint_frontend(ClientState& state, HDC dc, const RECT& bounds, render::List
     detail += "\nOnline world continues while menus are open.";
   detail += std::string("\nBuild ") + std::string(VERDIGRIS_BUILD_ID).substr(0, 12) +
       (VERDIGRIS_BUILD_DIRTY ? " (development)" : "");
-  DrawTextA(dc, detail.c_str(), static_cast<int>(detail.size()), &help_box, DT_WORDBREAK | DT_NOPREFIX);
+  skin::draw_text(dc, detail.c_str(), static_cast<int>(detail.size()), &help_box, DT_WORDBREAK | DT_NOPREFIX);
 }
 
 // ── TASK-0161: contained capture-root isolation ─────────────────────────
@@ -5872,7 +5861,7 @@ void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
                   chip_y + 7 + dot};
     FillRect(dc, &dot_rect, dot_brush);
     DeleteObject(dot_brush);
-    TextOutA(dc, chip_x + 20, chip_y + 3, chip.c_str(), static_cast<int>(chip.size()));
+    skin::text_out(dc, chip_x + 20, chip_y + 3, chip.c_str(), static_cast<int>(chip.size()));
     if (conn == verdigris::client::ConnectionState::Disconnected ||
         conn == verdigris::client::ConnectionState::Rejected ||
         conn == verdigris::client::ConnectionState::ProtocolMismatch) {
@@ -5882,7 +5871,7 @@ void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
       // minimap panel instead of painting across it.
       const HudRect map = minimap_rect(static_cast<int>(bounds.bottom));
       const int banner_y = std::max(76, map.y + map.h + 8);
-      TextOutA(dc, 18, banner_y, banner, static_cast<int>(strlen(banner)));
+      skin::text_out(dc, 18, banner_y, banner, static_cast<int>(strlen(banner)));
     }
 }
 
@@ -6102,7 +6091,7 @@ void paint_tree_pane(ClientState& state, HDC dc, const RECT& bounds,
   HGDIOBJ old_font = SelectObject(dc, skin::font_heading());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::ui::owner_skill_tree_label();
-  TextOutA(dc, left + 16 * s, top + 10 * s, title,
+  skin::text_out(dc, left + 16 * s, top + 10 * s, title,
            static_cast<int>(strlen(title)));
 
   const bool remote = state.session != nullptr;
@@ -6116,7 +6105,7 @@ void paint_tree_pane(ClientState& state, HDC dc, const RECT& bounds,
       : std::string("Skill tree: no data yet");
   SetTextColor(dc, present && progression->unspent_points > 0 ? skin::kGold
                                                               : skin::kInkDim);
-  TextOutA(dc, left + 16 * s, top + 38 * s, points_line.c_str(),
+  skin::text_out(dc, left + 16 * s, top + 38 * s, points_line.c_str(),
            static_cast<int>(points_line.size()));
   rl.push_back({render::Op::Hud, static_cast<double>(left),
                 static_cast<double>(top + 38 * s), 0.0,
@@ -6131,11 +6120,11 @@ void paint_tree_pane(ClientState& state, HDC dc, const RECT& bounds,
     SetTextColor(dc, skin::kInkDim);
     const char* empty = verdigris::client::ui::owner_no_seats_yet_label();
     SIZE empty_extent{};
-    GetTextExtentPoint32A(dc, empty, static_cast<int>(strlen(empty)),
+    skin::text_extent(dc, empty, static_cast<int>(strlen(empty)),
                           &empty_extent);
     const int ex = left + (pane_w - empty_extent.cx) / 2;
     const int ey = top + pane_h / 2 - 16 * s;
-    TextOutA(dc, ex, ey, empty, static_cast<int>(strlen(empty)));
+    skin::text_out(dc, ex, ey, empty, static_cast<int>(strlen(empty)));
     rl.push_back({render::Op::Hud, static_cast<double>(ex),
                   static_cast<double>(ey), 0.0, 0, "tree:seats-hidden-absent"});
     const int rx = left + pane_w / 2;
@@ -6147,15 +6136,15 @@ void paint_tree_pane(ClientState& state, HDC dc, const RECT& bounds,
     SelectObject(dc, skin::font_small());
     const char* rejected = "invented origin";
     SIZE rejected_extent{};
-    GetTextExtentPoint32A(dc, rejected, static_cast<int>(strlen(rejected)),
+    skin::text_extent(dc, rejected, static_cast<int>(strlen(rejected)),
                           &rejected_extent);
-    TextOutA(dc, rx - rejected_extent.cx / 2, ry + 22 * s, rejected,
+    skin::text_out(dc, rx - rejected_extent.cx / 2, ry + 22 * s, rejected,
              static_cast<int>(strlen(rejected)));
     rl.push_back({render::Op::Hud, static_cast<double>(rx),
                   static_cast<double>(ry), 0.0, 0,
                   "tree:invented-origin-rejected"});
     const char* footer = "P or Esc closes";
-    TextOutA(dc, left + 16 * s, top + pane_h - 24 * s, footer,
+    skin::text_out(dc, left + 16 * s, top + pane_h - 24 * s, footer,
              static_cast<int>(strlen(footer)));
     SelectObject(dc, old_font);
     return;
@@ -6204,10 +6193,10 @@ void paint_tree_pane(ClientState& state, HDC dc, const RECT& bounds,
     const char* type_label = geometric_skill_tree::seat_type_name(seat.type);
     SIZE extent{};
     HGDIOBJ seat_font = SelectObject(dc, skin::font_small());
-    GetTextExtentPoint32A(dc, type_label, static_cast<int>(strlen(type_label)),
+    skin::text_extent(dc, type_label, static_cast<int>(strlen(type_label)),
                           &extent);
     SetTextColor(dc, active ? skin::kInk : skin::kInkDim);
-    TextOutA(dc, sx - extent.cx / 2, sy - extent.cy / 2, type_label,
+    skin::text_out(dc, sx - extent.cx / 2, sy - extent.cy / 2, type_label,
              static_cast<int>(strlen(type_label)));
     SelectObject(dc, seat_font);
     rl.push_back({render::Op::Hud, static_cast<double>(sx),
@@ -6222,7 +6211,7 @@ void paint_tree_pane(ClientState& state, HDC dc, const RECT& bounds,
   const char* footer = progression->unspent_points > 0
                            ? "Click a gold seat to allocate | P or Esc closes"
                            : "P or Esc closes";
-  TextOutA(dc, left + 16 * s, top + pane_h - 24 * s, footer,
+  skin::text_out(dc, left + 16 * s, top + pane_h - 24 * s, footer,
            static_cast<int>(strlen(footer)));
   SelectObject(dc, old_font);
 }
@@ -6359,7 +6348,7 @@ void paint_trade_pane(ClientState& state, HDC dc, const RECT& bounds,
   const std::string title = chart ? model.chart.road_name
                             : shop  ? model.shop.name
                                     : "Rhea's Countinghouse";
-  TextOutA(dc, left + 16 * s, top + 8 * s, title.c_str(),
+  skin::text_out(dc, left + 16 * s, top + 8 * s, title.c_str(),
            static_cast<int>(title.size()));
   SelectObject(dc, skin::font_body());
 
@@ -6378,20 +6367,20 @@ void paint_trade_pane(ClientState& state, HDC dc, const RECT& bounds,
     if (row.header) {
       SelectObject(dc, skin::font_body_bold());
       SetTextColor(dc, skin::kInkDim);
-      TextOutA(dc, line.left + 6 * s, y + 6 * s, row.left.c_str(),
+      skin::text_out(dc, line.left + 6 * s, y + 6 * s, row.left.c_str(),
                static_cast<int>(row.left.size()));
       SelectObject(dc, skin::font_body());
     } else {
       const bool selected = active_index == state.trade_selected;
       skin::slot(dc, line, shop ? skin::kGold : skin::kVerdigris, selected);
       SetTextColor(dc, selected ? skin::kInk : skin::kInkDim);
-      TextOutA(dc, line.left + 8 * s, y + 6 * s, row.left.c_str(),
+      skin::text_out(dc, line.left + 8 * s, y + 6 * s, row.left.c_str(),
                static_cast<int>(row.left.size()));
       SIZE extent{};
-      GetTextExtentPoint32A(dc, row.right.c_str(),
+      skin::text_extent(dc, row.right.c_str(),
                             static_cast<int>(row.right.size()), &extent);
       SetTextColor(dc, shop ? skin::kGold : skin::kVerdigris);
-      TextOutA(dc, line.right - extent.cx - 8 * s, y + 6 * s, row.right.c_str(),
+      skin::text_out(dc, line.right - extent.cx - 8 * s, y + 6 * s, row.right.c_str(),
                static_cast<int>(row.right.size()));
       ClientState::TradeRowHit hit = row.hit;
       hit.rect = line;
@@ -6415,7 +6404,7 @@ void paint_trade_pane(ClientState& state, HDC dc, const RECT& bounds,
                     "g - carrying " + std::to_string(model.bank.carried_coins) +
                     "g") +
       "  |  click or Enter - Esc closes";
-  TextOutA(dc, left + 16 * s, top + pane_h - footer_h, footer.c_str(),
+  skin::text_out(dc, left + 16 * s, top + pane_h - footer_h, footer.c_str(),
            static_cast<int>(footer.size()));
   SelectObject(dc, old_font);
 }
@@ -6471,7 +6460,7 @@ void paint_attack_pose_strip(ClientState& state, HDC dc, const RECT& bounds,
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = vector_art::owner_strike_poses_label();
-  TextOutA(dc, left + 12 * s, top + 6 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 6 * s, title, static_cast<int>(strlen(title)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 6 * s), 0.0, 1, "pose:strike-poses"});
   const char* names[4] = {"Windup", "Active", "Recover", "Cancel"};
@@ -6494,10 +6483,10 @@ void paint_attack_pose_strip(ClientState& state, HDC dc, const RECT& bounds,
     vector_art::humanoid(dc, cx, base_y, 72 * s, vector_art::player_style(),
                          pose, held);
     SIZE extent{};
-    GetTextExtentPoint32A(dc, names[i], static_cast<int>(strlen(names[i])),
+    skin::text_extent(dc, names[i], static_cast<int>(strlen(names[i])),
                           &extent);
     SetTextColor(dc, skin::kInk);
-    TextOutA(dc, cx - extent.cx / 2, top + pane_h - 16 * s, names[i],
+    skin::text_out(dc, cx - extent.cx / 2, top + pane_h - 16 * s, names[i],
              static_cast<int>(strlen(names[i])));
     rl.push_back({render::Op::Hud, static_cast<double>(cx),
                   static_cast<double>(base_y), 0.0, i + 1, tokens[i]});
@@ -6509,7 +6498,7 @@ void paint_attack_pose_strip(ClientState& state, HDC dc, const RECT& bounds,
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "idle still";
-  TextOutA(dc, rx - 28 * s, top + pane_h - 16 * s, rejected,
+  skin::text_out(dc, rx - 28 * s, top + pane_h - 16 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
                 0.0, 0, "pose-strip:idle-rejected"});
@@ -6540,7 +6529,7 @@ void paint_weave_review_strip(ClientState& state, HDC dc, const RECT& bounds,
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = vector_art::owner_war_cry_weave_label();
-  TextOutA(dc, left + 12 * s, top + 6 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 6 * s, title, static_cast<int>(strlen(title)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 6 * s), 0.0, 1, "weave:war-cry"});
   const char* names[4] = {"Cast", "Travel", "Impact", "Cancel"};
@@ -6574,10 +6563,10 @@ void paint_weave_review_strip(ClientState& state, HDC dc, const RECT& bounds,
       }
     }
     SIZE extent{};
-    GetTextExtentPoint32A(dc, names[i], static_cast<int>(strlen(names[i])),
+    skin::text_extent(dc, names[i], static_cast<int>(strlen(names[i])),
                           &extent);
     SetTextColor(dc, skin::kInk);
-    TextOutA(dc, cx - extent.cx / 2, top + pane_h - 16 * s, names[i],
+    skin::text_out(dc, cx - extent.cx / 2, top + pane_h - 16 * s, names[i],
              static_cast<int>(strlen(names[i])));
     rl.push_back({render::Op::Hud, static_cast<double>(cx),
                   static_cast<double>(cy), 0.0, i + 1, tokens[i]});
@@ -6589,7 +6578,7 @@ void paint_weave_review_strip(ClientState& state, HDC dc, const RECT& bounds,
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "screen fill";
-  TextOutA(dc, rx - 28 * s, top + pane_h - 16 * s, rejected,
+  skin::text_out(dc, rx - 28 * s, top + pane_h - 16 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
                 0.0, 0, "weave-strip:fill-rejected"});
@@ -6624,7 +6613,7 @@ void paint_telegraph_review_strip(ClientState& state, HDC dc, const RECT& bounds
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = "Warning windows";
-  TextOutA(dc, left + 12 * s, top + 6 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 6 * s, title, static_cast<int>(strlen(title)));
   const verdigris::client::actions::TelegraphSpec specs[2] = {thrust, sweep};
   for (int i = 0; i < 2; ++i) {
     const int cx = left + 90 * s + i * 160 * s;
@@ -6646,7 +6635,7 @@ void paint_telegraph_review_strip(ClientState& state, HDC dc, const RECT& bounds
   draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69), 2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "ms/50";
-  TextOutA(dc, rx - 16 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 16 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
                 0.0, 0, "telegraph-strip:ms-rejected"});
@@ -6680,9 +6669,9 @@ void paint_ambience_review_strip(ClientState& state, HDC dc, const RECT& bounds,
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::ambience::owner_zone_loop_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
-  TextOutA(dc, left + 12 * s, top + 32 * s, loop.c_str(),
+  skin::text_out(dc, left + 12 * s, top + 32 * s, loop.c_str(),
            static_cast<int>(loop.size()));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
@@ -6691,7 +6680,7 @@ void paint_ambience_review_strip(ClientState& state, HDC dc, const RECT& bounds,
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "ambience x3";
-  TextOutA(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
                 0.0, 0, "ambience-strip:stacked-rejected"});
@@ -6719,10 +6708,10 @@ void paint_capture_review_strip(ClientState& state, HDC dc, const RECT& bounds,
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::gpu::owner_pixel_capture_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* ok = verdigris::gpu::owner_bmp_provenance_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, ok, static_cast<int>(strlen(ok)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, ok, static_cast<int>(strlen(ok)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -6730,7 +6719,7 @@ void paint_capture_review_strip(ClientState& state, HDC dc, const RECT& bounds,
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "packet log";
-  TextOutA(dc, rx - 26 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 26 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 32 * s), 0.0, 1, "capture:bmp"});
@@ -6762,11 +6751,11 @@ void paint_voice_budget_review_strip(ClientState& state, HDC dc, const RECT& bou
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const std::string title = verdigris::client::voices::owner_budget_line();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title.c_str(),
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title.c_str(),
            static_cast<int>(title.size()));
   SetTextColor(dc, skin::kInk);
   const char* held = verdigris::client::voices::owner_warning_held_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, held, static_cast<int>(strlen(held)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, held, static_cast<int>(strlen(held)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -6774,7 +6763,7 @@ void paint_voice_budget_review_strip(ClientState& state, HDC dc, const RECT& bou
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "cosmetic x12";
-  TextOutA(dc, rx - 30 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 30 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 32 * s), 0.0, 1, "voice:warning-held"});
@@ -6804,10 +6793,10 @@ void paint_tone_adapter_review_strip(ClientState& state, HDC dc, const RECT& bou
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::audio::owner_adapter_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const std::string tone = verdigris::audio::owner_tone_label(440);
-  TextOutA(dc, left + 12 * s, top + 32 * s, tone.c_str(),
+  skin::text_out(dc, left + 12 * s, top + 32 * s, tone.c_str(),
            static_cast<int>(tone.size()));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
@@ -6816,7 +6805,7 @@ void paint_tone_adapter_review_strip(ClientState& state, HDC dc, const RECT& bou
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "0 ms cue";
-  TextOutA(dc, rx - 22 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 22 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "adapter:software"});
@@ -6848,10 +6837,10 @@ void paint_recover_review_strip(ClientState& state, HDC dc, const RECT& bounds,
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::gpu::owner_restore_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* live = verdigris::gpu::owner_live_buffers_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, live, static_cast<int>(strlen(live)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, live, static_cast<int>(strlen(live)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -6859,7 +6848,7 @@ void paint_recover_review_strip(ClientState& state, HDC dc, const RECT& bounds,
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "leak";
-  TextOutA(dc, rx - 10 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 10 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 32 * s), 0.0, 1, "recover:live-1"});
@@ -6889,10 +6878,10 @@ void paint_legal_sounds_review_strip(ClientState& state, HDC dc, const RECT& bou
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::sound_family::owner_family_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* anticipate = verdigris::client::sound_family::owner_anticipate_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, anticipate,
+  skin::text_out(dc, left + 12 * s, top + 32 * s, anticipate,
            static_cast<int>(strlen(anticipate)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
@@ -6901,7 +6890,7 @@ void paint_legal_sounds_review_strip(ClientState& state, HDC dc, const RECT& bou
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "unlicensed";
-  TextOutA(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "family:combat"});
@@ -6929,10 +6918,10 @@ void paint_loot_filter_review_strip(ClientState& state, HDC dc, const RECT& boun
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = "Loot filter";
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* hide = verdigris::client::items::owner_hide_trophies_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, hide, static_cast<int>(strlen(hide)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, hide, static_cast<int>(strlen(hide)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -6940,7 +6929,7 @@ void paint_loot_filter_review_strip(ClientState& state, HDC dc, const RECT& boun
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "mutate ground";
-  TextOutA(dc, rx - 38 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 38 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 32 * s), 0.0, 1, "filter:hide-trophy"});
@@ -6966,10 +6955,10 @@ void paint_dense_mix_review_strip(ClientState& state, HDC dc, const RECT& bounds
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::audio::owner_mix_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* range = verdigris::audio::owner_mix_range_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, range, static_cast<int>(strlen(range)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, range, static_cast<int>(strlen(range)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -6977,7 +6966,7 @@ void paint_dense_mix_review_strip(ClientState& state, HDC dc, const RECT& bounds
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "preview";
-  TextOutA(dc, rx - 18 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 18 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "mix:encounter"});
@@ -7005,10 +6994,10 @@ void paint_attack_beat_review_strip(ClientState& state, HDC dc, const RECT& boun
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::combat::owner_beat_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* anticipate = verdigris::client::combat::owner_anticipate_beat_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, anticipate,
+  skin::text_out(dc, left + 12 * s, top + 32 * s, anticipate,
            static_cast<int>(strlen(anticipate)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
@@ -7017,7 +7006,7 @@ void paint_attack_beat_review_strip(ClientState& state, HDC dc, const RECT& boun
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "fabricated";
-  TextOutA(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "beat:attack"});
@@ -7045,10 +7034,10 @@ void paint_combat_beats_review_strip(ClientState& state, HDC dc, const RECT& bou
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::audio_beats::owner_beats_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* once = verdigris::client::audio_beats::owner_hit_once_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, once, static_cast<int>(strlen(once)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, once, static_cast<int>(strlen(once)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7056,7 +7045,7 @@ void paint_combat_beats_review_strip(ClientState& state, HDC dc, const RECT& bou
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "double-play";
-  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "beats:mapped"});
@@ -7094,13 +7083,13 @@ void paint_pane_stack_review_strip(ClientState& state, HDC dc, const RECT& bound
   const int pad = std::max(4 * s, 4);
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::ui::owner_stack_label();
-  TextOutA(dc, left + pad, top + pad, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + pad, top + pad, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* escape_a = verdigris::client::ui::owner_escape_wrap_a();
   const char* escape_b = verdigris::client::ui::owner_escape_wrap_b();
-  TextOutA(dc, left + pad, top + pad + 18 * s, escape_a,
+  skin::text_out(dc, left + pad, top + pad + 18 * s, escape_a,
            static_cast<int>(strlen(escape_a)));
-  TextOutA(dc, left + pad, top + pad + 34 * s, escape_b,
+  skin::text_out(dc, left + pad, top + pad + 34 * s, escape_b,
            static_cast<int>(strlen(escape_b)));
   const int rx = left + pane_w / 2;
   const int ry = top + pad + 70 * s;
@@ -7111,11 +7100,11 @@ void paint_pane_stack_review_strip(ClientState& state, HDC dc, const RECT& bound
   const char* rejected_a = "helper";
   const char* rejected_b = "depth";
   SIZE ra{}, rb{};
-  GetTextExtentPoint32A(dc, rejected_a, static_cast<int>(strlen(rejected_a)), &ra);
-  GetTextExtentPoint32A(dc, rejected_b, static_cast<int>(strlen(rejected_b)), &rb);
-  TextOutA(dc, left + (pane_w - ra.cx) / 2, top + pane_h - 32 * s, rejected_a,
+  skin::text_extent(dc, rejected_a, static_cast<int>(strlen(rejected_a)), &ra);
+  skin::text_extent(dc, rejected_b, static_cast<int>(strlen(rejected_b)), &rb);
+  skin::text_out(dc, left + (pane_w - ra.cx) / 2, top + pane_h - 32 * s, rejected_a,
            static_cast<int>(strlen(rejected_a)));
-  TextOutA(dc, left + (pane_w - rb.cx) / 2, top + pane_h - 18 * s, rejected_b,
+  skin::text_out(dc, left + (pane_w - rb.cx) / 2, top + pane_h - 18 * s, rejected_b,
            static_cast<int>(strlen(rejected_b)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + pad),
                 static_cast<double>(top + pad), 0.0, 1, "stack:2"});
@@ -7143,10 +7132,10 @@ void paint_eight_way_review_strip(ClientState& state, HDC dc, const RECT& bounds
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::move::owner_eight_way_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* diag = verdigris::client::move::owner_up_left_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, diag, static_cast<int>(strlen(diag)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, diag, static_cast<int>(strlen(diag)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7154,7 +7143,7 @@ void paint_eight_way_review_strip(ClientState& state, HDC dc, const RECT& bounds
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "vertical-only";
-  TextOutA(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "move:eight-way"});
@@ -7182,10 +7171,10 @@ void paint_aim_hold_review_strip(ClientState& state, HDC dc, const RECT& bounds,
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::move::owner_aim_hold_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* face = verdigris::client::move::owner_face_east_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, face, static_cast<int>(strlen(face)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, face, static_cast<int>(strlen(face)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7193,7 +7182,7 @@ void paint_aim_hold_review_strip(ClientState& state, HDC dc, const RECT& bounds,
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "move facing";
-  TextOutA(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "aim:hold"});
@@ -7221,10 +7210,10 @@ void paint_input_latency_review_strip(ClientState& state, HDC dc, const RECT& bo
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::input::owner_present_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* method = "Input paint";
-  TextOutA(dc, left + 12 * s, top + 32 * s, method, static_cast<int>(strlen(method)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, method, static_cast<int>(strlen(method)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7232,7 +7221,7 @@ void paint_input_latency_review_strip(ClientState& state, HDC dc, const RECT& bo
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "photon";
-  TextOutA(dc, rx - 18 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 18 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "latency:present"});
@@ -7260,10 +7249,10 @@ void paint_death_disconnect_review_strip(ClientState& state, HDC dc, const RECT&
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::gov::owner_carry_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* line = "No extract";
-  TextOutA(dc, left + 12 * s, top + 32 * s, line, static_cast<int>(strlen(line)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, line, static_cast<int>(strlen(line)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7271,7 +7260,7 @@ void paint_death_disconnect_review_strip(ClientState& state, HDC dc, const RECT&
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "extract ok";
-  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "extract:carry-open"});
@@ -7299,10 +7288,10 @@ void paint_build_fixtures_review_strip(ClientState& state, HDC dc, const RECT& b
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::builds::owner_three_slices_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* reach = verdigris::client::builds::owner_reach_pike_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, reach, static_cast<int>(strlen(reach)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, reach, static_cast<int>(strlen(reach)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7310,7 +7299,7 @@ void paint_build_fixtures_review_strip(ClientState& state, HDC dc, const RECT& b
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "tint clones";
-  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "build:three-slices"});
@@ -7338,10 +7327,10 @@ void paint_headless_contract_review_strip(ClientState& state, HDC dc, const RECT
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::qa::owner_sim_event_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* intent = verdigris::client::qa::owner_intent_swing_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, intent, static_cast<int>(strlen(intent)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, intent, static_cast<int>(strlen(intent)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7349,7 +7338,7 @@ void paint_headless_contract_review_strip(ClientState& state, HDC dc, const RECT
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "mocked";
-  TextOutA(dc, rx - 22 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 22 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "contract:sim-event"});
@@ -7377,10 +7366,10 @@ void paint_bronze_stone_review_strip(ClientState& state, HDC dc, const RECT& bou
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::art::bronze_stone::owner_bronze_stone_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* cooked = verdigris::art::bronze_stone::owner_cooked_cc0_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, cooked, static_cast<int>(strlen(cooked)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, cooked, static_cast<int>(strlen(cooked)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7388,7 +7377,7 @@ void paint_bronze_stone_review_strip(ClientState& state, HDC dc, const RECT& bou
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "magenta";
-  TextOutA(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "art:bronze-stone"});
@@ -7420,10 +7409,10 @@ void paint_kit_chunk_review_strip(ClientState& state, HDC dc, const RECT& bounds
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = vector_art::owner_village_kit_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* proxy = vector_art::owner_solid_proxy_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, proxy, static_cast<int>(strlen(proxy)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, proxy, static_cast<int>(strlen(proxy)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7431,7 +7420,7 @@ void paint_kit_chunk_review_strip(ClientState& state, HDC dc, const RECT& bounds
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "lollipop";
-  TextOutA(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "kit:village"});
@@ -7463,10 +7452,10 @@ void paint_held_item_review_strip(ClientState& state, HDC dc, const RECT& bounds
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::art::owner_world_hold_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* ack = verdigris::client::art::owner_ack_equip_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, ack, static_cast<int>(strlen(ack)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, ack, static_cast<int>(strlen(ack)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7474,7 +7463,7 @@ void paint_held_item_review_strip(ClientState& state, HDC dc, const RECT& bounds
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "paper doll";
-  TextOutA(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "held-strip:world-hold"});
@@ -7506,10 +7495,10 @@ void paint_gpu_reference_review_strip(ClientState& state, HDC dc, const RECT& bo
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::gpu::owner_live_packets_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = verdigris::gpu::owner_session_present_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7517,7 +7506,7 @@ void paint_gpu_reference_review_strip(ClientState& state, HDC dc, const RECT& bo
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "quad demo";
-  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "gpu:live-packets"});
@@ -7549,10 +7538,10 @@ void paint_grounding_review_strip(ClientState& state, HDC dc, const RECT& bounds
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::gpu::owner_y_sort_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = verdigris::gpu::owner_sweep_disc_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7560,7 +7549,7 @@ void paint_grounding_review_strip(ClientState& state, HDC dc, const RECT& bounds
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "wall hide";
-  TextOutA(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "gpu:y-sort"});
@@ -7592,10 +7581,10 @@ void paint_material_light_review_strip(ClientState& state, HDC dc, const RECT& b
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::gpu::owner_lantern_pool_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = verdigris::gpu::owner_bronze_light_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7603,7 +7592,7 @@ void paint_material_light_review_strip(ClientState& state, HDC dc, const RECT& b
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "wash white";
-  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "gpu:lantern-pool"});
@@ -7631,10 +7620,10 @@ void paint_effect_batch_review_strip(ClientState& state, HDC dc, const RECT& bou
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = owner_reuse_pens_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = owner_keep_warning_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7642,7 +7631,7 @@ void paint_effect_batch_review_strip(ClientState& state, HDC dc, const RECT& bou
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "drop FX";
-  TextOutA(dc, rx - 24 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 24 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "perf:reuse-pens"});
@@ -7670,10 +7659,10 @@ void paint_resource_envelope_review_strip(ClientState& state, HDC dc, const RECT
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = owner_cap_128_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = owner_one_floor_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7681,7 +7670,7 @@ void paint_resource_envelope_review_strip(ClientState& state, HDC dc, const RECT
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "grow FX";
-  TextOutA(dc, rx - 24 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 24 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "perf:cap-128"});
@@ -7709,10 +7698,10 @@ void paint_hitch_warmup_review_strip(ClientState& state, HDC dc, const RECT& bou
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = owner_warm_glyphs_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = owner_cold_trace_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7720,7 +7709,7 @@ void paint_hitch_warmup_review_strip(ClientState& state, HDC dc, const RECT& bou
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "hide cold";
-  TextOutA(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "perf:warm-glyphs"});
@@ -7748,10 +7737,10 @@ void paint_audio_prefs_review_strip(ClientState& state, HDC dc, const RECT& boun
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::audio::owner_mixer_prefs_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = verdigris::audio::owner_sfx_persist_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7759,7 +7748,7 @@ void paint_audio_prefs_review_strip(ClientState& state, HDC dc, const RECT& boun
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "mute reset";
-  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "sound:mixer-prefs"});
@@ -7787,10 +7776,10 @@ void paint_dressing_pass_review_strip(ClientState& state, HDC dc, const RECT& bo
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::world::owner_dressing_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = verdigris::client::world::owner_not_solid_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7798,7 +7787,7 @@ void paint_dressing_pass_review_strip(ClientState& state, HDC dc, const RECT& bo
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "tree solid";
-  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "world:dressing"});
@@ -7826,10 +7815,10 @@ void paint_loot_label_budget_review_strip(ClientState& state, HDC dc, const RECT
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = owner_nearest_12_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = owner_drop_stays_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7837,7 +7826,7 @@ void paint_loot_label_budget_review_strip(ClientState& state, HDC dc, const RECT
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "cull pickup";
-  TextOutA(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "perf:nearest-12"});
@@ -7869,10 +7858,10 @@ void paint_gpu_packets_review_strip(ClientState& state, HDC dc, const RECT& boun
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::gpu::owner_handle_free_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = verdigris::gpu::owner_telegraph_class_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7880,7 +7869,7 @@ void paint_gpu_packets_review_strip(ClientState& state, HDC dc, const RECT& boun
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "backend handle";
-  TextOutA(dc, rx - 42 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 42 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "gpu:handle-free"});
@@ -7908,10 +7897,10 @@ void paint_xp_meter_review_strip(ClientState& state, HDC dc, const RECT& bounds,
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = owner_kill_fill_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = owner_gold_pit_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7919,7 +7908,7 @@ void paint_xp_meter_review_strip(ClientState& state, HDC dc, const RECT& bounds,
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "VG-ID count";
-  TextOutA(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "gov:kill-fill"});
@@ -7947,10 +7936,10 @@ void paint_remap_binds_review_strip(ClientState& state, HDC dc, const RECT& boun
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::input::owner_isolated_profile_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = verdigris::client::input::owner_dash_remap_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7958,7 +7947,7 @@ void paint_remap_binds_review_strip(ClientState& state, HDC dc, const RECT& boun
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "Documents";
-  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "move:isolated-profile"});
@@ -7986,10 +7975,10 @@ void paint_pane_focus_review_strip(ClientState& state, HDC dc, const RECT& bound
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::ui::owner_focus_gear_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = verdigris::client::ui::owner_no_buffer_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -7997,7 +7986,7 @@ void paint_pane_focus_review_strip(ClientState& state, HDC dc, const RECT& bound
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "held fire";
-  TextOutA(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "move:focus-gear"});
@@ -8114,10 +8103,10 @@ void paint_pack_drag_review_strip(ClientState& state, HDC dc, const RECT& bounds
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::ui::owner_pack_place_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = verdigris::client::ui::owner_reject_keeps_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -8125,7 +8114,7 @@ void paint_pack_drag_review_strip(ClientState& state, HDC dc, const RECT& bounds
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "silent equip";
-  TextOutA(dc, rx - 38 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 38 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "ui:pack-place"});
@@ -8157,10 +8146,10 @@ void paint_pad_path_review_strip(ClientState& state, HDC dc, const RECT& bounds,
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::owner_pad_glyphs_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = verdigris::client::owner_a_strike_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -8168,7 +8157,7 @@ void paint_pad_path_review_strip(ClientState& state, HDC dc, const RECT& bounds,
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "mouse pad";
-  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "ui:pad-glyphs"});
@@ -8200,10 +8189,10 @@ void paint_visual_target_review_strip(ClientState& state, HDC dc, const RECT& bo
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = owner_adult_camera_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = owner_bronze_palette_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -8211,7 +8200,7 @@ void paint_visual_target_review_strip(ClientState& state, HDC dc, const RECT& bo
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "chibi head";
-  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "art:adult-camera"});
@@ -8243,10 +8232,10 @@ void paint_route_map_review_strip(ClientState& state, HDC dc, const RECT& bounds
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::ui::owner_tin_village_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = verdigris::client::ui::owner_risk_wardens_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -8254,7 +8243,7 @@ void paint_route_map_review_strip(ClientState& state, HDC dc, const RECT& bounds
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "route:tin";
-  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "ui:tin-village"});
@@ -8286,10 +8275,10 @@ void paint_vital_orbs_review_strip(ClientState& state, HDC dc, const RECT& bound
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::ui::owner_life_left_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = verdigris::client::ui::owner_mana_right_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -8297,7 +8286,7 @@ void paint_vital_orbs_review_strip(ClientState& state, HDC dc, const RECT& bound
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "X on mana";
-  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "ui:life-left"});
@@ -8329,10 +8318,10 @@ void paint_equipment_review_strip(ClientState& state, HDC dc, const RECT& bounds
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::ui::owner_ack_only_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = verdigris::client::ui::owner_no_pending_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -8340,7 +8329,7 @@ void paint_equipment_review_strip(ClientState& state, HDC dc, const RECT& bounds
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "pending gold";
-  TextOutA(dc, rx - 40 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 40 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "ui:ack-only"});
@@ -8372,10 +8361,10 @@ void paint_stat_explain_review_strip(ClientState& state, HDC dc, const RECT& bou
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::ui::owner_base_gear_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = verdigris::client::ui::owner_cond_off_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -8383,7 +8372,7 @@ void paint_stat_explain_review_strip(ClientState& state, HDC dc, const RECT& bou
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "dormant ATK";
-  TextOutA(dc, rx - 40 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 40 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "ui:base-gear"});
@@ -8415,10 +8404,10 @@ void paint_gpu_sample_review_strip(ClientState& state, HDC dc, const RECT& bound
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::gpu::owner_software_quad_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = verdigris::gpu::owner_no_d3d_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -8426,7 +8415,7 @@ void paint_gpu_sample_review_strip(ClientState& state, HDC dc, const RECT& bound
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "unknown GPU";
-  TextOutA(dc, rx - 40 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 40 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "gpu:software-quad"});
@@ -8458,10 +8447,10 @@ void paint_shader_bindings_review_strip(ClientState& state, HDC dc, const RECT& 
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::gpu::owner_layout_v1_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = verdigris::gpu::owner_no_source_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -8469,7 +8458,7 @@ void paint_shader_bindings_review_strip(ClientState& state, HDC dc, const RECT& 
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "stale HLSL";
-  TextOutA(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "gpu:layout-v1"});
@@ -8497,10 +8486,10 @@ void paint_memory_soak_review_strip(ClientState& state, HDC dc, const RECT& boun
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::perf::owner_thirty_two_cycles_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = verdigris::perf::owner_cap_holds_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -8508,7 +8497,7 @@ void paint_memory_soak_review_strip(ClientState& state, HDC dc, const RECT& boun
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "short scene";
-  TextOutA(dc, rx - 40 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 40 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "perf:32-cycles"});
@@ -8536,10 +8525,10 @@ void paint_frame_budget_review_strip(ClientState& state, HDC dc, const RECT& bou
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = owner_named_machine_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = owner_paint_fields_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -8547,7 +8536,7 @@ void paint_frame_budget_review_strip(ClientState& state, HDC dc, const RECT& bou
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "unnamed HW";
-  TextOutA(dc, rx - 40 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 40 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "perf:named-machine"});
@@ -8579,10 +8568,10 @@ void paint_music_phase_review_strip(ClientState& state, HDC dc, const RECT& boun
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::music::owner_theme_label("music:combat");
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = verdigris::client::music::owner_music_none_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -8590,7 +8579,7 @@ void paint_music_phase_review_strip(ClientState& state, HDC dc, const RECT& boun
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "leftover loop";
-  TextOutA(dc, rx - 44 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 44 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "sound:theme-combat"});
@@ -8622,10 +8611,10 @@ void paint_hud_scale_floor_review_strip(ClientState& state, HDC dc, const RECT& 
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = skin::owner_type_floor_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = skin::owner_ink_contrast_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -8633,7 +8622,7 @@ void paint_hud_scale_floor_review_strip(ClientState& state, HDC dc, const RECT& 
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "shrink type";
-  TextOutA(dc, rx - 40 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 40 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "ui:type-floor"});
@@ -8665,10 +8654,10 @@ void paint_first_fight_review_strip(ClientState& state, HDC dc, const RECT& boun
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = vector_art::owner_jointed_warden_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = vector_art::owner_snout_claws_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -8676,7 +8665,7 @@ void paint_first_fight_review_strip(ClientState& state, HDC dc, const RECT& boun
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "crate foe";
-  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "art:jointed-warden"});
@@ -8708,10 +8697,10 @@ void paint_combat_juice_review_strip(ClientState& state, HDC dc, const RECT& bou
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = vector_art::owner_hit_flash_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = vector_art::owner_number_fade_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -8719,7 +8708,7 @@ void paint_combat_juice_review_strip(ClientState& state, HDC dc, const RECT& bou
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "silent hit";
-  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "art:hit-flash"});
@@ -8751,10 +8740,10 @@ void paint_loot_to_bank_review_strip(ClientState& state, HDC dc, const RECT& bou
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::art::owner_unarmed_first_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = verdigris::client::art::owner_world_hold_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -8762,7 +8751,7 @@ void paint_loot_to_bank_review_strip(ClientState& state, HDC dc, const RECT& bou
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "paper doll";
-  TextOutA(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "art:unarmed-first"});
@@ -8794,10 +8783,10 @@ void paint_zoom_invariance_review_strip(ClientState& state, HDC dc, const RECT& 
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = camera2d::owner_uniform_pan_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = camera2d::owner_zoom_lock_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -8805,7 +8794,7 @@ void paint_zoom_invariance_review_strip(ClientState& state, HDC dc, const RECT& 
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "free tile";
-  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "cam:uniform-pan"});
@@ -8837,10 +8826,10 @@ void paint_telegraph_dodge_review_strip(ClientState& state, HDC dc, const RECT& 
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::actions::owner_dodge_clear_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = verdigris::client::actions::owner_life_holds_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -8848,7 +8837,7 @@ void paint_telegraph_dodge_review_strip(ClientState& state, HDC dc, const RECT& 
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "ghost hit";
-  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "act:dodge-clear"});
@@ -8880,10 +8869,10 @@ void paint_move_and_camera_review_strip(ClientState& state, HDC dc, const RECT& 
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = camera2d::owner_kit_lock_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = camera2d::owner_same_delta_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -8891,7 +8880,7 @@ void paint_move_and_camera_review_strip(ClientState& state, HDC dc, const RECT& 
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "sliding kit";
-  TextOutA(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "cam:kit-lock"});
@@ -8923,10 +8912,10 @@ void paint_first_session_review_strip(ClientState& state, HDC dc, const RECT& bo
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = owner_slay_wardens_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = owner_dash_hint_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -8934,7 +8923,7 @@ void paint_first_session_review_strip(ClientState& state, HDC dc, const RECT& bo
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "walk-on";
-  TextOutA(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "ui:slay-wardens"});
@@ -8965,10 +8954,10 @@ void paint_tree_review_strip(ClientState& state, HDC dc, const RECT& bounds,
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::ui::owner_skill_tree_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = verdigris::client::ui::owner_no_data_yet_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -8976,7 +8965,7 @@ void paint_tree_review_strip(ClientState& state, HDC dc, const RECT& bounds,
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "TREE jargon";
-  TextOutA(dc, rx - 40 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 40 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "ui:skill-tree"});
@@ -9004,10 +8993,10 @@ void paint_spawn_review_strip(ClientState& state, HDC dc, const RECT& bounds,
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
   const char* title = phase_a::owner_spawn_once_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  skin::text_out(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* body = phase_a::owner_fade_ttl_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  skin::text_out(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
   ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
@@ -9015,7 +9004,7 @@ void paint_spawn_review_strip(ClientState& state, HDC dc, const RECT& bounds,
             2);
   SetTextColor(dc, skin::kInkDim);
   const char* rejected = "re-spawn";
-  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+  skin::text_out(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
            static_cast<int>(strlen(rejected)));
   rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
                 static_cast<double>(top + 8 * s), 0.0, 1, "vfx:spawn-once"});
@@ -9330,13 +9319,13 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                     static_cast<double>(pad.y), 0.0, 0, "raster:extraction:stairs"});
     HGDIOBJ label_font = SelectObject(dc, skin::font_small());
     SIZE label_size{};
-    GetTextExtentPoint32A(dc, "EXIT", 4, &label_size);
+    skin::text_extent(dc, "EXIT", 4, &label_size);
     RECT label_backing{pad.x - label_size.cx / 2 - 10, stairs_feet + 5,
                        pad.x + label_size.cx / 2 + 10, stairs_feet + label_size.cy + 15};
     skin::chip(dc, label_backing, RGB(217, 179, 102));
     SetBkMode(dc, TRANSPARENT);
     SetTextColor(dc, skin::kInk);
-    TextOutA(dc, pad.x - label_size.cx / 2, label_backing.top + 5, "EXIT", 4);
+    skin::text_out(dc, pad.x - label_size.cx / 2, label_backing.top + 5, "EXIT", 4);
     SelectObject(dc, label_font);
     rl.push_back({render::Op::Hud, static_cast<double>(label_backing.left),
                   static_cast<double>(label_backing.top), 0.0, 0, "extraction:label"});
@@ -9686,7 +9675,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                          [](unsigned char character) {
                            return static_cast<char>(std::toupper(character));
                          });
-          TextOutA(dc, base.x - bar_w / 2, bar_y - 15, pending.c_str(),
+          skin::text_out(dc, base.x - bar_w / 2, bar_y - 15, pending.c_str(),
                    static_cast<int>(pending.size()));
         }
         break;
@@ -9741,11 +9730,11 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
           SetBkMode(dc, TRANSPARENT);
           SetTextColor(dc, RGB(170, 202, 240));
           SIZE extent{};
-          GetTextExtentPoint32A(dc, npc.name.c_str(),
+          skin::text_extent(dc, npc.name.c_str(),
                                 static_cast<int>(npc.name.size()), &extent);
           const int name_y =
               base.y - static_cast<int>(kTileUnits * 1.6 * base.scale) - 6;
-          TextOutA(dc, base.x - extent.cx / 2, name_y, npc.name.c_str(),
+          skin::text_out(dc, base.x - extent.cx / 2, name_y, npc.name.c_str(),
                    static_cast<int>(npc.name.size()));
           // Interaction prompt when the player is within hailing distance.
           const int ddx = npc.position.x - world.player.position.x;
@@ -9760,10 +9749,10 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
             }
             const std::string prompt = "[T] " + verb;
             SIZE prompt_extent{};
-            GetTextExtentPoint32A(dc, prompt.c_str(),
+            skin::text_extent(dc, prompt.c_str(),
                                   static_cast<int>(prompt.size()), &prompt_extent);
             SetTextColor(dc, RGB(239, 208, 116));
-            TextOutA(dc, base.x - prompt_extent.cx / 2, name_y - extent.cy - 2,
+            skin::text_out(dc, base.x - prompt_extent.cx / 2, name_y - extent.cy - 2,
                      prompt.c_str(), static_cast<int>(prompt.size()));
           }
         }
@@ -9870,7 +9859,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                         "loot-label:" + label});
           SetBkMode(dc, TRANSPARENT);
           SetTextColor(dc, color);
-          TextOutA(dc, base.x + r + 4, base.y - lift - r - 5, label.c_str(),
+          skin::text_out(dc, base.x + r + 4, base.y - lift - r - 5, label.c_str(),
                    static_cast<int>(label.size()));
         }
         break;
@@ -9902,7 +9891,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                                     "Verdana");
     HGDIOBJ old_legend_font = SelectObject(dc, legend_font);
     SIZE extent{};
-    GetTextExtentPoint32A(dc, entry.first.c_str(),
+    skin::text_extent(dc, entry.first.c_str(),
                           static_cast<int>(entry.first.size()), &extent);
     RECT chip{at.x - extent.cx / 2 - 5, at.y - 24, at.x + extent.cx / 2 + 5,
               at.y - 8};
@@ -9918,7 +9907,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     DeleteObject(chip_edge);
     SetBkMode(dc, TRANSPARENT);
     SetTextColor(dc, RGB(226, 238, 230));
-    TextOutA(dc, chip.left + 5, chip.top + 2, entry.first.c_str(),
+    skin::text_out(dc, chip.left + 5, chip.top + 2, entry.first.c_str(),
              static_cast<int>(entry.first.size()));
     SelectObject(dc, old_legend_font);
     DeleteObject(legend_font);
@@ -10045,30 +10034,30 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       }
     }
     SIZE controls_a_extent{}, controls_b_extent{};
-    GetTextExtentPoint32A(dc, controls_line_a.c_str(),
+    skin::text_extent(dc, controls_line_a.c_str(),
                           static_cast<int>(controls_line_a.size()),
                           &controls_a_extent);
     if (!controls_line_b.empty())
-      GetTextExtentPoint32A(dc, controls_line_b.c_str(),
+      skin::text_extent(dc, controls_line_b.c_str(),
                             static_cast<int>(controls_line_b.size()),
                             &controls_b_extent);
 
     SIZE identity_extent{}, objective_extent{}, art_extent{}, mute_extent{},
         lost_extent{}, controls_extent{};
-    GetTextExtentPoint32A(dc, identity.c_str(),
+    skin::text_extent(dc, identity.c_str(),
                           static_cast<int>(identity.size()), &identity_extent);
-    GetTextExtentPoint32A(dc, objective_owner.c_str(),
+    skin::text_extent(dc, objective_owner.c_str(),
                           static_cast<int>(objective_owner.size()), &objective_extent);
     if (show_art_chip) {
-      GetTextExtentPoint32A(dc, art_text.c_str(),
+      skin::text_extent(dc, art_text.c_str(),
                             static_cast<int>(art_text.size()), &art_extent);
     }
     if (show_mute_chip)
-      GetTextExtentPoint32A(dc, mute_text, static_cast<int>(strlen(mute_text)),
+      skin::text_extent(dc, mute_text, static_cast<int>(strlen(mute_text)),
                             &mute_extent);
     if (state.link_lost) {
       constexpr char lost_text[] = "extract uncommitted";
-      GetTextExtentPoint32A(dc, lost_text, sizeof(lost_text) - 1, &lost_extent);
+      skin::text_extent(dc, lost_text, sizeof(lost_text) - 1, &lost_extent);
     }
     const int audio_scale = hud_scale(static_cast<int>(bounds.bottom));
     const bool show_mixer = state.audio_sink && state.debug_overlay;
@@ -10086,7 +10075,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         audio_scale, chip_size(art_extent, show_art_chip),
         chip_size(mute_extent, show_mute_chip), mixer_plan.bounds,
         chip_size(lost_extent, state.link_lost));
-    GetTextExtentPoint32A(dc, kControls,
+    skin::text_extent(dc, kControls,
                           static_cast<int>(sizeof(kControls) - 1),
                           &controls_extent);
 
@@ -10141,7 +10130,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     if (state.debug_overlay && layout.identity.w > 0) {
       text_backing(layout.identity.x, layout.identity.y, identity_extent);
       SetTextColor(dc, RGB(140, 208, 172));
-      TextOutA(dc, layout.identity.x, layout.identity.y, identity.c_str(),
+      skin::text_out(dc, layout.identity.x, layout.identity.y, identity.c_str(),
                static_cast<int>(identity.size()));
       state.hud_rect_trace.push_back(
           {"identity",
@@ -10153,7 +10142,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       SetTextColor(dc, RGB(148, 160, 150));
       if (layout.controls_wrapped) {
         text_backing(controls_at.x, controls_at.y, controls_a_extent);
-        TextOutA(dc, controls_at.x, controls_at.y, controls_line_a.c_str(),
+        skin::text_out(dc, controls_at.x, controls_at.y, controls_line_a.c_str(),
                  static_cast<int>(controls_line_a.size()));
         state.hud_rect_trace.push_back(
             {"controls",
@@ -10161,7 +10150,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
               controls_a_extent.cy}});
         text_backing(layout.controls_second.x, layout.controls_second.y,
                      controls_b_extent);
-        TextOutA(dc, layout.controls_second.x, layout.controls_second.y,
+        skin::text_out(dc, layout.controls_second.x, layout.controls_second.y,
                  controls_line_b.c_str(),
                  static_cast<int>(controls_line_b.size()));
         state.hud_rect_trace.push_back(
@@ -10170,7 +10159,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
               controls_b_extent.cx, controls_b_extent.cy}});
       } else {
         text_backing(controls_at.x, controls_at.y, controls_extent);
-        TextOutA(dc, controls_at.x, controls_at.y, kControls,
+        skin::text_out(dc, controls_at.x, controls_at.y, kControls,
                  static_cast<int>(sizeof(kControls) - 1));
         state.hud_rect_trace.push_back(
             {"controls",
@@ -10329,7 +10318,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                   "relic: " + state.relic_toast});
     SetBkMode(dc, TRANSPARENT);
     SetTextColor(dc, RGB(239, 208, 116));
-    TextOutA(dc, 18, bounds.bottom - 28, state.relic_toast.c_str(),
+    skin::text_out(dc, 18, bounds.bottom - 28, state.relic_toast.c_str(),
              static_cast<int>(state.relic_toast.size()));
   }
 
@@ -10463,7 +10452,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     int debug_line_height = 18 * debug_scale;
     for (const auto& line : debug_lines) {
       SIZE extent{};
-      GetTextExtentPoint32A(dc, line.c_str(), static_cast<int>(line.size()), &extent);
+      skin::text_extent(dc, line.c_str(), static_cast<int>(line.size()), &extent);
       max_debug_width = std::max(max_debug_width, static_cast<int>(extent.cx));
       debug_line_height = std::max(debug_line_height, static_cast<int>(extent.cy));
     }
@@ -10492,12 +10481,12 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                          static_cast<int>(i + 1) * debug_line_height};
       SetTextColor(dc, i == 0 ? RGB(239, 208, 116) :
                                (i < 5 ? RGB(230, 235, 220) : RGB(150, 160, 150)));
-      DrawTextA(dc, debug_lines[i].c_str(), -1, &line_rect,
+      skin::draw_text(dc, debug_lines[i].c_str(), -1, &line_rect,
                 DT_SINGLELINE | DT_VCENTER | DT_END_ELLIPSIS | DT_NOPREFIX);
     }
     int log_y = bounds.bottom - 24;
     for (auto it = state.event_log.rbegin(); it != state.event_log.rend(); ++it) {
-      TextOutA(dc, 18, log_y, it->c_str(), static_cast<int>(it->size()));
+      skin::text_out(dc, 18, log_y, it->c_str(), static_cast<int>(it->size()));
       log_y -= 20;
     }
   }
@@ -10519,7 +10508,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     std::string remaining = state.hint;
     while (!remaining.empty() && lines.size() < 4) {
       SIZE full{};
-      GetTextExtentPoint32A(dc, remaining.c_str(),
+      skin::text_extent(dc, remaining.c_str(),
                             static_cast<int>(remaining.size()), &full);
       if (full.cx <= max_width) {
         lines.push_back(remaining);
@@ -10529,7 +10518,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       std::size_t fit = remaining.size();
       while (fit > 1) {
         SIZE part{};
-        GetTextExtentPoint32A(dc, remaining.c_str(), static_cast<int>(fit), &part);
+        skin::text_extent(dc, remaining.c_str(), static_cast<int>(fit), &part);
         if (part.cx <= max_width) break;
         --fit;
       }
@@ -10542,7 +10531,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     int widest = 0;
     for (const auto& line : lines) {
       SIZE extent{};
-      GetTextExtentPoint32A(dc, line.c_str(), static_cast<int>(line.size()),
+      skin::text_extent(dc, line.c_str(), static_cast<int>(line.size()),
                             &extent);
       widest = std::max(widest, static_cast<int>(extent.cx));
       line_height = std::max(line_height, static_cast<int>(extent.cy));
@@ -10558,7 +10547,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     skin::panel(dc, plate, skin::kGold, 240, 7.0f);
     SetTextColor(dc, skin::kGold);
     for (std::size_t i = 0; i < lines.size(); ++i) {
-      TextOutA(dc, toast_x, toast_y + static_cast<int>(i) * line_height,
+      skin::text_out(dc, toast_x, toast_y + static_cast<int>(i) * line_height,
                lines[i].c_str(), static_cast<int>(lines[i].size()));
     }
   }
@@ -11318,8 +11307,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
     case WM_CHAR:
       if (state && state->frontend == Frontend::None && state->screen == Screen::Chronicles && !state->chronicle_edit.empty()) {
         auto& value = state->chronicle_edit == "house-name" ? state->house_name_input : state->scion_name_input;
-        if (wparam == 8 && !value.empty()) value.pop_back();
-        else if (wparam >= 32 && wparam < 127 && value.size() < 40) value.push_back(static_cast<char>(wparam));
+        state->chronicle_cursor.character(value,wparam);
       }
       break;
     case WM_MOUSEMOVE:
@@ -11382,7 +11370,18 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
           if(hit)break;
         }
         if (state->screen == Screen::Chronicles) {
+          const auto previous_edit=state->chronicle_edit;
+          const auto previous_cursor=state->chronicle_cursor;
           handle_chronicles_click(*state, state->mouse);
+          if(!state->chronicle_edit.empty()) {
+            if(previous_edit==state->chronicle_edit)state->chronicle_cursor=previous_cursor;
+            for(const auto& hit:state->chronicle_hits)if(hit.action.command==state->chronicle_edit&&PtInRect(&hit.rect,state->mouse)) {
+              HDC dc=GetDC(window);
+              skin::click_entry(dc,state->chronicle_edit=="house-name"?state->house_name_input:state->scion_name_input,
+                state->chronicle_cursor,hit.rect,state->mouse.x,(GetKeyState(VK_SHIFT)&0x8000)!=0);
+              ReleaseDC(window,dc);break;
+            }
+          }
           break;
         }
         if(state->character_pane) {
@@ -11524,6 +11523,15 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       break;
     case WM_ERASEBKGND:
       return 1;
+    case WM_DPICHANGED: {
+      // Repaint at the monitor's physical pixels; DWM must not interpolate a
+      // low-resolution image of our pixel text when display scaling changes.
+      const auto* suggested=reinterpret_cast<const RECT*>(lparam);
+      SetWindowPos(window,nullptr,suggested->left,suggested->top,
+          suggested->right-suggested->left,suggested->bottom-suggested->top,
+          SWP_NOZORDER|SWP_NOACTIVATE);
+      return 0;
+    }
     case WM_PAINT: {
       PAINTSTRUCT paint_struct;
       HDC dc = BeginPaint(window, &paint_struct);
@@ -20852,6 +20860,7 @@ int scenario_frontend_flow() {
 
 #include "consolidation_scenarios.hpp"
 #include "inventory_scenarios.hpp"
+#include "typography_scenarios.hpp"
 
 int run_scenarios(const std::string& which) {
   struct Entry {
@@ -20859,6 +20868,7 @@ int run_scenarios(const std::string& which) {
     int (*fn)();
   };
   const Entry entries[] = {
+      {"typography", scenario_typography},
       {"consolidated-flow", scenario_consolidated_flow},
       {"inventory-equipment", scenario_inventory_equipment},
       {"quick-movement-tap", scenario_quick_movement_tap},
@@ -21749,6 +21759,11 @@ int main(int argc, char** argv) {
   if (argc > 1 && std::strcmp(argv[1], "--build-info") == 0) {
     std::printf("%s %s\n", VERDIGRIS_BUILD_ID, VERDIGRIS_BUILD_DIRTY ? "dirty" : "clean");
     return 0;
+  }
+  SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+  if (!skin::game_font_available()) {
+    std::fprintf(stderr,"Missing bundled UI font: native/client/assets/fonts/novel/VerdigrisNovel.ttf\n");
+    return 2;
   }
   for (int i = 1; i < argc; ++i) {
     if (std::strcmp(argv[i], "--headless") == 0) return run_headless_demo();

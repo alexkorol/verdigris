@@ -25,6 +25,8 @@
 #include <vector>
 #include <array>
 #include "hud_chrome_layout.hpp"
+#include "ui_typography.hpp"
+#include "ui_text_entry.hpp"
 
 #include <objidl.h>
 namespace Gdiplus {
@@ -37,7 +39,7 @@ using std::min;
 
 namespace skin {
 
-// ── palette ────────────────────────────────────────────────────────────
+// â”€â”€ palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Mirrors the web client's design tokens (src/assets/scss/abstracts/
 // _tokens.scss) so both clients read as one product.
 inline constexpr COLORREF kPanelTop = RGB(30, 28, 25);      // #1e1c19
@@ -50,8 +52,8 @@ inline constexpr COLORREF kAccent = RGB(183, 146, 79);      // accent #b7924f
 inline constexpr COLORREF kEmber = RGB(185, 72, 69);        // danger #b94845
 inline constexpr COLORREF kRuby = RGB(139, 48, 52);         // #8b3034
 inline constexpr COLORREF kSapphire = RGB(49, 91, 122);     // #315b7a
-inline constexpr COLORREF kInk = RGB(238, 226, 197);        // text-primary #eee2c5
-inline constexpr COLORREF kInkDim = RGB(182, 169, 141);     // text-secondary #b6a98d
+inline constexpr COLORREF kInk = RGB(207, 180, 104);        // warm ochre primary #cfb468
+inline constexpr COLORREF kInkDim = RGB(181, 162, 119);     // readable secondary #b5a277
 
 // VG-UI-007: WCAG-style contrast against HUD plates. Tooltips always set
 // title glyphs to kInk; accent lives on a shape, not on the letters.
@@ -90,7 +92,7 @@ inline void inventory_surface(HDC dc, const RECT& r, int focus = 0) {
   g.DrawRectangle(&line, Gdiplus::Rect(r.left,r.top,r.right-r.left-1,r.bottom-r.top-1));
 }
 
-// ── GDI+ lifetime ──────────────────────────────────────────────────────
+// â”€â”€ GDI+ lifetime â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Started lazily on the first draw; shut down with the process. Headless
 // scenario runs through memory DCs work identically.
 inline void ensure_started() {
@@ -103,113 +105,7 @@ inline void ensure_started() {
   (void)token;
 }
 
-// ── type ramp ──────────────────────────────────────────────────────────
-// Cached fonts per role and UI scale. Georgia carries the chronicle voice
-// for titles; Segoe UI carries the working HUD. set_ui_scale() is called
-// once per painted frame from the window height, so fullscreen doubles the
-// glyphs while the shipped test resolutions keep scale 1.
-inline int& ui_scale_ref() {
-  static int scale = 1;
-  return scale;
-}
-
-inline void set_ui_scale(int scale) {
-  ui_scale_ref() = std::clamp(scale, 1, 4);
-}
-
-inline int ui_scale() { return ui_scale_ref(); }
-
-// VG-UI-007: overflow is solved by layout wrap, never by dropping below
-// these glyph floors.
-inline constexpr int kMinSmallPx = 10;
-inline constexpr int kMinBodyPx = 12;
-
-inline const char* owner_type_floor_label() { return "Type floor"; }
-inline const char* owner_ink_contrast_label() { return "Ink contrast"; }
-inline bool type_floor_strip_covers_hud_fails_review(bool overlap) {
-  return overlap;
-}
-
-// Registers the web client's pixel fonts for this process so both clients
-// share one typeface. Safe to call often; loads once.
-inline void ensure_game_fonts() {
-  static bool tried = false;
-  if (tried) return;
-  tried = true;
-  const char* candidates[] = {
-      "src/assets/fonts/pixelmix.ttf",
-      "src/assets/fonts/pixelmix_bold.ttf",
-      "src/assets/fonts/PxPlus_IBM_VGA8.ttf",
-      "../../../src/assets/fonts/pixelmix.ttf",
-      "../../../src/assets/fonts/pixelmix_bold.ttf",
-      "../../../src/assets/fonts/PxPlus_IBM_VGA8.ttf",
-  };
-  for (const char* path : candidates)
-    AddFontResourceExA(path, FR_PRIVATE, nullptr);
-}
-
-inline bool game_font_available() {
-  static int available = -1;
-  if (available < 0) {
-    ensure_game_fonts();
-    LOGFONTA probe{};
-    probe.lfCharSet = DEFAULT_CHARSET;
-    strncpy_s(probe.lfFaceName, "Pixelmix", _TRUNCATE);
-    available = 0;
-    HDC screen = GetDC(nullptr);
-    EnumFontFamiliesExA(
-        screen, &probe,
-        [](const LOGFONTA*, const TEXTMETRICA*, DWORD, LPARAM ctx) -> int {
-          *reinterpret_cast<int*>(ctx) = 1;
-          return 0;
-        },
-        reinterpret_cast<LPARAM>(&available), 0);
-    ReleaseDC(nullptr, screen);
-  }
-  return available == 1;
-}
-
-inline HFONT cached_font(HFONT (&cache)[5], int base_height, int weight,
-                         const char* face) {
-  const int s = ui_scale_ref();
-  if (!cache[s]) {
-    const int requested = std::abs(base_height) * s;
-    const int floor =
-        std::abs(base_height) <= 10 ? kMinSmallPx : kMinBodyPx;
-    const int px = std::max(requested, floor);
-    cache[s] = CreateFontA(-px, 0, 0, 0, weight, FALSE, FALSE, FALSE,
-                           DEFAULT_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS,
-                           CLEARTYPE_QUALITY, VARIABLE_PITCH, face);
-  }
-  return cache[s];
-}
-
-inline HFONT font_body() {
-  static HFONT cache[5] = {};
-  return cached_font(cache, -15, FW_NORMAL, "Segoe UI");
-}
-
-inline HFONT font_body_bold() {
-  static HFONT cache[5] = {};
-  return cached_font(cache, -15, FW_SEMIBOLD, "Segoe UI");
-}
-
-inline HFONT font_small() {
-  static HFONT cache[5] = {};
-  return cached_font(cache, -12, FW_NORMAL, "Segoe UI");
-}
-
-inline HFONT font_title() {
-  static HFONT cache[5] = {};
-  return cached_font(cache, -34, FW_BOLD, "Georgia");
-}
-
-inline HFONT font_heading() {
-  static HFONT cache[5] = {};
-  return cached_font(cache, -19, FW_BOLD, "Georgia");
-}
-
-// ── cached layers ──────────────────────────────────────────────────────
+// â”€â”€ cached layers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // GDI+ antialiased chrome is expensive to re-render 60x/s (measured 13+ ms
 // of a fullscreen frame). Static elements render ONCE into premultiplied
 // 32bpp bitmaps keyed by their parameters and AlphaBlend per frame.
@@ -275,7 +171,7 @@ inline unsigned long long layer_key(int kind, int w, int h, COLORREF accent,
          (static_cast<unsigned long long>(extra & 0xFF) << 16);
 }
 
-// ── primitives ─────────────────────────────────────────────────────────
+// â”€â”€ primitives â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 inline void rounded_path(Gdiplus::GraphicsPath& path, const Gdiplus::RectF& r,
                          float radius) {
@@ -629,13 +525,13 @@ inline bool raster_orb(HDC dc,bool life,int cx,int cy,int radius,double ratio,
   // Keep the value's type size stable as digits change at the compact HUD scale.
   const bool compact_value=gw<96;
   SetBkMode(dc,TRANSPARENT);SelectObject(dc,compact_value?font_small():font_body_bold());SIZE extent{};
-  GetTextExtentPoint32A(dc,caption.c_str(),static_cast<int>(caption.size()),&extent);
-  if(!compact_value&&extent.cx>gw-6){SelectObject(dc,font_small());GetTextExtentPoint32A(dc,caption.c_str(),static_cast<int>(caption.size()),&extent);}
+  skin::text_extent(dc,caption.c_str(),static_cast<int>(caption.size()),&extent);
+  if(!compact_value&&extent.cx>gw-6){SelectObject(dc,font_small());skin::text_extent(dc,caption.c_str(),static_cast<int>(caption.size()),&extent);}
   const int tx=gx+gw/2-extent.cx/2,ty=gy+gh/2-extent.cy/2;
   SetTextColor(dc,RGB(8,8,10));
   for(const POINT offset:{POINT{-1,-1},POINT{1,-1},POINT{-1,1},POINT{1,1}})
-    TextOutA(dc,tx+offset.x,ty+offset.y,caption.c_str(),static_cast<int>(caption.size()));
-  SetTextColor(dc,kInk);TextOutA(dc,tx,ty,caption.c_str(),static_cast<int>(caption.size()));
+    skin::text_out(dc,tx+offset.x,ty+offset.y,caption.c_str(),static_cast<int>(caption.size()));
+  SetTextColor(dc,kInk);skin::text_out(dc,tx,ty,caption.c_str(),static_cast<int>(caption.size()));
   RestoreDC(dc,saved);return true;
 }
 
@@ -886,7 +782,7 @@ inline hud_chrome_layout::TextCard measure_hud_card(HDC dc,int width,
   std::array<int,8> heights{};
   for(std::size_t i=0;i<lines.size();++i){
     RECT measured{0,0,width-20*s,0};
-    DrawTextA(dc,lines[i].text.c_str(),static_cast<int>(lines[i].text.size()),&measured,
+    skin::draw_text(dc,lines[i].text.c_str(),static_cast<int>(lines[i].text.size()),&measured,
               DT_CALCRECT|DT_WORDBREAK|DT_NOPREFIX);
     heights[i]=std::max(12*s,static_cast<int>(measured.bottom));
   }
@@ -909,7 +805,7 @@ inline bool hud_text_card(HDC dc,const RECT& plate,
     RECT text{plate.left+row.x,plate.top+row.y,plate.left+row.x+row.w,
               plate.top+row.y+row.h};
     SetTextColor(dc,lines[i].color);
-    DrawTextA(dc,lines[i].text.c_str(),static_cast<int>(lines[i].text.size()),&text,
+    skin::draw_text(dc,lines[i].text.c_str(),static_cast<int>(lines[i].text.size()),&text,
               DT_WORDBREAK|DT_NOPREFIX);
   }
   RestoreDC(dc,saved);return true;

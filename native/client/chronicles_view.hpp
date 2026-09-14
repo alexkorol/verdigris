@@ -13,7 +13,7 @@ void paint_lineage_door(ClientState& state,HDC dc,const RECT& bounds,render::Lis
   RECT page{left,top,left+width,bottom};skin::hud_panel(dc,page,255,20*s);
   auto text=[&](const std::string& value,RECT box,COLORREF color,HFONT font,UINT flags=DT_LEFT|DT_WORDBREAK) {
     SelectObject(dc,font);SetTextColor(dc,color);
-    DrawTextA(dc,value.c_str(),int(value.size()),&box,flags|DT_NOPREFIX);
+    skin::draw_text(dc,value.c_str(),int(value.size()),&box,flags|DT_NOPREFIX);
   };
   auto tag=[&](const std::string& label,const RECT& box) {
     trace.push_back({render::Op::Chronicles,double(box.left),double(box.top),0,box.right-box.left,label});
@@ -42,7 +42,8 @@ void paint_lineage_door(ClientState& state,HDC dc,const RECT& bounds,render::Lis
   for(const auto& house:model.chronicle.houses) selected_exists |= house.id==state.selected_house_id;
   if(has_house&&!selected_exists) state.selected_house_id=model.chronicle.houses.front().id;
   auto field=[&](const std::string& command,const std::string& value,const std::string& placeholder,RECT box) {
-    button({"",command,"",""},value.empty()?placeholder:value+(state.chronicle_edit==command?" |":""),box,state.chronicle_edit==command);
+    button({"",command,"",""},"",box,state.chronicle_edit==command);
+    skin::paint_entry(dc,box,value,placeholder,state.chronicle_cursor,state.chronicle_edit==command);
     tag("field:"+command,box);
   };
   text("A new Scion",{left+32*s,content_top,split-20*s,content_top+32*s},skin::kGold,skin::font_heading());

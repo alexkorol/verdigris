@@ -3,6 +3,37 @@
 The native C++20 game uses the Fable perspective renderer and directional
 animated Scions. The historical browser reference remains in src/ and server/.
 
+## Player typography
+
+All runtime text uses **Verdigris Novel**, a bundled CC0 derivative of Not Jam
+Novel 16. [Source and license notes](client/assets/fonts/novel/README.md).
+The supplied reference font is unidentified; this choice is finer and more
+condensed. `client/ui_typography.hpp` owns Body, Label, Heading, Compact and
+Title roles. The first four share a 16px design grid (10px unaccented cap
+height); Title uses 32px. Existing viewport UI tiers multiply these sizes by
+integers. Heading emphasis uses color and space instead of synthetic bold.
+
+GDI rasterizes cached private fonts at integer positions with
+`NONANTIALIASED_QUALITY`, in screen space after world rendering. Per-monitor
+DPI awareness prevents Windows from interpolating a bitmap of the window.
+Camera calibration is unchanged. Primary ink is `#cfb468`, secondary `#b5a277`;
+meaningful state colors remain. NPC labels have one dark pixel of separation.
+Measurement and drawing share UTF-8 decoding with a legacy Windows-1252
+fallback. The 746-character map includes Latin, extended Latin, Cyrillic and
+selected symbols. Unsupported characters visibly become this font's `?`;
+ellipsis uses three periods and smart quotes use straight quote shapes.
+The font resolves relative to the executable. Missing resources cause an
+explicit error; there is no installed-font substitution.
+
+Name input retains its 40 printable-ASCII limit, with measured click/caret
+positioning, Left/Right/Home/End, Shift selection, Ctrl+A, Delete/Backspace,
+replacement typing and horizontal scrolling. The existing bounded message log
+wraps using actual metrics. No new chat or dialogue system was introduced;
+Body is their shared role when implemented. `--scenario typography` checks
+raster pixels, cached metrics, glyph policy and input, and captures production
+paint at 960x600, 1280x800 and 3440x1440. Captured log text and name/roster
+stress data are labeled fixtures, not proof of a new dialogue feature.
+
 ## Consolidated application
 
 The packaged `Verdigris.exe` opens one native title screen. Continue admits the

@@ -17,7 +17,7 @@ RECT gear_action_rect(int w, int h, int index) {
 void inventory_text(HDC dc, RECT r, const std::string& text, COLORREF ink,
                     UINT flags = DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS) {
   SetBkMode(dc, TRANSPARENT); SetTextColor(dc,ink);
-  DrawTextA(dc,text.c_str(),-1,&r,flags);
+  skin::draw_text(dc,text.c_str(),-1,&r,flags);
 }
 void inventory_button(HDC dc, RECT r, const std::string& text, bool hover, bool enabled=true) {
   skin::inventory_surface(dc,r,hover && enabled ? 1 : 0);

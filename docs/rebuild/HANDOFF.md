@@ -1,5 +1,18 @@
 # Native reconstitution handoff
 
+## 2026-09-14 â€” Native typography implementation verified
+
+The consolidated client uses the bundled CC0 Verdigris Novel family through
+shared roles, crisp integer raster sizes and matching Unicode draw/measurement
+paths. Name fields have measured editing/selection/scrolling; the existing log
+wraps. The reference font is unidentified and Novel is a finer, more condensed
+approximation. Equipment/stat fixes and the normal-entry handover below remain
+intact. Full native acceptance passed eight suites and 80 client scenarios; the
+final DPI-aware build also passed typography checks. Clean packaging and final
+live installation verification follow this milestone. Details and inspected
+evidence: `orchestration/recoveries/2026-09-14-typography/REPORT.md`.
+
+
 ## 2026-09-13 - Normal-launch handover complete
 
 Normal entry: C:\Users\Alex\Documents\Verdigris Native 2026-09-13\Verdigris.exe.
@@ -71,7 +84,7 @@ the same QA profile; physical Escape left its other live walkthrough steps
 unfinished. That does not block authorized inventory development.
 
 
-## 2026-09-13 — Packaged verification result
+## 2026-09-13 â€” Packaged verification result
 
 The clean package from `3bd164d34f189d1438dc68990667312e8ecd721f` at
 `C:/Users/Alex/Documents/Verdigris Native 2026-09-13/Verdigris.exe` passed all
@@ -83,7 +96,7 @@ normal launch is unchanged. Exact hashes, evidence, preservation decisions and
 remaining acceptance are in
 `orchestration/recoveries/2026-09-13-consolidation/REPORT.md`.
 
-## 2026-09-13 — Native application consolidation
+## 2026-09-13 â€” Native application consolidation
 
 Owner-authorized integration in `codex/native-consolidated-20260913`, based on
 `5c388d9fd` with recovered history `443fb2503` merged in full. The perspective

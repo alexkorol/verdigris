@@ -4,6 +4,8 @@
 function Get-NativePackageResources([string]$Root) {
   $required = @(
     'native/build/verdigris_client.exe', 'native/build/verdigris_server.exe',
+    'native/client/assets/fonts/novel/VerdigrisNovel.ttf',
+    'native/client/assets/fonts/novel/CC0.txt', 'native/client/assets/fonts/novel/README.md',
     'src/assets/fonts/pixelmix.ttf', 'src/assets/fonts/pixelmix_bold.ttf', 'src/assets/fonts/PxPlus_IBM_VGA8.ttf',
     'src/assets/inventory/frame_ornate.png', 'src/assets/orbs/wizard/art.png',
     'src/assets/orbs/wizard/mask_fullres.png', 'src/assets/orbs/wizard/empty_aligned.jpg',

@@ -506,23 +506,27 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
       const bool is_near=std::max(std::abs(state.world.player.position.x-state.world.extraction.x),
           std::abs(state.world.player.position.y-state.world.extraction.y))<=kTileUnits;
       const char* label=is_near?"F  Return to House":"Return to House";
-      SIZE size{};GetTextExtentPoint32A(dc,label,int(std::strlen(label)),&size);
+      SIZE size{};skin::text_extent(dc,label,int(std::strlen(label)),&size);
       skin::hud_text_backing(dc,{at.x-size.cx/2-5,at.y+8,at.x+size.cx/2+5,at.y+size.cy+14});
-      SetTextColor(dc,RGB(238,226,197));SetBkMode(dc,TRANSPARENT);
-      TextOutA(dc,at.x-size.cx/2,at.y+11,label,int(std::strlen(label)));
+      SetTextColor(dc,skin::kInk);SetBkMode(dc,TRANSPARENT);
+      skin::text_out(dc,at.x-size.cx/2,at.y+11,label,int(std::strlen(label)));
     }
   }
   for(const auto& npc:state.world.npcs) {
     const auto at=project(state.camera,bounds,npc.position.x,npc.position.y);
     if(at.scale<=0 || at.x<0 || at.x>bounds.right || at.y<0 || at.y>bounds.bottom) continue;
-    SetBkMode(dc,TRANSPARENT);SetTextColor(dc,RGB(237,224,188));
-    SIZE size{};GetTextExtentPoint32A(dc,npc.name.c_str(),int(npc.name.size()),&size);
-    TextOutA(dc,at.x-size.cx/2,at.y-int(106*at.scale),npc.name.c_str(),int(npc.name.size()));
+    SetBkMode(dc,TRANSPARENT);SetTextColor(dc,skin::kInk);
+    SIZE size{};skin::text_extent(dc,npc.name.c_str(),int(npc.name.size()),&size);
+    const int y=at.y-int(106*at.scale);
+    SetTextColor(dc,RGB(15,12,9));
+    skin::text_out(dc,at.x-size.cx/2+skin::ui_scale(),y+skin::ui_scale(),npc.name.c_str(),int(npc.name.size()));
+    SetTextColor(dc,skin::kInk);
+    skin::text_out(dc,at.x-size.cx/2,y,npc.name.c_str(),int(npc.name.size()));
   }
   if(state.loot_labels) for(const auto& [id,pos]:state.loot_positions) {
     const auto it=state.world.loot_names.find(id);if(it==state.world.loot_names.end()) continue;
     const auto at=project(state.camera,bounds,pos.x,pos.y);
-    SetTextColor(dc,RGB(248,229,172));TextOutA(dc,at.x,at.y+5,it->second.c_str(),int(it->second.size()));
+    SetTextColor(dc,RGB(248,229,172));skin::text_out(dc,at.x,at.y+5,it->second.c_str(),int(it->second.size()));
   }
   return true;
 }
