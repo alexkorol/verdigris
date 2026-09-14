@@ -1,0 +1,9 @@
+2026-09-14T02:10:19.0110316Z root=C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\build\player-package-43c104c5a\ profile=C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\build\player-package-071f87f53\qa\live-profile isolatedSettings=True
+2026-09-14T02:10:19.3710534Z verdigris_server.exe pid=15148 6520
+2026-09-14T02:10:19.3968284Z server: verdigris_server listening on ws://127.0.0.1:6520
+2026-09-14T02:10:19.4019369Z verdigris_client.exe pid=2616 --remote 127.0.0.1 6520 review-player
+2026-09-14T02:10:19.5382248Z client: source=43c104c5acca73805ebb6184079a7fb0d9c7be17 dirty=0 renderer=Fable perspective=1 authored-poses=96 asset-root=C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\build\player-package-43c104c5a\native\client\assets\raster\runtime
+2026-09-14T02:13:21.6095521Z client error: native-exit: confirmed menu quit
+2026-09-14T02:13:21.6955247Z client exit=0
+2026-09-14T02:13:21.6965242Z cleaned pid=2616 exit=0
+2026-09-14T02:13:21.8086205Z cleaned pid=15148 exit=0

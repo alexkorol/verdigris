@@ -1,5 +1,29 @@
 # Native reconstitution handoff
 
+## 2026-09-13 - Equipment repair published; normal handover pending user stop
+
+Packaged implementation `43c104c5acca73805ebb6184079a7fb0d9c7be17` preserves the
+consolidated renderer and accepted inventory layout. It adds authoritative
+stats and backpack moves, honest selection/pending/rejection handling, exact
+Scion loadout persistence, and fixes the two live-discovered restart defects:
+stale saved loadouts and repeat starter-kit grants. The final package passed
+79/79 scenarios and all eight native suites, including both new regressions.
+
+Package: `native/build/player-package-43c104c5a/Verdigris.exe` in the consolidated
+checkout. Detailed evidence and exact profile/launch paths:
+`orchestration/recoveries/2026-09-13-handover/REPORT.md`.
+
+Physical Escape stopped Computer Use during the final live reload repeat.
+No game input or normal-launch promotion followed the stop. The existing
+`C:\Users\Alex\Documents\Verdigris Native 2026-09-13\Verdigris.exe` still starts
+old source `3bd164d34`; owner saves remain unchanged and backed up. Complete
+the final same-executable/same-QA-profile reload after control is resumed,
+then perform the already-authorized in-place handover and smoke the Explorer
+entry itself. Do not claim handover finished or bypass the stop through
+another input tool. Verified implementation and evidence continue to be
+committed/pushed under the owner's standing policy; no new planning approval
+is required. Both native development branches share this verified source.
+
 ## 2026-09-13 - Native UI repair verified package
 
 Inventory and character presentation now follow the owner WIZARD composition.
