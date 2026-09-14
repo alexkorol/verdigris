@@ -1,16 +1,22 @@
 # Native reconstitution handoff
 
-## Current normal installation — c00ade08e
+## Current verification and installation — unattended checks available
 
-The established Documents/Verdigris Native 2026-09-13/Verdigris.exe now contains
-clean source c00ade08e4e43cab9305b5d2d940d1473dac7a8e, including typography.
-Installed hashes/resources and the actual normal launcher/title/profile passed.
-Physical Escape interrupted the final quit confirmation; current-build shutdown
-remains unverified, and the game was left running. Owner save bytes were unchanged.
-The newer inventory changes remain uncommitted, unverified and excluded from the
-normal package. The shared native baseline remains d0179c8b3. Exact current state,
-evidence and remaining checks: orchestration/recoveries/2026-09-13-handover/CURRENT.md.
-The completed 43c104c5a handover below is historical, not the current package ID.
+The clean inventory-drag package at native/build/player-package-1d3db8ab7/
+Verdigris.exe passed all 80 packaged scenarios, package hashes/resources and two
+same-profile launcher lifecycles, including Effects 70% persistence and clean
+owned-process shutdown. All eight native suites passed. Computer Use is not
+required: run native/tools/verify-player-package.ps1 with explicit package and
+contained evidence directories. It retains production captures for inspection.
+
+The normal Documents/Verdigris Native 2026-09-13/Verdigris.exe was independently
+updated by the typography task to source cefd238b234c0c489abb2718e6b86ba001672c6c
+(m5x7). Preserve that work; the inventory QA package has the earlier font and
+must not replace it wholesale. Owner save hash remains unchanged. Six gated
+inventory drawers remain unfinished, with a local core-tested storage foundation
+preserved outside the package. Shared baseline still d0179c8b3. No Computer Use
+or owner-approval gate blocks implementation. Exact evidence and limitations:
+orchestration/recoveries/2026-09-14-inventory-drag/REPORT.md.
 
 ## 2026-09-14 — Native typography implementation verified
 

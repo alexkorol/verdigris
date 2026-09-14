@@ -17,11 +17,15 @@ $oldCapture=$env:VERDIGRIS_CAPTURE_ROOT
 try {
   $env:VERDIGRIS_CAPTURE_ROOT=$evidenceRoot
   $process=Start-Process -FilePath (Join-Path $packageRoot 'native/build/verdigris_client.exe') -ArgumentList @('--scenario','all') -WorkingDirectory $packageRoot -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $evidenceRoot 'scenarios.log') -RedirectStandardError (Join-Path $evidenceRoot 'scenarios-stderr.log')
+  $retainedHandle=$process.Handle # Windows PowerShell otherwise may lose ExitCode after a long redirected run.
   if(!$process.WaitForExit(900000)) {
     $process.Kill();$process.WaitForExit()
     throw 'Packaged scenarios timed out; retained logs identify the last completed scenario'
   }
-  if($process.ExitCode -ne 0){throw "Packaged scenarios failed ($($process.ExitCode)); see $evidenceRoot/scenarios.log"}
+  $process.WaitForExit() # drain redirected output before inspecting the final result
+  $scenarioExit=$process.ExitCode
+  "exitCode=$scenarioExit" | Set-Content (Join-Path $evidenceRoot 'scenario-exit.txt')
+  if($null -eq $scenarioExit -or $scenarioExit -ne 0){throw "Packaged scenarios failed ($scenarioExit); see $evidenceRoot/scenarios.log"}
 } finally {
   if($null -eq $oldCapture){Remove-Item Env:VERDIGRIS_CAPTURE_ROOT -ErrorAction SilentlyContinue}
   else {$env:VERDIGRIS_CAPTURE_ROOT=$oldCapture}

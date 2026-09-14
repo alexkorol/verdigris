@@ -1,0 +1,33 @@
+fixtures=C:\Users\Alex\AppData\Local\Temp\verdigris-settings-tests-16240-1734402888543300-0
+PASS missing file uses quiet defaults
+PASS first save succeeds
+PASS saved file declares schema version 1
+PASS mute-only save succeeds
+PASS mute retains both category values
+PASS audio save preserves unrelated values and comments
+PASS corrupt input returns safe defaults and visible warning
+PASS corrupt input returns safe defaults and visible warning
+PASS corrupt input returns safe defaults and visible warning
+PASS corrupt input returns safe defaults and visible warning
+PASS corrupt input returns safe defaults and visible warning
+PASS corrupt input returns safe defaults and visible warning
+PASS corrupt input returns safe defaults and visible warning
+PASS corrupt input returns safe defaults and visible warning
+PASS corrupt input returns safe defaults and visible warning
+PASS corrupt input returns safe defaults and visible warning
+PASS corrupt file recovers on explicit save
+PASS recovery retains exact damaged bytes in sibling backup and writes valid settings
+PASS future schema is never overwritten
+PASS legacy audio document upgrades on save
+PASS invalid caller values cannot damage persisted settings
+PASS unreadable target is reported without overwrite
+PASS blocked parent reports failure without changing the original
+PASS replacement failure fixture locks existing file
+PASS atomic replacement failure reports error and preserves original bytes
+PASS failed save cleans its temporary file
+PASS Unicode profile path saves and reloads
+PASS controls reach independent mixer buses
+PASS master mute silences buses and preserves scene music gate
+PASS unmute restores category volumes without starting unloaded music
+PASS SFX preference scales actual scheduled audio gain
+PASS zero-volume effects schedule no audio

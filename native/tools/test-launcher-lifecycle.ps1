@@ -16,12 +16,14 @@ $entryHash=(Get-FileHash -LiteralPath $entry).Hash
 $clientHash=(Get-FileHash -LiteralPath (Join-Path $packageRoot 'native/build/verdigris_client.exe')).Hash
 foreach($phase in @('save','reload')) {
   $process=Start-Process -FilePath $entry -ArgumentList @('--profile',('"'+$qaProfile+'"'),'--verify-launch',$phase) -WorkingDirectory $packageRoot -WindowStyle Hidden -PassThru
+  $retainedHandle=$process.Handle
   if(!$process.WaitForExit(90000)) {
     # Only the fresh QA launcher started above; its job owns its child cleanup.
     $process.Kill();$process.WaitForExit()
     throw "Launcher QA $phase timed out. Profile and logs retained: $qaProfile"
   }
-  if($process.ExitCode -ne 0){throw "Launcher QA $phase failed ($($process.ExitCode)); see $qaProfile/logs"}
+  $process.WaitForExit()
+  if($null -eq $process.ExitCode -or $process.ExitCode -ne 0){throw "Launcher QA $phase failed ($($process.ExitCode)); see $qaProfile/logs"}
   $log=Get-ChildItem -LiteralPath (Join-Path $qaProfile 'logs') -File | Sort-Object LastWriteTime -Descending | Select-Object -First 1
   $body=Get-Content -LiteralPath $log.FullName -Raw
   if($body -notmatch "launch-check: PASS phase=$phase" -or $body -notmatch 'client exit=0' -or $body -notmatch 'isolatedSettings=True') {

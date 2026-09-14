@@ -1,3 +1,25 @@
+# Current state addendum — unattended verification
+
+The c00ade08e inspection below is historical. A fresh installed manifest now
+identifies cefd238b234c0c489abb2718e6b86ba001672c6c at the same normal launcher,
+installed by the separate owner-selected m5x7 typography task. Its own report is
+on codex/native-typography-sans-20260914. Do not overwrite it with the earlier
+font merely because an inventory package was built later.
+
+Inventory source 1d3db8ab7 is pushed and its exact package passed 80 scenarios,
+eight native suites, hashes/resources and two isolated top-level launcher runs
+with same-profile settings persistence and clean shutdown. Detailed evidence:
+../2026-09-14-inventory-drag/REPORT.md. This does not establish a live normal-entry
+walkthrough on the typography installation. No game processes remained at the
+latest read-only check; normal save hash remains 696F4629...427C1.
+
+The six extensions remain open and local multi-pack implementation is preserved.
+Builds and automated packaged checks now run independently of Computer Use.
+Shared native baseline remains d0179c8b3. No normal launch promotion was performed
+by this inventory verification milestone.
+
+---
+
 # Current installed handover — 2026-09-14
 
 The original equipment-repair handover in REPORT.md completed on source
