@@ -1,0 +1,46 @@
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+core.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\src\core.cpp(2362): warning C4100: 'player_level': unreferenced formal parameter
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+core_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+verdigris core tests: PASS
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+networking.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\src\networking.cpp(3479): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+networking_tests.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\tests\networking_tests.cpp(578): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+verdigris networking tests: FAIL: safe return does not implicitly bank items
+extension authority tests failed
+At C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\build\build-extension-authority.ps1:138
+char:50
++ ... if ($LASTEXITCODE -ne 0) { throw 'extension authority tests failed' }
++                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (extension authority tests failed:String) [], RuntimeException
+    + FullyQualifiedErrorId : extension authority tests failed

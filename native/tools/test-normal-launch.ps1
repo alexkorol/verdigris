@@ -53,9 +53,16 @@ function Assert-Preserved($before,$after,[string]$path) {
   if($null -eq $before){if($null -ne $after){throw "Changed saved value: $path"};return}
   if($before -is [PSCustomObject]) {
     if($after -isnot [PSCustomObject]){throw "Changed saved object: $path"}
+    $migratedStore=$before.houseStore -is [Array] -and $before.houseStore.Count -gt 0
+    if($migratedStore) {
+      if($after.houseStore -isnot [Array] -or $after.houseStore.Count -ne 0){throw "Incomplete legacy-store migration: $path"}
+      $expectedBank=[object[]]@(@($before.bankItems)+@($before.houseStore))
+      Assert-Preserved $expectedBank $after.bankItems "$path/bankItems (exact legacy-store transfer)"
+    }
     foreach($property in $before.PSObject.Properties) {
       $next=$after.PSObject.Properties[$property.Name]
       if($null -eq $next){throw "Removed saved field: $path/$($property.Name)"}
+      if($migratedStore -and $property.Name -in @('houseStore','bankItems')){continue}
       # Authorized purse migration removes only its backpack coordinates.
       if($before.id -eq 'coins' -and $property.Name -in @('slot','position') -and
          ($null -eq $next.Value -or ($property.Name -eq 'slot' -and $next.Value -eq -1))){continue}
@@ -77,4 +84,4 @@ if($afterSettings -ne $settingsHash){throw 'Normal-launch smoke changed user set
 if((Get-FileHash -LiteralPath $entry).Hash -ne $entryHash){throw 'Normal launch entry changed during verification'}
 Copy-Item -LiteralPath (Join-Path $profile 'logs/smoke-title.png') -Destination (Join-Path $evidenceRoot 'normal-title.png')
 "PASS exact normal entry, working directory, actual child images, normal profile, perspective startup, confirmed menu quit and owned-process cleanup. Source=$($manifest.sourceCommit)" | Tee-Object -FilePath (Join-Path $evidenceRoot 'normal-result.txt')
-"PASS $($beforeFiles.Count) existing saves preserved (additive schema and purse-coordinate migration only); settings=$settingsHash. Entry SHA256=$entryHash" | Tee-Object -FilePath (Join-Path $evidenceRoot 'preservation.txt')
+"PASS $($beforeFiles.Count) existing saves preserved (additive schema, purse coordinates, exact legacy-store transfer to bank only); settings=$settingsHash. Entry SHA256=$entryHash" | Tee-Object -FilePath (Join-Path $evidenceRoot 'preservation.txt')

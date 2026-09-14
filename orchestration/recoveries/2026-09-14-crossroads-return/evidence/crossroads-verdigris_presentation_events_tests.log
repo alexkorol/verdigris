@@ -1,0 +1,132 @@
+PASS dash FX: accepted travel produces only four dust positions
+PASS dash FX: dust follows actual server from/to segment
+PASS dash FX: presentation never moves the authoritative player
+PASS dash FX: trail expires at its named lifetime
+PASS dash FX: unrelated actor and zero movement add no dust
+PASS dash FX: repeated events obey shared effect cap
+PASS drop FX: explicit authority pose is not replaced by corpse position or scatter
+PASS drop FX: sparkle marks the real item location
+PASS fall event pose: final position and committed facing override stale prior geometry
+PASS fall event pose: known snapshot still supplies identity family and elite
+PASS fall event pose: dust and loot anchor share the immutable death position
+PASS fall event pose: presentation does not mutate the retained actor snapshot
+PASS fall event pose: duplicate metadata cannot relocate restart or duplicate a death
+PASS fall event pose: pose-only unknown actor still creates no body or dust
+PASS strike: monster slash faces the player as the living raster does
+PASS strike: overlapping monster uses its own facing fallback
+PASS strike: player slash preserves player aim rather than aiming at a monster
+PASS strike: a dodge cannot rotate the committed warning at contact
+PASS fall: snapshots ID, art family, elite, position and actual player-facing angle
+PASS fall: known deaths retain dust feedback even without authored family death art
+PASS fall: stale strikes, warnings, spawn and target tint no longer pose the dead monster
+PASS fall: presentation neither kills a live actor nor invents loot or rewards
+PASS fall: retained snapshot survives actor removal and later player/theme changes
+PASS fall: semantic recorder emits a labelled Death, never an extra live Monster
+PASS fall: duplicate death cannot restart the retained pose
+PASS fall: duplicate death neither restarts nor duplicates dust
+PASS fall: named eight-tick motion is independent of the eight-second hold
+PASS fall: settled pose stays fully opaque after motion ends
+PASS fall: fading begins only in the final twenty ticks
+PASS fall: fade changes opacity without replaying motion
+PASS fall: last visible tick is retained
+PASS fall: body expires at the named TTL
+PASS fall: more than32 deaths discard oldest bodies deterministically
+PASS fall: combat feedback and retained bodies share the128-effect cap
+PASS fall: monster family matches the living raster selection
+PASS fall: monster family matches the living raster selection
+PASS fall: monster family matches the living raster selection
+PASS fall: monster family matches the living raster selection
+PASS fall: ranged role takes precedence over theme
+PASS fall: overlapping actor falls back to its own facing
+PASS fall: unknown actor never borrows last death position for a fabricated corpse
+PASS fall: Scion death cannot masquerade as a raider body
+PASS fall: an unchanged scene does not clear a body
+PASS fall: snapshot route changes clear bodies even without a transition event
+PASS fall: extraction, connection and Scion-loss transitions clear retained bodies
+PASS fall: extraction, connection and Scion-loss transitions clear retained bodies
+PASS fall: extraction, connection and Scion-loss transitions clear retained bodies
+PASS fall: extraction, connection and Scion-loss transitions clear retained bodies
+PASS fall: extraction, connection and Scion-loss transitions clear retained bodies
+PASS fall: extraction, connection and Scion-loss transitions clear retained bodies
+PASS strike: input creates one speculative preparation
+PASS strike: repeated input cannot restart a live strike
+PASS strike: early, late, or expired preparation reconciles to one contact
+PASS strike: presentation alone cannot manufacture hit feedback
+PASS strike: authoritative damage supplies contact feedback once
+PASS strike: input during contact cannot revert to preparation
+PASS strike: input creates one speculative preparation
+PASS strike: repeated input cannot restart a live strike
+PASS strike: early, late, or expired preparation reconciles to one contact
+PASS strike: presentation alone cannot manufacture hit feedback
+PASS strike: authoritative damage supplies contact feedback once
+PASS strike: input during contact cannot revert to preparation
+PASS strike: input creates one speculative preparation
+PASS strike: repeated input cannot restart a live strike
+PASS strike: early, late, or expired preparation reconciles to one contact
+PASS strike: presentation alone cannot manufacture hit feedback
+PASS strike: authoritative damage supplies contact feedback once
+PASS strike: input during contact cannot revert to preparation
+PASS strike: input creates one speculative preparation
+PASS strike: early, late, or expired preparation reconciles to one contact
+PASS strike: presentation alone cannot manufacture hit feedback
+PASS strike: authoritative damage supplies contact feedback once
+PASS strike: input during contact cannot revert to preparation
+PASS strike: an enemy arc never becomes the player strike
+PASS strike: unconfirmed preparation expires without hit feedback
+PASS phase-a: table pins the 50ms presentation tick
+PASS phase-a: critical number outlives the ordinary 12-tick number
+PASS phase-a: beat lifetimes are distinct by construction
+PASS phase-a: loss pulse outlives the 3-tick damage pulse
+PASS phase-a: critical flag and style copy onto the damage number
+PASS phase-a: critical number ttl comes from the table and differs
+PASS phase-a: critical flash is longer than the ordinary flash
+PASS phase-a: render list labels critical hits with style
+PASS phase-a: ScionLost produces a loss beat
+PASS phase-a: loss beat lifetime comes from the table
+PASS phase-a: loss pulse comes from the table
+PASS phase-a: loss beat logs a readable line
+PASS phase-a: BuffExpired(war-cry) produces the fade beat with its ttl
+PASS phase-a: only war-cry expiry renders the fade beat
+PASS phase-a: local seam starts
+PASS phase-a: post-entry WarCry activates before checking expiry
+PASS phase-a: local seam maps BuffExpired through the presentation seam
+PASS phase-a: spawn detection is byte-deterministic across runs
+PASS phase-a: one materialization beat per unseen foe
+PASS phase-a: materialization ttl comes from the table
+PASS phase-a: re-sighting never re-triggers the beat
+PASS phase-a: player facing right no longer flips the monster west
+PASS phase-a: player facing left does not flip the monster east either
+PASS monster display: rendering can trail an unchanged authority endpoint
+PASS monster display: authority facing survives into contact presentation
+PASS monster display: hit anchors and the model retain authority coordinates
+PASS monster display: snapshots without movement metadata render authority
+PASS monster display: malformed display coordinates cannot contaminate world state
+PASS phase-a: local seam starts for the negative control
+PASS phase-a: applying every drained beat leaves the model untouched
+PASS facing: up-left resolves to (-1,-1)
+PASS facing: down-right resolves to (1,1)
+PASS facing: up-right resolves to (1,-1)
+PASS facing: plain left keeps its single axis
+PASS facing: unknown name falls back to down
+PASS message: server text becomes the HUD toast
+PASS message: toast outlives a key-echo hint
+PASS message: empty text never blanks a toast
+PASS 0108: JS payload shape is fromX/fromY/toX/toY/travelMs/kind=monster
+PASS 0108: missing travelMs is not a projectile payload
+PASS 0108: slam-shaped telegraph is not a projectile warning
+PASS 0108: world:projectile keys become a Telegraph event
+PASS 0108: travelMs uses the 50ms tick, not a catalog guess
+PASS 0108: ranged windup records a Telegraph op
+PASS 0108: Telegraph label stays the existing op, action projectile
+PASS 0108: ranged hit lands as attributed Damage/Impact
+PASS 0108: every ranged hit is preceded by its Telegraph op
+PASS 0108: incoming hit is attributed to the ranged attacker
+PASS 0108: a hit without a preceding warning cannot mint a Telegraph
+PASS 0108: negative — damage-only path never records the ranged warning
+PASS 0108: negative — slam telegraph never becomes a projectile warning
+PASS npc: roster entry survives the sync
+PASS npc: name survives the sync
+PASS npc: tile position converts to world units
+PASS npc: server verb list survives verbatim
+PASS npc: render list carries a labeled Npc op
+presentation events tests: PASS

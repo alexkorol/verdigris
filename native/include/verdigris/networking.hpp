@@ -256,8 +256,8 @@ class ProtocolSession {
   std::map<std::string,JsonValue> scion_loadouts_;
   PlayerInventory inventory_;
   WearSet wear_;
-  // Protocol House bank (JS has no player:extract; core Simulation::house is
-  // const from this layer). Extraction and stairs-up both drain here.
+  // Legacy extraction storage, migrated into the accessible bank on load.
+  // Safe return never drains the Scion's inventory or equipment.
   std::vector<GameItem> house_store_;
   Mulberry32 session_rng_;
   std::unique_ptr<Simulation> simulation_;

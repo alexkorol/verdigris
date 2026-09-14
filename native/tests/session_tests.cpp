@@ -3124,13 +3124,13 @@ void remote_dash_return_retires_exit_and_preserves_banked_result() {
         "dash-return: town clears dungeon stairs and expedition objective immediately");
   check(session.model().scene.stairs_up_x == 0 && session.model().scene.stairs_up_y == 0,
         "dash-return: retired exit coordinates are cleared too");
-  check(carried > 0 && session.model().stored_items == carried &&
-        world.stored_items == static_cast<std::size_t>(carried) && session.model().inventory.empty(),
-        "dash-return: real bank summary publishes exact stored total and emptied inventory");
+  check(carried > 0 && session.model().stored_items == 0 &&
+        world.stored_items == 0 && session.model().inventory.size()+session.model().worn.size()==static_cast<std::size_t>(carried),
+        "dash-return: safe return keeps carried items and does not auto-bank them");
   bool extracted = false, banked_message = false;
   for (const auto& event : session.drain_events()) {
     extracted |= event.type == PresentationEventType::ExtractionCompleted;
-    banked_message |= event.type == PresentationEventType::Message && event.text.find("Banked ") == 0;
+    banked_message |= event.type == PresentationEventType::Message && event.text.find("Returned safely") == 0;
   }
   check(extracted && banked_message && session.model().extracted,
         "dash-return: extraction confirmation and banked toast survive phase reset");
@@ -3140,14 +3140,14 @@ void remote_dash_return_retires_exit_and_preserves_banked_result() {
         "dash-return: town phase reset preserves level and progression");
   session.send_raw("dev:state", JV::Object{{"requestId", "returned-store"}});
   std::this_thread::sleep_for(std::chrono::milliseconds(70)); session.poll();
-  check(session.model().stored_items == carried && !session.model().scene.has_stairs_up,
+  check(session.model().stored_items == 0 && !session.model().scene.has_stairs_up,
         "dash-return: authoritative store reconciliation does not double count or restore old exit");
   session.send_raw("instance:enterSolo", JV::Object{{"template", "crypt"}, {"layout", "gauntlet"}});
   check(wait_until(session, 3000, [&] { return session.model().scene.type == "instance" && session.model().scene.has_stairs_up; }),
         "dash-return: next authored instance publishes its exit normally");
   sync_world_from_model(world, session.model());
   check(world.has_extraction && world.expedition_phase != ExpeditionPhaseView::Unknown &&
-        session.model().stored_items == carried,
+        session.model().stored_items == 0 && session.model().inventory.size()+session.model().worn.size()==static_cast<std::size_t>(carried),
         "dash-return: new expedition restores its phase while House store persists");
   session.shutdown(); server->stop(); delete server;
 }

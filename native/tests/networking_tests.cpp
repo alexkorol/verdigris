@@ -22,6 +22,49 @@ void check(bool condition, const char* message) {
   if (!condition) throw std::runtime_error(message);
 }
 
+void test_legacy_return_storage_recovery() {
+  const auto file=std::filesystem::temp_directory_path()/("verdigris-return-recovery-"+
+      std::to_string(std::chrono::steady_clock::now().time_since_epoch().count())+".json");
+  const auto ignore=[](const Envelope&){};
+  const auto state=[](ProtocolSession& s){JsonValue v;verdigris::networking::parse_json(s.state_payload("recovery"),v);return v["state"];};
+  ProtocolSession seed("return-recovery","seed",23,false);seed.attach_persistence(file);
+  seed.handle({"dev:give",JsonValue::Object{{"itemId","garnet-amulet"}}},ignore);
+  seed.handle({"dev:give",JsonValue::Object{{"itemId","coins"},{"qty",370}}},ignore);seed.persist();
+  JsonValue saved;{std::ifstream in(file);std::string bytes((std::istreambuf_iterator<char>(in)),{});check(verdigris::networking::parse_json(bytes,saved),"recovery fixture saved");}
+  auto* loadouts=(*saved.object())["scionLoadouts"].object();check(loadouts && !loadouts->empty(),"recovery fixture has saved loadout");
+  auto& loadout=loadouts->begin()->second;
+  const auto lost=loadout["inventory"];
+  check(lost.array() && lost.array()->size()>=2,"recovery fixture contains actual serialized items and coins");
+  (*saved.object())["houseStore"]=lost;(*loadout.object())["inventory"]=JsonValue::Array{};
+  {std::ofstream out(file);out<<saved.stringify();}
+  ProtocolSession recovered("return-recovery","recovered",23,false);recovered.attach_persistence(file);
+  auto now=state(recovered);
+  check(now["bank"].array() && now["bank"].array()->size()==lost.array()->size(),"legacy extracted items become accessible in existing bank");
+  check(now["houseStoredItems"].array()->empty(),"legacy hidden store transferred once");
+  for(const auto& row:*lost.array()) {
+    const auto it=std::find_if(now["bank"].array()->begin(),now["bank"].array()->end(),[&](const auto& b){return b["uuid"].string()==nullptr?false:*b["uuid"].string()==*row["uuid"].string();});
+    check(it!=now["bank"].array()->end() && (*it)["qty"].number()==row["qty"].number(),"recovery preserves UUIDs and quantities");
+  }
+  recovered.persist();ProtocolSession restarted("return-recovery","again",23,false);restarted.attach_persistence(file);
+  check(state(restarted)["bank"].stringify()==now["bank"].stringify(),"recovery is idempotent across process restart");
+  for(int i=0;i<84;++i)restarted.handle({"dev:give",JsonValue::Object{{"itemId","gold-ring"}}},ignore);
+  auto withdraw=[&](const JsonValue& row,int qty){
+    JsonValue::Object entry{{"action",JsonValue::Object{{"actionId","player:bank:withdraw"}}},
+        {"item",JsonValue::Object{{"uuid",*row["uuid"].string()},{"qty",qty}}}};
+    restarted.handle({"player:context-menu:action",JsonValue::Object{{"queueItem",entry}}},ignore);
+  };
+  for(const auto& row:*now["bank"].array())if(row["id"].string() && *row["id"].string()=="garnet-amulet") {
+    const auto bank_before=state(restarted)["bank"].stringify();withdraw(row,1);
+    check(state(restarted)["bank"].stringify()==bank_before,"full backpack rejection preserves banked item");
+  }
+  for(const auto& row:*now["bank"].array())if(row["id"].string() && *row["id"].string()=="coins") {
+    withdraw(row,10);const auto after=state(restarted);int bank_coins=0,purse=0;
+    for(const auto& item:*after["bank"].array())if(*item["id"].string()=="coins")bank_coins+=int(item["qty"].number().value_or(0));
+    for(const auto& item:*after["inventoryDetails"].array())if(*item["id"].string()=="coins")purse+=int(item["qty"].number().value_or(0));
+    check(purse==10 && bank_coins==int(row["qty"].number().value_or(0))-10,"partial coin withdrawal works with full backpack and preserves remaining balance");
+  }
+}
+
 void test_inventory_extension_authority_and_persistence() {
   const auto file=std::filesystem::temp_directory_path()/"verdigris-extension-authority-test.json";
   std::filesystem::remove(file);
@@ -1070,18 +1113,18 @@ void test_gate_a_extract_and_stairs() {
     if (event.event == "player:extract") summary = event;
   });
   check(summary.has_value(), "player:extract emits a bank summary");
-  check(summary->data["items"].number().value_or(0) >= 1, "extract banks at least the amulet");
+  check(summary->data["items"].number().value_or(-1) == 0, "safe return does not implicitly bank items");
   const auto after = request_state(extract_session, "ex-1");
   check(after["state"]["sceneType"].string() && *after["state"]["sceneType"].string() == "town",
         "extract returns to town");
-  check(inventory_uuid_for(after, "garnet-amulet").empty(), "extract clears the amulet from the backpack");
+  check(!inventory_uuid_for(after, "garnet-amulet").empty(), "safe return retains the amulet in the backpack");
   bool stored = false;
   if (const auto* bank = after["state"]["houseStoredItems"].array()) {
     for (const auto& item : *bank) {
       if (item["id"].string() && *item["id"].string() == "garnet-amulet") stored = true;
     }
   }
-  check(stored, "extract places the amulet in the House store");
+  check(!stored, "safe return does not duplicate carried items into House storage");
 
   ProtocolSession stairs("guest-0063-stairs", "socket-st", 29, false);
   stairs.handle(Envelope{"dev:give", JsonValue::Object{{"itemId", "bronze-sword"}, {"qty", 1}}},
@@ -1100,14 +1143,14 @@ void test_gate_a_extract_and_stairs() {
   const auto back = request_state(stairs, "st-2");
   check(back["state"]["sceneType"].string() && *back["state"]["sceneType"].string() == "town",
         "stairs-up still returns to town");
-  check(inventory_uuid_for(back, "bronze-sword").empty(), "stairs-up banks carried items");
+  check(inventory_uuid_for(back, "bronze-sword") == inventory_uuid_for(in_zone,"bronze-sword"), "stairs-up preserves carried identity");
   bool sword_stored = false;
   if (const auto* bank = back["state"]["houseStoredItems"].array()) {
     for (const auto& item : *bank) {
       if (item["id"].string() && *item["id"].string() == "bronze-sword") sword_stored = true;
     }
   }
-  check(sword_stored, "stairs-up and player:extract converge on the House store");
+  check(!sword_stored, "stairs-up does not secretly bank carried items");
 }
 
 void test_gate_a_equip_totals_and_unknown_uuid() {
@@ -1158,6 +1201,7 @@ void test_gate_a_equip_totals_and_unknown_uuid() {
 
 int main() {
   try {
+    test_legacy_return_storage_recovery();
     test_inventory_extension_authority_and_persistence();
     test_inventory_drag_transactions();
     test_equipment_disk_and_scion_ownership();

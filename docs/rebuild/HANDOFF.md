@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## Crossroads return correction in progress
+
+The owner found a gap in the previous acceptance: safe return automatically
+stripped all carried/worn items and coins into inaccessible extraction storage.
+The corrected protocol retains the loadout and purse, and old stored records
+become withdrawable from the existing House bank. Eight suites and focused
+native return/restart checks passed; clean final packaging follows. The owner's
+normal game is running on 2651bd498 and remains untouched until it is closed.
+See `orchestration/recoveries/2026-09-14-crossroads-return/REPORT.md`.
+
 ## Current handover — installed and shared baseline verified
 
 Normal entry: `C:\Users\Alex\Documents\Verdigris Native 2026-09-13\Verdigris.exe`.

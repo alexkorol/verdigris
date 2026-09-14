@@ -303,6 +303,32 @@ int scenario_inventory_equipment() {
   scenario_check(pump([&]{return !state.equip_view.pending;}),"handover: rejected Unequip re-enables action");
   state.character_pane=true;
   scenario_check(reference_present(state,1366,768,dir+"/handover-full-pack-rejection.png"),"handover: rejected operation and retained equipment captured");
+  // Real native server transitions must keep the Scion's pack, purse, worn
+  // seats and ratings. Test a full backpack too: safe return cannot depend
+  // on finding spare cells for the already equipped loadout.
+  for(const char* exit_event:{"player:extract","player:move"}) {
+    const auto before_return=identity_snapshot();
+    const auto wear_before=state.session->model().worn;
+    const int attack_before=state.session->model().player.attack_rating;
+    const int defense_before=state.session->model().player.defense;
+    remote->send_raw("instance:enterSolo",JV::Object{{"template","dungeon"},{"layout","warren"}});
+    scenario_check(pump([&]{return state.session->model().scene.type=="instance";}),"return: enters actual combat zone with full loadout");
+    if(std::string(exit_event)=="player:move") {
+      // Movement samples cover part of a tile. Hold the real direction until
+      // the occupied tile crosses the stair, rather than assuming a teleport.
+      for(int step=0;step<30 && state.session->model().scene.type=="instance";++step) {
+        remote->send_raw("player:move",JV::Object{{"direction","left"}});
+        chronicles_pump(state,5,[&]{return state.session->model().scene.type=="town";});
+      }
+    } else remote->send_raw(exit_event,JV::Object{});
+    scenario_check(pump([&]{return state.session->model().scene.type=="town";}),"return: exit action reaches Crossroads through authority");
+    scenario_check(identity_snapshot()==before_return,"return: every item UUID and coin quantity survives combat-zone exit");
+    bool seats_same=wear_before.size()==state.session->model().worn.size();
+    for(const auto& row:wear_before)seats_same &= worn(row.item.uuid,row.seat);
+    scenario_check(seats_same && state.session->model().player.attack_rating==attack_before && state.session->model().player.defense==defense_before,
+        "return: equipped seats and authoritative combat ratings survive exit");
+  }
+  scenario_check(reference_present(state,1366,768,dir+"/crossroads-retained-loadout.png"),"return: actual Crossroads inventory and coin balance captured");
   const auto persisted_items=identity_snapshot();
   std::vector<std::string> persisted_seats;
   for(const auto& row:state.session->model().worn) persisted_seats.push_back(row.seat+":"+row.item.uuid);

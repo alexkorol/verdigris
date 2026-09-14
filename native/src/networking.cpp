@@ -872,6 +872,12 @@ void ProtocolSession::attach_persistence(const std::filesystem::path& path) {
   if(const auto* stored=saved.get("bankItems");stored && stored->array()) {
     bank_.clear();for(const auto& row:*stored->array())bank_.push_back(load_saved_item(row));
   }
+  // Older safe-return code stripped the whole loadout into an inaccessible
+  // extraction-only store. Preserve those exact records in the existing bank,
+  // where the owner can withdraw them deliberately. Clearing only after the
+  // transfer makes the next persisted load idempotent; no Scion/seat is guessed.
+  for(auto& item:house_store_)bank_.push_back(std::move(item));
+  house_store_.clear();
 }
 
 void ProtocolSession::checkpoint_scion_progression() {
@@ -1481,26 +1487,9 @@ void ProtocolSession::emit_equip_state(const std::function<void(const Envelope&)
   emit(Envelope{"player:equippedAnItem", JsonValue(std::move(data))});
 }
 void ProtocolSession::finish_extraction(const std::function<void(const Envelope&)>& emit) {
-  // Drain backpack + wear into the House store. JS has no player:extract;
-  // the response envelope reuses that name (see REPORT).
+  // A living Scion returning safely keeps equipment, compartments and purse.
+  // House storage is an explicit player action, not a side effect of stairs.
   int banked_items = 0;
-  std::vector<std::string> uuids;
-  uuids.reserve(inventory_.items().size());
-  for (const auto& item : inventory_.items()) uuids.push_back(item.uuid);
-  for (const auto& uuid : uuids) {
-    GameItem item;
-    if (inventory_.remove_by_uuid(uuid, &item)) {
-      house_store_.push_back(std::move(item));
-      ++banked_items;
-    }
-  }
-  for (const auto& seat : WearSet::physical_slots()) {
-    auto worn = wear_.unequip(seat);
-    if (worn) {
-      house_store_.push_back(std::move(*worn));
-      ++banked_items;
-    }
-  }
   sync_combat_mods();
   JsonValue::Array stored;
   for (const auto& item : house_store_) stored.emplace_back(item_identity_json(item));
@@ -1510,7 +1499,7 @@ void ProtocolSession::finish_extraction(const std::function<void(const Envelope&
   put(summary, "storedItems", std::move(stored));
   put(summary, "storedTrophies", JsonValue::Array{});
   emit(Envelope{"player:extract", JsonValue(std::move(summary))});
-  emit_message(emit, "Banked " + std::to_string(banked_items) + " items into the House store.");
+  emit_message(emit, "Returned safely to Crossroads. Your equipment, items and coins are retained.");
   emit_inventory_refresh(emit);
   emit_equip_state(emit);
 }
@@ -2486,16 +2475,20 @@ void ProtocolSession::handle_menu_action(const JsonValue& payload, const std::fu
   }
   if (action_id=="player:bank:withdraw") {
     const int qty = as_int(item_ref ? item_ref->get("qty") : nullptr, 1);
+    if(qty<=0)return;
     for (std::size_t i = 0; i < bank_.size(); ++i) {
       if (bank_[i].uuid != uuid) continue;
       GameItem out = bank_[i];
-      if (out.stackable && out.qty > qty) {
-        bank_[i].qty -= qty;
-        out.qty = qty;
+      if(out.stackable)out.qty=(std::min)(out.qty,qty);
+      if(inventory_.add(out).added<=0) {
+        emit_message(emit,"Make room in your backpack before withdrawing.");
+        emit_bank_screen(emit);return;
+      }
+      if (out.stackable && bank_[i].qty > out.qty) {
+        bank_[i].qty -= out.qty;
       } else {
         bank_.erase(bank_.begin() + static_cast<long long>(i));
       }
-      inventory_.add(std::move(out));
       emit_inventory_refresh(emit);
       emit_bank_screen(emit);
       break;
