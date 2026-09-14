@@ -4106,8 +4106,10 @@ void ingest_events(ClientState& state, const RECT& bounds) {
         break;
       }
       case verdigris::EventType::BuffApplied:
-        if (event.text == "war-cry")
+        if (event.text == "war-cry") {
           add_effect(state, {EffectFx::Kind::WarCryAura, ex, ey, 0.0, 0, 14});
+          particle_event(state,{verdigris::client::PresentationEventType::BuffApplied,event.actor_id,"","war-cry"},state.world);
+        }
         break;
       case verdigris::EventType::BuffExpired:
         // TASK-0122 Phase A: war-cry end contract beat. Imploding dimmed-gold
@@ -4134,7 +4136,7 @@ void ingest_events(ClientState& state, const RECT& bounds) {
         const bool to_player =
             subject && subject->kind == verdigris::ActorKind::Player;
         ensure_particle_assets(state);
-        state.particles.play("melee_hit_small",{"",verdigris::client::vfx::Anchor::World,{float(ex),float(ey),52}},++state.particle_seed);
+        state.particles.play(event.text=="critical"?"critical_hit":"melee_hit_small",{"",verdigris::client::vfx::Anchor::World,{float(ex),float(ey),52}},++state.particle_seed);
         add_effect(state, {EffectFx::Kind::Impact, ex, ey, 0.0, 0, 4});
         // Brief tint on the hit target's sprite so "what I hit" reads at a
         // glance, separate from the position flash.
@@ -21094,6 +21096,7 @@ int run_scenarios(const std::string& which) {
   };
   const Entry entries[] = {
       {"menu-particles", scenario_menu_particles},
+      {"gameplay-particles", scenario_gameplay_particles},
       {"typography", scenario_typography},
       {"consolidated-flow", scenario_consolidated_flow},
       {"inventory-equipment", scenario_inventory_equipment},

@@ -788,6 +788,41 @@ void test_authoritative_dash_and_remote_controls() {
         "dash adds no life or invulnerability substitution");
 }
 
+void test_confirmed_particle_events() {
+  using namespace verdigris;
+  ProtocolSession session("vfx-authority","vfx-socket",42,false);
+  const auto ignore=[](const Envelope&){};
+  int buffs=0,pickups=0,coins=0;
+  auto capture=[&](const Envelope& e){
+    if(e.event=="player:buff-applied") {
+      ++buffs;check(e.data["actorId"].string() && *e.data["actorId"].string()==session.identity() &&
+          e.data["buffId"].string() && *e.data["buffId"].string()=="war-cry","vfx: accepted buff names owner and action");
+    }
+    if(e.event=="player:pickup-confirmed") {
+      ++pickups;
+      if(e.data["itemId"].string() && *e.data["itemId"].string()=="coins")coins+=int(e.data["quantity"].number().value_or(0));
+    }
+  };
+  const Envelope cry{"player:skill:trigger",JsonValue::Object{{"skillId","war-cry"}}};
+  session.handle(cry,capture);check(buffs==0,"vfx: town rejects War Cry without a visual confirmation");
+  session.shared_world()->set_spawn_suppressed(true);
+  session.handle({"instance:enterSolo",JsonValue::Object{{"template","forest"},{"layout","clearings"}}},ignore);
+  session.handle({"dev:teleport",JsonValue::Object{{"x",7},{"y",7}}},ignore);
+  session.handle(cry,capture);check(buffs==1,"vfx: resource-paid War Cry confirms exactly once");
+  for(int n=0;n<30;++n)session.handle(cry,capture);
+  const int exhausted=buffs;session.handle(cry,capture);
+  check(exhausted>0 && exhausted<30 && buffs==exhausted,"vfx: insufficient resource emits no false buff");
+  CreateItemOptions options;options.quantity=37;auto gold=create_game_item("coins",options);
+  check(bool(gold),"vfx: coin fixture exists");
+  session.shared_world()->add_ground_item(std::move(*gold),7,7);
+  session.handle({"player:move",JsonValue::Object{{"direction","right"}}},capture);
+  check(pickups==1 && coins==37,"vfx: actual auto gold pickup confirms admitted quantity");
+  session.handle({"player:take:underfoot",JsonValue::Object{}},capture);
+  check(pickups==1,"vfx: missing ground item adds no pickup confirmation");
+  session.handle({"dev:give",JsonValue::Object{{"itemId","ring"}}},capture);
+  check(pickups==1,"vfx: grants and inventory refreshes do not masquerade as ground pickups");
+}
+
 void test_instance_entry_and_stairs() {
   ProtocolSession session("guest-zones", "socket-z", 13, false);
   const auto town = request_state(session, "z-0");
@@ -1222,6 +1257,7 @@ int main() {
     test_set_out_resolves_the_saved_living_house();
     test_continuous_movement();
     test_authoritative_dash_and_remote_controls();
+    test_confirmed_particle_events();
     test_instance_entry_and_stairs();
     test_crypt_pursuit_publishes_exact_authority();
     test_n3_combat_rules_and_wire_events();

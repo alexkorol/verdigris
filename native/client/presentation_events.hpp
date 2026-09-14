@@ -30,6 +30,8 @@ enum class PresentationEventType {
   ProtocolError,       // malformed or unexpected envelope in `text`
   LevelUp,             // Explicit confirmed advancement; never inferred on login.
   PlayerDashed,        // accepted authority travel; from/to are world units
+  BuffApplied,         // explicit accepted buff, never inferred from UI input
+  PickupConfirmed,     // actual ground admission, not an inventory refresh
 };
 
 struct PresentationEvent {

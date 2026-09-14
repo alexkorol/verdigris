@@ -28,10 +28,16 @@ inline std::optional<Vec3> resolve(const ClientState& state,const Attachment& at
 void ensure_particle_assets(ClientState& state) {
   if(state.particle_assets_attempted)return;
   state.particle_assets_attempted=true;
-  const std::string root=executable_directory()+"/../client/assets/effects";
-  if(verdigris::client::vfx::load_assets(root,state.particles.assets))return;
-  for(const char* root:{"native/client/assets/effects","client/assets/effects","../client/assets/effects","../../native/client/assets/effects"})
-    if(verdigris::client::vfx::load_assets(root,state.particles.assets))return;
+  for(const std::string root:{executable_directory()+"/../client/assets/effects",
+      std::string("native/client/assets/effects"),std::string("client/assets/effects"),
+      std::string("../client/assets/effects"),std::string("../../native/client/assets/effects")}) {
+    std::ifstream atlas(root+"/particles.atlas.json");
+    if(!atlas)continue;
+    // A present but invalid package is an error, never replaced by assets
+    // from another checkout. Preserve the useful loader error for evidence.
+    verdigris::client::vfx::load_assets(root,state.particles.assets);return;
+  }
+  state.particles.assets.error="Native particle atlas was not found";
 }
 void clear_particles(ClientState& state) {
   state.particles.clear();state.bowl_emitter=0;state.particle_step_known=false;state.particle_step_distance=0;
@@ -46,12 +52,29 @@ void particle_event(ClientState& state,const verdigris::client::PresentationEven
   if(event.type==E::LevelUp) {
     state.particles.play("level_up",{event.actor_id,Anchor::Root},++state.particle_seed);return;
   }
+  if(event.type==E::BuffApplied && event.text=="war-cry" && event.actor_id==world.player.id) {
+    state.particles.play("war_cry",{event.actor_id,Anchor::Feet},++state.particle_seed);return;
+  }
+  if(event.type==E::PickupConfirmed && event.actor_id==world.player.id) {
+    state.particles.play("pickup_motes",{event.actor_id,Anchor::Feet},++state.particle_seed);return;
+  }
+  if(event.type==E::PlayerDashed && event.actor_id==world.player.id) {
+    const Vec3 from{float(event.from_x),float(event.from_y),3},to{float(event.to_x),float(event.to_y),3};
+    const float distance=std::hypot(to.x-from.x,to.y-from.y);
+    if(distance<1 || distance>1000)return;
+    const int points=std::clamp(int(distance/22)+1,2,6);
+    for(int n=0;n<points;++n)
+      state.particles.play("dash_dust",{"",Anchor::World,from+(to-from)*(float(n)/float(points-1))},++state.particle_seed);
+    // Accepted dash feedback replaces normal foot sampling for this jump.
+    state.particle_last_step={event.to_x,event.to_y};state.particle_step_known=true;state.particle_step_distance=0;
+    return;
+  }
   const auto* actor=particle_view::actor(world,event.text=="incoming"?world.player.id:event.actor_id);
   if(!actor)return;
   const auto p=actor->displayed_position();
   Attachment at{"",Anchor::World,{float(p.x),float(p.y),event.type==E::ActorDied?8.f:52.f}};
   if(event.type==E::DamageApplied && event.value>0)
-    state.particles.play(event.item_id=="burning-touch"?"burning_touch_contact":"melee_hit_small",at,++state.particle_seed);
+    state.particles.play(event.item_id=="burning-touch"?"burning_touch_contact":event.critical?"critical_hit":"melee_hit_small",at,++state.particle_seed);
   if(event.type==E::ActorDied)state.particles.play("simple_death_puff",at,++state.particle_seed);
 }
 void tick_particles(ClientState& state) {

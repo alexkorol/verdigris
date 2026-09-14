@@ -3000,6 +3000,12 @@ void remote_level_follows_authority_across_admissions() {
   add(Envelope{"player:level-up", JV::Object{{"actorId","level-player"},{"level",3}}},"explicit-level-up");
   add(Envelope{"player:level-up", JV::Object{{"actorId","other-player"},{"level",3}}},"foreign-level-up");
   add(Envelope{"player:level-up", JV::Object{{"actorId","level-player"},{"level",2.5}}},"fractional-level-up");
+  add(Envelope{"player:buff-applied",JV::Object{{"actorId","level-player"},{"buffId","war-cry"}}},"confirmed-buff");
+  add(Envelope{"player:buff-applied",JV::Object{{"actorId","other-player"},{"buffId","war-cry"}}},"foreign-buff");
+  add(Envelope{"player:buff-applied",JV::Object{{"actorId","level-player"},{"buffId","unknown"}}},"unknown-buff");
+  add(Envelope{"player:pickup-confirmed",JV::Object{{"actorId","level-player"},{"itemId","coins"},{"quantity",37}}},"confirmed-pickup");
+  add(Envelope{"player:pickup-confirmed",JV::Object{{"actorId","other-player"},{"itemId","coins"},{"quantity",37}}},"foreign-pickup");
+  add(Envelope{"player:pickup-confirmed",JV::Object{{"actorId","level-player"},{"itemId","coins"},{"quantity",.5}}},"fractional-pickup");
   std::string error;
   check(server.start(&error), "level-sync: scripted socket starts");
   if (!server.port()) return;
@@ -3033,6 +3039,17 @@ void remote_level_follows_authority_across_admissions() {
   deliver("explicit-level-up",2);check(count_levels()==1,"level-up: explicit server event crosses the real session seam once");
   deliver("foreign-level-up",2);deliver("fractional-level-up",2);
   check(count_levels()==0,"level-up: foreign actor and invalid fractional level are ignored");
+  deliver("confirmed-buff",2);
+  auto events=session.drain_events();
+  check(std::count_if(events.begin(),events.end(),[](const auto& e){return e.type==PresentationEventType::BuffApplied && e.text=="war-cry";})==1,"particles: accepted buff crosses real socket once");
+  deliver("foreign-buff",2);deliver("unknown-buff",2);
+  events=session.drain_events();
+  check(std::none_of(events.begin(),events.end(),[](const auto& e){return e.type==PresentationEventType::BuffApplied;}),"particles: foreign and unknown buffs ignored");
+  deliver("confirmed-pickup",2);events=session.drain_events();
+  check(std::count_if(events.begin(),events.end(),[](const auto& e){return e.type==PresentationEventType::PickupConfirmed && e.item_id=="coins" && e.value==37;})==1,"particles: real pickup confirmation retains admitted quantity");
+  deliver("foreign-pickup",2);deliver("fractional-pickup",2);events=session.drain_events();
+  check(std::none_of(events.begin(),events.end(),[](const auto& e){return e.type==PresentationEventType::PickupConfirmed;}),"particles: foreign and malformed pickups ignored");
+
   session.shutdown(); server.stop();
 }
 

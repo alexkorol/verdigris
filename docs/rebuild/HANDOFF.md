@@ -1,5 +1,9 @@
 # Native reconstitution handoff
 
+## Implementation milestone — gameplay particles
+
+Confirmed War Cry, dash, critical contact, and ground pickups now use the bounded native particle module. Eight native suites and both focused particle scenarios passed; production captures inspected. Package verification and normal-launch promotion remain in progress. The installed baseline below is preserved until those checks complete. Task record: `orchestration/recoveries/2026-09-14-gameplay-particles/STATUS.md`.
+
 ## Current handover — illustrated menus and native particles installed
 
 Normal entry: `C:/Users/Alex/Documents/Verdigris Native 2026-09-13/Verdigris.exe`.

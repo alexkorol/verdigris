@@ -1526,6 +1526,23 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     }
     return;
   }
+  if (envelope.event == "player:buff-applied") {
+    const auto* actor=json_string(envelope.data.get("actorId"));
+    const auto* buff=json_string(envelope.data.get("buffId"));
+    if(actor && *actor==model_.player.uuid && buff && *buff=="war-cry")
+      pending_events_.push_back({PresentationEventType::BuffApplied,*actor,"",*buff});
+    return;
+  }
+  if (envelope.event == "player:pickup-confirmed") {
+    const auto* actor=json_string(envelope.data.get("actorId"));
+    const auto* item=json_string(envelope.data.get("itemId"));
+    const auto* quantity=envelope.data.get("quantity");
+    const auto n=quantity?quantity->number():std::optional<double>{};
+    if(actor && *actor==model_.player.uuid && item && !item->empty() && n &&
+       std::isfinite(*n) && *n>0 && *n<=1000000000 && std::floor(*n)==*n)
+      pending_events_.push_back({PresentationEventType::PickupConfirmed,*actor,*item,"",static_cast<int>(*n)});
+    return;
+  }
   if (envelope.event == "player:level-up") {
     const auto* actor=json_string(envelope.data.get("actorId"));
     const double level=json_number(envelope.data.get("level"),0);

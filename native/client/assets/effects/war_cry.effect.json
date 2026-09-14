@@ -1,0 +1,166 @@
+{
+  "duration": 0.4,
+  "loop": false,
+  "layers": [
+    {
+      "name": "outward-bronze",
+      "spawn": "burst",
+      "space": "world",
+      "blend": "additive",
+      "count": 40,
+      "lifetime": [
+        0.55,
+        0.6
+      ],
+      "sizeStart": [
+        9,
+        9
+      ],
+      "sizeEnd": [
+        1,
+        1
+      ],
+      "colorStart": [
+        1,
+        0.85,
+        0.45,
+        1
+      ],
+      "colorEnd": [
+        1,
+        0.45,
+        0.1,
+        0
+      ],
+      "frames": [
+        "spark"
+      ],
+      "shape": "ring",
+      "radius": 18,
+      "radialSpeed": 130,
+      "positionMin": [
+        0,
+        0,
+        8
+      ],
+      "positionMax": [
+        0,
+        0,
+        8
+      ],
+      "velocityMin": [
+        0,
+        0,
+        6
+      ],
+      "velocityMax": [
+        0,
+        0,
+        14
+      ],
+      "drag": 0.7
+    },
+    {
+      "name": "echo",
+      "spawn": "burst",
+      "space": "world",
+      "blend": "additive",
+      "count": 32,
+      "lifetime": [
+        0.55,
+        0.6
+      ],
+      "sizeStart": [
+        6,
+        6
+      ],
+      "sizeEnd": [
+        1,
+        1
+      ],
+      "colorStart": [
+        1,
+        0.7,
+        0.22,
+        0.9
+      ],
+      "colorEnd": [
+        1,
+        0.45,
+        0.1,
+        0
+      ],
+      "frames": [
+        "spark"
+      ],
+      "shape": "ring",
+      "radius": 12,
+      "radialSpeed": 105,
+      "delay": 0.15,
+      "positionMin": [
+        0,
+        0,
+        20
+      ],
+      "positionMax": [
+        0,
+        0,
+        20
+      ]
+    },
+    {
+      "name": "rising-flecks",
+      "spawn": "burst",
+      "space": "world",
+      "blend": "additive",
+      "count": 14,
+      "lifetime": [
+        0.45,
+        0.8
+      ],
+      "sizeStart": [
+        3,
+        14
+      ],
+      "sizeEnd": [
+        1,
+        5
+      ],
+      "colorStart": [
+        1,
+        0.85,
+        0.45,
+        1
+      ],
+      "colorEnd": [
+        1,
+        0.45,
+        0.1,
+        0
+      ],
+      "frames": [
+        "streak"
+      ],
+      "positionMin": [
+        -16,
+        -12,
+        16
+      ],
+      "positionMax": [
+        16,
+        12,
+        65
+      ],
+      "velocityMin": [
+        -12,
+        -12,
+        35
+      ],
+      "velocityMax": [
+        12,
+        12,
+        75
+      ]
+    }
+  ]
+}

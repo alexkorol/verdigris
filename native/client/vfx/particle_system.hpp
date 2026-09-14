@@ -24,6 +24,7 @@ struct Layer {
   std::string name;bool continuous=false,local=false,additive=false,glow=false;
   float delay=0,duration=.1f,rate=0,life_min=.2f,life_max=.4f,drag=0,spin=0,fps=0;
   int count=1;Vec3 pos_min{},pos_max{},vel_min{},vel_max{},accel{};
+  bool radial=false;float radius=0,radial_speed=0;
   std::array<float,2> size_start{3,3},size_end{1,1};
   Color color_start{1,1,1,1},color_end{1,1,1,0};
   std::vector<std::string> frames;
@@ -76,7 +77,7 @@ inline bool load_assets(const std::string& root,Assets& destination) {
     }
     if(!a.regions.emplace(name,region).second)return fail("Duplicate VFX tile");
   }
-  for(const char* name: {"level_up","melee_hit_small","foot_dust","bowl_ember_idle","burning_touch_contact","simple_death_puff","projectile_trail_simple"}) {
+  for(const char* name: {"level_up","melee_hit_small","foot_dust","bowl_ember_idle","burning_touch_contact","simple_death_puff","projectile_trail_simple","war_cry","dash_dust","critical_hit","pickup_motes"}) {
     data::J doc;if(!data::read(root+"/"+name+".effect.json",doc,a.error))return fail(a.error);
     Effect effect;effect.name=name;effect.duration=data::num(doc,"duration",1);effect.loop=data::flag(doc,"loop");
     if(!std::isfinite(effect.duration)||effect.duration<=0||effect.duration>10)return fail("Invalid VFX effect duration");
@@ -86,6 +87,8 @@ inline bool load_assets(const std::string& root,Assets& destination) {
       l.local=data::str(j,"space")=="local";l.additive=data::str(j,"blend")=="additive";l.glow=data::flag(j,"glow");
       l.delay=data::num(j,"delay",0);l.duration=data::num(j,"duration",effect.duration);
       l.rate=data::num(j,"rate",0);l.count=static_cast<int>(data::num(j,"count",1));
+      l.radial=data::str(j,"shape")=="ring";l.radius=data::num(j,"radius",0);l.radial_speed=data::num(j,"radialSpeed",0);
+      if(!std::isfinite(l.radius)||!std::isfinite(l.radial_speed)||l.radius<0||l.radius>200||std::abs(l.radial_speed)>400)return fail("Invalid radial VFX bounds");
       const auto life=data::values<2>(j,"lifetime",{.2f,.4f});l.life_min=life[0];l.life_max=life[1];
       l.drag=data::num(j,"drag",0);l.spin=data::num(j,"spin",0);l.fps=data::num(j,"fps",0);
       l.pos_min=data::vec(j,"positionMin");l.pos_max=data::vec(j,"positionMax");
@@ -146,11 +149,17 @@ public:
         int count=0;
         if(l.continuous){e.carry[index]+=l.rate*dt;count=static_cast<int>(e.carry[index]);e.carry[index]-=count;}
         else if(!e.burst[index]){count=l.count;e.burst[index]=true;}
+        const float phase=l.radial?unit(e)*6.2831853f:0;
         for(int n=0;n<count;++n) {
           if(particles.size()>=max_particles){++dropped;continue;}
           Particle p;p.layer=&l;p.emitter=e.id;p.attachment=e.attachment;
           p.pos=random(e,l.pos_min,l.pos_max)+(l.local?Vec3{}:*origin);p.previous=p.pos;
           p.velocity=random(e,l.vel_min,l.vel_max);p.life=mix(l.life_min,l.life_max,unit(e));
+          if(l.radial) {
+            const float angle=phase+6.2831853f*float(n)/float(std::max(1,count));
+            const Vec3 direction{std::cos(angle),std::sin(angle),0};
+            p.pos=p.pos+direction*l.radius;p.previous=p.pos;p.velocity=p.velocity+direction*l.radial_speed;
+          }
           p.rotation=0;particles.push_back(std::move(p));++spawned;
         }
       }

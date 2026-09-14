@@ -1,0 +1,114 @@
+{
+  "duration": 0.1,
+  "loop": false,
+  "layers": [
+    {
+      "name": "wake",
+      "spawn": "burst",
+      "space": "world",
+      "blend": "alpha",
+      "count": 5,
+      "lifetime": [
+        0.18,
+        0.35
+      ],
+      "sizeStart": [
+        10,
+        8
+      ],
+      "sizeEnd": [
+        22,
+        18
+      ],
+      "colorStart": [
+        0.7,
+        0.56,
+        0.34,
+        0.55
+      ],
+      "colorEnd": [
+        0.6,
+        0.5,
+        0.34,
+        0
+      ],
+      "frames": [
+        "smoke0",
+        "smoke1",
+        "smoke2",
+        "smoke3"
+      ],
+      "positionMin": [
+        -5,
+        -5,
+        0
+      ],
+      "positionMax": [
+        5,
+        5,
+        4
+      ],
+      "velocityMin": [
+        -12,
+        -12,
+        9
+      ],
+      "velocityMax": [
+        12,
+        12,
+        30
+      ],
+      "drag": 2,
+      "fps": 9
+    },
+    {
+      "name": "grit",
+      "spawn": "burst",
+      "space": "world",
+      "blend": "alpha",
+      "count": 3,
+      "lifetime": [
+        0.15,
+        0.3
+      ],
+      "sizeStart": [
+        3,
+        3
+      ],
+      "sizeEnd": [
+        1,
+        1
+      ],
+      "colorStart": [
+        0.95,
+        0.8,
+        0.5,
+        0.85
+      ],
+      "colorEnd": [
+        1,
+        0.45,
+        0.1,
+        0
+      ],
+      "frames": [
+        "dot"
+      ],
+      "velocityMin": [
+        -22,
+        -22,
+        20
+      ],
+      "velocityMax": [
+        22,
+        22,
+        45
+      ],
+      "acceleration": [
+        0,
+        0,
+        -140
+      ]
+    }
+  ]
+}

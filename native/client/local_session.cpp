@@ -397,7 +397,10 @@ void LocalCoreSession::translate_new_events() {
       case verdigris::EventType::DamageApplied: out.type = PresentationEventType::DamageApplied; break;
       case verdigris::EventType::ActorDied: out.type = PresentationEventType::ActorDied; break;
       case verdigris::EventType::ItemDropped: out.type = PresentationEventType::ItemDropped; break;
-      case verdigris::EventType::ItemPickedUp: out.type = PresentationEventType::ItemPickedUp; break;
+      case verdigris::EventType::BuffApplied: out.type = PresentationEventType::BuffApplied; break;
+      case verdigris::EventType::ItemPickedUp:
+        pending_events_.push_back({PresentationEventType::PickupConfirmed,event.actor_id,event.item_id,event.text,event.value});
+        out.type = PresentationEventType::ItemPickedUp; break;
       case verdigris::EventType::ItemEquipped: out.type = PresentationEventType::ItemEquipped; break;
       case verdigris::EventType::ItemExtracted: out.type = PresentationEventType::ExtractionCompleted; break;
       // TASK-0122 Phase A: the previously-dropped lifecycle events now cross

@@ -2148,7 +2148,9 @@ void ProtocolSession::auto_pickup_gold(const std::function<void(const Envelope&)
     GameItem item;
     if (!world_->take_ground_item(uuid,&item)) continue;
     item.slot=-1;
+    const auto item_id=item.id;const int quantity=item.qty;
     inventory_.add(std::move(item));
+    emit(Envelope{"player:pickup-confirmed",JsonValue::Object{{"actorId",identity_},{"itemId",item_id},{"quantity",quantity}}});
     changed=true;
   }
   if (changed) { emit_inventory_refresh(emit); emit_ground_change(emit); }
@@ -2213,7 +2215,11 @@ void ProtocolSession::handle_take_ground(const std::string& uuid, const std::fun
   if (!relic_scion_id.empty()) mark_relic_recovered(relic_scion_id);
   quest_trigger("loot", emit);
   if (took_vessel) quest_trigger("loot-vessel", emit);
+  const auto item_id=item.id;const int quantity=item.qty;
   auto result=inventory_.add(std::move(item));
+  int admitted=quantity;
+  for(const auto& spill:result.overflow)admitted-=spill.qty;
+  if(admitted>0)emit(Envelope{"player:pickup-confirmed",JsonValue::Object{{"actorId",identity_},{"itemId",item_id},{"quantity",admitted}}});
   bool spilled=false;
   for (auto& spill:result.overflow) { world_->add_ground_item(std::move(spill),gx,gy); spilled=true; }  // no room: stays on the ground
   emit_inventory_refresh(emit);
@@ -3126,7 +3132,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     }
     return;
   }
-  if (envelope.event=="player:skill:trigger") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor&&world_->in_instance()){ if (respawn_protection_until_ms_ > 0) respawn_protection_until_ms_ = 0; active_skill_id_=as_string(payload?payload->get("skillId"):nullptr,"primary-attack"); if (active_skill_id_ == "war-cry") { if (actor->stats.resource < presentation_constants::kWarCryResourceCost) { emit_message(emit,"Not enough resource for War Cry."); return; } actor->stats.resource -= presentation_constants::kWarCryResourceCost; actor->war_cry_attack_bonus = presentation_constants::kWarCryAttackBonus; actor->war_cry_ticks_remaining = presentation_constants::kWarCryDurationTicks; emit_message(emit,"War Cry: attack empowered."); return; } world_->set_engaged_by(identity_); const auto direction=as_string(payload?payload->get("direction"):nullptr,"down"); const auto wear_totals=wear_.totals(); const int wear_bonus=(std::max)((std::max)(wear_totals.attack.stab,wear_totals.attack.slash),(std::max)(wear_totals.attack.crush,wear_totals.attack.range)); world_->start_player_attack(actor->stats.level,actor->stats.attack+(std::max)(0,wear_bonus),now_ms(),direction); process_combat(now_ms(),emit); /* real-clock cadence: polls advance combat */ } return; }
+  if (envelope.event=="player:skill:trigger") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor&&world_->in_instance()){ if (respawn_protection_until_ms_ > 0) respawn_protection_until_ms_ = 0; active_skill_id_=as_string(payload?payload->get("skillId"):nullptr,"primary-attack"); if (active_skill_id_ == "war-cry") { if (actor->stats.resource < presentation_constants::kWarCryResourceCost) { emit_message(emit,"Not enough resource for War Cry."); return; } actor->stats.resource -= presentation_constants::kWarCryResourceCost; actor->war_cry_attack_bonus = presentation_constants::kWarCryAttackBonus; actor->war_cry_ticks_remaining = presentation_constants::kWarCryDurationTicks; emit(Envelope{"player:buff-applied", JsonValue::Object{{"actorId",identity_},{"buffId","war-cry"}}}); emit_message(emit,"War Cry: attack empowered."); return; } world_->set_engaged_by(identity_); const auto direction=as_string(payload?payload->get("direction"):nullptr,"down"); const auto wear_totals=wear_.totals(); const int wear_bonus=(std::max)((std::max)(wear_totals.attack.stab,wear_totals.attack.slash),(std::max)(wear_totals.attack.crush,wear_totals.attack.range)); world_->start_player_attack(actor->stats.level,actor->stats.attack+(std::max)(0,wear_bonus),now_ms(),direction); process_combat(now_ms(),emit); /* real-clock cadence: polls advance combat */ } return; }
   if (envelope.event=="dev:give") { if (payload) handle_give(*payload,emit); return; }
   if (envelope.event=="dev:drop") { if (payload) handle_drop(*payload,emit); return; }
   if (envelope.event=="dev:forcecritical") { world_->player_combat_mods().force_critical=true; emit_message(emit,"Your next strike will be a critical hit."); return; }
