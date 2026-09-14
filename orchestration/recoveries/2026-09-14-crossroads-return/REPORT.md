@@ -1,5 +1,40 @@
 # Crossroads safe-return repair
 
+## Final outcome — installed 2026-09-14
+
+Normal executable: `C:\Users\Alex\Documents\Verdigris Native 2026-09-13\Verdigris.exe`.
+Clean packaged source: `34e855c1a4124cba42fd8c008863094454578c42`.
+Launcher SHA256: `066796290F76569D6CD16CDEBAC80CEBEA4140F5A1A96A1A0DE54C943AC1EAAA`.
+Client SHA256: `352449271A636A0F534A03B375E2B6B7B52CF9CEFE21C054B89F2ACE6D87D99A`.
+Subsequent commits contain handover/evidence only, not unbuilt game changes.
+
+Completed checks: all 80 scenarios in the exact package; eight native suites;
+same executable and same isolated QA profile saved/reloaded Effects 70%; twice
+launched final package with copied owner save; actual normal installation's
+paths, working directory, normal profile, perspective startup, menu-confirmed
+quit and owned-process cleanup. Final sustained-drag average 39.880 ms, peak
+46.869 ms; static fullscreen 22.8 ms and moving fullscreen 25.4 ms average.
+The average bound stays 40 ms. Viewed final actual-window composition, bank
+and Crossroads retained-loadout captures. These are automated native checks
+and inspected captures, not an owner-operated live walkthrough.
+
+The old owner game exited naturally. Promotion backed up the full installation
+and save to `native/build/normal-launch-rollback-before-34e855c1a/`, preserved
+the save byte-for-byte during copying, then launched the normal entry. Its
+first startup migrated the exact legacy store into the accessible bank under
+the full save-preservation comparison. The installed save now has zero legacy
+store rows and 370 bank coins. Normal settings stayed absent/unchanged. No QA
+save replaced the owner's profile. Withdraw those coins in one click at Rhea's
+Countinghouse; future safe returns retain the living Scion's carried loadout.
+
+Remaining failures: none in the final gates. Earlier performance, fixture
+sequencing and floor-cache failures below are retained as failed intermediate
+results. None of those candidate packages was promoted. Nothing remains running
+or blocked for this repair. Shared baseline synchronization is a normal
+fast-forward publication under the standing commit/push authorization.
+
+## Implementation and intermediate verification record
+
 Owner report: equipped/carried items and coins disappear when leaving a combat
 zone. Reproduced: ProtocolSession::finish_extraction drained all inventory and
 all worn seats into house_store_ on every return path. This store was separate

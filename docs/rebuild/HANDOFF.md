@@ -1,16 +1,30 @@
 # Native reconstitution handoff
 
-## Crossroads return correction in progress
+## Current handover — Crossroads return fixed and installed
 
-The owner found a gap in the previous acceptance: safe return automatically
-stripped all carried/worn items and coins into inaccessible extraction storage.
-The corrected protocol retains the loadout and purse, and old stored records
-become withdrawable from the existing House bank. Eight suites and focused
-native return/restart checks passed; clean final packaging follows. The owner's
-normal game is running on 2651bd498 and remains untouched until it is closed.
+Normal entry: `C:\Users\Alex\Documents\Verdigris Native 2026-09-13\Verdigris.exe`.
+Installed clean source: `34e855c1a4124cba42fd8c008863094454578c42`.
+Safe return retains the living Scion's items, coins, equipped seats and ratings.
+The owner's existing 370 coins were recovered from legacy extraction storage
+into Rhea's Countinghouse bank; use its single-click **withdraw all** row.
+No equipment ownership or seat was guessed, and no QA profile was promoted.
+
+All 80 final packaged scenarios, eight native suites, same-executable/same-QA-
+profile settings restart, copied-save migration/restart and the installed
+normal-entry smoke passed. Actual window, bank and return captures inspected.
+Final drag average 39.880 ms; moving fullscreen average 25.4 ms, under the
+unchanged 40 ms average gate. Earlier failed candidates were never installed;
+their failures and corrections are retained in the report.
+
+The owner game closed naturally before promotion; no owner process was killed.
+Full rollback including the prior save:
+`native/build/normal-launch-rollback-before-34e855c1a/`.
+Only documentation/evidence commits follow the packaged source. Publish the
+handover to both `codex/native-consolidated-20260913` and the preserved shared
+baseline `codex/native-reconstitution` by normal fast-forward push.
 See `orchestration/recoveries/2026-09-14-crossroads-return/REPORT.md`.
 
-## Current handover — installed and shared baseline verified
+## Previous handover — inventory extensions baseline
 
 Normal entry: `C:\Users\Alex\Documents\Verdigris Native 2026-09-13\Verdigris.exe`.
 Installed source: `2651bd4985e698fade744b8aeea5c84f9c251d57` (clean).
