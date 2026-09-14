@@ -7,6 +7,10 @@ void paint_lineage_door(ClientState& state,HDC dc,const RECT& bounds,render::Lis
   skin::set_ui_scale(s);
   const int saved=SaveDC(dc);SetBkMode(dc,TRANSPARENT);
   HBRUSH back=CreateSolidBrush(RGB(18,17,15));FillRect(dc,&bounds,back);DeleteObject(back);
+  if(state.billboards.menu_gateway.ready()) {
+    const auto& art=state.billboards.menu_gateway;SetStretchBltMode(dc,HALFTONE);
+    StretchBlt(dc,0,0,bounds.right,bounds.bottom,art.dc,0,0,art.width,art.height,SRCCOPY);
+  }
   const int width=std::min(int(bounds.right)-32*s,1100*s),left=(bounds.right-width)/2;
   const int top=std::max(24*s,(int(bounds.bottom)-680*s)/2);
   const int bottom=std::min(int(bounds.bottom)-24*s,top+650*s);
@@ -31,8 +35,11 @@ void paint_lineage_door(ClientState& state,HDC dc,const RECT& bounds,render::Lis
   auto button=[&](const ChronicleAction& action,const std::string& label,RECT box,bool active=false) {
     const bool hover=PtInRect(&box,state.mouse)!=FALSE;
     active = active || state.chronicles_selected == state.chronicle_hits.size();
-    skin::hud_panel(dc,box,active||hover?255:235,active?14*s:10*s);
-    RECT caption{box.left+15*s,box.top+9*s,box.right-15*s,box.bottom-8*s};
+    const auto& art=state.billboards.menu_control;
+    if(art.ready())skin::relic_control(dc,art.dc,art.width,art.height,box,active||hover,GetTickCount64()/1000.0);
+    else skin::hud_panel(dc,box,active||hover?255:235,active?14*s:10*s);
+    const int inset=std::min(int(box.right-box.left)*16/100,std::max(24*s,int(box.bottom-box.top)*4/5));
+    RECT caption{box.left+inset,box.top+3*s,box.right-inset,box.bottom-3*s};
     text(label,caption,active||hover?skin::kGold:skin::kInk,skin::font_body(),DT_CENTER|DT_VCENTER|DT_SINGLELINE|DT_END_ELLIPSIS);
     state.chronicle_hits.push_back({box,action});
     tag("action:"+action.command+(action.arg.empty()?"":":"+action.arg),box);
@@ -42,7 +49,10 @@ void paint_lineage_door(ClientState& state,HDC dc,const RECT& bounds,render::Lis
   for(const auto& house:model.chronicle.houses) selected_exists |= house.id==state.selected_house_id;
   if(has_house&&!selected_exists) state.selected_house_id=model.chronicle.houses.front().id;
   auto field=[&](const std::string& command,const std::string& value,const std::string& placeholder,RECT box) {
-    button({"",command,"",""},"",box,state.chronicle_edit==command);
+    const bool focus=state.chronicle_edit==command || state.chronicles_selected==state.chronicle_hits.size();
+    skin::hud_panel(dc,box,255,focus?14*s:10*s);
+    state.chronicle_hits.push_back({box,{"",command,"",""}});
+    tag("action:"+command,box);
     skin::paint_entry(dc,box,value,placeholder,state.chronicle_cursor,state.chronicle_edit==command);
     tag("field:"+command,box);
   };

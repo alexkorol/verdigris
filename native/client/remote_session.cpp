@@ -1506,6 +1506,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       outgoing.type = PresentationEventType::DamageApplied;
       outgoing.actor_id = target ? *target : "";
       outgoing.text = "outgoing";
+      outgoing.item_id = skill ? *skill : "";
       outgoing.value = amount;
       outgoing.critical = critical;
       outgoing.style = style;
@@ -1523,6 +1524,13 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
 
       }
     }
+    return;
+  }
+  if (envelope.event == "player:level-up") {
+    const auto* actor=json_string(envelope.data.get("actorId"));
+    const double level=json_number(envelope.data.get("level"),0);
+    if(actor && *actor==model_.player.uuid && std::isfinite(level) && level>1 && level<=10000 && std::floor(level)==level)
+      pending_events_.push_back({PresentationEventType::LevelUp,*actor,"","",static_cast<int>(level)});
     return;
   }
   if (envelope.event == "dev:state") {

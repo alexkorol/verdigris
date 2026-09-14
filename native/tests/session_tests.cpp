@@ -2997,6 +2997,9 @@ void remote_level_follows_authority_across_admissions() {
       {"playerState", JV::Object{{"level", 4}}},
       {"scene", JV::Object{{"id", "road"}, {"type", "instance"}}}}}, "scene-level");
   add(login(2), "readmitted-two");
+  add(Envelope{"player:level-up", JV::Object{{"actorId","level-player"},{"level",3}}},"explicit-level-up");
+  add(Envelope{"player:level-up", JV::Object{{"actorId","other-player"},{"level",3}}},"foreign-level-up");
+  add(Envelope{"player:level-up", JV::Object{{"actorId","level-player"},{"level",2.5}}},"fractional-level-up");
   std::string error;
   check(server.start(&error), "level-sync: scripted socket starts");
   if (!server.port()) return;
@@ -3025,6 +3028,11 @@ void remote_level_follows_authority_across_admissions() {
   deliver("invalid-string", 2);
   deliver("scene-level", 4);
   deliver("readmitted-two", 2);
+  auto count_levels=[&] {int count=0;for(const auto& e:session.drain_events())count+=e.type==PresentationEventType::LevelUp;return count;};
+  check(count_levels()==0,"level-up: snapshots and admission never fabricate a celebration");
+  deliver("explicit-level-up",2);check(count_levels()==1,"level-up: explicit server event crosses the real session seam once");
+  deliver("foreign-level-up",2);deliver("fractional-level-up",2);
+  check(count_levels()==0,"level-up: foreign actor and invalid fractional level are ignored");
   session.shutdown(); server.stop();
 }
 

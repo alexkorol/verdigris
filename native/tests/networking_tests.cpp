@@ -524,7 +524,13 @@ void test_earned_level_survives_disk_restart_and_scion_switch() {
   const auto file = std::filesystem::temp_directory_path() /
       ("verdigris-earned-level-" + std::to_string(
           std::chrono::steady_clock::now().time_since_epoch().count()) + ".json");
-  const auto discard = [](const Envelope&) {};
+  int advancements=0;
+  const auto discard = [&](const Envelope& e) {
+    if(e.event=="player:level-up") {
+      ++advancements;
+      check(e.data["level"].number().value_or(0)==2 && e.data["actorId"].string(),"level-up event carries confirmed level and actor");
+    }
+  };
   std::string house, veteran, novice;
   JsonValue earned;
   {
@@ -590,6 +596,7 @@ void test_earned_level_survives_disk_restart_and_scion_switch() {
     check(earned["state"]["level"].number().value_or(0) == 2 &&
           earned["state"]["xp"]["current"].number().value_or(0) == 96,
           "two authored crypt kills produce authoritative level two and 96 XP");
+    check(advancements==1,"one earned level crossing emits exactly one level-up event");
     // Do not explicitly persist here: the final kill's ordinary server tick
     // must have written the progression even without another client command.
   }
@@ -623,6 +630,7 @@ void test_earned_level_survives_disk_restart_and_scion_switch() {
     std::filesystem::copy_file(file, std::filesystem::path(review_dir) / "earned-level-review.json",
                                std::filesystem::copy_options::overwrite_existing);
   }
+  check(advancements==1,"restart and Scion switches do not replay level-up events");
   // Simulate the previous save format: roster level exists, XP map does not.
   JsonValue legacy;
   {

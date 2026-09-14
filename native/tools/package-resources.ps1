@@ -4,6 +4,15 @@
 function Get-NativePackageResources([string]$Root) {
   $required = @(
     'native/build/verdigris_client.exe', 'native/build/verdigris_server.exe',
+    'native/client/assets/menu/bronze-gateway.png', 'native/client/assets/menu/amber-control.png',
+    'native/client/assets/effects/particles.atlas.json',
+    'native/client/assets/effects/level_up.effect.json',
+    'native/client/assets/effects/melee_hit_small.effect.json',
+    'native/client/assets/effects/foot_dust.effect.json',
+    'native/client/assets/effects/bowl_ember_idle.effect.json',
+    'native/client/assets/effects/burning_touch_contact.effect.json',
+    'native/client/assets/effects/simple_death_puff.effect.json',
+    'native/client/assets/effects/projectile_trail_simple.effect.json',
     'native/client/assets/fonts/sans/VerdigrisSans.ttf',
     'native/client/assets/fonts/sans/CC0.txt', 'native/client/assets/fonts/sans/README.md',
     'src/assets/fonts/pixelmix.ttf', 'src/assets/fonts/pixelmix_bold.ttf', 'src/assets/fonts/PxPlus_IBM_VGA8.ttf',

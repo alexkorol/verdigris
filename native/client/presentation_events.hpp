@@ -28,6 +28,7 @@ enum class PresentationEventType {
   Telegraph,
   Message,             // human-readable server/system line in `text`
   ProtocolError,       // malformed or unexpected envelope in `text`
+  LevelUp,             // Explicit confirmed advancement; never inferred on login.
   PlayerDashed,        // accepted authority travel; from/to are world units
 };
 

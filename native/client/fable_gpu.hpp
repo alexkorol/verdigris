@@ -55,6 +55,8 @@ struct Sprite {
   bool additive = false;
   float rotation = 0;  // Clockwise radians in the screen billboard plane.
   bool ground_layer = false;
+  bool crisp = false; // Small atlas signals retain their point-sampled silhouette.
+  std::array<float,4> uv{0,0,1,1};
 };
 struct Light {
   float x = 0, y = 0, elevation = 0, radius = 1;
@@ -183,7 +185,7 @@ float4 worldPS(WorldOut i) : SV_TARGET {
     c = pointPremult(i.uv);
     // Continuous blur radius, with a point-sampled sharp center. No discrete
     // preblurred sprite variants or texture filtering on in-focus pixels.
-    float radius = coc(i.dz)*3.6;
+    float radius = i.sprite.w >= 3 ? 0 : coc(i.dz)*3.6;
     if (radius > .001) {
       float2 delta = radius * i.dz / projection.y / max(i.sprite.xy,float2(.001,.001));
       float4 blur = blurPremult(i.uv)*4;
@@ -563,9 +565,9 @@ class Renderer {
     for(const auto& m:scene.world_meshes) if(m.opacity>=1&&!mesh(m)) return false;
     for(const auto& sprite:scene.sprites) {
       for(float f:{sprite.x,sprite.y,sprite.elevation,sprite.width,sprite.height,sprite.anchor_x,sprite.anchor_y,
-                   sprite.opacity,sprite.tint_r,sprite.tint_g,sprite.tint_b,sprite.flash,sprite.rotation})
+                   sprite.opacity,sprite.tint_r,sprite.tint_g,sprite.tint_b,sprite.flash,sprite.rotation,sprite.uv[0],sprite.uv[1],sprite.uv[2],sprite.uv[3]})
         if(!std::isfinite(f)) return fail("nonfinite billboard",E_INVALIDARG);
-      if(sprite.width<=0||sprite.height<=0||sprite.opacity<0||sprite.opacity>1||!textures_.contains(sprite.texture))
+      if(sprite.width<=0||sprite.height<=0||sprite.opacity<0||sprite.opacity>1||sprite.uv[0]<0||sprite.uv[1]<0||sprite.uv[2]>1||sprite.uv[3]>1||sprite.uv[0]>=sprite.uv[2]||sprite.uv[1]>=sprite.uv[3]||!textures_.contains(sprite.texture))
         return fail("invalid billboard or missing texture",E_INVALIDARG);
       const float dz=scene.camera.d0-sprite.y;
       if(dz<scene.camera.near_depth||dz>scene.camera.far_depth||sprite.opacity==0) continue;
@@ -582,15 +584,21 @@ class Renderer {
       const float dz=scene.camera.d0-s.y;
       const float coc=std::clamp((std::abs(dz-scene.camera.dzp)/scene.camera.dzp*1.6f-.12f)/.40f,0.f,1.f)*
                       std::clamp(scene.dof_strength,0.f,1.f);
-      const float pad=coc>0 ? (coc*3.6f+1)*dz/scene.camera.k : 0;
+      const float pad=!s.crisp && coc>0 ? (coc*3.6f+1)*dz/scene.camera.k : 0;
       for(const auto& uv:std::array<std::array<float,2>,4>{{{0,0},{1,0},{0,1},{1,1}}}) {
         const float u=uv[0]+(uv[0]*2-1)*pad/s.width,v=uv[1]+(uv[1]*2-1)*pad/s.height;
         const float x=(u-s.anchor_x)*s.width,y=(v-s.anchor_y)*s.height;
         vertices_.push_back({s.x+cosine*x-sine*y,s.y,s.elevation-sine*x-cosine*y,
-            s.flip?1-u:u,v,s.tint_r,s.tint_g,s.tint_b,s.opacity,s.width,s.height,s.flash,2});
+            s.uv[0]+(s.flip?1-u:u)*(s.uv[2]-s.uv[0]),s.uv[1]+v*(s.uv[3]-s.uv[1]),
+            s.tint_r,s.tint_g,s.tint_b,s.opacity,s.width,s.height,s.flash,s.crisp?3.f:2.f});
       }
       for(UINT i:{0u,2u,1u,1u,2u,3u}) indices_.push_back(base+i);
-      draws_.push_back({6,start,s.texture,s.additive?2:1,false});
+      const int blend=s.additive?2:1;
+      // Adjacent atlas quads share one draw without reordering transparency.
+      if(s.crisp && !draws_.empty() && draws_.back().texture==s.texture &&
+          draws_.back().blend==blend && !draws_.back().write_depth &&
+          draws_.back().start_index+draws_.back().index_count==start) draws_.back().index_count+=6;
+      else draws_.push_back({6,start,s.texture,blend,false});
     }
     for(const auto& m:scene.world_meshes) if(m.opacity<1&&!mesh(m)) return false;
     return true;

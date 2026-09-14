@@ -1,0 +1,55 @@
+{
+  "duration": 0.1,
+  "loop": false,
+  "layers": [
+    {
+      "name": "contact",
+      "spawn": "burst",
+      "space": "world",
+      "blend": "additive",
+      "count": 9,
+      "lifetime": [
+        0.2,
+        0.4
+      ],
+      "sizeStart": [
+        7,
+        7
+      ],
+      "sizeEnd": [
+        1,
+        1
+      ],
+      "colorStart": [
+        1,
+        0.86,
+        0.5,
+        1
+      ],
+      "colorEnd": [
+        1,
+        0.9,
+        0.7,
+        0
+      ],
+      "frames": [
+        "spark"
+      ],
+      "velocityMin": [
+        -90,
+        -40,
+        -10
+      ],
+      "velocityMax": [
+        90,
+        40,
+        110
+      ],
+      "acceleration": [
+        0,
+        0,
+        -160
+      ]
+    }
+  ]
+}

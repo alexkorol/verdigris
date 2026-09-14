@@ -381,6 +381,41 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
     }
     if(s) s->opacity=life;
   }
+  // The small shared atlas stays sharp at every perspective depth. No bloom
+  // or extra fullscreen pass; particles use the existing billboard pipeline.
+  const auto& vfx=state.particles;
+  constexpr std::uint64_t particle_texture=0x56465841544c4153ull;
+  if(vfx.assets.ready() && !vfx.particles.empty()) {
+    if(!r.gpu.has_texture(particle_texture,1))
+      r.gpu.upload_texture(particle_texture,vfx.assets.width,vfx.assets.height,vfx.assets.rgba.data(),vfx.assets.width*4,false,1);
+    if(r.gpu.has_texture(particle_texture,1)) {
+      int glows=0;
+      for(const auto& part:vfx.particles) {
+        const auto& layer=*part.layer;
+        const float interpolation=float(std::clamp(state.tick_accum_ms/50.0,0.0,1.0));
+        auto position=part.previous+(part.pos-part.previous)*interpolation;
+        if(layer.local) {
+          const auto anchor=particle_view::resolve(state,part.attachment);if(!anchor)continue;position=position+*anchor;
+        }
+        const float t=std::clamp((part.age+interpolation*.05f)/part.life,0.f,1.f);
+        if(t>=1)continue;
+        const auto mix=[&](float a,float b){return a+(b-a)*t;};
+        const float width=mix(layer.size_start[0],layer.size_end[0]),h=mix(layer.size_start[1],layer.size_end[1]);
+        if(width<=0 || h<=0)continue;
+        const auto frame=std::min(layer.frames.size()-1,static_cast<std::size_t>(part.age*layer.fps));
+        const auto uv=vfx.assets.regions.at(layer.frames[frame]);
+        fable_gpu::Sprite sp;sp.texture=particle_texture;sp.x=position.x;sp.y=position.y;
+        sp.elevation=height(position.x,position.y)+position.z;sp.width=width;sp.height=h;sp.anchor_y=.5f;
+        sp.tint_r=mix(layer.color_start[0],layer.color_end[0]);sp.tint_g=mix(layer.color_start[1],layer.color_end[1]);
+        sp.tint_b=mix(layer.color_start[2],layer.color_end[2]);sp.opacity=mix(layer.color_start[3],layer.color_end[3]);
+        sp.additive=layer.additive;sp.crisp=true;sp.rotation=part.rotation;
+        sp.uv={float(uv.x)/vfx.assets.width,float(uv.y)/vfx.assets.height,float(uv.x+uv.w)/vfx.assets.width,float(uv.y+uv.h)/vfx.assets.height};
+        sprites.push_back(sp);
+        if(layer.glow && glows<2 && lights.size()<24) {++glows;lights.push_back({position.x,position.y,sp.elevation,95,sp.tint_r,sp.tint_g,sp.tint_b,sp.opacity*.3f});}
+      }
+      trace.push_back({render::Op::Hud,0,0,0,int(vfx.particles.size()),"vfx:atlas-billboards"});
+    }
+  }
   std::vector<fable_gpu::Vertex> wall_vertices,cut_vertices;
   std::vector<std::uint32_t> wall_indices,cut_indices;
   const auto quad=[](auto& vertices,auto& indices,fable_gpu::Vertex a,fable_gpu::Vertex b,fable_gpu::Vertex c,fable_gpu::Vertex d) {

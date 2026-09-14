@@ -1,0 +1,51 @@
+{
+  "duration": 1,
+  "loop": true,
+  "layers": [
+    {
+      "name": "trail",
+      "spawn": "continuous",
+      "space": "world",
+      "blend": "additive",
+      "count": 8,
+      "lifetime": [
+        0.15,
+        0.3
+      ],
+      "sizeStart": [
+        6,
+        6
+      ],
+      "sizeEnd": [
+        1,
+        1
+      ],
+      "colorStart": [
+        0.75,
+        0.88,
+        1,
+        0.8
+      ],
+      "colorEnd": [
+        0.4,
+        0.65,
+        1,
+        0
+      ],
+      "frames": [
+        "spark"
+      ],
+      "rate": 35,
+      "velocityMin": [
+        -3,
+        -3,
+        -3
+      ],
+      "velocityMax": [
+        3,
+        3,
+        3
+      ]
+    }
+  ]
+}

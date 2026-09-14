@@ -2703,6 +2703,7 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
           actor->stats.life_max = 100 + derived * 10;
           actor->stats.life = actor->stats.life_max;
           world_->set_level(derived);
+          emit(Envelope{"player:level-up",JsonValue::Object{{"actorId",identity_},{"level",derived}}});
           emit_message(emit, "You are now level " + std::to_string(derived) + "!");
         }
         checkpoint_scion_progression();

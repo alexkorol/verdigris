@@ -868,6 +868,33 @@ inline bool hud_text_card(HDC dc,const RECT& plate,
   RestoreDC(dc,saved);return true;
 }
 
+// Authored physical menu control. Runtime labels stay outside the artwork;
+// focus changes illumination, not the control's hit rectangle or text width.
+inline void relic_control(HDC dc, HDC source, int sw, int sh, RECT r,
+                          bool focused, double phase) {
+  const BLENDFUNCTION blend{AC_SRC_OVER,0,static_cast<BYTE>(focused?255:218),AC_SRC_ALPHA};
+  const int height=r.bottom-r.top, source_y=sh*8/100, source_h=sh*80/100;
+  const int source_cap=sw/5;
+  const int cap=std::min(int(r.right-r.left)/3,std::max(1,height*source_cap/source_h));
+  // Preserve the physical endcaps at their original aspect ratio. Only the
+  // empty enamel label bed stretches for narrower Chronicle controls.
+  AlphaBlend(dc,r.left,r.top,cap,height,source,0,source_y,source_cap,source_h,blend);
+  AlphaBlend(dc,r.left+cap,r.top,r.right-r.left-2*cap,height,source,source_cap,source_y,sw-2*source_cap,source_h,blend);
+  AlphaBlend(dc,r.right-cap,r.top,cap,height,source,sw-source_cap,source_y,source_cap,source_h,blend);
+  if(!focused)return;
+  Gdiplus::Graphics g(dc);
+  const float cy=(r.top+r.bottom)*.5f;
+  for(int side: {-1,1}) {
+    const float x=side<0?r.left+(r.right-r.left)*.055f:r.right-(r.right-r.left)*.055f;
+    for(int n=0;n<5;++n) {
+      const float t=static_cast<float>(std::fmod(phase*.65+n*.19,1.0));
+      Gdiplus::SolidBrush spark(Gdiplus::Color(static_cast<BYTE>(190*(1-t)),255,207,103));
+      const float dx=static_cast<float>(std::sin(n*2.4+phase))*5;
+      g.FillRectangle(&spark,x+dx,cy-t*(r.bottom-r.top)*.55f,2.0f,3.0f);
+    }
+  }
+}
+
 }  // namespace skin
 
 #endif  // _WIN32

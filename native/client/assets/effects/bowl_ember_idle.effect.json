@@ -1,0 +1,61 @@
+{
+  "duration": 1,
+  "loop": true,
+  "layers": [
+    {
+      "name": "embers",
+      "spawn": "continuous",
+      "space": "local",
+      "blend": "additive",
+      "count": 8,
+      "lifetime": [
+        0.3,
+        0.7
+      ],
+      "sizeStart": [
+        4,
+        4
+      ],
+      "sizeEnd": [
+        1,
+        1
+      ],
+      "colorStart": [
+        1,
+        0.45,
+        0.06,
+        0.8
+      ],
+      "colorEnd": [
+        1,
+        0.15,
+        0.01,
+        0
+      ],
+      "frames": [
+        "dot"
+      ],
+      "rate": 7,
+      "positionMin": [
+        -4,
+        -3,
+        0
+      ],
+      "positionMax": [
+        4,
+        3,
+        2
+      ],
+      "velocityMin": [
+        -5,
+        -3,
+        17
+      ],
+      "velocityMax": [
+        5,
+        3,
+        35
+      ]
+    }
+  ]
+}

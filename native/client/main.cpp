@@ -32,6 +32,7 @@
 #include "presentation_state.hpp"
 #include "session.hpp"
 #include "build_identity.hpp"
+#include "vfx/particle_system.hpp"
 
 // TASK-0122 Phase A: the single named presentation constants table.
 namespace phase_a = verdigris::client::phase_a;
@@ -244,6 +245,8 @@ struct BillboardAssets {
   SpriteBitmap inventory_texture;
   skin::InventorySurfaceCache inventory_surfaces;
   SpriteBitmap splash;
+  SpriteBitmap menu_gateway;
+  SpriteBitmap menu_control;
   std::unordered_map<std::string, SpriteBitmap> item_art;
   // Web-client UI assets (src/assets): the wizard orb statue plate with its
   // alpha matte, its orb-disc mask, and the ornate nine-slice pane frame.
@@ -289,6 +292,8 @@ struct BillboardAssets {
     fk_panel.reset();
     fk_slot.reset();
     splash.reset();
+    menu_gateway.reset();
+    menu_control.reset();
     orb_art.reset();
     orb_mask.reset();
     ornate_frame.reset();
@@ -509,6 +514,13 @@ struct ClientState {
   std::vector<verdigris::Command> pending_local_commands;
   bool link_lost = false;
   WorldView world;
+  verdigris::client::vfx::ParticleSystem particles;
+  bool particle_assets_attempted=false;
+  std::string particle_scene;
+  std::uint32_t particle_seed=0x564658, bowl_emitter=0;
+  verdigris::Vec2 particle_last_step{};
+  bool particle_step_known=false;
+  float particle_step_distance=0;
   BillboardAssets billboards;
   std::vector<SceneryItem> scenery;
   bool w = false;
@@ -1335,6 +1347,8 @@ void load_framekit_assets(BillboardAssets& assets) {
   for (const auto& root : candidates) {
     if (!directory_exists(root)) continue;
     load_sprite(assets, root + "/splash/background_fallback.png", assets.splash);
+    load_sprite(assets, root + "/../menu/bronze-gateway.png", assets.menu_gateway);
+    load_sprite(assets, root + "/../menu/amber-control.png", assets.menu_control);
     load_sprite(assets, root + "/inventory/slot_texture.png", assets.inventory_texture);
     const bool chrome_loaded =
         load_sprite(assets, root + "/framekit/textures/panel.png",
@@ -2141,6 +2155,8 @@ void sync_world(ClientState& state) {
   }
 }
 
+#include "vfx/game_effects.hpp"
+
 void ingest_session_events(ClientState& state) {
   if (!state.session) return;
   verdigris::client::PresentationFx fx;
@@ -2187,6 +2203,7 @@ void ingest_session_events(ClientState& state) {
     const bool retained_death = event.type == verdigris::client::PresentationEventType::ActorDied &&
         state.event_world_known && state.event_world.route_id == state.world.route_id;
     const WorldView& event_world = retained_death ? state.event_world : state.world;
+    particle_event(state,event,event_world);
     verdigris::client::apply_presentation_event(fx, event_world, event, state.world.tick);
     voice_presentation_event(state, event, state.world.tick, batch_keys);
     if (!fx.hint.empty()) {
@@ -4116,6 +4133,8 @@ void ingest_events(ClientState& state, const RECT& bounds) {
       case verdigris::EventType::DamageApplied: {
         const bool to_player =
             subject && subject->kind == verdigris::ActorKind::Player;
+        ensure_particle_assets(state);
+        state.particles.play("melee_hit_small",{"",verdigris::client::vfx::Anchor::World,{float(ex),float(ey),52}},++state.particle_seed);
         add_effect(state, {EffectFx::Kind::Impact, ex, ey, 0.0, 0, 4});
         // Brief tint on the hit target's sprite so "what I hit" reads at a
         // glance, separate from the position flash.
@@ -4144,6 +4163,8 @@ void ingest_events(ClientState& state, const RECT& bounds) {
         break;
       }
       case verdigris::EventType::ActorDied:
+        ensure_particle_assets(state);
+        state.particles.play("simple_death_puff",{"",verdigris::client::vfx::Anchor::World,{float(ex),float(ey),8}},++state.particle_seed);
         state.telegraphs.erase(event.actor_id);
         // The core cancels all elite windups when the Scion dies; clear any
         // remaining client records at the same event boundary.
@@ -5732,73 +5753,7 @@ bool handle_frontend_key(ClientState& state, WPARAM key) {
   return true;
 }
 
-void paint_frontend(ClientState& state, HDC dc, const RECT& bounds, render::List& rl) {
-  FillRect(dc, &bounds, cached_brush(RGB(10, 14, 12)));
-  const auto& splash = state.billboards.splash;
-  if (splash.ready()) {
-    SetStretchBltMode(dc, HALFTONE);
-    StretchBlt(dc, 0, 0, bounds.right, bounds.bottom, splash.dc, 0, 0,
-               splash.width, splash.height, SRCCOPY);
-  }
-  const int scale = hud_scale(bounds.bottom);
-  skin::set_ui_scale(scale);
-  const int width = std::min<int>(bounds.right - 32, 540 * scale);
-  const int left = (bounds.right - width) / 2;
-  const int top = std::max<int>(16, (bounds.bottom - 410 * scale) / 2);
-  RECT panel{left, top, left + width, std::min<LONG>(bounds.bottom - 16, top + 410 * scale)};
-  skin::panel(dc, panel, skin::kPanelBorder, 248, 10.0f);
-  if (state.billboards.fk_panel.ready())
-    draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, panel);
-  const char* heading = state.frontend == Frontend::Title ? "VERDIGRIS"
-      : state.frontend == Frontend::Settings ? "Settings"
-      : state.frontend == Frontend::ConfirmQuit ? "Leave Verdigris?" : "Session menu";
-  SetBkMode(dc, TRANSPARENT);
-  SelectObject(dc, skin::font_title());
-  SetTextColor(dc, skin::kInk);
-  skin::text_out(dc, left + 28 * scale, top + 24 * scale, heading, static_cast<int>(std::strlen(heading)));
-  rl.push_back({render::Op::Hud, double(left), double(top), 0, 0, std::string("frontend:") + heading});
-  const auto rows = frontend_rows(state);
-  state.menu_hits.clear();
-  state.menu_selected = std::min(state.menu_selected, rows.size() - 1);
-  SelectObject(dc, skin::font_heading());
-  for (std::size_t i = 0; i < rows.size(); ++i) {
-    const int y = top + (86 + static_cast<int>(i) * 52) * scale;
-    RECT button{left + 24 * scale, y, left + width - 24 * scale, y + 42 * scale};
-    const bool selected = i == state.menu_selected;
-    skin::panel(dc, button, selected ? skin::kInk : skin::kPanelBorder, 245, 4.0f);
-    SetTextColor(dc, selected ? skin::kGold : skin::kInk);
-    const std::string text = (selected ? "> " : "  ") + rows[i];
-    skin::text_out(dc, button.left + 12 * scale, y + 9 * scale, text.c_str(), static_cast<int>(text.size()));
-    if (state.frontend == Frontend::Settings && (i == 1 || i == 2)) {
-      for (int step : {-1, 1}) {
-        const int offset = step < 0 ? 100 : 48;
-        RECT adjust{button.right - offset * scale, button.top + 4 * scale,
-                    button.right - (offset - 40) * scale, button.bottom - 4 * scale};
-        skin::panel(dc, adjust, skin::kInk, 250, 3.0f);
-        const char* label = step < 0 ? "-" : "+";
-        skin::text_out(dc, adjust.left + 14 * scale, adjust.top + 5 * scale, label, 1);
-        state.menu_hits.push_back({adjust, i, step});
-      }
-    }
-    state.menu_hits.push_back({button, i, 0});
-    rl.push_back({render::Op::Hud, double(button.left), double(y), 0, 0, "menu:" + rows[i]});
-  }
-  SelectObject(dc, skin::font_body());
-  SetTextColor(dc, skin::kInkDim);
-  const std::string help = state.frontend == Frontend::Settings
-      ? "Left / Right adjust  |  Enter select  |  Esc back"
-      : "Arrows / Tab focus  |  Enter select  |  Esc back";
-  RECT help_box{left + 24 * scale, top + 306 * scale,
-                 left + width - 24 * scale, panel.bottom - 12 * scale};
-  std::string detail = help;
-  if (state.frontend == Frontend::Settings && !state.settings_message.empty())
-    detail += "\n" + state.settings_message;
-  else if (state.session && state.screen == Screen::Expedition)
-    detail += "\nOnline world continues while menus are open.";
-  detail += std::string("\nBuild ") + std::string(VERDIGRIS_BUILD_ID).substr(0, 12) +
-      (VERDIGRIS_BUILD_DIRTY ? " (development)" : "");
-  skin::draw_text(dc, detail.c_str(), static_cast<int>(detail.size()), &help_box, DT_WORDBREAK | DT_NOPREFIX);
-}
+#include "frontend_art.hpp"
 
 // ── TASK-0161: contained capture-root isolation ─────────────────────────
 // A full validation gate passes -CaptureRoot (threaded through the
@@ -10911,6 +10866,7 @@ void consume_pad_buttons(ClientState& state) {
 // must never run faster than 20 Hz — the wire's movement sampling contract
 // and every ttl/tick constant depend on it.
 void fixed_game_tick(ClientState& state, const RECT& bounds) {
+  tick_particles(state);
   // Age the previous frame's feedback before ingesting new events. Otherwise
   // confirmed age-3 contact advances to age 4 before its first live paint.
   for (auto& fx : state.effects) ++fx.age;
@@ -21129,6 +21085,7 @@ int scenario_frontend_flow() {
 #include "consolidation_scenarios.hpp"
 #include "inventory_scenarios.hpp"
 #include "typography_scenarios.hpp"
+#include "vfx/particle_scenarios.hpp"
 
 int run_scenarios(const std::string& which) {
   struct Entry {
@@ -21136,6 +21093,7 @@ int run_scenarios(const std::string& which) {
     int (*fn)();
   };
   const Entry entries[] = {
+      {"menu-particles", scenario_menu_particles},
       {"typography", scenario_typography},
       {"consolidated-flow", scenario_consolidated_flow},
       {"inventory-equipment", scenario_inventory_equipment},

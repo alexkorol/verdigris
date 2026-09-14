@@ -60,6 +60,8 @@ int scenario_consolidated_flow() {
     }
   };
   menu(0);
+  const auto menu_captures=art_wave_capture_dir();
+  scenario_check(reference_present(state,1920,1080,menu_captures+"/relic-house-creation.png"),"consolidation: actual House creation surface captured");
   card("house-name"); type("Cedar Kin"); card("found-house");
   scenario_check(chronicles_pump(state, 250, [&] { return !state.session->model().chronicle.houses.empty(); }),
                  "consolidation: House button creates named House");
@@ -76,6 +78,8 @@ int scenario_consolidated_flow() {
   const std::string scion_id = scions.front().id;
   scenario_check(scions.front().name == "Mira" && scions.front().appearance == "female",
                  "consolidation: name and appearance reach authoritative roster");
+  scenario_check(reference_present(state,1920,1080,menu_captures+"/relic-scion-roster.png"),"consolidation: actual named Scion roster captured");
+  scenario_check(reference_present(state,960,600,menu_captures+"/relic-scion-roster-960.png"),"consolidation: narrow Scion roster captured");
   card("set-out");
   scenario_check(chronicles_pump(state, 250, [&] { return state.screen == Screen::Expedition; }),
                  "consolidation: clicked Scion reaches normal play");
