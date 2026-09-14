@@ -707,6 +707,7 @@ struct ClientState {
   HDC back_dc = nullptr;
   HBITMAP back_bitmap = nullptr;
   HGDIOBJ back_old = nullptr;
+  void* back_pixels = nullptr;
   int back_w = 0;
   int back_h = 0;
   // TASK-0157 audio, finally voiced: the deterministic mixer drains into a
@@ -9445,7 +9446,8 @@ void draw_raster_target_flash(HDC dc, const ClientState& state,
 
 #include "fable_world.hpp"
 
-void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
+void paint_scene(ClientState& state, HDC dc, const RECT& bounds,
+                 std::span<std::uint8_t> frame_pixels = {}) {
   sync_world(state);
   if (state.session) {
     const auto conn = state.session->connection_state();
@@ -9500,7 +9502,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   }
 
   const WorldActor& player = world.player;
-  bool fable_painted = state.camera.perspective && fable_world::paint(state, dc, bounds, rl);
+  bool fable_painted = state.camera.perspective && fable_world::paint(state, dc, bounds, rl, frame_pixels);
   if (state.camera.perspective && !fable_painted) {
     state.camera.perspective = false;
     state.hint = "GPU renderer unavailable: " + fable_world::renderer().gpu.error();
@@ -10808,7 +10810,7 @@ bool movement_hits_scenery(const ClientState& state, int dx, int dy,
   return scenery_blocks_segment(state, player->position, destination);
 }
 
-HBITMAP create_frame_bitmap(HDC dc, int width, int height) {
+HBITMAP create_frame_bitmap(HDC dc, int width, int height, void** pixels = nullptr) {
   // The GPU returns BGRA pixels and the HUD is composed by GDI. Keep that
   // composition in a 32-bit DIB instead of converting through a device bitmap
   // on every full-resolution world upload. The window still blits once.
@@ -10820,7 +10822,9 @@ HBITMAP create_frame_bitmap(HDC dc, int width, int height) {
   info.bmiHeader.biBitCount = 32;
   info.bmiHeader.biCompression = BI_RGB;
   void* bits = nullptr;
-  return CreateDIBSection(dc, &info, DIB_RGB_COLORS, &bits, nullptr, 0);
+  HBITMAP bitmap=CreateDIBSection(dc, &info, DIB_RGB_COLORS, &bits, nullptr, 0);
+  if(pixels)*pixels=bits;
+  return bitmap;
 }
 
 void paint(HWND window, HDC dc) {
@@ -10841,9 +10845,10 @@ void paint(HWND window, HDC dc) {
     if (state->back_bitmap) {
       DeleteObject(state->back_bitmap);
       state->back_bitmap = nullptr;
+      state->back_pixels = nullptr;
     }
     state->back_dc = CreateCompatibleDC(dc);
-    state->back_bitmap = create_frame_bitmap(dc, bounds.right, bounds.bottom);
+    state->back_bitmap = create_frame_bitmap(dc, bounds.right, bounds.bottom, &state->back_pixels);
     if (!state->back_dc || !state->back_bitmap) return;
     state->back_old = SelectObject(state->back_dc, state->back_bitmap);
     state->back_w = bounds.right;
@@ -10852,7 +10857,8 @@ void paint(HWND window, HDC dc) {
   HDC memory_dc = state->back_dc;
   LARGE_INTEGER paint_freq{}, paint_end{}, blit_begin{}, blit_end{};
   QueryPerformanceFrequency(&paint_freq);
-  paint_scene(*state, memory_dc, bounds);
+  paint_scene(*state, memory_dc, bounds, {static_cast<std::uint8_t*>(state->back_pixels),
+      static_cast<std::size_t>(bounds.right)*bounds.bottom*4});
   QueryPerformanceCounter(&blit_begin);
   BitBlt(dc, 0, 0, bounds.right, bounds.bottom, memory_dc, 0, 0, SRCCOPY);
   QueryPerformanceCounter(&blit_end);
@@ -11833,11 +11839,13 @@ void scenario_check(bool ok, const char* label) {
   }
 }
 
-void scenario_present_size(ClientState& state, int width, int height) {
-  // Use the same full-resolution composition surface as the live window.
+void scenario_present_size(ClientState& state, int width, int height, bool device_bitmap = false) {
+  // Default to the live composition surface. Only legacy floor-cache fixtures
+  // request a DDB: draw_floor deliberately bypasses that cache for DIBs.
   HDC display = GetDC(nullptr);
   HDC dc = CreateCompatibleDC(display);
-  HBITMAP bitmap = create_frame_bitmap(display, width, height);
+  void* pixels=nullptr;
+  HBITMAP bitmap = device_bitmap ? CreateCompatibleBitmap(display,width,height) : create_frame_bitmap(display, width, height, &pixels);
   ReleaseDC(nullptr, display);
   BITMAP format{};
   if (!dc || !bitmap || GetObject(bitmap, sizeof(format), &format) == 0 ||
@@ -11849,7 +11857,7 @@ void scenario_present_size(ClientState& state, int width, int height) {
   }
   HGDIOBJ old = SelectObject(dc, bitmap);
   RECT bounds{0, 0, width, height};
-  paint_scene(state, dc, bounds);
+  paint_scene(state, dc, bounds, {static_cast<std::uint8_t*>(pixels),pixels?static_cast<std::size_t>(width)*height*4:0});
   SelectObject(dc, old);
   DeleteObject(bitmap);
   DeleteDC(dc);
@@ -19030,15 +19038,16 @@ int scenario_resource_envelope() {
   ClientState state;
   scenario_begin(state);
   scenario_follow_camera(state);
-  scenario_present_size(state, 960, 600);
+  const auto present_cache=[&](int w,int h){scenario_present_size(state,w,h,true);};
+  present_cache(960, 600);
   const PresentationResources first = presentation_resources(state);
   scenario_check(first.floor_bitmaps == 1,
                  "resource-envelope: one floor bitmap after the first paint");
   int max_floor_w = first.floor_w;
   for (int cycle = 0; cycle < 8; ++cycle) {
-    scenario_present_size(state, 1920, 1080);
-    scenario_present_size(state, 640, 400);
-    scenario_present_size(state, 960, 600);
+    present_cache(1920, 1080);
+    present_cache(640, 400);
+    present_cache(960, 600);
     const PresentationResources mid = presentation_resources(state);
     max_floor_w = std::max(max_floor_w, mid.floor_w);
     scenario_check(mid.floor_bitmaps == 1,

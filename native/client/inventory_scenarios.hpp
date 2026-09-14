@@ -17,6 +17,11 @@ int scenario_inventory_equipment() {
     scenario_check(gpu.upload_texture(1,1,1,red.data(),4,false,1) && gpu.render(scene,nullptr),
         "inventory: GPU visibility fixture renders a real colored sprite");
     const std::vector<std::uint8_t> before(gpu.pixels_bgra().begin(),gpu.pixels_bgra().end());
+    std::vector<std::uint8_t> direct(before.size());
+    scenario_check(gpu.render(scene,nullptr,direct) && direct==before,
+        "inventory: direct composition preserves every GPU output byte");
+    scenario_check(!gpu.render(scene,nullptr,std::span<std::uint8_t>(direct).first(1)),
+        "inventory: direct composition rejects an undersized destination");
     scene.opaque_rect={160,50,280,150};
     scenario_check(gpu.render(scene,nullptr),"inventory: opaque-panel world exclusion renders");
     bool outside_equal=true,inside_changed=false;
@@ -103,6 +108,9 @@ int scenario_inventory_equipment() {
       frame_surface.dsBm.bmBitsPixel==32 && frame_surface.dsBm.bmWidth==state.back_w &&
       frame_surface.dsBm.bmHeight==state.back_h && state.back_w>0 && state.back_h>0,
       "inventory: actual window paints through the full-resolution 32-bit composition surface");
+  GdiFlush();
+  scenario_check(save_hbitmap_png(state.billboards,state.back_bitmap,art_wave_capture_dir()+"/native-window-composition.png"),
+      "inventory: actual window composition pixels captured");
   scenario_check(std::none_of(state.hud_rect_trace.begin(),state.hud_rect_trace.end(),[](const auto& hit){return hit.first=="inventory-extension-button";}),
       "extensions: no auxiliary controls appear before skill-tree unlock");
   for(std::size_t seat=11;seat<14;++seat){const auto r=make_pack_geom(1366,768).seats[seat];

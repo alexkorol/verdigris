@@ -395,9 +395,11 @@ class Renderer {
 
   // nullptr HDC is supported for deterministic offscreen verification. A live
   // HDC gets this exact completed frame synchronously, before the caller's HUD.
-  bool render(const Scene& scene, HDC dc) {
+  bool render(const Scene& scene, HDC dc, std::span<std::uint8_t> top_down_bgra = {}) {
     const auto start=std::chrono::steady_clock::now(); error_.clear();
     if(!valid(scene)) return false;
+    if(!top_down_bgra.empty() && top_down_bgra.size()!=static_cast<std::size_t>(scene.camera.width)*scene.camera.height*4)
+      return fail("invalid composition buffer size",E_INVALIDARG);
     if(!initialize() || !resize(scene.camera.width,scene.camera.height)) return false;
     if(!assemble(scene)) return false;
     if(!upload_geometry() || !upload_constants(scene)) return false;
@@ -456,7 +458,12 @@ class Renderer {
                   static_cast<std::size_t>(width_)*4);
     context_->Unmap(staging_.Get(),0);
     const auto composite_start=std::chrono::steady_clock::now();
-    if(dc) {
+    if(!top_down_bgra.empty()) {
+      // The caller owns a full-size top-down 32-bit DIB. Finish earlier GDI
+      // commands before writing its pixels directly, without a DIB conversion.
+      if(dc)GdiFlush();
+      std::memcpy(top_down_bgra.data(),readback_.data(),readback_.size());
+    } else if(dc) {
       BITMAPINFO info{};info.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);info.bmiHeader.biWidth=width_;
       info.bmiHeader.biHeight=-height_;info.bmiHeader.biPlanes=1;info.bmiHeader.biBitCount=32;
       info.bmiHeader.biCompression=BI_RGB;

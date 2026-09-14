@@ -95,3 +95,18 @@ Production sustained-drag capture inspected. Earlier diagnostic test mistakes
 GetObject) were corrected; assertions still require a valid rendered sprite,
 actual hidden-pixel changes, exact visible pixels and full-resolution surface.
 Final clean package verification follows this implementation checkpoint.
+
+Package 4c40fdccc passed gameplay, returns, recovery and dragging (34.172 ms),
+but nine assertions in the legacy resource-envelope fixture expected a DDB
+floor cache while its new DIB target intentionally bypassed that cache. The
+fixture now explicitly requests a device bitmap for its cache resize cycles;
+all existing one-bitmap, dimensions, pen, brush and effect limits remain. Its
+focused run passes. The failed package was not installed.
+
+Further profiling found conversion cost in the full-frame GDI upload. The live
+window now passes its known top-down DIB storage to the GPU compositor, which
+flushes preceding GDI commands and copies exact output bytes directly. Other
+HDC callers retain the normal conversion path. Buffer sizes are checked; real
+GPU tests prove byte-identical output and rejection of an undersized buffer.
+Focused inventory/recovery/GPU tests pass (37.906 ms dragging); the actual
+window backbuffer is captured for the final package inspection.

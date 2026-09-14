@@ -281,7 +281,8 @@ inline std::string actor_pose(const char* family,double x,double y,double attack
   return raster_art::available(name.c_str()) ? name : std::string(family)+"_"+dir;
 }
 
-inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& trace) {
+inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& trace,
+                  std::span<std::uint8_t> frame_pixels = {}) {
   auto& r=renderer();
   if(!r.prepare(state)) return false;
   const auto now=GetTickCount64();
@@ -491,7 +492,7 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
     if(key!=r.impact_key){r.impact_key=key;r.hitstop_until=now+55;r.contact_sprites=sprites;}
   }
   if(now<r.hitstop_until && !r.contact_sprites.empty()) scene.sprites=r.contact_sprites;
-  if(!r.gpu.render(scene,dc)) return false;
+  if(!r.gpu.render(scene,dc,frame_pixels)) return false;
   trace.push_back({render::Op::Hud,0,0,0,0,"fable:hardware:"+r.gpu.adapter_name()});
   for(const auto& fx:state.effects) if(fx.kind==EffectFx::Kind::DamageNumber) draw_effect(dc,state.camera,bounds,fx,trace);
   paint_telegraphs(state,dc,bounds,trace);
