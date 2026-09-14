@@ -248,6 +248,10 @@ class ProtocolSession {
                               const std::string& name, bool mortal, const std::string& appearance = "male");
   // N4: the real item pipeline state (12x7 backpack + wear seats); the forge
   // itself lives on the world (JS module singleton).
+  JsonValue loadout_json() const;
+  bool restore_loadout(const JsonValue& data);
+  void change_loadout(const std::string& house, const std::string& scion);
+  std::map<std::string,JsonValue> scion_loadouts_;
   PlayerInventory inventory_;
   WearSet wear_;
   // Protocol House bank (JS has no player:extract; core Simulation::house is

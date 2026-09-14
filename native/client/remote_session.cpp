@@ -116,8 +116,6 @@ ClientItemSlot parse_item_slot(const JsonValue& entry) {
       const int stab = static_cast<int>(json_number(attack->get("stab")));
       const int crush = static_cast<int>(json_number(attack->get("crush")));
       const int range = static_cast<int>(json_number(attack->get("range")));
-      slot.critical_chance = (std::max)(slot.critical_chance,
-                                        (std::max)(slash, (std::max)(stab, (std::max)(crush, range))));
       slot.attack_rating = (std::max)(slash, (std::max)(stab, (std::max)(crush, range)));
     }
   }
@@ -162,6 +160,11 @@ void apply_combat_fields(const JsonValue& combat, ClientPlayer& player) {
   if (gear_defense) player.defense += static_cast<int>(*gear_defense->number());
   player.gear_attack = static_cast<int>(*gear->number());
   player.combat_stats_present = true;
+  player.total_ratings_present=valid(combat.get("attackRating")) && valid(combat.get("defenseRating"));
+  if(player.total_ratings_present) {
+    player.attack_rating=static_cast<int>(*combat.get("attackRating")->number());
+    player.defense_rating=static_cast<int>(*combat.get("defenseRating")->number());
+  }
 }
 
 // TASK-0156: mirror the authoritative `passiveTree` envelope (schemaVersion
@@ -619,9 +622,13 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
       if (!command.extra.empty())
         (*(*envelope.data.object())["item"].object())["targetSlot"] = JsonValue(command.extra);
       break;
+    case ClientCommand::Type::MoveInventory:
+      envelope.event="player:inventory:commit";
+      envelope.data=JsonValue::Object{{"action","move"},{"item",JsonValue::Object{{"uuid",command.target}}},{"slot",command.value}};
+      break;
     case ClientCommand::Type::Unequip:
       envelope.event = "item:unequip";
-      envelope.data = JsonValue::Object{{"seat", command.target}};
+      envelope.data = JsonValue::Object{{"seat", command.target},{"uuid",command.extra}};
       break;
     case ClientCommand::Type::EnterZone:
       model_.chart.open = false;
@@ -1100,6 +1107,15 @@ void RemoteProtocolSession::sample_monster_display() {
 }
 
 void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
+  if(envelope.event=="inventory:operation") {
+    const auto* id=json_string(envelope.data.get("uuid"));
+    const auto* reason=json_string(envelope.data.get("reason"));
+    const auto* accepted=envelope.data.get("accepted");
+    if(id && accepted && accepted->boolean())
+      pending_events_.push_back({*accepted->boolean()?PresentationEventType::InventoryAccepted:PresentationEventType::EquipRejected,
+          model_.player.uuid,*id,reason?*reason:"",0});
+    return;
+  }
   if (envelope.event == "item:equip:rejected") {
     const std::string id = json_string(envelope.data.get("uuid")) ? *json_string(envelope.data.get("uuid")) : "";
     const std::string reason = json_string(envelope.data.get("reason")) ? *json_string(envelope.data.get("reason")) : "Equip rejected";
@@ -1125,6 +1141,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
   if (envelope.event == "player:login") {
     model_.player.appearance = "male";
     model_.player.combat_stats_present = false;
+    model_.player.total_ratings_present = false;
+    model_.attributes_present = false;
     has_player_sequence_ = false;
     clear_monster_display();
     clear_player_display();
@@ -1517,7 +1535,11 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
           static_cast<int>(json_number(hp->get("max"), model_.player.life_max));
       model_.player.alive = model_.player.life > 0;
     }
-    if (const auto* attributes = state->get("attributes")) {
+    if (const auto* attributes = state->get("attributes"); attributes &&
+        attributes->get("strength") && attributes->get("strength")->number() &&
+        attributes->get("dexterity") && attributes->get("dexterity")->number() &&
+        attributes->get("intelligence") && attributes->get("intelligence")->number()) {
+      model_.attributes_present=true;
       model_.attr_strength = static_cast<int>(
           json_number(attributes->get("strength"), model_.attr_strength));
       model_.attr_dexterity = static_cast<int>(

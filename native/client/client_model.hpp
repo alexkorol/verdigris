@@ -32,6 +32,9 @@ struct ClientPlayer {
   int defense = 0;
   int gear_attack = 0;
   bool combat_stats_present = false;
+  bool total_ratings_present = false;
+  int attack_rating = 0;
+  int defense_rating = 0;
 };
 
 struct ClientMonster {
@@ -235,6 +238,7 @@ struct ClientModel {
   ClientBankScreen bank;
   ClientChartScreen chart;
   // stats-manager attributes from the dev:state snapshot.
+  bool attributes_present = false;
   int attr_strength = 10;
   int attr_dexterity = 10;
   int attr_intelligence = 10;

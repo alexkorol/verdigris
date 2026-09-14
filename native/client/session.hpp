@@ -44,6 +44,7 @@ struct ClientCommand {
     UseAction,      // `target` = action name ("melee", ...)
     PickUp,         // `target` = ground item uuid; empty => underfoot
     Equip,          // `target` = item uuid
+    MoveInventory, // target UUID, value = destination backpack cell
     Unequip,        // `target` = worn seat; server rejects if backpack is full
     EnterZone,      // `target` = route/node id
     Extract,

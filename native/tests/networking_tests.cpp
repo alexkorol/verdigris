@@ -22,6 +22,41 @@ void check(bool condition, const char* message) {
   if (!condition) throw std::runtime_error(message);
 }
 
+void test_equipment_disk_and_scion_ownership() {
+  const auto file=std::filesystem::temp_directory_path()/"verdigris-equipment-disk-repair.json";
+  std::filesystem::remove(file);
+  auto ignore=[](const Envelope&){};
+  auto snapshot=[](ProtocolSession& session) {JsonValue value;verdigris::networking::parse_json(session.state_payload("disk-check"),value);return value["state"];};
+  ProtocolSession first("equipment-save","socket",41,true);first.attach_persistence(file);
+  first.handle({"dev:give",JsonValue::Object{{"itemId","vessel-wrap"},{"seed",42},{"itemLevel",12}}},ignore);
+  auto before=snapshot(first);std::string uuid;
+  for(const auto& row:*before["inventoryDetails"].array())if(row["id"].string() && *row["id"].string()=="vessel-wrap")uuid=*row["uuid"].string();
+  check(!uuid.empty(),"disk equipment fixture created");
+  first.handle({"item:equip",JsonValue::Object{{"item",JsonValue::Object{{"uuid",uuid},{"targetSlot","armor"}}}}},ignore);
+  before=snapshot(first);first.persist();
+  ProtocolSession restored("equipment-save","new-socket",41,true);restored.attach_persistence(file);
+  const auto after=snapshot(restored);
+  for(const char* key:{"inventoryDetails","wearDetails","combat","houseStoredItems"})
+    check(before[key].stringify()==after[key].stringify(),"disk restart preserves exact item roll, stats, location and storage");
+  verdigris::reserve_game_item_identity("00000000-0000-4000-8000-001000000000");
+  auto generated=verdigris::create_game_item("ring",{});
+  check(generated && generated->uuid>"00000000-0000-4000-8000-001000000000","new items cannot reuse persisted instance serials");
+  std::string house,one,two;
+  restored.handle({"chronicles:house:found",JsonValue::Object{{"name","Equipment House"}}},[&](const Envelope& e){
+    if(const auto* list=e.data["chronicle"]["houses"].array();list && !list->empty())house=*list->front()["id"].string();
+  });
+  auto create=[&](const char* name) {std::string id;restored.handle({"chronicles:scion:create",JsonValue::Object{{"houseId",house},{"name",name}}},[&](const Envelope& e){if(const auto* value=e.data["createdScionId"].string())id=*value;});return id;};
+  check(!house.empty(),"Scion ownership fixture has an actual House");
+  one=create("First");two=create("Second");
+  restored.handle({"chronicles:scion:set-out",JsonValue::Object{{"scionId",one}}},ignore);
+  const auto first_wear=snapshot(restored)["wearDetails"].stringify();
+  restored.handle({"chronicles:scion:set-out",JsonValue::Object{{"scionId",two}}},ignore);
+  check(snapshot(restored)["wearDetails"].stringify()!=first_wear,"another Scion does not inherit the first Scion's equipment");
+  restored.handle({"chronicles:scion:set-out",JsonValue::Object{{"scionId",one}}},ignore);
+  check(snapshot(restored)["wearDetails"].stringify()==first_wear,"returning Scion retains its own exact equipment");
+  std::filesystem::remove(file);
+}
+
 void test_envelope_round_trip() {
   Envelope source{"player:login", JsonValue::Object{{"useGuestAccount", true}, {"guestId", "roundtrip-guest"}}};
   const auto wire = emit_envelope(source);
@@ -965,6 +1000,7 @@ void test_gate_a_equip_totals_and_unknown_uuid() {
 
 int main() {
   try {
+    test_equipment_disk_and_scion_ownership();
     test_envelope_round_trip();
     test_session_lifecycle();
     test_town_services_share_real_chronicles_arrival();

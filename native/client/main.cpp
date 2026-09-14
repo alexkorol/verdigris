@@ -707,6 +707,7 @@ struct ClientState {
   // back to a movable window for side-by-side development.
   bool fullscreen_window = true;
   std::size_t selected_item = 0;
+  std::string selected_item_id;
   // VG-UI-002: presentation backpack occupancy. Item identities stay
   // authoritative; this grid only places 1x1 footprints. A rejected drop
   // restores the previous occupancy and never equips.
@@ -1563,8 +1564,11 @@ void paint_compare_plate(ClientState& state, HDC dc, int x, int y,
   const int line_h = 16 * s;
   const int pad = 8 * s;
   const int box_w = std::min(widest + pad * 2, std::min(340*s,static_cast<int>(bounds.right)-16));
-  const int box_h = title_extent.cy + static_cast<int>(lines.size()) * line_h +
-                    pad * 2;
+  SelectObject(dc,skin::font_body_bold());
+  RECT measure{0,0,box_w-2*pad,0};
+  DrawTextA(dc,title.c_str(),-1,&measure,DT_WORDBREAK|DT_CALCRECT|DT_NOPREFIX);
+  const int title_h=std::min(int(measure.bottom),std::max(line_h,int(bounds.bottom)/3));
+  const int box_h = title_h + static_cast<int>(lines.size()) * line_h + pad * 2;
   int box_x = std::min(x, static_cast<int>(bounds.right) - box_w - 8);
   int box_y = std::max(8, y - box_h - 8);
   box_x = std::max(8, box_x);
@@ -1589,11 +1593,11 @@ void paint_compare_plate(ClientState& state, HDC dc, int x, int y,
   SetBkMode(dc, TRANSPARENT);
   SelectObject(dc, skin::font_body_bold());
   SetTextColor(dc, title_color);
-  RECT title_box{box_x+pad,box_y+pad-2,box_x+box_w-pad,box_y+pad+title_extent.cy};
-  DrawTextA(dc,title.c_str(),-1,&title_box,DT_SINGLELINE|DT_END_ELLIPSIS);
+  RECT title_box{box_x+pad,box_y+pad-2,box_x+box_w-pad,box_y+pad+title_h};
+  DrawTextA(dc,title.c_str(),-1,&title_box,DT_WORDBREAK|DT_END_ELLIPSIS|DT_NOPREFIX);
   SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kInkDim);
-  int fact_y = box_y + pad + title_extent.cy;
+  int fact_y = box_y + pad + title_h;
   for (const auto& fact : lines) {
     RECT fact_box{box_x+pad,fact_y,box_x+box_w-pad,fact_y+line_h};
     DrawTextA(dc,fact.c_str(),-1,&fact_box,DT_SINGLELINE|DT_END_ELLIPSIS);
@@ -2058,6 +2062,16 @@ ClientState* state_from(HWND window) {
 
 bool is_remote(const ClientState& state) { return static_cast<bool>(state.session); }
 
+void select_inventory_index(ClientState& state, std::size_t index) {
+  state.selected_item = index;
+  state.selected_item_id = index < state.world.carried.size() ? state.world.carried[index].id : "";
+}
+void reconcile_inventory_selection(ClientState& state) {
+  for (std::size_t i=0;i<state.world.carried.size();++i)
+    if (state.world.carried[i].id==state.selected_item_id) { state.selected_item=i; return; }
+  state.selected_item_id.clear();
+  state.selected_item=state.world.carried.size();
+}
 void sync_world(ClientState& state) {
   if (state.simulation) {
     verdigris::client::sync_world_from_simulation(state.world, *state.simulation,
@@ -2067,6 +2081,7 @@ void sync_world(ClientState& state) {
   if (!state.session) return;
   const auto& model = state.session->model();
   verdigris::client::sync_world_from_model(state.world, model);
+  reconcile_inventory_selection(state);
   // Authoritative loot placement: the server snapshot carries every ground
   // item's real position; the event-scatter heuristic anchored on the last
   // death and piled every drop onto one spot. A small deterministic per-uuid
@@ -2110,8 +2125,16 @@ void ingest_session_events(ClientState& state) {
   std::vector<std::string> batch_keys;
   for (const auto& event : state.session->drain_events()) {
     using EventType = verdigris::client::PresentationEventType;
-    if (event.type == EventType::ItemEquipped)
+    if (event.type == EventType::ItemEquipped) {
       verdigris::client::ui::ack_equip(state.equip_view, event.item_id, event.value);
+      fx.hint.clear();fx.hint_ticks=0;
+    }
+    if (event.type == EventType::ConnectionLost && state.equip_view.pending)
+      verdigris::client::ui::reject_equip(state.equip_view);
+    if (event.type == EventType::InventoryAccepted) {
+      if(state.equip_view.pending_id==event.item_id) verdigris::client::ui::reject_equip(state.equip_view);
+      state.pack_last_drop="ok";fx.hint.clear();fx.hint_ticks=0;
+    }
     if (event.type == EventType::EquipRejected) {
       if (state.equip_view.pending_id == event.item_id)
         verdigris::client::ui::reject_equip(state.equip_view);
@@ -2214,6 +2237,7 @@ void submit_pick_up(ClientState& state, const std::string& id) {
 
 void submit_equip(ClientState& state, const std::string& id,
                   const std::string& seat = {}) {
+  if (state.equip_view.pending) return;
   verdigris::client::ui::request_equip(state.equip_view, id);
   if (state.session) {
     auto command = verdigris::client::ClientCommand::equip(id);
@@ -2375,6 +2399,7 @@ void equip_selected(ClientState& state) {
     show_hint(state, "Already equipped | U returns it to the backpack");
     return;
   }
+  if (state.equip_view.pending) return;
   verdigris::client::ui::request_equip(state.equip_view, id);
   submit_equip(state, id);
 
@@ -4448,7 +4473,7 @@ void pack_first_free(const inventory_grid::State& grid, std::uint8_t& x,
 void reconcile_pack_grid(ClientState& state) {
   std::string fingerprint;
   for (const auto& item : state.world.carried)
-    fingerprint += item.id + ":" + std::to_string(item.equipped) + ":" +
+    fingerprint += item.id + ":" + std::to_string(item.grid_slot) + ":" + std::to_string(item.equipped) + ":" +
         std::to_string(item.width) + "x" + std::to_string(item.height) + ",";
   if (fingerprint == state.pack_fingerprint && state.pack_grid.valid() &&
       state.pack_grid.width == kPackColumns &&
@@ -4470,7 +4495,11 @@ void reconcile_pack_grid(ClientState& state) {
     placed.stack_max = 1;
     const std::size_t old = inventory_grid::find_index(state.pack_grid, id);
     bool found = false;
-    if (old != inventory_grid::kMaxItems) {
+    if(state.session && carried.grid_slot>=0) {
+      placed.x=carried.grid_slot%kPackColumns;placed.y=carried.grid_slot/kPackColumns;
+      found=inventory_grid::can_place(next,placed.x,placed.y,placed.width,placed.height);
+    }
+    if (!state.session && old != inventory_grid::kMaxItems) {
       placed.x = state.pack_grid.items[old].x;
       placed.y = state.pack_grid.items[old].y;
       if (inventory_grid::can_place(next, placed.x, placed.y, placed.width, placed.height))
@@ -4525,7 +4554,7 @@ bool pack_can_land(const inventory_grid::State& grid, std::uint32_t id, int x,
 }
 
 void pack_begin_drag(ClientState& state, int gx, int gy) {
-  if (gx < 0 || gy < 0) return;
+  if (gx < 0 || gy < 0 || state.equip_view.pending) return;
   const std::uint32_t id = inventory_grid::item_at(
       state.pack_grid, static_cast<std::uint8_t>(gx),
       static_cast<std::uint8_t>(gy));
@@ -4539,7 +4568,7 @@ void pack_begin_drag(ClientState& state, int gx, int gy) {
   state.pack_preview_y = gy;
   state.pack_preview_ok = true;
   const std::size_t index = carried_index_for_pack_id(state, id);
-  if (index < state.world.carried.size()) state.selected_item = index;
+  if (index < state.world.carried.size()) select_inventory_index(state,index);
 }
 
 void cancel_pack_drag(ClientState& state) {
@@ -4574,7 +4603,7 @@ bool pack_commit_drop(ClientState& state, int seat_index) {
       show_hint(state, "This item does not fit that seat");
       return false;
     }
-    state.selected_item = index;
+    select_inventory_index(state,index);
     const std::string before = state.world.carried[index].id;
     submit_equip(state, before, target_seat);
     state.pack_last_drop = "equip";
@@ -4586,6 +4615,9 @@ bool pack_commit_drop(ClientState& state, int seat_index) {
     show_hint(state, "Not enough space for this item");
     return false;
   }
+  const auto origin=inventory_grid::find_index(state.pack_grid,id);
+  if(origin<inventory_grid::kMaxItems && state.pack_grid.items[origin].x==state.pack_preview_x &&
+      state.pack_grid.items[origin].y==state.pack_preview_y) { state.pack_last_drop="ok";return true; }
   const inventory_grid::State before = state.pack_grid;
   const auto ux = static_cast<std::uint8_t>(state.pack_preview_x);
   const auto uy = static_cast<std::uint8_t>(state.pack_preview_y);
@@ -4601,8 +4633,18 @@ bool pack_commit_drop(ClientState& state, int seat_index) {
     show_hint(state, "Not enough space for this item");
     return false;
   }
-  state.pack_last_drop = "ok";
-
+  if(state.session) {
+    const auto index=carried_index_for_pack_id(state,id);
+    if(index>=state.world.carried.size()) { state.pack_grid=before; return false; }
+    verdigris::client::ClientCommand command;
+    command.type=verdigris::client::ClientCommand::Type::MoveInventory;
+    command.target=state.world.carried[index].id;
+    command.value=int(uy)*kPackColumns+ux;
+    verdigris::client::ui::request_equip(state.equip_view,command.target);
+    state.session->submit(command);
+    state.pack_grid=before; // Only the acknowledgement can move the displayed item.
+    state.pack_last_drop="pending";
+  } else state.pack_last_drop = "ok";
   return true;
 }
 
@@ -4866,8 +4908,11 @@ void paint_hover_tooltip(ClientState& state, HDC dc, const RECT& bounds,
   const int pad = 8 * s;
   const int mark = 10 * s;
   const int box_w = widest + pad * 2 + mark;
-  const int box_h = title_extent.cy + static_cast<int>(lines.size()) * line_h +
-                    pad * 2;
+  SelectObject(dc,skin::font_body_bold());
+  RECT measure{0,0,box_w-2*pad,0};
+  DrawTextA(dc,title.c_str(),-1,&measure,DT_WORDBREAK|DT_CALCRECT|DT_NOPREFIX);
+  const int title_h=std::min(int(measure.bottom),std::max(line_h,int(bounds.bottom)/3));
+  const int box_h = title_h + static_cast<int>(lines.size()) * line_h + pad * 2;
   int box_x = mx + 18;
   int box_y = my - box_h - 10;
   box_x = std::min(box_x, static_cast<int>(bounds.right) - box_w - 8);
@@ -4892,7 +4937,7 @@ void paint_hover_tooltip(ClientState& state, HDC dc, const RECT& bounds,
            static_cast<int>(title.size()));
   SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kInk);
-  int fact_y = box_y + pad + title_extent.cy;
+  int fact_y = box_y + pad + title_h;
   for (const auto& fact : lines) {
     TextOutA(dc, box_x + pad + mark, fact_y, fact.c_str(),
              static_cast<int>(fact.size()));
@@ -10877,7 +10922,7 @@ void toggle_gear_overlay(ClientState& state) {
   cancel_pack_drag(state);
   sync_world(state);
   state.gear_overlay = !state.gear_overlay;
-  state.selected_item = 0;
+  reconcile_inventory_selection(state);
 
 }
 
@@ -10925,6 +10970,7 @@ void release_held_gameplay_attack(ClientState& state) {
 }
 
 void handle_escape_key(ClientState& state) {
+  if (state.pack_drag_live) { cancel_pack_drag(state); if(GetCapture()) ReleaseCapture(); return; }
   if (handle_frontend_key(state, VK_ESCAPE)) return;
   if (state.screen == Screen::Chronicles) {
     open_frontend(state, Frontend::Title);
@@ -11077,13 +11123,13 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         break;
       }
       if (handle_frontend_key(*state, wparam)) {
-        if (state->quit_requested) PostQuitMessage(0);
+        if (state->quit_requested) { std::fprintf(stderr,"native-exit: confirmed menu quit\n"); PostQuitMessage(0); }
         break;
       }
       if (wparam == VK_ESCAPE) {
         // TASK-0153: dismiss an open pane first; exit only on a bare Escape.
         handle_escape_key(*state);
-        if (state->quit_requested) PostQuitMessage(0);
+        if (state->quit_requested) { std::fprintf(stderr,"native-exit: confirmed menu quit\n"); PostQuitMessage(0); }
         break;
       }
       if (state->screen == Screen::Chronicles && state->session) {
@@ -11188,7 +11234,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       }
       if(wparam==VK_TAB && state->gear_overlay && !state->world.carried.empty()) {
         state->gear_keyboard_focus=true;
-        state->selected_item=(state->selected_item+1)%state->world.carried.size();break;
+        select_inventory_index(*state,(state->selected_item+1)%state->world.carried.size());break;
       }
       if (wparam == 'C') {
         if (state->text_entry || trade_pane_open(*state)) break;
@@ -11217,7 +11263,8 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       }
       if (wparam == 'P') {
         if (state->text_entry || trade_pane_open(*state)) break;
-        state->tree_pane = !state->tree_pane;
+        if(state->tree_pane || (state->session && state->session->model().progression.present))
+          state->tree_pane = !state->tree_pane;
       }
       // Only the open gear pane needs a fresh view here; a bare sync on
       // every auto-repeating WASD keydown is per-input work the frame loop
@@ -11235,24 +11282,17 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         if (wparam == VK_LEFT && state->selected_item > 0) --state->selected_item;
         if (wparam == VK_RIGHT)
           state->selected_item = std::min(count - 1, state->selected_item + 1);
+        if(wparam>=VK_LEFT && wparam<=VK_DOWN) select_inventory_index(*state,std::min(state->selected_item,count-1));
         if (wparam == VK_RETURN) activate_inventory_item(*state);
-        if (wparam == 'U') {
-          const auto& item = state->world.carried[std::min(state->selected_item, count - 1)];
-          if (item.equipped && state->session) {
-            verdigris::client::ClientCommand command;
-            command.type = verdigris::client::ClientCommand::Type::Unequip;
-            command.target = item.equip_seat;
-            state->session->submit(command);
-          } else if (state->simulation) {
-            queue_local_command(*state, verdigris::Command::unequip());
-          }
-        }
+        if (wparam == 'U' && state->selected_item<count && state->world.carried[state->selected_item].equipped)
+          activate_inventory_item(*state);
       }
-      if (wparam >= '1' && wparam <= '9' && state->session) {
+      if (wparam >= '1' && wparam <= '9' && state->session && state->gear_overlay && !state->text_entry) {
         const std::size_t index = static_cast<std::size_t>(wparam - '1');
         sync_world(*state);
-        if (index < state->world.carried.size())
-          submit_equip(*state, state->world.carried[index].id);
+        if (index < state->world.carried.size()) {
+          select_inventory_index(*state,index);activate_inventory_item(*state);
+        }
       }
       if (wparam == VK_HOME) {
         RECT home_bounds;
@@ -11312,7 +11352,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
             if (PtInRect(&hit.rect, point)) {
               state->menu_selected = hit.index;
               activate_frontend_row(*state, hit.direction);
-              if (state->quit_requested) PostQuitMessage(0);
+              if (state->quit_requested) { std::fprintf(stderr,"native-exit: confirmed menu quit\n"); PostQuitMessage(0); }
               break;
             }
           }
@@ -11394,7 +11434,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
               const auto& item = state->world.carried[i];
               if (item.equipped && (item.equip_seat == kDollSeats[seat] ||
                   (item.equip_seat.empty() && seat == paper_doll::slot_index(paper_doll::Slot::MainHand))))
-                state->selected_item = i;
+                select_inventory_index(*state,i);
             }
           } else {
             int gx = -1;
@@ -11468,7 +11508,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
     case WM_TIMER:
       if (state) {
         timer_step(window, *state);
-        if (state->quit_requested) PostQuitMessage(0);
+        if (state->quit_requested) { std::fprintf(stderr,"native-exit: confirmed menu quit\n"); PostQuitMessage(0); }
         InvalidateRect(window, nullptr, FALSE);
       }
       break;
@@ -11481,7 +11521,11 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       EndPaint(window, &paint_struct);
       return 0;
     }
+    case WM_CLOSE:
+      std::fprintf(stderr,"native-exit: WM_CLOSE (window/system close request)\n");
+      break;
     case WM_DESTROY:
+      std::fprintf(stderr,"native-exit: WM_DESTROY\n");
       KillTimer(window, 1);
       PostQuitMessage(0);
       return 0;
@@ -12501,7 +12545,7 @@ int scenario_loot_to_bank() {
         if (item.label.rfind("char:ATK src:", 0) == 0) has_src = true;
         if (item.label.rfind("char:Cond:0 | inactive", 0) == 0)
           has_dormant = true;
-        if (item.label.rfind("char:Attack:", 0) == 0) attack_row = item.label;
+        if (item.label.rfind("char:Attack rating:", 0) == 0) attack_row = item.label;
       }
       scenario_check(!has_src,
                  "loot-to-bank: source calculations are hidden until expanded");

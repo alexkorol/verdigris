@@ -54,6 +54,7 @@ internal static class PlayerLauncher
         };
         info.EnvironmentVariables["VERDIGRIS_SAVE_DIR"] = Path.Combine(profile, "saves");
         if (settingsOverride) info.EnvironmentVariables["VERDIGRIS_SETTINGS_PATH"] = Path.Combine(profile, "settings.ini");
+        else info.EnvironmentVariables.Remove("VERDIGRIS_SETTINGS_PATH"); // Normal launch must not inherit a QA settings override.
         var process = Process.Start(info);
         if (!AssignProcessToJobObject(job, process.Handle)) {
             process.Kill(); process.WaitForExit(); process.Dispose();

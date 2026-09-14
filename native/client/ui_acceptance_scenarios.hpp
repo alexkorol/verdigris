@@ -52,7 +52,7 @@ int scenario_authoritative_stat_details() {
   state.sheet_passive_atk=999;state.sheet_cond_atk=999;state.sheet_cond_active=true;
   scenario_present(state);
   const auto expect=std::to_string(state.world.player.attack+state.world.player.gear_attack);
-  scenario_check(render_list_has(state,render::Op::Hud,"char:Attack:"+expect),"stat-details: client fixture guesses cannot change authoritative rating");
+  scenario_check(render_list_has(state,render::Op::Hud,"char:Attack rating:"+expect),"stat-details: client fixture guesses cannot change authoritative rating");
   scenario_check(!render_list_has(state,render::Op::Hud,"char:Cond:"),"stat-details: no unimplemented conditional row");
   scenario_check(!render_list_has(state,render::Op::Hud,"char:Base attack:"),"stat-details: calculations are collapsed by default");
   state.stat_atk_expanded=true;scenario_present(state);

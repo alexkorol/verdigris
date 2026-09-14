@@ -23,16 +23,18 @@ void paint_character_pane(ClientState& state,HDC dc,const RECT& bounds,render::L
     {"Level",std::to_string(a.level)},
     {"Life",std::to_string(a.life)+" / "+std::to_string(a.life_max)},
     {"Resource",std::to_string(a.resource)+" / "+std::to_string(a.resource_max)},
-    {"Attack",std::to_string(a.attack+a.gear_attack)},
-    {"Defense",std::to_string(a.defense)}};
+    {"Attack rating",a.combat_stats_present?std::to_string(a.attack+a.gear_attack):"Unavailable"},
+    {"Defense",a.combat_stats_present?std::to_string(a.defense):"Unavailable"}};
   if(state.session) {
     const auto& m=state.session->model();
-    rows.push_back({"Strength",std::to_string(m.attr_strength)});
-    rows.push_back({"Dexterity",std::to_string(m.attr_dexterity)});
-    rows.push_back({"Intelligence",std::to_string(m.attr_intelligence)});
+    rows[3].second=m.player.total_ratings_present?std::to_string(m.player.attack_rating):"Unavailable";
+    rows[4].second=m.player.total_ratings_present?std::to_string(m.player.defense_rating):"Unavailable";
+    rows.push_back({"Strength",m.attributes_present?std::to_string(m.attr_strength):"Unavailable"});
+    rows.push_back({"Dexterity",m.attributes_present?std::to_string(m.attr_dexterity):"Unavailable"});
+    rows.push_back({"Intelligence",m.attributes_present?std::to_string(m.attr_intelligence):"Unavailable"});
     if(m.progression.present) rows.push_back({"Skill points",std::to_string(m.progression.unspent_points)});
   }
-  if(state.stat_atk_expanded) {
+  if(state.stat_atk_expanded && a.combat_stats_present) {
     rows.push_back({"Base attack",std::to_string(a.attack)});
     rows.push_back({"Equipment",std::to_string(a.gear_attack)});
   }

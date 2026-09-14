@@ -9,8 +9,10 @@ int scenario_inventory_equipment() {
   using JV = verdigris::networking::JsonValue;
   std::unique_ptr<verdigris::networking::WebSocketServer> server;
   unsigned short port = 0;
+  const auto qa_saves=std::filesystem::path(art_wave_capture_dir())/("inventory-profile-"+std::to_string(GetTickCount64()));
+  std::filesystem::create_directories(qa_saves);
   for (unsigned short p = 6780; p < 6800; ++p) {
-    auto probe = std::make_unique<verdigris::networking::WebSocketServer>(p);
+    auto probe = std::make_unique<verdigris::networking::WebSocketServer>(p,qa_saves);
     std::string error;
     if (probe->start(&error)) { port = p; server = std::move(probe); break; }
   }
@@ -77,8 +79,8 @@ int scenario_inventory_equipment() {
     if (i == inventory_grid::kMaxItems) { scenario_check(false, "inventory: drag item exists"); return; }
     const auto geom = make_pack_geom(1366, 768);
     const auto item = state.pack_grid.items[i];
-    const int x = geom.grid_left + item.x * (geom.cell_w + geom.gap) + geom.cell_w / 2;
-    const int y = geom.grid_top + item.y * (geom.cell_h + geom.gap) + geom.cell_h / 2;
+    const int x = geom.grid_left + (item.x+item.width-1) * (geom.cell_w + geom.gap) + geom.cell_w / 2;
+    const int y = geom.grid_top + (item.y+item.height-1) * (geom.cell_h + geom.gap) + geom.cell_h / 2;
     const auto target = geom.seats[paper_doll::slot_index(seat)];
     SendMessage(window, WM_LBUTTONDOWN, 0, MAKELPARAM(x, y));
     SendMessage(window, WM_MOUSEMOVE, MK_LBUTTON, MAKELPARAM((target.left+target.right)/2,(target.top+target.bottom)/2));
@@ -103,6 +105,20 @@ int scenario_inventory_equipment() {
                  "inventory: spear occupies its authoritative multi-cell footprint");
   scenario_check(!pack_can_land(state.pack_grid, pack_stable_id(spear), 11, 6),
                  "inventory: full footprint rejects bottom-right overflow");
+  auto identity_snapshot=[&] {
+    std::vector<std::string> all;
+    for(const auto& row:state.session->model().inventory) all.push_back(row.uuid+":"+std::to_string(row.quantity));
+    for(const auto& row:state.session->model().worn) all.push_back(row.item.uuid+":"+std::to_string(row.item.quantity));
+    std::sort(all.begin(),all.end());return all;
+  };
+  const auto identities_before=identity_snapshot();
+  select_inventory_index(state,state.world.carried.size());
+  scenario_present(state);
+  scenario_check(render_list_has(state,render::Op::Hud,"inventory-action:Select an item"),"handover: no invisible default item action");
+  state.character_pane=true;
+  scenario_check(reference_present(state,1366,768,art_wave_capture_dir()+"/handover-before-equip.png"),"handover: actual server fixture before equipment");
+  state.character_pane=false;
+  const int attacks_before=state.combat_requests;
   drag_to_seat(wrap, paper_doll::Slot::MainHand);
   scenario_check(state.pack_last_drop == "reject" && !state.equip_view.pending,
                  "inventory: wrong seat rejects without sending a fake equip");
@@ -116,6 +132,9 @@ int scenario_inventory_equipment() {
                    "inventory: drag equips exact requested seat on server");
     scenario_check(!state.equip_view.pending && state.equip_view.acknowledged_id == pair.first,
                    "inventory: server acknowledgement completes equip feedback");
+    scenario_check(state.selected_item_id==pair.first && state.selected_item<state.world.carried.size() &&
+        state.world.carried[state.selected_item].id==pair.first,"handover: selected UUID survives inventory-to-wear reordering");
+    scenario_check(identity_snapshot()==identities_before,"handover: each equip conserves all item UUIDs and quantities");
   }
   sync_world(state); reconcile_pack_grid(state);
   scenario_check(inventory_grid::find_index(state.pack_grid, pack_stable_id(spear)) == inventory_grid::kMaxItems,
@@ -149,6 +168,12 @@ int scenario_inventory_equipment() {
   scenario_check(pump([&] { return worn(axe, "right_hand"); }), "inventory: one-handed weapon coexists with shield");
   scenario_check(!state.primary_down && !state.held_gameplay_attacks.contains(VK_LBUTTON),"inventory: visible Equip button consumes combat input");
   sync_world(state);
+  scenario_check(state.combat_requests==attacks_before,"handover: equipment controls submit zero world attacks");
+  scenario_check(state.session->model().player.total_ratings_present,"handover: server explicitly supplies displayed total ratings");
+  state.character_pane=true;
+  scenario_check(reference_present(state,1366,768,art_wave_capture_dir()+"/handover-after-equip.png"),"handover: actual equipment and server stats after equip");
+  scenario_check(render_list_has(state,render::Op::Hud,"char:Attack rating:"+std::to_string(state.session->model().player.attack_rating)),"handover: displayed rating exactly matches server field");
+  state.character_pane=false;
   scenario_check(state.world.player.combat_stats_present &&
                  state.world.player.gear_attack == state.session->model().player.gear_attack &&
                  state.world.player.gear_attack > 0 && state.world.player.defense > 0,
@@ -180,12 +205,37 @@ int scenario_inventory_equipment() {
   }
   scenario_check(tooltip && sheet && !hud_rects_overlap(*tooltip,*sheet),"inventory: contextual tooltip does not cover character values");
   state.character_pane=false;
+  // Select/rearrange through the full footprint, then require authoritative coordinates.
+  sync_world(state);reconcile_pack_grid(state);
+  const auto move_id=spear;
+  auto moving_index=inventory_grid::find_index(state.pack_grid,pack_stable_id(move_id));
+  if(moving_index<inventory_grid::kMaxItems) {
+    const auto item=state.pack_grid.items[moving_index];const auto g=make_pack_geom(1366,768);
+    int tx=-1,ty=-1;
+    for(int y=0;y<kPackRows && tx<0;++y) for(int x=0;x<kPackColumns;++x)
+      if((x!=item.x || y!=item.y) && inventory_grid::can_place(state.pack_grid,x,y,item.width,item.height,pack_stable_id(move_id))) {tx=x;ty=y;break;}
+    scenario_check(tx>=0,"handover: fixture has a real free destination");
+    if(tx>=0) {
+      SendMessage(window,WM_LBUTTONDOWN,0,MAKELPARAM(g.grid_left+(item.x+item.width-1)*g.cell_w+g.cell_w/2,g.grid_top+(item.y+item.height-1)*g.cell_h+g.cell_h/2));
+      SendMessage(window,WM_LBUTTONUP,0,MAKELPARAM(g.grid_left+(tx+item.width-1)*g.cell_w+g.cell_w/2,g.grid_top+(ty+item.height-1)*g.cell_h+g.cell_h/2));
+      scenario_check(state.equip_view.pending,"handover: backpack move waits for server");
+      scenario_check(pump([&]{return !state.equip_view.pending;}),"handover: backpack operation acknowledged");
+      sync_world(state);reconcile_pack_grid(state);
+      const auto i=inventory_grid::find_index(state.pack_grid,pack_stable_id(move_id));
+      scenario_check(i<inventory_grid::kMaxItems && state.pack_grid.items[i].x==tx && state.pack_grid.items[i].y==ty,"handover: drawn backpack uses accepted server coordinates");
+      scenario_check(identity_snapshot()==identities_before,"handover: rearrangement conserves every item and quantity");
+    }
+  }
   // Actual button controls and drag cancellation in the production HWND.
   const auto saved_count=state.session->model().inventory.size();
   const auto geom=make_pack_geom(1366,768);
   const auto first=state.pack_grid.items[0];
   const int pickx=geom.grid_left+first.x*geom.cell_w+geom.cell_w/2;
   const int picky=geom.grid_top+first.y*geom.cell_h+geom.cell_h/2;
+  SendMessage(window,WM_LBUTTONDOWN,0,MAKELPARAM(pickx,picky));
+  SendMessage(window,WM_KEYDOWN,VK_ESCAPE,0);
+  scenario_check(!state.pack_drag_live && state.gear_overlay,"handover: Escape cancels drag before closing another view");
+  SendMessage(window,WM_LBUTTONUP,0,MAKELPARAM(-20,-20));
   SendMessage(window,WM_LBUTTONDOWN,0,MAKELPARAM(pickx,picky));
   SendMessage(window,WM_KILLFOCUS,0,0);
   scenario_check(!state.pack_drag_live && state.session->model().inventory.size()==saved_count,"inventory: focus-loss cancellation conserves authoritative inventory");
@@ -217,11 +267,32 @@ int scenario_inventory_equipment() {
                  state.session->model().inventory.size() == before_count &&
                  state.session->model().ground.size() == before_ground,
                  "inventory: full-pack swap rejects atomically without spilling displaced gear");
-  ClientCommand unequip; unequip.type = ClientCommand::Type::Unequip; unequip.target = "armor";
-  state.session->submit(unequip);
+  const auto body=make_pack_geom(1366,768).seats[3];
+  SendMessage(window,WM_LBUTTONDOWN,0,MAKELPARAM((body.left+body.right)/2,(body.top+body.bottom)/2));
+  SendMessage(window,WM_LBUTTONUP,0,0);
+  SendMessage(window,WM_LBUTTONDOWN,0,button_at);SendMessage(window,WM_LBUTTONUP,0,button_at);
+  scenario_check(state.equip_view.pending,"handover: visible Unequip waits for server, including full-pack rejection");
   scenario_check(pump([&] { return state.session->model().last_message.find("Make room") != std::string::npos; }) &&
                  worn(wrap, "armor") && state.session->model().inventory.size() == before_count,
                  "inventory: full backpack rejects unequip without losing or spilling item");
+  scenario_check(pump([&]{return !state.equip_view.pending;}),"handover: rejected Unequip re-enables action");
+  state.character_pane=true;
+  scenario_check(reference_present(state,1366,768,dir+"/handover-full-pack-rejection.png"),"handover: rejected operation and retained equipment captured");
+  const auto persisted_items=identity_snapshot();
+  std::vector<std::string> persisted_seats;
+  for(const auto& row:state.session->model().worn) persisted_seats.push_back(row.seat+":"+row.item.uuid);
+  std::vector<std::string> persisted_grid;
+  for(const auto& row:state.session->model().inventory) persisted_grid.push_back(row.uuid+":"+std::to_string(row.slot));
+  state.session->shutdown(); server->stop();server.reset();
+  server=std::make_unique<verdigris::networking::WebSocketServer>(port,qa_saves);
+  scenario_check(server->start(&error),"handover: fresh server reloads isolated persisted profile");
+  state.session=std::make_unique<RemoteProtocolSession>("127.0.0.1",port,"inventory-qa",true);
+  scenario_check(state.session->start(&error) && pump([&]{return state.session->connection_state()==ConnectionState::Ready;}),"handover: fresh client reconnects to reloaded profile");
+  scenario_check(identity_snapshot()==persisted_items,"handover: restart retains all owned UUIDs and quantities");
+  std::vector<std::string> restored_seats,restored_grid;
+  for(const auto& row:state.session->model().worn) restored_seats.push_back(row.seat+":"+row.item.uuid);
+  for(const auto& row:state.session->model().inventory) restored_grid.push_back(row.uuid+":"+std::to_string(row.slot));
+  scenario_check(restored_seats==persisted_seats && restored_grid==persisted_grid,"handover: restart retains exact equipment seats and backpack positions");
   state.session->shutdown(); DestroyWindow(window); server->stop();
   return scenario_failures;
 }

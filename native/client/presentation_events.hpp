@@ -20,6 +20,7 @@ enum class PresentationEventType {
   ItemPickedUp,
   ItemEquipped,
   EquipRejected,
+  InventoryAccepted,
   ExtractionCompleted,
   ScionDied,
   ScionLost,           // TASK-0122 Phase A: permanent Scion loss beat

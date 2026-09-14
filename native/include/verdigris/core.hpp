@@ -680,6 +680,7 @@ struct CreateItemOptions {
 };
 
 // factory.js createById/createFromBase. Returns nullopt for unknown ids.
+void reserve_game_item_identity(const std::string& uuid);
 std::optional<GameItem> create_game_item(const std::string& item_id,
                                          const CreateItemOptions& options);
 
@@ -706,6 +707,7 @@ class PlayerInventory {
   bool remove_by_uuid(const std::string& uuid, GameItem* out);
   GameItem* find_by_uuid(const std::string& uuid);
   const GameItem* find_by_uuid(const std::string& uuid) const;
+  bool move_or_swap(const std::string& uuid, int slot); // atomic existing footprint rules
   int coin_total() const;
   bool spend_coins(int amount);  // false when coin_total() < amount
 

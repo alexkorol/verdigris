@@ -19,9 +19,9 @@ void inventory_text(HDC dc, RECT r, const std::string& text, COLORREF ink,
   SetBkMode(dc, TRANSPARENT); SetTextColor(dc,ink);
   DrawTextA(dc,text.c_str(),-1,&r,flags);
 }
-void inventory_button(HDC dc, RECT r, const std::string& text, bool hover) {
-  skin::inventory_surface(dc,r,hover ? 1 : 0);
-  inventory_text(dc,r,text,skin::kInk,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+void inventory_button(HDC dc, RECT r, const std::string& text, bool hover, bool enabled=true) {
+  skin::inventory_surface(dc,r,hover && enabled ? 1 : 0);
+  inventory_text(dc,r,text,enabled?skin::kInk:skin::kInkDim,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
 }
 void empty_equipment_outline(HDC dc,RECT r,std::size_t seat) {
   // Restrained outlines follow WIZARD's empty-slot icon vocabulary.
@@ -53,12 +53,16 @@ std::string inventory_art_key(const ClientState& state, const WorldCarriedItem& 
   return item.id;
 }
 void activate_inventory_item(ClientState& state) {
-  if (state.world.carried.empty()) return;
-  const auto& item = state.world.carried[std::min(state.selected_item,state.world.carried.size()-1)];
+  reconcile_inventory_selection(state);
+  if (state.equip_view.pending || state.selected_item>=state.world.carried.size()) return;
+  const auto& item = state.world.carried[state.selected_item];
+  if(item.equip_seat.empty() && state.session) return;
   if (item.equipped && state.session) {
     verdigris::client::ClientCommand command;
     command.type=verdigris::client::ClientCommand::Type::Unequip;
     command.target=item.equip_seat;
+    command.extra=item.id;
+    verdigris::client::ui::request_equip(state.equip_view,item.id);
     state.session->submit(command);
   } else submit_equip(state,item.id,item.equip_seat);
 }
@@ -118,7 +122,7 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
       if (items[j].equipped && (items[j].equip_seat==kDollSeats[i] ||
           (items[j].equip_seat.empty() && i==2))) { item=&items[j]; break; }
     const bool over=PtInRect(&r,pointer);
-    int focus=over ? 1 : 0;
+    int focus=over || (item && item->id==state.selected_item_id) ? 1 : 0;
     if (over && state.pack_drag_live) {
       const auto j=carried_index_for_pack_id(state,state.pack_drag_id);
       focus=j<items.size() && compatible_equipment(items[j],static_cast<int>(i)) ? 1 : -1;
@@ -159,11 +163,11 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
     RECT r{pack.grid_left+placed.x*pack.cell_w,pack.grid_top+placed.y*pack.cell_h,
       pack.grid_left+(placed.x+placed.width)*pack.cell_w,pack.grid_top+(placed.y+placed.height)*pack.cell_h};
     const bool over=PtInRect(&r,pointer);
-    const bool selected=state.gear_keyboard_focus && j==state.selected_item;
+    const bool selected=items[j].id==state.selected_item_id;
     skin::inventory_surface(dc,r,over||selected ? 1 : 0);
     const bool art=draw_object(items[j],r);
     if (items[j].quantity>1) inventory_text(dc,r,std::to_string(items[j].quantity),skin::kInk,DT_RIGHT|DT_BOTTOM|DT_SINGLELINE);
-    if(over || selected) { hover=static_cast<int>(j);anchor=r; }
+    if(over || (selected && state.gear_keyboard_focus)) { hover=static_cast<int>(j);anchor=r; }
     state.hud_rect_trace.push_back({"pane-cell",{r.left,r.top,r.right-r.left,r.bottom-r.top}});
     rl.push_back({render::Op::PaneItem,double(r.left),double(r.top),0,items[j].attack_bonus,items[j].name});
     rl.push_back({render::Op::Hud,double(placed.x),double(placed.y),0,art?1:0,art?"pack-glyph:billboard":"pack-glyph:unmapped"});
@@ -188,8 +192,12 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
     }
   }
   const auto action=gear_action_rect(w,h,0),character=gear_action_rect(w,h,1);
-  const auto pick=items.empty()?0:std::min(state.selected_item,items.size()-1);
-  inventory_button(dc,action,state.equip_view.pending?"Equipping...":items.empty()?"Select an item":items[pick].equipped?"Unequip":"Equip",PtInRect(&action,pointer));
+  const bool selected=state.selected_item<items.size() && items[state.selected_item].id==state.selected_item_id;
+  const bool enabled=selected && !state.equip_view.pending && (!state.session || !items[state.selected_item].equip_seat.empty());
+  const std::string action_text=state.equip_view.pending?"Waiting for server...":!selected?"Select an item":!enabled?"Cannot equip":items[state.selected_item].equipped?"Unequip":"Equip";
+  inventory_button(dc,action,action_text,PtInRect(&action,pointer),enabled);
+  rl.push_back({render::Op::Hud,0,0,0,enabled?1:0,"inventory-action:"+action_text});
+  if(selected) rl.push_back({render::Op::Hud,0,0,0,0,"inventory-selected:"+state.selected_item_id});
   inventory_button(dc,character,"Character",PtInRect(&character,pointer));
   if(state.equip_view.pending) {
     rl.push_back({render::Op::Hud,0,0,0,0,"compare:pending"});

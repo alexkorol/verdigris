@@ -1,6 +1,7 @@
 #include "verdigris/core.hpp"
 
 #include <cmath>
+#include <atomic>
 #include <cctype>
 #include <charconv>
 #include <iomanip>
@@ -3171,7 +3172,7 @@ const ItemDef kItemCatalogue[] = {
 
 // Process-wide instance identity source (factory.js uuid v4): uniqueness is
 // the only contract the wire and the take/equip verbs rely on.
-std::uint64_t g_item_uuid_serial = 0;
+std::atomic<std::uint64_t> g_item_uuid_serial{0};
 
 std::string next_item_uuid() {
   const std::uint64_t value = ++g_item_uuid_serial;
@@ -3276,6 +3277,15 @@ ItemSize resolve_item_size(const ItemDef& def, const VesselBlock* vessel) {
   return {1, 1};
 }
 
+void reserve_game_item_identity(const std::string& uuid) {
+  if(uuid.size()!=36 || uuid.compare(0,24,"00000000-0000-4000-8000-")!=0) return;
+  std::uint64_t value=0;
+  const auto parsed=std::from_chars(uuid.data()+24,uuid.data()+36,value,16);
+  if(parsed.ec!=std::errc{} || parsed.ptr!=uuid.data()+36)return;
+  auto current=g_item_uuid_serial.load();
+  while(current<value && !g_item_uuid_serial.compare_exchange_weak(current,value)) {}
+}
+
 std::optional<GameItem> create_game_item(const std::string& item_id,
                                          const CreateItemOptions& options) {
   // factory.js createById/createFromBase.
@@ -3361,6 +3371,30 @@ bool PlayerInventory::fits_at(const GameItem& item, int slot) const {
         }
       }
     }
+  }
+  return true;
+}
+
+bool PlayerInventory::move_or_swap(const std::string& uuid, int slot) {
+  if(slot<0 || slot>=kSlotCount) return false;
+  auto* source=find_by_uuid(uuid);
+  if(!source || source->slot<0) return false;
+  const auto before=items_;
+  const int old_slot=source->slot;
+  GameItem* target=nullptr;
+  for(auto& other:items_) {
+    if(other.uuid==uuid || other.slot<0) continue;
+    const int x=slot%kColumns,y=slot/kColumns,ox=other.slot%kColumns,oy=other.slot/kColumns;
+    if(x>=ox && x<ox+other.size.width && y>=oy && y<oy+other.size.height) { target=&other;break; }
+  }
+  const int destination=target?target->slot:slot;
+  source->slot=-1;
+  if(target) target->slot=-1;
+  if(!fits_at(*source,destination)) { items_=before; return false; }
+  source->slot=destination;
+  if(target) {
+    if(!fits_at(*target,old_slot)) { items_=before;return false; }
+    target->slot=old_slot;
   }
   return true;
 }
