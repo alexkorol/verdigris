@@ -119,6 +119,13 @@ int scenario_inventory_equipment() {
   scenario_check(reference_present(state,1366,768,art_wave_capture_dir()+"/handover-before-equip.png"),"handover: actual server fixture before equipment");
   state.character_pane=false;
   const int attacks_before=state.combat_requests;
+  const auto scene_before_ui=state.session->model().scene.id;
+  const auto zoom_before_ui=state.camera.zoom;
+  SendMessage(window,WM_KEYDOWN,'N',0);SendMessage(window,WM_KEYUP,'N',0);
+  SendMessage(window,WM_KEYDOWN,'T',0);SendMessage(window,WM_KEYUP,'T',0);
+  SendMessage(window,WM_MOUSEWHEEL,MAKEWPARAM(0,WHEEL_DELTA),0);
+  chronicles_pump(state,20,[]{return false;});
+  scenario_check(state.session->model().scene.id==scene_before_ui && !trade_pane_open(state) && state.camera.zoom==zoom_before_ui,"handover: open inventory owns route, talk and wheel input");
   drag_to_seat(wrap, paper_doll::Slot::MainHand);
   scenario_check(state.pack_last_drop == "reject" && !state.equip_view.pending,
                  "inventory: wrong seat rejects without sending a fake equip");

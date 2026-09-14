@@ -2069,6 +2069,11 @@ void select_inventory_index(ClientState& state, std::size_t index) {
 void reconcile_inventory_selection(ClientState& state) {
   for (std::size_t i=0;i<state.world.carried.size();++i)
     if (state.world.carried[i].id==state.selected_item_id) { state.selected_item=i; return; }
+  // Inventory refresh and worn acknowledgement can arrive in separate polls.
+  // Keep the selected identity through that in-flight transition.
+  if(state.equip_view.pending && state.equip_view.pending_id==state.selected_item_id) {
+    state.selected_item=state.world.carried.size();return;
+  }
   state.selected_item_id.clear();
   state.selected_item=state.world.carried.size();
 }
@@ -11138,6 +11143,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         handle_chronicles_key(*state, wparam);
         break;
       }
+      if(state->text_entry) break;
       if (trade_pane_open(*state)) {
         if (wparam == VK_UP && state->trade_selected > 0) --state->trade_selected;
         if (wparam == VK_DOWN) ++state->trade_selected;  // painter clamps
@@ -11154,7 +11160,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         }
       }
       apply_bound_key_down(*state, wparam);
-      if (wparam == 'N' && state->session)
+      if (wparam == 'N' && state->session && try_gameplay_intent(*state, input_focus::Intent::Interact))
         state->session->submit(verdigris::client::ClientCommand::enter_zone("tin:1:0"));
       if (wparam == 'X') {
         if (!try_gameplay_intent(*state, input_focus::Intent::Interact)) break;
