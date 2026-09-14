@@ -2,7 +2,7 @@
 
 ## Implementation milestone — gameplay particles
 
-Confirmed War Cry, dash, critical contact, and ground pickups now use the bounded native particle module. Eight native suites and both focused particle scenarios passed; production captures inspected. Package verification and normal-launch promotion remain in progress. The installed baseline below is preserved until those checks complete. Task record: `orchestration/recoveries/2026-09-14-gameplay-particles/STATUS.md`.
+Confirmed War Cry, dash, critical contact, and ground pickups now use the bounded native particle module. Eight native suites and both focused particle scenarios passed; production captures inspected. The first package failed sustained inventory drag at 40.055 ms. Direct DIB readback now avoids an unnecessary full-frame copy; pixel equivalence and focused checks pass (drag 36.175 ms, 258-particle frame 26.053 ms). Fresh package verification and normal-launch promotion remain in progress. The installed baseline below is preserved until those checks complete. Task record: `orchestration/recoveries/2026-09-14-gameplay-particles/STATUS.md`.
 
 ## Current handover — illustrated menus and native particles installed
 

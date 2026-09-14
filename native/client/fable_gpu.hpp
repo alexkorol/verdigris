@@ -269,8 +269,22 @@ class Renderer {
   const std::string& error() const { return error_; }
   const std::string& adapter_name() const { return adapter_; }
   const Stats& stats() const { return stats_; }
-  // This buffer belongs to the last completed render, with width*4 row pitch.
-  std::span<const std::uint8_t> pixels_bgra() const { return readback_; }
+  // Owned snapshot of the last completed world frame, with width*4 row pitch.
+  // Direct DIB presentation does not need a second CPU copy every frame.
+  // Materialize diagnostic pixels only when requested; never retain the
+  // caller's DIB pointer (it may already be destroyed or contain HUD drawing).
+  std::span<const std::uint8_t> pixels_bgra() const {
+    if(readback_pending_) {
+      D3D11_MAPPED_SUBRESOURCE mapped{};
+      if(!context_ || !staging_ || FAILED(context_->Map(staging_.Get(),0,D3D11_MAP_READ,0,&mapped)))return {};
+      for(int y=0;y<height_;++y)
+        std::memcpy(readback_.data()+static_cast<std::size_t>(y)*width_*4,
+            static_cast<const BYTE*>(mapped.pData)+static_cast<std::size_t>(y)*mapped.RowPitch,
+            static_cast<std::size_t>(width_)*4);
+      context_->Unmap(staging_.Get(),0);readback_pending_=false;
+    }
+    return readback_;
+  }
   int width() const { return width_; }
   int height() const { return height_; }
 
@@ -449,23 +463,23 @@ class Renderer {
     context_->PSSetShaderResources(0,2,null_views);
     context_->OMSetRenderTargets(0,nullptr,nullptr);
     context_->CopyResource(staging_.Get(),output_.image.Get());
+    // Flush the caller's earlier GDI work while the GPU finishes its frame,
+    // before copying directly into that DIB. No intermediate full-frame copy.
+    if(!top_down_bgra.empty() && dc)GdiFlush();
     const auto wait_start=std::chrono::steady_clock::now();
     D3D11_MAPPED_SUBRESOURCE mapped{};
     HRESULT hr=context_->Map(staging_.Get(),0,D3D11_MAP_READ,0,&mapped);
     if(FAILED(hr)) return fail("world GPU readback",hr);
     const auto copy_start=std::chrono::steady_clock::now();
+    auto* destination=top_down_bgra.empty()?readback_.data():top_down_bgra.data();
     for(int y=0;y<height_;++y)
-      std::memcpy(readback_.data()+static_cast<std::size_t>(y)*width_*4,
+      std::memcpy(destination+static_cast<std::size_t>(y)*width_*4,
                   static_cast<const BYTE*>(mapped.pData)+static_cast<std::size_t>(y)*mapped.RowPitch,
                   static_cast<std::size_t>(width_)*4);
     context_->Unmap(staging_.Get(),0);
+    readback_pending_=!top_down_bgra.empty();
     const auto composite_start=std::chrono::steady_clock::now();
-    if(!top_down_bgra.empty()) {
-      // The caller owns a full-size top-down 32-bit DIB. Finish earlier GDI
-      // commands before writing its pixels directly, without a DIB conversion.
-      if(dc)GdiFlush();
-      std::memcpy(top_down_bgra.data(),readback_.data(),readback_.size());
-    } else if(dc) {
+    if(top_down_bgra.empty() && dc) {
       BITMAPINFO info{};info.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);info.bmiHeader.biWidth=width_;
       info.bmiHeader.biHeight=-height_;info.bmiHeader.biPlanes=1;info.bmiHeader.biBitCount=32;
       info.bmiHeader.biCompression=BI_RGB;
@@ -539,6 +553,7 @@ class Renderer {
     desc.Format=DXGI_FORMAT_B8G8R8A8_UNORM;desc.BindFlags=0;desc.Usage=D3D11_USAGE_STAGING;desc.CPUAccessFlags=D3D11_CPU_ACCESS_READ;
     if(FAILED(hr=device_->CreateTexture2D(&desc,nullptr,&staging))) return fail("world readback allocation",hr);
     readback_.resize(static_cast<std::size_t>(w)*h*4);
+    readback_pending_=false;
     world_=std::move(world);output_=std::move(output);light_=std::move(light);
     depth_image_=std::move(depth);depth_view_=std::move(view);staging_=std::move(staging);
     width_=w;height_=h;light_width_=lw;light_height_=lh;return true;
@@ -688,7 +703,8 @@ class Renderer {
   std::map<std::uint64_t,detail::Texture> textures_;
   std::vector<detail::GpuVertex> vertices_;std::vector<UINT> indices_;
   std::vector<detail::Draw> draws_;std::vector<const Sprite*> sprite_order_;
-  std::vector<std::uint8_t> readback_;
+  mutable std::vector<std::uint8_t> readback_;
+  mutable bool readback_pending_=false;
 };
 }  // namespace fable_gpu
 #endif

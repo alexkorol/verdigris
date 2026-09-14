@@ -20,6 +20,10 @@ int scenario_inventory_equipment() {
     std::vector<std::uint8_t> direct(before.size());
     scenario_check(gpu.render(scene,nullptr,direct) && direct==before,
         "inventory: direct composition preserves every GPU output byte");
+    std::fill(direct.begin(),direct.end(),0); // caller may overwrite/release its DIB
+    const auto snapshot=gpu.pixels_bgra();
+    scenario_check(snapshot.size()==before.size() && std::equal(before.begin(),before.end(),snapshot.begin()),
+        "inventory: lazy world snapshot is independent of overwritten caller pixels");
     scenario_check(!gpu.render(scene,nullptr,std::span<std::uint8_t>(direct).first(1)),
         "inventory: direct composition rejects an undersized destination");
     scene.opaque_rect={160,50,280,150};
@@ -35,6 +39,12 @@ int scenario_inventory_equipment() {
       }
     } else outside_equal=false;
     scenario_check(outside_equal && inside_changed,"inventory: exclusion changes only pixels hidden by the opaque panel");
+    const std::vector<std::uint8_t> excluded(after.begin(),after.end());
+    scenario_check(gpu.render(scene,nullptr,direct),"inventory: direct excluded frame renders");
+    std::fill(direct.begin(),direct.end(),0);
+    const auto latest=gpu.pixels_bgra();
+    scenario_check(latest.size()==excluded.size() && std::equal(excluded.begin(),excluded.end(),latest.begin()),
+        "inventory: lazy snapshot returns latest GPU frame, not stale CPU pixels");
     scene.opaque_rect={};
     scenario_check(gpu.render(scene,nullptr) && std::equal(before.begin(),before.end(),gpu.pixels_bgra().begin(),gpu.pixels_bgra().end()),
         "inventory: closing the panel restores every world pixel");
