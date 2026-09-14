@@ -38,6 +38,17 @@ void test_equipment_disk_and_scion_ownership() {
   const auto after=snapshot(restored);
   for(const char* key:{"inventoryDetails","wearDetails","combat","houseStoredItems"})
     check(before[key].stringify()==after[key].stringify(),"disk restart preserves exact item roll, stats, location and storage");
+  // A loaded map already contains this Scion's key. Later writes must replace
+  // that saved entry, not retain the first snapshot forever.
+  restored.handle({"item:unequip",JsonValue::Object{{"seat","armor"}}},ignore);
+  const auto changed=snapshot(restored);
+  check(changed["wearDetails"].stringify()!=after["wearDetails"].stringify(),"loaded Scion actually unequips before second restart");
+  restored.persist();
+  ProtocolSession restarted_again("equipment-save","third-socket",41,true);
+  restarted_again.attach_persistence(file);
+  for(const char* key:{"inventoryDetails","wearDetails","combat"})
+    check(changed[key].stringify()==snapshot(restarted_again)[key].stringify(),"second restart retains operations performed after loading an existing save");
+  restored.handle({"item:equip",JsonValue::Object{{"item",JsonValue::Object{{"uuid",uuid},{"targetSlot","armor"}}}}},ignore);
   verdigris::reserve_game_item_identity("00000000-0000-4000-8000-001000000000");
   auto generated=verdigris::create_game_item("ring",{});
   check(generated && generated->uuid>"00000000-0000-4000-8000-001000000000","new items cannot reuse persisted instance serials");

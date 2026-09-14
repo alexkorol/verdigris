@@ -841,7 +841,10 @@ void ProtocolSession::persist() const {
   put(progression, active_house_id_ + ":" + active_scion_id_, static_cast<double>(combat_xp_));
   put(saved, "scionCombatXp", std::move(progression));
   JsonValue::Object loadouts=scion_loadouts_;
-  put(loadouts,active_house_id_+":"+active_scion_id_,loadout_json());put(saved,"scionLoadouts",std::move(loadouts));
+  // This key already exists after loading or switching Scions. The current
+  // authoritative loadout must replace it; put() only inserts missing keys.
+  loadouts.insert_or_assign(active_house_id_+":"+active_scion_id_,loadout_json());
+  put(saved,"scionLoadouts",std::move(loadouts));
   JsonValue::Array stored;for(const auto& item:house_store_)stored.push_back(saved_item_json(item));put(saved,"houseStore",std::move(stored));
   JsonValue::Array bank;for(const auto& item:bank_)bank.push_back(saved_item_json(item));put(saved,"bankItems",std::move(bank));
   const auto temp = persistence_path_.wstring() + L".tmp";
