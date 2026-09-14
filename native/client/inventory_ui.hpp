@@ -166,7 +166,11 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
     const bool selected=items[j].id==state.selected_item_id;
     skin::inventory_surface(dc,r,over||selected ? 1 : 0);
     const bool art=draw_object(items[j],r);
-    if (items[j].quantity>1) inventory_text(dc,r,std::to_string(items[j].quantity),skin::kInk,DT_RIGHT|DT_BOTTOM|DT_SINGLELINE|DT_END_ELLIPSIS);
+    if (items[j].quantity>1) {
+      const auto count_font=SelectObject(dc,skin::font(skin::TextRole::CompactValue));
+      inventory_text(dc,r,std::to_string(items[j].quantity),skin::kInk,DT_RIGHT|DT_BOTTOM|DT_SINGLELINE|DT_END_ELLIPSIS);
+      SelectObject(dc,count_font);
+    }
     if(over || (selected && state.gear_keyboard_focus)) { hover=static_cast<int>(j);anchor=r; }
     state.hud_rect_trace.push_back({"pane-cell",{r.left,r.top,r.right-r.left,r.bottom-r.top}});
     rl.push_back({render::Op::PaneItem,double(r.left),double(r.top),0,items[j].attack_bonus,items[j].name});
@@ -194,7 +198,7 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
   const auto action=gear_action_rect(w,h,0),character=gear_action_rect(w,h,1);
   const bool selected=state.selected_item<items.size() && items[state.selected_item].id==state.selected_item_id;
   const bool enabled=selected && !state.equip_view.pending && (!state.session || !items[state.selected_item].equip_seat.empty());
-  const std::string action_text=state.equip_view.pending?"Waiting for server...":!selected?"Select an item":!enabled?"Cannot equip":items[state.selected_item].equipped?"Unequip":"Equip";
+  const std::string action_text=state.equip_view.pending?"Waiting...":!selected?"Select an item":!enabled?"Cannot equip":items[state.selected_item].equipped?"Unequip":"Equip";
   inventory_button(dc,action,action_text,PtInRect(&action,pointer),enabled);
   rl.push_back({render::Op::Hud,0,0,0,enabled?1:0,"inventory-action:"+action_text});
   if(selected) rl.push_back({render::Op::Hud,0,0,0,0,"inventory-selected:"+state.selected_item_id});

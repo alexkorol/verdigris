@@ -5,15 +5,15 @@ animated Scions. The historical browser reference remains in src/ and server/.
 
 ## Player typography
 
-All runtime text uses **Verdigris Sans**, a bundled CC0 derivative of Pixel
-Operator HB. [Source and license notes](client/assets/fonts/sans/README.md).
-This proportional pixel sans follows the owner's sans-serif direction. The
-reference font is unidentified. Its heavier authored pixel strokes follow the
-request for more pronounced pixel structure without synthetic bold or blur.
-`client/ui_typography.hpp` owns Body, Label, Heading, Compact and
-Title roles. The first four share a 16px design grid (9px unaccented cap
-height); Title uses 32px. Existing viewport UI tiers multiply these sizes by
-integers. Heading emphasis uses color and space instead of synthetic bold.
+All player text uses **Verdigris Sans**, a bundled CC0 derivative of m5x7.
+[Source and license notes](client/assets/fonts/sans/README.md). The owner selected
+this proportional sans face from actual native captures. The Nox reference's
+exact font remains unidentified. The chosen 32px em produces 14px capitals and
+visible 2px authored pixel steps without synthetic bold or blur.
+`client/ui_typography.hpp` owns Body, Label, Heading, Compact, Title and CompactValue
+roles. Ordinary roles use 32px, Title 64px and tiny inventory/orb values 16px.
+Viewport tiers multiply these sizes by integers. Heading emphasis uses color
+and space. Line metrics are aligned to the source font's pixel grid.
 
 GDI rasterizes cached private fonts at integer positions with
 `NONANTIALIASED_QUALITY`, in screen space after world rendering. Per-monitor
@@ -21,10 +21,10 @@ DPI awareness prevents Windows from interpolating a bitmap of the window.
 Camera calibration is unchanged. Primary ink is `#cfb468`, secondary `#b5a277`;
 meaningful state colors remain. NPC labels have one dark pixel of separation.
 Measurement and drawing share UTF-8 decoding with a legacy Windows-1252
-fallback. The 239-character map includes Latin-1, selected extended Latin,
+fallback. The 326-character map includes Latin-1, selected extended Latin,
 punctuation and symbols; Cyrillic is not included. Unsupported characters
-visibly become this font's `?`; ellipsis uses three periods. Existing smart
-quotes retain their own shapes, with low-quote aliases where absent.
+visibly become this font's `?`; ellipsis uses three periods. Missing smart
+quotes and low quotes alias the family's straight quote glyphs.
 The font resolves relative to the executable. Missing resources cause an
 explicit error; there is no installed-font substitution.
 

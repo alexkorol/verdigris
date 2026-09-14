@@ -35,6 +35,18 @@ int scenario_typography() {
   bool crisp=true;int ink=0;
   for(int i=0;i<1000*360;++i){const auto c=bits[i]&0xffffff;crisp&=c==0||c==rgb;ink+=c==rgb;}
   scenario_check(crisp&&ink>100,"type: actual GDI glyphs contain only ink and transparent backing, no antialias fringes");
+  skin::set_ui_scale(1);SelectObject(dc,skin::font_body());
+  const std::string long_name="An exceptionally long inventory item name with its distinguishing final words still available in the tooltip";
+  const auto wrapped=skin::wrap_text(dc,long_name,132);
+  std::wstring joined;bool fits=true;
+  for(const auto& line:wrapped) {
+    SIZE extent{};GetTextExtentPoint32W(dc,line.data(),int(line.size()),&extent);
+    fits&=extent.cx<=132;joined+=line;
+  }
+  auto expected=skin::display_text(long_name.c_str(),-1);
+  joined.erase(std::remove(joined.begin(),joined.end(),L' '),joined.end());
+  expected.erase(std::remove(expected.begin(),expected.end(),L' '),expected.end());
+  scenario_check(fits&&joined==expected,"type: narrow tooltip wraps long words without losing final text or widening its rectangle");
   scenario_check(save_hbitmap_png(state.billboards,bitmap,dir+"/type-specimen.png"),"type: native shared-role specimen saved");
   SelectObject(dc,old);DeleteObject(bitmap);DeleteDC(dc);
   scenario_check(skin::display_text("\xe2\x80\x98quoted\xe2\x80\x99",-1)==L"\u2018quoted\u2019","type: UTF-8 smart quotes retain bundled glyphs");
@@ -52,6 +64,17 @@ int scenario_typography() {
   scenario_check(value.size()==40,"type: established name length limit retained");
 
   for(const auto size:{std::pair{960,600},std::pair{1280,800},std::pair{3440,1440}}) {
+    const int ui_scale=hud_scale(size.second);
+    bool menu_fits=true;
+    for(const auto* caption:{"Equipment","Character","Settings"}) {
+      const auto extent=skin::measure_text(caption,skin::TextRole::Label,ui_scale);
+      const auto button=player_menu_rect(size.first,size.second,0);
+      menu_fits&=extent.cx+12*ui_scale<=button.right-button.left&&extent.cy<=button.bottom-button.top;
+    }
+    scenario_check(menu_fits,"type: actual menu captions fit supported viewport buttons");
+    const auto pack=make_pack_geom(size.first,size.second);
+    const auto count=skin::measure_text("100",skin::TextRole::CompactValue,ui_scale);
+    scenario_check(count.cx<=pack.cell_w&&count.cy<=pack.cell_h,"type: ordinary three-digit inventory count fits a single cell");
     const auto suffix=std::to_string(size.first)+".png";
     state.camera.perspective=true;state.lineage_art=true;state.camera.zoom=kCameraDefaultZoom*zoom_height_factor(size.second);
     state.frontend=Frontend::Title;

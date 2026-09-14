@@ -1,42 +1,62 @@
-# Native player typography â€” sans-serif revision
+# Native player typography - owner-selected m5x7
 
-The owner corrected the direction to **sans serif**. The runtime now uses
-Verdigris Sans, a private-family derivative of **Pixel Operator HB** by
-Jayvee Enaguas (HarvettFox96), under CC0. The author's distribution page is
-https://www.dafont.com/pixel-operator.font; the original font and license are
-bundled in `native/client/assets/fonts/sans/`. The serif Novel candidate and
-its resources are superseded. No owner visual approval or exact identification
-of the reference's font is claimed.
+The owner selected the m5x7 captures supplied as download.png and download (1).png.
+The runtime now uses that font at the same 32px em (14px capitals, 2px authored
+steps). Pixel Operator 8 was the middle reference; the interim Pixel Operator HB
+revision is superseded. Nox's exact font remains unidentified. The selection
+establishes the owner's typography preference, not acceptance of every layout.
 
-The owner liked the sans-serif direction and requested more visible pixelation.
-Pixel Operator HB keeps the proportional family and its 16px grid, with heavier
-hand-authored pixel strokes. Lower-grid trials were rejected after actual native
-captures exposed overly wide text and clipping. No synthetic bold or bitmap
-interpolation is used. The result is a heavier pixel treatment, not a claim to
-have reproduced Nox's exact font. Capitals are 9px; Titles use a 32px em.
-Viewport UI tiers multiply raster sizes by integers. Camera and animation remain.
+Verdigris Sans privately bundles Daniel Linssen's m5x7 under CC0. Original source,
+license text and attribution are in native/client/assets/fonts/sans/. The build
+renames the family, adds compatible punctuation aliases and aligns line metrics
+to the source pixel grid without changing glyph outlines or advances. The font
+maps 326 characters; unsupported glyphs explicitly use the same family's '?'.
 
-Shared Body, Label, Heading, Compact and Title roles cover menus, House/Scion,
-equipment/stats/tooltips, the existing message log, HUD and world labels.
-The prior measured editing/selection/scrolling and log wrapping remain. Fonts
-are cached and registered from executable-relative bytes with no system-font
-fallback. Names retain their 40 printable-ASCII limit. The font has 239 mapped
-characters: Latin-1, selected extended Latin, punctuation and symbols. It lacks
-the earlier serif candidate's Cyrillic coverage; unsupported glyphs explicitly
-display `?`. Existing curly quotes are preserved; ellipsis uses three periods.
-No new dialogue or chat system was built.
+Ordinary roles use 32px em, titles 64px, and inventory cell counts and small orb values use the native
+16px em so ordinary quantities remain legible inside tiny cells. Cached GDI
+fonts rasterize without antialiasing or interpolation. Name editing, selection,
+scrolling, executable-relative loading and explicit missing-resource failure
+remain. Names retain the established 40 printable-ASCII limit.
 
-Evidence in `evidence/` from the first implementation is historical serif
-comparison evidence. Files prefixed `sans-` describe the final sans revision.
-Log, long-name and roster screenshots are production-paint fixtures, not proof
-of an implemented dialogue system. Before title/entry captures are live views
-of installed source 43c104c5a; before inventory/log images are labeled fixtures.
+Measured geometry now gives top buttons and hotbar labels enough room. House
+intro and portrait descriptions reserve their full wrapped height. Tooltip
+measurement and drawing share fixed-width lines, including glyph-boundary
+breaks for words wider than the available world gap. This avoids DrawText's
+CALCRECT width expansion and the resulting lost final words. No new dialogue,
+chat, gameplay stats or inventory schema was introduced.
 
-The sans change was isolated from c00ade08e on
-`codex/native-typography-sans-20260914` after concurrent inventory source edits
-appeared in the consolidated working directory. Those unrelated edits remain
-there and are excluded from the typography package. The verified equipment/stat
-repairs already in c00ade08e remain included.
+The change is isolated from consolidated c00ade08e on
+codex/native-typography-sans-20260914, preserving concurrent unrelated inventory
+edits in verdigris-consolidated-20260913. Existing verified equipment/stat fixes,
+WIZARD composition, perspective rendering and authored animation remain included.
 
-Validation, package identity and normal-installation handover are recorded below
-after the isolated native gate and clean package complete.
+Evidence naming: files without a font prefix are historical serif evidence;
+`sans-` files are interim Pixel Operator comparisons; `selected-` files are the
+owner-selected m5x7 production renders and logs. Synthetic long-name/count/log
+fixtures are labeled stress evidence, not actual player data or a dialogue system.
+
+Validation and delivery results are appended after the final checks.
+Desktop automation was stopped by the user's Escape key earlier in the session.
+No further automated desktop input is authorized by that stopped run. A fresh
+live check of the final normal installation remains separate from scenario
+captures and package verification.
+
+Pre-package validation: actual production renders inspected at 960x600,
+1280x800 and 3440x1440. Typography (including fixed-width long-word retention,
+measured menu fitting and three-digit counts), inventory/equipment, vital-orbs,
+hitch-warmup and frame-budget pass. Missing font exits 2 with its actual path;
+font and coverage regeneration are byte-identical. Frame budget averaged
+31.398ms static and 34.245ms moving (48.242ms peak), below the unchanged 40ms
+average gate. No browser tests were used for native acceptance.
+
+The first m5x7 all-scenarios run passed 78/80: hitch-warmup exceeded its relative
+single-frame comparison by 0.567ms and passed the isolated unchanged retry;
+vital-orbs failed because large numeric captions obscured the colored glass.
+The compact numeric role fixes that production defect; the unchanged color
+check passes. The full failed log is retained, not silently presented as green.
+The final clean-package suite is pending at this source commit.
+
+Earlier native compilation and eight non-UI suites passed across a full-build
+run and solo retries. The first session-suite run had reconnect/death failures
+while another test session was active; its complete solo retry passed. Both
+failed and successful logs are retained as interim evidence.

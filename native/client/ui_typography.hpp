@@ -9,9 +9,9 @@
 #include "ui_font_coverage.hpp"
 
 namespace skin {
-// One 16px design grid with heavier authored pixel strokes (9px capitals).
-// Rasterize directly at integer sizes; viewport tiers and titles use integers.
-enum class TextRole { Body, Label, Heading, Compact, Title };
+// Owner-selected m5x7 at its 32px em: visible 2px steps and 14px capitals.
+// Rasterize directly; viewport tiers and titles use deliberate integer sizes.
+enum class TextRole { Body, Label, Heading, Compact, Title, CompactValue };
 inline constexpr int kMinSmallPx = 10, kMinBodyPx = 12;
 inline int& ui_scale_ref() { static int scale=1; return scale; }
 inline void set_ui_scale(int scale) { ui_scale_ref()=std::clamp(scale,1,4); }
@@ -47,16 +47,18 @@ inline bool game_font_available() { return font_resource().registration!=nullptr
 
 inline HFONT font(TextRole role, int scale=0) {
   struct Cache {
-    HFONT fonts[2][5]{};
+    HFONT fonts[3][5]{};
     ~Cache() { for(auto& row:fonts) for(auto f:row) if(f) DeleteObject(f); }
   };
   ensure_game_fonts();
   static Cache cache;
   const int s=scale?std::clamp(scale,1,4):ui_scale();
-  const int title=role==TextRole::Title?1:0;
-  auto& result=cache.fonts[title][s];
+  // Tiny inventory cells use the same face's native 1px grid for counts.
+  const int tier=role==TextRole::CompactValue?0:role==TextRole::Title?2:1;
+  const int em=tier==0?16:tier==1?32:64;
+  auto& result=cache.fonts[tier][s];
   if(!result && game_font_available())
-    result=CreateFontW(-16*s*(title+1),0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,
+    result=CreateFontW(-em*s,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,
         DEFAULT_CHARSET,OUT_TT_ONLY_PRECIS,CLIP_DEFAULT_PRECIS,
         NONANTIALIASED_QUALITY,VARIABLE_PITCH,L"Verdigris Sans");
   return result;
@@ -106,5 +108,35 @@ inline BOOL text_extent(HDC dc,const char* text,int count,SIZE* size) {
 inline int line_height(HDC dc,int leading=3) {
   TEXTMETRICW metric{};GetTextMetricsW(dc,&metric);
   return metric.tmHeight+leading*ui_scale();
+}
+// DrawText(DT_CALCRECT) can widen its rectangle for a long word. Keep the
+// requested width fixed, breaking such words on actual glyph boundaries.
+inline std::vector<std::wstring> wrap_text(HDC dc,const std::string& text,int width) {
+  const auto value=display_text(text.c_str(),-1);
+  std::vector<std::wstring> lines;
+  std::size_t start=0;
+  while(start<value.size()) {
+    std::size_t end=start,last_space=std::wstring::npos;
+    while(end<value.size()&&value[end]!=L'\n') {
+      SIZE extent{};GetTextExtentPoint32W(dc,value.data()+start,int(end-start+1),&extent);
+      if(extent.cx>width&&end>start)break;
+      if(value[end]==L' ')last_space=end;
+      ++end;
+    }
+    const bool newline=end<value.size()&&value[end]==L'\n';
+    if(!newline&&end<value.size()&&last_space!=std::wstring::npos)end=last_space;
+    auto line=value.substr(start,end-start);
+    while(!line.empty()&&line.back()==L' ')line.pop_back();
+    lines.push_back(std::move(line));start=end;
+    if(newline)++start;
+    while(start<value.size()&&value[start]==L' ')++start;
+  }
+  return lines;
+}
+inline SIZE measure_text(const char* text,TextRole role,int scale) {
+  HDC dc=CreateCompatibleDC(nullptr);
+  const auto old=SelectObject(dc,font(role,scale));
+  SIZE result{};text_extent(dc,text,-1,&result);
+  SelectObject(dc,old);DeleteDC(dc);return result;
 }
 } // namespace skin

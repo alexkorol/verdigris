@@ -1,21 +1,21 @@
 # Verdigris Sans
 
-Derived from **Pixel Operator HB**, by Jayvee Enaguas (HarvettFox96), version
-2018.10.04-1, downloaded from the author's
-[distribution page](https://www.dafont.com/pixel-operator.font) on 2026-09-14.
-The archive's `LICENSE.txt`, retained as `CC0.txt`, and font metadata both
-specify CC0 1.0 Universal. The untouched original is `source/PixelOperatorHB.ttf`.
+Derived from **m5x7**, by Daniel Linssen (managore), downloaded from the
+[author's distribution page](https://managore.itch.io/m5x7) on 2026-09-14.
+That page dedicates the font to the public domain under CC0 and appreciates
+attribution. The complete CC0 1.0 legal text is retained as `CC0.txt`.
+The untouched original is `source/m5x7.ttf`; its metadata credits managore.
 
-This proportional sans-serif face has deliberately heavier pixel-drawn strokes.
-It retains the 16px design grid and 9px unaccented capitals. It follows the
-owner's requests for sans serif and more visibly pixelated lettering. Native
-comparisons rejected lower-grid alternatives that widened or clipped controls.
-The reference font remains unidentified. This is a heavier pixel treatment of
-the accepted sans direction, not an exact Nox font or a reduced-resolution copy.
+The owner selected native m5x7 captures as their preferred pixel treatment.
+Ordinary text uses a 32px em: 14px capitals and visible 2px authored steps.
+Titles use 64px; inventory cell counts and small orb values use the native 16px em to fit tiny
+cells. Viewport tiers multiply these sizes by integers. This proportional
+sans face is a lawful substitute; the exact Nox font remains unidentified.
 
-`VerdigrisSans.ttf` preserves original glyphs and metrics under a private family
-name. Missing low-quote/soft-hyphen mappings alias existing family glyphs;
-existing curly quotes are preserved. Rebuild with
-`python native/tools/prepare-ui-font.py` (fontTools 4.56.0 used).
-Coverage is Latin-1 plus selected extended Latin, punctuation and symbols;
+`VerdigrisSans.ttf` preserves original glyph outlines and advances under a
+private family name. Line metrics are aligned to the original 64-unit pixel
+grid (704 ascent, 128 descent) for exact integer scaling. Missing smart quotes,
+low quotes, nonbreaking space and soft hyphen alias existing family glyphs.
+Rebuild with `python native/tools/prepare-ui-font.py` (fontTools 4.56.0 used).
+The 326-character map includes Latin-1, extended Latin, punctuation and symbols.
 Cyrillic is not included. Unsupported characters explicitly display `?`.

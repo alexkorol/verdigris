@@ -1,0 +1,15 @@
+== scenario hitch-warmup ==
+    hitch-warmup cold combat paint: 12.5 ms (must be reported)
+    hitch-warmup warm combat paint: 12.3 ms
+    hitch-warmup prepared combat paint: 10.5 ms (glyphs warmed before the strike)
+    ok: hitch-warmup: hiding the cold trace cannot pass
+    ok: hitch-warmup: warm trace is required
+    ok: hitch-warmup: prepared trace is required
+    ok: hitch-warmup: cold combat still draws swing and damage
+    ok: hitch-warmup: warmup cannot drop required combat ops
+    ok: hitch-warmup: prepared strike is not slower than the cold hit
+    ok: hitch-warmup: report opened
+    ok: hitch-warmup: prepared-strike capture written
+    ok: hitch-warmup: live HUD names Warm glyphs and Cold trace
+    ok: hitch-warmup: live HUD rejects hide cold
+   PASS (0 failures)

@@ -524,9 +524,9 @@ inline bool raster_orb(HDC dc,bool life,int cx,int cy,int radius,double ratio,
   const int saved=SaveDC(dc);if(!saved)return false;
   // Keep the value's type size stable as digits change at the compact HUD scale.
   const bool compact_value=gw<96;
-  SetBkMode(dc,TRANSPARENT);SelectObject(dc,compact_value?font_small():font_body_bold());SIZE extent{};
+  SetBkMode(dc,TRANSPARENT);SelectObject(dc,compact_value?font(TextRole::CompactValue):font_body_bold());SIZE extent{};
   skin::text_extent(dc,caption.c_str(),static_cast<int>(caption.size()),&extent);
-  if(!compact_value&&extent.cx>gw-6){SelectObject(dc,font_small());skin::text_extent(dc,caption.c_str(),static_cast<int>(caption.size()),&extent);}
+  if(!compact_value&&extent.cx>gw-6){SelectObject(dc,font(TextRole::CompactValue));skin::text_extent(dc,caption.c_str(),static_cast<int>(caption.size()),&extent);}
   const int tx=gx+gw/2-extent.cx/2,ty=gy+gh/2-extent.cy/2;
   SetTextColor(dc,RGB(8,8,10));
   for(const POINT offset:{POINT{-1,-1},POINT{1,-1},POINT{-1,1},POINT{1,1}})

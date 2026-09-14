@@ -4,7 +4,7 @@ from fontTools.ttLib import TTFont
 
 root = Path(__file__).resolve().parents[1]
 assets = root / "client/assets/fonts/sans"
-font = TTFont(assets / "source/PixelOperatorHB.ttf", recalcTimestamp=False)
+font = TTFont(assets / "source/m5x7.ttf", recalcTimestamp=False)
 cmap = font.getBestCmap()
 # Compatible punctuation aliases use this family's own glyphs. No OS fallback.
 aliases = {0x2018: ord("'"), 0x2019: ord("'"), 0x201a: ord("'"),
@@ -19,6 +19,15 @@ for name in font['name'].names:
               4: 'Verdigris Sans', 6: 'VerdigrisSans'}
     if name.nameID in values:
         name.string = values[name.nameID].encode(name.getEncoding())
+# Snap line metrics to the source pixel grid for exact integer scaling.
+font['hhea'].ascent = 704
+font['hhea'].descent = -128
+font['hhea'].lineGap = 0
+font['OS/2'].sTypoAscender = 704
+font['OS/2'].sTypoDescender = -128
+font['OS/2'].sTypoLineGap = 0
+font['OS/2'].usWinAscent = 704
+font['OS/2'].usWinDescent = 128
 font.save(assets / 'VerdigrisSans.ttf')
 points = sorted(font.getBestCmap())
 rows = [', '.join(f'0x{v:04x}' for v in points[i:i+12]) for i in range(0,len(points),12)]
