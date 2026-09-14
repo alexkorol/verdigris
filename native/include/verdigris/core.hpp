@@ -667,6 +667,7 @@ struct GameItem {
   int bonus_attributes = 0;
   std::optional<VesselBlock> vessel;
   std::string bound_to;
+  std::string pack_id = "main";
 
   int item_level() const { return vessel ? vessel->item.ilvl : 0; }
 };
@@ -704,11 +705,12 @@ class PlayerInventory {
   // overflows; other items place first-fit. One instance per call — callers
   // loop for multi-quantity grants so each roll gets its own rng draw.
   AddResult add(GameItem item);
-  bool add_at(GameItem item, int slot); // exact destination; leaves inventory unchanged on rejection
+  bool add_at(GameItem item, int slot, const std::string& pack = "main");
+  static bool can_store_in_pack(const GameItem& item, const std::string& pack);
   bool remove_by_uuid(const std::string& uuid, GameItem* out);
   GameItem* find_by_uuid(const std::string& uuid);
   const GameItem* find_by_uuid(const std::string& uuid) const;
-  bool move_or_swap(const std::string& uuid, int slot); // atomic existing footprint rules
+  bool move_or_swap(const std::string& uuid, int slot, const std::string& pack = "main");
   int coin_total() const;
   bool spend_coins(int amount);  // false when coin_total() < amount
 

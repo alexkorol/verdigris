@@ -1,4 +1,5 @@
 #pragma once
+#include "verdigris/inventory_extensions.hpp"
 
 #include <cstdint>
 #include <filesystem>
@@ -147,6 +148,7 @@ class ProtocolSession {
   void maybe_complete_first_goal(const std::function<void(const Envelope&)>& emit);
   JsonValue quests_json() const;
   JsonValue passive_tree_json() const;
+  bool inventory_extension_unlocked(const inventory_extensions::Definition* definition) const;
   void tree_attributes(int* strength, int* dexterity, int* intelligence) const;
   void handle_skilltree_save(const JsonValue& payload, const std::function<void(const Envelope&)>& emit);
   void emit_bank_screen(const std::function<void(const Envelope&)>& emit) const;

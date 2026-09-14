@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "verdigris/core.hpp"
+#include "verdigris/inventory_extensions.hpp"
 #include "verdigris/persistence.hpp"
 #include "verdigris/seasonal.hpp"
 
@@ -2730,6 +2731,28 @@ void test_n4_sear_rules_and_brand_pool_exclusion() {
   check(item.brands.size() == 4 && item.patience == 3, "N4 sear: a failed roll leaves the item untouched");
 }
 
+void test_inventory_extension_compartments() {
+  PlayerInventory inventory;
+  auto trophy=[](const std::string& id) {GameItem item;item.id="fixture-trophy";item.uuid=id;
+    item.name="Hunt Trophy";item.vessel=VesselBlock{};item.vessel->item.kind="trophy";return item;};
+  for(int slot=0;slot<16;++slot)check(inventory.add_at(trophy("trophy-"+std::to_string(slot)),slot,"spoils"),"4x4 trophy pack accepts each independent cell");
+  check(!inventory.add_at(trophy("overflow"),16,"spoils"),"extra pack rejects a seventeenth cell");
+  auto weapon=create_game_item("bronze-sword",{});
+  check(weapon.has_value() && inventory.add(*weapon).added==1 && inventory.find_by_uuid(weapon->uuid)->slot==0,"full extra pack does not consume main backpack cells");
+  check(!inventory.move_or_swap(weapon->uuid,0,"spoils"),"equipment cannot displace a trophy into a restricted pack");
+  check(inventory.move_or_swap("trophy-0",1,"main"),"item transfers from extra pack into main pack");
+  check(inventory.find_by_uuid("trophy-0")->pack_id=="main" && inventory.find_by_uuid("trophy-0")->slot==1,"transfer retains identity and exact destination compartment");
+  check(inventory.move_or_swap("trophy-0",1,"spoils"),"compatible cross-pack swap succeeds");
+  check(inventory.find_by_uuid("trophy-1")->pack_id=="main" && inventory.find_by_uuid("trophy-1")->slot==1,"displaced item returns to source compartment without duplication");
+  check(inventory.items().size()==17,"cross-pack moves conserve every item");
+  check(!inventory.move_or_swap("trophy-0",0,"reliquary"),"wrong-category compartment refuses transfer");
+  check(inventory.find_by_uuid("trophy-0")->pack_id=="spoils","rejected transfer preserves original compartment");
+  for(const auto& def:inventory_extensions::definitions) {
+    check(def.node!="0,0","all extension gates are outside the starting node");
+    if(!def.pack.empty())check(inventory_extensions::columns(def.pack)==4 && inventory_extensions::rows(def.pack)==4,"extra capacity matches WIZARD 4x4 pack definition");
+  }
+}
+
 void test_n4_inventory_first_fit_overflow_and_currency() {
   PlayerInventory inventory;
   CreateItemOptions coin_opts;
@@ -2777,7 +2800,7 @@ void test_n4_inventory_first_fit_overflow_and_currency() {
 
 void test_n4_ring_seats_and_wear_caps() {
   WearSet wear;
-  check(WearSet::physical_slots().size() == 11, "N4 eleven physical wear seats");
+  check(WearSet::physical_slots().size() == 14, "eleven main and three gated auxiliary wear seats");
   check(wear.resolve_seat("ring") == "ring", "N4 first ring takes the primary seat");
   auto first = create_game_item("ring", CreateItemOptions{});
   auto second = create_game_item("gold-ring", CreateItemOptions{});
@@ -2971,6 +2994,7 @@ int main() {
   test_n4_mulberry32_matches_js();
   test_n4_ground_truth_rolls();
   test_n4_sear_rules_and_brand_pool_exclusion();
+  test_inventory_extension_compartments();
   test_n4_inventory_first_fit_overflow_and_currency();
   test_n4_ring_seats_and_wear_caps();
   test_n4_loot_math_and_depth_scaling();

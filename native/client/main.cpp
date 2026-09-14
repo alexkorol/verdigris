@@ -671,6 +671,7 @@ struct ClientState {
     bool frontier = false;
   };
   std::vector<TreeSeatHit> tree_seat_hits;
+  std::string tree_focus;
   // Scene the current scenery set was generated for (remote path).
   std::string scenery_scene;
   FloorCache floor_cache;
@@ -719,6 +720,8 @@ struct ClientState {
   bool pack_drag_live = false;
   int pack_grab_x = 0, pack_grab_y = 0;
   int pack_grab_pixel_x = 0, pack_grab_pixel_y = 0;
+  int inventory_aux = -1;
+  std::string pack_preview_pack = "main";
   int pack_preview_x = -1;
   int pack_preview_y = -1;
   bool pack_preview_ok = false;
@@ -4395,7 +4398,7 @@ RECT paper_doll_slot_rect(int width,int height,std::size_t index) {
   const auto pane=gear_pane_rect(width,height);const int s=hud_scale(height);
   const int inner=pane.w-36*s,cell=inner/kPackColumns;
   const int bag_top=pane.y+pane.h-48*s-kPackRows*cell;
-  const int top=pane.y+44*s,eqh=bag_top-top-54*s;
+  const int top=pane.y+44*s,eqh=bag_top-top-28*s;
   const int gap=5*s,cw=(inner-3*gap)/4;
   // Actual WIZARD column proportions, independent of backpack footprints.
   static constexpr double x[]={2,1,0,2,1,3,0,2,3,1,1.5,0,1.34,2.68};
@@ -4403,7 +4406,7 @@ RECT paper_doll_slot_rect(int width,int height,std::size_t index) {
   static constexpr double hh[]={2,2,4,3,3,4,2,1,2,1,1,0,0,0};
   index=std::min(index,std::size(x)-1);
   const int left=pane.x+18*s+static_cast<int>(x[index]*(cw+gap));
-  if(index>=11) { const int aux=pane.x+18*s+static_cast<int>(index-11)*inner/3;return {aux,top+eqh+5*s,aux+inner/3-gap,bag_top-25*s}; }
+  if(index>=11)return {}; // Auxiliary equipment belongs in skill-gated side drawers.
   const int sy=top+static_cast<int>(y[index]*eqh/6);
   const int sw=(index==9||index==10)?(cw-gap)/2:cw;
   return {left,sy,left+sw,top+static_cast<int>((y[index]+hh[index])*eqh/6)-gap};
@@ -4426,6 +4429,8 @@ struct PackGeom {
   int grid_left = 0;
   int grid_top = 0;
   RECT seat{};
+  int columns=kPackColumns,rows=kPackRows;
+  std::string pack_id="main";
   std::array<RECT, paper_doll::kSlotCount> seats{};
 };
 
@@ -4437,6 +4442,62 @@ PackGeom make_pack_geom(int width,int height) {
   g.seat=g.seats[2];return g;
 }
 
+bool inventory_extension_visible(const ClientState& state,int index) {
+  if(!state.session || index<0 || index>=6)return false;
+  const auto& progress=state.session->model().progression;
+  const auto& flag=verdigris::inventory_extensions::definitions[index].unlock;
+  return progress.present && std::find(progress.inventory_unlocks.begin(),progress.inventory_unlocks.end(),flag)!=progress.inventory_unlocks.end();
+}
+RECT inventory_aux_button(int width,int height,int index) {
+  const auto p=gear_pane_rect(width,height);const int scale=hud_scale(height),size=22*scale;
+  const int y=p.y+40*scale+index*(p.h-80*scale-size)/5;
+  return {p.x-size-2*scale,y,p.x-2*scale,y+size};
+}
+RECT inventory_aux_rect(const ClientState& state,int width,int height) {
+  if(!inventory_extension_visible(state,state.inventory_aux))return {};
+  const auto p=gear_pane_rect(width,height);const auto g=make_pack_geom(width,height);
+  const auto& def=verdigris::inventory_extensions::definitions[state.inventory_aux];
+  const int rows=def.pack.empty()?2:4;
+  const int ww=4*g.cell_w+36*g.s,hh=rows*g.cell_h+64*g.s;
+  const auto button=inventory_aux_button(width,height,state.inventory_aux);
+  const int left=std::max(6*g.s,p.x-ww-30*g.s),top=std::clamp(int(button.top),6*g.s,std::max(6*g.s,height-hh-6*g.s));
+  return {left,top,left+ww,top+hh};
+}
+PackGeom inventory_aux_geom(const ClientState& state,int width,int height) {
+  auto g=make_pack_geom(width,height);g.seats={};g.columns=g.rows=0;
+  if(!inventory_extension_visible(state,state.inventory_aux))return g;
+  const auto box=inventory_aux_rect(state,width,height);
+  const auto& def=verdigris::inventory_extensions::definitions[state.inventory_aux];
+  g.grid_left=box.left+18*g.s;g.grid_top=box.top+42*g.s;
+  if(!def.pack.empty()){g.pack_id=std::string(def.pack);g.columns=g.rows=4;}
+  else {
+    const int seat=11+state.inventory_aux;
+    g.seats[seat]={g.grid_left+g.cell_w,g.grid_top,g.grid_left+3*g.cell_w,g.grid_top+2*g.cell_h};
+  }
+  return g;
+}
+PackGeom inventory_hit_geom(const ClientState& state,int width,int height,int x,int y) {
+  const auto box=inventory_aux_rect(state,width,height);
+  return PtInRect(&box,POINT{x,y})?inventory_aux_geom(state,width,height):make_pack_geom(width,height);
+}
+bool inventory_surface_contains(const ClientState& state,int width,int height,POINT point) {
+  const auto p=gear_pane_rect(width,height);const RECT main{p.x,p.y,p.x+p.w,p.y+p.h};
+  const auto aux=inventory_aux_rect(state,width,height);
+  if(PtInRect(&main,point) || PtInRect(&aux,point))return true;
+  for(int i=0;i<6;++i)if(inventory_extension_visible(state,i)){
+    const auto button=inventory_aux_button(width,height,i);if(PtInRect(&button,point))return true;
+  }
+  return false;
+}
+
+bool inventory_world_drop_allowed(const ClientState& state,int width,int height,POINT point) {
+  if(inventory_surface_contains(state,width,height,point))return false;
+  auto inside=[&](HudRect p){const RECT r{p.x,p.y,p.x+p.w,p.y+p.h};return PtInRect(&r,point)!=0;};
+  if(state.character_pane && inside(character_pane_rect(width,height,0)))return false;
+  if(state.tree_pane && inside(tree_pane_rect(width,height)))return false;
+  return true;
+}
+
 bool pack_hit_cell(const PackGeom& geom, int mx, int my, int& gx, int& gy) {
   if (geom.cell_w <= 0 || geom.cell_h <= 0) return false;
   const int stride_x = geom.cell_w + geom.gap;
@@ -4444,7 +4505,7 @@ bool pack_hit_cell(const PackGeom& geom, int mx, int my, int& gx, int& gy) {
   if (mx < geom.grid_left || my < geom.grid_top) return false;
   gx = (mx - geom.grid_left) / stride_x;
   gy = (my - geom.grid_top) / stride_y;
-  if (gx < 0 || gy < 0 || gx >= kPackColumns || gy >= kPackRows) return false;
+  if (gx < 0 || gy < 0 || gx >= geom.columns || gy >= geom.rows) return false;
   const int cx = geom.grid_left + gx * stride_x;
   const int cy = geom.grid_top + gy * stride_y;
   return mx < cx + geom.cell_w && my < cy + geom.cell_h;
@@ -4474,7 +4535,7 @@ void pack_first_free(const inventory_grid::State& grid, std::uint8_t& x,
 void reconcile_pack_grid(ClientState& state) {
   std::string fingerprint;
   for (const auto& item : state.world.carried)
-    fingerprint += item.id + ":" + std::to_string(item.grid_slot) + ":" + std::to_string(item.equipped) + ":" +
+    fingerprint += item.id + ":" + item.pack_id + ":" + std::to_string(item.grid_slot) + ":" + std::to_string(item.equipped) + ":" +
         std::to_string(item.width) + "x" + std::to_string(item.height) + ",";
   if (fingerprint == state.pack_fingerprint && state.pack_grid.valid() &&
       state.pack_grid.width == kPackColumns &&
@@ -4486,7 +4547,7 @@ void reconcile_pack_grid(ClientState& state) {
   (void)inventory_grid::rebuild_occupancy(next);
   bool unplaced = false;
   for (const auto& carried : state.world.carried) {
-    if (carried.equipped) continue;
+    if (carried.equipped || carried.pack_id!="main") continue;
     const std::uint32_t id = pack_stable_id(carried.id);
     inventory_grid::Item placed{};
     placed.id = id;
@@ -4516,7 +4577,7 @@ void reconcile_pack_grid(ClientState& state) {
     next = inventory_grid::State{};
     next.width = kPackColumns; next.height = kPackRows;
     for (const auto& carried : state.world.carried) {
-      if (carried.equipped || carried.grid_slot < 0) continue;
+      if (carried.equipped || carried.grid_slot < 0 || carried.pack_id!="main") continue;
       inventory_grid::Item item{};
       item.id = pack_stable_id(carried.id);
       item.width = static_cast<std::uint8_t>(carried.width);
@@ -4554,17 +4615,31 @@ bool pack_can_land(const inventory_grid::State& grid, std::uint32_t id, int x,
   return inventory_grid::swap(scratch, id, occupant) == inventory_grid::Status::Ok;
 }
 
-void pack_begin_drag(ClientState& state, int gx, int gy) {
+inventory_grid::State inventory_grid_for(const ClientState& state,const std::string& pack) {
+  if(pack=="main")return state.pack_grid;
+  inventory_grid::State grid{};grid.width=4;grid.height=4;
+  for(const auto& carried:state.world.carried)if(!carried.equipped && carried.pack_id==pack && carried.grid_slot>=0) {
+    inventory_grid::Item item{};item.id=pack_stable_id(carried.id);
+    item.x=carried.grid_slot%4;item.y=carried.grid_slot/4;
+    item.width=carried.width;item.height=carried.height;item.stack_count=item.stack_max=1;
+    (void)inventory_grid::place(grid,item);
+  }
+  return grid;
+}
+
+void pack_begin_drag(ClientState& state, int gx, int gy,const std::string& pack="main") {
   if (gx < 0 || gy < 0 || state.equip_view.pending) return;
+  const auto grid=inventory_grid_for(state,pack);
   const std::uint32_t id = inventory_grid::item_at(
-      state.pack_grid, static_cast<std::uint8_t>(gx),
+      grid, static_cast<std::uint8_t>(gx),
       static_cast<std::uint8_t>(gy));
   if (id == 0) return;
+  state.pack_preview_pack=pack;
   state.pack_drag_live = true;
   state.pack_drag_id = id;
-  const auto item_index = inventory_grid::find_index(state.pack_grid, id);
-  state.pack_grab_x = gx - state.pack_grid.items[item_index].x;
-  state.pack_grab_y = gy - state.pack_grid.items[item_index].y;
+  const auto item_index = inventory_grid::find_index(grid, id);
+  state.pack_grab_x = gx - grid.items[item_index].x;
+  state.pack_grab_y = gy - grid.items[item_index].y;
   state.pack_preview_x = gx;
   state.pack_preview_y = gy;
   state.pack_preview_ok = true;
@@ -4586,21 +4661,45 @@ void pack_begin_equipment_drag(ClientState& state, std::size_t index, const Pack
   state.pack_grab_y=state.pack_grab_pixel_y/geom.cell_h;
 }
 
-bool pack_drag_can_land(const ClientState& state,int x,int y) {
+bool pack_drag_can_land(const ClientState& state,int x,int y,const std::string& pack="main") {
   const auto index=carried_index_for_pack_id(state,state.pack_drag_id);
   if(index>=state.world.carried.size() || x<0 || y<0)return false;
   const auto& item=state.world.carried[index];
-  if(!item.equipped)return pack_can_land(state.pack_grid,state.pack_drag_id,x,y);
-  if(x>=kPackColumns || y>=kPackRows)return false;
-  const auto occupant=inventory_grid::item_at(state.pack_grid,x,y);
-  if(!occupant)return inventory_grid::can_place(state.pack_grid,x,y,item.width,item.height);
+  auto allows=[](const WorldCarriedItem& it,const std::string& container){return container=="main" ||
+      std::find(it.compatible_packs.begin(),it.compatible_packs.end(),container)!=it.compatible_packs.end();};
+  if(!state.session && !item.equipped)return pack_can_land(state.pack_grid,state.pack_drag_id,x,y);
+  if(!allows(item,pack))return false;
+  auto grid=inventory_grid_for(state,pack);
+  if(x>=grid.width || y>=grid.height)return false;
+  const auto occupant=inventory_grid::item_at(grid,x,y);
+  (void)inventory_grid::remove(grid,state.pack_drag_id);
   const auto target=carried_index_for_pack_id(state,occupant);
-  if(target>=state.world.carried.size())return false;
-  const auto& other=state.world.carried[target];
-  if(!verdigris::WearSet::can_use_seat(other.equip_seat,item.equip_seat))return false;
-  const auto placed=inventory_grid::find_index(state.pack_grid,occupant);
-  return placed<inventory_grid::kMaxItems && inventory_grid::can_place(state.pack_grid,
-      state.pack_grid.items[placed].x,state.pack_grid.items[placed].y,item.width,item.height,occupant);
+  if(occupant && occupant!=state.pack_drag_id) {
+    if(target>=state.world.carried.size())return false;
+    const auto& other=state.world.carried[target];
+    const auto placed=inventory_grid::find_index(grid,occupant);
+    if(placed>=inventory_grid::kMaxItems)return false;
+    x=grid.items[placed].x;y=grid.items[placed].y;
+    (void)inventory_grid::remove(grid,occupant);
+    if(item.equipped) {
+      if(!verdigris::WearSet::can_use_seat(other.equip_seat,item.equip_seat))return false;
+      for(const auto& worn:state.world.carried)if(worn.equipped && worn.id!=item.id)
+        if((other.two_handed && item.equip_seat=="right_hand" && worn.equip_seat=="left_hand") ||
+           (item.equip_seat=="left_hand" && worn.equip_seat=="right_hand" && worn.two_handed))return false;
+    } else {
+      if(!allows(other,item.pack_id))return false;
+      auto origin=inventory_grid_for(state,item.pack_id);
+      (void)inventory_grid::remove(origin,state.pack_drag_id);
+      if(item.pack_id==pack) {
+        (void)inventory_grid::remove(origin,occupant);
+        inventory_grid::Item incoming{};incoming.id=state.pack_drag_id;incoming.x=x;incoming.y=y;
+        incoming.width=item.width;incoming.height=item.height;incoming.stack_count=incoming.stack_max=1;
+        if(inventory_grid::place(origin,incoming)!=inventory_grid::Status::Ok)return false;
+      }
+      if(item.grid_slot<0 || !inventory_grid::can_place(origin,item.grid_slot%origin.width,item.grid_slot/origin.width,other.width,other.height))return false;
+    }
+  }
+  return inventory_grid::can_place(grid,x,y,item.width,item.height);
 }
 
 void cancel_pack_drag(ClientState& state) {
@@ -4608,6 +4707,7 @@ void cancel_pack_drag(ClientState& state) {
   state.pack_drag_id = 0;
   state.pack_preview_x = state.pack_preview_y = -1;
   state.pack_preview_ok = false;
+  state.pack_preview_pack="main";
 }
 
 bool pack_commit_drop(ClientState& state, int seat_index) {
@@ -4635,7 +4735,8 @@ bool pack_commit_drop(ClientState& state, int seat_index) {
     verdigris::client::ClientCommand command;
     command.type=verdigris::client::ClientCommand::Type::UnequipToInventory;
     command.target=dragged.id;command.extra=dragged.equip_seat;
-    command.value=state.pack_preview_y*kPackColumns+state.pack_preview_x;
+    command.pack_id=state.pack_preview_pack;
+    command.value=state.pack_preview_y*verdigris::inventory_extensions::columns(command.pack_id)+state.pack_preview_x;
     verdigris::client::ui::request_equip(state.equip_view,command.target);
     state.session->submit(command);state.pack_last_drop="pending";return true;
   }
@@ -4667,6 +4768,18 @@ bool pack_commit_drop(ClientState& state, int seat_index) {
     state.pack_last_drop = "reject";
     show_hint(state, "Not enough space for this item");
     return false;
+  }
+  const int target_columns=verdigris::inventory_extensions::columns(state.pack_preview_pack);
+  if(!dragged.equipped && dragged.pack_id==state.pack_preview_pack && target_columns>0 &&
+     dragged.grid_slot==state.pack_preview_y*target_columns+state.pack_preview_x) {
+    state.pack_last_drop="idle";return true; // A click is selection, not a pending move.
+  }
+  if(state.session) {
+    verdigris::client::ClientCommand command;command.type=verdigris::client::ClientCommand::Type::MoveInventory;
+    command.target=dragged.id;command.pack_id=state.pack_preview_pack;
+    command.value=state.pack_preview_y*verdigris::inventory_extensions::columns(command.pack_id)+state.pack_preview_x;
+    verdigris::client::ui::request_equip(state.equip_view,command.target);
+    state.session->submit(command);state.pack_last_drop="pending";return true;
   }
   const auto origin=inventory_grid::find_index(state.pack_grid,id);
   if(origin<inventory_grid::kMaxItems && state.pack_grid.items[origin].x==state.pack_preview_x &&
@@ -6205,7 +6318,20 @@ void paint_tree_pane(ClientState& state, HDC dc, const RECT& bounds,
     return;
   }
 
-  const auto slice = geometric_skill_tree::make_owner_demo_first_level_slice();
+  const auto initial = geometric_skill_tree::make_owner_demo_first_level_slice();
+  int focus_q=0,focus_r=0;
+  const auto focus=state.tree_focus.empty()?progression->selected_node:state.tree_focus;
+  if(!verdigris::inventory_extensions::node_position(focus,focus_q,focus_r)){focus_q=focus_r=0;}
+  std::vector<geometric_skill_tree::Seat> seats;
+  for(int q=focus_q-1;q<=focus_q+1;++q)for(int r=focus_r-1;r<=focus_r+1;++r) {
+    const auto id=std::to_string(q)+","+std::to_string(r);int a=0,b=0;
+    if(!verdigris::inventory_extensions::node_position(id,a,b) ||
+       (std::max)({std::abs(q-focus_q),std::abs(r-focus_r),std::abs(q+r-focus_q-focus_r)})>1)continue;
+    geometric_skill_tree::Seat seat;seat.pos={static_cast<std::int8_t>(q),static_cast<std::int8_t>(r)};
+    for(std::uint8_t i=0;i<initial.seat_count;++i)if(initial.seats[i].pos==seat.pos)seat.type=initial.seats[i].type;
+    for(const auto& def:verdigris::inventory_extensions::definitions)if(def.node==id)seat.type=geometric_skill_tree::SeatType::Gateway;
+    seats.push_back(seat);
+  }
   const auto node_id_of = [](geometric_skill_tree::Axial pos) {
     return std::to_string(pos.q) + "," + std::to_string(pos.r);
   };
@@ -6218,25 +6344,23 @@ void paint_tree_pane(ClientState& state, HDC dc, const RECT& bounds,
   const int center_y = top + pane_h / 2 + 20 * s;
   const double hex = 62.0 * s;
   const int seat_r = 24 * s;
-  for (std::uint8_t i = 0; i < slice.seat_count; ++i) {
-    const auto& seat = slice.seats[i];
+  for (std::size_t i = 0; i < seats.size(); ++i) {
+    const auto& seat = seats[i];
     const std::string id = node_id_of(seat.pos);
     const bool active = allocated(id);
     bool frontier = false;
     if (!active && progression->unspent_points > 0) {
-      for (std::uint8_t j = 0; j < slice.seat_count; ++j) {
-        const std::string other = node_id_of(slice.seats[j].pos);
-        if (allocated(other) &&
-            geometric_skill_tree::hex_distance(seat.pos, slice.seats[j].pos) == 1) {
+      for (const auto& other : progression->nodes) {
+        if (verdigris::inventory_extensions::adjacent(id,other)) {
           frontier = true;
           break;
         }
       }
     }
-    const int sx = center_x + static_cast<int>(hex * 1.5 * seat.pos.q);
+    const int sx = center_x + static_cast<int>(hex * 1.5 * (seat.pos.q-focus_q));
     const int sy = center_y +
                    static_cast<int>(hex * 0.8660254 *
-                                    (2.0 * seat.pos.r + seat.pos.q));
+                                    (2.0 * (seat.pos.r-focus_r) + seat.pos.q-focus_q));
     const COLORREF fill = active ? RGB(52, 112, 86)
                           : frontier ? RGB(64, 58, 30)
                                      : RGB(26, 32, 31);
@@ -6260,11 +6384,15 @@ void paint_tree_pane(ClientState& state, HDC dc, const RECT& bounds,
                                      : frontier ? std::string(":frontier")
                                                 : std::string(":locked"))});
     state.tree_seat_hits.push_back({sx, sy, seat_r, id, frontier});
+    for(const auto& def:verdigris::inventory_extensions::definitions)if(def.node==id) {
+      RECT label{sx-90*s,sy+seat_r+4*s,sx+90*s,sy+seat_r+24*s};
+      inventory_text(dc,label,std::string(def.name),active?skin::kVerdigris:skin::kGold,DT_CENTER|DT_SINGLELINE|DT_END_ELLIPSIS);
+    }
   }
   SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kInkDim);
   const char* footer = progression->unspent_points > 0
-                           ? "Click a gold seat to allocate | P or Esc closes"
+                           ? "Gold: allocate. Owned: center. P or Esc: close."
                            : "P or Esc closes";
   skin::text_out(dc, left + 16 * s, top + pane_h - 24 * s, footer,
            static_cast<int>(strlen(footer)));
@@ -10970,6 +11098,7 @@ std::string isolated_bindings_path() {
 // TASK-0153: production gear-pane toggle, shared verbatim by the Win32 key
 // path and the scenario harness ('I' opens/closes; Esc closes when open).
 void toggle_gear_overlay(ClientState& state) {
+  state.inventory_aux=-1;
   cancel_pack_drag(state);
   sync_world(state);
   state.gear_overlay = !state.gear_overlay;
@@ -11023,6 +11152,7 @@ void release_held_gameplay_attack(ClientState& state) {
 void handle_escape_key(ClientState& state) {
   if (state.pack_drag_live) { cancel_pack_drag(state); if(GetCapture()) ReleaseCapture(); return; }
   if (handle_frontend_key(state, VK_ESCAPE)) return;
+  if(state.gear_overlay && state.inventory_aux>=0){state.inventory_aux=-1;state.gear_keyboard_focus=false;return;}
   if (state.screen == Screen::Chronicles) {
     open_frontend(state, Frontend::Title);
     return;
@@ -11439,7 +11569,19 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
           }
           break;
         }
-        if(state->character_pane) {
+        bool auxiliary_input=false;
+        if(state->gear_overlay && !state->tree_pane && !trade_pane_open(*state)) {
+          RECT client{};GetClientRect(window,&client);const POINT point{GET_X_LPARAM(lparam),GET_Y_LPARAM(lparam)};
+          bool tab=false;
+          for(int i=0;i<6;++i)if(inventory_extension_visible(*state,i)) {
+            const auto button=inventory_aux_button(client.right,client.bottom,i);
+            if(PtInRect(&button,point)){state->gear_keyboard_focus=false;state->inventory_aux=state->inventory_aux==i?-1:i;tab=true;break;}
+          }
+          if(tab)break;
+          const auto drawer=inventory_aux_rect(*state,client.right,client.bottom);
+          auxiliary_input=PtInRect(&drawer,point);
+        }
+        if(state->character_pane && !auxiliary_input) {
           RECT client{};GetClientRect(window,&client);const POINT point{GET_X_LPARAM(lparam),GET_Y_LPARAM(lparam)};
           const auto close=character_close_rect(client.right,client.bottom);
           const auto details=character_detail_rect(client.right,client.bottom);
@@ -11472,15 +11614,16 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
             if (hit.frontier && state->session) {
               state->session->submit(
                   verdigris::client::ClientCommand::allocate_node(hit.node_id));
-              show_hint(*state, "The lattice takes the point");
+              state->tree_focus.clear();
+            } else if(state->session && std::find(state->session->model().progression.nodes.begin(),state->session->model().progression.nodes.end(),hit.node_id)!=state->session->model().progression.nodes.end()) {
+              state->tree_focus=hit.node_id;
             }
             break;
           }
         } else if (state->gear_overlay) {
           RECT client{};
           GetClientRect(window, &client);
-          const PackGeom pack = make_pack_geom(static_cast<int>(client.right),
-                                               static_cast<int>(client.bottom));
+          const PackGeom pack = inventory_hit_geom(*state,client.right,client.bottom,GET_X_LPARAM(lparam),GET_Y_LPARAM(lparam));
           const int mx = GET_X_LPARAM(lparam);
           const int my = GET_Y_LPARAM(lparam);
           const POINT point{mx,my};
@@ -11501,7 +11644,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
             int gx = -1;
             int gy = -1;
             if (pack_hit_cell(pack, mx, my, gx, gy)) {
-              pack_begin_drag(*state, gx, gy);
+              pack_begin_drag(*state, gx, gy,pack.pack_id);
               if (state->pack_drag_live) {
                 state->pack_grab_pixel_x=state->pack_grab_x*pack.cell_w+(mx-pack.grid_left)%pack.cell_w;
                 state->pack_grab_pixel_y=state->pack_grab_y*pack.cell_h+(my-pack.grid_top)%pack.cell_h;
@@ -11536,8 +11679,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       if (state && state->gear_overlay && state->pack_drag_live) {
         RECT client{};
         GetClientRect(window, &client);
-        const PackGeom pack = make_pack_geom(static_cast<int>(client.right),
-                                             static_cast<int>(client.bottom));
+        const PackGeom pack = inventory_hit_geom(*state,client.right,client.bottom,GET_X_LPARAM(lparam),GET_Y_LPARAM(lparam));
         const int mx = GET_X_LPARAM(lparam);
         const int my = GET_Y_LPARAM(lparam);
         int gx = -1;
@@ -11545,7 +11687,8 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         if (pack_hit_cell(pack, mx, my, gx, gy)) {
           state->pack_preview_x = gx - state->pack_grab_x;
           state->pack_preview_y = gy - state->pack_grab_y;
-          state->pack_preview_ok = pack_drag_can_land(*state,state->pack_preview_x,state->pack_preview_y);
+          state->pack_preview_pack=pack.pack_id;
+          state->pack_preview_ok = pack_drag_can_land(*state,state->pack_preview_x,state->pack_preview_y,pack.pack_id);
         } else {
           state->pack_preview_ok = false;
         }
@@ -11557,7 +11700,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         // pane also cancels; only uncovered world space is a world drop.
         if(!PtInRect(&client,point))cancel_pack_drag(*state);
         else {
-          if(!PtInRect(&panel,point) && !state->character_pane && !state->tree_pane && !trade_pane_open(*state))target=-2;
+          if(inventory_world_drop_allowed(*state,client.right,client.bottom,point) && !trade_pane_open(*state))target=-2;
           pack_commit_drop(*state,target);
         }
         if (GetCapture() == window) ReleaseCapture();

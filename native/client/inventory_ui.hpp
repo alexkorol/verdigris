@@ -66,6 +66,15 @@ bool compatible_equipment(const WorldCarriedItem& item, int seat) {
   return item.equip_seat == target ||
       ((item.equip_seat=="ring" || item.equip_seat=="ring2") && (target=="ring" || target=="ring2"));
 }
+bool compatible_equipment(const ClientState& state,const WorldCarriedItem& item,int seat) {
+  if(!compatible_equipment(item,seat))return false;
+  const std::string target=kDollSeats[seat];
+  for(const auto& worn:state.world.carried)if(worn.equipped) {
+    if(item.two_handed && target=="right_hand" && worn.equip_seat=="left_hand")return false;
+    if(target=="left_hand" && worn.equip_seat=="right_hand" && worn.two_handed)return false;
+  }
+  return true;
+}
 void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::List& rl) {
   if (!state.gear_overlay) return;
   const int w=bounds.right,h=bounds.bottom,s=hud_scale(h);
@@ -81,6 +90,28 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
   auto font=SelectObject(dc,skin::font_small());
   const auto close=gear_close_rect(w,h);
   skin::pane_close(dc,close,PtInRect(&close,pointer));
+  if(!inventory_extension_visible(state,state.inventory_aux))state.inventory_aux=-1;
+  if(state.gear_keyboard_focus && state.selected_item<state.world.carried.size()) {
+    const auto& selected=state.world.carried[state.selected_item];
+    for(int i=0;i<6;++i)if(inventory_extension_visible(state,i)) {
+      const auto& def=verdigris::inventory_extensions::definitions[i];
+      if((selected.equipped && !def.seat.empty() && selected.equip_seat==def.seat) ||
+         (!selected.equipped && !def.pack.empty() && selected.pack_id==def.pack))state.inventory_aux=i;
+    }
+  }
+  const auto aux=inventory_aux_geom(state,w,h);const auto drawer=inventory_aux_rect(state,w,h);
+  for(int i=0;i<6;++i)if(inventory_extension_visible(state,i)) {
+    const auto button=inventory_aux_button(w,h,i);
+    inventory_button(dc,button,state.inventory_aux==i?">>":"<<",PtInRect(&button,pointer));
+    state.hud_rect_trace.push_back({"inventory-extension-button",{button.left,button.top,button.right-button.left,button.bottom-button.top}});
+    rl.push_back({render::Op::Hud,double(button.left),double(button.top),0,i,"inventory-extension:"+std::string(verdigris::inventory_extensions::definitions[i].id)});
+  }
+  if(state.inventory_aux>=0) {
+    well(drawer);dress_owned_pane(state.billboards,dc,drawer);
+    RECT title{drawer.left+12*s,drawer.top+8*s,drawer.right-12*s,drawer.top+34*s};
+    inventory_text(dc,title,std::string(verdigris::inventory_extensions::definitions[state.inventory_aux].name),skin::kInk);
+    state.hud_rect_trace.push_back({"inventory-extension-drawer",{drawer.left,drawer.top,drawer.right-drawer.left,drawer.bottom-drawer.top}});
+  }
   reconcile_pack_grid(state);
   const auto& items=state.world.carried;
   int hover=-1; int hover_seat=-1; RECT anchor{};
@@ -111,7 +142,9 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
     return art;
   };
   for (std::size_t i=0;i<std::size(kDollSeats);++i) {
-    const RECT r=pack.seats[i]; const WorldCarriedItem* item=nullptr;
+    const RECT r=i<11?pack.seats[i]:aux.seats[i];
+    if(r.right<=r.left || r.bottom<=r.top)continue;
+    const WorldCarriedItem* item=nullptr;
     for (std::size_t j=0;j<items.size();++j)
       if (items[j].equipped && (items[j].equip_seat==kDollSeats[i] ||
           (items[j].equip_seat.empty() && i==2))) { item=&items[j]; break; }
@@ -119,7 +152,7 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
     int focus=over || (item && item->id==state.selected_item_id) ? 1 : 0;
     if (over && state.pack_drag_live) {
       const auto j=carried_index_for_pack_id(state,state.pack_drag_id);
-      focus=j<items.size() && compatible_equipment(items[j],static_cast<int>(i)) ? 1 : -1;
+      focus=j<items.size() && compatible_equipment(state,items[j],static_cast<int>(i)) ? 1 : -1;
     }
     well(r,focus);
     if (item) {
@@ -147,14 +180,15 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
   inventory_text(dc,bag_title,"Backpack",skin::kInkDim);
   inventory_text(dc,bag_title,std::to_string(coins)+" coins",skin::kInk,DT_RIGHT|DT_VCENTER|DT_SINGLELINE);
   rl.push_back({render::Op::Hud,0,0,0,coins,"inventory-coins:"+std::to_string(coins)});
-  for (int y=0;y<kPackRows;++y) for (int x=0;x<kPackColumns;++x) {
+  auto draw_pack=[&](const PackGeom& pack,const inventory_grid::State& grid) {
+  for (int y=0;y<pack.rows;++y) for (int x=0;x<pack.columns;++x) {
     RECT r{pack.grid_left+x*pack.cell_w,pack.grid_top+y*pack.cell_h,
         pack.grid_left+(x+1)*pack.cell_w,pack.grid_top+(y+1)*pack.cell_h};
     well(r);
     state.hud_rect_trace.push_back({"pane-backpack-cell",{r.left,r.top,pack.cell_w,pack.cell_h}});
   }
-  for (std::uint8_t i=0;i<state.pack_grid.count;++i) {
-    const auto& placed=state.pack_grid.items[i];
+  for (std::uint8_t i=0;i<grid.count;++i) {
+    const auto& placed=grid.items[i];
     const auto j=carried_index_for_pack_id(state,placed.id); if(j>=items.size())continue;
     RECT r{pack.grid_left+placed.x*pack.cell_w,pack.grid_top+placed.y*pack.cell_h,
       pack.grid_left+(placed.x+placed.width)*pack.cell_w,pack.grid_top+(placed.y+placed.height)*pack.cell_h};
@@ -170,16 +204,21 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
     rl.push_back({render::Op::Hud,double(placed.x),double(placed.y),0,art?1:0,art?"pack-glyph:billboard":"pack-glyph:unmapped"});
     rl.push_back({render::Op::Hud,double(placed.x),double(placed.y),0,int(placed.id),"pack:"+std::to_string(placed.x)+","+std::to_string(placed.y)});
   }
+  };
+  draw_pack(pack,state.pack_grid);
+  if(aux.columns>0)draw_pack(aux,inventory_grid_for(state,aux.pack_id));
   if(state.pack_drag_live) {
-    int x=-1,y=-1;pack_hit_cell(pack,pointer.x,pointer.y,x,y);
+    const auto destination=inventory_hit_geom(state,w,h,pointer.x,pointer.y);
+    int x=-1,y=-1;pack_hit_cell(destination,pointer.x,pointer.y,x,y);
+    state.pack_preview_pack=destination.pack_id;
     state.pack_preview_x=x-state.pack_grab_x;state.pack_preview_y=y-state.pack_grab_y;
-    state.pack_preview_ok=pack_drag_can_land(state,state.pack_preview_x,state.pack_preview_y);
+    state.pack_preview_ok=pack_drag_can_land(state,state.pack_preview_x,state.pack_preview_y,destination.pack_id);
     const auto j=carried_index_for_pack_id(state,state.pack_drag_id);
     if(j<items.size()) {
       RECT ghost{pointer.x-state.pack_grab_pixel_x,pointer.y-state.pack_grab_pixel_y,0,0};
       ghost.right=ghost.left+items[j].width*pack.cell_w;ghost.bottom=ghost.top+items[j].height*pack.cell_h;
-      const bool outside=!PtInRect(&panel,pointer) && !state.character_pane && !state.tree_pane;
-      const bool valid=outside || (hover_seat>=0 ? compatible_equipment(items[j],hover_seat) : state.pack_preview_ok);
+      const bool outside=inventory_world_drop_allowed(state,w,h,pointer);
+      const bool valid=outside || (hover_seat>=0 ? compatible_equipment(state,items[j],hover_seat) : state.pack_preview_ok);
       OffsetRect(&ghost,std::clamp(int(ghost.left),0,std::max(0,w-int(ghost.right-ghost.left)))-ghost.left,
           std::clamp(int(ghost.top),0,std::max(0,h-int(ghost.bottom-ghost.top)))-ghost.top);
       draw_object(items[j],ghost);
@@ -213,7 +252,7 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
     rl.push_back({render::Op::Hud,0,0,0,0,"pack-name:full"});
     rl.push_back({render::Op::Hud,0,0,0,0,item.equipped?"compare:equipped":"compare:candidate"});
   } else if(hover_seat>=0 && !state.pack_drag_live) {
-    const auto r=pack.seats[hover_seat];
+    const auto r=hover_seat<11?pack.seats[hover_seat]:aux.seats[hover_seat];
     paint_compare_plate(state,dc,r.left,r.top,bounds,pane,kEquipmentNames[hover_seat],skin::kInk,{},rl);
   }
   SelectObject(dc,font);RestoreDC(dc,saved);

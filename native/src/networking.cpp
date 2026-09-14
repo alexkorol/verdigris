@@ -1,4 +1,5 @@
 #include "verdigris/networking.hpp"
+#include "verdigris/inventory_extensions.hpp"
 
 #include <algorithm>
 #include <array>
@@ -473,6 +474,11 @@ JsonValue snapshot_item_json(const GameItem& item) {
 // dev.js itemIdentity (server/shared item identity projection).
 JsonValue item_identity_json(const GameItem& item) {
   JsonValue::Object out;
+  put(out,"packId",item.pack_id);
+  JsonValue::Array eligible;
+  for(const char* pack:{"main","spoils","preparations","reliquary"})
+    if(PlayerInventory::can_store_in_pack(item,pack))eligible.emplace_back(pack);
+  put(out,"packEligibility",std::move(eligible));
   put(out, "equipSlot", item.equip_slot);
   put(out, "twoHanded", item.two_handed);
   put(out, "slot", item.slot >= 0 ? JsonValue(item.slot) : JsonValue(nullptr));
@@ -483,7 +489,8 @@ JsonValue item_identity_json(const GameItem& item) {
   put(out, "qty", item.qty);
   if (item.slot >= 0) {
     put(out, "slot", item.slot);
-    put(out, "position", JsonValue::Object{{"x", item.slot % 12}, {"y", item.slot / 12}});
+    const int columns=(std::max)(1,inventory_extensions::columns(item.pack_id));
+    put(out, "position", JsonValue::Object{{"x", item.slot % columns}, {"y", item.slot / columns}});
   } else {
     put(out, "slot", nullptr);
     put(out, "position", nullptr);
@@ -522,6 +529,7 @@ GameItem load_saved_item(const JsonValue& row) {
   reserve_game_item_identity(item.uuid);
   item.name=as_string(row.get("name"));item.display_name=as_string(row.get("displayName"));
   item.qty=as_int(row.get("qty"),1);item.slot=as_int(row.get("slot"),-1);
+  item.pack_id=as_string(row.get("packId"),"main");
   item.stackable=as_bool(row.get("stackable"));item.two_handed=as_bool(row.get("twoHanded"));
   item.equip_slot=as_string(row.get("equipSlot"));item.bound_to=as_string(row.get("boundTo"));
   if(const auto* size=row.get("size")) item.size={as_int(size->get("width"),1),as_int(size->get("height"),1)};
@@ -692,24 +700,80 @@ void ProtocolSession::set_direct_emit(std::function<void(const Envelope&)> emit)
   direct_emit_ = std::move(emit);
 }
 
+namespace {
+// Validate bounded native allocations before deriving inventory access from
+// them. Client-provided unlock flags and point totals never grant authority.
+bool normalize_passive_allocation(const JsonValue& source,int budget,JsonValue& result,std::string& reason) {
+  const auto* nodes=source.get("nodes");const auto* conduits=source.get("conduits");
+  auto reject=[&](const char* message){reason=message;return false;};
+  if(!source.object() || !nodes || !nodes->array() || !conduits || !conduits->array() ||
+     nodes->array()->empty() || nodes->array()->size()>141 || conduits->array()->size()>140)
+    return reject("Invalid skill-tree allocation");
+  std::set<std::string> allocated,edges;
+  for(const auto& node:*nodes->array()) {
+    int q=0,r=0;
+    if(!node.string() || !inventory_extensions::node_position(*node.string(),q,r) || !allocated.insert(*node.string()).second)
+      return reject("Invalid skill-tree node");
+  }
+  if(!allocated.count("0,0"))return reject("The skill tree must include its origin");
+  std::set<std::string> reached{"0,0"};
+  bool changed=true;
+  while(changed){changed=false;for(const auto& node:allocated)if(!reached.count(node))
+    for(const auto& connected:reached)if(inventory_extensions::adjacent(node,connected)){
+      reached.insert(node);changed=true;break;
+    }}
+  if(reached.size()!=allocated.size())return reject("Connect this node to your allocated tree");
+  for(const auto& conduit:*conduits->array()) {
+    if(!conduit.string())return reject("Invalid skill-tree conduit");
+    const auto& id=*conduit.string();const auto split=id.find(':');
+    if(split==std::string::npos)return reject("Invalid skill-tree conduit");
+    const auto a=id.substr(0,split),b=id.substr(split+1);
+    if(a>=b || !allocated.count(a) || !allocated.count(b) || !inventory_extensions::adjacent(a,b) || !edges.insert(id).second)
+      return reject("Invalid skill-tree conduit");
+  }
+  if(static_cast<int>(allocated.size()+edges.size())-1>budget)return reject("Not enough skill points");
+  std::string selected=as_string(source.get("selectedNodeId"));
+  if(!allocated.count(selected))selected="0,0";
+  result=JsonValue::Object{{"schemaVersion",2},{"nodes",*nodes},{"conduits",*conduits},{"selectedNodeId",selected}};
+  return true;
+}
+bool allocation_contains(const JsonValue& tree,std::string_view id) {
+  if(const auto* nodes=tree.get("nodes");nodes && nodes->array())
+    for(const auto& node:*nodes->array())if(node.string() && *node.string()==id)return true;
+  return false;
+}
+}
+bool ProtocolSession::inventory_extension_unlocked(const inventory_extensions::Definition* definition) const {
+  return !definition || (passive_tree_saved_ && allocation_contains(passive_tree_,definition->node));
+}
+
 JsonValue ProtocolSession::loadout_json() const {
   JsonValue::Array pack;for(const auto& item:inventory_.items())pack.push_back(saved_item_json(item));
   JsonValue::Object worn;for(const auto& [seat,item]:wear_.slots())put(worn,seat,saved_item_json(item));
-  return JsonValue::Object{{"inventory",std::move(pack)},{"wear",std::move(worn)}};
+  return JsonValue::Object{{"inventory",std::move(pack)},{"wear",std::move(worn)},
+      {"passiveTree",passive_tree_json()},{"treeQuestPoints",tree_quest_points_}};
 }
 bool ProtocolSession::restore_loadout(const JsonValue& data) {
   const auto* pack=data.get("inventory");const auto* worn=data.get("wear");
   if(!pack || !pack->array() || !worn || !worn->object()) return false;
-  PlayerInventory next;WearSet next_wear;std::set<std::string> ids;std::set<int> occupied;
+  JsonValue next_tree;std::string tree_error;bool tree_saved=false;
+  if(const auto* tree=data.get("passiveTree");tree && tree->object()) {
+    // Disk load is structural validation; the active Scion level is restored
+    // separately during admission. Never erase a valid saved unlock on restart.
+    if(!normalize_passive_allocation(*tree,140,next_tree,tree_error))return false;
+    tree_saved=true;
+  }
+  PlayerInventory next;WearSet next_wear;std::set<std::string> ids;std::set<std::pair<std::string,int>> occupied;
   for(const auto& row:*pack->array()) {
     auto item=load_saved_item(row);
     if(item.uuid.empty() || item.qty<=0 || !ids.insert(item.uuid).second) return false;
     // Migrate old purses out of the grid without changing identity or amount.
-    if(item.id=="coins") {item.slot=-1;next.items().push_back(std::move(item));continue;}
-    if(item.slot<0 || item.slot>=PlayerInventory::kSlotCount ||
-       item.size.width<1 || item.size.height<1 || item.slot%12+item.size.width>12 || item.slot/12+item.size.height>7) return false;
+    if(item.id=="coins") {item.slot=-1;item.pack_id="main";next.items().push_back(std::move(item));continue;}
+    const int columns=inventory_extensions::columns(item.pack_id),rows=inventory_extensions::rows(item.pack_id);
+    if(!columns || !PlayerInventory::can_store_in_pack(item,item.pack_id) || item.slot<0 || item.slot>=columns*rows ||
+       item.size.width<1 || item.size.height<1 || item.slot%columns+item.size.width>columns || item.slot/columns+item.size.height>rows) return false;
     for(int y=0;y<item.size.height;++y)for(int x=0;x<item.size.width;++x)
-      if(!occupied.insert(item.slot+y*12+x).second) return false;
+      if(!occupied.emplace(item.pack_id,item.slot+y*columns+x).second) return false;
     next.items().push_back(std::move(item));
   }
   for(const auto& [seat,row]:*worn->object()) {
@@ -718,7 +782,10 @@ bool ProtocolSession::restore_loadout(const JsonValue& data) {
     next_wear.equip(std::move(item),seat);
   }
   if(const auto* main=next_wear.in_seat("right_hand");main && main->two_handed && next_wear.in_seat("left_hand"))return false;
-  inventory_=std::move(next);wear_=std::move(next_wear);sync_combat_mods();return true;
+  inventory_=std::move(next);wear_=std::move(next_wear);
+  passive_tree_=std::move(next_tree);passive_tree_saved_=tree_saved;
+  tree_quest_points_=std::clamp(as_int(data.get("treeQuestPoints"),0),0,23);
+  sync_combat_mods();return true;
 }
 void ProtocolSession::change_loadout(const std::string& house,const std::string& scion) {
   const auto previous=active_house_id_+":"+active_scion_id_,next=house+":"+scion;
@@ -727,6 +794,7 @@ void ProtocolSession::change_loadout(const std::string& house,const std::string&
   if(auto found=scion_loadouts_.find(next);found!=scion_loadouts_.end()) { restore_loadout(found->second);return; }
   if(active_scion_id_.empty())return; // First admission keeps the fresh purse.
   inventory_.clear();wear_.clear();
+  passive_tree_={};passive_tree_saved_=false;tree_quest_points_=0;
   CreateItemOptions purse;purse.quantity=100;
   if(auto coins=create_game_item("coins",purse))inventory_.add(std::move(*coins));
   sync_combat_mods();
@@ -912,7 +980,7 @@ void ProtocolSession::reset_world_for_new_socket() {
   // lifecycle blocked respawn.mjs; a leftover Chronicle draft broke
   // mortality.mjs's seeded revision).
   std::lock_guard<std::recursive_mutex> lock(mutex_);
-  tree_quest_points_ = 0;  // JS: a rebuilt Player starts with questPoints 0
+  // Native Scion loadouts retain earned tree quest points across login.
   if (lifecycle_ != "permadead") {
     // A soft death clears on re-login (fresh Player), but a mortal Scion's
     // final death is Chronicle history - reconnecting must NOT resurrect
@@ -1529,6 +1597,9 @@ void ProtocolSession::handle_equip(const JsonValue& payload, const std::function
     reject("This item does not fit that seat."); return;
   }
   const std::string seat = wear_.resolve_seat(base, target);
+  if(!inventory_extension_unlocked(inventory_extensions::for_seat(seat))) {
+    reject("Unlock this equipment seat in the skill tree first.");return;
+  }
   const auto* main_hand = wear_.in_seat("right_hand");
   if ((seat == "right_hand" && candidate->two_handed && wear_.in_seat("left_hand")) ||
       (seat == "left_hand" && main_hand && main_hand->two_handed)) {
@@ -1613,7 +1684,7 @@ JsonValue ProtocolSession::passive_tree_json() const {
   JsonValue::Array conduits;
   std::string selected = "0,0";
   JsonValue::Array class_order;
-  int spent = 1;
+  int spent = 0;
   if (passive_tree_saved_) {
     if (const auto* saved_nodes = passive_tree_.get("nodes"); saved_nodes && saved_nodes->array()) {
       nodes = *saved_nodes->array();
@@ -1636,18 +1707,36 @@ JsonValue ProtocolSession::passive_tree_json() const {
   put(tree, "earned", earned);
   put(tree, "selectedNodeId", selected);
   put(tree, "classOrder", std::move(class_order));
+  JsonValue::Array unlocks;
+  for(const auto& definition:inventory_extensions::definitions)
+    if(inventory_extension_unlocked(&definition))unlocks.emplace_back(std::string(definition.unlock));
+  put(tree,"inventoryUnlocks",std::move(unlocks));
   return JsonValue(std::move(tree));
 }
 
 void ProtocolSession::handle_skilltree_save(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) {
-  const auto* snapshot = payload.get("snapshot");
-  if (!snapshot || !snapshot->object()) return;
-  passive_tree_ = *snapshot;
-  passive_tree_saved_ = true;
-  JsonValue::Object data;
-  put(data, "player", JsonValue::Object{{"socket_id", socket_id_}});
-  put(data, "passiveTree", passive_tree_json());
-  emit(Envelope{"player:skilltree:update", JsonValue(std::move(data))});
+  const auto* snapshot=payload.get("snapshot");
+  JsonValue normalized;std::string reason;
+  const auto authoritative=passive_tree_json();
+  bool accepted=snapshot && normalize_passive_allocation(*snapshot,as_int(authoritative.get("earned"),0),normalized,reason);
+  if(accepted && passive_tree_saved_) {
+    // The native pane has allocation, not respec. Never let stale saves revoke
+    // an existing route or strand an occupied, unlocked inventory extension.
+    for(const auto& node:*passive_tree_["nodes"].array())
+      if(!allocation_contains(normalized,*node.string())){accepted=false;reason="Existing skill choices must be retained";break;}
+    if(accepted)for(const auto& edge:*passive_tree_["conduits"].array()) {
+      const auto& next=*normalized["conduits"].array();
+      if(std::none_of(next.begin(),next.end(),[&](const JsonValue& v){return v.stringify()==edge.stringify();})) {
+        accepted=false;reason="Existing conduit choices must be retained";break;
+      }
+    }
+  }
+  if(accepted){passive_tree_=std::move(normalized);passive_tree_saved_=true;sync_combat_mods();persist();}
+  else if(reason.empty())reason="Invalid skill-tree allocation";
+  emit(Envelope{"player:skilltree:update",JsonValue::Object{{"player",JsonValue::Object{{"socket_id",socket_id_}}},
+      {"passiveTree",passive_tree_json()},{"accepted",accepted},{"reason",accepted?"":reason}}});
+  if(!accepted)emit_message(emit,reason);
+  else emit_equip_state(emit);
 }
 
 namespace {
@@ -2462,26 +2551,30 @@ void ProtocolSession::handle_menu_action(const JsonValue& payload, const std::fu
 void ProtocolSession::handle_inventory_commit(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) {
   // player:inventory:commit world-drop: the production inventory drop verb.
   const std::string action=as_string(payload.get("action"));
+  const auto requested_pack=as_string(payload.get("packId"));
+  const std::string pack=requested_pack.empty()?"main":requested_pack;
+  const int columns=inventory_extensions::columns(pack),rows=inventory_extensions::rows(pack);
+  const bool unlocked=columns && inventory_extension_unlocked(inventory_extensions::for_pack(pack));
   if(action=="unequip") {
     const auto* ref=payload.get("item");
     const auto uuid=as_string(ref?ref->get("uuid"):nullptr);
     const auto seat=as_string(payload.get("seat"));
     const auto* requested=payload.get("slot");
     const bool valid=requested && requested->number() && std::isfinite(*requested->number()) &&
-        *requested->number()>=0 && *requested->number()<PlayerInventory::kSlotCount &&
+        *requested->number()>=0 && *requested->number()<columns*rows &&
         std::floor(*requested->number())==*requested->number();
     const auto* worn=wear_.in_seat(seat);
     bool accepted=false;
     std::string reason="That equipment changed; try again";
-    if(valid && worn && worn->uuid==uuid) {
+    if(valid && unlocked && worn && worn->uuid==uuid) {
       const auto before_inventory=inventory_;
       const auto before_wear=wear_;
       const int slot=as_int(requested,-1);
       std::string displaced_uuid;
       for(const auto& candidate:inventory_.items()) {
-        if(candidate.slot<0)continue;
-        const int x=slot%PlayerInventory::kColumns,y=slot/PlayerInventory::kColumns;
-        const int cx=candidate.slot%PlayerInventory::kColumns,cy=candidate.slot/PlayerInventory::kColumns;
+        if(candidate.slot<0 || candidate.pack_id!=pack)continue;
+        const int x=slot%columns,y=slot/columns;
+        const int cx=candidate.slot%columns,cy=candidate.slot/columns;
         if(x>=cx && x<cx+candidate.size.width && y>=cy && y<cy+candidate.size.height) {
           displaced_uuid=candidate.uuid;break;
         }
@@ -2499,11 +2592,12 @@ void ProtocolSession::handle_inventory_commit(const JsonValue& payload, const st
             !(seat=="left_hand" && main && main->two_handed);
         if(compatible)wear_.equip(std::move(displaced),seat);
       }
-      accepted=compatible && inventory_.add_at(std::move(*incoming),destination);
+      accepted=compatible && inventory_.add_at(std::move(*incoming),destination,pack);
       reason=compatible?"Not enough space for this item":"That item cannot replace this equipment";
       if(!accepted){inventory_=before_inventory;wear_=before_wear;}
       else sync_combat_mods();
-    } else if(!valid)reason="Drop inside the backpack";
+    } else if(!unlocked)reason="Unlock this compartment in the skill tree first";
+    else if(!valid)reason="Drop inside the compartment";
     emit_inventory_refresh(emit);emit_equip_state(emit);
     emit(Envelope{"inventory:operation",JsonValue::Object{{"uuid",uuid},{"accepted",accepted},{"reason",accepted?"":reason}}});
     return;
@@ -2513,12 +2607,12 @@ void ProtocolSession::handle_inventory_commit(const JsonValue& payload, const st
     const auto uuid=as_string(ref?ref->get("uuid"):nullptr);
     const auto* requested=payload.get("slot");
     const bool valid=requested && requested->number() && std::isfinite(*requested->number()) &&
-        *requested->number()>=0 && *requested->number()<PlayerInventory::kSlotCount &&
+        *requested->number()>=0 && *requested->number()<columns*rows &&
         std::floor(*requested->number())==*requested->number();
-    const bool accepted=valid && inventory_.move_or_swap(uuid,as_int(requested,-1));
+    const bool accepted=valid && unlocked && inventory_.move_or_swap(uuid,as_int(requested,-1),pack);
     emit_inventory_refresh(emit);
     emit(Envelope{"inventory:operation",JsonValue::Object{{"uuid",uuid},{"accepted",accepted},
-        {"reason",accepted?"":"Not enough space for this item"}}});
+        {"reason",accepted?"":!unlocked?"Unlock this compartment in the skill tree first":"This item does not fit here"}}});
     return;
   }
   if (action!="world-drop") return;

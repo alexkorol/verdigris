@@ -320,7 +320,7 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     const std::string label = item.name.empty() ? item.id : item.name;
     world.carried.push_back({item.uuid, label, item.attack_rating, false,
                              item.width, item.height, item.quantity,
-                             item.equip_slot, item.two_handed, item.slot});
+                             item.equip_slot, item.two_handed, item.slot, item.pack_id, item.compatible_packs});
   }
   // Worn equipment is authoritative and lives outside the backpack. Keep it
   // in the same presentation collection so the gear pane can render the
@@ -331,7 +331,7 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
       const std::string label = item.name.empty() ? item.id : item.name;
       world.carried.push_back({item.uuid, label, item.attack_rating, true,
                                item.width, item.height, item.quantity,
-                               worn.seat, item.two_handed});
+                               worn.seat, item.two_handed, -1, item.pack_id, item.compatible_packs});
     }
   } else if (!model.equipped.uuid.empty()) {
     const std::string label =

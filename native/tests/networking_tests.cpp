@@ -22,6 +22,99 @@ void check(bool condition, const char* message) {
   if (!condition) throw std::runtime_error(message);
 }
 
+void test_inventory_extension_authority_and_persistence() {
+  const auto file=std::filesystem::temp_directory_path()/"verdigris-extension-authority-test.json";
+  std::filesystem::remove(file);
+  auto ignore=[](const Envelope&){};
+  auto state=[](ProtocolSession& session){JsonValue value;verdigris::networking::parse_json(session.state_payload("extension-fixture"),value);return value["state"];};
+  ProtocolSession seed("extension-fixture","seed-socket",41,true);seed.attach_persistence(file);
+  std::string house,scion;
+  seed.handle({"chronicles:house:found",JsonValue::Object{{"name","Extension Fixture"}}},[&](const Envelope& e){
+    if(const auto* houses=e.data["chronicle"]["houses"].array();houses && !houses->empty())house=*houses->front()["id"].string();
+  });
+  seed.handle({"chronicles:scion:create",JsonValue::Object{{"houseId",house},{"name","First"}}},[&](const Envelope& e){
+    if(e.data["createdScionId"].string())scion=*e.data["createdScionId"].string();
+  });
+  check(!house.empty() && !scion.empty(),"extension fixture uses admitted House/Scion");
+  seed.handle({"chronicles:scion:set-out",JsonValue::Object{{"scionId",scion}}},ignore);
+  seed.handle({"dev:give",JsonValue::Object{{"itemId","vessel-wrap"},{"seed",42}}},ignore);seed.persist();
+  JsonValue saved;{std::ifstream in(file);std::string text((std::istreambuf_iterator<char>(in)),{});check(verdigris::networking::parse_json(text,saved),"fixture save parses");}
+  auto& loadout=(*(*saved.object())["scionLoadouts"].object())[house+":"+scion];
+  JsonValue sample;JsonValue::Array items;
+  for(const auto& row:*loadout["inventory"].array()) {
+    if(row["id"].string() && *row["id"].string()=="vessel-wrap")sample=row;
+    if(row["id"].string() && *row["id"].string()=="coins")items.push_back(row);
+  }
+  check(sample.object(),"extension fixture clones an existing vessel serialization");
+  // Explicit category fixtures, not grants added to the player's game/catalogue.
+  const char* kinds[]={"warcall","quickrig","attendant","trophy","reagent","relic"};
+  const char* seats[]={"warhorn","quick_rig","attendant","","",""};
+  for(int i=0;i<6;++i) {
+    auto row=sample;auto& o=*row.object();
+    o["id"]="extension-fixture-"+std::to_string(i);o["uuid"]="extension-test-"+std::to_string(i);
+    o["equipSlot"]=seats[i];o["slot"]=i<3?i*2:30+i;o["packId"]="main";
+    o["size"]=JsonValue::Object{{"width",i<3?2:1},{"height",i<3?2:1}};
+    (*(*o["vessel"].object())["item"].object())["kind"]=kinds[i];
+    items.push_back(std::move(row));
+  }
+  (*loadout.object())["inventory"]=std::move(items);(*loadout.object())["wear"]=JsonValue::Object{};
+  {std::ofstream out(file);out<<saved.stringify();}
+  ProtocolSession session("extension-fixture","active-socket",41,true);session.attach_persistence(file);
+  check(state(session)["passiveTree"]["inventoryUnlocks"].array()->empty(),"all six extensions locked for fresh Scion");
+  auto move=[&](int index,const char* pack,int cell){bool ack=false,ok=false;
+    session.handle({"player:inventory:commit",JsonValue::Object{{"action","move"},{"item",JsonValue::Object{{"uuid","extension-test-"+std::to_string(index)}}},{"packId",pack},{"slot",cell}}},[&](const Envelope& e){
+      if(e.event=="inventory:operation"){ack=true;ok=e.data["accepted"].boolean().value_or(false);}
+    });check(ack,"extension move is acknowledged");return ok;
+  };
+  auto equip=[&](int index){session.handle({"item:equip",JsonValue::Object{{"item",JsonValue::Object{{"uuid","extension-test-"+std::to_string(index)},{"targetSlot",seats[index]}}}}},ignore);};
+  const char* packs[]={"spoils","preparations","reliquary"};
+  for(int i=0;i<3;++i){check(!move(i+3,packs[i],0),"locked compartment rejects drag");equip(i);}
+  for(int i=0;i<3;++i)check(!state(session)["wearDetails"][seats[i]].object(),"locked equipment seats reject equip");
+  auto allocate=[&](JsonValue::Array nodes,JsonValue::Array edges=JsonValue::Array{},bool forge_flags=false){bool ack=false,accepted=false;
+    JsonValue::Object tree{{"nodes",std::move(nodes)},{"conduits",std::move(edges)},{"earned",999},{"points",JsonValue::Object{{"skill",999}}}};
+    if(forge_flags)tree["inventoryUnlocks"]=JsonValue::Array{"war_call_slot","spoils_pack"};
+    session.handle({"player:skilltree:save",JsonValue::Object{{"snapshot",std::move(tree)}}},[&](const Envelope& e){
+      if(e.event=="player:skilltree:update"){ack=true;accepted=e.data["accepted"].boolean().value_or(false);}
+    });check(ack,"skill allocation is acknowledged");return accepted;
+  };
+  check(allocate({"0,0"},{},true),"valid root allocation accepted while ignoring forged flags");
+  check(state(session)["passiveTree"]["inventoryUnlocks"].array()->empty(),"client flags cannot unlock drawers");
+  check(!allocate({"0,0","1,0","2,0","3,0"}),"server rejects forged point budget");
+  check(!allocate({"0,0","0,0"}),"duplicate root cannot mint points");
+  session.handle({"dev:setlevel",JsonValue::Object{{"level",100}}},ignore);
+  check(!allocate({"0,0","10,0"}),"gate must have connected route");
+  check(!allocate({"0,0","11,0"}),"nodes outside WIZARD lattice rejected");
+  check(!allocate({"0,0","-0,0"}),"noncanonical node aliases rejected");
+  check(!allocate({"0,0","1,0"},{"0,0:3,0"}),"conduit endpoints must be allocated adjacent nodes");
+  JsonValue::Array nodes{"0,0"};
+  for(int i=1;i<=10;++i)for(const auto& point:std::vector<std::pair<int,int>>{{-i,i},{0,-i},{i,0},{-i,0},{i,-i},{0,i}})
+    nodes.emplace_back(std::to_string(point.first)+","+std::to_string(point.second));
+  check(allocate(nodes),"six connected real rim gates can be allocated");
+  check(state(session)["passiveTree"]["inventoryUnlocks"].array()->size()==6,"six gates grant exactly six inventory unlocks");
+  for(int i=0;i<3;++i){check(move(i+3,packs[i],0),"unlocked compartment accepts matching item at exact cell");equip(i);}
+  for(int i=0;i<3;++i)check(state(session)["wearDetails"][seats[i]]["uuid"].string() && *state(session)["wearDetails"][seats[i]]["uuid"].string()=="extension-test-"+std::to_string(i),"each unlocked auxiliary equipment seat accepts its item");
+  const auto before=state(session);
+  check(!move(3,"preparations",0),"category mismatch is rejected atomically");
+  check(!move(3,"spoils",16),"extension geometry rejects out-of-range cell");
+  check(!move(3,"made-up",0),"unknown compartment cannot allocate storage");
+  check(!allocate({"0,0"}),"stale allocation cannot revoke occupied extensions");
+  check(before["inventoryDetails"].stringify()==state(session)["inventoryDetails"].stringify(),"rejections preserve all compartments exactly");
+  session.persist();
+  ProtocolSession restarted("extension-fixture","restart-socket",41,true);restarted.attach_persistence(file);
+  auto reloaded=state(restarted);
+  for(const char* key:{"inventoryDetails","wearDetails"})check(before[key].stringify()==reloaded[key].stringify(),"restart preserves extension item identity, category, exact cell and worn seat");
+  check(reloaded["passiveTree"]["inventoryUnlocks"].array()->size()==6,"restart retains all six skill-derived unlocks");
+  std::string second;
+  restarted.handle({"chronicles:scion:create",JsonValue::Object{{"houseId",house},{"name","Second"}}},[&](const Envelope& e){if(e.data["createdScionId"].string())second=*e.data["createdScionId"].string();});
+  check(!second.empty(),"second Scion created");
+  restarted.handle({"chronicles:scion:set-out",JsonValue::Object{{"scionId",second}}},ignore);
+  check(state(restarted)["passiveTree"]["inventoryUnlocks"].array()->empty(),"new Scion does not inherit inventory unlocks");
+  restarted.handle({"chronicles:scion:set-out",JsonValue::Object{{"scionId",scion}}},ignore);
+  check(state(restarted)["passiveTree"]["inventoryUnlocks"].array()->size()==6,"returning Scion restores its own unlocks");
+  for(const char* key:{"inventoryDetails","wearDetails"})check(before[key].stringify()==state(restarted)[key].stringify(),"switching Scions preserves extension contents");
+  std::filesystem::remove(file);
+}
+
 void test_inventory_drag_transactions() {
   ProtocolSession session("drag-transactions","drag-socket",41,true);
   auto ignore=[](const Envelope&){};
@@ -1065,6 +1158,7 @@ void test_gate_a_equip_totals_and_unknown_uuid() {
 
 int main() {
   try {
+    test_inventory_extension_authority_and_persistence();
     test_inventory_drag_transactions();
     test_equipment_disk_and_scion_ownership();
     test_envelope_round_trip();

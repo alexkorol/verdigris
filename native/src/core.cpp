@@ -1,4 +1,5 @@
 #include "verdigris/core.hpp"
+#include "verdigris/inventory_extensions.hpp"
 
 #include <cmath>
 #include <atomic>
@@ -3355,18 +3356,19 @@ std::optional<GameItem> create_game_item(const std::string& item_id,
 // ── PlayerInventory (inventory.js + inventory-footprints.js) ─────────────
 
 bool PlayerInventory::fits_at(const GameItem& item, int slot) const {
-  if (slot < 0 || slot >= kSlotCount) return false;
-  const int x0 = slot % kColumns;
-  const int y0 = slot / kColumns;
+  const int columns=inventory_extensions::columns(item.pack_id),rows=inventory_extensions::rows(item.pack_id);
+  if (!columns || slot < 0 || slot >= columns*rows || item.size.width<1 || item.size.height<1) return false;
+  const int x0 = slot % columns;
+  const int y0 = slot / columns;
   for (int dy = 0; dy < item.size.height; ++dy) {
     for (int dx = 0; dx < item.size.width; ++dx) {
       const int x = x0 + dx;
       const int y = y0 + dy;
-      if (x >= kColumns || y >= kRows) return false;
+      if (x >= columns || y >= rows) return false;
       for (const auto& other : items_) {
-        if (other.slot < 0 || other.id == "coins") continue;
-        const int ox = other.slot % kColumns;
-        const int oy = other.slot / kColumns;
+        if (other.slot < 0 || other.id == "coins" || other.pack_id!=item.pack_id) continue;
+        const int ox = other.slot % columns;
+        const int oy = other.slot / columns;
         if (x >= ox && x < ox + other.size.width && y >= oy && y < oy + other.size.height) {
           return false;
         }
@@ -3376,24 +3378,29 @@ bool PlayerInventory::fits_at(const GameItem& item, int slot) const {
   return true;
 }
 
-bool PlayerInventory::move_or_swap(const std::string& uuid, int slot) {
-  if(slot<0 || slot>=kSlotCount) return false;
+bool PlayerInventory::move_or_swap(const std::string& uuid, int slot, const std::string& pack) {
+  const int columns=inventory_extensions::columns(pack),rows=inventory_extensions::rows(pack);
+  if(!columns || slot<0 || slot>=columns*rows) return false;
   auto* source=find_by_uuid(uuid);
-  if(!source || source->slot<0 || source->id=="coins") return false;
+  if(!source || source->slot<0 || source->id=="coins" || !can_store_in_pack(*source,pack)) return false;
   const auto before=items_;
   const int old_slot=source->slot;
+  const auto old_pack=source->pack_id;
   GameItem* target=nullptr;
   for(auto& other:items_) {
-    if(other.uuid==uuid || other.slot<0 || other.id=="coins") continue;
-    const int x=slot%kColumns,y=slot/kColumns,ox=other.slot%kColumns,oy=other.slot/kColumns;
+    if(other.uuid==uuid || other.slot<0 || other.id=="coins" || other.pack_id!=pack) continue;
+    const int x=slot%columns,y=slot/columns,ox=other.slot%columns,oy=other.slot/columns;
     if(x>=ox && x<ox+other.size.width && y>=oy && y<oy+other.size.height) { target=&other;break; }
   }
   const int destination=target?target->slot:slot;
+  if(target && !can_store_in_pack(*target,old_pack))return false;
   source->slot=-1;
   if(target) target->slot=-1;
+  source->pack_id=pack;
   if(!fits_at(*source,destination)) { items_=before; return false; }
   source->slot=destination;
   if(target) {
+    target->pack_id=old_pack;
     if(!fits_at(*target,old_slot)) { items_=before;return false; }
     target->slot=old_slot;
   }
@@ -3410,6 +3417,7 @@ int PlayerInventory::first_fit(const GameItem& item) const {
 
 PlayerInventory::AddResult PlayerInventory::add(GameItem item) {
   AddResult result;
+  item.pack_id="main"; // new grants/pickups enter the backpack or purse
   if (item.stackable) {
     // inventory.js: an existing stack of the same id absorbs the quantity;
     // the balance never needs a free cell and never overflows.
@@ -3439,8 +3447,20 @@ PlayerInventory::AddResult PlayerInventory::add(GameItem item) {
   return result;
 }
 
-bool PlayerInventory::add_at(GameItem item, int slot) {
-  if (find_by_uuid(item.uuid) || item.id == "coins" || !fits_at(item, slot)) return false;
+bool PlayerInventory::can_store_in_pack(const GameItem& item,const std::string& pack) {
+  if(item.id=="coins")return false;
+  if(pack=="main")return true;
+  const auto* def=item_def(item.id);
+  const auto kind=item.vessel?item.vessel->item.kind:def?def->type:std::string{};
+  if(pack=="spoils")return kind=="trophy";
+  if(pack=="preparations")return kind=="reagent" || kind=="tool";
+  if(pack=="reliquary")return kind=="curio" || kind=="relic" || kind=="chart";
+  return false;
+}
+
+bool PlayerInventory::add_at(GameItem item, int slot,const std::string& pack) {
+  item.pack_id=pack;
+  if (find_by_uuid(item.uuid) || !can_store_in_pack(item,pack) || !fits_at(item, slot)) return false;
   item.slot = slot;
   items_.push_back(std::move(item));
   return true;
@@ -3504,7 +3524,7 @@ bool PlayerInventory::spend_coins(int amount) {
 const std::vector<std::string>& WearSet::physical_slots() {
   static const std::vector<std::string> slots = {
       "right_hand", "left_hand", "armor", "head", "back", "belt",
-      "gloves", "feet", "ring", "ring2", "necklace",
+      "gloves", "feet", "ring", "ring2", "necklace", "warhorn", "quick_rig", "attendant",
   };
   return slots;
 }

@@ -127,6 +127,8 @@ struct WorldCarriedItem {
   std::string equip_seat;
   bool two_handed = false;
   int grid_slot = -1;
+  std::string pack_id = "main";
+  std::vector<std::string> compatible_packs;
 };
 
 // A town NPC as the presentation sees it: authoritative roster entry with a

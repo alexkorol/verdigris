@@ -89,6 +89,9 @@ ClientItemSlot parse_item_slot(const JsonValue& entry) {
   if (const auto* index = entry.get("slot"); index && index->number()) {
     slot.slot = static_cast<int>(*index->number());
   }
+  if(const auto* pack=json_string(entry.get("packId")))slot.pack_id=*pack;
+  if(const auto* choices=entry.get("packEligibility");choices && choices->array() && choices->array()->size()<=4)
+    for(const auto& choice:*choices->array())if(choice.string())slot.compatible_packs.push_back(*choice.string());
   slot.quantity = (std::max)(1, static_cast<int>(json_number(entry.get("qty"), 1.0)));
   if (const auto* size = entry.get("size"); size && size->object()) {
     slot.width = std::clamp(static_cast<int>(json_number(size->get("width"), 1.0)), 1, 12);
@@ -249,6 +252,11 @@ void apply_passive_tree(const JsonValue& tree, ClientModel& model,
   if (const auto* selected = tree.get("selectedNodeId");
       selected && selected->string())
     model.progression.selected_node = *selected->string();
+  model.progression.inventory_unlocks.clear();
+  if(const auto* unlocks=tree.get("inventoryUnlocks");unlocks && unlocks->array() && unlocks->array()->size()<=6)
+    for(const auto& unlock:*unlocks->array())if(unlock.string())
+      for(const auto& definition:verdigris::inventory_extensions::definitions)
+        if(*unlock.string()==definition.unlock)model.progression.inventory_unlocks.push_back(*unlock.string());
 }
 
 void apply_player_level(ClientPlayer& player, const JsonValue& source) {
@@ -624,7 +632,7 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
       break;
     case ClientCommand::Type::MoveInventory:
       envelope.event="player:inventory:commit";
-      envelope.data=JsonValue::Object{{"action","move"},{"item",JsonValue::Object{{"uuid",command.target}}},{"slot",command.value}};
+      envelope.data=JsonValue::Object{{"action","move"},{"item",JsonValue::Object{{"uuid",command.target}}},{"slot",command.value},{"packId",command.pack_id}};
       break;
     case ClientCommand::Type::Unequip:
       envelope.event = "item:unequip";
@@ -633,7 +641,7 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
     case ClientCommand::Type::UnequipToInventory:
       envelope.event="player:inventory:commit";
       envelope.data=JsonValue::Object{{"action","unequip"},{"item",JsonValue::Object{{"uuid",command.target}}},
-          {"seat",command.extra},{"slot",command.value}};
+          {"seat",command.extra},{"slot",command.value},{"packId",command.pack_id}};
       break;
     case ClientCommand::Type::DropInventory:
       envelope.event="player:inventory:commit";
@@ -754,9 +762,7 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
       snapshot.emplace("conduits", JsonValue(std::move(conduits)));
       snapshot.emplace(
           "selectedNodeId",
-          JsonValue(model_.progression.selected_node.empty()
-                        ? std::string("0,0")
-                        : model_.progression.selected_node));
+          JsonValue(command.target));
       envelope.event = "player:skilltree:save";
       envelope.data = JsonValue::Object{{"snapshot", JsonValue(std::move(snapshot))}};
       break;

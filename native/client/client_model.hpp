@@ -72,6 +72,8 @@ struct ClientItemSlot {
   std::string equip_slot;
   bool two_handed = false;
   std::string art_key; // Authoritative vessel form/material, presentation only.
+  std::string pack_id = "main";
+  std::vector<std::string> compatible_packs;
 };
 
 struct ClientWornItem {
@@ -175,6 +177,7 @@ struct ClientPassiveProgression {
   std::vector<std::string> nodes;
   std::vector<std::string> conduits;
   std::string selected_node;
+  std::vector<std::string> inventory_unlocks;
 };
 
 // TASK-0145 Gate-B chronicle state, exactly as carried by the accepted wire

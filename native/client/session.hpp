@@ -71,6 +71,7 @@ struct ClientCommand {
   std::string target;
   std::string house_id; // Optional explicit House for CreateScion, validated by server.
   std::string extra;  // CreateScion: appearance; MenuAction: item id/uuid
+  std::string pack_id = "main"; // destination compartment for inventory moves
 
   static ClientCommand login(std::string guest_id, bool quick_guest);
   static ClientCommand move(int dx, int dy);

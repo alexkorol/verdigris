@@ -1,5 +1,20 @@
 # Native reconstitution handoff
 
+## Inventory extensions implemented — final combined packaging remains
+
+All six skill-gated left-edge drawers now exist, with server-owned unlocks,
+per-Scion storage and real drag transfers. Eight native suites and 80 client
+scenarios passed; the enhanced inventory run also verifies populated drawer
+transfers/restarts and keyboard reveal/close behavior after the last focused
+fixes. Evidence and exact verification limits:
+orchestration/recoveries/2026-09-14-inventory-extensions/REPORT.md.
+
+Merge the newer owner-selected m5x7 branch before the next clean package;
+preserve its text metrics without restoring the removed inventory action strip.
+Sustained drag verification, the exact final package gate, and authorized normal
+launch/shared baseline promotion remain. Normal cefd238b2 and owner saves are
+untouched by this milestone. The goal remains active; no new approval gate.
+
 ## Current verification and installation — unattended checks available
 
 The clean inventory-drag package at native/build/player-package-1d3db8ab7/

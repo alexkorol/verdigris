@@ -67,6 +67,11 @@ int scenario_inventory_equipment() {
   RegisterClassA(&wc);
   HWND window = CreateWindowExA(0, wc.lpszClassName, "Inventory acceptance", WS_POPUP,
                                 0, 0, 1366, 768, nullptr, nullptr, wc.hInstance, &state);
+  scenario_present_size(state,1366,768);
+  scenario_check(std::none_of(state.hud_rect_trace.begin(),state.hud_rect_trace.end(),[](const auto& hit){return hit.first=="inventory-extension-button";}),
+      "extensions: no auxiliary controls appear before skill-tree unlock");
+  for(std::size_t seat=11;seat<14;++seat){const auto r=make_pack_geom(1366,768).seats[seat];
+    scenario_check(r.right<=r.left,"extensions: reserved seats are absent from main paperdoll");}
   auto worn = [&](const std::string& id, const std::string& seat) {
     for (const auto& item : state.session->model().worn)
       if (item.item.uuid == id && item.seat == seat) return true;
@@ -313,6 +318,141 @@ int scenario_inventory_equipment() {
   for(const auto& row:state.session->model().worn) restored_seats.push_back(row.seat+":"+row.item.uuid);
   for(const auto& row:state.session->model().inventory) restored_grid.push_back(row.uuid+":"+std::to_string(row.slot));
   scenario_check(restored_seats==persisted_seats && restored_grid==persisted_grid,"handover: restart retains exact equipment seats and backpack positions");
+  // Allocate real connected paths through production tree clicks. The dev
+  // command supplies only the fixture's earned level, never an unlock flag.
+  remote=static_cast<RemoteProtocolSession*>(state.session.get());
+  remote->send_raw("dev:setlevel",JV::Object{{"level",100}});
+  scenario_check(pump([&]{return state.session->model().player.level==100;}),"extensions: fixture has earned allocation budget");
+  state.character_pane=false;state.gear_overlay=false;state.tree_pane=true;
+  auto tree_click=[&](const std::string& id,bool allocate) {
+    sync_world(state);scenario_present_size(state,1366,768);
+    auto hit=std::find_if(state.tree_seat_hits.begin(),state.tree_seat_hits.end(),[&](const auto& row){return row.node_id==id;});
+    if(hit==state.tree_seat_hits.end()){scenario_check(false,"extensions: next connected tree node is reachable in pane");return;}
+    const int x=hit->x,y=hit->y;
+    SendMessage(window,WM_LBUTTONDOWN,0,MAKELPARAM(x,y));SendMessage(window,WM_LBUTTONUP,0,MAKELPARAM(x,y));
+    if(allocate)scenario_check(pump([&]{const auto& nodes=state.session->model().progression.nodes;return std::find(nodes.begin(),nodes.end(),id)!=nodes.end();}),
+        "extensions: production tree click receives authoritative allocation");
+  };
+  for(const auto axis:std::vector<std::pair<int,int>>{{-1,1},{0,-1},{1,0},{-1,0},{1,-1},{0,1}}) {
+    for(int i=1;i<=10;++i)tree_click(std::to_string(axis.first*i)+","+std::to_string(axis.second*i),true);
+    for(int i=9;i>=0;--i)tree_click(std::to_string(axis.first*i)+","+std::to_string(axis.second*i),false);
+  }
+  scenario_check(state.session->model().progression.inventory_unlocks.size()==6,"extensions: real tree paths unlock six drawers");
+  state.tree_pane=false;state.gear_overlay=true;state.hint_ticks=0;
+  state.character_pane=true;
+  const auto extension_sheet=character_pane_rect(1366,768,0);
+  scenario_check(!inventory_world_drop_allowed(state,1366,768,POINT{extension_sheet.x+10,extension_sheet.y+10}),"inventory: another visible pane rejects world drop");
+  scenario_check(inventory_world_drop_allowed(state,1366,768,POINT{10,700}),"inventory: uncovered world remains a drop target with character pane open");
+  state.character_pane=false;
+  const int attacks_before_drawers=state.combat_requests;
+  for(const auto size:{std::pair{960,600},std::pair{1280,800},std::pair{3440,1440}}) {
+    SetWindowPos(window,nullptr,0,0,size.first,size.second,SWP_NOACTIVATE|SWP_NOZORDER);
+    for(int index=0;index<6;++index) {
+      const auto button=inventory_aux_button(size.first,size.second,index);
+      const int bx=(button.left+button.right)/2,by=(button.top+button.bottom)/2;
+      SendMessage(window,WM_LBUTTONDOWN,0,MAKELPARAM(bx,by));SendMessage(window,WM_LBUTTONUP,0,MAKELPARAM(bx,by));
+      scenario_check(state.inventory_aux==index,"extensions: left-edge button opens its own drawer");
+      scenario_check(reference_present(state,size.first,size.second,dir+"/extension-"+std::to_string(index)+"-"+std::to_string(size.first)+".png"),
+          "extensions: actual production drawer captured");
+      const auto box=inventory_aux_rect(state,size.first,size.second);
+      scenario_check(box.left>=0 && box.top>=0 && box.right<=size.first && box.bottom<=size.second,"extensions: drawer stays inside viewport");
+      const auto geometry=inventory_aux_geom(state,size.first,size.second);
+      scenario_check(index<3 ? geometry.columns==0 && geometry.seats[11+index].right>geometry.seats[11+index].left : geometry.columns==4 && geometry.rows==4,
+          "extensions: equipment and 4x4 storage have distinct geometry");
+      SendMessage(window,WM_LBUTTONDOWN,0,MAKELPARAM(box.left+5,box.top+5));SendMessage(window,WM_LBUTTONUP,0,MAKELPARAM(box.left+5,box.top+5));
+      SendMessage(window,WM_KEYDOWN,VK_ESCAPE,0);SendMessage(window,WM_KEYUP,VK_ESCAPE,0);
+      scenario_check(state.gear_overlay && state.inventory_aux==-1,"extensions: Escape closes only the topmost drawer");
+    }
+  }
+  scenario_check(state.combat_requests==attacks_before_drawers && !state.primary_down,"extensions: drawer and tab clicks do not attack through UI");
+  SetWindowPos(window,nullptr,0,0,1366,768,SWP_NOACTIVATE|SWP_NOZORDER);
+  state.session->shutdown();server->stop();server.reset();
+  server=std::make_unique<verdigris::networking::WebSocketServer>(port,qa_saves);
+  // Isolated category fixtures exercise the real drawer transport. They are
+  // explicitly labeled QA objects, not new loot/content or owner-save grants.
+  const auto fixture_file=qa_saves/"inventory-qa.json";
+  JV fixture_save;
+  {std::ifstream input(fixture_file);const std::string bytes((std::istreambuf_iterator<char>(input)),{});
+    scenario_check(verdigris::networking::parse_json(bytes,fixture_save),"extensions: isolated fixture profile is readable");}
+  if(fixture_save.object()) {
+    const auto key=*fixture_save["activeHouseId"].string()+":"+*fixture_save["activeScionId"].string();
+    auto& loadout=(*(*fixture_save.object())["scionLoadouts"].object())[key];
+    JV::Array fixture_items;
+    for(const auto& row:*loadout["inventory"].array())if(row["id"].string() && *row["id"].string()=="coins")fixture_items.push_back(row);
+    const char* kinds[]={"warcall","quickrig","attendant","trophy","reagent","relic"};
+    const char* seats[]={"warhorn","quick_rig","attendant","","",""};
+    const char* names[]={"QA Warhorn","QA Quick Rig","QA Attendant","QA Trophy","QA Reagent","QA Relic"};
+    for(int i=0;i<6;++i) {
+      const int size=i<3?2:1;
+      fixture_items.push_back(JV::Object{{"id","extension-qa"},{"uuid","extension-ui-"+std::to_string(i)},
+        {"name",names[i]},{"displayName",names[i]},{"qty",1},{"packId","main"},{"slot",i<3?i*2:30+i},
+        {"size",JV::Object{{"width",size},{"height",size}}},{"equipSlot",seats[i]},
+        {"vessel",JV::Object{{"item",JV::Object{{"kind",kinds[i]},{"w",size},{"h",size}}}}}});
+    }
+    (*loadout.object())["inventory"]=std::move(fixture_items);
+    std::ofstream output(fixture_file);output<<fixture_save.stringify();
+  }
+  scenario_check(server->start(&error),"extensions: server restarts with same QA profile");
+  state.session=std::make_unique<RemoteProtocolSession>("127.0.0.1",port,"inventory-qa",true);
+  scenario_check(state.session->start(&error) && pump([&]{return state.session->connection_state()==ConnectionState::Ready && state.session->model().progression.inventory_unlocks.size()==6;}),
+      "extensions: fresh client reloads all six authoritative unlocks");
+  auto refresh_inventory=[&]{sync_world(state);reconcile_pack_grid(state);};
+  auto open_aux=[&](int index){
+    if(state.inventory_aux==index)return;
+    const auto r=inventory_aux_button(1366,768,index);const int x=(r.left+r.right)/2,y=(r.top+r.bottom)/2;
+    SendMessage(window,WM_LBUTTONDOWN,0,MAKELPARAM(x,y));SendMessage(window,WM_LBUTTONUP,0,MAKELPARAM(x,y));
+  };
+  auto row_for=[&](int index)->const ClientItemSlot* {
+    const auto& inventory=state.session->model().inventory;
+    const auto it=std::find_if(inventory.begin(),inventory.end(),[&](const auto& row){return row.uuid=="extension-ui-"+std::to_string(index);});
+    return it==inventory.end()?nullptr:&*it;
+  };
+  auto point_for=[&](const ClientItemSlot& row){const auto g=row.pack_id=="main"?make_pack_geom(1366,768):inventory_aux_geom(state,1366,768);
+    return POINT{g.grid_left+(row.slot%g.columns)*g.cell_w+g.cell_w/2,g.grid_top+(row.slot/g.columns)*g.cell_h+g.cell_h/2};};
+  auto drag_between=[&](POINT from,POINT to){
+    refresh_inventory();SendMessage(window,WM_LBUTTONDOWN,0,MAKELPARAM(from.x,from.y));
+    scenario_check(state.pack_drag_live,"extensions: full item footprint starts actual drag");
+    SendMessage(window,WM_MOUSEMOVE,MK_LBUTTON,MAKELPARAM(to.x,to.y));
+    SendMessage(window,WM_LBUTTONUP,0,MAKELPARAM(to.x,to.y));
+    scenario_check(state.equip_view.pending,"extensions: drawer transfer waits for authority");
+    scenario_check(pump([&]{return !state.equip_view.pending;}),"extensions: drawer transfer receives server acknowledgement");
+  };
+  for(int i=0;i<3;++i) {
+    open_aux(i);refresh_inventory();const auto* row=row_for(i);scenario_check(row!=nullptr,"extensions: auxiliary equipment fixture is carried");
+    if(!row)continue;
+    const auto seat=inventory_aux_geom(state,1366,768).seats[11+i];const POINT target{(seat.left+seat.right)/2,(seat.top+seat.bottom)/2};
+    drag_between(point_for(*row),target);
+    scenario_check(worn("extension-ui-"+std::to_string(i),kDollSeats[11+i]),"extensions: actual drag equips auxiliary seat");
+    const auto pack=make_pack_geom(1366,768);const int cell=60+i*2;
+    drag_between(target,POINT{pack.grid_left+(cell%12+1)*pack.cell_w+pack.cell_w/2,pack.grid_top+(cell/12+1)*pack.cell_h+pack.cell_h/2});
+    const auto* back=row_for(i);
+    scenario_check(back && back->pack_id=="main","extensions: worn auxiliary item returns to backpack through drag");
+    if(back)drag_between(point_for(*back),target);
+  }
+  for(int i=3;i<6;++i) {
+    open_aux(i);refresh_inventory();const auto* row=row_for(i);scenario_check(row!=nullptr,"extensions: category fixture is carried");
+    if(!row)continue;
+    const auto pack=inventory_aux_geom(state,1366,768);
+    drag_between(point_for(*row),POINT{pack.grid_left+pack.cell_w+pack.cell_w/2,pack.grid_top+pack.cell_h+pack.cell_h/2});
+    const auto* placed=row_for(i);
+    scenario_check(placed && placed->pack_id==pack.pack_id && placed->slot==5,"extensions: drag lands in exact compartment cell");
+    if(placed) {
+      const auto main=make_pack_geom(1366,768);
+      drag_between(point_for(*placed),POINT{main.grid_left+main.cell_w/2,main.grid_top+6*main.cell_h+main.cell_h/2});
+      const auto* returned=row_for(i);
+      scenario_check(returned && returned->pack_id=="main" && returned->slot==72,"extensions: extra storage returns exact item to main backpack");
+      if(returned)drag_between(point_for(*returned),POINT{pack.grid_left+pack.cell_w+pack.cell_w/2,pack.grid_top+pack.cell_h+pack.cell_h/2});
+    }
+    scenario_check(reference_present(state,1366,768,dir+"/extension-filled-"+std::to_string(i)+".png"),"extensions: labeled QA item in real compartment captured");
+  }
+  state.session->shutdown();server->stop();server.reset();
+  server=std::make_unique<verdigris::networking::WebSocketServer>(port,qa_saves);
+  scenario_check(server->start(&error),"extensions: populated compartments restart on same profile");
+  state.session=std::make_unique<RemoteProtocolSession>("127.0.0.1",port,"inventory-qa",true);
+  scenario_check(state.session->start(&error) && pump([&]{return state.session->connection_state()==ConnectionState::Ready;}),"extensions: populated profile reconnects");
+  for(int i=0;i<3;++i)scenario_check(worn("extension-ui-"+std::to_string(i),kDollSeats[11+i]),"extensions: worn auxiliary item persists through process restart");
+  for(int i=3;i<6;++i){const auto* row=row_for(i);scenario_check(row && row->pack_id==verdigris::inventory_extensions::definitions[i].pack && row->slot==5,"extensions: exact compartment UUID and cell persist through restart");}
+  state.character_pane=true;
   // Presentation stress only: freeze a copy of the real session snapshot. No
   // synthetic names or quantities are sent to authority or saved into its profile.
   struct ReadabilitySnapshot final : IClientSession {
@@ -353,6 +493,9 @@ int scenario_inventory_equipment() {
       }
     }
   }
+  SendMessage(window,WM_KEYDOWN,VK_ESCAPE,0);SendMessage(window,WM_KEYUP,VK_ESCAPE,0);
+  scenario_present_size(state,1366,768);
+  scenario_check(state.gear_overlay && state.inventory_aux==-1,"extensions: Escape keeps a keyboard-revealed drawer closed on subsequent paint");
   state.session->shutdown(); DestroyWindow(window); server->stop();
   return scenario_failures;
 }
