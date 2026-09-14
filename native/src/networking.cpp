@@ -746,6 +746,19 @@ void ProtocolSession::attach_persistence(const std::filesystem::path& path) {
   active_house_name_ = as_string(saved.get("activeHouseName"));
   active_scion_id_ = as_string(saved.get("activeScionId"));
   active_scion_name_ = as_string(saved.get("activeScionName"));
+  kitted_scions_.clear();
+  if(const auto* admitted=saved.get("kittedScions");admitted && admitted->array()) {
+    for(const auto& id:*admitted->array())if(id.string() && !id.string()->empty())kitted_scions_.insert(*id.string());
+  } else {
+    // Older saves omitted the one-time admission marker. A previously active
+    // Scion (or stored Scion loadout) has already received its starter kit.
+    if(!active_scion_id_.empty())kitted_scions_.insert(active_scion_id_);
+    if(const auto* loadouts=saved.get("scionLoadouts");loadouts && loadouts->object())
+      for(const auto& [key,loadout]:*loadouts->object()) {
+        const auto separator=key.find(':');
+        if(separator!=std::string::npos && separator+1<key.size())kitted_scions_.insert(key.substr(separator+1));
+      }
+  }
   username_ = as_string(saved.get("username"));
   house_treasury_ = as_int(saved.get("houseTreasury"), 0);
   scion_combat_xp_.clear();
@@ -835,6 +848,8 @@ void ProtocolSession::persist() const {
   put(saved, "activeHouseName", active_house_name_);
   put(saved, "activeScionId", active_scion_id_);
   put(saved, "activeScionName", active_scion_name_);
+  JsonValue::Array admitted;for(const auto& id:kitted_scions_)admitted.push_back(id);
+  put(saved,"kittedScions",std::move(admitted));
   put(saved, "houseTreasury", house_treasury_);
   JsonValue::Object progression;
   for (const auto& [id, xp] : scion_combat_xp_) put(progression, id, static_cast<double>(xp));

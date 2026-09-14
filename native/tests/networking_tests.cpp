@@ -65,6 +65,19 @@ void test_equipment_disk_and_scion_ownership() {
   check(snapshot(restored)["wearDetails"].stringify()!=first_wear,"another Scion does not inherit the first Scion's equipment");
   restored.handle({"chronicles:scion:set-out",JsonValue::Object{{"scionId",one}}},ignore);
   check(snapshot(restored)["wearDetails"].stringify()==first_wear,"returning Scion retains its own exact equipment");
+  const auto admitted=snapshot(restored);
+  std::string dagger;
+  for(const auto& row:*admitted["inventoryDetails"].array())
+    if(row["id"].string() && *row["id"].string()=="bronze-dagger")dagger=*row["uuid"].string();
+  check(!dagger.empty(),"admitted Scion has its initial dagger");
+  restored.handle({"item:equip",JsonValue::Object{{"item",JsonValue::Object{{"uuid",dagger},{"targetSlot","right_hand"}}}}},ignore);
+  const auto before_admission_restart=snapshot(restored);
+  restored.persist();
+  ProtocolSession readmitted("equipment-save","fourth-socket",41,true);
+  readmitted.attach_persistence(file);
+  readmitted.handle({"chronicles:scion:set-out",JsonValue::Object{{"scionId",one}}},ignore);
+  for(const char* key:{"inventoryDetails","wearDetails"})
+    check(before_admission_restart[key].stringify()==snapshot(readmitted)[key].stringify(),"restart and graphical re-admission cannot grant a second starter kit");
   std::filesystem::remove(file);
 }
 
