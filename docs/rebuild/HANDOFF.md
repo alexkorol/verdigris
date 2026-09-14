@@ -1,5 +1,17 @@
 # Native reconstitution handoff
 
+## Current normal installation — c00ade08e
+
+The established Documents/Verdigris Native 2026-09-13/Verdigris.exe now contains
+clean source c00ade08e4e43cab9305b5d2d940d1473dac7a8e, including typography.
+Installed hashes/resources and the actual normal launcher/title/profile passed.
+Physical Escape interrupted the final quit confirmation; current-build shutdown
+remains unverified, and the game was left running. Owner save bytes were unchanged.
+The newer inventory changes remain uncommitted, unverified and excluded from the
+normal package. The shared native baseline remains d0179c8b3. Exact current state,
+evidence and remaining checks: orchestration/recoveries/2026-09-13-handover/CURRENT.md.
+The completed 43c104c5a handover below is historical, not the current package ID.
+
 ## 2026-09-14 — Native typography implementation verified
 
 The consolidated client uses the bundled CC0 Verdigris Novel family through

@@ -1,0 +1,30 @@
+[
+  {
+    "ProcessId": 29240,
+    "ParentProcessId": 35732,
+    "Name": "verdigris_session_tests.exe",
+    "ExecutablePath": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-typography-sans-20260914\\native\\build\\verdigris_session_tests.exe",
+    "CommandLine": "\"C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-typography-sans-20260914\\native\\build\\verdigris_session_tests.exe\""
+  },
+  {
+    "ProcessId": 38020,
+    "ParentProcessId": 37708,
+    "Name": "Verdigris.exe",
+    "ExecutablePath": "C:\\Users\\Alex\\Documents\\verdigris native 2026-09-13\\verdigris.exe",
+    "CommandLine": "\"C:\\Users\\Alex\\Documents\\verdigris native 2026-09-13\\verdigris.exe\" "
+  },
+  {
+    "ProcessId": 31352,
+    "ParentProcessId": 38020,
+    "Name": "verdigris_server.exe",
+    "ExecutablePath": "C:\\Users\\Alex\\Documents\\Verdigris Native 2026-09-13\\native\\build\\verdigris_server.exe",
+    "CommandLine": "\"C:\\Users\\Alex\\Documents\\Verdigris Native 2026-09-13\\native\\build\\verdigris_server.exe\" 6520"
+  },
+  {
+    "ProcessId": 4520,
+    "ParentProcessId": 38020,
+    "Name": "verdigris_client.exe",
+    "ExecutablePath": "C:\\Users\\Alex\\Documents\\Verdigris Native 2026-09-13\\native\\build\\verdigris_client.exe",
+    "CommandLine": "\"C:\\Users\\Alex\\Documents\\Verdigris Native 2026-09-13\\native\\build\\verdigris_client.exe\" --remote 127.0.0.1 6520 review-player"
+  }
+]

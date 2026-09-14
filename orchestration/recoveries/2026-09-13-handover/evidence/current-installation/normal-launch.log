@@ -1,0 +1,5 @@
+2026-09-14T03:47:43.7898198Z root=C:\Users\Alex\Documents\Verdigris Native 2026-09-13\ profile=C:\Users\Alex\Documents\Verdigris Native 2026-09-13\profile isolatedSettings=False
+2026-09-14T03:47:44.1853309Z verdigris_server.exe pid=31352 6520
+2026-09-14T03:47:44.2139706Z server: verdigris_server listening on ws://127.0.0.1:6520
+2026-09-14T03:47:44.2199733Z verdigris_client.exe pid=4520 --remote 127.0.0.1 6520 review-player
+2026-09-14T03:47:44.3645161Z client: source=c00ade08e4e43cab9305b5d2d940d1473dac7a8e dirty=0 renderer=Fable perspective=1 authored-poses=96 asset-root=C:\Users\Alex\Documents\Verdigris Native 2026-09-13\native\client\assets\raster\runtime
