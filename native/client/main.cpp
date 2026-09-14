@@ -4485,7 +4485,10 @@ RECT inventory_aux_rect(const ClientState& state,int width,int height) {
   const int rows=def.pack.empty()?2:4;
   const int ww=4*g.cell_w+36*g.s,hh=rows*g.cell_h+64*g.s;
   const auto button=inventory_aux_button(width,height,state.inventory_aux);
-  const int left=std::max(6*g.s,p.x-ww-30*g.s),top=std::clamp(int(button.top),6*g.s,std::max(6*g.s,height-hh-6*g.s));
+  // The inventory already reserves the bottom HUD band. Its drawers must
+  // share that boundary, including the lowest tab at the minimum viewport.
+  const int bottom=std::min(p.y+p.h,quickbar_strip_rect(width,height).y-6*g.s);
+  const int left=std::max(6*g.s,p.x-ww-30*g.s),top=std::clamp(int(button.top),6*g.s,std::max(6*g.s,bottom-hh));
   return {left,top,left+ww,top+hh};
 }
 PackGeom inventory_aux_geom(const ClientState& state,int width,int height) {

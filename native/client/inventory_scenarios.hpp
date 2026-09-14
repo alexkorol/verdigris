@@ -356,6 +356,9 @@ int scenario_inventory_equipment() {
           "extensions: actual production drawer captured");
       const auto box=inventory_aux_rect(state,size.first,size.second);
       scenario_check(box.left>=0 && box.top>=0 && box.right<=size.first && box.bottom<=size.second,"extensions: drawer stays inside viewport");
+      const auto bar=quickbar_strip_rect(size.first,size.second);
+      scenario_check(box.right<=bar.x || box.left>=bar.x+bar.w || box.bottom<=bar.y || box.top>=bar.y+bar.h,
+          "extensions: open drawer never covers action-bar controls");
       const auto geometry=inventory_aux_geom(state,size.first,size.second);
       scenario_check(index<3 ? geometry.columns==0 && geometry.seats[11+index].right>geometry.seats[11+index].left : geometry.columns==4 && geometry.rows==4,
           "extensions: equipment and 4x4 storage have distinct geometry");

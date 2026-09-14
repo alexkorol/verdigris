@@ -1,5 +1,12 @@
 # Combined inventory and unattended handover
 
+Final layout correction: inspection of the 9e8e60741 package at 960x600 found
+the lowest drawer overlapping the action bar. Drawer geometry now shares the
+inventory/HUD vertical boundary. Added explicit nonintersection assertions for
+all six drawers at all three viewport sizes. The focused scenario passed,
+corrected minimum-size capture was inspected, and actual-art sustained drag
+remained below the unchanged gate (31.036 ms average, 34.365 peak).
+
 Foundation: b21054d63 inventory extensions, merged with typography branch
 d4498d2af (owner-selected m5x7 implementation cefd238b2). Preserved accepted
 paperdoll composition, authoritative equipment/stats, purse, six skill-gated
