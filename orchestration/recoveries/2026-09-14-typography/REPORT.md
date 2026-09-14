@@ -60,3 +60,39 @@ Earlier native compilation and eight non-UI suites passed across a full-build
 run and solo retries. The first session-suite run had reconnect/death failures
 while another test session was active; its complete solo retry passed. Both
 failed and successful logs are retained as interim evidence.
+
+Clean package: source cefd238b234c0c489abb2718e6b86ba001672c6c,
+native/build/player-package-cefd238b2/Verdigris.exe. Fresh compilation and native
+denylist passed. Package verification passed all 1,270 file hashes, 349 required
+resources, embedded clean source identity and profile-lock alias/reopen checks.
+The source commit is verified on origin/codex/native-typography-sans-20260914.
+
+Concurrent inventory milestone 1d3db8ab7 in the other consolidated checkout is
+separate work and is not included in this typography package. Its files and
+branch were not modified. Future integration must retain both that work and
+the selected m5x7 family/scale; do not restore Novel from that older font base.
+The normal-installation promotion checks the previously inspected c00ade08e
+identity before replacing anything, so a newer installation is not overwritten.
+
+Final packaged validation: all 80/80 client scenarios pass with exit 0 on source
+cefd238b2, including typography, inventory/equipment, vital-orbs and hitch-warmup.
+The unchanged fullscreen frame gate averaged 29.284ms static and 35.525ms moving
+(52.600ms peak). The complete successful log is selected-package-all.log.
+The production title, entry, settings, inventory, tooltip and log captures were
+inspected separately. The all-scenarios run invoked the packaged executable from
+the source checkout; a separate typography run from the package working directory
+also passed. Private font loading is executable-relative in both cases.
+
+Normal installation updated in place on 2026-09-13 at 21:30 local time:
+C:\Users\Alex\Documents\Verdigris Native 2026-09-13\Verdigris.exe.
+Installed source is cefd238b234c0c489abb2718e6b86ba001672c6c. All 1,270 installed
+hashes, 349 resources and embedded clean source identity pass. The one existing
+save is byte-identical; normal settings remained absent. Obsolete Novel files
+were removed only after path containment and backup/hash verification. No QA
+profiles or fixtures entered the normal installation.
+
+Rollback: native/build/typography-sans/rollback-20260913213044/installation.
+The owner was asked to open the usual launcher for a final read-only live capture.
+That final normal-window check remains pending; packaged production captures and
+hash verification do not substitute for it. No further desktop input followed
+the earlier Escape stop. No whole-product visual approval is claimed.

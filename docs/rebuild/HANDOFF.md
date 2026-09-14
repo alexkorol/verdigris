@@ -2,6 +2,15 @@
 
 ## 2026-09-14 - Owner-selected pixel sans typography
 
+Normal installation now contains source cefd238b234c0c489abb2718e6b86ba001672c6c
+at C:\Users\Alex\Documents\Verdigris Native 2026-09-13\Verdigris.exe.
+All 80 packaged scenarios and 1,270 installed hashes pass; 349 required resources
+and embedded clean source identity pass. Existing save bytes and settings are
+preserved. Final normal-window inspection awaits the owner's manual launch,
+because desktop input was stopped with Escape. Packaged captures were inspected.
+Rollback is native/build/typography-sans/rollback-20260913213044/installation.
+
+
 The owner selected m5x7 at 32px em from actual native captures. Bundled as
 Verdigris Sans (CC0), it supersedes Novel and the interim Pixel Operator trials.
 Preserve the 2px authored steps and 14px capitals for ordinary text when
