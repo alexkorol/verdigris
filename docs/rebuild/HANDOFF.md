@@ -1,5 +1,37 @@
 # Native reconstitution handoff
 
+## Current handover — installed and shared baseline verified
+
+Normal entry: `C:\Users\Alex\Documents\Verdigris Native 2026-09-13\Verdigris.exe`.
+Installed source: `2651bd4985e698fade744b8aeea5c84f9c251d57` (clean).
+Both `codex/native-consolidated-20260913` and `codex/native-reconstitution` now
+contain that implementation; subsequent handover commits contain only evidence
+and documentation. Shared baseline advanced by fast-forward, without lost work.
+Checkout: `C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913`.
+
+All 80 final packaged scenarios, eight native suites, same-QA-profile Effects
+70% save/reload, and the installed normal-entry smoke passed. Actual source,
+assets, child paths, working directory, normal profile and clean owned-process
+shutdown were checked. Production inventory/drawer/drag captures were inspected,
+including 960x600 and 3440x1440. Final sustained drag average 37.140 ms; moving
+fullscreen average 25.3 ms, both below the unchanged 40 ms average gate.
+
+Owner save values and quantities were preserved. First normal startup added
+compartment/passive-tree schema fields and removed currency's obsolete cell;
+the raw save hash therefore changed. Normal settings remained absent/unchanged.
+Previous full installation and save retained at
+`native/build/normal-launch-rollback-before-2651bd498/`.
+
+Builds and passes no longer depend on Computer Use: use
+`native/tools/verify-player-package.ps1` for a package, followed by
+`native/tools/test-normal-launch.ps1` for the installed entry. Both run app-owned
+hidden diagnostics without desktop input. Computer Use stayed stopped; the
+interrupted human walkthrough is not relabeled complete or owner acceptance.
+No build/test/push is still running or blocked. Evidence, limits and exact
+commands: `orchestration/recoveries/2026-09-14-final-handover/REPORT.md`.
+
+## Historical checkpoints (superseded by the current handover above)
+
 ## Combined inventory / m5x7 implementation — final package gate in progress
 
 The owner-selected m5x7 typography history is merged with all six inventory
