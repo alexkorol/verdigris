@@ -103,6 +103,42 @@ inline void inventory_surface(HDC dc, const RECT& r, int focus = 0,
   }
 }
 
+// Opaque well pixels depend only on size, focus and the owner's texture.
+// Keep the expensive GDI+ gradient/texture composition off the pointer frame
+// path. Ownership follows the loaded assets; dimensions/focus are in the key.
+// Both entry count and pixel storage are bounded during arbitrary resizing.
+struct InventorySurfaceCache {
+  struct Entry {
+    HDC dc=nullptr; HBITMAP bitmap=nullptr; HGDIOBJ old=nullptr;
+    int w=0,h=0,focus=0,tw=0,th=0; HDC texture=nullptr;
+    ~Entry(){if(dc){SelectObject(dc,old);DeleteDC(dc);}if(bitmap)DeleteObject(bitmap);}
+  };
+  std::vector<std::unique_ptr<Entry>> entries;
+  std::size_t pixels=0;
+  void draw(HDC dc,const RECT& r,int focus,HDC texture,int tw,int th) {
+    const int w=r.right-r.left,h=r.bottom-r.top;
+    if(w<=0 || h<=0)return;
+    for(const auto& entry:entries)if(entry->w==w && entry->h==h && entry->focus==focus &&
+        entry->texture==texture && entry->tw==tw && entry->th==th) {
+      BitBlt(dc,r.left,r.top,w,h,entry->dc,0,0,SRCCOPY);return;
+    }
+    constexpr std::size_t max_pixels=8*1024*1024;
+    const auto area=std::size_t(w)*h;
+    if(area>max_pixels){inventory_surface(dc,r,focus,texture,tw,th);return;}
+    while(!entries.empty() && (entries.size()>=64 || pixels+area>max_pixels)) {
+      pixels-=std::size_t(entries.front()->w)*entries.front()->h;entries.erase(entries.begin());
+    }
+    auto entry=std::make_unique<Entry>();
+    entry->w=w;entry->h=h;entry->focus=focus;entry->texture=texture;entry->tw=tw;entry->th=th;
+    entry->dc=CreateCompatibleDC(dc);entry->bitmap=CreateCompatibleBitmap(dc,w,h);
+    if(!entry->dc || !entry->bitmap){inventory_surface(dc,r,focus,texture,tw,th);return;}
+    entry->old=SelectObject(entry->dc,entry->bitmap);
+    inventory_surface(entry->dc,RECT{0,0,w,h},focus,texture,tw,th);
+    BitBlt(dc,r.left,r.top,w,h,entry->dc,0,0,SRCCOPY);
+    pixels+=area;entries.push_back(std::move(entry));
+  }
+};
+
 inline void pane_close(HDC dc,const RECT& r,bool hover) {
   if(hover)inventory_surface(dc,r,1);
   Gdiplus::Graphics g(dc);
@@ -545,9 +581,9 @@ inline bool raster_orb(HDC dc,bool life,int cx,int cy,int radius,double ratio,
   const int saved=SaveDC(dc);if(!saved)return false;
   // Keep the value's type size stable as digits change at the compact HUD scale.
   const bool compact_value=gw<96;
-  SetBkMode(dc,TRANSPARENT);SelectObject(dc,compact_value?font_small():font_body_bold());SIZE extent{};
+  SetBkMode(dc,TRANSPARENT);SelectObject(dc,compact_value?font(TextRole::CompactValue):font_body_bold());SIZE extent{};
   skin::text_extent(dc,caption.c_str(),static_cast<int>(caption.size()),&extent);
-  if(!compact_value&&extent.cx>gw-6){SelectObject(dc,font_small());skin::text_extent(dc,caption.c_str(),static_cast<int>(caption.size()),&extent);}
+  if(!compact_value&&extent.cx>gw-6){SelectObject(dc,font(TextRole::CompactValue));skin::text_extent(dc,caption.c_str(),static_cast<int>(caption.size()),&extent);}
   const int tx=gx+gw/2-extent.cx/2,ty=gy+gh/2-extent.cy/2;
   SetTextColor(dc,RGB(8,8,10));
   for(const POINT offset:{POINT{-1,-1},POINT{1,-1},POINT{-1,1},POINT{1,1}})

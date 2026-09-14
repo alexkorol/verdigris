@@ -1,0 +1,17 @@
+native-exit: WM_DESTROY
+== scenario consolidated-flow ==
+    ok: consolidation: isolated native server starts
+    ok: consolidation: session connects
+    ok: consolidation: authoritative roster arrives
+    ok: consolidation: House button creates named House
+    ok: consolidation: name field submits exact text without hotkey side effects
+    ok: consolidation: Scion button creates named character
+    ok: consolidation: name and appearance reach authoritative roster
+    ok: consolidation: clicked Scion reaches normal play
+    ok: consolidation: same flow reaches hardware perspective and selected animated actor
+    ok: consolidation: pause button returns to title
+    ok: consolidation: title exposes character management after admission
+    ok: consolidation: Continue resumes living Scion without old prompts
+    ok: consolidation: returning connection loads roster
+    ok: consolidation: returning Continue admits saved Scion directly
+   PASS (0 failures)

@@ -1,5 +1,22 @@
 # Native reconstitution handoff
 
+## Combined inventory / m5x7 implementation — final package gate in progress
+
+The owner-selected m5x7 typography history is merged with all six inventory
+extensions. Removed inventory controls remain removed. Inventory well pixels
+are now cached by dimensions/focus/texture with bounded storage: sustained
+3440x1440 dragging of actual weapon art passes at 36.290 ms average (unchanged
+40 ms gate), down from 75–84 ms before the repair. Production captures inspected.
+Eight native suites and the focused real-server inventory scenario passed.
+
+Unattended launcher save/reload checks passed on the same QA profile; title-only
+normal-profile smoke passed in a physical development fixture, including a copy
+of the owner's existing save. Actual owner installation/profile remain unchanged
+at this checkpoint. Exact clean packaging, package scenarios, installed normal
+entry verification and shared baseline promotion are the remaining operations.
+Continue them without requesting another approval or restarting Computer Use.
+See orchestration/recoveries/2026-09-14-final-handover/REPORT.md.
+
 ## Inventory extensions implemented — final combined packaging remains
 
 All six skill-gated left-edge drawers now exist, with server-owned unlocks,
@@ -45,6 +62,31 @@ final DPI-aware build also passed typography checks. Clean packaging and final
 live installation verification follow this milestone. Details and inspected
 evidence: `orchestration/recoveries/2026-09-14-typography/REPORT.md`.
 
+
+## 2026-09-14 - Owner-selected pixel sans typography
+
+Normal installation now contains source cefd238b234c0c489abb2718e6b86ba001672c6c
+at C:\Users\Alex\Documents\Verdigris Native 2026-09-13\Verdigris.exe.
+All 80 packaged scenarios and 1,270 installed hashes pass; 349 required resources
+and embedded clean source identity pass. Existing save bytes and settings are
+preserved. Final normal-window inspection awaits the owner's manual launch,
+because desktop input was stopped with Escape. Packaged captures were inspected.
+Rollback is native/build/typography-sans/rollback-20260913213044/installation.
+
+
+The owner selected m5x7 at 32px em from actual native captures. Bundled as
+Verdigris Sans (CC0), it supersedes Novel and the interim Pixel Operator trials.
+Preserve the 2px authored steps and 14px capitals for ordinary text when
+integrating concurrent inventory work. Fix layout using actual metrics rather
+than changing the selected font to hide clipping. Small numeric counters use 16px em.
+The exact Nox font remains unidentified; unsupported glyphs explicitly use '?'.
+
+The typography work is isolated from c00ade08e on
+codex/native-typography-sans-20260914, preserving unrelated inventory edits in
+verdigris-consolidated-20260913. Existing equipment/stat repairs remain included.
+Standing authorization includes committing verified work and pushing the working
+branch. Validation, evidence and installation identity are recorded in
+orchestration/recoveries/2026-09-14-typography/REPORT.md.
 
 ## 2026-09-13 - Normal-launch handover complete
 

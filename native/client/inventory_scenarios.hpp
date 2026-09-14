@@ -453,6 +453,40 @@ int scenario_inventory_equipment() {
   for(int i=0;i<3;++i)scenario_check(worn("extension-ui-"+std::to_string(i),kDollSeats[11+i]),"extensions: worn auxiliary item persists through process restart");
   for(int i=3;i<6;++i){const auto* row=row_for(i);scenario_check(row && row->pack_id==verdigris::inventory_extensions::definitions[i].pack && row->slot==5,"extensions: exact compartment UUID and cell persist through restart");}
   state.character_pane=true;
+  // Sustained actual-window input + production paint. Every frame consumes a
+  // burst of pointer events; the ghost must use the newest point without moving
+  // authoritative items before release. This is not a static mockup/timing loop.
+  state.character_pane=false;state.inventory_aux=-1;state.gear_keyboard_focus=false;
+  SetWindowPos(window,nullptr,0,0,3440,1440,SWP_NOACTIVATE|SWP_NOZORDER);
+  refresh_inventory();
+  const auto performance_items=identity_snapshot();
+  const auto main_geom=make_pack_geom(3440,1440);
+  state.inventory_aux=0;
+  // Drag the actual authored weapon artwork, not an unmapped QA extension.
+  const auto worn_rect=main_geom.seats[2];
+  const int start_x=(worn_rect.left+worn_rect.right)/2,start_y=(worn_rect.top+worn_rect.bottom)/2;
+  SendMessage(window,WM_LBUTTONDOWN,0,MAKELPARAM(start_x,start_y));
+  scenario_check(state.pack_drag_live,"drag-frame: equipped item begins a real sustained drag");
+  double drag_total=0,drag_peak=0,drag_floor=0,drag_world=0,drag_hud=0;int measured=0;
+  for(int frame=0;frame<45;++frame) {
+    const int x=main_geom.grid_left+main_geom.cell_w*(2+frame%7),y=main_geom.grid_top+main_geom.cell_h*(1+frame%4);
+    for(int event=0;event<32;++event)SendMessage(window,WM_MOUSEMOVE,MK_LBUTTON,MAKELPARAM(x-31+event,y));
+    scenario_present_size(state,3440,1440);
+    const auto ghost=std::find_if(state.hud_rect_trace.begin(),state.hud_rect_trace.end(),[](const auto& entry){return entry.first=="inventory-drag-ghost";});
+    scenario_check(ghost!=state.hud_rect_trace.end() && ghost->second.x==x-state.pack_grab_pixel_x && ghost->second.y==y-state.pack_grab_pixel_y,
+        "drag-frame: painted ghost follows the latest pointer with stable grab offset");
+    if(frame>=5){drag_total+=state.last_paint_ms;drag_peak=std::max(drag_peak,state.last_paint_ms);
+      drag_floor+=state.paint_ms_floor;drag_world+=state.paint_ms_world;drag_hud+=state.paint_ms_hud;++measured;}
+  }
+  std::printf("    drag-frame: %.3f ms average, %.3f ms peak; 40 measured 3440x1440 frames, 1440 pointer events\n",drag_total/std::max(1,measured),drag_peak);
+  std::printf("    drag-frame sections: floor %.3f world %.3f hud %.3f ms\n",drag_floor/measured,drag_world/measured,drag_hud/measured);
+  scenario_check(drag_total/std::max(1,measured)<40.0,"drag-frame: sustained inventory dragging stays under unchanged 40ms frame budget");
+  scenario_check(identity_snapshot()==performance_items && state.combat_requests==attacks_before_drawers,"drag-frame: pointer bursts neither mutate inventory nor attack");
+  scenario_check(reference_present(state,3440,1440,dir+"/inventory-sustained-drag.png"),"drag-frame: actual final dragged-item frame captured");
+  SendMessage(window,WM_KEYDOWN,VK_ESCAPE,0);SendMessage(window,WM_KEYUP,VK_ESCAPE,0);
+  scenario_check(!state.pack_drag_live && state.gear_overlay,"drag-frame: Escape cancels drag without closing inventory");
+  SetWindowPos(window,nullptr,0,0,1366,768,SWP_NOACTIVATE|SWP_NOZORDER);
+  state.inventory_aux=-1;state.character_pane=true;
   // Presentation stress only: freeze a copy of the real session snapshot. No
   // synthetic names or quantities are sent to authority or saved into its profile.
   struct ReadabilitySnapshot final : IClientSession {

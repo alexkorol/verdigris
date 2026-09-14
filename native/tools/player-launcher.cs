@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Text;
 using System.Windows.Forms;
 
 // Unsigned local-review entry point. No developer console or checkout required.
@@ -17,6 +18,8 @@ internal static class PlayerLauncher
     [DllImport("kernel32.dll")]
     static extern bool AssignProcessToJobObject(IntPtr job, IntPtr process);
     [DllImport("kernel32.dll")] static extern bool CloseHandle(IntPtr handle);
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    static extern bool QueryFullProcessImageName(IntPtr process, uint flags, StringBuilder name, ref uint size);
     [StructLayout(LayoutKind.Sequential)] struct BasicLimits {
         public long ProcessTime, JobTime; public uint Flags;
         public UIntPtr MinimumWorkingSet, MaximumWorkingSet;
@@ -61,6 +64,15 @@ internal static class PlayerLauncher
             throw new InvalidOperationException("Cannot attach game process to cleanup group.");
         }
         Log(Path.GetFileName(exe) + " pid=" + process.Id + " " + args);
+        // Query the process handle directly: MainModule enumeration can race
+        // startup and return a null module even after Process.Start succeeds.
+        var image = new StringBuilder(32768); uint imageSize = (uint)image.Capacity;
+        if (!QueryFullProcessImageName(process.Handle, 0, image, ref imageSize)) {
+            int error = Marshal.GetLastWin32Error();
+            Stop(process, false);
+            throw new InvalidOperationException("Cannot identify launched game process (Win32 " + error + ").");
+        }
+        Log("image=" + image.ToString() + " cwd=" + root);
         return process;
     }
     static int FreePort() {
@@ -95,9 +107,11 @@ internal static class PlayerLauncher
                 if (args[i] == "--profile" && i + 1 < args.Length) { profile = Path.GetFullPath(args[++i]); isolated = true; }
                 else if (args[i] == "--quick") quick = true;
                 else if (args[i] == "--verify-launch" && i + 1 < args.Length) verifyLaunch = args[++i];
-                else throw new ArgumentException("Usage: Verdigris.exe [--profile <isolated review directory>] [--quick] [--verify-launch save|reload]");
+                else throw new ArgumentException("Usage: Verdigris.exe [--profile <isolated review directory>] [--quick] [--verify-launch save|reload|smoke]");
             }
-            if (verifyLaunch != null && (!isolated || (verifyLaunch != "save" && verifyLaunch != "reload") ||
+            if (verifyLaunch == "smoke" && (isolated || quick))
+                throw new ArgumentException("Normal-launch smoke uses the normal profile without QA or quick-start arguments.");
+            if (verifyLaunch != null && verifyLaunch != "smoke" && (!isolated || (verifyLaunch != "save" && verifyLaunch != "reload") ||
                 string.Equals(profile.TrimEnd('\\'), Path.Combine(root, "profile").TrimEnd('\\'), StringComparison.OrdinalIgnoreCase)))
                 throw new ArgumentException("Launch verification requires a separate explicit QA profile and save or reload phase.");
             Directory.CreateDirectory(profile); Directory.CreateDirectory(Path.Combine(profile, "saves"));

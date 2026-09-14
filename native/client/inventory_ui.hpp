@@ -83,7 +83,7 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
   const POINT pointer{state.mouse.x,state.mouse.y};
   const int saved=SaveDC(dc);
   const auto& texture=state.billboards.inventory_texture;
-  auto well=[&](RECT r,int focus=0){skin::inventory_surface(dc,r,focus,texture.dc,texture.width,texture.height);};
+  auto well=[&](RECT r,int focus=0){state.billboards.inventory_surfaces.draw(dc,r,focus,texture.dc,texture.width,texture.height);};
   well(panel);
   dress_owned_pane(state.billboards,dc,panel);
   state.hud_rect_trace.push_back({"pane-frame",pane});
@@ -197,7 +197,11 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
     well(r,over||selected ? 1 : 0);
     const bool dragging=state.pack_drag_live && placed.id==state.pack_drag_id;
     const bool art=dragging || draw_object(items[j],r);
-    if (items[j].quantity>1) inventory_text(dc,r,std::to_string(items[j].quantity),skin::kInk,DT_RIGHT|DT_BOTTOM|DT_SINGLELINE|DT_END_ELLIPSIS);
+    if (items[j].quantity>1) {
+      const auto count_font=SelectObject(dc,skin::font(skin::TextRole::CompactValue));
+      inventory_text(dc,r,std::to_string(items[j].quantity),skin::kInk,DT_RIGHT|DT_BOTTOM|DT_SINGLELINE|DT_END_ELLIPSIS);
+      SelectObject(dc,count_font);
+    }
     if(over || (selected && state.gear_keyboard_focus)) { hover=static_cast<int>(j);anchor=r; }
     state.hud_rect_trace.push_back({"pane-cell",{r.left,r.top,r.right-r.left,r.bottom-r.top}});
     rl.push_back({render::Op::PaneItem,double(r.left),double(r.top),0,items[j].attack_bonus,items[j].name});
@@ -222,6 +226,7 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
       OffsetRect(&ghost,std::clamp(int(ghost.left),0,std::max(0,w-int(ghost.right-ghost.left)))-ghost.left,
           std::clamp(int(ghost.top),0,std::max(0,h-int(ghost.bottom-ghost.top)))-ghost.top);
       draw_object(items[j],ghost);
+      state.hud_rect_trace.push_back({"inventory-drag-ghost",{ghost.left,ghost.top,ghost.right-ghost.left,ghost.bottom-ghost.top}});
       RECT feedback{ghost.left,std::max(0L,ghost.top-22*s),std::min(LONG(w),ghost.left+160*s),std::max(0L,ghost.top-22*s)+20*s};
       skin::inventory_surface(dc,feedback,valid?1:-1);
       inventory_text(dc,feedback,outside?"Drop on ground":valid?"Fits":"Cannot place here",skin::kInk);

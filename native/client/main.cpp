@@ -242,6 +242,7 @@ struct BillboardAssets {
   SpriteBitmap fk_panel;
   SpriteBitmap fk_slot;
   SpriteBitmap inventory_texture;
+  skin::InventorySurfaceCache inventory_surfaces;
   SpriteBitmap splash;
   std::unordered_map<std::string, SpriteBitmap> item_art;
   // Web-client UI assets (src/assets): the wizard orb statue plate with its
@@ -371,9 +372,14 @@ HudRect gear_pane_rect(int width, int height) {
 }
 
 RECT player_menu_rect(int width,int height,int index) {
-  const int scale=hud_scale(height),ww=90*scale,gap=5*scale;
+  const int scale=hud_scale(height),gap=5*scale;
+  int ww=90*scale,hh=28*scale;
+  for(const auto* caption:{"Equipment","Character","Settings"}) {
+    const auto size=skin::measure_text(caption,skin::TextRole::Label,scale);
+    ww=std::max(ww,int(size.cx)+16*scale);hh=std::max(hh,int(size.cy)+10*scale);
+  }
   const int x=width-16*scale-3*ww-2*gap+index*(ww+gap);
-  return {x,12*scale,x+ww,40*scale};
+  return {x,12*scale,x+ww,12*scale+hh};
 }
 
 HudRect tree_pane_rect(int width, int height) {
@@ -410,10 +416,20 @@ HudRect vital_orb_rect(int width, int height, bool resource) {
 
 constexpr int kQuickbarSlotCount = 4;
 
+int quickbar_slot_width(int scale) {
+  int width=58*scale;
+  for(const auto* label:{"Strike","Thrust","Sweep","WarCry"})
+    width=std::max(width,int(skin::measure_text(label,skin::TextRole::Label,scale).cx)+12*scale);
+  return width;
+}
+int quickbar_slot_height(int scale) {
+  return std::max(52*scale,int(skin::measure_text("Mg",skin::TextRole::Label,scale).cy)*2+8*scale);
+}
+
 HudRect quickbar_strip_rect(int width, int height) {
   const int s = hud_scale(height);
-  const int slot_w = 58 * s;
-  const int slot_h = 52 * s;
+  const int slot_w = quickbar_slot_width(s);
+  const int slot_h = quickbar_slot_height(s);
   const int gap = 8 * s;
   const int strip_w =
       kQuickbarSlotCount * slot_w + (kQuickbarSlotCount - 1) * gap;
@@ -1568,14 +1584,24 @@ void paint_compare_plate(ClientState& state, HDC dc, int x, int y,
     widest = std::max(widest, static_cast<int>(extent.cx));
   }
   const int s = hud_scale(static_cast<int>(bounds.bottom));
-  const int line_h = 16 * s;
+  const int line_h = skin::line_height(dc,2);
   const int pad = 8 * s;
-  const int box_w = std::min(widest + pad * 2, std::min(340*s,static_cast<int>(bounds.right)-16));
+  int box_w = std::min(widest + pad * 2, std::min(340*s,static_cast<int>(bounds.right)-16));
+  if(state.character_pane&&keep_out.w>0) {
+    const auto character=character_pane_rect(bounds.right,bounds.bottom,0);
+    const int lane=keep_out.x-(character.x+character.w)-16;
+    if(lane>=120*s)box_w=std::min(box_w,lane);
+  }
+  std::vector<std::vector<std::wstring>> fact_lines;
+  int facts_h=0;
+  for(const auto& fact:lines) {
+    fact_lines.push_back(skin::wrap_text(dc,fact,box_w-2*pad));
+    facts_h+=int(fact_lines.back().size())*line_h;
+  }
   SelectObject(dc,skin::font_body_bold());
-  RECT measure{0,0,box_w-2*pad,0};
-  skin::draw_text(dc,title.c_str(),-1,&measure,DT_WORDBREAK|DT_CALCRECT|DT_NOPREFIX);
-  const int title_h=std::min(int(measure.bottom),std::max(line_h,int(bounds.bottom)/3));
-  const int box_h = title_h + static_cast<int>(lines.size()) * line_h + pad * 2;
+  const auto title_lines=skin::wrap_text(dc,title,box_w-2*pad);
+  const int title_h=int(title_lines.size())*line_h;
+  const int box_h=title_h+facts_h+pad*2;
   int box_x = std::min(x, static_cast<int>(bounds.right) - box_w - 8);
   int box_y = std::max(8, y - box_h - 8);
   box_x = std::max(8, box_x);
@@ -1600,15 +1626,14 @@ void paint_compare_plate(ClientState& state, HDC dc, int x, int y,
   SetBkMode(dc, TRANSPARENT);
   SelectObject(dc, skin::font_body_bold());
   SetTextColor(dc, title_color);
-  RECT title_box{box_x+pad,box_y+pad-2,box_x+box_w-pad,box_y+pad+title_h};
-  skin::draw_text(dc,title.c_str(),-1,&title_box,DT_WORDBREAK|DT_END_ELLIPSIS|DT_NOPREFIX);
+  int text_y=box_y+pad;
+  for(const auto& line:title_lines) {
+    TextOutW(dc,box_x+pad,text_y,line.data(),int(line.size()));text_y+=line_h;
+  }
   SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kInkDim);
-  int fact_y = box_y + pad + title_h;
-  for (const auto& fact : lines) {
-    RECT fact_box{box_x+pad,fact_y,box_x+box_w-pad,fact_y+line_h};
-    skin::draw_text(dc,fact.c_str(),-1,&fact_box,DT_SINGLELINE|DT_END_ELLIPSIS);
-    fact_y += line_h;
+  for(const auto& fact:fact_lines)for(const auto& line:fact) {
+    TextOutW(dc,box_x+pad,text_y,line.data(),int(line.size()));text_y+=line_h;
   }
   SelectObject(dc, old_font);
   state.hud_rect_trace.push_back({"compare-plate", plate_rect});
@@ -4917,12 +4942,14 @@ static_assert(kQuickbarSlotCount ==
               "quickbar geometry helper and painter must agree on slot count");
 
 void paint_quickbar(ClientState& state, HDC dc, const RECT& bounds, render::List& rl) {
+  const int saved_dc=SaveDC(dc);SelectObject(dc,skin::font_body());
   const WorldActor& player = state.world.player;
   const verdigris::PresentationCatalog catalog =
       verdigris::Simulation::presentation_catalog();
   const int s = hud_scale(static_cast<int>(bounds.bottom));
-  const int slot_w = 58 * s;
-  const int slot_h = 52 * s;
+  const int slot_w = quickbar_slot_width(s);
+  const int slot_h = quickbar_slot_height(s);
+  const int text_line=skin::line_height(dc,0);
   const int gap = 8 * s;
   const int count = static_cast<int>(sizeof(kQuickbarSlots) / sizeof(kQuickbarSlots[0]));
   const int strip_w = count * slot_w + (count - 1) * gap;
@@ -4986,9 +5013,10 @@ void paint_quickbar(ClientState& state, HDC dc, const RECT& bounds, render::List
     skin::text_out(dc, box.left + 6 * s, box.top + 4 * s, slot.key_label,
              static_cast<int>(strlen(slot.key_label)));
     SetTextColor(dc, available ? RGB(205, 221, 207) : RGB(112, 119, 115));
-    skin::text_out(dc, box.left + 6 * s, box.top + 26 * s, slot.name,
+    skin::text_out(dc, box.left + 6 * s, box.top + 4 * s + text_line, slot.name,
              static_cast<int>(strlen(slot.name)));
   }
+  RestoreDC(dc,saved_dc);
 }
 
 bool trade_pane_open(const ClientState& state);
@@ -5070,14 +5098,14 @@ void paint_hover_tooltip(ClientState& state, HDC dc, const RECT& bounds,
                           &extent);
     widest = std::max(widest, static_cast<int>(extent.cx));
   }
-  const int line_h = 16 * s;
+  const int line_h = skin::line_height(dc,2);
   const int pad = 8 * s;
   const int mark = 10 * s;
-  const int box_w = widest + pad * 2 + mark;
+  const int box_w = std::min(widest + pad * 2 + mark,int(bounds.right)-16);
   SelectObject(dc,skin::font_body_bold());
-  RECT measure{0,0,box_w-2*pad,0};
+  RECT measure{0,0,box_w-2*pad-mark,0};
   skin::draw_text(dc,title.c_str(),-1,&measure,DT_WORDBREAK|DT_CALCRECT|DT_NOPREFIX);
-  const int title_h=std::min(int(measure.bottom),std::max(line_h,int(bounds.bottom)/3));
+  const int title_h=std::max(line_h,int(measure.bottom));
   const int box_h = title_h + static_cast<int>(lines.size()) * line_h + pad * 2;
   int box_x = mx + 18;
   int box_y = my - box_h - 10;
@@ -5099,8 +5127,8 @@ void paint_hover_tooltip(ClientState& state, HDC dc, const RECT& bounds,
   SetBkMode(dc, TRANSPARENT);
   SelectObject(dc, skin::font_body_bold());
   SetTextColor(dc, skin::kInk);
-  skin::text_out(dc, box_x + pad + mark, box_y + pad - 2, title.c_str(),
-           static_cast<int>(title.size()));
+  RECT title_box{box_x+pad+mark,box_y+pad-2,box_x+box_w-pad,box_y+pad+title_h};
+  skin::draw_text(dc,title.c_str(),-1,&title_box,DT_WORDBREAK|DT_NOPREFIX);
   SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kInk);
   int fact_y = box_y + pad + title_h;
@@ -21927,11 +21955,14 @@ int run_remote_native_client(const char* host, unsigned short port, const char* 
       WS_POPUP, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN),
       nullptr, nullptr, instance, state.get());
   if (!verify_launch.empty()) {
-    // Application-owned regression mode: hidden QA window, no desktop input,
+    // Application-owned regression mode: hidden window, no desktop input,
     // same remote session, renderer, settings and menu implementation.
+    const bool normal_smoke=verify_launch=="smoke";
     const char* settings_path=std::getenv("VERDIGRIS_SETTINGS_PATH");
-    if(!settings_path || !*settings_path || (verify_launch!="save" && verify_launch!="reload")) {
-      std::fprintf(stderr,"launch-check: isolated settings path and valid phase required\n");
+    const char* save_path=std::getenv("VERDIGRIS_SAVE_DIR");
+    if(normal_smoke ? (!save_path || !*save_path || (settings_path && *settings_path)) :
+       (!settings_path || !*settings_path || (verify_launch!="save" && verify_launch!="reload"))) {
+      std::fprintf(stderr,"launch-check: valid phase and matching profile configuration required\n");
       state->session->shutdown();DestroyWindow(window);return 2;
     }
     const int failures_before=scenario_failures;
@@ -21939,9 +21970,12 @@ int run_remote_native_client(const char* host, unsigned short port, const char* 
         "launch-check: actual launcher-owned server supplies Chronicle");
     scenario_check(state->frontend==Frontend::Title && state->camera.perspective,
         "launch-check: normal title and perspective configuration");
-    const auto captures=std::filesystem::path(settings_path).parent_path();
-    scenario_check(reference_present(*state,1280,800,(captures/(verify_launch+"-title.png")).string()),
+    const auto captures=normal_smoke?std::filesystem::path(save_path).parent_path()/"logs":std::filesystem::path(settings_path).parent_path();
+    std::filesystem::create_directories(captures);
+    scenario_check(reference_present(*state,normal_smoke?GetSystemMetrics(SM_CXSCREEN):1280,
+        normal_smoke?GetSystemMetrics(SM_CYSCREEN):800,(captures/(verify_launch+"-title.png")).string()),
         "launch-check: production title renders with packaged assets");
+    if(!normal_smoke) {
     handle_frontend_key(*state,VK_DOWN);handle_frontend_key(*state,VK_RETURN);
     scenario_check(state->frontend==Frontend::Settings,"launch-check: menu navigation opens Settings");
     if(verify_launch=="save") {
@@ -21957,6 +21991,7 @@ int run_remote_native_client(const char* host, unsigned short port, const char* 
     // player window or injecting OS keyboard/mouse messages.
     for(int attempt=0;attempt<4 && state->menu_selected!=3;++attempt)handle_frontend_key(*state,VK_DOWN);
     handle_frontend_key(*state,VK_RETURN);
+    } // Normal-profile smoke never opens gameplay or changes settings.
     handle_frontend_key(*state,VK_DOWN);handle_frontend_key(*state,VK_DOWN);handle_frontend_key(*state,VK_RETURN);
     scenario_check(state->frontend==Frontend::ConfirmQuit && !state->quit_requested,
         "launch-check: Quit requires confirmation");
@@ -22011,7 +22046,7 @@ int main(int argc, char** argv) {
   }
   SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
   if (!skin::game_font_available()) {
-    std::fprintf(stderr,"Missing bundled UI font: native/client/assets/fonts/novel/VerdigrisNovel.ttf\n");
+    std::fprintf(stderr,"Missing bundled UI font: %ls\n",skin::font_resource().path.c_str());
     return 2;
   }
   for (int i = 1; i < argc; ++i) {

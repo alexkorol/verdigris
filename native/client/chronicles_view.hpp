@@ -50,7 +50,12 @@ void paint_lineage_door(ClientState& state,HDC dc,const RECT& bounds,render::Lis
   const int gap=12*s,card_width=(split-left-64*s-gap)/2;
   field("scion-name",state.scion_name_input,"Scion name (optional)",
       {left+32*s,content_top+34*s,split-20*s,content_top+74*s});
-  const int card_top=content_top+84*s,card_bottom=std::max(card_top+100*s,footer-48*s);
+  const std::string appearance_help="Appearance changes the character's look.\nAbilities and starting equipment are the same.";
+  RECT help_measure{0,0,split-20*s-(left+32*s),0};
+  SelectObject(dc,skin::font_small());
+  skin::draw_text(dc,appearance_help.c_str(),-1,&help_measure,DT_WORDBREAK|DT_CALCRECT|DT_NOPREFIX);
+  const int card_top=content_top+84*s;
+  const int card_bottom=std::max(card_top+100*s,footer-int(help_measure.bottom)-8*s);
   for(int i=0;i<2;++i) {
     const std::string appearance=i?"female":"male";
     RECT card{left+32*s+i*(card_width+gap),card_top,left+32*s+i*(card_width+gap)+card_width,card_bottom};
@@ -65,7 +70,7 @@ void paint_lineage_door(ClientState& state,HDC dc,const RECT& bounds,render::Lis
     state.chronicle_hits.push_back({card,{"","appearance",appearance,""}});
     tag("appearance:"+appearance+(active?":selected":""),card);
   }
-  text("Appearance changes the character's look.\nAbilities and starting equipment are the same.",
+  text(appearance_help,
        {left+32*s,card_bottom+8*s,split-20*s,footer},skin::kInkDim,skin::font_small());
   if(has_house) button({"C","create-scion","",""},"Create "+std::string(state.selected_appearance=="female"?"female":"male")+" Scion",
       {left+32*s,footer+8*s,split-20*s,footer+53*s});
@@ -85,11 +90,15 @@ void paint_lineage_door(ClientState& state,HDC dc,const RECT& bounds,render::Lis
     y+=48*s;break;
   }
   if(!has_house) {
-    RECT line{roster_left,y,roster_right,y+70*s};
-    text("Your House carries its history across generations. Found it, then choose your first Scion.",line,skin::kInk,skin::font_body());tag("prompt",line);
+    const std::string prompt="Your House carries its history across generations. Found it, then choose your first Scion.";
+    RECT measure{0,0,roster_right-roster_left,0};SelectObject(dc,skin::font_body());
+    skin::draw_text(dc,prompt.c_str(),-1,&measure,DT_WORDBREAK|DT_CALCRECT|DT_NOPREFIX);
+    const int prompt_h=std::max(70*s,int(measure.bottom));
+    RECT line{roster_left,y,roster_right,y+prompt_h};
+    text(prompt,line,skin::kInk,skin::font_body());tag("prompt",line);
     field("house-name",state.house_name_input,"House name (optional)",
-        {roster_left,y+82*s,roster_right,y+124*s});
-    if(model.chronicle.present) button({"F","found-house","",""},"Found your House",{roster_left,y+138*s,roster_right,y+184*s});
+        {roster_left,y+prompt_h+12*s,roster_right,y+prompt_h+54*s});
+    if(model.chronicle.present) button({"F","found-house","",""},"Found your House",{roster_left,y+prompt_h+68*s,roster_right,y+prompt_h+114*s});
   } else {
     std::vector<ChronicleAction> admissions;
     for(const auto& action:state.chronicles_menu)
