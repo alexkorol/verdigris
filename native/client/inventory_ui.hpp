@@ -166,7 +166,7 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
     const bool selected=items[j].id==state.selected_item_id;
     skin::inventory_surface(dc,r,over||selected ? 1 : 0);
     const bool art=draw_object(items[j],r);
-    if (items[j].quantity>1) inventory_text(dc,r,std::to_string(items[j].quantity),skin::kInk,DT_RIGHT|DT_BOTTOM|DT_SINGLELINE);
+    if (items[j].quantity>1) inventory_text(dc,r,std::to_string(items[j].quantity),skin::kInk,DT_RIGHT|DT_BOTTOM|DT_SINGLELINE|DT_END_ELLIPSIS);
     if(over || (selected && state.gear_keyboard_focus)) { hover=static_cast<int>(j);anchor=r; }
     state.hud_rect_trace.push_back({"pane-cell",{r.left,r.top,r.right-r.left,r.bottom-r.top}});
     rl.push_back({render::Op::PaneItem,double(r.left),double(r.top),0,items[j].attack_bonus,items[j].name});
@@ -211,6 +211,7 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
   if(hover>=0 && !state.pack_drag_live) {
     const auto& item=items[hover];
     std::vector<std::string> facts;
+    if(item.quantity>1)facts.push_back("Quantity "+std::to_string(item.quantity));
     if(item.attack_bonus)facts.push_back("Attack rating +"+std::to_string(item.attack_bonus));
     facts.push_back(item.equipped?"Equipped":"Carried");
     if(item.two_handed)facts.push_back("Requires both hands");

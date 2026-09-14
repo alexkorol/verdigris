@@ -293,6 +293,25 @@ int scenario_inventory_equipment() {
   for(const auto& row:state.session->model().worn) restored_seats.push_back(row.seat+":"+row.item.uuid);
   for(const auto& row:state.session->model().inventory) restored_grid.push_back(row.uuid+":"+std::to_string(row.slot));
   scenario_check(restored_seats==persisted_seats && restored_grid==persisted_grid,"handover: restart retains exact equipment seats and backpack positions");
+  // Presentation stress only: no synthetic names or quantities are sent to authority.
+  sync_world(state);reconcile_pack_grid(state);
+  if(!state.world.carried.empty()) {
+    const auto index=carried_index_for_pack_id(state,state.pack_grid.items[0].id);
+    if(index<state.world.carried.size()) {
+      state.world.carried[index].name="An exceptionally long inventory item name with its distinguishing final words still available in the tooltip";
+      state.world.carried[index].quantity=12345678;
+      state.gear_keyboard_focus=true;select_inventory_index(state,index);
+      for(const auto size:{std::pair{960,600},std::pair{1280,800},std::pair{3440,1440}}) {
+        scenario_check(reference_present(state,size.first,size.second,dir+"/handover-long-name-"+std::to_string(size.first)+".png"),"handover: labeled long-name/count presentation stress captured");
+        bool tooltip=false;
+        for(const auto& trace:state.hud_rect_trace)if(trace.first=="compare-plate") {
+          tooltip=true;const auto& r=trace.second;
+          scenario_check(r.x>=0 && r.y>=0 && r.x+r.w<=size.first && r.y+r.h<=size.second,"handover: full-name tooltip remains within viewport");
+        }
+        scenario_check(tooltip,"handover: selected item tooltip stays keyboard-accessible");
+      }
+    }
+  }
   state.session->shutdown(); DestroyWindow(window); server->stop();
   return scenario_failures;
 }

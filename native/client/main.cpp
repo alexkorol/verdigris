@@ -11234,7 +11234,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       }
       if(wparam==VK_TAB && state->gear_overlay && !state->world.carried.empty()) {
         state->gear_keyboard_focus=true;
-        select_inventory_index(*state,(state->selected_item+1)%state->world.carried.size());break;
+        select_inventory_index(*state,state->selected_item_id.empty()?0:(state->selected_item+1)%state->world.carried.size());break;
       }
       if (wparam == 'C') {
         if (state->text_entry || trade_pane_open(*state)) break;
@@ -12416,6 +12416,7 @@ int scenario_loot_to_bank() {
 
   state.gear_overlay = true;
   state.gear_keyboard_focus=true;
+  select_inventory_index(state,0);
   scenario_present(state);
   scenario_check(render::any(state.render_list, render::Op::PaneItem),
                  "loot-to-bank: grid cell rendered in the pane");
