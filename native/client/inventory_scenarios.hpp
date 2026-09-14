@@ -7,6 +7,33 @@ int scenario_inventory_equipment() {
   std::setvbuf(stdout, nullptr, _IONBF, 0);
   using namespace verdigris::client;
   using JV = verdigris::networking::JsonValue;
+  {
+    fable_gpu::Renderer gpu;
+    const std::array<std::uint8_t,4> red{230,40,20,255};
+    fable_gpu::Scene scene;
+    scene.camera={320,200,0,0,100,100,100,100,100,1,1000};
+    const std::array<fable_gpu::Sprite,1> sprites{{{1,0,0,0,280,120,.5f,.5f}}};
+    scene.sprites=sprites;
+    scenario_check(gpu.upload_texture(1,1,1,red.data(),4,false,1) && gpu.render(scene,nullptr),
+        "inventory: GPU visibility fixture renders a real colored sprite");
+    const std::vector<std::uint8_t> before(gpu.pixels_bgra().begin(),gpu.pixels_bgra().end());
+    scene.opaque_rect={160,50,280,150};
+    scenario_check(gpu.render(scene,nullptr),"inventory: opaque-panel world exclusion renders");
+    bool outside_equal=true,inside_changed=false;
+    const auto after=gpu.pixels_bgra();
+    if(before.size()==320*200*4 && after.size()==before.size()) {
+      for(int y=0;y<200;++y)for(int x=0;x<320;++x) {
+        const auto offset=(y*320+x)*4;
+        const bool same=std::equal(before.begin()+offset,before.begin()+offset+4,after.begin()+offset);
+        if(x>=160 && x<280 && y>=50 && y<150)inside_changed|=!same;
+        else outside_equal&=same;
+      }
+    } else outside_equal=false;
+    scenario_check(outside_equal && inside_changed,"inventory: exclusion changes only pixels hidden by the opaque panel");
+    scene.opaque_rect={};
+    scenario_check(gpu.render(scene,nullptr) && std::equal(before.begin(),before.end(),gpu.pixels_bgra().begin(),gpu.pixels_bgra().end()),
+        "inventory: closing the panel restores every world pixel");
+  }
   std::unique_ptr<verdigris::networking::WebSocketServer> server;
   unsigned short port = 0;
   const auto qa_saves=std::filesystem::path(art_wave_capture_dir())/("inventory-profile-"+std::to_string(GetTickCount64()));
@@ -68,6 +95,14 @@ int scenario_inventory_equipment() {
   HWND window = CreateWindowExA(0, wc.lpszClassName, "Inventory acceptance", WS_POPUP,
                                 0, 0, 1366, 768, nullptr, nullptr, wc.hInstance, &state);
   scenario_present_size(state,1366,768);
+  HDC window_dc=GetDC(window);
+  paint(window,window_dc);
+  ReleaseDC(window,window_dc);
+  DIBSECTION frame_surface{};
+  scenario_check(GetObject(state.back_bitmap,sizeof(frame_surface),&frame_surface)==sizeof(frame_surface) &&
+      frame_surface.dsBm.bmBitsPixel==32 && frame_surface.dsBm.bmWidth==state.back_w &&
+      frame_surface.dsBm.bmHeight==state.back_h && state.back_w>0 && state.back_h>0,
+      "inventory: actual window paints through the full-resolution 32-bit composition surface");
   scenario_check(std::none_of(state.hud_rect_trace.begin(),state.hud_rect_trace.end(),[](const auto& hit){return hit.first=="inventory-extension-button";}),
       "extensions: no auxiliary controls appear before skill-tree unlock");
   for(std::size_t seat=11;seat<14;++seat){const auto r=make_pack_geom(1366,768).seats[seat];
@@ -499,6 +534,7 @@ int scenario_inventory_equipment() {
   SendMessage(window,WM_LBUTTONDOWN,0,MAKELPARAM(start_x,start_y));
   scenario_check(state.pack_drag_live,"drag-frame: equipped item begins a real sustained drag");
   double drag_total=0,drag_peak=0,drag_floor=0,drag_world=0,drag_hud=0;int measured=0;
+  double gpu_total=0,gpu_wait=0,gpu_copy=0,gpu_composite=0;
   for(int frame=0;frame<45;++frame) {
     const int x=main_geom.grid_left+main_geom.cell_w*(2+frame%7),y=main_geom.grid_top+main_geom.cell_h*(1+frame%4);
     for(int event=0;event<32;++event)SendMessage(window,WM_MOUSEMOVE,MK_LBUTTON,MAKELPARAM(x-31+event,y));
@@ -507,10 +543,14 @@ int scenario_inventory_equipment() {
     scenario_check(ghost!=state.hud_rect_trace.end() && ghost->second.x==x-state.pack_grab_pixel_x && ghost->second.y==y-state.pack_grab_pixel_y,
         "drag-frame: painted ghost follows the latest pointer with stable grab offset");
     if(frame>=5){drag_total+=state.last_paint_ms;drag_peak=std::max(drag_peak,state.last_paint_ms);
-      drag_floor+=state.paint_ms_floor;drag_world+=state.paint_ms_world;drag_hud+=state.paint_ms_hud;++measured;}
+      drag_floor+=state.paint_ms_floor;drag_world+=state.paint_ms_world;drag_hud+=state.paint_ms_hud;++measured;
+      const auto& gpu=fable_world::renderer().gpu.stats();
+      gpu_total+=gpu.render_readback_ms;gpu_wait+=gpu.readback_wait_ms;
+      gpu_copy+=gpu.readback_copy_ms;gpu_composite+=gpu.composite_ms;}
   }
   std::printf("    drag-frame: %.3f ms average, %.3f ms peak; 40 measured 3440x1440 frames, 1440 pointer events\n",drag_total/std::max(1,measured),drag_peak);
   std::printf("    drag-frame sections: floor %.3f world %.3f hud %.3f ms\n",drag_floor/measured,drag_world/measured,drag_hud/measured);
+  std::printf("    drag GPU: total %.3f wait %.3f copy %.3f composite %.3f ms\n",gpu_total/measured,gpu_wait/measured,gpu_copy/measured,gpu_composite/measured);
   scenario_check(drag_total/std::max(1,measured)<40.0,"drag-frame: sustained inventory dragging stays under unchanged 40ms frame budget");
   scenario_check(identity_snapshot()==performance_items && state.combat_requests==attacks_before_drawers,"drag-frame: pointer bursts neither mutate inventory nor attack");
   scenario_check(reference_present(state,3440,1440,dir+"/inventory-sustained-drag.png"),"drag-frame: actual final dragged-item frame captured");
@@ -585,5 +625,7 @@ int scenario_inventory_equipment() {
   scenario_present_size(state,1366,768);
   scenario_check(state.gear_overlay && state.inventory_aux==-1,"extensions: Escape keeps a keyboard-revealed drawer closed on subsequent paint");
   state.session->shutdown(); DestroyWindow(window); server->stop();
+  if(state.back_dc){SelectObject(state.back_dc,state.back_old);DeleteDC(state.back_dc);state.back_dc=nullptr;}
+  if(state.back_bitmap){DeleteObject(state.back_bitmap);state.back_bitmap=nullptr;}
   return scenario_failures;
 }

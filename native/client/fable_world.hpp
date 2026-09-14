@@ -441,6 +441,12 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
   }
   const std::array<fable_gpu::Mesh,1> ground_meshes{{{2,shadow_vertices,shadow_indices,true,.8f}}};
   fable_gpu::Scene scene;
+  if(state.gear_overlay) {
+    // inventory_surface paints an opaque gradient over this entire rectangle.
+    // Keep rendering the visible world and all animation at full resolution.
+    const auto pane=gear_pane_rect(bounds.right,bounds.bottom);
+    scene.opaque_rect={float(pane.x),float(pane.y),float(pane.x+pane.w),float(pane.y+pane.h)};
+  }
   scene.camera={int(p.width),int(p.height),float(p.cam_x),float(p.cam_y),float(p.d0),float(p.k),float(p.a),float(p.horizon),float(p.dzp),float(p.near_depth),float(p.far_depth)};
   scene.terrain={1,r.terrain_vertices,r.terrain_indices};scene.sprites=sprites;scene.lights=lights;scene.world_meshes=meshes;
   if(r.shadow_ready) scene.ground_meshes=ground_meshes;

@@ -10808,6 +10808,21 @@ bool movement_hits_scenery(const ClientState& state, int dx, int dy,
   return scenery_blocks_segment(state, player->position, destination);
 }
 
+HBITMAP create_frame_bitmap(HDC dc, int width, int height) {
+  // The GPU returns BGRA pixels and the HUD is composed by GDI. Keep that
+  // composition in a 32-bit DIB instead of converting through a device bitmap
+  // on every full-resolution world upload. The window still blits once.
+  BITMAPINFO info{};
+  info.bmiHeader.biSize = sizeof(info.bmiHeader);
+  info.bmiHeader.biWidth = width;
+  info.bmiHeader.biHeight = -height;
+  info.bmiHeader.biPlanes = 1;
+  info.bmiHeader.biBitCount = 32;
+  info.bmiHeader.biCompression = BI_RGB;
+  void* bits = nullptr;
+  return CreateDIBSection(dc, &info, DIB_RGB_COLORS, &bits, nullptr, 0);
+}
+
 void paint(HWND window, HDC dc) {
   ClientState* state = state_from(window);
   if (!state) return;
@@ -10828,7 +10843,7 @@ void paint(HWND window, HDC dc) {
       state->back_bitmap = nullptr;
     }
     state->back_dc = CreateCompatibleDC(dc);
-    state->back_bitmap = CreateCompatibleBitmap(dc, bounds.right, bounds.bottom);
+    state->back_bitmap = create_frame_bitmap(dc, bounds.right, bounds.bottom);
     if (!state->back_dc || !state->back_bitmap) return;
     state->back_old = SelectObject(state->back_dc, state->back_bitmap);
     state->back_w = bounds.right;
@@ -11819,12 +11834,10 @@ void scenario_check(bool ok, const char* label) {
 }
 
 void scenario_present_size(ClientState& state, int width, int height) {
-  // A fresh memory DC holds a 1bpp stock bitmap. Using it as the format
-  // reference forced colored sprites through monochrome conversion, unlike
-  // the live window. Use the display format and retain the real DDB floor cache.
+  // Use the same full-resolution composition surface as the live window.
   HDC display = GetDC(nullptr);
   HDC dc = CreateCompatibleDC(display);
-  HBITMAP bitmap = CreateCompatibleBitmap(display, width, height);
+  HBITMAP bitmap = create_frame_bitmap(display, width, height);
   ReleaseDC(nullptr, display);
   BITMAP format{};
   if (!dc || !bitmap || GetObject(bitmap, sizeof(format), &format) == 0 ||

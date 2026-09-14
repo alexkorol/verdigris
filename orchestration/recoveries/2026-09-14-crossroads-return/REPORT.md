@@ -58,3 +58,40 @@ including the whole-stack row click and acknowledged drag sequence, with
 34.636 ms sustained-drag average (54.627 ms peak; the existing gate is average).
 The corrected bank capture was viewed at 1366x768: no clipped withdrawal text
 or overflowing footer. This is a focused result, not final package acceptance.
+
+## Exact-package save recovery
+
+Clean package source: `7e11bc52939137573bc4b9845a433e69b4e38789`.
+Candidate: `native/build/player-package-7e11bc529/Verdigris.exe`.
+The candidate top-level executable was launched twice with its normal profile
+containing a copy of the owner's save, never the live owner profile. The first
+startup moved the one legacy coin record (370 coins) into the accessible bank;
+the complete preservation comparison passed. The second startup preserved that
+bank exactly, without duplication. Both checks verified actual child executable
+paths, working directory, perspective startup, menu quit and owned-process
+cleanup. Normal settings remained absent. Raw copied owner saves stay only in
+ignored local QA evidence, not Git.
+
+## Packaged performance failure and correction
+
+Package 7e11bc529 was held back: its full suite failed only sustained dragging
+(44.116 ms; 31.123 world / 12.992 HUD). Its item, currency and recovery checks
+passed, but it was not installed. The failed package log is retained.
+
+The live window and scenario now share a full-resolution 32-bit DIB composition
+surface, reducing HUD composition cost. GPU stage measurements identified
+world shading/readback as the remaining cost. The renderer now excludes world
+shading only inside the opaque inventory well, whose production skin fills
+every pixel before any texture overlay. No resolution, animation, shader blur,
+camera behavior or frame-budget threshold was reduced. A real GPU comparison
+checks that every pixel outside the excluded rectangle is identical and that
+closing the panel restores the complete original image. The live window's
+actual backbuffer is also checked, not only a test-created surface.
+
+Final focused run: crossroads-occlusion-ui2.log passes all assertions, including
+return/recovery and GPU pixel preservation; 39.605 ms average, 41.571 ms peak.
+Production sustained-drag capture inspected. Earlier diagnostic test mistakes
+(an invalid zero camera projection parameter and a height-sign assumption in
+GetObject) were corrected; assertions still require a valid rendered sprite,
+actual hidden-pixel changes, exact visible pixels and full-resolution surface.
+Final clean package verification follows this implementation checkpoint.

@@ -76,12 +76,15 @@ struct Scene {
   std::span<const Mesh> world_meshes{};
   std::span<const Mesh> ground_meshes{};  // Contact shadows/corpses before standing geometry.
   std::span<const Cloud> clouds{};
+  // Only a guaranteed opaque foreground surface may exclude world shading.
+  std::array<float,4> opaque_rect{};
 };
 struct Stats {
   std::uint64_t frames = 0, texture_uploads = 0, texture_hits = 0, texture_evictions = 0;
   std::size_t texture_count = 0, texture_bytes = 0;
   std::uint32_t draw_calls = 0, terrain_triangles = 0, sprites = 0;
   double render_readback_ms = 0;
+  double readback_wait_ms = 0, readback_copy_ms = 0, composite_ms = 0;
   bool hardware = false;
   std::uint32_t feature_level = 0, vendor_id = 0, device_id = 0;
 };
@@ -108,6 +111,7 @@ struct alignas(16) Constants {
   float cloud_count[4]{};
   float cloud_position[kClouds][4]{};  // full-resolution screen x,y,radius,strength
   float cloud_color[kClouds][4]{};
+  float opaque_rect[4]{};
 };
 static_assert(sizeof(Constants) % 16 == 0);
 inline constexpr const char* kShader = R"HLSL(
@@ -116,6 +120,7 @@ cbuffer Frame : register(b0) {
   float4 sky; float4 ambient;
   float4 lightPosition[32]; float4 lightColor[32];
   float4 cloudCount; float4 cloudPosition[8]; float4 cloudColor[8];
+  float4 opaqueRect;
 };
 Texture2D image : register(t0);
 Texture2D lightmap : register(t1);
@@ -166,6 +171,7 @@ float4 blurPremult(float2 uv) {
               lerp(texelPremult(at+int2(0,1),size),texelPremult(at+int2(1,1),size),f.x),f.y);
 }
 float4 worldPS(WorldOut i) : SV_TARGET {
+  [branch] if(all(i.position.xy>=opaqueRect.xy) && all(i.position.xy<opaqueRect.zw)) discard;
   float4 c;
   if (i.sprite.w < .5) {
     float4 sharp = image.Sample(groundSampler,i.uv);
@@ -439,14 +445,17 @@ class Renderer {
     context_->PSSetShaderResources(0,2,null_views);
     context_->OMSetRenderTargets(0,nullptr,nullptr);
     context_->CopyResource(staging_.Get(),output_.image.Get());
+    const auto wait_start=std::chrono::steady_clock::now();
     D3D11_MAPPED_SUBRESOURCE mapped{};
     HRESULT hr=context_->Map(staging_.Get(),0,D3D11_MAP_READ,0,&mapped);
     if(FAILED(hr)) return fail("world GPU readback",hr);
+    const auto copy_start=std::chrono::steady_clock::now();
     for(int y=0;y<height_;++y)
       std::memcpy(readback_.data()+static_cast<std::size_t>(y)*width_*4,
                   static_cast<const BYTE*>(mapped.pData)+static_cast<std::size_t>(y)*mapped.RowPitch,
                   static_cast<std::size_t>(width_)*4);
     context_->Unmap(staging_.Get(),0);
+    const auto composite_start=std::chrono::steady_clock::now();
     if(dc) {
       BITMAPINFO info{};info.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);info.bmiHeader.biWidth=width_;
       info.bmiHeader.biHeight=-height_;info.bmiHeader.biPlanes=1;info.bmiHeader.biBitCount=32;
@@ -457,6 +466,10 @@ class Renderer {
     hr=device_->GetDeviceRemovedReason();
     if(FAILED(hr)) { ready_=false;device_lost_=true; return fail("D3D11 device removed; reset renderer and reupload textures",hr); }
     ++stats_.frames;
+    const auto finish=std::chrono::steady_clock::now();
+    stats_.readback_wait_ms=std::chrono::duration<double,std::milli>(copy_start-wait_start).count();
+    stats_.readback_copy_ms=std::chrono::duration<double,std::milli>(composite_start-copy_start).count();
+    stats_.composite_ms=std::chrono::duration<double,std::milli>(finish-composite_start).count();
     stats_.render_readback_ms=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
     return true;
   }
@@ -604,6 +617,10 @@ class Renderer {
     c.depth[0]=p.dzp;c.depth[1]=p.near_depth;c.depth[2]=p.far_depth;c.depth[3]=std::clamp(scene.dof_strength,0.f,1.f);
     c.sky[0]=scene.sky_r;c.sky[1]=scene.sky_g;c.sky[2]=scene.sky_b;c.sky[3]=std::clamp(scene.vignette,0.f,1.f);
     c.ambient[0]=scene.ambient_r;c.ambient[1]=scene.ambient_g;c.ambient[2]=scene.ambient_b;
+    for(int n=0;n<4;++n) {
+      if(!std::isfinite(scene.opaque_rect[n]))return fail("nonfinite opaque surface",E_INVALIDARG);
+      c.opaque_rect[n]=scene.opaque_rect[n];
+    }
     int count=0;
     for(const auto& light:scene.lights) {
       for(float f:{light.x,light.y,light.elevation,light.radius,light.r,light.g,light.b,light.intensity})
