@@ -1,0 +1,1 @@
+PASS exact normal entry, working directory, actual child images, normal profile, perspective startup, confirmed menu quit and owned-process cleanup. Source=30ed52c842cc0500db2b3cf0a6397454c52410c8

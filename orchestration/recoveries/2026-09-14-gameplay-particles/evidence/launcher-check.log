@@ -1,0 +1,5 @@
+PASS launcher save, menu confirmation, owned client/server shutdown; profile=C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\build\player-package-30ed52c84\qa\verification\launcher-qa-82038f5ad398486d914d0f5c99ba23e2
+
+PASS launcher reload, menu confirmation, owned client/server shutdown; profile=C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\build\player-package-30ed52c84\qa\verification\launcher-qa-82038f5ad398486d914d0f5c99ba23e2
+
+PASS same executable and same QA profile settings restart. Entry SHA256=E1AAAD7D90C76B82BF8DE2A42BA83F64BD3F5C52C898018A3C354E6BDB43539D client SHA256=E07572B307DA52093089E921BEE4713322CD3205D8E3B1D98D803F06A7685240

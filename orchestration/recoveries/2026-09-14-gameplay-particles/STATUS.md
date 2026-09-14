@@ -1,11 +1,8 @@
 coordinator: codex
 worker: root
-state: IMPLEMENTED
+state: COMPLETE
 branch: codex/native-consolidated-20260913
-base: d9eb6e75de56ff0b42988b06960b8f168d4e4aa0
+shared-baseline: codex/native-reconstitution
+source: 30ed52c842cc0500db2b3cf0a6397454c52410c8
 
-Owner-directed particle implementation: confirmed dash, War Cry, critical contact and ground pickup; native package and normal launch verification.
-
-All eight native suites passed. Both focused particle scenarios passed and production captures inspected. Clean-source package, complete packaged scenarios, normal entry promotion, and remote push are next.
-
-First clean package c191b7ee6 failed only sustained inventory drag at 40.055 ms. It was not promoted. Removed the redundant full-frame CPU copy: direct DIB presentation now materializes diagnostic snapshots lazily from owned GPU staging. Pixel identity/freshness and affected scenarios pass; drag 36.175 ms, 258 particles 26.053 ms. Fresh combined package is next.
+Four playable-action particle effects implemented. All eight native suites and 82 exact packaged scenarios passed; final captures inspected. Same-profile Effects 70% restart passed. Same normal launch installed and checked; save byte-identical, settings preserved, rollback retained. Implementation pushed to both branches and remote source SHAs verified. No running task or failed check remains. REPORT.md records corrected development failures and remaining content scope.

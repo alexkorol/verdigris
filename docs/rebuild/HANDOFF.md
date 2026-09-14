@@ -1,10 +1,42 @@
 # Native reconstitution handoff
 
-## Implementation milestone — gameplay particles
+## Current handover — gameplay particles installed
 
-Confirmed War Cry, dash, critical contact, and ground pickups now use the bounded native particle module. Eight native suites and both focused particle scenarios passed; production captures inspected. The first package failed sustained inventory drag at 40.055 ms. Direct DIB readback now avoids an unnecessary full-frame copy; pixel equivalence and focused checks pass (drag 36.175 ms, 258-particle frame 26.053 ms). Fresh package verification and normal-launch promotion remain in progress. The installed baseline below is preserved until those checks complete. Task record: `orchestration/recoveries/2026-09-14-gameplay-particles/STATUS.md`.
+Normal entry: `C:/Users/Alex/Documents/Verdigris Native 2026-09-13/Verdigris.exe`.
+Installed clean source: `30ed52c842cc0500db2b3cf0a6397454c52410c8`.
+Checkout: `C:/Users/Alex/Documents/ChatGPT/verdigris-consolidated-20260913`.
+Working branch: `codex/native-consolidated-20260913`; shared baseline:
+`codex/native-reconstitution`. Implementation pushed to both, remote SHAs verified.
+Later handover commits contain only this record/evidence, not new game code.
 
-## Current handover — illustrated menus and native particles installed
+Existing playable War Cry, dash, critical contact and ground pickup now emit
+native particles from confirmed events. World-space rings expand/gather using
+the existing tiny atlas and fixed 32-emitter/384-particle budgets. Inventory
+refreshes and rejected actions cannot fabricate these effects. Existing level-up,
+melee/death, menu, inventory and Crossroads persistence improvements remain.
+The renderer now copies directly to the native DIB, materializing a separate
+owned diagnostic snapshot only on request; exact pixel checks cover that path.
+
+Eight native suites and **82 exact packaged scenarios passed**. Same executable
+and same isolated QA profile saved/reloaded Effects 70%. Final package timing:
+258 particles 37.449 ms, sustained inventory drag 36.519 ms (39.433 ms peak),
+moving fullscreen 24.3 ms; all unchanged 40 ms average gates passed. Final
+production particle captures and the actual normal 3440x1440 title were inspected.
+Normal launch passed source/child paths/cwd/profile/perspective/menu Quit/cleanup.
+The existing save is byte-identical before/after launch; normal settings stayed
+absent. No owner game was killed and no QA profile was promoted.
+
+Rollback: `native/build/normal-launch-rollback-before-30ed52c84/`.
+Package: `native/build/player-package-30ed52c84/`.
+Report: `orchestration/recoveries/2026-09-14-gameplay-particles/REPORT.md`.
+The first candidate failed drag performance and was never promoted; the report
+records the cause, code fix and successful replacement checks. No failed check
+or verification task remains. Further content scope remains playable fire-vessel
+tags/sockets, Burning Touch and authoritative flying projectiles. Their recipes
+are preserved; none are falsely presented as existing gameplay. Continue
+implementation and verified commit/push under the standing owner authorization.
+
+## Previous handover — illustrated menus and native particles installed
 
 Normal entry: `C:/Users/Alex/Documents/Verdigris Native 2026-09-13/Verdigris.exe`.
 Installed clean source: `3cee73d2667dfcf7e77b4cdd910399bcc20b933f`.

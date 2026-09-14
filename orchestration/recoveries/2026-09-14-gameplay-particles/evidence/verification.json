@@ -1,0 +1,27 @@
+{
+  "sourceCommit": "30ed52c842cc0500db2b3cf0a6397454c52410c8",
+  "entryPoint": "C:/Users/Alex/Documents/Verdigris Native 2026-09-13/Verdigris.exe",
+  "nativeSuites": 8,
+  "packagedScenarios": 82,
+  "packagedScenarioExit": 0,
+  "manifestFiles": 1285,
+  "requiredResources": 363,
+  "settingsRestart": {
+    "sameExecutable": true,
+    "sameQAProfile": true,
+    "effectsVolumePercent": 70
+  },
+  "normalSaveByteIdentical": true,
+  "normalSettings": "absent",
+  "performanceMs": {
+    "particles258": 37.449,
+    "sustainedInventoryDrag": 36.519,
+    "movingFullscreen": 24.3,
+    "bound": 40
+  },
+  "sha256": {
+    "Verdigris.exe": "e1aaad7d90c76b82bf8de2a42ba83f64bd3f5c52c898018a3c354e6bdb43539d",
+    "native/build/verdigris_client.exe": "e07572b307da52093089e921bee4713322cd3205d8e3b1d98d803f06a7685240",
+    "native/build/verdigris_server.exe": "8bf96f2756051da4f59c894b1972ca9ff7d458909a5f82d6cd569f673eb52e81"
+  }
+}

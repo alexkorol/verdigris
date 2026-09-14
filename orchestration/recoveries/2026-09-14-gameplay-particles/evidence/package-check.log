@@ -1,0 +1,11 @@
+PASS package hashes: 1285
+
+PASS required runtime resources: 363
+
+PASS embedded executable source identity: 30ed52c842cc0500db2b3cf0a6397454c52410c8 clean
+
+PASS simultaneous trailing-separator alias refused
+
+PASS profile opens again after previous lock closes
+
+Retained disposable fixture: C:\Users\Alex\AppData\Local\Temp\verdigris-lock-test-6d69f3f8230040318ac94a277328af16
