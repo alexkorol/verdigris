@@ -121,7 +121,7 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
     for (std::size_t j=0;j<items.size();++j)
       if (items[j].equipped && (items[j].equip_seat==kDollSeats[i] ||
           (items[j].equip_seat.empty() && i==2))) { item=&items[j]; break; }
-    const bool over=PtInRect(&r,pointer);
+    const bool over=!state.gear_keyboard_focus && PtInRect(&r,pointer);
     int focus=over || (item && item->id==state.selected_item_id) ? 1 : 0;
     if (over && state.pack_drag_live) {
       const auto j=carried_index_for_pack_id(state,state.pack_drag_id);
@@ -162,7 +162,7 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
     const auto j=carried_index_for_pack_id(state,placed.id); if(j>=items.size())continue;
     RECT r{pack.grid_left+placed.x*pack.cell_w,pack.grid_top+placed.y*pack.cell_h,
       pack.grid_left+(placed.x+placed.width)*pack.cell_w,pack.grid_top+(placed.y+placed.height)*pack.cell_h};
-    const bool over=PtInRect(&r,pointer);
+    const bool over=!state.gear_keyboard_focus && PtInRect(&r,pointer);
     const bool selected=items[j].id==state.selected_item_id;
     skin::inventory_surface(dc,r,over||selected ? 1 : 0);
     const bool art=draw_object(items[j],r);

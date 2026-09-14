@@ -9931,10 +9931,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_quickbar(state, dc, bounds, rl);
   paint_xp_bar(state, dc, bounds, rl);
   paint_hover_tooltip(state, dc, bounds, rl);
-  paint_gear_overlay(state, dc, bounds, rl);
-  paint_character_pane(state, dc, bounds, rl);
-  paint_tree_pane(state, dc, bounds, rl);
-  paint_trade_pane(state, dc, bounds, rl);
+
   if(!state.gear_overlay && !state.character_pane && !state.tree_pane && state.frontend==Frontend::None) {
     auto font=SelectObject(dc,skin::font_small());
     const char* captions[]={"Equipment","Character","Settings"};
@@ -10390,7 +10387,6 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_tree_review_strip(state, dc, bounds, rl);
   paint_spawn_review_strip(state, dc, bounds, rl);
 
-  state.render_list = std::move(rl);
   if (state.debug_overlay) {
     const int life = player.life;
     const std::string status =
@@ -10479,7 +10475,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     const int debug_top = std::max(debug_margin, debug_bottom - debug_height);
     skin::panel(dc, {debug_left, debug_top, debug_right, debug_bottom},
                 skin::kGold, 226, 7.0f);
-    state.render_list.push_back({render::Op::Hud, static_cast<double>(debug_left),
+    rl.push_back({render::Op::Hud, static_cast<double>(debug_left),
                                  static_cast<double>(debug_top), 0.0, 0,
                                  "debug-overlay:panel"});
     SetBkMode(dc, TRANSPARENT);
@@ -10563,6 +10559,12 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   }
 
   LARGE_INTEGER section_t3{};
+  // Modal panels and their tooltips are above objective/status chrome.
+  paint_character_pane(state, dc, bounds, rl);
+  paint_gear_overlay(state, dc, bounds, rl);
+  paint_tree_pane(state, dc, bounds, rl);
+  paint_trade_pane(state, dc, bounds, rl);
+  state.render_list = std::move(rl);
   QueryPerformanceCounter(&section_t3);
   state.paint_ms_hud = section_ms(section_t2, section_t3);
   state.last_paint_ms = section_ms(section_t0, section_t3);
@@ -11321,11 +11323,13 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       // the client ground to a crawl under move+attack input. The 20 Hz tick
       // dispatches aim from the stored position and repaints.
       if (state) {
+        if(state->mouse.x!=GET_X_LPARAM(lparam) || state->mouse.y!=GET_Y_LPARAM(lparam)) state->gear_keyboard_focus=false;
         state->mouse.x = GET_X_LPARAM(lparam);
         state->mouse.y = GET_Y_LPARAM(lparam);
       }
       break;
     case WM_MOUSEWHEEL:
+      if(state && (state->gear_overlay || state->character_pane || state->tree_pane || trade_pane_open(*state))) break;
       if (state && state->frontend == Frontend::None && state->screen == Screen::Expedition) {
         const int delta = GET_WHEEL_DELTA_WPARAM(wparam);
         const double factor = delta > 0 ? 1.1 : 1.0 / 1.1;
