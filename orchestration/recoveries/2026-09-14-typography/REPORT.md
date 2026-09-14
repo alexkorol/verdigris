@@ -1,54 +1,42 @@
-# Native typography implementation — 2026-09-14
+# Native player typography â€” sans-serif revision
 
-Verdigris Novel is a CC0 derivative of Not Jam Novel 16. Its source, license,
-compatible punctuation aliases and reproduction command are documented beside
-`native/client/assets/fonts/novel/VerdigrisNovel.ttf`. The supplied reference's
-font is unidentified. Native GDI comparisons with Not Jam Serif 11 and existing
-Pixelmix favored Novel's narrow, differentiated single-pixel strokes; it is
-finer and more condensed than the reference, not an exact match or owner approval.
+The owner corrected the direction to **sans serif**. The runtime now uses
+Verdigris Sans, a private-family derivative of **Pixel Operator HB** by
+Jayvee Enaguas (HarvettFox96), under CC0. The author's distribution page is
+https://www.dafont.com/pixel-operator.font; the original font and license are
+bundled in `native/client/assets/fonts/sans/`. The serif Novel candidate and
+its resources are superseded. No owner visual approval or exact identification
+of the reference's font is claimed.
 
-The shared type roles replace Segoe UI/Georgia and floating-damage Verdana across
-menus, House/Scion, equipment/stats/tooltips, the existing message log, HUD and
-world labels. Rendering and measurement use the same Unicode conversion and
-explicit same-family missing-glyph policy. Private resources load relative to
-the executable, cache per integral size, and fail explicitly when absent.
-Per-monitor DPI awareness avoids Windows bitmap interpolation. No camera,
-animation, equipment, stat or inventory-composition changes were made.
+The owner liked the sans-serif direction and requested more visible pixelation.
+Pixel Operator HB keeps the proportional family and its 16px grid, with heavier
+hand-authored pixel strokes. Lower-grid trials were rejected after actual native
+captures exposed overly wide text and clipping. No synthetic bold or bitmap
+interpolation is used. The result is a heavier pixel treatment, not a claim to
+have reproduced Nox's exact font. Capitals are 9px; Titles use a 32px em.
+Viewport UI tiers multiply raster sizes by integers. Camera and animation remain.
 
-Names retain 40 printable ASCII characters and now support measured caret/click
-positioning, selection, replacement, deletion and horizontal scrolling. The
-existing message log wraps instead of estimating and truncating a byte count.
-No dialogue/chat system was added. Body is the role for those future surfaces.
+Shared Body, Label, Heading, Compact and Title roles cover menus, House/Scion,
+equipment/stats/tooltips, the existing message log, HUD and world labels.
+The prior measured editing/selection/scrolling and log wrapping remain. Fonts
+are cached and registered from executable-relative bytes with no system-font
+fallback. Names retain their 40 printable-ASCII limit. The font has 239 mapped
+characters: Latin-1, selected extended Latin, punctuation and symbols. It lacks
+the earlier serif candidate's Cyrillic coverage; unsupported glyphs explicitly
+display `?`. Existing curly quotes are preserved; ellipsis uses three periods.
+No new dialogue or chat system was built.
 
-Validation before the implementation commit:
+Evidence in `evidence/` from the first implementation is historical serif
+comparison evidence. Files prefixed `sans-` describe the final sans revision.
+Log, long-name and roster screenshots are production-paint fixtures, not proof
+of an implemented dialogue system. Before title/entry captures are live views
+of installed source 43c104c5a; before inventory/log images are labeled fixtures.
 
-- `native/tools/verify-native.ps1 -CaptureRoot native/build/typography-evidence/full-gate`:
-  build, eight native suites, denylist and 80/80 scenarios passed (full-gate.log).
-- The last DPI-awareness change was built separately using the same MSVC client
-  flags/object set and passed `--scenario typography` (typecheck.log). The clean
-  package will rebuild all final sources together.
-- Actual monochrome GDI pixels, exact 2x metrics, selected face, cache reuse,
-  UTF-8 quotes, explicit unsupported-glyph replacement, input editing and
-  field containment passed. Font regeneration was byte-identical.
-- A client copied without its bundled font exited 2 with the resource path;
-  no installed font was used as a substitute.
-- Production-paint fixture captures inspected at 960x600, 1280x800, 3440x1440:
-  equipment/stats, full long item names/quantities, menus/name entry, and log/HUD.
-  Reference dialogue/button/heading crops and nearest-neighbor specimen examined.
-- `before-title.png` and `before-entry.png` are live PrintWindow captures of the
-  installed 43c104c5a package using an isolated profile; its client/server exited
-  cleanly. `before-inventory.png` is the actual server equipment fixture before
-  typography changes. `before-message-log-fixture.png` is a crop of the existing
-  combat-scenario log. The after log sentences and long-name/count/roster images
-  are labeled presentation fixtures, not an implemented dialogue screen.
+The sans change was isolated from c00ade08e on
+`codex/native-typography-sans-20260914` after concurrent inventory source edits
+appeared in the consolidated working directory. Those unrelated edits remain
+there and are excluded from the typography package. The verified equipment/stat
+repairs already in c00ade08e remain included.
 
-Limitations: 746 mapped characters, selected Latin/Cyrillic/symbol coverage;
-unsupported characters display `?`. Smart quote glyphs are straight aliases.
-Name entry remains ASCII-only. A steady measured caret is used. The internal
-capture-only beat legend retains its developer font. The Computer Use capture
-API failed with an interface error; live images use the repository-supported
-PrintWindow helper and app input uses the Computer Use API.
-
-Clean package identity, final live checks and normal-launch promotion will be
-recorded after packaging. Earlier equipment/stat repair handover d0179c8b3 is
-preserved beneath this typography addition.
+Validation, package identity and normal-installation handover are recorded below
+after the isolated native gate and clean package complete.

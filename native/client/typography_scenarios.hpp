@@ -20,7 +20,9 @@ int scenario_typography() {
   for(int scale:{1,2}) {
     skin::set_ui_scale(scale);SelectObject(dc,skin::font_body());
     wchar_t face[64]{};GetTextFaceW(dc,64,face);
-    scenario_check(std::wstring(face)==L"Verdigris Novel","type: selected face is bundled family, never a system substitution");
+    scenario_check(std::wstring(face)==L"Verdigris Sans","type: selected face is bundled family, never a system substitution");
+    SIZE narrow{},wide{};skin::text_extent(dc,"iii",-1,&narrow);skin::text_extent(dc,"WWW",-1,&wide);
+    scenario_check(narrow.cx<wide.cx,"type: player sans face has proportional advances");
     const auto font=skin::font_body();
     scenario_check(font==skin::font_body(),"type: role resources reused across paints");
     SIZE extent{};skin::text_extent(dc,samples[3],-1,&extent);

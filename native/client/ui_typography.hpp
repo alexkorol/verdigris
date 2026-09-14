@@ -9,8 +9,8 @@
 #include "ui_font_coverage.hpp"
 
 namespace skin {
-// One 16px design grid, rasterized directly at integer multiples. The 10px
-// unaccented cap height remains readable in compact slots. Titles use 2 grids.
+// One 16px design grid with heavier authored pixel strokes (9px capitals).
+// Rasterize directly at integer sizes; viewport tiers and titles use integers.
 enum class TextRole { Body, Label, Heading, Compact, Title };
 inline constexpr int kMinSmallPx = 10, kMinBodyPx = 12;
 inline int& ui_scale_ref() { static int scale=1; return scale; }
@@ -31,7 +31,7 @@ struct FontResource {
     // Both development and the player package keep native/build/client.exe.
     // Deliberately no cwd or installed-font fallback.
     path=std::filesystem::path(exe).parent_path().parent_path()/
-         L"client/assets/fonts/novel/VerdigrisNovel.ttf";
+         L"client/assets/fonts/sans/VerdigrisSans.ttf";
     std::ifstream file(path,std::ios::binary);
     if(!file) return;
     bytes.assign(std::istreambuf_iterator<char>(file),{});
@@ -58,7 +58,7 @@ inline HFONT font(TextRole role, int scale=0) {
   if(!result && game_font_available())
     result=CreateFontW(-16*s*(title+1),0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,
         DEFAULT_CHARSET,OUT_TT_ONLY_PRECIS,CLIP_DEFAULT_PRECIS,
-        NONANTIALIASED_QUALITY,VARIABLE_PITCH,L"Verdigris Novel");
+        NONANTIALIASED_QUALITY,VARIABLE_PITCH,L"Verdigris Sans");
   return result;
 }
 inline HFONT font_body() { return font(TextRole::Body); }

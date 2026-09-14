@@ -5,11 +5,13 @@ animated Scions. The historical browser reference remains in src/ and server/.
 
 ## Player typography
 
-All runtime text uses **Verdigris Novel**, a bundled CC0 derivative of Not Jam
-Novel 16. [Source and license notes](client/assets/fonts/novel/README.md).
-The supplied reference font is unidentified; this choice is finer and more
-condensed. `client/ui_typography.hpp` owns Body, Label, Heading, Compact and
-Title roles. The first four share a 16px design grid (10px unaccented cap
+All runtime text uses **Verdigris Sans**, a bundled CC0 derivative of Pixel
+Operator HB. [Source and license notes](client/assets/fonts/sans/README.md).
+This proportional pixel sans follows the owner's sans-serif direction. The
+reference font is unidentified. Its heavier authored pixel strokes follow the
+request for more pronounced pixel structure without synthetic bold or blur.
+`client/ui_typography.hpp` owns Body, Label, Heading, Compact and
+Title roles. The first four share a 16px design grid (9px unaccented cap
 height); Title uses 32px. Existing viewport UI tiers multiply these sizes by
 integers. Heading emphasis uses color and space instead of synthetic bold.
 
@@ -19,9 +21,10 @@ DPI awareness prevents Windows from interpolating a bitmap of the window.
 Camera calibration is unchanged. Primary ink is `#cfb468`, secondary `#b5a277`;
 meaningful state colors remain. NPC labels have one dark pixel of separation.
 Measurement and drawing share UTF-8 decoding with a legacy Windows-1252
-fallback. The 746-character map includes Latin, extended Latin, Cyrillic and
-selected symbols. Unsupported characters visibly become this font's `?`;
-ellipsis uses three periods and smart quotes use straight quote shapes.
+fallback. The 239-character map includes Latin-1, selected extended Latin,
+punctuation and symbols; Cyrillic is not included. Unsupported characters
+visibly become this font's `?`; ellipsis uses three periods. Existing smart
+quotes retain their own shapes, with low-quote aliases where absent.
 The font resolves relative to the executable. Missing resources cause an
 explicit error; there is no installed-font substitution.
 
@@ -125,7 +128,7 @@ per Scion, and the HUD uses the level supplied by the server.
 ## Owner play (one command)
 
 `native/tools/play-native.ps1` builds if the exes are missing or stale, starts
-`verdigris_server` on a free **6520–6539** port (never 6500), launches
+`verdigris_server` on a free **6520â€“6539** port (never 6500), launches
 `verdigris_client --remote` against it, tees server output under
 `native/build/logs/`, and stops the server when the client exits.
 
@@ -197,19 +200,19 @@ next experiment, not a general-purpose engine.
 
 ~~~text
 create House
-→ create Scion
-→ enter route
-→ move and melee the enemy
-→ pick up the generated item and trophy
-→ equip (gear pane: Enter, or 1-9)
-→ return to the extraction point
-→ extract durable House value (local: F at the EXIT; remote: walk onto it)
+â†’ create Scion
+â†’ enter route
+â†’ move and melee the enemy
+â†’ pick up the generated item and trophy
+â†’ equip (gear pane: Enter, or 1-9)
+â†’ return to the extraction point
+â†’ extract durable House value (local: F at the EXIT; remote: walk onto it)
 ~~~
 
 ## Scenario harness (D-119)
 
 The client has an automated, headless scenario runner that drives the real
-input→simulation→presentation pipeline and asserts on three layers:
+inputâ†’simulationâ†’presentation pipeline and asserts on three layers:
 authoritative core state, the recorded render list (`render_list.hpp`), and
 pane/HUD state.
 
@@ -224,10 +227,10 @@ Every future client wave must add its own scenario. To add one:
 
 1. In `native/client/main.cpp`, write `int scenario_<name>()` that:
    - calls `scenario_begin(state)` (enters the seeded route and builds
-     scenery), then drives commands with `scenario_step(state, Command::…)`
-     (dispatch → ingest events → age effects → follow camera → present);
+     scenery), then drives commands with `scenario_step(state, Command::â€¦)`
+     (dispatch â†’ ingest events â†’ age effects â†’ follow camera â†’ present);
    - asserts with `scenario_check(condition, "label")` against
-     `state.simulation->…` (core), `state.render_list` (`render::any` /
+     `state.simulation->â€¦` (core), `state.render_list` (`render::any` /
      `render::first` / `render::count`), and `state.render_list` Pane*/Hud
      ops (pane/HUD).
 2. Register it in `run_scenarios`'s `entries` table.

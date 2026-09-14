@@ -1,10 +1,9 @@
 coordinator: codex
 worker: root-typography
 status: IMPLEMENTED
-branch: codex/native-consolidated-20260913
+branch: codex/native-typography-sans-20260914
 
-Native typography, input, packaging-resource changes and initial evidence are
-verified. Full native gate passed all 80 client scenarios and native suites;
-the final DPI-aware build separately passed the typography scenario. Clean
-packaging and final live launch verification follow this implementation commit.
+The owner requested a sans-serif revision. Pixel Operator HB replaces
+the Novel resource while retaining shared typography, layout and input fixes.
+The isolated native gate and clean-package verification are in progress.
 Standing commit/push authorization applies. No owner visual approval is claimed.

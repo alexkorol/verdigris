@@ -21762,7 +21762,7 @@ int main(int argc, char** argv) {
   }
   SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
   if (!skin::game_font_available()) {
-    std::fprintf(stderr,"Missing bundled UI font: native/client/assets/fonts/novel/VerdigrisNovel.ttf\n");
+    std::fprintf(stderr,"Missing bundled UI font: %ls\n",skin::font_resource().path.c_str());
     return 2;
   }
   for (int i = 1; i < argc; ++i) {
