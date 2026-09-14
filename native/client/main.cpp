@@ -6462,7 +6462,15 @@ void paint_trade_pane(ClientState& state, HDC dc, const RECT& bounds,
   const bool chart = model.chart.open;
   const bool shop = !chart && model.shop.open;
   const int pane_w = (shop ? 460 : 560) * s;
-  const int row_h = 30 * s;
+  const HGDIOBJ measured_font = SelectObject(dc, skin::font_body());
+  SIZE body_size{}, heading_size{}, footer_size{};
+  skin::text_extent(dc, "Ag", 2, &body_size);
+  SelectObject(dc, skin::font_heading());
+  skin::text_extent(dc, "Ag", 2, &heading_size);
+  SelectObject(dc, skin::font_small());
+  skin::text_extent(dc, "Ag", 2, &footer_size);
+  SelectObject(dc, measured_font);
+  const int row_h = std::max(30 * s, static_cast<int>(body_size.cy) + 12 * s);
 
   // Build the row list first so the pane height fits the content.
   struct Row {
@@ -6513,10 +6521,10 @@ void paint_trade_pane(ClientState& state, HDC dc, const RECT& bounds,
     for (const auto& item : model.bank.items) {
       Row row;
       row.left = item.name;
-      row.right = "x" + std::to_string(item.qty) + "  withdraw";
+      row.right = "x" + std::to_string(item.qty) + "  withdraw all";
       row.hit.kind = 1;
       row.hit.ref = item.uuid;
-      row.hit.value = 1;
+      row.hit.value = item.qty;
       rows.push_back(std::move(row));
     }
     if (!model.inventory.empty()) {
@@ -6542,8 +6550,8 @@ void paint_trade_pane(ClientState& state, HDC dc, const RECT& bounds,
     }
   }
 
-  const int title_h = 34 * s;
-  const int footer_h = 26 * s;
+  const int title_h = std::max(34 * s, static_cast<int>(heading_size.cy) + 16 * s);
+  const int footer_h = std::max(26 * s, static_cast<int>(footer_size.cy) + 16 * s);
   const int pane_h = title_h + static_cast<int>(rows.size()) * row_h +
                      footer_h + 20 * s;
   const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
@@ -6614,10 +6622,9 @@ void paint_trade_pane(ClientState& state, HDC dc, const RECT& bounds,
   const std::string footer =
       (chart ? model.chart.blurb
        : shop ? "carrying " + std::to_string(model.shop.carried_coins) + "g"
-              : "House treasury " + std::to_string(model.bank.treasury) +
-                    "g - carrying " + std::to_string(model.bank.carried_coins) +
-                    "g") +
-      "  |  click or Enter - Esc closes";
+              : "Treasury " + std::to_string(model.bank.treasury) +
+                    "g | Purse " + std::to_string(model.bank.carried_coins) +
+                    "g");
   skin::text_out(dc, left + 16 * s, top + pane_h - footer_h, footer.c_str(),
            static_cast<int>(footer.size()));
   SelectObject(dc, old_font);

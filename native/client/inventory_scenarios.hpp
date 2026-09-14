@@ -174,7 +174,9 @@ int scenario_inventory_equipment() {
   SendMessage(window,WM_MOUSEMOVE,MK_LBUTTON,pack_at);
   SendMessage(window,WM_LBUTTONUP,0,pack_at);
   scenario_check(state.equip_view.pending,"inventory: seat-to-backpack drag waits for authority");
-  scenario_check(pump([&] { return !worn(spear, "right_hand"); }), "inventory: seat-to-backpack drag returns the exact item through server");
+  // The inventory refresh can arrive before InventoryAccepted. Do not issue
+  // another synthetic drag while the production UI still awaits that ack.
+  scenario_check(pump([&] { return !worn(spear, "right_hand") && !state.equip_view.pending; }), "inventory: seat-to-backpack drag returns the exact item and receives server acknowledgement");
   const auto landed=std::find_if(state.session->model().inventory.begin(),state.session->model().inventory.end(),[&](const auto& item){return item.uuid==spear;});
   scenario_check(landed!=state.session->model().inventory.end() && landed->slot==destination,"inventory: server accepts the exact dragged destination");
   scenario_check(identity_snapshot()==identities_before,"inventory: seat-to-backpack conserves identities and quantities");
@@ -516,6 +518,29 @@ int scenario_inventory_equipment() {
   scenario_check(!state.pack_drag_live && state.gear_overlay,"drag-frame: Escape cancels drag without closing inventory");
   SetWindowPos(window,nullptr,0,0,1366,768,SWP_NOACTIVATE|SWP_NOZORDER);
   state.inventory_aux=-1;state.character_pane=true;
+  // Recover a whole stored currency stack through the painted bank row.
+  std::string purse_id;int purse_quantity=0;
+  for(const auto& item:state.session->model().inventory)if(item.id=="coins"){purse_id=item.uuid;purse_quantity=item.quantity;}
+  scenario_check(purse_quantity>1,"recovery: fixture has a meaningful coin stack");
+  state.gear_overlay=false;state.character_pane=false;
+  state.session->submit(ClientCommand::menu_action("player:screen:bank","",0));
+  scenario_check(pump([&]{return state.session->model().bank.open;}),"recovery: existing native House bank opens");
+  state.session->submit(ClientCommand::menu_action("player:bank:deposit",purse_id,purse_quantity));
+  scenario_check(pump([&]{for(const auto& item:state.session->model().bank.items)if(item.uuid==purse_id && item.qty==purse_quantity)return true;return false;}),"recovery: actual stored stack reaches bank screen");
+  scenario_present_size(state,1366,768);
+  const auto bank_hit=std::find_if(state.trade_row_hits.begin(),state.trade_row_hits.end(),[&](const auto& hit){return hit.kind==1 && hit.ref==purse_id;});
+  scenario_check(bank_hit!=state.trade_row_hits.end() && bank_hit->value==purse_quantity,"recovery: displayed withdrawal submits the entire stack");
+  const bool has_bank_hit=bank_hit!=state.trade_row_hits.end();
+  const RECT bank_rect=has_bank_hit?bank_hit->rect:RECT{};
+  scenario_check(reference_present(state,1366,768,dir+"/bank-recover-stack.png"),"recovery: native whole-stack recovery control captured");
+  if(has_bank_hit) {
+    const RECT r=bank_rect;const LPARAM point=MAKELPARAM((r.left+r.right)/2,(r.top+r.bottom)/2);
+    SendMessage(window,WM_LBUTTONDOWN,0,point);SendMessage(window,WM_LBUTTONUP,0,point);
+  }
+  scenario_check(pump([&]{for(const auto& item:state.session->model().inventory)if(item.id=="coins" && item.quantity==purse_quantity)return true;return false;}),"recovery: one real row click restores the complete coin balance");
+  SendMessage(window,WM_KEYDOWN,VK_ESCAPE,0);SendMessage(window,WM_KEYUP,VK_ESCAPE,0);
+  scenario_check(pump([&]{return !state.session->model().bank.open;}),"recovery: bank closes normally");
+  state.gear_overlay=true;state.character_pane=true;
   // Presentation stress only: freeze a copy of the real session snapshot. No
   // synthetic names or quantities are sent to authority or saved into its profile.
   struct ReadabilitySnapshot final : IClientSession {

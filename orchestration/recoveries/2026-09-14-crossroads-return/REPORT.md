@@ -35,6 +35,26 @@ coin quantities, worn seats and ratings; subsequent same-profile restart also
 retains the equipment/pack. Actual Crossroads capture inspected. Sustained
 drag average 34.550 ms (unchanged <40 ms gate).
 
+The existing bank row now withdraws its displayed stack in one action; an
+actual production row click restores the full purse in the native scenario.
+Bank row/title/footer heights follow the actual font metrics, preventing the
+recovery label from being clipped. The footer is shortened to the balances.
+
+Intermediate failures are retained rather than relabeled as passes: the first
+expanded run issued the next drag before InventoryAccepted; the fixture now
+waits for both authoritative removal from the seat and acknowledgment. The
+next run passed all functional assertions but missed sustained dragging's
+unchanged 40 ms budget (41.828 ms average, floor 26.139 / HUD 15.689). Earlier
+same-feature measurement was 34.685 ms; final packaged verification must still
+pass the unchanged gate. No performance bound or assertion was relaxed.
+
 Clean packaging, final packaged scenarios and installation are pending this
-checkpoint. Commit/push verified implementation under standing authorization;
-do not terminate the owner game or overwrite its active executable/save.
+checkpoint. Do not terminate the owner game or overwrite its active
+executable/save. The final package's source hash and results follow below when
+available.
+
+The final focused run (crossroads-recovery-ui3.log) passes all assertions,
+including the whole-stack row click and acknowledged drag sequence, with
+34.636 ms sustained-drag average (54.627 ms peak; the existing gate is average).
+The corrected bank capture was viewed at 1366x768: no clipped withdrawal text
+or overflowing footer. This is a focused result, not final package acceptance.
