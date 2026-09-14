@@ -1,17 +1,20 @@
 coordinator: codex
 worker: root
 branch: codex/native-consolidated-20260913
-base: 16fb57bf9d706a4b25ee3fee12ae08e9a2826cc0
-state: VALIDATING
+state: COMPLETE
 
-Implemented the owner's tactile illustrated menu and bounded native sprite
-particle system in the consolidated game. Existing House/Scion actions,
-settings, perspective, animation, inventory and safe-return fixes preserved.
-Eight native suites passed. Focused production menu/particle captures and
-mouse/keyboard/controller/House/Scion tests passed. Clean final packaging,
-packaged full scenario gate, settings restart and normal-entry promotion are
-pending. Do not substitute an unverified executable at the normal path.
+Installed clean source: 3cee73d2667dfcf7e77b4cdd910399bcc20b933f
+Normal entry: C:/Users/Alex/Documents/Verdigris Native 2026-09-13/Verdigris.exe
 
-Commit/push verified work to the task working branch under standing user
-authorization; no extra approval checkpoint. Preserve saves and prior builds.
-Computer Use is not needed for the app-owned verification harness.
+Illustrated physical menus and bounded native sprite particles are installed.
+Eight native suites, all 81 exact packaged scenarios, same-executable/same-QA-
+profile settings restart, package integrity and normal-entry smoke passed.
+Production captures inspected. Existing save byte-identical after normal launch;
+settings preserved. Full rollback: native/build/normal-launch-rollback-before-3cee73d26/.
+No owner process killed; no QA profile promoted. No failed check or running test.
+
+Burning Touch/projectile gameplay and fire-bowl item/socket data remain content
+work; effect recipes and reusable trail/attachment API are shipped. See REPORT.md
+and native/client/vfx/README.md. Computer Use is not required for build/verification.
+Commit/push completed verified work under standing authorization, including normal
+fast-forward of the shared codex/native-reconstitution baseline. No extra approval.

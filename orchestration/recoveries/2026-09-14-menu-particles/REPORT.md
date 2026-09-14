@@ -23,4 +23,27 @@ Completed development checks:
 
 Content limits (not new gameplay): Burning Touch and a flying projectile are not existing native actions. Their recipes and trail API are shipped and captured; no fake damage/spell system was added. The fire-bowl hook currently uses equipped display names and centralized facing-based hand offsets. A playable fire-bowl item and per-frame exported sockets remain content work.
 
-Final clean package, full packaged checks, normal-entry promotion and remote commits will be recorded below after completion. Existing saves and normal launch remain protected until those gates pass.
+Final package and promotion results are recorded below.
+
+## Final verified package and normal launch
+
+Installed executable: `C:/Users/Alex/Documents/Verdigris Native 2026-09-13/Verdigris.exe`
+Packaged source: `3cee73d2667dfcf7e77b4cdd910399bcc20b933f` (clean).
+Package: `native/build/player-package-3cee73d26/`.
+Entry SHA256: `90CDA81348E5BAF49B86B8C3FFFA0B69C234AFC311FF8E69D63404B663BEAF7B`.
+Client SHA256: `DA67BEDF65AC42C97838661431EDBC4E7D8BEBE78C392C0E139834B7614EEF11`.
+
+Completed checks:
+- All **81** scenarios passed in the exact packaged client; no failed assertions. Includes perspective/animation, gameplay, complete button-based House/Scion flow, inventory/equipment, coin/item retention and bank recovery.
+- All 1281 package hashes and 359 mandatory runtime resources validated; embedded source identity is clean.
+- The same top-level executable completed save and reload lifecycles using one isolated QA profile. **Effects 70%** persisted; this is the audio setting, not a completion percentage.
+- Sustained 3440x1440 inventory dragging: **34.582 ms average**. Moving fullscreen: **25.3 ms average**. Unchanged 40 ms average limits passed.
+- Packaged title, House/Scion roster and VFX phase captures inspected. Normal 3440x1440 title captured from the actual installed launch and inspected; its Continue button and source ID are visible.
+- Before promotion, the previous full installation was copied to `native/build/normal-launch-rollback-before-3cee73d26/`. One existing save and normal settings were preserved byte-for-byte during copying. The normal launch then passed source, actual child paths, working directory, normal profile, perspective configuration, menu-confirmed quit and owned-process cleanup.
+- The normal save was also byte-identical **after** that launch. Normal settings remained absent. The Crossroads fix and the previously recovered bank coins remain preserved.
+
+The timed VFX phase captures drive a controlled LevelUp event through production presentation for repeatable frames. Real XP threshold emission and the socket seam were verified separately by the native kill/session regressions. Testing used app-owned native windows and hidden launcher diagnostics; Computer Use stayed stopped.
+
+Remaining failed checks: **none**. Remaining content work: fire-bowl item/tag and per-frame sockets, Burning Touch gameplay, and authoritative flying-projectile gameplay. Their effect recipes/API are available as detailed in the module README. No owner process was terminated, no QA profile was promoted, and no alternate normal launch was introduced.
+
+Only this handover/evidence update follows packaged source `3cee73d26`; it contains no further game-code changes. Commit and push completed verified work to `codex/native-consolidated-20260913` and fast-forward the shared `codex/native-reconstitution` baseline under standing authorization. No additional approval checkpoint.

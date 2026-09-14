@@ -1,6 +1,46 @@
 # Native reconstitution handoff
 
-## Current handover — Crossroads return fixed and installed
+## Current handover — illustrated menus and native particles installed
+
+Normal entry: `C:/Users/Alex/Documents/Verdigris Native 2026-09-13/Verdigris.exe`.
+Installed clean source: `3cee73d2667dfcf7e77b4cdd910399bcc20b933f`.
+Checkout: `C:/Users/Alex/Documents/ChatGPT/verdigris-consolidated-20260913`.
+Working branch: `codex/native-consolidated-20260913`; shared baseline:
+`codex/native-reconstitution`. Both receive the same verified implementation
+and handover through ordinary fast-forward pushes. No competing launch.
+
+The title/settings/pause/quit menu now has original illustrated cedar/bronze
+art and physical enamel controls. The real button-based House/Scion creation,
+name fields, appearance choices and Continue remain intact. The bounded native
+particle module has external recipes and a tiny atlas: layered level-up column,
+descending streaks, sparks, dust, embers, contact flare and reusable trails.
+Confirmed server XP crossings trigger level-up; login does not replay it.
+
+All eight native suites and **81 exact packaged scenarios passed**. The same
+executable saved/reloaded Effects 70% in one isolated QA profile. Production
+captures, including the actual normal 3440x1440 title, were inspected. Sustained
+drag averaged 34.582 ms and moving fullscreen 25.3 ms under unchanged 40 ms gates.
+Normal-entry smoke verified source, child images, cwd/profile, perspective
+startup, confirmed menu quit and process cleanup. The owner's save remained
+byte-identical even after normal launch; normal settings remained absent.
+Crossroads items/coins/equipment preservation and bank recovery remain included.
+
+Full prior installation/save rollback:
+`native/build/normal-launch-rollback-before-3cee73d26/`.
+No owner game process was killed and no QA profile was promoted. Build/verification
+used app-owned native diagnostics without Computer Use or desktop input.
+
+Remaining content work: a playable fire-bowl item/tag and per-frame sockets,
+Burning Touch gameplay and authoritative flying-projectile gameplay. Their
+recipes/API are shipped; they are not invented new combat actions. No failed
+check or verification task remains. Continue authorized implementation and
+commit/push completed verified work without adding an approval checkpoint.
+Only handover/evidence changes follow the packaged source.
+
+Report and captures: `orchestration/recoveries/2026-09-14-menu-particles/REPORT.md`.
+Module/trigger details: `native/client/vfx/README.md`.
+
+## Previous handover — Crossroads return fixed and installed
 
 Normal entry: `C:\Users\Alex\Documents\Verdigris Native 2026-09-13\Verdigris.exe`.
 Installed clean source: `34e855c1a4124cba42fd8c008863094454578c42`.

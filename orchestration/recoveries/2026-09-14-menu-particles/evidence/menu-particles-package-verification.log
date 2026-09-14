@@ -1,0 +1,2 @@
+PASS automated packaged verification: source=3cee73d2667dfcf7e77b4cdd910399bcc20b933f, all native scenarios, two launcher lifecycles, same-profile settings restart. Evidence=C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\build\player-package-3cee73d26\qa\verification
+Inspect the retained production captures separately for visual quality; automated success is not owner acceptance.
