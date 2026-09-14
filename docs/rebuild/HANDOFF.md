@@ -1,28 +1,35 @@
 # Native reconstitution handoff
 
-## 2026-09-13 - Equipment repair published; normal handover pending user stop
+## 2026-09-13 - Normal-launch handover complete
 
-Packaged implementation `43c104c5acca73805ebb6184079a7fb0d9c7be17` preserves the
-consolidated renderer and accepted inventory layout. It adds authoritative
-stats and backpack moves, honest selection/pending/rejection handling, exact
-Scion loadout persistence, and fixes the two live-discovered restart defects:
-stale saved loadouts and repeat starter-kit grants. The final package passed
-79/79 scenarios and all eight native suites, including both new regressions.
+Normal entry: C:\Users\Alex\Documents\Verdigris Native 2026-09-13\Verdigris.exe.
+It now launches packaged source 43c104c5acca73805ebb6184079a7fb0d9c7be17 with
+its installed assets and normal profile. The previous installation and original
+save remain in native/build/normal-launch-rollback-8731c3646/installation.
+Every preexisting owner-save field is unchanged; startup adds inventory schema
+fields. Normal settings remain untouched. Confirmed menu quit closed the owned
+client/server cleanly, with zero remaining Verdigris processes.
 
-Package: `native/build/player-package-43c104c5a/Verdigris.exe` in the consolidated
-checkout. Detailed evidence and exact profile/launch paths:
-`orchestration/recoveries/2026-09-13-handover/REPORT.md`.
+The final package passed 79/79 scenarios and eight native suites. Resumed live
+checks proved same-profile Effects persistence, moved and equipped loadouts
+across separate process restarts without duplicate starter grants, perspective
+movement, bounded route thrust feedback, Return to title and Continue. Installed
+verification passed all 1266 hashes and 346 required resources. Authoritative
+stats/moves, UUID selection, pending/rejection handling and saved loadout fixes
+preserve the accepted inventory composition and consolidated renderer history.
 
-Physical Escape stopped Computer Use during the final live reload repeat.
-No game input or normal-launch promotion followed the stop. The existing
-`C:\Users\Alex\Documents\Verdigris Native 2026-09-13\Verdigris.exe` still starts
-old source `3bd164d34`; owner saves remain unchanged and backed up. Complete
-the final same-executable/same-QA-profile reload after control is resumed,
-then perform the already-authorized in-place handover and smoke the Explorer
-entry itself. Do not claim handover finished or bypass the stop through
-another input tool. Verified implementation and evidence continue to be
-committed/pushed under the owner's standing policy; no new planning approval
-is required. Both native development branches share this verified source.
+Both codex/native-consolidated-20260913 and codex/native-reconstitution carry
+the verified implementation; later handover commits change only evidence/docs.
+Concurrent uncommitted source edits are preserved and excluded from this package.
+Build and verify those changes before replacing the normal installation again.
+
+Evidence and exact limitations: orchestration/recoveries/2026-09-13-handover/REPORT.md.
+Explorer double-click automation failed; Windows launch of that same top-level
+normal launcher proved its real client/server/profile lifecycle. Bounded live
+thrust feedback does not prove enemy damage; packaged melee/animation scenarios
+provide separate coverage. Seat-to-backpack drag did not transfer the dagger;
+Unequip worked. Back-item factory support and reserved-seat mechanics remain
+outside this handover. No new acceptance or planning approval is required.
 
 ## 2026-09-13 - Native UI repair verified package
 

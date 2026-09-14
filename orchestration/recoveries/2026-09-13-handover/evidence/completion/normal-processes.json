@@ -1,0 +1,20 @@
+[
+  {
+    "ProcessId": 34340,
+    "ParentProcessId": 13420,
+    "ExecutablePath": "C:\\Users\\Alex\\Documents\\verdigris native 2026-09-13\\verdigris.exe",
+    "CommandLine": "\"C:\\Users\\Alex\\Documents\\verdigris native 2026-09-13\\verdigris.exe\" "
+  },
+  {
+    "ProcessId": 20476,
+    "ParentProcessId": 34340,
+    "ExecutablePath": "C:\\Users\\Alex\\Documents\\Verdigris Native 2026-09-13\\native\\build\\verdigris_server.exe",
+    "CommandLine": "\"C:\\Users\\Alex\\Documents\\Verdigris Native 2026-09-13\\native\\build\\verdigris_server.exe\" 6520"
+  },
+  {
+    "ProcessId": 38900,
+    "ParentProcessId": 34340,
+    "ExecutablePath": "C:\\Users\\Alex\\Documents\\Verdigris Native 2026-09-13\\native\\build\\verdigris_client.exe",
+    "CommandLine": "\"C:\\Users\\Alex\\Documents\\Verdigris Native 2026-09-13\\native\\build\\verdigris_client.exe\" --remote 127.0.0.1 6520 review-player"
+  }
+]
