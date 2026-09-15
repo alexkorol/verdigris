@@ -1,0 +1,574 @@
+{
+  "clip": "female-walk-front",
+  "source_sha256": "cf9f0cef62b9e12f28bf6daf34d671562b964d1530531b888db342bbfbfb0bd0",
+  "frame_size": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "base_cell": 48,
+  "alpha_policy": "Returned alpha threshold 128; no RGB key",
+  "grid_candidates": [
+    {
+      "size": 21,
+      "source": "autocorr",
+      "offset": [
+        6,
+        18
+      ],
+      "score": 1.1901949220672925,
+      "variance": 498.0685119628906,
+      "gated_out": false
+    },
+    {
+      "size": 46,
+      "source": "autocorr",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 1.1538094824542682,
+      "variance": 946.06591796875,
+      "gated_out": true
+    },
+    {
+      "size": 13,
+      "source": "autocorr",
+      "offset": [
+        0,
+        11
+      ],
+      "score": 1.1223138563546506,
+      "variance": 331.1327209472656,
+      "gated_out": false
+    },
+    {
+      "size": 8,
+      "source": "fine",
+      "offset": [
+        1,
+        0
+      ],
+      "score": 1.0305974281012769,
+      "variance": 219.67532348632812,
+      "gated_out": false
+    },
+    {
+      "size": 7,
+      "source": "fine",
+      "offset": [
+        1,
+        3
+      ],
+      "score": 1.0245832128132877,
+      "variance": 195.8422088623047,
+      "gated_out": false
+    },
+    {
+      "size": 6,
+      "source": "fine",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 1.0014752242907403,
+      "variance": 168.0313262939453,
+      "gated_out": false
+    },
+    {
+      "size": 5,
+      "source": "fine",
+      "offset": [
+        0,
+        2
+      ],
+      "score": 0.9718310309742045,
+      "variance": 146.68637084960938,
+      "gated_out": false
+    },
+    {
+      "size": 3,
+      "source": "fine",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.9619821963271942,
+      "variance": 85.66918182373047,
+      "gated_out": false
+    },
+    {
+      "size": 4,
+      "source": "fine",
+      "offset": [
+        1,
+        3
+      ],
+      "score": 0.9546608529028294,
+      "variance": 117.8595199584961,
+      "gated_out": false
+    },
+    {
+      "size": 184,
+      "source": "fold",
+      "offset": [
+        65,
+        157
+      ],
+      "score": 0.3841753723672835,
+      "variance": 2512.505126953125,
+      "gated_out": true
+    },
+    {
+      "size": 186,
+      "source": "fold",
+      "offset": [
+        50,
+        149
+      ],
+      "score": 0.3249617156130171,
+      "variance": 2649.763671875,
+      "gated_out": true
+    },
+    {
+      "size": 187,
+      "source": "fold",
+      "offset": [
+        43,
+        145
+      ],
+      "score": 0.2926147335009909,
+      "variance": 2713.69091796875,
+      "gated_out": true
+    },
+    {
+      "size": 188,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.2649140007443847,
+      "variance": 2522.6435546875,
+      "gated_out": true
+    },
+    {
+      "size": 189,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.24940467308444741,
+      "variance": 2536.367431640625,
+      "gated_out": true
+    },
+    {
+      "size": 190,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.23555150748909437,
+      "variance": 2546.4228515625,
+      "gated_out": true
+    },
+    {
+      "size": 191,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.22228835209817707,
+      "variance": 2552.419189453125,
+      "gated_out": true
+    },
+    {
+      "size": 192,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.20926361856454687,
+      "variance": 2554.093994140625,
+      "gated_out": true
+    }
+  ],
+  "visual_acceptance": "Parent and player agents inspected native/2x contact including row3->4 and loop7->0; no obvious clipping or artificial displacement. Owner acceptance not claimed.",
+  "frames": [
+    {
+      "file": "female-walk-front-00.png",
+      "bbox": [
+        37,
+        10,
+        62,
+        85
+      ],
+      "reference": {
+        "src": "references/female-walk-front-00.png",
+        "sha256": "4253e6e806879e80f2b54302ae3cb255afd07a9f96cb18a31d3ee97fb06e22c5"
+      },
+      "silhouette_iou": 0.8834668608885652,
+      "slot_origin": [
+        0,
+        0
+      ],
+      "registration_translation": [
+        0,
+        0
+      ],
+      "output_anchor": [
+        48,
+        80
+      ],
+      "sha256": "2195e0acc6237f3cd89ad7156444f9caa537c0f7d686ccea73364c7523ffb882",
+      "packaged_reference": "references/female-walk-front-00.png"
+    },
+    {
+      "file": "female-walk-front-01.png",
+      "bbox": [
+        36,
+        10,
+        63,
+        91
+      ],
+      "reference": {
+        "src": "references/female-walk-front-01.png",
+        "sha256": "9809452eedefe79a90d13b293e115203d6d9b1fef9502517627cdcc1598630fa"
+      },
+      "silhouette_iou": 0.9073529411764706,
+      "slot_origin": [
+        96,
+        0
+      ],
+      "registration_translation": [
+        0,
+        0
+      ],
+      "output_anchor": [
+        48,
+        80
+      ],
+      "sha256": "1c563abc674d7bd7cbd4cdf4d38b7569e496f08deaeb7fc08a31f7ebf94ee047",
+      "packaged_reference": "references/female-walk-front-01.png"
+    },
+    {
+      "file": "female-walk-front-02.png",
+      "bbox": [
+        37,
+        10,
+        62,
+        92
+      ],
+      "reference": {
+        "src": "references/female-walk-front-02.png",
+        "sha256": "190c5fb4eab45f2b73c92017c66abade929abf2c256b066c80e23bd33490571c"
+      },
+      "silhouette_iou": 0.8888042650418888,
+      "slot_origin": [
+        192,
+        0
+      ],
+      "registration_translation": [
+        0,
+        0
+      ],
+      "output_anchor": [
+        48,
+        80
+      ],
+      "sha256": "7013b105741c32ba39173009afe56e5a5642415fb077e750dfcdcaa8d0e900b2",
+      "packaged_reference": "references/female-walk-front-02.png"
+    },
+    {
+      "file": "female-walk-front-03.png",
+      "bbox": [
+        36,
+        10,
+        63,
+        88
+      ],
+      "reference": {
+        "src": "references/female-walk-front-03.png",
+        "sha256": "7e50d38cb698d1fd558ba3a3c6add4c243371b856dc1fb849c0997570bbae224"
+      },
+      "silhouette_iou": 0.8948948948948949,
+      "slot_origin": [
+        288,
+        0
+      ],
+      "registration_translation": [
+        0,
+        0
+      ],
+      "output_anchor": [
+        48,
+        80
+      ],
+      "sha256": "a9ff461a2e665c3964e8362f32d81f9763b741ffb2dcf222f9ee463cd0f9a8fb",
+      "packaged_reference": "references/female-walk-front-03.png"
+    },
+    {
+      "file": "female-walk-front-04.png",
+      "bbox": [
+        36,
+        10,
+        62,
+        83
+      ],
+      "reference": {
+        "src": "references/female-walk-front-04.png",
+        "sha256": "744eba450c542055a8a5f4bedad56a6a8804db6dc071e9013742d6c46cb99b56"
+      },
+      "silhouette_iou": 0.8886446886446886,
+      "slot_origin": [
+        0,
+        128
+      ],
+      "registration_translation": [
+        0,
+        8
+      ],
+      "output_anchor": [
+        48,
+        80
+      ],
+      "sha256": "7ffc0e703027818a26067ea72e66d92cab9aa106f23eb59dfefc09bde4e9204b",
+      "packaged_reference": "references/female-walk-front-04.png"
+    },
+    {
+      "file": "female-walk-front-05.png",
+      "bbox": [
+        36,
+        10,
+        63,
+        91
+      ],
+      "reference": {
+        "src": "references/female-walk-front-05.png",
+        "sha256": "79cf25b2e8584dbe76eaf9eeae6e9dcd265997a0536d23dfd474dff7f27a7fa0"
+      },
+      "silhouette_iou": 0.9055636896046853,
+      "slot_origin": [
+        96,
+        128
+      ],
+      "registration_translation": [
+        0,
+        8
+      ],
+      "output_anchor": [
+        48,
+        80
+      ],
+      "sha256": "c20ded8791c55f5751e02ced78394222ffacc55c03248935fd0033dfbac3938f",
+      "packaged_reference": "references/female-walk-front-05.png"
+    },
+    {
+      "file": "female-walk-front-06.png",
+      "bbox": [
+        37,
+        10,
+        62,
+        93
+      ],
+      "reference": {
+        "src": "references/female-walk-front-06.png",
+        "sha256": "a8bd4bca16ec8320cb80c8a3408c29aaa42369c28f50d206ebd45f181633eb98"
+      },
+      "silhouette_iou": 0.9059633027522935,
+      "slot_origin": [
+        192,
+        128
+      ],
+      "registration_translation": [
+        0,
+        8
+      ],
+      "output_anchor": [
+        48,
+        80
+      ],
+      "sha256": "ecccafe1822be16e54226979034aab2fc563de36480223de322f046b35983127",
+      "packaged_reference": "references/female-walk-front-06.png"
+    },
+    {
+      "file": "female-walk-front-07.png",
+      "bbox": [
+        37,
+        10,
+        62,
+        88
+      ],
+      "reference": {
+        "src": "references/female-walk-front-07.png",
+        "sha256": "4ab3b15bea54baf32704c94b298a5cd4d3a44276ea76d96d314c133d9451f8cb"
+      },
+      "silhouette_iou": 0.9069591527987897,
+      "slot_origin": [
+        288,
+        128
+      ],
+      "registration_translation": [
+        0,
+        8
+      ],
+      "output_anchor": [
+        48,
+        80
+      ],
+      "sha256": "1a4d2326fcd6590e810b6b5a595b9dd58e5778094aa8d6796afd5398084a0576",
+      "packaged_reference": "references/female-walk-front-07.png"
+    }
+  ],
+  "selected_grid": {
+    "size": 4,
+    "source": "fine",
+    "offset": [
+      1,
+      3
+    ],
+    "score": 0.9546608529028294,
+    "variance": 117.8595199584961,
+    "gated_out": false
+  },
+  "registration_policy": "row",
+  "registrations": [
+    {
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "translation": [
+        0,
+        0
+      ],
+      "mean_iou": 0.8695220925046816,
+      "frame_iou": [
+        0.8750988142292491,
+        0.8650546021840874,
+        0.8566748566748567,
+        0.8812600969305331
+      ]
+    },
+    {
+      "frames": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "translation": [
+        0,
+        8
+      ],
+      "mean_iou": 0.8727150300932839,
+      "frame_iou": [
+        0.8713496448303079,
+        0.8778747026169706,
+        0.8701725554642563,
+        0.8714632174616006
+      ]
+    }
+  ],
+  "whole_cycle_translation": null,
+  "registered_mean_iou": 0.8711185612989827,
+  "loop_transition_checks": [
+    {
+      "from": 0,
+      "to": 1,
+      "centroid_motion_error_px": [
+        0.42756974494657385,
+        -0.9101200029301992
+      ],
+      "magnitude_px": 1.0055517423421552
+    },
+    {
+      "from": 1,
+      "to": 2,
+      "centroid_motion_error_px": [
+        -0.18170969356398103,
+        0.38982564048721713
+      ],
+      "magnitude_px": 0.43009585294023117
+    },
+    {
+      "from": 2,
+      "to": 3,
+      "centroid_motion_error_px": [
+        0.08419072500314684,
+        0.3334511820381181
+      ],
+      "magnitude_px": 0.3439153514735474
+    },
+    {
+      "from": 3,
+      "to": 4,
+      "centroid_motion_error_px": [
+        -0.14510521660992737,
+        0.3170391835326001
+      ],
+      "magnitude_px": 0.34866799076260446
+    },
+    {
+      "from": 4,
+      "to": 5,
+      "centroid_motion_error_px": [
+        0.4647750338942984,
+        -0.30771887087134076
+      ],
+      "magnitude_px": 0.5574107422913368
+    },
+    {
+      "from": 5,
+      "to": 6,
+      "centroid_motion_error_px": [
+        -0.07651791963009202,
+        0.18302166724224378
+      ],
+      "magnitude_px": 0.19837319048865407
+    },
+    {
+      "from": 6,
+      "to": 7,
+      "centroid_motion_error_px": [
+        0.011913546496842287,
+        0.5536399907311704
+      ],
+      "magnitude_px": 0.553768157198428
+    },
+    {
+      "from": 7,
+      "to": 0,
+      "centroid_motion_error_px": [
+        -0.585116220536861,
+        -0.5591387902298095
+      ],
+      "magnitude_px": 0.8093189595425252
+    }
+  ],
+  "metric_definitions": {
+    "registration_iou": "Paint alpha >=128 versus Blender reference alpha >=128; used to estimate shared translation.",
+    "silhouette_iou": "Binary recovered paint alpha >0 versus Blender reference alpha >0, including antialiased edge coverage. This broader reference mask explains higher final overlap scores.",
+    "reference_integrity": "Every compared source reference hash is checked before copying; packaged_reference points at byte-identical copy."
+  },
+  "reference_sha256": {
+    "references/female-walk-front-00.png": "4253e6e806879e80f2b54302ae3cb255afd07a9f96cb18a31d3ee97fb06e22c5",
+    "references/female-walk-front-01.png": "9809452eedefe79a90d13b293e115203d6d9b1fef9502517627cdcc1598630fa",
+    "references/female-walk-front-02.png": "190c5fb4eab45f2b73c92017c66abade929abf2c256b066c80e23bd33490571c",
+    "references/female-walk-front-03.png": "7e50d38cb698d1fd558ba3a3c6add4c243371b856dc1fb849c0997570bbae224",
+    "references/female-walk-front-04.png": "744eba450c542055a8a5f4bedad56a6a8804db6dc071e9013742d6c46cb99b56",
+    "references/female-walk-front-05.png": "79cf25b2e8584dbe76eaf9eeae6e9dcd265997a0536d23dfd474dff7f27a7fa0",
+    "references/female-walk-front-06.png": "a8bd4bca16ec8320cb80c8a3408c29aaa42369c28f50d206ebd45f181633eb98",
+    "references/female-walk-front-07.png": "4ab3b15bea54baf32704c94b298a5cd4d3a44276ea76d96d314c133d9451f8cb"
+  },
+  "alpha_verification": "Composited on opaque background before review. Hidden RGB under zero alpha is not visible haze."
+}

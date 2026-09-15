@@ -15,7 +15,7 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1] / 'client/assets/first-slice'
 
 
-def recover(raw, clip, reference_root, respect_root, manifest_name='manifest-linen.json'):
+def recover(raw, clip, reference_root, respect_root, manifest_name='manifest-linen.json', registration='sheet'):
     sys.path.insert(0, str(respect_root))
     from pixel_perfecter.reconstructor import PixelArtReconstructor
     raw = Path(raw)
@@ -52,8 +52,9 @@ def recover(raw, clip, reference_root, respect_root, manifest_name='manifest-lin
     recovered = Image.fromarray(rec._empirical_pixel_reconstruction())
     recovered.save(ROOT / 'review' / (clip + '-recovered.png'))
     report['selected_grid'] = candidate
-    # Recover one translation for the WHOLE cycle against the rig-authored
-    # silhouettes. This cannot recenter individual poses or erase gait bob.
+    # The default is one translation for the whole cycle. Opt-in row recovery
+    # corrects a shared sheet-layout offset for four poses together. Neither
+    # policy can recenter individual poses, resize a figure, or erase gait bob.
     ox, oy = candidate['offset']
     slots = []
     masks = []
@@ -62,29 +63,41 @@ def recover(raw, clip, reference_root, respect_root, manifest_name='manifest-lin
         y = round(-oy / 4) + (i // 4) * 128
         slots.append(recovered.crop((x, y, x + 96, y + 128)))
         masks.append(np.array(Image.open(refroot / ref['src']).convert('RGBA'))[:, :, 3] >= 128)
-    best = (-1, 0, 0)
-    for dy in range(-12, 13):
-        for dx in range(-12, 13):
-            score = 0
-            for cell, mask in zip(slots, masks):
-                a = np.array(cell.crop((-dx, 16-dy, 96-dx, 112-dy)))[:, :, 3] >= 128
-                score += np.count_nonzero(a & mask) / max(1, np.count_nonzero(a | mask))
-            score /= len(slots)
-            if score > best[0]:
-                best = (score, dx, dy)
-    _, shift_x, shift_y = best
-    report['whole_cycle_translation'] = [shift_x, shift_y]
-    report['registered_mean_iou'] = best[0]
-    if best[0] < .70:
+    if registration not in ('sheet', 'row'):
+        raise ValueError('Registration must be sheet or row; per-frame fitting is forbidden')
+    groups = [list(range(len(slots)))] if registration == 'sheet' else [list(range(j, min(j+4, len(slots)))) for j in range(0, len(slots), 4)]
+    translations = [None] * len(slots)
+    registrations = []
+    for group in groups:
+        best = (-1, 0, 0, [])
+        for dy in range(-12, 13):
+            for dx in range(-12, 13):
+                scores = []
+                for j in group:
+                    a = np.array(slots[j].crop((-dx, 16-dy, 96-dx, 112-dy)))[:, :, 3] >= 128
+                    scores.append(np.count_nonzero(a & masks[j]) / max(1, np.count_nonzero(a | masks[j])))
+                score = sum(scores) / len(scores)
+                if score > best[0]:
+                    best = (score, dx, dy, scores)
+        score, dx, dy, scores = best
+        registrations.append({'frames': group, 'translation': [dx, dy], 'mean_iou': score, 'frame_iou': scores})
+        for j in group:
+            translations[j] = (dx, dy)
+    report['registration_policy'] = registration
+    report['registrations'] = registrations
+    report['whole_cycle_translation'] = list(translations[0]) if registration == 'sheet' else None
+    report['registered_mean_iou'] = sum(r['mean_iou']*len(r['frames']) for r in registrations)/len(slots)
+    if any(r['mean_iou'] < .70 or min(r['frame_iou']) < .65 for r in registrations):
         (ROOT / 'review' / (clip + '-rejected.json')).write_text(json.dumps(report, indent=2))
-        raise ValueError(f'Whole-cycle silhouette drift: best IoU={best[0]:.3f}')
+        raise ValueError(f'Silhouette drift after {registration} registration: mean IoU={report["registered_mean_iou"]:.3f}')
     preview = Image.new('RGBA', (768, 384), (36, 42, 35, 255))
     pending = []
     for i, ref in enumerate(refs):
+        shift_x, shift_y = translations[i]
         refpath = refroot / ref['src']
         if hashlib.sha256(refpath.read_bytes()).hexdigest() != ref['sha256']:
             raise ValueError('Changed Blender reference')
-        # Global sheet origin and fixed slot dimensions; no ink-derived shifts.
+        # Fixed slot geometry and shared sheet/row origin; no per-pose shifts.
         frame = slots[i].crop((-shift_x, 16-shift_y, 96-shift_x, 112-shift_y))
         pixels = np.array(frame)
         pixels[:, :, 3] = np.where(pixels[:, :, 3] >= 128, 255, 0)
@@ -104,7 +117,9 @@ def recover(raw, clip, reference_root, respect_root, manifest_name='manifest-lin
         if frame_iou < .65:
             raise ValueError(f'{clip} phase {i}: silhouette drift IoU={frame_iou:.3f}')
         report['frames'].append({'file': output.name, 'bbox': box,
-            'reference': ref, 'silhouette_iou': np.count_nonzero(a & b) / union})
+            'reference': ref, 'silhouette_iou': np.count_nonzero(a & b) / union,
+            'slot_origin': [(i % 4) * 96, (i // 4) * 128],
+            'registration_translation': [shift_x, shift_y], 'output_anchor': report['anchor']})
         preview.alpha_composite(frame.resize((192, 192), Image.Resampling.NEAREST),
                                 ((i % 4) * 192, (i // 4) * 192))
     # Publish candidates only after every frame passes the same checks.

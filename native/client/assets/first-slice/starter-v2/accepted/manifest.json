@@ -1,0 +1,231 @@
+{
+  "accepted": true,
+  "status": "Three visually reviewed unarmed walk clips; not a complete playable player family",
+  "appearance_reference_sha256": "9352b701a3b50815c46ebb37bc3cca9193d3355c19ff8f73ed7e7013d7fff210",
+  "clips": [
+    {
+      "identity": "player_male_unarmed",
+      "action": "walk",
+      "direction": "front",
+      "frames": [
+        "frames/male-walk-front-00.png",
+        "frames/male-walk-front-01.png",
+        "frames/male-walk-front-02.png",
+        "frames/male-walk-front-03.png",
+        "frames/male-walk-front-04.png",
+        "frames/male-walk-front-05.png",
+        "frames/male-walk-front-06.png",
+        "frames/male-walk-front-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 10,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "walk",
+      "direction": "back",
+      "frames": [
+        "frames/male-walk-back-00.png",
+        "frames/male-walk-back-01.png",
+        "frames/male-walk-back-02.png",
+        "frames/male-walk-back-03.png",
+        "frames/male-walk-back-04.png",
+        "frames/male-walk-back-05.png",
+        "frames/male-walk-back-06.png",
+        "frames/male-walk-back-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 10,
+      "loop": true
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "walk",
+      "direction": "front",
+      "frames": [
+        "frames/female-walk-front-00.png",
+        "frames/female-walk-front-01.png",
+        "frames/female-walk-front-02.png",
+        "frames/female-walk-front-03.png",
+        "frames/female-walk-front-04.png",
+        "frames/female-walk-front-05.png",
+        "frames/female-walk-front-06.png",
+        "frames/female-walk-front-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 10,
+      "loop": true
+    }
+  ],
+  "provenance": {
+    "male-walk-front": {
+      "guide": "guides/male-walk-front.png",
+      "guide_sha256": "4e75e7baeffe61ac3792616857dbebc785627b8208f7475e27cad86f0663711d",
+      "exact_generation_call": "generation/male-walk-front-exact-call.js",
+      "exact_generation_call_sha256": "c672f9a83f473fde940fedb3004f42c6cf61b689975a33a04e378a86ae96f485",
+      "original": "originals/male-walk-front.png",
+      "original_sha256": "f86a7242a0339ff4e2efe0671b41ebb15161a4f434d7f7ff5cd413b8ece562b4",
+      "blender": "blender/male-walk-exterior.blend",
+      "blender_sha256": "a0c181a36a4ed0aa41007328c0b214cb7d45813268141616bdd2d0d41b6749b3",
+      "report": "reports/male-walk-front.json",
+      "registration": [
+        {
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "translation": [
+            0,
+            1
+          ],
+          "mean_iou": 0.8030613480710597,
+          "frame_iou": [
+            0.8002560819462228,
+            0.8127883981542519,
+            0.8244897959183674,
+            0.8302783435166328,
+            0.786833855799373,
+            0.7758730158730158,
+            0.786046511627907,
+            0.8079247817327065
+          ]
+        }
+      ],
+      "source_reference_folder": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2",
+      "frame_sha256": [
+        "dfe4971f8cc796241d822c11218ede0dddf5bd54e93907e069f55a3c8b920694",
+        "aae789558856b886b524467681c8e5618a57f807553cf449ae8219bcd7c7c2e2",
+        "b179e5e1c29071ffea2c7e83b182be2afb2f5bb479df4fc5070c67e46888582d",
+        "38d4b5a4f45413635e831adecb639b5c470572597db3ae150e65594da82ea6fd",
+        "0473fa80aac82e3b559d9c07d3451705352e60bf84e8faf981071b71c3c5c0f4",
+        "9dc368f2572b6ff23e1e52c4aec39b58b3fa96fd2ffb84cdcb9290ab16323370",
+        "f4ea2a88b2b67154830860070bbfc2107829dd4a2e034ef4ac23f0c8e3ca7b58",
+        "0f934ecd758671de75c2fdc23d3c02643416e8aea5ba763c64fcaf0bab6f6b0e"
+      ]
+    },
+    "male-walk-back": {
+      "guide": "guides/male-walk-back.png",
+      "guide_sha256": "0ef96a639113b1e034423f17b9dc72a5709de6cc82546e643b246fbd6c396466",
+      "exact_generation_call": "generation/male-walk-back-exact-call.js",
+      "exact_generation_call_sha256": "5292185324325424be8bbe72091265bd899945db105342dfc1a0da3f37349325",
+      "original": "originals/male-walk-back.png",
+      "original_sha256": "2865d6a16cbf41c5e1dca3fd1316129998ca6ff44c3085cb5e88db39d42cd509",
+      "blender": "blender/male-walk-exterior.blend",
+      "blender_sha256": "a0c181a36a4ed0aa41007328c0b214cb7d45813268141616bdd2d0d41b6749b3",
+      "report": "reports/male-walk-back.json",
+      "registration": null,
+      "source_reference_folder": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2",
+      "frame_sha256": [
+        "ddb117bb466f98a15e3014c32e6ffd3b6592d67d180cb585795dae1183e4408c",
+        "84f80274f977b196f2b3449fed2b8ff257fb989489d355cca4eb8cefc757697b",
+        "15612b5c165140f1087e435eb27c2c72bdae55988f0eac63d017c08ba986bd5b",
+        "d081cb8ec7440e95a54fbadb7178e80276a1002761082b900bfef52805b9f5a4",
+        "0e67ce52b21efe59d06e1c1c1cdc3f6903647aae51878700fda2d74c138843a4",
+        "290c30364210263514210f892fc6c2a1f3dc030cab79eec79d4c2142e8dde57e",
+        "faa9ec26af7a1d8f9b7ca560cb34bd3db298822a7897e1594c087f6c664d01c8",
+        "4fd9c1948f8059e11b0d8804b4ce033cd1f2363748f17dce135fb29f1202793b"
+      ]
+    },
+    "female-walk-front": {
+      "guide": "guides/female-walk-front.png",
+      "guide_sha256": "ecd34a45a5e560141c3efae67b05ad05a7d1cecb9a590544fc6fae68b24e98b6",
+      "exact_generation_call": "generation/female-walk-front-exact-call.js",
+      "exact_generation_call_sha256": "82ba83971bf5a81a11a11f2ab32d03aaa781bd173157489bbe5b39f878062049",
+      "original": "originals/female-walk-front.png",
+      "original_sha256": "cf9f0cef62b9e12f28bf6daf34d671562b964d1530531b888db342bbfbfb0bd0",
+      "blender": "blender/female-walk-exterior.blend",
+      "blender_sha256": "a668944a456fa2ba79de9617b4562501a690b060c5461ab12424e2cb6fee4cd4",
+      "report": "reports/female-walk-front.json",
+      "registration": [
+        {
+          "frames": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "translation": [
+            0,
+            0
+          ],
+          "mean_iou": 0.8695220925046816,
+          "frame_iou": [
+            0.8750988142292491,
+            0.8650546021840874,
+            0.8566748566748567,
+            0.8812600969305331
+          ]
+        },
+        {
+          "frames": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "translation": [
+            0,
+            8
+          ],
+          "mean_iou": 0.8727150300932839,
+          "frame_iou": [
+            0.8713496448303079,
+            0.8778747026169706,
+            0.8701725554642563,
+            0.8714632174616006
+          ]
+        }
+      ],
+      "source_reference_folder": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2-female-refine",
+      "frame_sha256": [
+        "2195e0acc6237f3cd89ad7156444f9caa537c0f7d686ccea73364c7523ffb882",
+        "1c563abc674d7bd7cbd4cdf4d38b7569e496f08deaeb7fc08a31f7ebf94ee047",
+        "7013b105741c32ba39173009afe56e5a5642415fb077e750dfcdcaa8d0e900b2",
+        "a9ff461a2e665c3964e8362f32d81f9763b741ffb2dcf222f9ee463cd0f9a8fb",
+        "7ffc0e703027818a26067ea72e66d92cab9aa106f23eb59dfefc09bde4e9204b",
+        "c20ded8791c55f5751e02ced78394222ffacc55c03248935fd0033dfbac3938f",
+        "ecccafe1822be16e54226979034aab2fc563de36480223de322f046b35983127",
+        "1a4d2326fcd6590e810b6b5a595b9dd58e5778094aa8d6796afd5398084a0576"
+      ]
+    }
+  },
+  "not_included": [
+    "complete cardinal locomotion",
+    "club loadout",
+    "combat",
+    "hit",
+    "death",
+    "native cohort activation"
+  ]
+}

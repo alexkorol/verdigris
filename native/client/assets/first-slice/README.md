@@ -28,6 +28,22 @@ female braid, heavier rope belt, rough asymmetric clothing, and woven footwear
 supersede conflicting design assumptions from earlier trials. The existing 128-frame
 locomotion milestone below predates this concept and still needs an appearance revision.
 
+## New exterior: partial walk milestone
+
+`starter-v2/accepted/manifest.json` contains 24 inspected frames: male front and
+back walk, plus female front walk, with eight phases per clip. These use the
+approved coarse-fabric exterior and retain exact imagegen calls, original RGBA
+outputs, uploaded guides, native Blender references, editable scenes, and hashes.
+They are incomplete and must not activate a player family in gameplay.
+
+The canvas is 96×96 with anchor [48,80] at 48px/metre. Pixel Respecter reconstructs
+the measured fourfold lattice without resizing the character. One shared integer
+translation is allowed per sheet; the female sheet has a recorded shared row
+offset. No individual pose is recentered, and no foreground is discarded.
+The inspected row transition and wraparound preserve the source motion.
+Registration scores use Blender alpha≥128, while the separately labeled final
+silhouette scores include its antialiased edge coverage (alpha>0).
+
 ## Previous locomotion milestone
 
 `reviewed/manifest.json` contains 128 painted player locomotion frames: male and
@@ -36,9 +52,8 @@ a 96×96 canvas, [48,80] rig anchor, and 48 pixels per metre at the player plane
 The female has a centered back braid. Both wear untrimmed natural flax linen,
 cord belts, and open sandals; the female tunic has the shorter practical cut.
 
-These are agent-reviewed art outputs, **not a finished first-slice pack or an
-integrated gameplay change**. Idle, combat, equipment variants, diagonal views,
-NPCs, monsters, environment, and native integration are still outstanding.
+These older outputs are **not a finished first-slice pack or the current player
+appearance**. Their incomplete action coverage must not be mixed with newer art.
 Do not silently substitute these walk frames for missing combat or idle clips.
 
 The package preserves original generated PNGs, exact native Blender references,
