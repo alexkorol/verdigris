@@ -6,9 +6,10 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Text;
+using System.Security.Cryptography;
 using System.Windows.Forms;
 
-// Unsigned local-review entry point. No developer console or checkout required.
+// Native entry point: explicit online service mode or preserved local review.
 internal static class PlayerLauncher
 {
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
@@ -50,12 +51,18 @@ internal static class PlayerLauncher
         } finally { Marshal.FreeHGlobal(data); }
         return job;
     }
-    static Process Start(string exe, string args, string root, string profile, bool settingsOverride, IntPtr job) {
+    static Process Start(string exe, string args, string root, string profile, bool settingsOverride, IntPtr job, bool online = false) {
         var info = new ProcessStartInfo(exe, args) {
             WorkingDirectory = root, UseShellExecute = false, CreateNoWindow = true,
             RedirectStandardInput = true, RedirectStandardOutput = true, RedirectStandardError = true
         };
-        info.EnvironmentVariables["VERDIGRIS_SAVE_DIR"] = Path.Combine(profile, "saves");
+        if (online) {
+            info.EnvironmentVariables.Remove("VERDIGRIS_SAVE_DIR");
+            info.EnvironmentVariables["VERDIGRIS_SERVICE_PROFILE"] = profile;
+        } else {
+            info.EnvironmentVariables["VERDIGRIS_SAVE_DIR"] = Path.Combine(profile, "saves");
+            info.EnvironmentVariables.Remove("VERDIGRIS_SERVICE_PROFILE");
+        }
         if (settingsOverride) info.EnvironmentVariables["VERDIGRIS_SETTINGS_PATH"] = Path.Combine(profile, "settings.ini");
         else info.EnvironmentVariables.Remove("VERDIGRIS_SETTINGS_PATH"); // Normal launch must not inherit a QA settings override.
         var process = Process.Start(info);
@@ -84,6 +91,28 @@ internal static class PlayerLauncher
         }
         throw new InvalidOperationException("No free local game port (6520-6539). Close another Verdigris review session and retry.");
     }
+    static string ValidateOnlineEndpoint(string endpoint) {
+        if (string.IsNullOrEmpty(endpoint) || endpoint.Length > 2048) throw new ArgumentException("Enter a service endpoint of at most 2048 characters.");
+        foreach (char c in endpoint) if (c <= 32 || c >= 127 || c == '\\' || c == '"' || c == '?' || c == '#' || c == '@')
+            throw new ArgumentException("Service endpoints cannot contain credentials, queries, fragments, spaces or quotes.");
+        Uri uri;
+        if ((!endpoint.StartsWith("wss://", StringComparison.Ordinal) && !endpoint.StartsWith("ws://", StringComparison.Ordinal)) ||
+            !Uri.TryCreate(endpoint, UriKind.Absolute, out uri) || string.IsNullOrEmpty(uri.Host) || uri.Port < 1 || uri.Port > 65535)
+            throw new ArgumentException("Use wss://hostname[:port]/path for the service endpoint.");
+        // Check the original host too: Uri normalizes ambiguous 127.1 spellings.
+        string authority = endpoint.Substring(endpoint.IndexOf("://", StringComparison.Ordinal) + 3).Split('/')[0];
+        string rawHost = authority.StartsWith("[", StringComparison.Ordinal) ? authority.Substring(0, authority.IndexOf(']') + 1) : authority.Split(':')[0];
+        if (uri.Scheme == "ws" && rawHost != "127.0.0.1" && !rawHost.Equals("localhost", StringComparison.OrdinalIgnoreCase) && rawHost != "[::1]")
+            throw new ArgumentException("Unencrypted ws:// is available only for explicit loopback QA. Online services require wss://.");
+        return endpoint;
+    }
+    static string DefaultOnlineProfile(string endpoint) {
+        using (var hash = SHA256.Create()) {
+            byte[] bytes = hash.ComputeHash(Encoding.UTF8.GetBytes(new Uri(endpoint).AbsoluteUri));
+            string key = BitConverter.ToString(bytes).Replace("-", "").ToLowerInvariant();
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Verdigris", "online", key);
+        }
+    }
     static FileStream AcquireProfileLock(string profile) {
         try { return new FileStream(Path.Combine(profile, "session.lock"), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None); }
         catch (IOException) { throw new InvalidOperationException("This review profile is already open or unavailable."); }
@@ -102,19 +131,29 @@ internal static class PlayerLauncher
         string verifyLaunch = null;
         try {
             string root = AppDomain.CurrentDomain.BaseDirectory;
-            string profile = Path.Combine(root, "profile"); bool isolated = false, quick = false;
+            string profile = Path.Combine(root, "profile"); bool isolated = false, quick = false; string onlineEndpoint = null;
             for (int i = 0; i < args.Length; ++i) {
                 if (args[i] == "--profile" && i + 1 < args.Length) { profile = Path.GetFullPath(args[++i]); isolated = true; }
                 else if (args[i] == "--quick") quick = true;
+                else if (args[i] == "--online" && i + 1 < args.Length) onlineEndpoint = ValidateOnlineEndpoint(args[++i]);
                 else if (args[i] == "--verify-launch" && i + 1 < args.Length) verifyLaunch = args[++i];
-                else throw new ArgumentException("Usage: Verdigris.exe [--profile <isolated review directory>] [--quick] [--verify-launch save|reload|smoke]");
+                else throw new ArgumentException("Usage: Verdigris.exe [--online <service endpoint>] [--profile <isolated directory>] [--quick] [--verify-launch save|reload|smoke]");
+            }
+            if (onlineEndpoint != null) {
+                if (quick || verifyLaunch != null) throw new ArgumentException("Online mode uses the authenticated native account flow; local quick/review verification arguments do not apply.");
+                if (!isolated) profile = DefaultOnlineProfile(onlineEndpoint);
+                if (Directory.Exists(Path.Combine(profile, "saves")) ||
+                    string.Equals(profile.TrimEnd('\\'), Path.Combine(root, "profile").TrimEnd('\\'), StringComparison.OrdinalIgnoreCase))
+                    throw new ArgumentException("Choose a separate online profile; existing local-review saves cannot be used for a service account.");
+                isolated = true;
             }
             if (verifyLaunch == "smoke" && (isolated || quick))
                 throw new ArgumentException("Normal-launch smoke uses the normal profile without QA or quick-start arguments.");
             if (verifyLaunch != null && verifyLaunch != "smoke" && (!isolated || (verifyLaunch != "save" && verifyLaunch != "reload") ||
                 string.Equals(profile.TrimEnd('\\'), Path.Combine(root, "profile").TrimEnd('\\'), StringComparison.OrdinalIgnoreCase)))
                 throw new ArgumentException("Launch verification requires a separate explicit QA profile and save or reload phase.");
-            Directory.CreateDirectory(profile); Directory.CreateDirectory(Path.Combine(profile, "saves"));
+            Directory.CreateDirectory(profile);
+            if (onlineEndpoint == null) Directory.CreateDirectory(Path.Combine(profile, "saves"));
             Directory.CreateDirectory(Path.Combine(profile, "logs"));
             // Lock the actual directory, so trailing separators and junction aliases
             // cannot create two server writers for the same review saves.
@@ -123,10 +162,11 @@ internal static class PlayerLauncher
             Log("root=" + root + " profile=" + profile + " isolatedSettings=" + isolated);
             string serverExe = Path.Combine(root, "native", "build", "verdigris_server.exe");
             string clientExe = Path.Combine(root, "native", "build", "verdigris_client.exe");
-            if (!File.Exists(serverExe) || !File.Exists(clientExe)) throw new FileNotFoundException("Game files are missing. Extract the complete review package and run Verdigris.exe.");
-            int port = FreePort(); job = NewJob();
-            server = Start(serverExe, port.ToString(), root, profile, isolated, job);
-            {
+            if (!File.Exists(clientExe) || (onlineEndpoint == null && !File.Exists(serverExe))) throw new FileNotFoundException("Game files are missing. Extract the complete native package and run Verdigris.exe.");
+            int port = 0; job = NewJob();
+            if (onlineEndpoint == null) {
+                port = FreePort();
+                server = Start(serverExe, port.ToString(), root, profile, isolated, job);
                 server.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e) {
                     if (e.Data == null) return; Log("server: " + e.Data);
                     if (e.Data == "verdigris_server listening on ws://127.0.0.1:" + port) ready.Set();
@@ -135,8 +175,9 @@ internal static class PlayerLauncher
                 server.BeginOutputReadLine(); server.BeginErrorReadLine();
                 if (!ready.WaitOne(12000) || server.HasExited) throw new InvalidOperationException("The local game server did not become ready. See " + logPath);
             }
-            client = Start(clientExe, "--remote 127.0.0.1 " + port + " review-player" + (quick ? " --quick" : "") +
-                (verifyLaunch == null ? "" : " --verify-launch " + verifyLaunch), root, profile, isolated, job);
+            string clientArgs = onlineEndpoint == null ? "--remote 127.0.0.1 " + port + " review-player" + (quick ? " --quick" : "") +
+                (verifyLaunch == null ? "" : " --verify-launch " + verifyLaunch) : "--online \"" + onlineEndpoint + "\"";
+            client = Start(clientExe, clientArgs, root, profile, isolated, job, onlineEndpoint != null);
             client.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e) { if (e.Data != null) Log("client: " + e.Data); };
             client.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e) { if (e.Data != null) Log("client error: " + e.Data); };
             client.BeginOutputReadLine(); client.BeginErrorReadLine();
