@@ -73,7 +73,7 @@ struct Run {
   }
   void settle(int milliseconds=400){const auto until=std::chrono::steady_clock::now()+std::chrono::milliseconds(milliseconds);while(std::chrono::steady_clock::now()<until)tick();}
   void mark(const std::string& phase,const std::string& value="ready"){write(root/(role+"-"+phase),value);}
-  void barrier(const std::string& phase){mark(phase);require(wait([&]{return std::filesystem::exists(root/(other+"-"+phase));}),"both clients reached "+phase);}
+  void barrier(const std::string& phase,int milliseconds=20000){mark(phase);require(wait([&]{return std::filesystem::exists(root/(other+"-"+phase));},milliseconds),"both clients reached "+phase);}
   void click(RECT rect){SendMessage(window,WM_LBUTTONDOWN,0,MAKELPARAM((rect.left+rect.right)/2,(rect.top+rect.bottom)/2));SendMessage(window,WM_LBUTTONUP,0,0);}
   void key(int key,bool down){SendMessage(window,down?WM_KEYDOWN:WM_KEYUP,key,0);}
   void text(const std::string& value){for(unsigned char c:value)SendMessage(window,WM_CHAR,c,0);}
@@ -232,7 +232,8 @@ struct Run {
     require(wait([&]{return model().scene.type!="instance";}),"own Scion returns to town without replacing ally world");party_open(false);
     require(wait([&]{return reward_received;}),"own House reward is acknowledged after return");
     require(wait([&]{return model().progression.present&&model().progression.earned_points>points_before;}),"authoritative passive budget includes earned progression");
-    settle(1000);points_after=model().progression.earned_points;inventory_after=inventory_signature();capture("returned-house-progress");barrier("returned");
+    // Each ally may still be following its own bounded 45-second return route.
+    settle(1000);points_after=model().progression.earned_points;inventory_after=inventory_signature();capture("returned-house-progress");barrier("returned",70000);
     state.session->shutdown();state.frontend=Frontend::Title;state.screen=Screen::Chronicles;
     state.session=verdigris::client::RemoteProtocolSession::online(endpoint);std::string error;
     require(state.session->start(&error),"new connection starts without enrollment credentials");

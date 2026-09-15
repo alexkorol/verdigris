@@ -6,6 +6,8 @@ This patch adds three descent fields to ClientScene and parses existing `metadat
 
 Captures and combat navigation logs now include descent coordinates. `approach-navigation.jsonl` records target, source/destination scene, both stairs, transition classification and completion reason. Embedded routing regressions use the recorded upstairs (5,20) and downstairs (34,20) geometry.
 
+The `returned` synchronization barrier allows 70 seconds so one actor's successful early return does not cancel its ally's independently allowed 45-second route and reward acknowledgment. Other barriers retain 20 seconds. The existing failure-marker bailout and frame-time gates remain unchanged.
+
 ## Focused verification
 
 - Compiled current `remote_session.cpp`, `local_session.cpp`, `presentation_state.cpp`, and a wrapper around the existing session test translation unit with MSVC C++20. Rebuilding these consumers accounts for ClientScene's changed layout.
