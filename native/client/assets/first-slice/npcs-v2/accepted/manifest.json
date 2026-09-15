@@ -1,0 +1,909 @@
+{
+  "schema_version": 1,
+  "accepted": true,
+  "role": "npc",
+  "pipeline": "Original distinct Blender meshes -> native96x96 thresholded reference -> integer enlargement -> built-in imagegen -> Pixel Respecter -> static-view registration -> visual review",
+  "registration_policy": "Each static view matches its own Blender projection via integer translation; no scaling or animation phase registration",
+  "clips": [
+    {
+      "identity": "field-hand",
+      "action": "idle",
+      "direction": "front",
+      "frames": [
+        "sprites/field-hand-idle-front.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "field-hand",
+      "action": "idle",
+      "direction": "right",
+      "frames": [
+        "sprites/field-hand-idle-right.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "field-hand",
+      "action": "idle",
+      "direction": "back",
+      "frames": [
+        "sprites/field-hand-idle-back.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "field-hand",
+      "action": "idle",
+      "direction": "left",
+      "frames": [
+        "sprites/field-hand-idle-left.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "scribe",
+      "action": "idle",
+      "direction": "front",
+      "frames": [
+        "sprites/scribe-idle-front.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "scribe",
+      "action": "idle",
+      "direction": "right",
+      "frames": [
+        "sprites/scribe-idle-right.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "scribe",
+      "action": "idle",
+      "direction": "back",
+      "frames": [
+        "sprites/scribe-idle-back.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "scribe",
+      "action": "idle",
+      "direction": "left",
+      "frames": [
+        "sprites/scribe-idle-left.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "scout",
+      "action": "idle",
+      "direction": "front",
+      "frames": [
+        "sprites/scout-idle-front.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "scout",
+      "action": "idle",
+      "direction": "right",
+      "frames": [
+        "sprites/scout-idle-right.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "scout",
+      "action": "idle",
+      "direction": "back",
+      "frames": [
+        "sprites/scout-idle-back.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "scout",
+      "action": "idle",
+      "direction": "left",
+      "frames": [
+        "sprites/scout-idle-left.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "defender",
+      "action": "idle",
+      "direction": "front",
+      "frames": [
+        "sprites/defender-idle-front.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "defender",
+      "action": "idle",
+      "direction": "right",
+      "frames": [
+        "sprites/defender-idle-right.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "defender",
+      "action": "idle",
+      "direction": "back",
+      "frames": [
+        "sprites/defender-idle-back.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "defender",
+      "action": "idle",
+      "direction": "left",
+      "frames": [
+        "sprites/defender-idle-left.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    }
+  ],
+  "frames": [
+    {
+      "identity": "field-hand",
+      "role": "npc",
+      "action": "idle",
+      "direction": "front",
+      "phase": 0,
+      "file": "sprites/field-hand-idle-front.png",
+      "sha256": "c8c9d3259e4f596bc49bbafa482e8d0531df39269b0f571a8d9b5c064fa4695e",
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "source": "source/field-hand.png",
+      "source_sha256": "e7928940a80505ca1fec28bc8086a5fe3f345397761945ae3fb72583284c6232",
+      "original_alpha_range": [
+        0,
+        255
+      ],
+      "reference": "references/field-hand-front.png",
+      "reference_sha256": "4a6544b007b1657822dcd72da1d57a6bc63e8219c02d13febbf8586cb257deba",
+      "generation_input": "references/field-hand-input-4x.png",
+      "generation_input_sha256": "60a32acd031964053f44347554589e0f2986d07082bebf6d5964e21a90d1545e",
+      "source_grid_pitch": 5,
+      "editable_blender": "blender/field-hand.blend",
+      "blender_sha256": "902a3baac9a6ca23b82169b584f0d0057e1c7217233251f7e92424a066ec975c",
+      "silhouette_iou": 0.920911528150134,
+      "static_view_translation": [
+        1,
+        1
+      ],
+      "agent_visual_review": true
+    },
+    {
+      "identity": "field-hand",
+      "role": "npc",
+      "action": "idle",
+      "direction": "right",
+      "phase": 0,
+      "file": "sprites/field-hand-idle-right.png",
+      "sha256": "754b81f945c7eb10e99b9a271d5761a5e10216ce1b088265f26d849009da8c73",
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "source": "source/field-hand.png",
+      "source_sha256": "e7928940a80505ca1fec28bc8086a5fe3f345397761945ae3fb72583284c6232",
+      "original_alpha_range": [
+        0,
+        255
+      ],
+      "reference": "references/field-hand-right.png",
+      "reference_sha256": "dac37f107204669016091f58fb779fba0fa63de573089a5cb481527ca8406789",
+      "generation_input": "references/field-hand-input-4x.png",
+      "generation_input_sha256": "60a32acd031964053f44347554589e0f2986d07082bebf6d5964e21a90d1545e",
+      "source_grid_pitch": 5,
+      "editable_blender": "blender/field-hand.blend",
+      "blender_sha256": "902a3baac9a6ca23b82169b584f0d0057e1c7217233251f7e92424a066ec975c",
+      "silhouette_iou": 0.8837837837837837,
+      "static_view_translation": [
+        4,
+        1
+      ],
+      "agent_visual_review": true
+    },
+    {
+      "identity": "field-hand",
+      "role": "npc",
+      "action": "idle",
+      "direction": "back",
+      "phase": 0,
+      "file": "sprites/field-hand-idle-back.png",
+      "sha256": "5e228626fa21442c8f52f4f12c8d1982f0fd15bc4cc85f7f8ad3ed1730877f79",
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "source": "source/field-hand.png",
+      "source_sha256": "e7928940a80505ca1fec28bc8086a5fe3f345397761945ae3fb72583284c6232",
+      "original_alpha_range": [
+        0,
+        255
+      ],
+      "reference": "references/field-hand-back.png",
+      "reference_sha256": "7f60feb536004851ffce4135cf22002e3d2559eebc4e3ce5f8ee0b1a23026689",
+      "generation_input": "references/field-hand-input-4x.png",
+      "generation_input_sha256": "60a32acd031964053f44347554589e0f2986d07082bebf6d5964e21a90d1545e",
+      "source_grid_pitch": 5,
+      "editable_blender": "blender/field-hand.blend",
+      "blender_sha256": "902a3baac9a6ca23b82169b584f0d0057e1c7217233251f7e92424a066ec975c",
+      "silhouette_iou": 0.8999323867478025,
+      "static_view_translation": [
+        1,
+        3
+      ],
+      "agent_visual_review": true
+    },
+    {
+      "identity": "field-hand",
+      "role": "npc",
+      "action": "idle",
+      "direction": "left",
+      "phase": 0,
+      "file": "sprites/field-hand-idle-left.png",
+      "sha256": "ecd6e59cbd1beb2704cea135c006f19ae760636ba7bcbc344d1dc7a40d66a1cd",
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "source": "source/field-hand.png",
+      "source_sha256": "e7928940a80505ca1fec28bc8086a5fe3f345397761945ae3fb72583284c6232",
+      "original_alpha_range": [
+        0,
+        255
+      ],
+      "reference": "references/field-hand-left.png",
+      "reference_sha256": "0ff3af497204e005342e16e9fda2b071c57db2f9b75e938fb1e5014a7c4f55a0",
+      "generation_input": "references/field-hand-input-4x.png",
+      "generation_input_sha256": "60a32acd031964053f44347554589e0f2986d07082bebf6d5964e21a90d1545e",
+      "source_grid_pitch": 5,
+      "editable_blender": "blender/field-hand.blend",
+      "blender_sha256": "902a3baac9a6ca23b82169b584f0d0057e1c7217233251f7e92424a066ec975c",
+      "silhouette_iou": 0.8668430335097002,
+      "static_view_translation": [
+        3,
+        4
+      ],
+      "agent_visual_review": true
+    },
+    {
+      "identity": "scribe",
+      "role": "npc",
+      "action": "idle",
+      "direction": "front",
+      "phase": 0,
+      "file": "sprites/scribe-idle-front.png",
+      "sha256": "d1b9cacb024305b9ab0610d482941fa2cb7d81a7fc0c7653669e217573a13e59",
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "source": "source/scribe.png",
+      "source_sha256": "9c02567af09e88e6e016550ee47967b13a5a891a32ad541da66d29ad60321308",
+      "original_alpha_range": [
+        0,
+        255
+      ],
+      "reference": "references/scribe-front.png",
+      "reference_sha256": "21ed9d1d9310581be697f394cc57d4472c08ee8461446ff1a740584960f829f7",
+      "generation_input": "references/scribe-input-4x.png",
+      "generation_input_sha256": "dda0560ebea108e730dbfd68c184ca6cd40f5efb984371f1f89200318b6fc669",
+      "source_grid_pitch": 5,
+      "editable_blender": "blender/scribe.blend",
+      "blender_sha256": "ffa9806b7aa4e509b32f864e36dbcf338c91d9b691e11b8ed113fb579ba903a8",
+      "silhouette_iou": 0.8784615384615385,
+      "static_view_translation": [
+        1,
+        2
+      ],
+      "agent_visual_review": true
+    },
+    {
+      "identity": "scribe",
+      "role": "npc",
+      "action": "idle",
+      "direction": "right",
+      "phase": 0,
+      "file": "sprites/scribe-idle-right.png",
+      "sha256": "a49d30dc979a2b61dffa50c6787e44e014cdbf4d9164de644a29313e4ea073a6",
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "source": "source/scribe.png",
+      "source_sha256": "9c02567af09e88e6e016550ee47967b13a5a891a32ad541da66d29ad60321308",
+      "original_alpha_range": [
+        0,
+        255
+      ],
+      "reference": "references/scribe-right.png",
+      "reference_sha256": "46e0fc3d112e1756430b7fdaa8cf079705605dac215f8965cb39bf0d4b7e8b35",
+      "generation_input": "references/scribe-input-4x.png",
+      "generation_input_sha256": "dda0560ebea108e730dbfd68c184ca6cd40f5efb984371f1f89200318b6fc669",
+      "source_grid_pitch": 5,
+      "editable_blender": "blender/scribe.blend",
+      "blender_sha256": "ffa9806b7aa4e509b32f864e36dbcf338c91d9b691e11b8ed113fb579ba903a8",
+      "silhouette_iou": 0.9003944773175543,
+      "static_view_translation": [
+        4,
+        1
+      ],
+      "agent_visual_review": true
+    },
+    {
+      "identity": "scribe",
+      "role": "npc",
+      "action": "idle",
+      "direction": "back",
+      "phase": 0,
+      "file": "sprites/scribe-idle-back.png",
+      "sha256": "a1ae317c52703695108c59502a4a67c426eaa175c806bc5067a09ab2460891d7",
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "source": "source/scribe.png",
+      "source_sha256": "9c02567af09e88e6e016550ee47967b13a5a891a32ad541da66d29ad60321308",
+      "original_alpha_range": [
+        0,
+        255
+      ],
+      "reference": "references/scribe-back.png",
+      "reference_sha256": "e4abda8895938a7e2882fe888819ebb7372d336d6e71636bb3010c69c750cdf3",
+      "generation_input": "references/scribe-input-4x.png",
+      "generation_input_sha256": "dda0560ebea108e730dbfd68c184ca6cd40f5efb984371f1f89200318b6fc669",
+      "source_grid_pitch": 5,
+      "editable_blender": "blender/scribe.blend",
+      "blender_sha256": "ffa9806b7aa4e509b32f864e36dbcf338c91d9b691e11b8ed113fb579ba903a8",
+      "silhouette_iou": 0.8676122931442081,
+      "static_view_translation": [
+        1,
+        4
+      ],
+      "agent_visual_review": true
+    },
+    {
+      "identity": "scribe",
+      "role": "npc",
+      "action": "idle",
+      "direction": "left",
+      "phase": 0,
+      "file": "sprites/scribe-idle-left.png",
+      "sha256": "af3f31bd055d05f5dcf8ffa6b2bf49f7090d2d99b8aa2eb1dae3591e30df2313",
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "source": "source/scribe.png",
+      "source_sha256": "9c02567af09e88e6e016550ee47967b13a5a891a32ad541da66d29ad60321308",
+      "original_alpha_range": [
+        0,
+        255
+      ],
+      "reference": "references/scribe-left.png",
+      "reference_sha256": "53ea473636a910a04c5a42c81f426e58551a1307083d3bfffb5ad447d6f48728",
+      "generation_input": "references/scribe-input-4x.png",
+      "generation_input_sha256": "dda0560ebea108e730dbfd68c184ca6cd40f5efb984371f1f89200318b6fc669",
+      "source_grid_pitch": 5,
+      "editable_blender": "blender/scribe.blend",
+      "blender_sha256": "ffa9806b7aa4e509b32f864e36dbcf338c91d9b691e11b8ed113fb579ba903a8",
+      "silhouette_iou": 0.87109375,
+      "static_view_translation": [
+        3,
+        5
+      ],
+      "agent_visual_review": true
+    },
+    {
+      "identity": "scout",
+      "role": "npc",
+      "action": "idle",
+      "direction": "front",
+      "phase": 0,
+      "file": "sprites/scout-idle-front.png",
+      "sha256": "56cb259e5b007ea396d17269aaef7d7caf7abad543e0b2f0a42ede0d29a19f32",
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "source": "source/scout.png",
+      "source_sha256": "6db20e3e8b8b876f2a42a475a1653e90d66d2ddccb36562aaacf76745b5d4594",
+      "original_alpha_range": [
+        0,
+        255
+      ],
+      "reference": "references/scout-front.png",
+      "reference_sha256": "fab4ff1990c58b5d5e1e12ebd0235fb105f98a47f03be00a5fa4f077909d6057",
+      "generation_input": "references/scout-input-4x.png",
+      "generation_input_sha256": "898dbc50e1d0e1b139c0c39584fe826c3748516980b6711c4b8940d70b201e2b",
+      "source_grid_pitch": 5,
+      "editable_blender": "blender/scout.blend",
+      "blender_sha256": "ef412cb5f3b2e7c46e3db129c9e18a879b637b42de96bce9597f9ecc2c45d989",
+      "silhouette_iou": 0.8667180277349769,
+      "static_view_translation": [
+        1,
+        1
+      ],
+      "agent_visual_review": true
+    },
+    {
+      "identity": "scout",
+      "role": "npc",
+      "action": "idle",
+      "direction": "right",
+      "phase": 0,
+      "file": "sprites/scout-idle-right.png",
+      "sha256": "cdf41e5893a50ecdd81e50bc25f54f90a5347f08f199b4aa3119c8d7477457cc",
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "source": "source/scout.png",
+      "source_sha256": "6db20e3e8b8b876f2a42a475a1653e90d66d2ddccb36562aaacf76745b5d4594",
+      "original_alpha_range": [
+        0,
+        255
+      ],
+      "reference": "references/scout-right.png",
+      "reference_sha256": "74d3913647b5ced432de1c731bb056fe7d6f4c38b4bd1ed0c1359fc844a5f612",
+      "generation_input": "references/scout-input-4x.png",
+      "generation_input_sha256": "898dbc50e1d0e1b139c0c39584fe826c3748516980b6711c4b8940d70b201e2b",
+      "source_grid_pitch": 5,
+      "editable_blender": "blender/scout.blend",
+      "blender_sha256": "ef412cb5f3b2e7c46e3db129c9e18a879b637b42de96bce9597f9ecc2c45d989",
+      "silhouette_iou": 0.8568627450980392,
+      "static_view_translation": [
+        3,
+        1
+      ],
+      "agent_visual_review": true
+    },
+    {
+      "identity": "scout",
+      "role": "npc",
+      "action": "idle",
+      "direction": "back",
+      "phase": 0,
+      "file": "sprites/scout-idle-back.png",
+      "sha256": "c3ccd51701aa4b909d6bb59830bbbef4bc6b7b0bf41d983876f6f19fb84fe407",
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "source": "source/scout.png",
+      "source_sha256": "6db20e3e8b8b876f2a42a475a1653e90d66d2ddccb36562aaacf76745b5d4594",
+      "original_alpha_range": [
+        0,
+        255
+      ],
+      "reference": "references/scout-back.png",
+      "reference_sha256": "61073feb15e0ca3a830253ce6c5e82f009ccad1dc0fe31951d91840af0009e86",
+      "generation_input": "references/scout-input-4x.png",
+      "generation_input_sha256": "898dbc50e1d0e1b139c0c39584fe826c3748516980b6711c4b8940d70b201e2b",
+      "source_grid_pitch": 5,
+      "editable_blender": "blender/scout.blend",
+      "blender_sha256": "ef412cb5f3b2e7c46e3db129c9e18a879b637b42de96bce9597f9ecc2c45d989",
+      "silhouette_iou": 0.8194864048338368,
+      "static_view_translation": [
+        1,
+        4
+      ],
+      "agent_visual_review": true
+    },
+    {
+      "identity": "scout",
+      "role": "npc",
+      "action": "idle",
+      "direction": "left",
+      "phase": 0,
+      "file": "sprites/scout-idle-left.png",
+      "sha256": "6bdea82347e0982673325b7506e254e70a5043e24433fd1855d81e00b2da0936",
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "source": "source/scout.png",
+      "source_sha256": "6db20e3e8b8b876f2a42a475a1653e90d66d2ddccb36562aaacf76745b5d4594",
+      "original_alpha_range": [
+        0,
+        255
+      ],
+      "reference": "references/scout-left.png",
+      "reference_sha256": "a18615c6b86fc35575147c3d91022e7613904a4b0e09580216a63fd8f618b17f",
+      "generation_input": "references/scout-input-4x.png",
+      "generation_input_sha256": "898dbc50e1d0e1b139c0c39584fe826c3748516980b6711c4b8940d70b201e2b",
+      "source_grid_pitch": 5,
+      "editable_blender": "blender/scout.blend",
+      "blender_sha256": "ef412cb5f3b2e7c46e3db129c9e18a879b637b42de96bce9597f9ecc2c45d989",
+      "silhouette_iou": 0.8646998982706002,
+      "static_view_translation": [
+        3,
+        4
+      ],
+      "agent_visual_review": true
+    },
+    {
+      "identity": "defender",
+      "role": "npc",
+      "action": "idle",
+      "direction": "front",
+      "phase": 0,
+      "file": "sprites/defender-idle-front.png",
+      "sha256": "c8bf65895ff8e25a8a5a967f1f842c168ba4adbad9165f92444282e5c91eb06d",
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "source": "source/defender.png",
+      "source_sha256": "84d5cf508f175e993cd44613730231de3cf263803d5b2d89ef503bce65892452",
+      "original_alpha_range": [
+        0,
+        255
+      ],
+      "reference": "references/defender-front.png",
+      "reference_sha256": "da05ee1e4ce6d9ccdc97779a544a56c57590c3455ebe2396cd5591364c7e7ba6",
+      "generation_input": "references/defender-input-4x.png",
+      "generation_input_sha256": "19879540249d5051f71d569e8c47888a3b7289cbb4337eef718116c0d24e42aa",
+      "source_grid_pitch": 5,
+      "editable_blender": "blender/defender.blend",
+      "blender_sha256": "0f4f13cb6193f31649409ef425b98617fad3847365226c86350cdff697363ec8",
+      "silhouette_iou": 0.8961121733588273,
+      "static_view_translation": [
+        1,
+        1
+      ],
+      "agent_visual_review": true
+    },
+    {
+      "identity": "defender",
+      "role": "npc",
+      "action": "idle",
+      "direction": "right",
+      "phase": 0,
+      "file": "sprites/defender-idle-right.png",
+      "sha256": "4f44534083960637d3c8b07f282a967b4011abded3a31a3245c0ac2e6b5f1574",
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "source": "source/defender.png",
+      "source_sha256": "84d5cf508f175e993cd44613730231de3cf263803d5b2d89ef503bce65892452",
+      "original_alpha_range": [
+        0,
+        255
+      ],
+      "reference": "references/defender-right.png",
+      "reference_sha256": "de12c6d7e9d9555bc71a29e480a47c91a7cf83caf3bf01c895ac2ffe827c05a6",
+      "generation_input": "references/defender-input-4x.png",
+      "generation_input_sha256": "19879540249d5051f71d569e8c47888a3b7289cbb4337eef718116c0d24e42aa",
+      "source_grid_pitch": 5,
+      "editable_blender": "blender/defender.blend",
+      "blender_sha256": "0f4f13cb6193f31649409ef425b98617fad3847365226c86350cdff697363ec8",
+      "silhouette_iou": 0.867595818815331,
+      "static_view_translation": [
+        4,
+        2
+      ],
+      "agent_visual_review": true
+    },
+    {
+      "identity": "defender",
+      "role": "npc",
+      "action": "idle",
+      "direction": "back",
+      "phase": 0,
+      "file": "sprites/defender-idle-back.png",
+      "sha256": "003f11c0b05fef2fe5ca12e1e15d16592ec2f5d5e65d31bb992be92e2463a098",
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "source": "source/defender.png",
+      "source_sha256": "84d5cf508f175e993cd44613730231de3cf263803d5b2d89ef503bce65892452",
+      "original_alpha_range": [
+        0,
+        255
+      ],
+      "reference": "references/defender-back.png",
+      "reference_sha256": "a6c477222f80fe0be17cc15b1142de02a8488dfef481152e3c584c9e1aa70bf2",
+      "generation_input": "references/defender-input-4x.png",
+      "generation_input_sha256": "19879540249d5051f71d569e8c47888a3b7289cbb4337eef718116c0d24e42aa",
+      "source_grid_pitch": 5,
+      "editable_blender": "blender/defender.blend",
+      "blender_sha256": "0f4f13cb6193f31649409ef425b98617fad3847365226c86350cdff697363ec8",
+      "silhouette_iou": 0.9014360313315927,
+      "static_view_translation": [
+        2,
+        3
+      ],
+      "agent_visual_review": true
+    },
+    {
+      "identity": "defender",
+      "role": "npc",
+      "action": "idle",
+      "direction": "left",
+      "phase": 0,
+      "file": "sprites/defender-idle-left.png",
+      "sha256": "b37d97a6806a531d9c1d122ba86cff48f4269f6b23a67400dc31ba48b4edd208",
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "source": "source/defender.png",
+      "source_sha256": "84d5cf508f175e993cd44613730231de3cf263803d5b2d89ef503bce65892452",
+      "original_alpha_range": [
+        0,
+        255
+      ],
+      "reference": "references/defender-left.png",
+      "reference_sha256": "cd22d9509a30007312ea0267f7bb0f11392a097496ccdb938910ba472a173020",
+      "generation_input": "references/defender-input-4x.png",
+      "generation_input_sha256": "19879540249d5051f71d569e8c47888a3b7289cbb4337eef718116c0d24e42aa",
+      "source_grid_pitch": 5,
+      "editable_blender": "blender/defender.blend",
+      "blender_sha256": "0f4f13cb6193f31649409ef425b98617fad3847365226c86350cdff697363ec8",
+      "silhouette_iou": 0.8747870528109029,
+      "static_view_translation": [
+        4,
+        4
+      ],
+      "agent_visual_review": true
+    }
+  ],
+  "scope": "Four role-specific NPC static turnarounds; no locomotion or combat animation claimed",
+  "npc_binding": "Roles only. Do not silently bind to unrelated named town characters."
+}

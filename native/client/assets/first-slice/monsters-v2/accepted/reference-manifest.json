@@ -1,0 +1,476 @@
+{
+  "clips": {
+    "pack-wolf-idle-front": {
+      "actor": "pack-wolf",
+      "action": "idle",
+      "direction": "front",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/pack-wolf-idle-front-00.png",
+          "sha256": "a44dc9cc984447eb8d3cd76e523e77adef0621b23c9e084f7d8bad6d07e47fb2",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/pack-wolf-idle-front-01.png",
+          "sha256": "f54b97d1dcd379876871ae1b3d12d1c966a311ab049cbfdff4b1c2e203214878",
+          "blender_frame": 5
+        },
+        {
+          "src": "references/pack-wolf-idle-front-02.png",
+          "sha256": "296718497000aaf218e053c7854bbe87bb4bacb23fb141e717f5d677069fb553",
+          "blender_frame": 10
+        },
+        {
+          "src": "references/pack-wolf-idle-front-03.png",
+          "sha256": "18ba8d192e98c872c2ccb6f8c4df65a6ca9d5564fe8cd32f12e23eb87ed9604c",
+          "blender_frame": 15
+        },
+        {
+          "src": "references/pack-wolf-idle-front-04.png",
+          "sha256": "825c38f00cef05a1aa75b1d99005c8ee59cea68fb807964c9f8a70473ee8bca2",
+          "blender_frame": 20
+        },
+        {
+          "src": "references/pack-wolf-idle-front-05.png",
+          "sha256": "2174a71ff5416969e12c5d8f09d5048b0c019bf8872d8023e2f6fb17802dc95a",
+          "blender_frame": 25
+        },
+        {
+          "src": "references/pack-wolf-idle-front-06.png",
+          "sha256": "cdcd4ad50316e45b6cf3ecb07fefbde447fe76511c0b1f2fac5af15c65f8db1d",
+          "blender_frame": 30
+        },
+        {
+          "src": "references/pack-wolf-idle-front-07.png",
+          "sha256": "a604ab3394c58862dd4137027c5c877acc8e7144b298f0db2b528d9ad2d5e0c1",
+          "blender_frame": 35
+        }
+      ],
+      "blender_source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\blender-wolves\\pack-wolf-walking.blend"
+    },
+    "pack-wolf-idle-right": {
+      "actor": "pack-wolf",
+      "action": "idle",
+      "direction": "right",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/pack-wolf-idle-right-00.png",
+          "sha256": "2aae90d06c8e90b120b490b34202765bc1943d0d586fc5c5c8d94e1d6e0031cc",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/pack-wolf-idle-right-01.png",
+          "sha256": "c1039b0ec62376007ae67186524024c047c9254625f1c16eac4dc9f0802b004c",
+          "blender_frame": 5
+        },
+        {
+          "src": "references/pack-wolf-idle-right-02.png",
+          "sha256": "475807aaafb190661d3e7315d42dd318d999b8beebc26ba33f04236e1004b216",
+          "blender_frame": 10
+        },
+        {
+          "src": "references/pack-wolf-idle-right-03.png",
+          "sha256": "e3386ed5925c9939025821f754b1d361dfaea050d4bf6cddabf9ece71fb5dc7d",
+          "blender_frame": 15
+        },
+        {
+          "src": "references/pack-wolf-idle-right-04.png",
+          "sha256": "e2297b508959afb5ebd16fff3ca1fd9e0a7f213003156315102bbd301b9b0379",
+          "blender_frame": 20
+        },
+        {
+          "src": "references/pack-wolf-idle-right-05.png",
+          "sha256": "650b86a5b7f16a6eeaa20d075d64042b39f90e880a034a8edbbbce5000db48ee",
+          "blender_frame": 25
+        },
+        {
+          "src": "references/pack-wolf-idle-right-06.png",
+          "sha256": "ad371deca783169422089e4fad330a5fa0f2701878eca1cdc3478ed5a492532b",
+          "blender_frame": 30
+        },
+        {
+          "src": "references/pack-wolf-idle-right-07.png",
+          "sha256": "060d5f99fc0e94187ea9c3d7de76b44ba71ede820d03286054e2b3d28f55565a",
+          "blender_frame": 35
+        }
+      ],
+      "blender_source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\blender-wolves\\pack-wolf-walking.blend"
+    },
+    "pack-wolf-idle-back": {
+      "actor": "pack-wolf",
+      "action": "idle",
+      "direction": "back",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/pack-wolf-idle-back-00.png",
+          "sha256": "8983f0a9c05b04162abb52f39394e444fe61d56eca1396db7d48c51c806d4cac",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/pack-wolf-idle-back-01.png",
+          "sha256": "46d6f19ad325eef78a780f3c3c9e60f998df0b3e8d42312ab51d180f978e1d92",
+          "blender_frame": 5
+        },
+        {
+          "src": "references/pack-wolf-idle-back-02.png",
+          "sha256": "ec179d56b260b06c4c96d4382101cc891dbb505e9fa712889356bf21112f84d6",
+          "blender_frame": 10
+        },
+        {
+          "src": "references/pack-wolf-idle-back-03.png",
+          "sha256": "dcfcfe9ae10a011a2a73b2bdefbe999af241754058c7a521d1c805cdeb99071f",
+          "blender_frame": 15
+        },
+        {
+          "src": "references/pack-wolf-idle-back-04.png",
+          "sha256": "32e18f81978e3a7b0a907813a2e5d5e1a2f7d8c0fcccf4af989e47c3f5e5b065",
+          "blender_frame": 20
+        },
+        {
+          "src": "references/pack-wolf-idle-back-05.png",
+          "sha256": "03f63bb3225eb258a48446bf21a4cdfa0253410fc3ffddca9cb457dc7774b02b",
+          "blender_frame": 25
+        },
+        {
+          "src": "references/pack-wolf-idle-back-06.png",
+          "sha256": "56d4264076f9e791918734c83dec0a6e6589253d0e11f1ef9ee1787024490957",
+          "blender_frame": 30
+        },
+        {
+          "src": "references/pack-wolf-idle-back-07.png",
+          "sha256": "405a8bbe5780f37c06fdd4a6af21c3c72a5156259a5355a53e7525e962128ddd",
+          "blender_frame": 35
+        }
+      ],
+      "blender_source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\blender-wolves\\pack-wolf-walking.blend"
+    },
+    "pack-wolf-idle-left": {
+      "actor": "pack-wolf",
+      "action": "idle",
+      "direction": "left",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/pack-wolf-idle-left-00.png",
+          "sha256": "91efbeb94c907e108152c03e59ee55e619228b0c8d93e47c4219cb035745819d",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/pack-wolf-idle-left-01.png",
+          "sha256": "7bcc526900d305bbd6f4444829de6bdb69a964125ccb412af224be81b55833e0",
+          "blender_frame": 5
+        },
+        {
+          "src": "references/pack-wolf-idle-left-02.png",
+          "sha256": "9d1a88329a00521060ebde9eac516f901007d86c939bea6bdbb9fa376b187577",
+          "blender_frame": 10
+        },
+        {
+          "src": "references/pack-wolf-idle-left-03.png",
+          "sha256": "87d684d3e38ec76cc6c3f43aa15abd352e87add5e7b8b735709bb8222c6002ed",
+          "blender_frame": 15
+        },
+        {
+          "src": "references/pack-wolf-idle-left-04.png",
+          "sha256": "55ec1530662d8d9ec70bfa7c06ba652709235f97644cabed70a1dd084a1b064b",
+          "blender_frame": 20
+        },
+        {
+          "src": "references/pack-wolf-idle-left-05.png",
+          "sha256": "537dba0f3ec0901a97f9d58efcd6224a374e8f3ee05b0eae5ab28c208a660548",
+          "blender_frame": 25
+        },
+        {
+          "src": "references/pack-wolf-idle-left-06.png",
+          "sha256": "220b99fa06d910181e454bdceb477d2bebc5e1930c994b81357e3a6db4ca99a6",
+          "blender_frame": 30
+        },
+        {
+          "src": "references/pack-wolf-idle-left-07.png",
+          "sha256": "12af1e6c18c7031f5188eb0047c371458fab3bd9d46dc91c04e87ace8f4da8fe",
+          "blender_frame": 35
+        }
+      ],
+      "blender_source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\blender-wolves\\pack-wolf-walking.blend"
+    },
+    "pack-wolf-walk-front": {
+      "actor": "pack-wolf",
+      "action": "walk",
+      "direction": "front",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/pack-wolf-walk-front-00.png",
+          "sha256": "6952515d5f0615b63d299c4fa7f7399e84455c5901a0cfc87e66b733f742fde1",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/pack-wolf-walk-front-01.png",
+          "sha256": "d53c4b0ff0fda172e648703651aad339f18687369c21dcf05b1f7299c7596d5a",
+          "blender_frame": 5
+        },
+        {
+          "src": "references/pack-wolf-walk-front-02.png",
+          "sha256": "9baed7e2ebb08b2f2edaee8d975fc1a3be787463948a994e9ae7f0b2883096ae",
+          "blender_frame": 10
+        },
+        {
+          "src": "references/pack-wolf-walk-front-03.png",
+          "sha256": "ac7b6bc34276787532d032072d46adc46bd68a1d3b762e00a1b9b0a762b3f5ea",
+          "blender_frame": 15
+        },
+        {
+          "src": "references/pack-wolf-walk-front-04.png",
+          "sha256": "c2093ab983a7cef80420549938b877929993834af6edc936fe44554d15d91503",
+          "blender_frame": 20
+        },
+        {
+          "src": "references/pack-wolf-walk-front-05.png",
+          "sha256": "166bc94c2edaf5851693f2f90aca7addab5dc1c0a9c13f014f84359915544564",
+          "blender_frame": 25
+        },
+        {
+          "src": "references/pack-wolf-walk-front-06.png",
+          "sha256": "4417c19db38234bf285b0334fd144d50a3285b1d3efcfceae31d1f45f18aae36",
+          "blender_frame": 30
+        },
+        {
+          "src": "references/pack-wolf-walk-front-07.png",
+          "sha256": "097a0fb9ad2be577223d4f149d2be4b4c85ccf8746cd4e40fa2b7a3842e5697f",
+          "blender_frame": 35
+        }
+      ],
+      "blender_source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\blender-wolves\\pack-wolf-walking.blend"
+    },
+    "pack-wolf-walk-right": {
+      "actor": "pack-wolf",
+      "action": "walk",
+      "direction": "right",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/pack-wolf-walk-right-00.png",
+          "sha256": "ae36b9a2ed2959e3f4a8e6fe2d519a715542ea54abd39fb24b9e8ec0f4ceef01",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/pack-wolf-walk-right-01.png",
+          "sha256": "6d29e4a9b0b92081d475d449642749ba725f7b5d00404e35fc00859eb8abfed5",
+          "blender_frame": 5
+        },
+        {
+          "src": "references/pack-wolf-walk-right-02.png",
+          "sha256": "8bd2238df9cf0341376b78bcecb7daef6f4434254f0a6874b18276e1b682a7d9",
+          "blender_frame": 10
+        },
+        {
+          "src": "references/pack-wolf-walk-right-03.png",
+          "sha256": "d173b8377527e391daa59a362b97344627eb04c42bd75eb1ed39de86e5c35269",
+          "blender_frame": 15
+        },
+        {
+          "src": "references/pack-wolf-walk-right-04.png",
+          "sha256": "f543664fdcc96b6c735595d58bc4d0c3612cc34e514fc7620ea79812e2782bda",
+          "blender_frame": 20
+        },
+        {
+          "src": "references/pack-wolf-walk-right-05.png",
+          "sha256": "a59581dc8219927c5d14de78c243213c7e7cf4085ec3af8741e5e4b49badee5f",
+          "blender_frame": 25
+        },
+        {
+          "src": "references/pack-wolf-walk-right-06.png",
+          "sha256": "7a5aad79dcd33cf103c352d36652bacc988c619f0de19814c04106b2c1e41c67",
+          "blender_frame": 30
+        },
+        {
+          "src": "references/pack-wolf-walk-right-07.png",
+          "sha256": "eeaae6e0858bfa0a3d756b09e755757e3da57ce1e3c228a008b76e706abcf9bf",
+          "blender_frame": 35
+        }
+      ],
+      "blender_source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\blender-wolves\\pack-wolf-walking.blend"
+    },
+    "pack-wolf-walk-back": {
+      "actor": "pack-wolf",
+      "action": "walk",
+      "direction": "back",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/pack-wolf-walk-back-00.png",
+          "sha256": "e97c4ae35903a394edce1a398aba61df579974b661e0442f55f475fc10fd4e22",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/pack-wolf-walk-back-01.png",
+          "sha256": "d118745136ff45c3a771391c3368c16354ab7892b813473b250cd24544c33e40",
+          "blender_frame": 5
+        },
+        {
+          "src": "references/pack-wolf-walk-back-02.png",
+          "sha256": "6edd71d1e990627f7111dd9345586bfe8ad265cbf5536e08c6ec548e034bbb1f",
+          "blender_frame": 10
+        },
+        {
+          "src": "references/pack-wolf-walk-back-03.png",
+          "sha256": "df0844e0a70acaf7296e31415d8ff0d05af68d4b7dfaadb0b601054eb473b803",
+          "blender_frame": 15
+        },
+        {
+          "src": "references/pack-wolf-walk-back-04.png",
+          "sha256": "2ce5902bc0da1acd10995fd7d300e9d8fa00afd2ab3f1de0ab814bd61ab089e3",
+          "blender_frame": 20
+        },
+        {
+          "src": "references/pack-wolf-walk-back-05.png",
+          "sha256": "dbea6edb79ba4aedff856eb8bb4437ecfe85677f7517f2628f08fdc449c1e015",
+          "blender_frame": 25
+        },
+        {
+          "src": "references/pack-wolf-walk-back-06.png",
+          "sha256": "dc8fc2dd5c6e7b918d641189360c45b87015c050769e0bf1d418d0fba5830991",
+          "blender_frame": 30
+        },
+        {
+          "src": "references/pack-wolf-walk-back-07.png",
+          "sha256": "88fa8a63b3b698811ab021e36997cd8729200398ae917f003cf90fbcf83edd6d",
+          "blender_frame": 35
+        }
+      ],
+      "blender_source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\blender-wolves\\pack-wolf-walking.blend"
+    },
+    "pack-wolf-walk-left": {
+      "actor": "pack-wolf",
+      "action": "walk",
+      "direction": "left",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/pack-wolf-walk-left-00.png",
+          "sha256": "0b6876dcdc475c2dfe9be81e586672b901f1f45e0000dd7afb51986951a34c22",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/pack-wolf-walk-left-01.png",
+          "sha256": "fd4919e2d38443f2c3433edbd4f5be90e20e776eebb8794fbcc9e0f0ab6e54d2",
+          "blender_frame": 5
+        },
+        {
+          "src": "references/pack-wolf-walk-left-02.png",
+          "sha256": "4db0f9a61bb7cf2c3fa661b08db9f065bcd927af32b2c80839760fe5e3c790b8",
+          "blender_frame": 10
+        },
+        {
+          "src": "references/pack-wolf-walk-left-03.png",
+          "sha256": "36153e02000b090f91423f8e7290293ef2a2a9f2c5e6a6553f8931fecc9dca32",
+          "blender_frame": 15
+        },
+        {
+          "src": "references/pack-wolf-walk-left-04.png",
+          "sha256": "4943bebc64b8ed66df9a14718f2fe3fe4c21c592b96305a47a7fbef7675655b9",
+          "blender_frame": 20
+        },
+        {
+          "src": "references/pack-wolf-walk-left-05.png",
+          "sha256": "4265dffa29ce88b3a45488733be681b6bde55d41c76bbdcdda6b5a3ef6128f44",
+          "blender_frame": 25
+        },
+        {
+          "src": "references/pack-wolf-walk-left-06.png",
+          "sha256": "eb76c54f3ef2df077d479a39ba8320243b8558d65c21443e8b326aee31cea5de",
+          "blender_frame": 30
+        },
+        {
+          "src": "references/pack-wolf-walk-left-07.png",
+          "sha256": "59891da2e64e3afcb40c2edb9c399b48f93e4718641dbf4f4bcfe8a553293e5d",
+          "blender_frame": 35
+        }
+      ],
+      "blender_source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\blender-wolves\\pack-wolf-walking.blend"
+    }
+  }
+}

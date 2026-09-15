@@ -1,0 +1,262 @@
+{
+  "id": "palisade-intact",
+  "source_sha256": "b832f2654b02653dccf381e07039666bf755c2e4ee9519f4d8a5f48ec06cd9bb",
+  "reference_sha256": "3c87f19f73d2ebd4345a7364694da900e1294dded35e271cb270ec642c1c18cb",
+  "returned_size": [
+    1254,
+    1254
+  ],
+  "pixel_grid": {
+    "size": 5,
+    "source": "autocorr",
+    "offset": [
+      0,
+      3
+    ],
+    "score": 1.0536716071904255,
+    "variance": 47.79301834106445,
+    "gated_out": false
+  },
+  "all_grid_candidates": [
+    {
+      "size": 6,
+      "source": "fine",
+      "offset": [
+        5,
+        2
+      ],
+      "score": 1.0769928761620595,
+      "variance": 58.045406341552734,
+      "gated_out": false
+    },
+    {
+      "size": 4,
+      "source": "fine",
+      "offset": [
+        1,
+        2
+      ],
+      "score": 1.0612173795427966,
+      "variance": 37.81498718261719,
+      "gated_out": false
+    },
+    {
+      "size": 5,
+      "source": "autocorr",
+      "offset": [
+        0,
+        3
+      ],
+      "score": 1.0536716071904255,
+      "variance": 47.79301834106445,
+      "gated_out": false
+    },
+    {
+      "size": 3,
+      "source": "autocorr",
+      "offset": [
+        2,
+        0
+      ],
+      "score": 1.0336763038447858,
+      "variance": 27.525436401367188,
+      "gated_out": false
+    },
+    {
+      "size": 8,
+      "source": "fine",
+      "offset": [
+        1,
+        6
+      ],
+      "score": 1.025036721941356,
+      "variance": 84.00469207763672,
+      "gated_out": false
+    },
+    {
+      "size": 7,
+      "source": "fine",
+      "offset": [
+        4,
+        3
+      ],
+      "score": 1.0198448400748568,
+      "variance": 72.00901794433594,
+      "gated_out": false
+    },
+    {
+      "size": 191,
+      "source": "fold",
+      "offset": [
+        114,
+        41
+      ],
+      "score": 0.7781630535271095,
+      "variance": 628.2731323242188,
+      "gated_out": true
+    },
+    {
+      "size": 190,
+      "source": "fold",
+      "offset": [
+        115,
+        46
+      ],
+      "score": 0.7739047738533613,
+      "variance": 641.388427734375,
+      "gated_out": true
+    },
+    {
+      "size": 59,
+      "source": "autocorr",
+      "offset": [
+        10,
+        54
+      ],
+      "score": 0.7719794138719379,
+      "variance": 426.4891662597656,
+      "gated_out": false
+    },
+    {
+      "size": 43,
+      "source": "autocorr",
+      "offset": [
+        4,
+        7
+      ],
+      "score": 0.7484717963753551,
+      "variance": 291.2113952636719,
+      "gated_out": false
+    },
+    {
+      "size": 185,
+      "source": "fold",
+      "offset": [
+        120,
+        71
+      ],
+      "score": 0.7387239041324902,
+      "variance": 734.1173706054688,
+      "gated_out": true
+    },
+    {
+      "size": 48,
+      "source": "autocorr",
+      "offset": [
+        37,
+        36
+      ],
+      "score": 0.7128621249594936,
+      "variance": 467.6824645996094,
+      "gated_out": false
+    },
+    {
+      "size": 102,
+      "source": "autocorr",
+      "offset": [
+        101,
+        80
+      ],
+      "score": 0.7092556076763004,
+      "variance": 686.5659790039062,
+      "gated_out": true
+    },
+    {
+      "size": 53,
+      "source": "autocorr",
+      "offset": [
+        48,
+        42
+      ],
+      "score": 0.6737205492733108,
+      "variance": 495.7772216796875,
+      "gated_out": false
+    },
+    {
+      "size": 192,
+      "source": "fold",
+      "offset": [
+        181,
+        36
+      ],
+      "score": 0.6030325563000302,
+      "variance": 1069.89453125,
+      "gated_out": true
+    },
+    {
+      "size": 97,
+      "source": "autocorr",
+      "offset": [
+        78,
+        28
+      ],
+      "score": 0.5854570026014705,
+      "variance": 573.4859619140625,
+      "gated_out": false
+    },
+    {
+      "size": 189,
+      "source": "fold",
+      "offset": [
+        6,
+        51
+      ],
+      "score": 0.5546463572938073,
+      "variance": 916.9157104492188,
+      "gated_out": true
+    },
+    {
+      "size": 186,
+      "source": "fold",
+      "offset": [
+        21,
+        66
+      ],
+      "score": 0.5480055491397073,
+      "variance": 1000.239501953125,
+      "gated_out": true
+    },
+    {
+      "size": 181,
+      "source": "fold",
+      "offset": [
+        46,
+        91
+      ],
+      "score": 0.5328003872701168,
+      "variance": 1165.7730712890625,
+      "gated_out": true
+    },
+    {
+      "size": 178,
+      "source": "fold",
+      "offset": [
+        61,
+        106
+      ],
+      "score": 0.52996001671301,
+      "variance": 1250.2044677734375,
+      "gated_out": true
+    }
+  ],
+  "translation": [
+    3,
+    4
+  ],
+  "silhouette_iou": 0.9820336020200058,
+  "canvas": [
+    256,
+    256
+  ],
+  "bbox": [
+    64,
+    117,
+    193,
+    203
+  ],
+  "rescaling": false,
+  "alpha_policy": "Original alpha threshold128; no color key",
+  "visual_acceptance": true,
+  "review_notes": "Inspected at native scale and nearest-neighbor 2x against Blender reference; no checkerboard, shape clipping, silhouette scaling or source corner holes.",
+  "output_sha256": "0800990b65eb91e0aea8dfe8b023d84e8251389fa18f9417d7b49e0e385da9b2"
+}

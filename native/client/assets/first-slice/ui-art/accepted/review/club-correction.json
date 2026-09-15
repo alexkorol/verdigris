@@ -1,0 +1,67 @@
+{
+  "source_sha256": "431317631ef2ec753ebf428ae1e054a26835e116c9ef8ad95873373de1b1aa88",
+  "source_size": [
+    1254,
+    1254
+  ],
+  "requested_logical_canvas": [
+    128,
+    128
+  ],
+  "recovered_canvas": [
+    124,
+    125
+  ],
+  "frame": [
+    48,
+    96
+  ],
+  "canvas_centre_crop": [
+    38,
+    14,
+    86,
+    110
+  ],
+  "pixel_grid": {
+    "size": 10,
+    "source": "autocorr",
+    "offset": [
+      7,
+      0
+    ],
+    "score": 1.0068380054208186,
+    "variance": 54.410057067871094,
+    "gated_out": false
+  },
+  "alpha_zero_fraction": 0.9739907256905495,
+  "bbox": [
+    18,
+    25,
+    32,
+    79
+  ],
+  "sha256": "1866983440047e229bcad37f44b28c7970139354274af1c30c9f3eed4f21bced",
+  "method": "Built-in imagegen targeted edit. PixelRespecter detects coarse blocks and crops a fixed-size frame about the canvas centre. No resize, foreground recentering, or RGB keying.",
+  "quality_metrics": {
+    "cell_size": 10,
+    "offset": [
+      7,
+      0
+    ],
+    "percent_diff_total": 2.4829000150077962,
+    "percent_diff_core": 2.4593554007316727,
+    "percent_diff_halo": 2.5635102284520137,
+    "percent_diff_outside": 0.0,
+    "percent_diff": 2.4829000150077962,
+    "grid_ratio": 0.007974481658692184,
+    "warnings": [],
+    "percent_diff_core_tolerant": 0.31708481769121494,
+    "percent_diff_total_tolerant": 0.585113283426051,
+    "intra_cell_variance": 8.111564636230469,
+    "mode": "global",
+    "grid_kind": "rigid",
+    "regions": 1
+  },
+  "visual_acceptance": true,
+  "visual_review": "Root agent viewed the corrected irregular branch club at native and nearest-neighbor 3x scale on 2026-09-15 and accepted it against the owner-approved exterior concept. In-game acceptance is separate."
+}

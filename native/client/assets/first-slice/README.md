@@ -1,5 +1,24 @@
 # First-slice art — incomplete
 
+## Accepted nonplayer assets
+
+The Village Palisade art pack now contains 16 static NPC cardinal views in
+`npcs-v2/accepted`, eight scenery sprites in `world-scenery/accepted`, four starter
+inventory icons in `ui-art/accepted`, and 64 pack-wolf idle/walk frames in
+`monsters-v2/accepted`. These folders retain the generation inputs, prompts,
+reconstruction evidence, and editable Blender sources where applicable. Their
+native outputs have been inspected; this is not acceptance of a complete combat
+set or of the village-defense gameplay implementation.
+
+World sprites use 48 pixels per metre and declared canvas anchors. Inventory
+icons use their inventory footprint. Preserve these distinct roles when importing.
+The new player appearance and remaining combat/boss animation work are in progress.
+
+Web art-generation conversations belong in the existing ChatGPT project
+[Pixel Art and Game Dev](https://chatgpt.com/g/g-p-68faa7735964819182de7eb32b19560d-pixel-art-and-game-dev/project).
+Nine earlier workflow conversations have been moved there. New generation uses
+the built-in imagegen skill while the web service is rate-limited.
+
 ## Current starter appearance reference
 
 The user-endorsed exterior is [the saved concept](concept/starter-player-exterior.png),

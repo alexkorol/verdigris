@@ -1,0 +1,273 @@
+{
+  "id": "hut",
+  "source_sha256": "7a418fe3305e0ad6390dc73d12994658aeb105a5cfa1bb77e97a92ce33028ff9",
+  "reference_sha256": "a788d790a0474c4e9fe6bc9af03f80a29438eb4fc5b7965ba67da3ddd9821697",
+  "returned_size": [
+    1254,
+    1254
+  ],
+  "pixel_grid": {
+    "size": 5,
+    "source": "autocorr",
+    "offset": [
+      4,
+      4
+    ],
+    "score": 1.9217805521562539,
+    "variance": 129.46556091308594,
+    "gated_out": false
+  },
+  "all_grid_candidates": [
+    {
+      "size": 6,
+      "source": "fine",
+      "offset": [
+        0,
+        4
+      ],
+      "score": 1.9543686555076594,
+      "variance": 147.848388671875,
+      "gated_out": false
+    },
+    {
+      "size": 4,
+      "source": "fine",
+      "offset": [
+        3,
+        2
+      ],
+      "score": 1.9536077201122863,
+      "variance": 99.00932312011719,
+      "gated_out": false
+    },
+    {
+      "size": 5,
+      "source": "autocorr",
+      "offset": [
+        4,
+        4
+      ],
+      "score": 1.9217805521562539,
+      "variance": 129.46556091308594,
+      "gated_out": false
+    },
+    {
+      "size": 3,
+      "source": "fine",
+      "offset": [
+        2,
+        0
+      ],
+      "score": 1.8956804725364083,
+      "variance": 70.60387420654297,
+      "gated_out": false
+    },
+    {
+      "size": 7,
+      "source": "fine",
+      "offset": [
+        6,
+        5
+      ],
+      "score": 1.7969314137357326,
+      "variance": 186.9385528564453,
+      "gated_out": false
+    },
+    {
+      "size": 8,
+      "source": "fine",
+      "offset": [
+        7,
+        5
+      ],
+      "score": 1.7550396916101563,
+      "variance": 210.9060821533203,
+      "gated_out": false
+    },
+    {
+      "size": 11,
+      "source": "autocorr",
+      "offset": [
+        7,
+        0
+      ],
+      "score": 1.5666307035002456,
+      "variance": 264.949951171875,
+      "gated_out": false
+    },
+    {
+      "size": 16,
+      "source": "autocorr",
+      "offset": [
+        12,
+        5
+      ],
+      "score": 1.3532200351999046,
+      "variance": 365.7399597167969,
+      "gated_out": false
+    },
+    {
+      "size": 22,
+      "source": "autocorr",
+      "offset": [
+        18,
+        21
+      ],
+      "score": 1.2308989671761483,
+      "variance": 464.28363037109375,
+      "gated_out": false
+    },
+    {
+      "size": 27,
+      "source": "autocorr",
+      "offset": [
+        26,
+        10
+      ],
+      "score": 1.1831077114067325,
+      "variance": 525.0804443359375,
+      "gated_out": false
+    },
+    {
+      "size": 32,
+      "source": "autocorr",
+      "offset": [
+        29,
+        12
+      ],
+      "score": 1.1652963776102359,
+      "variance": 592.5333251953125,
+      "gated_out": false
+    },
+    {
+      "size": 48,
+      "source": "autocorr",
+      "offset": [
+        29,
+        5
+      ],
+      "score": 1.1358174960101204,
+      "variance": 746.3486328125,
+      "gated_out": true
+    },
+    {
+      "size": 43,
+      "source": "autocorr",
+      "offset": [
+        13,
+        16
+      ],
+      "score": 1.117532380510623,
+      "variance": 667.5147705078125,
+      "gated_out": true
+    },
+    {
+      "size": 150,
+      "source": "fold",
+      "offset": [
+        99,
+        116
+      ],
+      "score": 0.7640761994389599,
+      "variance": 2095.14990234375,
+      "gated_out": true
+    },
+    {
+      "size": 148,
+      "source": "fold",
+      "offset": [
+        107,
+        86
+      ],
+      "score": 0.7595161983980214,
+      "variance": 2056.62744140625,
+      "gated_out": true
+    },
+    {
+      "size": 177,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.7188415018436093,
+      "variance": 1642.4713134765625,
+      "gated_out": true
+    },
+    {
+      "size": 182,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.705936288995478,
+      "variance": 1726.2750244140625,
+      "gated_out": true
+    },
+    {
+      "size": 187,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.6950489058639847,
+      "variance": 1790.4815673828125,
+      "gated_out": true
+    },
+    {
+      "size": 188,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.6916977282860823,
+      "variance": 1803.0389404296875,
+      "gated_out": true
+    },
+    {
+      "size": 190,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.68372949668082,
+      "variance": 1827.1849365234375,
+      "gated_out": true
+    },
+    {
+      "size": 192,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.6743435835561843,
+      "variance": 1851.0872802734375,
+      "gated_out": true
+    }
+  ],
+  "translation": [
+    3,
+    10
+  ],
+  "silhouette_iou": 0.9699504076657981,
+  "canvas": [
+    256,
+    256
+  ],
+  "bbox": [
+    30,
+    49,
+    226,
+    242
+  ],
+  "rescaling": false,
+  "alpha_policy": "Original alpha threshold128; no color key",
+  "visual_acceptance": true,
+  "review_notes": "Inspected at native scale and nearest-neighbor 2x against Blender reference; no checkerboard, shape clipping, silhouette scaling or source corner holes.",
+  "output_sha256": "77cc29e2ad98bc189e1350f92e83b5fafee4f96987dd5ea80722b7a18e3756be"
+}
