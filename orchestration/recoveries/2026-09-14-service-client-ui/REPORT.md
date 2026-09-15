@@ -1,0 +1,9 @@
+# Native co-op presentation milestone
+
+Implemented separate public peer actors, authored Scion appearance/equipment and directional movement/strike presentation through the existing Fable perspective sprite/depth path, peer names/vitals, bounded peer motion eviction, and peer VFX attachment lookup. Local player/camera/vitals remain separate. Party controls use the existing skin and typed command seam: create, invite a displayed actor, accept/decline an invitation, ready/unready, leader start, leave, return, paged roster and errors. Server owns authorization. Remote movement sends release while idle/blocked and on focus loss.
+
+Verification: native/build.ps1 -RunTests exited 0 (eight native suites). Recompiled production client from current sources using identical build flags after adding fixture checks. VERDIGRIS_CAPTURE_ROOT=native/build/coop-evidence; verdigris_client.exe --scenario coop-presentation exited 0: 27 native render/model/input assertions. --scenario frame-budget exited 0; moving full-resolution average 26.0ms, peak37.4ms across20 frames. This performance sample is existing local movement, not service RTT or multiplayer load.
+
+Viewed delivered 1280x800 and960x600 party captures plus motion frames0 and7. Corrected clipped error text after viewing; second captures show full error, separate authored male/female Scions, ready names and unchanged local vitals. Motion fixtures show peer travel and changing authored walk pose through the normal GPU depth path. Captures remain native/build/coop-evidence. These are explicitly arranged authoritative-model fixtures plus real Win32 input, not two networked clients or owner acceptance. Integrated transport/packaging and two-client checks belong to coordinator. Normal installation untouched.
+
+Next: online authentication UI/CLI integration requested by coordinator. No architect acceptance claimed. Worker branch is published under standing owner policy.

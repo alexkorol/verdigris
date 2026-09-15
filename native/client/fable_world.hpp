@@ -346,13 +346,15 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
     const auto name=actor_pose(family,ax,ay,attack,motion.moving,motion.walk_phase);
     // Fixed canvas scale across all frames: the hero has65 ink rows inside
     // its96-row canvas, the raider57. Never resize each pose to its own ink.
-    if(auto* s=sprite(name,pos.x,pos.y,player?(state.lineage_art?184:140):a.elite?184:160,player?equipped_held(state):vector_art::Held::None)) {
+    if(auto* s=sprite(name,pos.x,pos.y,player?(state.lineage_art?184:140):a.elite?184:160,player?(a.id==state.world.player.id?equipped_held(state):vector_art::held_from_item(a.held_item,a.held_item)):vector_art::Held::None)) {
       for(const auto& fx:state.effects) if(fx.kind==EffectFx::Kind::TargetFlash && fx.actor_id==a.id && fx.ttl>0)
         s->flash=std::max(s->flash,float(std::clamp(1.0-(fx.age+state.tick_accum_ms/50)/fx.ttl,0.0,1.0)*.85));
       trace.push_back({player?render::Op::Player:render::Op::Monster,double(pos.x),double(pos.y),0,0,name});
     }
   };
   actor(state.world.player,player_raster_family(state),"player",true);
+  for(const auto& peer:state.world.peers)
+    actor(peer,state.lineage_art?(peer.appearance=="female"?"hero_female":"hero_male"):"hero",("peer:"+peer.id).c_str(),true);
   for(const auto& a:state.world.monsters) actor(a,verdigris::client::monster_art_family(a,state.world),a.id.c_str(),false);
   for(const auto& npc:state.world.npcs) sprite("artisan_sw",npc.position.x,npc.position.y,144);
   for(const auto& [id,pos]:state.loot_positions) {
@@ -531,6 +533,21 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
   trace.push_back({render::Op::Hud,0,0,0,0,"fable:hardware:"+r.gpu.adapter_name()});
   for(const auto& fx:state.effects) if(fx.kind==EffectFx::Kind::DamageNumber) draw_effect(dc,state.camera,bounds,fx,trace);
   paint_telegraphs(state,dc,bounds,trace);
+  for(const auto& peer:state.world.peers) {
+    if(!peer.alive)continue;
+    const auto pos=peer.displayed_position();const auto at=project(state.camera,bounds,pos.x,pos.y);
+    if(at.scale<=0 || at.x<0 || at.x>bounds.right || at.y<0 || at.y>bounds.bottom)continue;
+    const int top=at.y-int(150*at.scale),width=std::max(42,int(60*at.scale));
+    RECT label{at.x-90,top-22,at.x+90,top};
+    auto font=SelectObject(dc,skin::font_small());
+    inventory_text(dc,label,peer.name.empty()?"Scion":peer.name,skin::kInk,DT_CENTER|DT_VCENTER|DT_SINGLELINE|DT_END_ELLIPSIS);
+    SelectObject(dc,font);
+    const RECT back{at.x-width/2,top,at.x+width/2,top+4};
+    FillRect(dc,&back,cached_brush(RGB(24,24,23)));
+    const RECT bar{back.left,top,back.left+int(width*std::clamp(double(peer.life)/std::max(1,peer.life_max),0.0,1.0)),top+4};
+    FillRect(dc,&bar,cached_brush(RGB(109,158,123)));
+  }
+
   for(const auto& a:state.world.monsters) {
     if(!a.alive) continue;
     const auto pos=a.displayed_position(); const auto at=project(state.camera,bounds,pos.x,pos.y);

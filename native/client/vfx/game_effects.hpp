@@ -5,6 +5,7 @@ namespace particle_view {
 using namespace verdigris::client::vfx;
 inline const WorldActor* actor(const WorldView& world,const std::string& id) {
   if(id==world.player.id)return &world.player;
+  for(const auto& a:world.peers)if(a.id==id)return &a;
   for(const auto& a:world.monsters)if(a.id==id)return &a;
   return nullptr;
 }

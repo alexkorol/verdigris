@@ -114,6 +114,7 @@ struct WorldActor {
     return has_display_position ? display_position : position;
   }
   std::string appearance = "male";
+  std::string held_item;
 };
 
 struct WorldCarriedItem {
@@ -149,6 +150,8 @@ enum class ExpeditionPhaseView { Unknown, SlayWardens, ExtractCarriedValue };
 
 struct WorldView {
   WorldActor player;
+  std::vector<WorldActor> peers;
+  ClientParty party;
   std::vector<WorldActor> monsters;
   std::vector<WorldNpc> npcs;
   // Authoritative walkable grid for the current scene (protocol tiles,
