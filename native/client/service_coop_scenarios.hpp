@@ -283,6 +283,8 @@ struct Run {
     state.camera.zoom=kCameraDefaultZoom*zoom_height_factor(800);state.session=verdigris::client::RemoteProtocolSession::online(endpoint);
     std::string error;require(state.session&&state.session->start(&error),"independent service session starts");
     require(wait([&]{return state.session->connection_state()==verdigris::client::ConnectionState::Connected;}),"service transport connected before account admission");
+    capture("online-menu");key(VK_RETURN,true);key(VK_RETURN,false);
+    require(state.account_entry_open,"illustrated online menu opens credential page");capture("account-entry");
     std::string code=read(code_file);while(!code.empty()&&(code.back()=='\r'||code.back()=='\n'||code.back()==' '))code.pop_back();
     require(!code.empty()&&code.size()<=512,"operator enrollment file is present");text(code);SecureZeroMemory(code.data(),code.size());code.clear();
     click(service_account_layout(1280,800).enroll);

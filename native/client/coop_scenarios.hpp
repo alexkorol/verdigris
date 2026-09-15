@@ -91,7 +91,24 @@ int scenario_coop_presentation() {
   scenario_check(!state.motions.contains("peer:"+peer.uuid),"coop fixture: departing peer motion is evicted");
 
   model.service_mode=true;model.authenticated=false;model.account_error="Enrollment code expired. Ask the operator for a new code.";
-  state.frontend=Frontend::Title;
+  state.frontend=Frontend::Title;state.menu_selected=0;state.account_entry_open=false;
+  scenario_check(reference_present(state,1280,800,dir+"/online-menu-1280-fixture.png")&&
+      reference_present(state,3440,1440,dir+"/online-menu-3440-fixture.png"),"account fixture: original illustrated entry menu at both target viewports");
+  SendMessage(window,WM_KEYDOWN,VK_DOWN,0);SendMessage(window,WM_KEYDOWN,VK_RETURN,0);
+  scenario_check(state.frontend==Frontend::Settings&&!model.authenticated&&!gameplay_intent_passes(state,input_focus::Intent::Move),"account fixture: Settings preserves admission gate");
+  SendMessage(window,WM_KEYDOWN,VK_ESCAPE,0);
+  scenario_check(state.frontend==Frontend::Title&&service_account_open(state)&&!state.account_entry_open,"account fixture: Settings Back returns to gated illustrated menu");
+  SendMessage(window,WM_KEYDOWN,VK_DOWN,0);SendMessage(window,WM_KEYDOWN,VK_DOWN,0);SendMessage(window,WM_KEYDOWN,VK_RETURN,0);
+  scenario_check(state.frontend==Frontend::ConfirmQuit&&!model.authenticated,"account fixture: Quit uses the existing confirmation page");
+  SendMessage(window,WM_KEYDOWN,VK_ESCAPE,0);
+  scenario_check(state.frontend==Frontend::Title&&service_account_open(state)&&!state.quit_requested,"account fixture: staying returns to admission menu");
+  SendMessage(window,WM_KEYDOWN,VK_RETURN,0);
+  scenario_check(state.account_entry_open,"account fixture: Enter opens credential page");
+  SendMessage(window,WM_KEYDOWN,VK_ESCAPE,0);
+  scenario_check(!state.account_entry_open&&!model.authenticated&&!state.quit_requested,"account fixture: credential Escape returns to menu without admitting or quitting");
+  SendMessage(window,WM_KEYDOWN,VK_RETURN,0);
+  scenario_check(reference_present(state,1280,800,dir+"/account-entry-1280-fixture.png")&&
+      reference_present(state,3440,1440,dir+"/account-entry-3440-fixture.png"),"account fixture: credential page uses the same gateway and physical controls");
   const std::string secret="fixture-secret-abcdefghijklmnopqrstuvwxyz-0123456789";
   for(char c:secret)SendMessage(window,WM_CHAR,c,0);
   scenario_check(state.account_credential==secret,"account fixture: native credential field supports longer tokens");
@@ -105,8 +122,19 @@ int scenario_coop_presentation() {
   scenario_check(fixture->commands.size()==before+1 && fixture->commands.back().type==verdigris::client::ClientCommand::Type::Authenticate && fixture->commands.back().target==secret && fixture->commands.back().value==1,
       "account fixture: ordinary enrollment button submits secret to session only");
   scenario_check(state.account_credential.empty() && state.combat_requests==attacks,"account fixture: submission clears secret and never attacks");
+  for(char c:secret)SendMessage(window,WM_CHAR,c,0);
+  SendMessage(window,WM_LBUTTONDOWN,0,MAKELPARAM((account.login.left+account.login.right)/2,(account.login.top+account.login.bottom)/2));
+  SendMessage(window,WM_LBUTTONUP,0,0);
+  scenario_check(fixture->commands.back().type==verdigris::client::ClientCommand::Type::Authenticate&&fixture->commands.back().value==0&&state.account_credential.empty(),"account fixture: token sign-in retains native submission and scrubbing");
   model.authenticated=true;
   scenario_check(!service_account_open(state),"account fixture: authoritative admission releases the front door");
+  model.authenticated=false;state.frontend=Frontend::None;state.account_entry_open=false;
+  scenario_check(reference_present(state,1280,800,dir+"/online-revoked-fixture.png")&&state.frontend==Frontend::Title&&
+      frontend_rows(state).front()=="Enter online"&&!gameplay_intent_passes(state,input_focus::Intent::Move),
+      "account fixture: revoked gameplay session returns to usable gated gateway menu");
+  SendMessage(window,WM_KEYDOWN,VK_RETURN,0);
+  scenario_check(state.account_entry_open&&!model.authenticated,"account fixture: revoked session can reopen credential page");
+  model.authenticated=true;
   SetWindowLongPtr(window,GWLP_USERDATA,0);DestroyWindow(window);
   return scenario_failures;
 }

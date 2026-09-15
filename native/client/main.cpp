@@ -714,6 +714,7 @@ struct ClientState {
   };
   std::unordered_map<std::string, ActorMotion> motions;
   std::string account_credential;
+  bool account_entry_open = false;
   skin::TextEntry account_cursor;
   bool party_open = false;
   int party_page = 0;
@@ -5667,6 +5668,8 @@ void open_frontend(ClientState& state, Frontend next) {
 std::vector<std::string> frontend_rows(const ClientState& state) {
   switch (state.frontend) {
     case Frontend::Title:
+      if(state.session&&state.session->model().service_mode&&!state.session->model().authenticated)
+        return {"Enter online","Settings","Quit"};
       return {state.session && state.session->model().chronicle.present &&
                   !state.session->model().chronicle.houses.empty() ? "Continue Scion" : "Begin your House",
               "Settings", "Quit", "House & Scion"};
@@ -5685,6 +5688,9 @@ std::vector<std::string> frontend_rows(const ClientState& state) {
 
 void activate_frontend_row(ClientState& state, int direction = 0) {
   const auto row = state.menu_selected;
+  if(state.frontend==Frontend::Title&&row==0&&state.session&&state.session->model().service_mode&&!state.session->model().authenticated) {
+    state.account_entry_open=true;state.account_cursor.focus(state.account_credential);return;
+  }
   if (state.frontend == Frontend::Settings) {
     if (row == 3) { open_frontend(state, state.settings_parent); return; }
     ensure_audio(state);
