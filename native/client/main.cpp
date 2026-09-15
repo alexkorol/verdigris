@@ -762,6 +762,7 @@ struct ClientState {
   std::string hint;
   int hint_ticks = 0;
   RECT feedback_toast_rect{};
+  std::string feedback_toast_text;
   // TASK-0153 owner Esc contract: Escape closes an open dismissible pane
   // first; only a bare Escape (no pane/modal open) requests application
   // exit. The Win32 path posts the quit from this flag so the deterministic
@@ -10696,6 +10697,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds,
   // Transient gameplay feedback uses a bounded, quiet plate. Long narrative
   // text cannot inherit a large HUD font or stretch across the playfield.
   state.feedback_toast_rect={};
+  state.feedback_toast_text.clear();
   if (state.hint_ticks > 0 && !state.hint.empty()) {
     const int saved=SaveDC(dc);
     SelectObject(dc,skin::font(skin::TextRole::Compact,1));
@@ -10705,17 +10707,32 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds,
     const int width=std::min(560,std::max(160,feedback_right-feedback_left-24));
     SIZE line{};skin::text_extent(dc,"Ag",2,&line);
     const int line_height=std::max(16,int(line.cy));
-    RECT measure{0,0,width-24,0};
-    skin::draw_text(dc,state.hint.c_str(),-1,&measure,DT_CALCRECT|DT_WORDBREAK|DT_NOPREFIX);
+    const auto measured=[&](const std::string& value){RECT r{0,0,width-24,0};
+      skin::draw_text(dc,value.c_str(),-1,&r,DT_CALCRECT|DT_WORDBREAK|DT_NOPREFIX);return r;};
+    std::string display=state.hint;
+    RECT measure=measured(display);
+    if(measure.bottom>2*line_height||measure.right>width-24) {
+      // The capped multiline receipt lost its ellipsis in the delivered
+      // capture. Fit the actual displayed string before drawing it.
+      std::size_t low=0,high=display.size();
+      while(low<high){const auto middle=(low+high+1)/2;const auto r=measured(display.substr(0,middle)+"...");
+        if(r.bottom<=2*line_height&&r.right<=width-24)low=middle;else high=middle-1;}
+      const auto space=display.rfind(' ',low);
+      if(space!=std::string::npos&&space>low/2)low=space;
+      while(low>0&&low<display.size()&&(static_cast<unsigned char>(display[low])&0xc0)==0x80)--low;
+      display=display.substr(0,low)+"...";measure=measured(display);
+    }
+    state.feedback_toast_text=display;
+    const int plate_width=std::min(width,std::max(160,int(measure.right)+24));
     const int text_height=std::min(2*line_height,std::max(line_height,int(measure.bottom)));
-    const int x=feedback_left+(feedback_right-feedback_left-width)/2;
+    const int x=feedback_left+(feedback_right-feedback_left-plate_width)/2;
     const int y=(state.character_pane?48:120)*hud_scale(static_cast<int>(bounds.bottom));
-    const RECT plate{x,y,x+width,y+text_height+16};
+    const RECT plate{x,y,x+plate_width,y+text_height+16};
     state.feedback_toast_rect=plate;
     skin::panel(dc,plate,skin::kGold,226,7.0f);
     SetTextColor(dc,skin::kGold);
     RECT text{plate.left+12,plate.top+8,plate.right-12,plate.bottom-8};
-    skin::draw_text(dc,state.hint.c_str(),-1,&text,DT_WORDBREAK|DT_END_ELLIPSIS|DT_NOPREFIX);
+    skin::draw_text(dc,display.c_str(),-1,&text,DT_WORDBREAK|DT_NOPREFIX);
     RestoreDC(dc,saved);
   }
   LARGE_INTEGER section_t3{};
@@ -21105,7 +21122,14 @@ int scenario_feedback_toast() {
   state.hint=std::string(1000,'W');state.hint_ticks=80;
   raster_art::detail::Surface surface;scenario_check(surface.create(1280,800),"feedback fixture: stress paint surface");
   if(surface.dc){paint_scene(state,surface.dc,RECT{0,0,1280,800});const auto r=state.feedback_toast_rect;
-    scenario_check(r.right-r.left<=560&&r.bottom-r.top<=80,"feedback fixture: unbroken long feedback cannot expand plate");}
+    scenario_check(r.right-r.left<=560&&r.bottom-r.top<=80,"feedback fixture: unbroken long feedback cannot expand plate");
+    scenario_check(state.feedback_toast_text.size()<state.hint.size()&&state.feedback_toast_text.ends_with("..."),"feedback fixture: overflowing text draws an explicit fitted ellipsis");}
+  state.hint="Your House's wagon rolls in with the dawn market. The quartermaster counts 100 gold into the family treasury and prepares the next expedition.";
+  scenario_check(reference_present(state,1280,800,dir+"/feedback-receipt-1280.png"),"feedback fixture: long receipt capture");
+  scenario_check(state.feedback_toast_text.ends_with("..."),"feedback fixture: long receipt visibly signals omitted text");
+  state.hint="War Cry: attack empowered.";
+  scenario_check(reference_present(state,1280,800,dir+"/feedback-short-1280.png"),"feedback fixture: short feedback capture");
+  scenario_check(state.feedback_toast_rect.right-state.feedback_toast_rect.left<560&&state.feedback_toast_text==state.hint,"feedback fixture: short feedback keeps its full text in a fitted plate");
   return scenario_failures;
 }
 
