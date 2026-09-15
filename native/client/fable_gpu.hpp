@@ -2,7 +2,8 @@
 
 // D3D11 world pass, ported from docs/reference/fable-demo. The caller owns
 // authoritative scene assembly and the one shared terrain height sampler.
-// Textures are straight RGBA8; the output is a top-down BGRA8 image for GDI.
+// Uploads accept straight RGBA8; texture storage is premultiplied so hardware
+// interpolation preserves transparent edges. Output is top-down BGRA8 for GDI.
 #ifdef _WIN32
 #ifndef NOMINMAX
 #define NOMINMAX
@@ -131,6 +132,7 @@ Texture2D lightmap : register(t1);
 SamplerState pointSampler : register(s0);
 SamplerState groundSampler : register(s1);
 SamplerState linearSampler : register(s2);
+SamplerState spriteLinearSampler : register(s3);
 struct VertexIn {
   float3 world : POSITION; float2 uv : TEXCOORD0; float4 tint : COLOR0;
   float4 sprite : TEXCOORD1;
@@ -167,19 +169,12 @@ float haze(float dz) { return saturate((dz/depthInfo.x-1.12)/1.02)*.96; }
 float4 pointPremult(float2 uv) {
   // Transparent outside the sprite, including the blur footprint.
   if (any(uv < 0) || any(uv > 1)) return 0;
-  float4 c = image.Sample(pointSampler,uv); c.rgb *= c.a; return c;
-}
-float4 texelPremult(int2 at, uint2 size) {
-  if(any(at<0)||any(at>=int2(size))) return 0;
-  float4 c=image.Load(int3(at,0));c.rgb*=c.a;return c;
+  return image.Sample(pointSampler,uv);
 }
 float4 blurPremult(float2 uv) {
-  // Bilinear interpolation of premultiplied texels, only for the defocused
-  // taps. Straight-alpha interpolation would darken transparent borders.
-  uint w,h;image.GetDimensions(w,h);uint2 size=uint2(w,h);
-  float2 p=uv*size-.5;int2 at=int2(floor(p));float2 f=frac(p);
-  return lerp(lerp(texelPremult(at,size),texelPremult(at+int2(1,0),size),f.x),
-              lerp(texelPremult(at+int2(0,1),size),texelPremult(at+int2(1,1),size),f.x),f.y);
+  // The same bilinear premultiplied taps, now filtered by the texture unit.
+  // Transparent border addressing matches zero texels outside the image.
+  return image.Sample(spriteLinearSampler,uv);
 }
 float4 worldPS(WorldOut i) : SV_TARGET {
   [branch] if(all(i.position.xy>=opaqueRect.xy) && all(i.position.xy<opaqueRect.zw)) discard;
@@ -187,7 +182,7 @@ float4 worldPS(WorldOut i) : SV_TARGET {
   if (i.sprite.w < .5) {
     float4 sharp = image.Sample(groundSampler,i.uv);
     float4 soft = image.SampleBias(groundSampler,i.uv,3.5);
-    c = lerp(sharp,soft,coc(i.dz)); c.rgb *= c.a;
+    c = lerp(sharp,soft,coc(i.dz));
   } else if (i.sprite.w < 1.5) {
     c = pointPremult(i.uv);
   } else {
@@ -352,6 +347,8 @@ class Renderer {
     if (FAILED(hr=device_->CreateSamplerState(&sampler,ground_.ReleaseAndGetAddressOf()))) return fail("anisotropic sampler",hr);
     sampler.Filter=D3D11_FILTER_MIN_MAG_MIP_LINEAR; sampler.MaxAnisotropy=1;
     if (FAILED(hr=device_->CreateSamplerState(&sampler,linear_.ReleaseAndGetAddressOf()))) return fail("linear sampler",hr);
+    sampler.AddressU=sampler.AddressV=sampler.AddressW=D3D11_TEXTURE_ADDRESS_BORDER;
+    if (FAILED(hr=device_->CreateSamplerState(&sampler,sprite_linear_.ReleaseAndGetAddressOf()))) return fail("sprite linear sampler",hr);
     D3D11_RASTERIZER_DESC raster{}; raster.FillMode=D3D11_FILL_SOLID;
     raster.CullMode=D3D11_CULL_NONE; raster.DepthClipEnable=TRUE;
     if (FAILED(hr=device_->CreateRasterizerState(&raster,raster_.ReleaseAndGetAddressOf()))) return fail("raster state",hr);
@@ -411,7 +408,18 @@ class Renderer {
     if(terrain) { desc.BindFlags|=D3D11_BIND_RENDER_TARGET; desc.MiscFlags=D3D11_RESOURCE_MISC_GENERATE_MIPS; }
     HRESULT hr=device_->CreateTexture2D(&desc,nullptr,&texture.image);
     if(FAILED(hr)) return fail("RGBA texture allocation",hr);
-    context_->UpdateSubresource(texture.image.Get(),0,nullptr,rgba,static_cast<UINT>(stride),0);
+    std::vector<std::uint8_t> premultiplied(static_cast<std::size_t>(width)*height*4);
+    for(int y=0;y<height;++y) {
+      std::memcpy(premultiplied.data()+static_cast<std::size_t>(y)*width*4,
+                  rgba+static_cast<std::size_t>(y)*stride,static_cast<std::size_t>(width)*4);
+      for(int x=0;x<width;++x) {
+        const auto* source=rgba+static_cast<std::size_t>(y)*stride+x*4;
+        if(source[3]==255)continue;
+        auto* target=premultiplied.data()+(static_cast<std::size_t>(y)*width+x)*4;
+        for(int c=0;c<3;++c)target[c]=static_cast<std::uint8_t>((unsigned(source[c])*source[3]+127)/255);
+      }
+    }
+    context_->UpdateSubresource(texture.image.Get(),0,nullptr,premultiplied.data(),static_cast<UINT>(width*4),0);
     if(FAILED(hr=device_->CreateShaderResourceView(texture.image.Get(),nullptr,&texture.view)))
       return fail("RGBA texture view",hr);
     if(terrain) context_->GenerateMips(texture.view.Get());
@@ -440,8 +448,8 @@ class Renderer {
     context_->RSSetState(raster_.Get());
     ID3D11Buffer* cb=constants_.Get();
     context_->VSSetConstantBuffers(0,1,&cb);context_->PSSetConstantBuffers(0,1,&cb);
-    ID3D11SamplerState* samplers[]{point_.Get(),ground_.Get(),linear_.Get()};
-    context_->PSSetSamplers(0,3,samplers);
+    ID3D11SamplerState* samplers[]{point_.Get(),ground_.Get(),linear_.Get(),sprite_linear_.Get()};
+    context_->PSSetSamplers(0,4,samplers);
     viewport(width_,height_);
     ID3D11RenderTargetView* world=world_.target.Get();
     context_->OMSetRenderTargets(1,&world,depth_view_.Get());
@@ -722,7 +730,7 @@ class Renderer {
   detail::Com<ID3D11VertexShader> world_vs_,full_vs_;
   detail::Com<ID3D11PixelShader> world_ps_,sky_ps_,light_ps_,post_ps_;
   detail::Com<ID3D11InputLayout> input_;detail::Com<ID3D11Buffer> constants_,vertex_buffer_,index_buffer_;
-  detail::Com<ID3D11SamplerState> point_,ground_,linear_;detail::Com<ID3D11RasterizerState> raster_,occlusion_raster_;
+  detail::Com<ID3D11SamplerState> point_,ground_,linear_,sprite_linear_;detail::Com<ID3D11RasterizerState> raster_,occlusion_raster_;
   detail::Com<ID3D11DepthStencilState> depth_write_,depth_read_,depth_off_;
   detail::Com<ID3D11BlendState> opaque_,alpha_,additive_;
   detail::Target world_,output_,light_;detail::Com<ID3D11Texture2D> depth_image_,staging_;
