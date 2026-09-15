@@ -5,9 +5,14 @@
 The main menu title now uses generated natural-gold fantasy lettering, composed
 over the existing gateway. Small pixel text and existing artwork remain intact.
 The project name is not a palette instruction; the initial green-patina candidate
-was rejected and never enabled. Focused native menu checks and 640/1920 captures
-passed. Fresh r5 package verification is tracked in
-`orchestration/recoveries/2026-09-15-title-art/STATUS.md`.
+was rejected and never enabled. Selected player is
+`C:/Users/Alex/Documents/Verdigris Service QA 2026-09-14-r5/Verdigris.exe`, clean
+source `13d127e5a20fb91664c23a0b3e310d211f03c217`, with ZIP beside the folder.
+All 84 exact packaged scenarios, actual online launcher, two local launcher
+lifecycles and settings restart passed. Viewed the delivered title at 1280/3440
+and focused captures at 640/1920. Runtime commit pushed and remote-verified.
+Hashes, final prompt and evidence: `orchestration/recoveries/2026-09-15-title-art/REPORT.md`.
+The normal installation remains unchanged; prior r4 co-op evidence below is retained.
 
 ## Service/co-op branch — isolated QA delivery, September 14
 
