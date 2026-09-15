@@ -126,3 +126,86 @@ in [WINHTTP_STATUS_CALLBACK](https://learn.microsoft.com/en-us/windows/win32/api
   No byte-identical preservation claim is made without corresponding hashes.
 
 No unresolved gameplay policy was introduced by this transport-only subtask.
+
+## Follow-up: service operations and launcher
+
+Parent coordinator explicitly assigned additional disjoint paths after the
+transport milestone: `native/src/server_main.cpp`, `native/tools/player-launcher.cs`,
+additive `native/tools/package-native.ps1` edits, and new service operation/package
+scripts and docs. No shared build, Store, router, client rendering or simulation
+sources were edited in this worktree.
+
+Server CLI now supports explicit `--service --data <dir> --port <port>
+--qa-policy coop-v1`, private `--enroll` and `--recover <account-id>` output,
+consistent `--backup` and fresh-directory `--restore`, `--health`, `--stop`, and
+embedded `--build-info`. Service lifetime ignores stdin; readiness follows Store
+open/listener success and is cleared on shutdown/failure. Windows control events
+and credential output receive current-user/SYSTEM ACLs. The process polls router
+`healthy()` and stops on failure. CTRL/termination handlers request shutdown;
+console-close waits briefly for cleanup. Named-event controls require the same
+operator and Windows session. Local review retains positional port/stdin quit.
+Unicode Windows command-line paths are decoded from `wmain` to UTF-8 Store paths.
+
+Launcher online mode requires only the graphical client, passes `--online
+<endpoint>`, and sets `VERDIGRIS_SERVICE_PROFILE` plus isolated settings under a
+per-endpoint profile. It removes local save-directory inheritance. Existing
+local-review saves are refused as online profiles. Online startup owns no server;
+the existing local private-server path and profile lock remain. The standard
+native package includes online instructions; the service packager emits only
+server executable, notices, operation scripts and gateway example, with hashes
+and embedded source identity checks. No service/client package was created by
+this worker: the integrated fresh build belongs to the parent gate.
+
+### Follow-up test evidence
+
+`native/build/build-service-operations.cmd` directly compiled this server entry
+and the parent's Store/core sources, then linked against the parent's already
+compiled `coop_networking.obj` and seasonal object. Parent checkout:
+`C:/Users/Alex/Documents/ChatGPT/verdigris-service-coop-20260914`. MSVC C++20 `/W4`
+compile and link exited 0 with no warnings using the normal CRT define. This
+cross-worktree executable is a disposable integration fixture, not a clean
+source-labelled deliverable. No parent sources or objects were modified.
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File native/tools/test-service-operations.ps1 -ServerExecutable native/build/service_operations_server.exe
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File native/tools/test-service-launcher.ps1
+python native/tools/check_legacy_denylist.py
+```
+
+All exited 0. Operations evidence:
+`native/build/service-operations-95bd359f82dd46d3b6c1aee7424e3999/`.
+The real service process proved private output ACL/no credential stdout, existing
+output refusal, Store exclusion while running, readiness, stdin quit and EOF
+independence, clean named-event shutdown, completed backup, fresh restore,
+existing-destination refusal and restored Store enrollment. It did not prove
+gameplay outcome recovery; that is covered by the Store/router integration lane.
+
+Launcher evidence:
+`native/build/online-launcher-52a85ec096a34764bc919b1034e93e05/`.
+The production launcher was freshly compiled and invoked against labelled probe
+executables. Online mode passed with no server executable present and correct
+arguments/environment/profile/settings. A second real-process run proved the
+local-review server readiness, remote client arguments and graceful stdin stop
+contract. Endpoint rejection, endpoint-specific default profiles and locking
+also passed. Probe executables are not graphical game acceptance.
+
+PowerShell parser checks passed for all added/changed scripts. Exact package
+creation/verification, configured gateway validation, Ctrl-close behavior,
+separate-computer play and positive remote TLS remain parent integration or
+external gates. The Caddy example follows its maintained
+[WebSocket proxy documentation](https://caddyserver.com/docs/caddyfile/directives/reverse_proxy)
+and [HTTPS setup](https://caddyserver.com/docs/quick-starts/https), but no Caddy
+instance was deployed. No public network, DNS, firewall, installation or owner
+profile changes occurred.
+
+### Required parent build integration
+
+Compile/link `service_store.cpp` and its Windows libraries into server/client
+targets already sharing networking. Server compile must include the generated
+build-header directory; `server_main.cpp` includes existing `build_identity.hpp`.
+The entry point now uses `wmain` on Windows (console target; normal MSVC CRT
+selection). It requires the agreed Store constructor and `WebSocketServer::healthy()`.
+The parent's current build was inspected and already includes the generated
+header path and Store linkage. Register the two added PowerShell real-process
+tests in the integrated gates and run `package-service.ps1` from a clean
+integrated commit, followed by exact package verification and gameplay tests.

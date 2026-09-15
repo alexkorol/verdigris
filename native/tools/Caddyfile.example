@@ -1,0 +1,29 @@
+# Example only. Requires an explicitly authorized host, domain, certificate
+# arrangement and firewall configuration. Nothing is deployed by this file.
+{
+    admin localhost:2019
+}
+
+game.example.com {
+    @game path /game
+    handle @game {
+        reverse_proxy 127.0.0.1:6540 {
+            transport http {
+                dial_timeout 5s
+                response_header_timeout 10s
+            }
+        }
+    }
+    handle {
+        respond "Not found" 404
+    }
+    # No request body, credentials, enrollment codes or gameplay payloads logged.
+    log {
+        output file service-access.log {
+            roll_size 10MiB
+            roll_keep 5
+            roll_keep_for 168h
+        }
+        format json
+    }
+}

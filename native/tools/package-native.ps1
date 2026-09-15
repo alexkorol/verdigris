@@ -38,6 +38,8 @@ foreach ($relative in @('native/build/verdigris_client.exe', 'native/build/verdi
 $launcher = Join-Path $destination 'Verdigris.exe'
 Add-Type -Path (Join-Path $PSScriptRoot 'player-launcher.cs') -OutputAssembly $launcher -OutputType WindowsApplication -ReferencedAssemblies System.Windows.Forms
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'PLAYER-README.txt') -Destination (Join-Path $destination 'READ-ME.txt')
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'SERVICE-OPERATIONS.md') -Destination (Join-Path $destination 'ONLINE-SERVICE.md')
+Add-Content -LiteralPath (Join-Path $destination 'READ-ME.txt') -Value @('', 'Online service: Verdigris.exe --online "wss://your-authorized-service/game"', 'Online mode starts only the client and uses a separate profile. See ONLINE-SERVICE.md.') -Encoding UTF8
 Assert-CleanSource
 $sourceStatus = @()
 $manifest = [ordered]@{
@@ -45,7 +47,7 @@ $manifest = [ordered]@{
   sourceCommit = $sourceCommit; sourceTree = $sourceTree; sourceStatus = $sourceStatus; entryPoint = 'Verdigris.exe'
   buildStartedUtc = $buildStartedUtc; buildCompletedUtc = [DateTime]::UtcNow.ToString('O'); freshBuild = $true
   platform = 'Windows x64'; signing = 'unsigned local review'; buildCommand = 'powershell -NoProfile -File native/build.ps1'
-  runtimeDependencies = @('Windows .NET Framework 4.x', 'Windows user32/gdi32/gdiplus/ws2_32/winmm system libraries')
+  runtimeDependencies = @('Windows 10 or newer x64', 'Windows .NET Framework 4.x', 'Windows user32/gdi32/gdiplus/ws2_32/winmm/winhttp/bcrypt/winsqlite3 system libraries')
   files = @(Get-ChildItem -LiteralPath $destination -Recurse -File | ForEach-Object {
     [ordered]@{ path = $_.FullName.Substring($destination.Length + 1).Replace('\', '/'); bytes = $_.Length; sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() }
   })
