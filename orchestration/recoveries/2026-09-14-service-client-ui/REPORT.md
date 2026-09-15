@@ -7,3 +7,11 @@ Verification: native/build.ps1 -RunTests exited 0 (eight native suites). Recompi
 Viewed delivered 1280x800 and960x600 party captures plus motion frames0 and7. Corrected clipped error text after viewing; second captures show full error, separate authored male/female Scions, ready names and unchanged local vitals. Motion fixtures show peer travel and changing authored walk pose through the normal GPU depth path. Captures remain native/build/coop-evidence. These are explicitly arranged authoritative-model fixtures plus real Win32 input, not two networked clients or owner acceptance. Integrated transport/packaging and two-client checks belong to coordinator. Normal installation untouched.
 
 Next: online authentication UI/CLI integration requested by coordinator. No architect acceptance claimed. Worker branch is published under standing owner policy.
+
+## Service account UI milestone
+
+Added masked512-character enrollment/token input with paste, selection/navigation and deletion, native Enroll/Sign in buttons, account/connection errors, Quit and gameplay input ownership before authentication. Submission sends Authenticate(target=credential,value=1 enrollment or0 token), clears both transient UI and command strings, and never records the secret in render traces. Authenticated service users have Sign out in the party panel (Logout). ClientModel adds service_mode/authenticated/account_error. The transport owns authentication and protected token persistence.
+
+Further peer refinements: bounded coordinates, ellipsis for long party labels, content-sized party panel, exact handaxe_flint handstone attachment, and peer dash/warcry particle anchors without changing local footstep sampling.
+
+Verification: fresh native source objects and linked production client compiled successfully (one LONG/int UI layout compile mismatch fixed). coop-presentation now includes masked-account Win32 input/render checks and20 production paints at3440x1440 with2 Scions; all passed, average25.105ms on first final measurement. frontend-flow and gameplay-particles both exited0. Viewed account1280x800/960x600 and final compact party captures; text fits, credentials masked, error fully readable. Fixtures remain explicitly arranged model state, not service admission/network proof. Parent integration must run real transport and packaged two-client gates.

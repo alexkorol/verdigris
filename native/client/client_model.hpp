@@ -242,6 +242,9 @@ struct ClientParty {
 };
 
 struct ClientModel {
+  bool service_mode = false;
+  bool authenticated = false;
+  std::string account_error;
   ClientPlayer player;
   std::vector<ClientPlayer> peers;
   ClientParty party;

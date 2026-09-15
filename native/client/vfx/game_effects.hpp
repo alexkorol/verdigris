@@ -53,13 +53,13 @@ void particle_event(ClientState& state,const verdigris::client::PresentationEven
   if(event.type==E::LevelUp) {
     state.particles.play("level_up",{event.actor_id,Anchor::Root},++state.particle_seed);return;
   }
-  if(event.type==E::BuffApplied && event.text=="war-cry" && event.actor_id==world.player.id) {
+  if(event.type==E::BuffApplied && event.text=="war-cry" && particle_view::actor(world,event.actor_id)) {
     state.particles.play("war_cry",{event.actor_id,Anchor::Feet},++state.particle_seed);return;
   }
   if(event.type==E::PickupConfirmed && event.actor_id==world.player.id) {
     state.particles.play("pickup_motes",{event.actor_id,Anchor::Feet},++state.particle_seed);return;
   }
-  if(event.type==E::PlayerDashed && event.actor_id==world.player.id) {
+  if(event.type==E::PlayerDashed && particle_view::actor(world,event.actor_id)) {
     const Vec3 from{float(event.from_x),float(event.from_y),3},to{float(event.to_x),float(event.to_y),3};
     const float distance=std::hypot(to.x-from.x,to.y-from.y);
     if(distance<1 || distance>1000)return;
@@ -67,7 +67,7 @@ void particle_event(ClientState& state,const verdigris::client::PresentationEven
     for(int n=0;n<points;++n)
       state.particles.play("dash_dust",{"",Anchor::World,from+(to-from)*(float(n)/float(points-1))},++state.particle_seed);
     // Accepted dash feedback replaces normal foot sampling for this jump.
-    state.particle_last_step={event.to_x,event.to_y};state.particle_step_known=true;state.particle_step_distance=0;
+    if(event.actor_id==world.player.id) {state.particle_last_step={event.to_x,event.to_y};state.particle_step_known=true;state.particle_step_distance=0;}
     return;
   }
   const auto* actor=particle_view::actor(world,event.text=="incoming"?world.player.id:event.actor_id);

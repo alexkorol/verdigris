@@ -227,7 +227,7 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     if (world.peers.size() >= 128) break;
     if (source.uuid.empty() || source.uuid == model.player.uuid ||
         (!source.scene_id.empty() && source.scene_id != model.scene.id) ||
-        !std::isfinite(source.x) || !std::isfinite(source.y)) continue;
+        !std::isfinite(source.x) || !std::isfinite(source.y) || std::abs(source.x)>1000000 || std::abs(source.y)>1000000) continue;
     if (std::any_of(world.peers.begin(), world.peers.end(), [&](const auto& p) { return p.id == source.uuid; })) continue;
     WorldActor peer;
     peer.id = source.uuid; peer.name = source.display_name;
@@ -235,7 +235,7 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     peer.held_item = source.held_item;
     peer.position = {static_cast<int>(std::lround(protocol_to_world(source.x))),
                      static_cast<int>(std::lround(protocol_to_world(source.y)))};
-    peer.has_display_position = source.has_display_position && std::isfinite(source.display_x) && std::isfinite(source.display_y);
+    peer.has_display_position = source.has_display_position && std::isfinite(source.display_x) && std::isfinite(source.display_y) && std::abs(source.display_x)<=1000000 && std::abs(source.display_y)<=1000000;
     peer.display_position = peer.has_display_position ? verdigris::Vec2{
         static_cast<int>(std::lround(protocol_to_world(source.display_x))),
         static_cast<int>(std::lround(protocol_to_world(source.display_y)))} : peer.position;

@@ -713,6 +713,8 @@ struct ClientState {
     double moving = 0.0;
   };
   std::unordered_map<std::string, ActorMotion> motions;
+  std::string account_credential;
+  skin::TextEntry account_cursor;
   bool party_open = false;
   int party_page = 0;
   double breathe_phase = 0.0;
@@ -9301,6 +9303,7 @@ int raster_strike_frames(const char* family, const std::string& direction) {
 }
 
 #include "coop_ui.hpp"
+#include "service_account_ui.hpp"
 
 void advance_actor_motion(ClientState& state, double dt_ms) {
   state.breathe_phase = std::fmod(state.breathe_phase + dt_ms / 2400.0, 1.0);
@@ -9445,6 +9448,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds,
                : 0.0;
   };
 
+  if (service_account_open(state)) {
+    paint_service_account(state,dc,bounds,rl);state.render_list=std::move(rl);return;
+  }
   if (state.frontend != Frontend::None) {
     paint_frontend(state, dc, bounds, rl);
     state.render_list = std::move(rl);
@@ -11155,7 +11161,7 @@ verdigris::client::ui::PaneFocusView client_pane_focus(const ClientState& state)
 }
 
 bool gameplay_intent_passes(const ClientState& state, input_focus::Intent intent) {
-  if (state.frontend != Frontend::None || state.screen == Screen::Chronicles || state.party_open) return false;
+  if (service_account_open(state) || state.frontend != Frontend::None || state.screen == Screen::Chronicles || state.party_open) return false;
   return verdigris::client::ui::passes_gameplay(client_pane_focus(state), intent);
 }
 
@@ -11296,6 +11302,9 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       }
       break;
     case WM_KEYDOWN:
+      if(state && service_account_key(*state,wparam)) {
+        if(state->quit_requested)PostQuitMessage(0);break;
+      }
       if (!state) break;
       verdigris::client::input::note_input(state->input_latency);
       for (const auto action : {verdigris::client::input::Action::Dash,
@@ -11519,6 +11528,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       apply_bound_key_up(*state, wparam);
       break;
     case WM_CHAR:
+      if(state && service_account_open(*state)){service_account_character(*state,wparam);break;}
       if (state && state->frontend == Frontend::None && state->screen == Screen::Chronicles && !state->chronicle_edit.empty()) {
         auto& value = state->chronicle_edit == "house-name" ? state->house_name_input : state->scion_name_input;
         state->chronicle_cursor.character(value,wparam);
@@ -11555,6 +11565,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         verdigris::client::input::note_input(state->input_latency);
         state->held_gameplay_attacks.insert(VK_LBUTTON);
         SetCapture(window);  // Receive release even after dragging outside the client.
+        if(service_account_click(*state,window,state->mouse))break;
         if(state->gear_overlay || state->character_pane || state->tree_pane || state->frontend!=Frontend::None) {
           state->held_gameplay_attacks.erase(VK_LBUTTON);state->primary_down=false;
         }

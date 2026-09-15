@@ -2,6 +2,11 @@
 // Native party controls consume authoritative state and submit typed intents.
 struct PartyHit { RECT rect{}; std::string label, verb, extra; int value=0; bool enabled=true; };
 struct PartyLayout { RECT toggle{}, panel{}; std::vector<PartyHit> hits; };
+void party_button(HDC dc,RECT rect,const std::string& label,bool hover,bool enabled=true) {
+  skin::inventory_surface(dc,rect,hover&&enabled?1:0);
+  rect.left+=6;rect.right-=6;
+  inventory_text(dc,rect,label,enabled?skin::kInk:skin::kInkDim,DT_CENTER|DT_VCENTER|DT_SINGLELINE|DT_END_ELLIPSIS);
+}
 bool party_visible(const ClientState& state) {
   return state.screen!=Screen::Chronicles && state.frontend==Frontend::None &&
       !state.gear_overlay && !state.character_pane && !state.tree_pane && !trade_pane_open(state) &&
@@ -10,7 +15,7 @@ bool party_visible(const ClientState& state) {
 PartyLayout party_layout(const ClientState& state,int w,int h) {
   PartyLayout out;const int s=hud_scale(h);
   const auto menu=player_menu_rect(w,h,2);
-  out.toggle={menu.left,menu.bottom+5*s,menu.right,menu.bottom+33*s};
+  out.toggle={menu.left-48*s,menu.bottom+5*s,menu.right,menu.bottom+33*s};
   const int ww=std::min(w-24*s,340*s),x=w-ww-16*s,y=out.toggle.bottom+8*s;
   out.panel={x,y,x+ww,std::min(h-104*s,y+410*s)};
   if(!state.party_open)return out;
@@ -33,6 +38,7 @@ PartyLayout party_layout(const ClientState& state,int w,int h) {
     } else add("Return to town","party:returnToTown");
     add("Leave party","party:leave");
   }
+  if(state.session && state.session->model().service_mode && state.session->model().authenticated) add("Sign out","account:logout");
   // One paged roster, bounded by available height. Members and available peers
   // have readable labels; invite targets are server actor UUIDs, never typed names.
   std::vector<PartyHit> roster;
@@ -54,6 +60,7 @@ PartyLayout party_layout(const ClientState& state,int w,int h) {
   for(int i=page*count;i<std::min(int(roster.size()),(page+1)*count);++i)
     add(roster[i].label,roster[i].verb,roster[i].extra,0,roster[i].enabled);
   if(pages>1)add("More players ("+std::to_string(page+1)+"/"+std::to_string(pages)+")","page","",(page+1)%pages);
+  out.panel.bottom=std::min(int(out.panel.bottom),yy+(p.error.empty()?12:110)*s);
   return out;
 }
 bool handle_party_click(ClientState& state,HWND window,POINT point) {
@@ -68,7 +75,7 @@ bool handle_party_click(ClientState& state,HWND window,POINT point) {
   for(const auto& hit:layout.hits)if(PtInRect(&hit.rect,point) && hit.enabled) {
     if(hit.verb=="page"){state.party_page=hit.value;break;}
     if(!hit.verb.empty() && state.session) {
-      verdigris::client::ClientCommand command;command.type=verdigris::client::ClientCommand::Type::PartyAction;
+      verdigris::client::ClientCommand command;command.type=hit.verb=="account:logout"?verdigris::client::ClientCommand::Type::Logout:verdigris::client::ClientCommand::Type::PartyAction;
       command.target=hit.verb;command.extra=hit.extra;command.value=hit.value;state.session->submit(command);
     }
     break;
@@ -80,14 +87,14 @@ void paint_party_ui(ClientState& state,HDC dc,const RECT& bounds,render::List& t
   const auto layout=party_layout(state,bounds.right,bounds.bottom);const int s=hud_scale(bounds.bottom);
   const auto font=SelectObject(dc,skin::font_small());
   const auto& p=state.world.party;
-  inventory_button(dc,layout.toggle,!p.invite_id.empty()?"Invitation":state.party_open?"Close party":"Party",PtInRect(&layout.toggle,state.mouse));
+  party_button(dc,layout.toggle,!p.invite_id.empty()?"Invitation":state.party_open?"Close party":"Party",PtInRect(&layout.toggle,state.mouse));
   if(state.party_open) {
     skin::panel(dc,layout.panel,skin::kGold,245,7.0f);
     RECT title{layout.panel.left+12*s,layout.panel.top+8*s,layout.panel.right-12*s,layout.panel.top+36*s};
     inventory_text(dc,title,!p.invite_id.empty()?"Party invitation":p.id.empty()?"Players nearby":"Your party",skin::kGold);
     for(const auto& hit:layout.hits) {
       if(hit.verb.empty())inventory_text(dc,hit.rect,hit.label,skin::kInk);
-      else inventory_button(dc,hit.rect,hit.label,PtInRect(&hit.rect,state.mouse),hit.enabled);
+      else party_button(dc,hit.rect,hit.label,PtInRect(&hit.rect,state.mouse),hit.enabled);
       trace.push_back({render::Op::Hud,double(hit.rect.left),double(hit.rect.top),0,0,"party:"+hit.label});
     }
     if(!p.error.empty()) {

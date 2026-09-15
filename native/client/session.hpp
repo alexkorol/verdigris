@@ -61,6 +61,8 @@ struct ClientCommand {
     MenuAction,     // `target` = wire action id; `extra` = item id/uuid;
                     // value = price or quantity (server reads what it needs)
     CloseScreen,    // dismiss the open shop/bank pane (client-local)
+    Authenticate,   // target secret credential; value 1 enrollment, 0 token login
+    Logout,
     PartyAction,    // target wire verb; extra recipient actor/invitation party ID; value ready
     AllocateNode,   // `target` = passive-tree axial node id ("q,r")
   };
