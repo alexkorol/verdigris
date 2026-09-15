@@ -1,6 +1,27 @@
 # Runtime requirements shared by creation and validation, independent of the
 # package's self-reported file inventory. Candidates under docs/art-review are
 # deliberately not runtime resources.
+function Get-FirstSlicePackageResources([string]$Root) {
+  $prefix = 'native/client/assets/first-slice/runtime/'
+  $manifest = Join-Path $Root ($prefix + 'manifest.tsv')
+  if (-not (Test-Path -LiteralPath $manifest -PathType Leaf)) { throw 'Accepted first-slice runtime manifest is missing.' }
+  $resources = @($prefix + 'manifest.tsv')
+  foreach ($line in Get-Content -LiteralPath $manifest) {
+    if ([string]::IsNullOrWhiteSpace($line) -or $line.StartsWith('#')) { continue }
+    $fields = $line -split "`t"
+    if ($fields.Count -lt 11) { throw 'Invalid first-slice runtime row.' }
+    foreach ($name in $fields[10..($fields.Count - 1)]) {
+      if ($name -notmatch '^fs_[a-z0-9_-]+_[0-9a-f]{10}$') { throw "Invalid first-slice frame name: $name" }
+      $relative = $prefix + $name + '.png'
+      $hash = (Get-FileHash -LiteralPath (Join-Path $Root $relative) -Algorithm SHA256).Hash.ToLowerInvariant()
+      if (-not $hash.StartsWith($name.Substring($name.Length - 10))) { throw "First-slice frame hash mismatch: $relative" }
+      $resources += $relative
+    }
+  }
+  if ($resources.Count -eq 1) { throw 'First-slice runtime manifest contains no sprite frames.' }
+  return $resources | Sort-Object -Unique
+}
+
 function Get-NativePackageResources([string]$Root) {
   $required = @(
     'native/build/verdigris_client.exe', 'native/build/verdigris_server.exe',
@@ -65,5 +86,6 @@ function Get-NativePackageResources([string]$Root) {
       }
     }
   }
+  $required += @(Get-FirstSlicePackageResources -Root $Root)
   return $required | Sort-Object -Unique
 }

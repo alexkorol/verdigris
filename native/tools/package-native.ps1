@@ -32,9 +32,15 @@ function Copy-Resource([string]$relative) {
   Copy-Item -LiteralPath (Join-Path $repoRoot $relative) -Destination $target -Recurse
 }
 foreach ($relative in @('native/build/verdigris_client.exe', 'native/build/verdigris_server.exe',
-  'native/client/assets', 'src/assets/fonts', 'src/assets/inventory', 'src/assets/orbs/wizard', 'prototypes/founding-slice/assets')) {
+  'src/assets/fonts', 'src/assets/inventory', 'src/assets/orbs/wizard', 'prototypes/founding-slice/assets')) {
   Copy-Resource $relative
 }
+# Art study originals, editable scenes and rejected candidates stay in the
+# workspace. Only manifest-referenced first-slice pixels belong in the game.
+foreach ($entry in Get-ChildItem -LiteralPath (Join-Path $repoRoot 'native/client/assets')) {
+  if ($entry.Name -ne 'first-slice') { Copy-Resource ('native/client/assets/' + $entry.Name) }
+}
+foreach ($relative in Get-FirstSlicePackageResources -Root $repoRoot) { Copy-Resource $relative }
 $launcher = Join-Path $destination 'Verdigris.exe'
 Add-Type -Path (Join-Path $PSScriptRoot 'player-launcher.cs') -OutputAssembly $launcher -OutputType WindowsApplication -ReferencedAssemblies System.Windows.Forms
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'PLAYER-README.txt') -Destination (Join-Path $destination 'READ-ME.txt')

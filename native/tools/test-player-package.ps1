@@ -8,6 +8,11 @@ if (-not $manifest.freshBuild -or $manifest.sourceCommit -notmatch '^[0-9a-f]{40
 }
 . (Join-Path $PSScriptRoot 'package-resources.ps1')
 $required = @(Get-NativePackageResources -Root $packageRoot) + @('Verdigris.exe', 'READ-ME.txt')
+$firstSliceFiles = @(Get-FirstSlicePackageResources -Root $packageRoot)
+foreach ($file in Get-ChildItem -LiteralPath (Join-Path $packageRoot 'native/client/assets/first-slice') -Recurse -File) {
+  $relative = $file.FullName.Substring($packageRoot.TrimEnd('\').Length + 1).Replace('\', '/')
+  if ($relative -notin $firstSliceFiles) { throw "Non-runtime first-slice artwork in player package: $relative" }
+}
 foreach ($relative in $required) {
   if (@($manifest.files | Where-Object { $_.path -eq $relative }).Count -ne 1) {
     throw "Package inventory must contain exactly one required resource: $relative"
