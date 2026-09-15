@@ -1,71 +1,137 @@
 # Verdigris
 
-Verdigris is a multiplayer action RPG about persistent Houses and mortal
-scions. Descend through procedural instances, shape a build through loot and a
-271-node passive lattice, and leave a permanent crypt record when a scion
-falls. Notable equipment from the dead can circulate back into future world
-drops.
+Verdigris is a WASD-first multiplayer action RPG about persistent **Houses**
+(clans and lineages) and mortal **Scions**. **The native C++ game is the active
+product.** The old Vue/Node game is retained as historical source, not the
+current game to install, develop, or use for native acceptance.
 
-## Run locally
+## Start here: the native game
 
-Requirements: Node 22+ and npm 10+.
+Active development is on
+[`codex/native-reconstitution`](https://github.com/alexkorol/verdigris/tree/codex/native-reconstitution).
+The default branch may lag behind it. Use the native branch for the commands
+below; do not build an older checkout and treat it as the current game.
 
-```bash
-npm install
-npm run dev
+This is an in-development Windows game, not a completed first playable slice.
+For published builds, consult
+[GitHub Releases](https://github.com/alexkorol/verdigris/releases).
+As of 12 September 2026, this repository has no published release package.
+Local review executables and agent completion reports are not public releases.
+
+### Play from source on Windows
+
+Requirements: Windows, PowerShell, Git, Python 3 available as `python`, and
+Visual Studio Build Tools with the C++ toolchain and Windows SDK.
+**Node, npm, Vite, and a browser server are not required for the native game.**
+
+For a new checkout:
+
+```powershell
+git clone --branch codex/native-reconstitution --single-branch https://github.com/alexkorol/verdigris.git verdigris-native
+cd verdigris-native
+powershell -NoProfile -File .\native\tools\play-native.ps1
 ```
 
-The Vite dev server runs at `http://localhost:5173`. The game server and its
-WebSocket protocol share `http://localhost:6500`.
+For an existing checkout, first preserve local work and check its branch and
+upstream. Do not reset or switch a dirty/shared worktree just to follow the
+example above.
 
-Before treating a gameplay change as complete, run the real loop:
+The supported launcher builds missing or stale native executables, starts
+`verdigris_server.exe` on a free local port in 6520–6539, opens
+`verdigris_client.exe --remote`, and cleans up its server when the client
+exits. Logs are under `native/build/logs/`.
 
-```bash
-npm run build        # bundle the client via Vite
-npm run test:unit    # execute Vitest-powered unit tests
-npm run playtest     # play the core loop over the real WebSocket protocol
-npm run smoke:browser # build, boot a real server, and drive the Playwright smoke
-npm run verify       # run every release gate above, plus lint and style checks
+Keep the checkout's assets with this source build. Copying only the client
+executable is not a player package. `-Local` and the bare client executable
+are developer/test paths, not substitutes for the normal server-backed launch.
+
+For detailed controls and platform notes, see the
+[native workspace guide](https://github.com/alexkorol/verdigris/blob/codex/native-reconstitution/native/README.md).
+The current native prototype covers House/Scion entry, expeditions, movement,
+combat, loot/equipment, and return/extraction. For the exact implemented state
+and known limitations, use the
+[native handoff](https://github.com/alexkorol/verdigris/blob/codex/native-reconstitution/docs/rebuild/HANDOFF.md).
+Do not treat the old browser feature checklist as evidence of native completion.
+
+## Build and verify native changes
+
+Run these from the native-branch repository root:
+
+```powershell
+# Build the native executables.
+.\native\build.ps1
+
+# Build and run native tests plus the client scenario suite.
+.\native\build.ps1 -RunTests -RunClientScenarios
+
+# Run a focused client scenario after building.
+.\native\build\verdigris_client.exe --scenario raster-world
 ```
 
-The playtest boots a server and drives login, movement, combat, loot, zones,
-and skill-tree persistence through the production WebSocket protocol.
-Troubleshooting tips and platform-specific notes live in [`docs/development-setup.md`](docs/development-setup.md).
+Native presentation work also requires launching the normal game, capturing
+and inspecting the actual window, and checking that existing raster art and
+animation have not regressed. A helper test, file-hash check, or screenshot
+collected without review does not establish a working player experience.
 
-## Roadmap
+```powershell
+powershell -NoProfile -File .\native\tools\capture-window.ps1 -OutPath .\native\build\review.png
+```
 
-- [x] Foundation & Tooling — one-command release verification now covers lint,
-  unit tests, production build, real-protocol playtests, and a built-browser loop.
-- [x] Gameplay Core — shared Str/Dex/Int stats, soft and mortal death loops,
-  authoritative quests, cheat death, combat, and passive-tree persistence.
-- [ ] Inventory & Items — the 12×7 spatial backpack, equipment, Vesselforge
-  affixes, tooltips, and pointer drag are live; nested containers remain.
-- [x] UI/UX — PoE-inspired panes, closable chat, responsive 2.5D rendering,
-  context menus, minimap, HUD orbs, and quickbar are browser-proven.
-- [x] Monsters & Combat — shared stat scaling, role AI, support healing,
-  generated bosses, feedback, loot, and interpolated movement are playable.
-- [x] Networking & World — persistent town, solo and party instances,
-  procedural layouts, depth transitions, and two-client party flow are live.
+Use an isolated test profile for persistence or destructive gameplay checks.
+A distributed package must also be tested outside the source checkout, with
+its own assets, fonts, and recorded build provenance.
 
-The focused path from the current playable build to 1.0 is maintained in
-[`docs/vision.md`](docs/vision.md#release-runway-toward-10).
+The root `npm run playtest` and `npm run verify` scripts belong to the legacy
+JavaScript game. They are **not native acceptance gates**. Do not run or repair
+them as routine native work.
 
-## Native reconstitution
+### Linux and macOS development
 
-The historical browser game remains available under `src/` and `server/`.
-The new native proof lives in [`native/`](native/README.md): a dependency-free
-C++20 headless simulation, deterministic tests, and a small Win32/console client
-shell for the House → expedition → extraction loop. Read the product authority
-in [`docs/product/VERDIGRIS_CONSTITUTION.md`](docs/product/VERDIGRIS_CONSTITUTION.md)
-before extending it.
+CMake and a C++20 compiler can build the headless/core targets:
 
-## Project layout
+```sh
+cmake -S native -B native/build
+cmake --build native/build
+ctest --test-dir native/build --output-on-failure
+```
 
-- `server/` — authoritative world, combat, accounts, and Chronicle persistence
-- `src/` — Vue client, canvas renderer, and interface
-- `playtest/` — headless playable-loop harness
-- `tests/` — focused unit and balance specifications
-- `docs/` — design, operations, and deployment notes
+The non-Windows client is currently a console fallback, not the Windows
+rendered game. Passing those tests does not verify the Windows presentation.
+
+## Development map
+
+| Area | Purpose |
+| --- | --- |
+| `native/` | Active C++ client, authoritative simulation/server, tests, tools, and assets |
+| `docs/product/` | Product decisions and the Verdigris constitution |
+| `docs/rebuild/` | Native implementation handoffs and evidence |
+| `orchestration/` | Task ownership, coordination, and review records |
+| `src/`, `server/`, `playtest/`, root JS tooling | Historical browser implementation and its tests |
+
+Before implementing, read the native branch's
+[agent guide](https://github.com/alexkorol/verdigris/blob/codex/native-reconstitution/AGENTS.md),
+[product constitution](https://github.com/alexkorol/verdigris/blob/codex/native-reconstitution/docs/product/VERDIGRIS_CONSTITUTION.md),
+and [coordination protocol](https://github.com/alexkorol/verdigris/blob/codex/native-reconstitution/orchestration/PROTOCOL.md).
+
+Authorized implementation includes committing and pushing verified work to
+its working branch unless the owner requests local-only work. Verify the
+remote commit. This does not bypass review, ownership, or default-branch and
+release controls.
+
+[WIZARD](https://github.com/alexkorol/WIZARD/tree/gh-pages) is a separate
+asset-authoring and reference workspace. Its tools and demos are not the
+retired browser game and are not proof of native integration. Candidate art
+still requires visual review before production use.
+
+## Historical browser reference
+
+The old Vue/Node implementation remains in this repository for provenance and
+selective reference. Its [historical setup notes](docs/development-setup.md)
+and root JavaScript scripts are not instructions for launching the current
+native product. Routine development does not maintain a second game; legacy
+work requires an explicit task. Preserve historical source and attribution
+rather than mechanically porting its behavior or deleting it to simplify the
+README.
 
 ## Attribution
 
