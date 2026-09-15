@@ -2568,3 +2568,8 @@ Branch `codex/first-slice-art-20260914`, isolated worktree. Published art scope:
 This is NOT completion of the owner request for all village-defense prologue assets. Native game integration, idle/combat/equipment, NPCs, monsters and scenery remain unfinished. Rejected local generations are excluded from the versioned reviewed pack. Do not use old candidate files when their source hash no longer matches the report. The experimental attack renderer still has hand-pose and skin-mask defects and is not approved for painting or runtime.
 
 Validation: package validator loaded all128 PNGs and checked RGBA/binary alpha,96x96 size, unique phases, source/reference/output hashes, fixed anchor, whole-cycle registration and per-frame silhouette gates. Both full64-frame contact sheets were visually inspected at2x; no gameplay change is claimed. Native baseline build/tests and fable-world scenario passed before asset work; no client source or game behavior was changed by this milestone. Standing owner policy permits committing and normal pushing verified implementation; do not add a blanket push ban.
+
+
+### Starter exterior reference update
+
+The user supplied and endorsed `native/client/assets/first-slice/concept/starter-player-exterior.png`. This exact image is now the appearance reference. It supersedes earlier short-hair, mandatory centered-back-braid, thin-belt and open-sandal-only assumptions. Preserve its long naturally draped female braid, male wavy hair and jaw beard, coarse untrimmed flax, substantial rope belts, asymmetric sporty female tunic, woven footwear and low wooden-club grips. The 128-frame milestone predates this concept and is not a completed match. No Blender or generated sprite change is claimed by this reference-only update.

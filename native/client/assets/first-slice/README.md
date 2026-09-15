@@ -1,5 +1,16 @@
 # First-slice art — incomplete
 
+## Current starter appearance reference
+
+The user-endorsed exterior is [the saved concept](concept/starter-player-exterior.png),
+with its scope recorded in [appearance-reference.json](concept/appearance-reference.json).
+Use the image itself for both Blender revisions and appearance painting. Its long
+female braid, heavier rope belt, rough asymmetric clothing, and woven footwear
+supersede conflicting design assumptions from earlier trials. The existing 128-frame
+locomotion milestone below predates this concept and still needs an appearance revision.
+
+## Previous locomotion milestone
+
 `reviewed/manifest.json` contains 128 painted player locomotion frames: male and
 female, walk and sprint, eight phases in four cardinal directions. Each PNG has
 a 96×96 canvas, [48,80] rig anchor, and 48 pixels per metre at the player plane.
