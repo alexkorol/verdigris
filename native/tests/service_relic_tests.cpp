@@ -36,6 +36,30 @@ try {
  second_restart.queue(*item,"account-a","house-a","scion-c","Cedar");
  auto third=second_restart.release("account-a","instance-third-death");
  check(bool(third)&&third->item.uuid==item->uuid&&third->scion=="scion-c","third distinct Scion death can circulate that same physical item");
+ // A's account can be offline while B recovers A's item and later dies.
+ // Replacing current provenance must not erase A's unobserved recovery receipt.
+ ServiceRelicLedger receipts;
+ receipts.queue(*item,"account-a","house-a","receipt-scion-a","Alder");
+ check(bool(receipts.release("account-a","receipt-first"))&&receipts.claim(item->uuid),"first cross-account recovery fixture claims A relic");
+ const std::map<std::string,std::string> only_a{{"receipt-scion-a","account-a"}};
+ check(receipts.records().at(item->uuid).recovered_sources==only_a,"first claim records original source account and Scion receipt");
+ receipts.queue(*item,"account-b","house-b","receipt-scion-b","Briar");
+ check(receipts.records().at(item->uuid).account=="account-b"&&receipts.records().at(item->uuid).state=="queued"&&
+       receipts.records().at(item->uuid).recovered_sources==only_a,"B later death preserves offline A recovery receipt despite replacing current owner");
+ ServiceRelicLedger receipt_restart;
+ check(receipt_restart.restore(receipts.serialize())&&receipt_restart.records().at(item->uuid).recovered_sources==only_a,
+       "offline A receipt survives serialize and restart while B relic remains queued");
+ check(bool(receipt_restart.release("account-b","receipt-second"))&&receipt_restart.claim(item->uuid),"B relic can subsequently be recovered");
+ const std::map<std::string,std::string> both{{"receipt-scion-a","account-a"},{"receipt-scion-b","account-b"}};
+ check(receipt_restart.records().at(item->uuid).recovered_sources==both,"second claim retains independent receipts for both original accounts");
+ receipt_restart.queue(*item,"account-a","house-a","receipt-scion-a","Alder");
+ receipt_restart.queue(*item,"account-b","house-b","receipt-scion-b","Briar");
+ check(!receipt_restart.claim(item->uuid)&&!receipt_restart.release("account-a","receipt-replay")&&
+       !receipt_restart.release("account-b","receipt-replay")&&receipt_restart.records().at(item->uuid).recovered_sources==both,
+       "replayed deaths and claims cannot duplicate receipts or reissue either account's item");
+ ServiceRelicLedger both_restart;
+ check(both_restart.restore(receipt_restart.serialize())&&both_restart.records().at(item->uuid).recovered_sources==both,
+       "both independent recovery receipts survive another restart");
  for(const auto* invalid:{"+1",".5","01","0x10","1.","1e","NaN","Infinity","1e400","{\"x\":1,\"x\":2}"}){JsonValue value;check(!parse_json(invalid,value),"strict JSON rejects invalid number or duplicate");}
  JsonValue value;check(parse_json("-1.25e+2",value)&&value.number()==std::optional<double>(-125),"valid JSON number");
  std::cout<<"service_relic_tests: "<<checks<<" checks PASS\n";return 0;
