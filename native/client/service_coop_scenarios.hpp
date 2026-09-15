@@ -62,7 +62,7 @@ struct Run {
     require(reference_present(state,width,height,(output/(name+".png")).string()),"capture "+name);
     const auto& m=model();Json::Array peers;
     for(const auto& p:m.peers)peers.push_back(Json::Object{{"id",p.uuid},{"scene",p.scene_id},{"appearance",p.appearance},{"x",p.x},{"y",p.y},{"hp",p.life}});
-    write(output/(name+".json"),Json(Json::Object{{"build",VERDIGRIS_BUILD_ID},{"pid",int(GetCurrentProcessId())},{"role",role},{"actor",m.player.uuid},{"house",m.chronicle.active_house_id},{"scion",m.chronicle.active_scion_id},{"scene",m.scene.id},{"appearance",m.player.appearance},{"x",m.player.x},{"y",m.player.y},{"hp",m.player.life},{"peers",peers},{"party",m.party.id},{"party_state",m.party.state},{"player_render_ops",int(render::count(state.render_list,render::Op::Player))}}).stringify());
+    write(output/(name+".json"),Json(Json::Object{{"build",VERDIGRIS_BUILD_ID},{"pid",int(GetCurrentProcessId())},{"role",role},{"actor",m.player.uuid},{"house",m.chronicle.active_house_id},{"scion",m.chronicle.active_scion_id},{"scene",m.scene.id},{"appearance",m.player.appearance},{"x",m.player.x},{"y",m.player.y},{"hp",m.player.life},{"peers",peers},{"party",m.party.id},{"party_state",m.party.state},{"has_stairs_up",m.scene.has_stairs_up},{"stairs_up_x",m.scene.stairs_up_x},{"stairs_up_y",m.scene.stairs_up_y},{"living_enemies",int(std::count_if(m.monsters.begin(),m.monsters.end(),[](const auto& monster){return monster.alive;}))},{"player_render_ops",int(render::count(state.render_list,render::Op::Player))}}).stringify());
   }
   bool chronicle(const std::string& verb,const std::string& arg="") {
     paint_scene(state,surface.dc,RECT{0,0,1280,800});
@@ -80,7 +80,7 @@ struct Run {
   bool walkable(int x,int y)const {
     const auto& m=model();return x>=0&&y>=0&&x<m.map_width&&y<m.map_height&&int(m.map_walkable.size())==m.map_width*m.map_height&&m.map_walkable[y*m.map_width+x]!=0;
   }
-  std::pair<int,int> step_toward(double target_x,double target_y)const {
+  std::pair<int,int> step_toward(double target_x,double target_y,bool allow_extraction=false)const {
     const auto& m=model();const int sx=int(std::lround(m.player.x)),sy=int(std::lround(m.player.y)),tx=int(std::lround(target_x)),ty=int(std::lround(target_y));
     const int w=m.map_width,h=m.map_height;
     if(w<=0||h<=0||w*h>262144||!walkable(sx,sy))return {0,0};
@@ -89,7 +89,13 @@ struct Run {
       const int at=queue[head++];const int x=at%w,y=at/w;
       if(x==tx&&y==ty){finish=at;break;}
       for(const auto [dx,dy]:{std::pair{1,0},{0,1},{-1,0},{0,-1}}) {
-        const int nx=x+dx,ny=y+dy;if(!walkable(nx,ny))continue;const int next=ny*w+nx;
+        const int nx=x+dx,ny=y+dy;if(!walkable(nx,ny))continue;
+        // Entering the rounded entrance tile extracts immediately. It is
+        // traversable terrain, but never a combat/loot route intermediate.
+        // A character spawned there may walk off; only re-entry is excluded.
+        if(!allow_extraction&&m.scene.type=="instance"&&m.scene.has_stairs_up&&
+            nx==int(std::lround(m.scene.stairs_up_x))&&ny==int(std::lround(m.scene.stairs_up_y)))continue;
+        const int next=ny*w+nx;
         if(parent[next]>=0)continue;parent[next]=at;queue.push_back(next);
       }
     }
@@ -101,12 +107,12 @@ struct Run {
     for(const auto& worn:model().worn)rows.push_back(worn.item.uuid+":"+worn.item.id+":"+std::to_string(worn.item.quantity)+":"+worn.seat);
     std::sort(rows.begin(),rows.end());std::string signature;for(const auto& row:rows)signature+=row+"\n";return signature;
   }
-  bool approach(double x,double y,double reach=0.65,int timeout_ms=30000) {
+  bool approach(double x,double y,double reach=0.65,int timeout_ms=30000,bool allow_extraction=false) {
     const auto deadline=std::chrono::steady_clock::now()+std::chrono::milliseconds(timeout_ms);const auto origin_scene=model().scene.id;
     while(std::chrono::steady_clock::now()<deadline&&model().player.alive) {
-      if(model().scene.id!=origin_scene){movement(0,0);return true;}
+      if(model().scene.id!=origin_scene){movement(0,0);return allow_extraction;}
       if(std::hypot(x-model().player.x,y-model().player.y)<=reach){movement(0,0);settle(200);return true;}
-      const auto [dx,dy]=step_toward(x,y);if(!dx&&!dy){movement(0,0);return std::hypot(x-model().player.x,y-model().player.y)<=1.0;}
+      const auto [dx,dy]=step_toward(x,y,allow_extraction);if(!dx&&!dy){movement(0,0);return std::hypot(x-model().player.x,y-model().player.y)<=1.0;}
       movement(dx,dy);settle(100);
     }
     movement(0,0);return false;
@@ -124,6 +130,7 @@ struct Run {
     barrier("charge-and-court");settle(1000);capture("town-peers-clear");
   }
   bool combat_step(int frame,const std::string& prefix) {
+    if(model().scene.id!=instance_id)require(false,"combat remains in the shared instance until intentional extraction");
     const verdigris::client::ClientMonster* target=nullptr;double nearest=1e9;
     for(const auto& m:model().monsters)if(m.alive){const double d=std::hypot(m.x-model().player.x,m.y-model().player.y);if(d<nearest){nearest=d;target=&m;}}
     if(!target)return false;const double tx=target->x,ty=target->y;
@@ -132,7 +139,12 @@ struct Run {
       movement(0,0);const auto at=project(state.camera,RECT{0,0,1280,800},verdigris::client::protocol_to_world(tx),verdigris::client::protocol_to_world(ty));
       SendMessage(window,WM_MOUSEMOVE,0,MAKELPARAM(at.x,at.y));settle(100);click(RECT{at.x-1,at.y-1,at.x+1,at.y+1});
     }
-    settle(150);if(frame<12||frame%30==0)capture(prefix+"-"+std::to_string(frame));return true;
+    settle(100);
+    // Snapshot encoding can be slower than an authority tick. Release real
+    // keys before capture so a route step cannot run past its next corner.
+    movement(0,0);settle(100);
+    if(model().scene.id!=instance_id)require(false,"combat movement preserves the shared instance");
+    if(frame<12||frame%30==0)capture(prefix+"-"+std::to_string(frame));return true;
   }
   void complete_and_reconnect(const std::string& endpoint) {
     const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(120);int frame=0;
@@ -141,7 +153,7 @@ struct Run {
       if(!combat_step(frame++,"warden-fight"))break;
     }
     movement(0,0);settle();require(model().player.alive,"own Scion survives shared Warden encounter");
-    require(std::none_of(model().monsters.begin(),model().monsters.end(),[](const auto& m){return m.alive;}),"shared first floor is cleared by ordinary combat");
+    require(model().scene.id==instance_id&&!model().monsters.empty()&&std::none_of(model().monsters.begin(),model().monsters.end(),[](const auto& m){return m.alive;}),"shared first floor is cleared by ordinary combat");
     require(wait([&]{return warden_credit;},5000),"this House receives shared first-Warden credit");barrier("warden-cleared");capture("warden-cleared");
     if(!model().ground.empty()&&(role=="A"||model().ground.size()>1)) {
       const auto drop=role=="A"?model().ground.front():model().ground.back();
@@ -149,7 +161,7 @@ struct Run {
     }
     capture("owned-loot");barrier("loot-observed");
     const auto exit=model().scene;require(exit.has_stairs_up,"authoritative extraction position exists");
-    require(approach(exit.stairs_up_x,exit.stairs_up_y,1.0,45000)||model().scene.type!="instance","ordinary return movement reaches extraction");
+    require(approach(exit.stairs_up_x,exit.stairs_up_y,1.0,45000,true)||model().scene.type!="instance","ordinary return movement reaches extraction");
     if(model().scene.type=="instance")require(party("party:returnToTown"),"native Return to town control requests extraction");
     require(wait([&]{return model().scene.type!="instance";}),"own Scion returns to town without replacing ally world");party_open(false);
     require(wait([&]{return reward_received;}),"own House reward is acknowledged after return");
