@@ -170,3 +170,41 @@ its initial ordinary deposit. Neither sends a development or client-save command
 Build the test against the parent's current `core`, `seasonal`, `networking`, and
 `service_store` objects and headers, then run it as a new service authority gate.
 Fixes must make these assertions pass before the integrated candidate is promoted.
+
+## Shared actor and scheduling regression (subsequent parent assignment)
+
+Added only `native/tests/service_actor_tests.cpp`; parent still owns all module
+edits and build wiring. The new gate compiled and returned **exit 0: 27 checks,
+0 failures** against captured parent sources:
+
+- networking SHA256 `F793B765086F3ED565FEA6557F70E33C446D4E5CA452F408238B4247C41ADE25`
+- core SHA256 `15338A106429ED9AE0DB940E1841DA1BEC904CF081C3CD0DF3DD1AE9904B90CD`
+
+Coverage: distinct pending targets/windups, isolated critical modifiers,
+independent attack recovery, two actors damaging one shared enemy with exact
+event-based damage conservation, one actor's disengagement/exit preserving the
+ally, one shared boss telegraph and one attributed impact for each in-range
+actor, repeated/stale sample rejection, extra participant pursuit compared
+against the same-seed single-participant clock, and independent dash recovery.
+
+Direct service sessions use normal found/create/set-out admission, then send
+1,000 movement packets before a tick, 1,000 duplicate ticks, stale/fresh movement
+sequences, stop intent, and a fresh client sequence after socket replacement.
+Another 1,000 attack commands are checked to leave enemy/ally damage unchanged
+until the authority tick resolves contact. World arrangement uses deterministic
+core fixture seams, not service development commands. This is headless actor and
+service-command evidence, not graphical, socket soak, or external-network proof.
+
+Outputs and captured source/object copies are only under this worker's ignored
+`native/build/actor-audit`. Compile the new file with the integrated core,
+seasonal, networking, and service_store objects/headers to wire the gate. The
+test source compiled cleanly; captured production sources retain existing
+unreferenced-parameter, cast, and inet_addr deprecation warnings in this audit
+build, which did not use /WX for those parent modules.
+
+Read-only review also identified the old reconnect movement sequence retained
+across socket replacement; parent corrected that seam before this source
+capture and the new regression passes. Earlier source findings about reader
+thread reaping, lifetime resident session caps, and failed-pickup side effects
+were sent to parent for bounded correction; this lane does not claim those
+findings were runtime soak results or all were corrected by this actor gate.
