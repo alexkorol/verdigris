@@ -153,8 +153,8 @@ struct Run {
     if(model().scene.type=="instance")require(party("party:returnToTown"),"native Return to town control requests extraction");
     require(wait([&]{return model().scene.type!="instance";}),"own Scion returns to town without replacing ally world");party_open(false);
     require(wait([&]{return reward_received;}),"own House reward is acknowledged after return");
-    points_after=model().progression.earned_points;require(points_after>points_before,"authoritative passive budget includes earned progression");
-    settle(1000);inventory_after=inventory_signature();capture("returned-house-progress");barrier("returned");
+    require(wait([&]{return model().progression.present&&model().progression.earned_points>points_before;}),"authoritative passive budget includes earned progression");
+    settle(1000);points_after=model().progression.earned_points;inventory_after=inventory_signature();capture("returned-house-progress");barrier("returned");
     state.session->shutdown();state.frontend=Frontend::Title;state.screen=Screen::Chronicles;
     state.session=verdigris::client::RemoteProtocolSession::online(endpoint);std::string error;
     require(state.session->start(&error),"new connection starts without enrollment credentials");
@@ -238,7 +238,7 @@ struct Run {
   void report(const std::string& error) {
     auto sorted=steady_samples;std::sort(sorted.begin(),sorted.end());double sum=0;for(double sample:sorted)sum+=sample;
     const auto percentile=[&](double p){return sorted.empty()?0.0:sorted[std::min(sorted.size()-1,std::size_t((sorted.size()-1)*p))];};
-    Json result=Json::Object{{"status",error.empty()?"passed":"failed"},{"role",role},{"pid",int(GetCurrentProcessId())},{"build",VERDIGRIS_BUILD_ID},{"actor",actor_id},{"peer",other_id},{"house",house_id},{"scion",scion_id},{"town",town_id},{"instance",instance_id},{"own_hit",own_hit},{"charge_accepted",charge_accepted},{"warden_credit",warden_credit},{"reward_received",reward_received},{"reconnected",reconnected},{"points_before",points_before},{"points_after",points_after},{"inventory_signature",inventory_after},{"steady_paint_samples",int(sorted.size())},{"steady_average_paint_ms",sorted.empty()?0.0:sum/sorted.size()},{"steady_p50_paint_ms",percentile(.50)},{"steady_p95_paint_ms",percentile(.95)},{"steady_peak_paint_ms",sorted.empty()?0.0:sorted.back()},{"steady_sample_rule","First 20 gameplay frames per authoritative scene excluded; frontends and open party panels excluded; concurrent clients on one machine"},{"checks",checks},{"error",error},{"frames",frames},{"average_paint_ms",frames?total_frame_ms/frames:0},{"peak_paint_ms",max_frame_ms},{"topology","two separate native client processes and independent service; app-owned hidden windows"}};
+    Json result=Json::Object{{"status",error.empty()?"passed":"failed"},{"role",role},{"pid",int(GetCurrentProcessId())},{"build",VERDIGRIS_BUILD_ID},{"actor",actor_id},{"peer",other_id},{"house",house_id},{"scion",scion_id},{"town",town_id},{"instance",instance_id},{"own_hit",own_hit},{"charge_accepted",charge_accepted},{"warden_credit",warden_credit},{"reward_received",reward_received},{"reconnected",reconnected},{"points_before",points_before},{"points_after",points_after},{"inventory_signature",inventory_after},{"steady_paint_samples",int(sorted.size())},{"steady_average_paint_ms",sorted.empty()?0.0:sum/sorted.size()},{"steady_p50_paint_ms",percentile(.50)},{"steady_p95_paint_ms",percentile(.95)},{"steady_peak_paint_ms",sorted.empty()?0.0:sorted.back()},{"steady_sample_rule","First 20 gameplay frames per authoritative scene excluded; frontends and open party panels excluded; concurrent clients on one machine"},{"checks",checks},{"error",error},{"last_message",state.session?model().last_message:std::string{}},{"account_error",state.session?model().account_error:std::string{}},{"frames",frames},{"average_paint_ms",frames?total_frame_ms/frames:0},{"peak_paint_ms",max_frame_ms},{"topology","two separate native client processes and independent service; app-owned hidden windows"}};
     write(output/"result.json",result.stringify());
   }
 };
@@ -249,5 +249,5 @@ int scenario_service_client() {
   if(endpoint.empty()||code.empty()||(role!="A"&&role!="B")||sync.empty()) {std::fprintf(stderr,"service-client needs QA endpoint, code file, role A/B and fresh sync directory\n");++scenario_failures;return 1;}
   Run run(sync,role);
   try {run.execute(endpoint,code);run.report("");return 0;}
-  catch(const std::exception& error) {try{run.mark("failed",error.what());run.report(error.what());}catch(...){}std::fprintf(stderr,"service-client %s failed: %s\n",role.c_str(),error.what());++scenario_failures;return 1;}
+  catch(const std::exception& error) {try{run.mark("failed",error.what());if(run.window&&run.surface.dc&&run.state.session)run.capture("failure");run.report(error.what());}catch(...){}std::fprintf(stderr,"service-client %s failed: %s\n",role.c_str(),error.what());++scenario_failures;return 1;}
 }
