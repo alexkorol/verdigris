@@ -26,7 +26,7 @@ int scenario_coop_presentation() {
   model.player.y=double(state.world.player.position.y)/kTileUnits;
   model.player.appearance="male";
   auto peer=model.player;peer.uuid="actor:bea";peer.display_name="Beatrice";
-  peer.x-=.9;peer.y+=.4;peer.appearance="female";peer.life=63;peer.facing="left";peer.held_item="handaxe";
+  peer.x-=.9;peer.y+=.4;peer.appearance="female";peer.life=63;peer.facing="left";peer.held_item="handaxe_flint";
   model.peers.push_back(peer);
   state.simulation.reset();
   state.session=std::move(session);sync_world_from_model(state.world,model);state.world.monsters.clear();
@@ -75,8 +75,38 @@ int scenario_coop_presentation() {
   verdigris::client::apply_presentation_event(fx,state.world,event,10);
   scenario_check(verdigris::client::actor_strike(fx.effects,peer.uuid)!=nullptr && !verdigris::client::actor_strike(fx.effects,model.player.uuid),"coop fixture: peer strike never poses local Scion");
   scenario_check(particle_view::actor(state.world,peer.uuid)==&state.world.peers[0],"coop fixture: particle anchors resolve peer actor");
+  // Shared Scion cost is measured through the production full-resolution paint.
+  state.camera.zoom=kCameraDefaultZoom*zoom_height_factor(1440);
+  raster_art::detail::Surface surface;
+  scenario_check(surface.create(3440,1440),"coop fixture: full-resolution surface allocated");
+  if(surface.dc) {
+    const RECT bounds{0,0,3440,1440};paint_scene(state,surface.dc,bounds);
+    LARGE_INTEGER frequency{},begin{},end{};QueryPerformanceFrequency(&frequency);QueryPerformanceCounter(&begin);
+    for(int frame=0;frame<20;++frame)paint_scene(state,surface.dc,bounds);
+    QueryPerformanceCounter(&end);const double ms=1000.0*(end.QuadPart-begin.QuadPart)/frequency.QuadPart/20;
+    std::printf("    coop fixture: 3440x1440 two Scions,20 production paints %.3fms average\n",ms);
+    scenario_check(ms<40,"coop fixture: two-Scion native paint stays below40ms");
+  }
   model.peers.clear();sync_world_from_model(state.world,model);advance_actor_motion(state,50);
   scenario_check(!state.motions.contains("peer:"+peer.uuid),"coop fixture: departing peer motion is evicted");
+
+  model.service_mode=true;model.authenticated=false;model.account_error="Enrollment code expired. Ask the operator for a new code.";
+  state.frontend=Frontend::Title;
+  const std::string secret="fixture-secret-abcdefghijklmnopqrstuvwxyz-0123456789";
+  for(char c:secret)SendMessage(window,WM_CHAR,c,0);
+  scenario_check(state.account_credential==secret,"account fixture: native credential field supports longer tokens");
+  scenario_check(reference_present(state,1280,800,dir+"/account-masked-fixture.png"),"account fixture: masked entry and error captured");
+  scenario_check(reference_present(state,960,600,dir+"/account-masked-small-fixture.png"),"account fixture: compact admission captured");
+  for(const auto& op:state.render_list)scenario_check(op.label.find(secret)==std::string::npos,"account fixture: secret excluded from render telemetry");
+  const auto before=fixture->commands.size();
+  RECT client{};GetClientRect(window,&client);const auto account=service_account_layout(client.right,client.bottom);
+  SendMessage(window,WM_LBUTTONDOWN,0,MAKELPARAM((account.enroll.left+account.enroll.right)/2,(account.enroll.top+account.enroll.bottom)/2));
+  SendMessage(window,WM_LBUTTONUP,0,0);
+  scenario_check(fixture->commands.size()==before+1 && fixture->commands.back().type==verdigris::client::ClientCommand::Type::Authenticate && fixture->commands.back().target==secret && fixture->commands.back().value==1,
+      "account fixture: ordinary enrollment button submits secret to session only");
+  scenario_check(state.account_credential.empty() && state.combat_requests==attacks,"account fixture: submission clears secret and never attacks");
+  model.authenticated=true;
+  scenario_check(!service_account_open(state),"account fixture: authoritative admission releases the front door");
   SetWindowLongPtr(window,GWLP_USERDATA,0);DestroyWindow(window);
   return scenario_failures;
 }

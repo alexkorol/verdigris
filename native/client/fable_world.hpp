@@ -346,7 +346,7 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
     const auto name=actor_pose(family,ax,ay,attack,motion.moving,motion.walk_phase);
     // Fixed canvas scale across all frames: the hero has65 ink rows inside
     // its96-row canvas, the raider57. Never resize each pose to its own ink.
-    if(auto* s=sprite(name,pos.x,pos.y,player?(state.lineage_art?184:140):a.elite?184:160,player?(a.id==state.world.player.id?equipped_held(state):vector_art::held_from_item(a.held_item,a.held_item)):vector_art::Held::None)) {
+    if(auto* s=sprite(name,pos.x,pos.y,player?(state.lineage_art?184:140):a.elite?184:160,player?(a.id==state.world.player.id?equipped_held(state):(a.held_item=="handaxe_flint"?vector_art::Held::Handstone:vector_art::held_from_item(a.held_item,a.held_item))):vector_art::Held::None)) {
       for(const auto& fx:state.effects) if(fx.kind==EffectFx::Kind::TargetFlash && fx.actor_id==a.id && fx.ttl>0)
         s->flash=std::max(s->flash,float(std::clamp(1.0-(fx.age+state.tick_accum_ms/50)/fx.ttl,0.0,1.0)*.85));
       trace.push_back({player?render::Op::Player:render::Op::Monster,double(pos.x),double(pos.y),0,0,name});
