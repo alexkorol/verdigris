@@ -32,6 +32,10 @@ public:
 
     bool open(std::string* error = nullptr);
     std::string issue_enrollment(std::int64_t now, std::int64_t ttl_ms, std::string* error = nullptr);
+    // Operator-only, after out-of-band ownership verification. Never expose as
+    // an unauthenticated client endpoint. enroll also redeems these rec_ codes.
+    std::string issue_recovery(const std::string& account_id, std::int64_t now,
+                               std::int64_t ttl_ms, std::string* error = nullptr);
     std::optional<Admission> enroll(const std::string& code, std::int64_t now, std::string* error = nullptr);
     std::optional<Admission> authenticate(const std::string& token, std::int64_t now, std::string* error = nullptr);
     bool revoke(const std::string& token, std::string* error = nullptr);

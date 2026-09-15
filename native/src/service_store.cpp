@@ -148,7 +148,7 @@ bool Store::open(std::string* error) {
         sqlite3_busy_timeout(impl_->db, 5000);
         // Refuse future schemas before any schema mutation.
         { Statement version(impl_->db, "PRAGMA user_version");
-          require(version.step() == SQLITE_ROW && version.number(0) <= 1, "Unsupported service database schema"); }
+          require(version.step() == SQLITE_ROW && version.number(0) <= 2, "Unsupported service database schema"); }
         { Statement journal(impl_->db, "PRAGMA journal_mode=WAL");
           require(journal.step() == SQLITE_ROW && journal.text(0) == "wal", "Service storage requires SQLite WAL"); }
         exec(impl_->db, "PRAGMA synchronous=FULL; PRAGMA foreign_keys=ON; PRAGMA secure_delete=ON; PRAGMA wal_autocheckpoint=256;");
@@ -161,7 +161,8 @@ bool Store::open(std::string* error) {
             "CREATE TABLE IF NOT EXISTS accounts(id TEXT PRIMARY KEY, snapshot TEXT NOT NULL);"
             "CREATE TABLE IF NOT EXISTS enrollment(hash TEXT PRIMARY KEY, expires INTEGER NOT NULL);"
             "CREATE TABLE IF NOT EXISTS credentials(hash TEXT PRIMARY KEY, account_id TEXT NOT NULL REFERENCES accounts(id), expires INTEGER NOT NULL, revoked INTEGER NOT NULL DEFAULT 0);"
-            "CREATE TABLE IF NOT EXISTS outcomes(id TEXT PRIMARY KEY); PRAGMA user_version=1;");
+            "CREATE TABLE IF NOT EXISTS recovery(hash TEXT PRIMARY KEY, account_id TEXT NOT NULL REFERENCES accounts(id), expires INTEGER NOT NULL);"
+            "CREATE TABLE IF NOT EXISTS outcomes(id TEXT PRIMARY KEY); PRAGMA user_version=2;");
         transaction.commit();
         return true;
     } catch (const std::exception& e) { impl_->close(); set_error(error, e); return false; }
@@ -180,21 +181,58 @@ std::string Store::issue_enrollment(std::int64_t now, std::int64_t ttl_ms, std::
     } catch (const std::exception& e) { set_error(error, e); return {}; }
 }
 
+std::string Store::issue_recovery(const std::string& account_id, std::int64_t now, std::int64_t ttl_ms, std::string* error) {
+    std::lock_guard<std::mutex> guard(impl_->mutex); clear_error(error);
+    try {
+        impl_->ready(); require(valid_secret(account_id, "acct_"), "Invalid account identity");
+        const auto expiry = expires(now, ttl_ms);
+        const auto code = "rec_" + random_hex();
+        Transaction transaction(impl_->db);
+        { Statement account(impl_->db, "SELECT 1 FROM accounts WHERE id=?"); account.bind(1, account_id);
+          require(account.step() == SQLITE_ROW, "Recovery requires an existing account"); }
+        { Statement cleanup(impl_->db, "DELETE FROM recovery WHERE expires<=?"); cleanup.bind(1, now); cleanup.step(); }
+        Statement insert(impl_->db, "INSERT INTO recovery(hash,account_id,expires) VALUES(?,?,?)");
+        insert.bind(1, digest(code)); insert.bind(2, account_id); insert.bind(3, expiry); insert.step();
+        transaction.commit(); return code;
+    } catch (const std::exception& e) { set_error(error, e); return {}; }
+}
+
 std::optional<Admission> Store::enroll(const std::string& code, std::int64_t now, std::string* error) {
     std::lock_guard<std::mutex> guard(impl_->mutex); clear_error(error);
     try {
-        impl_->ready(); require(valid_secret(code, "enr_"), "Enrollment rejected");
+        impl_->ready(); const bool recovering = valid_secret(code, "rec_");
+        require(recovering || valid_secret(code, "enr_"), "Enrollment rejected");
         const auto expiry = expires(now, impl_->config.session_ttl_ms);
         const auto hash = digest(code);
         Transaction transaction(impl_->db);
-        { Statement lookup(impl_->db, "SELECT expires FROM enrollment WHERE hash=?"); lookup.bind(1, hash);
-          require(lookup.step() == SQLITE_ROW && lookup.number(0) > now, "Enrollment rejected"); }
-        Admission admission{"acct_" + random_hex(), "ses_" + random_hex(), expiry};
-        { Statement insert(impl_->db, "INSERT INTO accounts(id,snapshot) VALUES(?,'{}')"); insert.bind(1, admission.account_id); insert.step(); }
+        std::string account_id;
+        if (recovering) {
+            Statement lookup(impl_->db, "SELECT expires,account_id FROM recovery WHERE hash=?"); lookup.bind(1, hash);
+            require(lookup.step() == SQLITE_ROW && lookup.number(0) > now, "Recovery rejected");
+            account_id = lookup.text(1);
+        } else {
+            Statement lookup(impl_->db, "SELECT expires FROM enrollment WHERE hash=?"); lookup.bind(1, hash);
+            require(lookup.step() == SQLITE_ROW && lookup.number(0) > now, "Enrollment rejected");
+            account_id = "acct_" + random_hex();
+        }
+        Admission admission{account_id, "ses_" + random_hex(), expiry};
+        if (recovering) {
+            Statement revoke(impl_->db, "UPDATE credentials SET revoked=1 WHERE account_id=?");
+            revoke.bind(1, account_id); revoke.step();
+        } else {
+            Statement insert(impl_->db, "INSERT INTO accounts(id,snapshot) VALUES(?,'{}')");
+            insert.bind(1, account_id); insert.step();
+        }
         impl_->interrupt();
         { Statement insert(impl_->db, "INSERT INTO credentials(hash,account_id,expires) VALUES(?,?,?)");
           insert.bind(1, digest(admission.token)); insert.bind(2, admission.account_id); insert.bind(3, expiry); insert.step(); }
-        { Statement consume(impl_->db, "DELETE FROM enrollment WHERE hash=?"); consume.bind(1, hash); consume.step(); }
+        if (recovering) {
+            // Successful recovery invalidates all outstanding recovery codes for
+            // the account as well as every previous reconnect credential.
+            Statement consume(impl_->db, "DELETE FROM recovery WHERE account_id=?"); consume.bind(1, account_id); consume.step();
+        } else {
+            Statement consume(impl_->db, "DELETE FROM enrollment WHERE hash=?"); consume.bind(1, hash); consume.step();
+        }
         transaction.commit(); return admission;
     } catch (const std::exception& e) { set_error(error, e); return std::nullopt; }
 }

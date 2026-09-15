@@ -16,6 +16,8 @@ Clean preflight; origin fetched; new branch has no upstream until normal push -u
 Implementation commit 2dca7f4ba33734f56e7b853e800b2691ac0b78c5 was pushed to
 origin/codex/native-service-store-20260914; git ls-remote matched the full SHA.
 
-Implemented and locally tested: 95 focused assertions, 16-thread races,
+Implemented and locally tested: 145 focused assertions, 16-thread races,
 two real process crash recoveries, online backup/restore; production object
 builds /W4 /WX and excludes test hooks. Parent owns integration/full native gate.
+Operator-issued recovery preserves account/House state, revokes old credentials,
+rejects code replay, and upgrades version-one schema transactionally.
