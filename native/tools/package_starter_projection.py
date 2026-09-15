@@ -9,8 +9,9 @@ from PIL import Image
 import numpy as np
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def package(source,output,reviewed=False):
- data=json.loads((source/'manifest.json').read_text());output.mkdir(parents=True,exist_ok=True);(output/'frames').mkdir(exist_ok=True)
- result={'accepted':reviewed,'status':'Visually reviewed partial projection cohort' if reviewed else 'Candidate awaiting visual review','technique':data['technique'],'source_manifest_sha256':sha(source/'manifest.json'),'clips':[],'provenance':{},'coverage':{}}
+ data=json.loads((source/'manifest.json').read_text());assert data['clips'],'Empty appearance cohort';output.mkdir(parents=True,exist_ok=True);(output/'frames').mkdir(exist_ok=True)
+ shutil.copy2(source/'manifest.json',output/'source-manifest.json')
+ result={'accepted':reviewed,'status':'Visually reviewed partial projection cohort' if reviewed else 'Candidate awaiting visual review','technique':data['technique'],'source_manifest':'source-manifest.json','source_manifest_sha256':sha(source/'manifest.json'),'clips':[],'provenance':{},'coverage':{}}
  atlas_by_sex={}
  for key,clip in data['clips'].items():
   pieces=key.split('-');sex=pieces[0];direction=pieces[-1];action=pieces[-2];equipment='club' if 'club' in pieces else 'unarmed';identity=f'player_{sex}_{equipment}'
@@ -24,7 +25,7 @@ def package(source,output,reviewed=False):
    dst=output/'frames'/src.name;shutil.copy2(src,dst);frames.append('frames/'+src.name)
   fps={'idle':6,'walk':10,'sprint':14,'attack':20,'hit':12,'death':10}[action]
   result['clips'].append({'identity':identity,'action':action,'direction':direction,'frames':frames,'frame':size,'anchor':anchor,'pixels_per_metre':48,'fps':fps,'loop':action in ['idle','walk','sprint']})
-  result['provenance'][key]={'geometry_sha256':clip['geometry_sha256'],'appearance_atlas_sha256':atlas,'source_frame_entries':clip['frames'],'frame_sha256':[sha(output/f) for f in frames]}
+  result['provenance'][key]={'source_clip_metadata':{k:v for k,v in clip.items() if k!='frames'},'geometry_sha256':clip['geometry_sha256'],'appearance_atlas_sha256':atlas,'source_frame_entries':clip['frames'],'frame_sha256':[sha(output/f) for f in frames]}
   result['coverage'].setdefault(identity,[]).append(action+'/'+direction)
  result['missing']={identity:[a+'/'+d for a in ['idle','walk','sprint','attack','hit','death'] for d in ['front','right','back','left'] if a+'/'+d not in entries] for identity,entries in result['coverage'].items()}
  result['complete']=all(not m for m in result['missing'].values()) and all(f'player_{sex}_{e}' in result['coverage'] for sex in atlas_by_sex for e in ['unarmed','club'])
