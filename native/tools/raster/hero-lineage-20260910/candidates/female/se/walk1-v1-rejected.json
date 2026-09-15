@@ -1,0 +1,14 @@
+{
+  "tool": "image_gen.imagegen",
+  "prompt": "Image 1 is the original character identity: preserve her exact adult face, anatomy, shoulder-length brown hair, plain beige knee-length linen tunic, narrow brown belt, brown strapped sandals, natural colors and physical rendered pixel-sprite style. Image 2 is the accepted direction idle: preserve its facing, elevated camera, body scale and placement. Change only the requested action; no new clothes, equipment, weapon, jewelry, cartoon rounding or green patina. Retain the 1254×1254 canvas and constant approximately 980px standing body scale, crown near y=120, ground anchor near x=627/y=1100; no independent pose fitting or zoom. Full silhouette, generous margins, one woman in one frame. Both hands empty. Request true transparent RGBA with alpha zero outside the woman; no checker, scene, floor or cast shadow. Direction SE, facing lower-right. Image 3 is contact A only as a transition reference. Produce WALK CONTACT B: reverse BOTH leg roles from image 3 without mirroring her upper body. The leg now bent backward on screen-left must come forward, its knee clearly emerging on screen-left beneath the tunic and its sandal planting toward lower-right. The leg currently extended forward on screen-right must now bend and trail back behind her. This is the opposite anatomical support leg, not a copy of the previous stride. Counter-swing the arms. Clear open stride, body remains in place, same SE head and torso.",
+  "references": [
+    "C:/Users/Alex/Downloads/ccd7ce15-5d1a-46c4-af49-f305bf7fad90 (1).png",
+    "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/female/se/idle.png",
+    "C:\\Users\\Alex\\.codex\\generated_images\\01a08b3d-0739-7b22-86a3-6475fe34a823\\exec-7f111f3a-2c9d-4458-b18f-24f12da55844.png"
+  ],
+  "source_path": "C:\\Users\\Alex\\.codex\\generated_images\\01a08b3d-0739-7b22-86a3-6475fe34a823\\exec-dc1f38eb-476a-4620-a2f6-d258dd491384.png",
+  "output_hint": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a08b3d-0739-7b22-86a3-6475fe34a823 as C:\\Users\\Alex\\.codex\\generated_images\\01a08b3d-0739-7b22-86a3-6475fe34a823\\exec-dc1f38eb-476a-4620-a2f6-d258dd491384.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "rejected_repeated_walk_contact",
+  "review": "First walk1 output repeated the walk0 leading-leg arrangement rather than clearly switching anatomical support. Superseded by v2 selected in canonical walk1.png.",
+  "backend_model_version": "not exposed by built-in tool"
+}

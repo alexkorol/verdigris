@@ -1,0 +1,37 @@
+== scenario resource-envelope ==
+    ok: resource-envelope: one floor bitmap after the first paint
+    ok: resource-envelope: resize cycles keep a single floor bitmap
+    ok: resource-envelope: GDI pens stay inside the 128 cap
+    ok: resource-envelope: GDI brushes stay inside the 128 cap
+    ok: resource-envelope: resize cycles keep a single floor bitmap
+    ok: resource-envelope: GDI pens stay inside the 128 cap
+    ok: resource-envelope: GDI brushes stay inside the 128 cap
+    ok: resource-envelope: resize cycles keep a single floor bitmap
+    ok: resource-envelope: GDI pens stay inside the 128 cap
+    ok: resource-envelope: GDI brushes stay inside the 128 cap
+    ok: resource-envelope: resize cycles keep a single floor bitmap
+    ok: resource-envelope: GDI pens stay inside the 128 cap
+    ok: resource-envelope: GDI brushes stay inside the 128 cap
+    ok: resource-envelope: resize cycles keep a single floor bitmap
+    ok: resource-envelope: GDI pens stay inside the 128 cap
+    ok: resource-envelope: GDI brushes stay inside the 128 cap
+    ok: resource-envelope: resize cycles keep a single floor bitmap
+    ok: resource-envelope: GDI pens stay inside the 128 cap
+    ok: resource-envelope: GDI brushes stay inside the 128 cap
+    ok: resource-envelope: resize cycles keep a single floor bitmap
+    ok: resource-envelope: GDI pens stay inside the 128 cap
+    ok: resource-envelope: GDI brushes stay inside the 128 cap
+    ok: resource-envelope: resize cycles keep a single floor bitmap
+    ok: resource-envelope: GDI pens stay inside the 128 cap
+    ok: resource-envelope: GDI brushes stay inside the 128 cap
+    ok: resource-envelope: returning to 960 shrinks an oversized floor
+    ok: resource-envelope: floor width is not a second leaked bitmap
+    resource-envelope: floor 1737x1554 (1 bitmap) | pens 5 | brushes 3 | fx 128 | paint 11.5 ms
+    ok: resource-envelope: 300 spawned effects stay at the 128 cap
+    ok: resource-envelope: a cheap frame does not excuse a growing effect list
+    ok: resource-envelope: the cap is occupied, not emptied to pass
+    ok: resource-envelope: report opened
+    ok: resource-envelope: capped-effect capture written
+    ok: resource-envelope: live HUD names Cap 128 and One floor
+    ok: resource-envelope: live HUD rejects grow FX
+   PASS (0 failures)

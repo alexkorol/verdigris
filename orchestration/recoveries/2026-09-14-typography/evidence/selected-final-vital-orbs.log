@@ -1,0 +1,20 @@
+== scenario vital-orbs ==
+    ok: vital-orbs: the blue crop cannot count as life
+    ok: vital-orbs: life uses the red crop on the sheet
+    ok: vital-orbs: scenarios still mute the sink
+    ok: vital-orbs: offscreen bitmap
+    ok: vital-orbs: life orb is left of mana
+    ok: vital-orbs: HUD names constitution roles
+    ok: vital-orbs: mute still has a non-color cue
+    ok: vital-orbs: mute cannot sit on the mana globe
+    vital-orbs: life rgb r=154 b=40 n=57 | mana r=18 b=135 n=83
+    ok: vital-orbs: left globe reads red, not blue
+    ok: vital-orbs: right globe reads blue, not orange
+    ok: vital-orbs: an R/B swapped still cannot certify life
+    ok: vital-orbs: capture written
+    ok: vital-orbs: live HUD names Life left and Mana right
+    ok: vital-orbs: live HUD rejects X on mana
+    ok: vital-orbs: Life left strip is traced
+    ok: vital-orbs: covering WASD, the objective, Tin village, or Life is the anti-pattern
+    ok: vital-orbs: Life left stays off WASD, the objective, Tin village, and Life
+   PASS (0 failures)

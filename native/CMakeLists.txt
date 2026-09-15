@@ -39,6 +39,9 @@ target_link_libraries(verdigris_core_tests PRIVATE verdigris_core)
 add_executable(verdigris_networking_tests tests/networking_tests.cpp)
 target_link_libraries(verdigris_networking_tests PRIVATE verdigris_networking)
 
+add_executable(verdigris_starter_slice_tests tests/starter_slice_tests.cpp)
+target_link_libraries(verdigris_starter_slice_tests PRIVATE verdigris_networking)
+
 add_executable(verdigris_server src/server_main.cpp)
 target_link_libraries(verdigris_server PRIVATE verdigris_networking)
 
@@ -58,6 +61,7 @@ if (WIN32)
 endif()
 
 add_executable(camera2d_tests tests/camera2d_tests.cpp)
+add_executable(fable_camera_tests tests/fable_camera_tests.cpp)
 
 add_executable(verdigris_session_tests tests/session_tests.cpp)
 target_link_libraries(verdigris_session_tests PRIVATE verdigris_client_session)
@@ -69,9 +73,28 @@ target_link_libraries(verdigris_presentation_events_tests PRIVATE verdigris_clie
 add_executable(verdigris_audio_mixer_tests tests/audio_mixer_tests.cpp)
 target_link_libraries(verdigris_audio_mixer_tests PRIVATE verdigris_audio)
 
+add_executable(verdigris_user_settings_tests tests/user_settings_tests.cpp)
+target_link_libraries(verdigris_user_settings_tests PRIVATE verdigris_audio)
+
 add_executable(verdigris_client client/main.cpp client/remote_play.cpp)
+# Match build.ps1 and the player package: runtime assets are resolved beside
+# native/build, not the deeper CMake intermediate directory.
+set_target_properties(verdigris_client verdigris_server PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build")
 target_include_directories(verdigris_client PRIVATE client)
-target_link_libraries(verdigris_client PRIVATE verdigris_core verdigris_client_session)
+execute_process(COMMAND git rev-parse HEAD WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  OUTPUT_VARIABLE VERDIGRIS_SOURCE_COMMIT OUTPUT_STRIP_TRAILING_WHITESPACE RESULT_VARIABLE VERDIGRIS_GIT_RESULT)
+execute_process(COMMAND git status --porcelain WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  OUTPUT_VARIABLE VERDIGRIS_SOURCE_STATUS OUTPUT_STRIP_TRAILING_WHITESPACE)
+set(VERDIGRIS_SOURCE_DIRTY 1)
+if(NOT VERDIGRIS_GIT_RESULT EQUAL 0)
+  set(VERDIGRIS_SOURCE_COMMIT "unknown")
+elseif(VERDIGRIS_SOURCE_STATUS STREQUAL "")
+  set(VERDIGRIS_SOURCE_DIRTY 0)
+endif()
+configure_file(build_identity.in.hpp ${CMAKE_CURRENT_BINARY_DIR}/verdigris_build_generated.hpp @ONLY)
+target_include_directories(verdigris_client PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_link_libraries(verdigris_client PRIVATE verdigris_core verdigris_client_session verdigris_audio)
 if (WIN32)
   target_compile_definitions(verdigris_client PRIVATE VERDIGRIS_NATIVE_WINDOWS=1)
   target_link_libraries(verdigris_client PRIVATE user32 gdi32)
@@ -80,8 +103,16 @@ endif()
 enable_testing()
 add_test(NAME verdigris_core_tests COMMAND verdigris_core_tests)
 add_test(NAME verdigris_networking_tests COMMAND verdigris_networking_tests)
+add_test(NAME verdigris_starter_slice_tests COMMAND verdigris_starter_slice_tests)
 add_test(NAME camera2d_tests COMMAND camera2d_tests)
+add_test(NAME fable_camera_tests COMMAND fable_camera_tests)
 add_test(NAME verdigris_session_tests COMMAND verdigris_session_tests)
 add_test(NAME verdigris_presentation_events_tests COMMAND verdigris_presentation_events_tests)
 add_test(NAME verdigris_audio_mixer_tests COMMAND verdigris_audio_mixer_tests)
-add_test(NAME verdigris_client_scenarios COMMAND verdigris_client --scenario all)
+add_test(NAME verdigris_user_settings_tests COMMAND verdigris_user_settings_tests)
+option(VERDIGRIS_SOFTWARE_RENDERER_CI "Run functional scenarios on a hosted software renderer; physical GPU performance is a separate release gate" OFF)
+if(VERDIGRIS_SOFTWARE_RENDERER_CI)
+  add_test(NAME verdigris_client_functional_scenarios COMMAND verdigris_client --software-renderer-ci all)
+else()
+  add_test(NAME verdigris_client_scenarios COMMAND verdigris_client --scenario all)
+endif()

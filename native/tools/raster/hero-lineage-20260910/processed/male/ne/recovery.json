@@ -1,0 +1,6 @@
+{
+  "file": "hero_male_strike2_ne.png",
+  "source": "hero_male_ne.png",
+  "method": "byte_identical_idle_recovery",
+  "sha256": "e37d6717e594ddd45b409d646ce0aa1ba5515ce5d6a11a71025b926127426e77"
+}

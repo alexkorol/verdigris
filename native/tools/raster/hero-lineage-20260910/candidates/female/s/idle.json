@@ -1,0 +1,20 @@
+{
+  "tool": "filesystem byte copy",
+  "prompt": null,
+  "references": [
+    "C:\\Users\\Alex\\Downloads\\ccd7ce15-5d1a-46c4-af49-f305bf7fad90 (1).png"
+  ],
+  "source_path": "C:\\Users\\Alex\\Downloads\\ccd7ce15-5d1a-46c4-af49-f305bf7fad90 (1).png",
+  "model": null,
+  "status": "exact_original_copy",
+  "review": "Supplied original copied without modification; preserves exact identity and true alpha.",
+  "backend_model_version": null,
+  "canvas_size": [
+    1254,
+    1254
+  ],
+  "png_mode": "RGBA",
+  "sha256": "9693437c9b6d88674cf64e55749135979c8db8db5576353967b2fe8a57fba742",
+  "alpha_review": "Original RGBA, including faint stray alpha pixels.",
+  "source_image_modified": false
+}

@@ -1,0 +1,311 @@
+{
+  "direction": "w",
+  "state": "source_candidates_measured_pending_root_visual_acceptance_and_import",
+  "source_identity": {
+    "path": "C:\\Users\\Alex\\Downloads\\ccd7ce15-5d1a-46c4-af49-f305bf7fad90 (1).png",
+    "sha256": "9693437c9b6d88674cf64e55749135979c8db8db5576353967b2fe8a57fba742"
+  },
+  "tool": "image_gen.imagegen",
+  "model": "not_exposed",
+  "bounds_method": "Largest connected warm-color component: RGB range>12 and R>B+8, for measurement only; excludes painted neutral checker. Bounds may omit neutral fringe and are not a production alpha mask. No PNG pixels changed.",
+  "equipment_angle_convention": "Clockwise degrees from screen-up; +90 points right, -90 points left. Suggestions for melee tools only, unverified with final runtime equipment.",
+  "ground_registration": "Source canvas left unchanged; requested common anchor around627,1110; observed sandal locations vary. Importer must preserve common scale and use actual measured registration.",
+  "known_limits": [
+    "RGB checkerboard needs reviewed root cleanup/Pixel Respecter.",
+    "W idle1057px body vs NW980px; no per-pose resize was applied.",
+    "W hip connections hidden by tunic; opposite supports require root gait review.",
+    "Generated linen has added fine texture; native reconstruction and identity review remain pending.",
+    "Third runtime strike frame is existing directional idle; no third source generated.",
+    "Anticipation and contact share planted feet with each other, but the stance differs from idle; inspect entry/recovery in production.",
+    "Wrist/grip coordinates are visual estimates with12px source uncertainty; remeasure alpha/finger clips after Pixel Respecter."
+  ],
+  "poses": [
+    {
+      "pose": "idle",
+      "source_file": "idle.png",
+      "source_sha256": "2f0f6a9ad9965783d1affbd4dcf2e6b047cdd925d431ee0151baa9c4b5420aac",
+      "mode": "RGB",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "actual_alpha": false,
+      "estimated_body_bounds": [
+        524,
+        83,
+        730,
+        1140
+      ],
+      "estimated_crown_to_sole": 1057,
+      "left_wrist_px": [
+        637,
+        632
+      ],
+      "left_wrist_normalized": [
+        0.507974,
+        0.503987
+      ],
+      "left_grip_px": [
+        623,
+        674
+      ],
+      "left_grip_normalized": [
+        0.49681,
+        0.53748
+      ],
+      "wrist_precision_px": 12,
+      "left_hand_visible": true,
+      "weapon_behind_body": false,
+      "suggested_equipment_angle_degrees": 0,
+      "status": "pending_root_source_review",
+      "prompt_file": "idle.prompt.txt",
+      "prompt_sha256": "79ae4d7436b92536e360f981bf9dfeb0b02c82ffb49c325e82cc868dfceca48a",
+      "tool_metadata_file": "idle-v1.tool.json",
+      "references": [
+        {
+          "path": "C:\\Users\\Alex\\Downloads\\ccd7ce15-5d1a-46c4-af49-f305bf7fad90 (1).png",
+          "sha256": "9693437c9b6d88674cf64e55749135979c8db8db5576353967b2fe8a57fba742"
+        }
+      ]
+    },
+    {
+      "pose": "walk0",
+      "source_file": "walk0.png",
+      "source_sha256": "acf98f27e9ee13064a74dcecd3fb0363b04219da44d08730d4ad610d4045398f",
+      "mode": "RGB",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "actual_alpha": false,
+      "estimated_body_bounds": [
+        389,
+        85,
+        890,
+        1115
+      ],
+      "estimated_crown_to_sole": 1030,
+      "left_wrist_px": [
+        760,
+        617
+      ],
+      "left_wrist_normalized": [
+        0.606061,
+        0.492026
+      ],
+      "left_grip_px": [
+        778,
+        663
+      ],
+      "left_grip_normalized": [
+        0.620415,
+        0.528708
+      ],
+      "wrist_precision_px": 12,
+      "left_hand_visible": true,
+      "weapon_behind_body": false,
+      "suggested_equipment_angle_degrees": 0,
+      "status": "pending_root_source_review",
+      "support_review": "W contacts reverse arm swing; projected profile legs/tunic hide definitive hip ownership.",
+      "prompt_file": "walk0.prompt.txt",
+      "prompt_sha256": "80edf7138d41594c5157cdb7bca7748bb5cec6db77bfbac57e01f25c7cc477d7",
+      "tool_metadata_file": "walk0.tool.json",
+      "references": [
+        {
+          "path": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\w\\idle.png",
+          "sha256": "2f0f6a9ad9965783d1affbd4dcf2e6b047cdd925d431ee0151baa9c4b5420aac"
+        },
+        {
+          "path": "C:\\Users\\Alex\\Downloads\\ccd7ce15-5d1a-46c4-af49-f305bf7fad90 (1).png",
+          "sha256": "9693437c9b6d88674cf64e55749135979c8db8db5576353967b2fe8a57fba742"
+        }
+      ]
+    },
+    {
+      "pose": "walk1",
+      "source_file": "walk1.png",
+      "source_sha256": "15be590e509162b9e560c768d577706c84a2a11b5363429636cfc5ad12a84f11",
+      "mode": "RGB",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "actual_alpha": false,
+      "estimated_body_bounds": [
+        373,
+        85,
+        917,
+        1105
+      ],
+      "estimated_crown_to_sole": 1020,
+      "left_wrist_px": [
+        496,
+        583
+      ],
+      "left_wrist_normalized": [
+        0.395534,
+        0.464912
+      ],
+      "left_grip_px": [
+        457,
+        614
+      ],
+      "left_grip_normalized": [
+        0.364434,
+        0.489633
+      ],
+      "wrist_precision_px": 12,
+      "left_hand_visible": true,
+      "weapon_behind_body": false,
+      "suggested_equipment_angle_degrees": 0,
+      "status": "pending_root_source_review",
+      "support_review": "W contacts reverse arm swing; projected profile legs/tunic hide definitive hip ownership.",
+      "prompt_file": "walk1.prompt.txt",
+      "prompt_sha256": "60a83eba541b09f655efd2a99caf71382fa2fb56369e75f0bd6907718555e713",
+      "tool_metadata_file": "walk1.tool.json",
+      "references": [
+        {
+          "path": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\w\\idle.png",
+          "sha256": "2f0f6a9ad9965783d1affbd4dcf2e6b047cdd925d431ee0151baa9c4b5420aac"
+        },
+        {
+          "path": "C:\\Users\\Alex\\Downloads\\ccd7ce15-5d1a-46c4-af49-f305bf7fad90 (1).png",
+          "sha256": "9693437c9b6d88674cf64e55749135979c8db8db5576353967b2fe8a57fba742"
+        },
+        {
+          "path": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\w\\walk0.png",
+          "sha256": "acf98f27e9ee13064a74dcecd3fb0363b04219da44d08730d4ad610d4045398f"
+        }
+      ]
+    },
+    {
+      "pose": "strike0",
+      "source_file": "strike0.png",
+      "source_sha256": "75f28139df32489f9bb84f2d14200c69775771468f8d431d15bb6250f7be8033",
+      "mode": "RGB",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "actual_alpha": false,
+      "estimated_body_bounds": [
+        435,
+        84,
+        850,
+        1127
+      ],
+      "estimated_crown_to_sole": 1043,
+      "left_wrist_px": [
+        777,
+        312
+      ],
+      "left_wrist_normalized": [
+        0.619617,
+        0.248804
+      ],
+      "left_grip_px": [
+        747,
+        280
+      ],
+      "left_grip_normalized": [
+        0.595694,
+        0.223285
+      ],
+      "wrist_precision_px": 12,
+      "left_hand_visible": true,
+      "weapon_behind_body": false,
+      "suggested_equipment_angle_degrees": 45,
+      "status": "pending_root_source_review",
+      "prompt_file": "strike0.prompt.txt",
+      "prompt_sha256": "1b2b774850cb89e20421099c77b4aa3a40cff6be685ca581c687b988ca0c4d04",
+      "tool_metadata_file": "strike0.tool.json",
+      "references": [
+        {
+          "path": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\w\\idle.png",
+          "sha256": "2f0f6a9ad9965783d1affbd4dcf2e6b047cdd925d431ee0151baa9c4b5420aac"
+        },
+        {
+          "path": "C:\\Users\\Alex\\Downloads\\ccd7ce15-5d1a-46c4-af49-f305bf7fad90 (1).png",
+          "sha256": "9693437c9b6d88674cf64e55749135979c8db8db5576353967b2fe8a57fba742"
+        }
+      ]
+    },
+    {
+      "pose": "strike1",
+      "source_file": "strike1.png",
+      "source_sha256": "b2e0fdddc08b72e7b88d3c28bea52ebc9f041047458917b7a37b34ba77edba3d",
+      "mode": "RGB",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "actual_alpha": false,
+      "estimated_body_bounds": [
+        309,
+        86,
+        833,
+        1128
+      ],
+      "estimated_crown_to_sole": 1042,
+      "left_wrist_px": [
+        378,
+        295
+      ],
+      "left_wrist_normalized": [
+        0.301435,
+        0.235247
+      ],
+      "left_grip_px": [
+        337,
+        292
+      ],
+      "left_grip_normalized": [
+        0.26874,
+        0.232855
+      ],
+      "wrist_precision_px": 12,
+      "left_hand_visible": true,
+      "weapon_behind_body": false,
+      "suggested_equipment_angle_degrees": -85,
+      "status": "pending_root_source_review",
+      "prompt_file": "strike1.prompt.txt",
+      "prompt_sha256": "563f7196b82ca9da548ef36132d8cf5866227b22c59639c1a87b386dacabbb49",
+      "tool_metadata_file": "strike1.tool.json",
+      "references": [
+        {
+          "path": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\w\\idle.png",
+          "sha256": "2f0f6a9ad9965783d1affbd4dcf2e6b047cdd925d431ee0151baa9c4b5420aac"
+        },
+        {
+          "path": "C:\\Users\\Alex\\Downloads\\ccd7ce15-5d1a-46c4-af49-f305bf7fad90 (1).png",
+          "sha256": "9693437c9b6d88674cf64e55749135979c8db8db5576353967b2fe8a57fba742"
+        },
+        {
+          "path": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\w\\strike0.png",
+          "sha256": "75f28139df32489f9bb84f2d14200c69775771468f8d431d15bb6250f7be8033"
+        }
+      ]
+    }
+  ],
+  "generation_call_count": 6,
+  "recipe_basis": {
+    "source": "https://www.flixly.ai/blog/stop-motion-chatgpt-images-2-5",
+    "local_record": "native/client/assets/raster/RESEARCH.md",
+    "adaptation": "Original identity remains in every call; isolated reference-led pose edits, plus root-approved identity swap of successful male NW B geometry after repeated support failures.",
+    "direct_reopen": "Web tool returned non-retryable safe-open error this turn; used the already-reviewed original excerpt and reference roles recorded in project research."
+  },
+  "retained_rejections": [
+    {
+      "file": "idle-rejected-alpha-v1.png",
+      "sha256": "2f0f6a9ad9965783d1affbd4dcf2e6b047cdd925d431ee0151baa9c4b5420aac",
+      "mode": "RGB",
+      "reason": "Requested real alpha absent; original v1 remains selected for pose only under root cleanup authorization."
+    },
+    {
+      "file": "idle-rejected-alpha-v2.png",
+      "sha256": "aad0a3bde5d60df2ad91be4b37561c762680fd1afbe85869e4f5c99a99781065",
+      "mode": "RGB",
+      "reason": "Capped alpha repair still RGB checkerboard and slightly smooths identity."
+    }
+  ]
+}

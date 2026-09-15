@@ -1,0 +1,5 @@
+Edit the supplied image by turning this exact adult man to face diagonally toward the upper-right, a45-degree back view. Show his back, back of his brown-haired head and only a narrow right-side profile; do not turn his face toward the viewer. Rotate the actor only under the same fixed elevated straight-grid camera.
+
+Preserve the exact adult proportions and physical rendering, short brown hair, plain beige short-sleeved tunic, simple brown belt, bare lower legs and brown sandals. Both arms hang naturally and both hands are empty. Neutral idle, planted feet. No cartoon conversion, armor or new kit.
+
+Keep the original actual1254 square canvas, about970px standing body height and common ground anchor at x627,y1098. One isolated full body, same light and material detail, true transparent RGBA including between limbs. No checker, floor, cast shadow or labels.

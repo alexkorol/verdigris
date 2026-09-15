@@ -1,0 +1,260 @@
+{
+  "schema_version": 1,
+  "owner": "bestiary_assets",
+  "character": "male",
+  "direction": "n",
+  "status": "source candidates selected; pending parent native reconstruction and game review",
+  "original_identity": {
+    "path": "C:\\Users\\Alex\\Downloads\\ChatGPT Image Sep 10, 2026, 05_22_21 PM.png",
+    "sha256": "fa6bb5a57dbb0791095abc6078920ae3e834782e3db8dd24b95e16c8f37b5e1f",
+    "size": [
+      1254,
+      1254
+    ],
+    "alpha128_bbox": [
+      432,
+      128,
+      822,
+      1098
+    ],
+    "standing_height_px": 970
+  },
+  "canvas_authority": "Original1254square source; raw generation never fitted/rescaled/repainted.",
+  "requested_common_source_pivot": [
+    627,
+    1098
+  ],
+  "source_pivot_caveat": "Requested anchor is not proof of registration. Body and foot offsets in review require common-scale parent reconstruction; do not independently fit each silhouette.",
+  "left_wrist_convention": "Anatomical LEFT. Source x right and y down. Normalized by1254. Forearm direction is elbow-to-wrist screen angle (0right,+90down), NOT a verified weapon angle; hands are empty. Occluded wrists are estimates.",
+  "workflow": {
+    "type": "Reference-preserving isolated single-pose built-in edits; original identity always retained. Idle direction normally added; successful opposite-pose geometry used for targeted repairs.",
+    "sources": [
+      "https://x.com/elle_elle_e/status/2097439673308389840",
+      "https://www.flixly.ai/blog/stop-motion-chatgpt-images-2-5",
+      "https://x.com/higgsfield/status/2097514684811554911"
+    ],
+    "adaptation": "Our controlled one-character direction/motion adaptation of separate-frame and explicit-reference-role workflows; not a claim these creators tested this character or produced these outputs. Tool exposes no selectable model variant."
+  },
+  "frames": [
+    {
+      "pose": "idle",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\n\\idle.png",
+      "sha256": "40b4bd96b3ea3320034c4eee21c5cadcb7b564a30ff6bc7f4a95dcb9aa0b8c36",
+      "selected_raw_stem": "idle",
+      "prompt": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\n\\idle.prompt.txt",
+      "tool_output": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\n\\idle.tool-output.json",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "alpha": {
+        "has_channel": false,
+        "min": 255,
+        "max": 255,
+        "zero_pixels": 0,
+        "partial_pixels": 0,
+        "verdict": "FAIL: opaque painted checkerboard; raw unchanged"
+      },
+      "estimated_foreground_bbox": [
+        433,
+        123,
+        820,
+        1059
+      ],
+      "bbox_method": "Warm/saturated foreground mask: RGB max-min>15 and mean<225; diagnostic estimate, NOT alpha and not used to edit pixels",
+      "estimated_body_extent_px": 936,
+      "left_wrist": {
+        "source_xy": [
+          464,
+          596
+        ],
+        "normalized_xy": [
+          0.37002,
+          0.47528
+        ],
+        "visible": true,
+        "confidence": "medium approximate visual measurement",
+        "forearm_direction_deg": 96
+      },
+      "visual_review": "Full north back; face hidden. Anatomical left wrist visible at screen-left. Standing body936px vs original970 (-3.5%)."
+    },
+    {
+      "pose": "walk0",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\n\\walk0.png",
+      "sha256": "e686cb47c8eb85e622f5a3314afac009789a815e0f5f22f375dbfc04defb7adf",
+      "selected_raw_stem": "walk0",
+      "prompt": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\n\\walk0.prompt.txt",
+      "tool_output": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\n\\walk0.tool-output.json",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "alpha": {
+        "has_channel": false,
+        "min": 255,
+        "max": 255,
+        "zero_pixels": 0,
+        "partial_pixels": 0,
+        "verdict": "FAIL: opaque painted checkerboard; raw unchanged"
+      },
+      "estimated_foreground_bbox": [
+        434,
+        123,
+        808,
+        1073
+      ],
+      "bbox_method": "Warm/saturated foreground mask: RGB max-min>15 and mean<225; diagnostic estimate, NOT alpha and not used to edit pixels",
+      "estimated_body_extent_px": 950,
+      "left_wrist": {
+        "source_xy": [
+          462,
+          595
+        ],
+        "normalized_xy": [
+          0.36842,
+          0.47448
+        ],
+        "visible": true,
+        "confidence": "medium approximate visual measurement",
+        "forearm_direction_deg": 97
+      },
+      "visual_review": "Left knee shortened/forward at screen-left; right calf trails down at screen-right with visible sole. Left arm back, right arm forward."
+    },
+    {
+      "pose": "walk1",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\n\\walk1.png",
+      "sha256": "f926eab787fd1995fdfe0e83bf5ce7c414626a3b1e423ec751eb2e5f9af24224",
+      "selected_raw_stem": "walk1",
+      "prompt": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\n\\walk1.prompt.txt",
+      "tool_output": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\n\\walk1.tool-output.json",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "alpha": {
+        "has_channel": false,
+        "min": 255,
+        "max": 255,
+        "zero_pixels": 0,
+        "partial_pixels": 0,
+        "verdict": "FAIL: opaque painted checkerboard; raw unchanged"
+      },
+      "estimated_foreground_bbox": [
+        448,
+        123,
+        827,
+        1073
+      ],
+      "bbox_method": "Warm/saturated foreground mask: RGB max-min>15 and mean<225; diagnostic estimate, NOT alpha and not used to edit pixels",
+      "estimated_body_extent_px": 950,
+      "left_wrist": {
+        "source_xy": [
+          520,
+          420
+        ],
+        "normalized_xy": [
+          0.41467,
+          0.33493
+        ],
+        "visible": false,
+        "confidence": "low; occluded and inferred",
+        "forearm_direction_deg": null
+      },
+      "visual_review": "Opposite: right knee shortened/forward at screen-right, left calf trails down at screen-left with sole visible. Left forearm is occluded beyond torso."
+    },
+    {
+      "pose": "strike0",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\n\\strike0.png",
+      "sha256": "c78a39c03e48b4c065bdf9856aa65eb59bd1427120f571ee3ba7f19772059e5c",
+      "selected_raw_stem": "strike0-repair",
+      "prompt": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\n\\strike0.prompt.txt",
+      "tool_output": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\n\\strike0.tool-output.json",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "alpha": {
+        "has_channel": false,
+        "min": 255,
+        "max": 255,
+        "zero_pixels": 0,
+        "partial_pixels": 0,
+        "verdict": "FAIL: opaque painted checkerboard; raw unchanged"
+      },
+      "estimated_foreground_bbox": [
+        355,
+        119,
+        824,
+        1085
+      ],
+      "bbox_method": "Warm/saturated foreground mask: RGB max-min>15 and mean<225; diagnostic estimate, NOT alpha and not used to edit pixels",
+      "estimated_body_extent_px": 966,
+      "left_wrist": {
+        "source_xy": [
+          437,
+          265
+        ],
+        "normalized_xy": [
+          0.34848,
+          0.21132
+        ],
+        "visible": true,
+        "confidence": "medium approximate visual measurement",
+        "forearm_direction_deg": -59
+      },
+      "visual_review": "Selected focused repair preserves left bent arm and reduces initial scale drift. Head-to-feet966px vs idle936 (+3.2%); feet26px lower. Initial1008px attempt rejected."
+    },
+    {
+      "pose": "strike1",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\n\\strike1.png",
+      "sha256": "54fc15ba4e367a3d539381279f311100c408ebbef5ab7aa2803495a0de94b810",
+      "selected_raw_stem": "strike1",
+      "prompt": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\n\\strike1.prompt.txt",
+      "tool_output": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\n\\strike1.tool-output.json",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "alpha": {
+        "has_channel": false,
+        "min": 255,
+        "max": 255,
+        "zero_pixels": 0,
+        "partial_pixels": 0,
+        "verdict": "FAIL: opaque painted checkerboard; raw unchanged"
+      },
+      "estimated_foreground_bbox": [
+        484,
+        98,
+        819,
+        1060
+      ],
+      "bbox_method": "Warm/saturated foreground mask: RGB max-min>15 and mean<225; diagnostic estimate, NOT alpha and not used to edit pixels",
+      "estimated_body_extent_px": 962,
+      "left_wrist": {
+        "source_xy": [
+          521,
+          151
+        ],
+        "normalized_xy": [
+          0.41547,
+          0.12041
+        ],
+        "visible": true,
+        "confidence": "medium approximate visual measurement",
+        "forearm_direction_deg": -89
+      },
+      "visual_review": "Correct anatomical left arm extends up/away; right arm down. Hair-to-feet approximately935px, matching idle. High northward reach."
+    }
+  ],
+  "retained_attempts": [
+    "strike0-rejected-scale.png",
+    "strike0-repair.png"
+  ],
+  "production_changes": "None: no runtime/catalog/code/build/Git edits."
+}

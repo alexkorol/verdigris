@@ -1,0 +1,81 @@
+{
+  "accepted": true,
+  "clips": [
+    {
+      "identity": "wooden_club",
+      "action": "icon",
+      "direction": "front",
+      "frames": [
+        "icons/wooden_club.png"
+      ],
+      "frame": [
+        48,
+        96
+      ],
+      "anchor": [
+        24,
+        48
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "identity": "starter_flax_tunic_male",
+      "action": "icon",
+      "direction": "front",
+      "frames": [
+        "icons/starter_flax_tunic_male.png"
+      ],
+      "frame": [
+        48,
+        96
+      ],
+      "anchor": [
+        24,
+        48
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "identity": "starter_flax_tunic_female",
+      "action": "icon",
+      "direction": "front",
+      "frames": [
+        "icons/starter_flax_tunic_female.png"
+      ],
+      "frame": [
+        48,
+        96
+      ],
+      "anchor": [
+        24,
+        48
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "identity": "starter_woven_footwear",
+      "action": "icon",
+      "direction": "front",
+      "frames": [
+        "icons/starter_woven_footwear.png"
+      ],
+      "frame": [
+        48,
+        48
+      ],
+      "anchor": [
+        24,
+        24
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": false
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+PASS: equipped loadout identical across restart and graphical readmission; no duplicate starter item

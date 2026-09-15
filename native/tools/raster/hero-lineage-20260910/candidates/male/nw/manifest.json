@@ -1,0 +1,212 @@
+{
+  "schema_version": 1,
+  "package": "hero-lineage-20260910",
+  "sex": "male",
+  "direction": "nw",
+  "status": "pose_reviewed_raw_sources_pending_matte_PixelRespecter_and_gameplay_review",
+  "tool": "built-in image_gen",
+  "tool_model_variant": "Not exposed by built-in tool; no CLI/API fallback used.",
+  "original_reference": {
+    "path": "C:\\Users\\Alex\\Downloads\\ChatGPT Image Sep 10, 2026, 05_22_21 PM.png",
+    "sha256": "fa6bb5a57dbb0791095abc6078920ae3e834782e3db8dd24b95e16c8f37b5e1f",
+    "canvas": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "reference_body_alpha128_bounds": [
+      432,
+      128,
+      822,
+      1098
+    ],
+    "reference_body_height": 970
+  },
+  "generation_policy": "One isolated pose per call. Original identity referenced every call; directional idle also referenced for animation. Selected raw PNGs copied byte-for-byte from built-in output; no resizing, matte operation, recoloring or pixel reconstruction by this worker.",
+  "prompt_source_method": {
+    "source": "https://www.flixly.ai/blog/stop-motion-chatgpt-images-2-5",
+    "reused": "Original identity plus directional/previous accepted frame, narrow pose edits and visual rejection of limb failures, as documented in repository RESEARCH.md.",
+    "evidence_limit": "Original workflow was documented by prior repository audit. Direct re-open this turn returned non-retryable safe-open error; no retry or new verification claimed."
+  },
+  "requested_common_pivot_pixels": [
+    627,
+    1098
+  ],
+  "requested_common_pivot_normalized": [
+    0.5,
+    0.8755980861244019
+  ],
+  "pivot_note": "Requested common ground anchor, not extracted engine-ready pivot. Keep common original/head scale; review fixed-canvas registration and floor contact after matte extraction. Do not independently stretch poses to match bbox height.",
+  "bounds_method": "Estimated warm foreground bounds from original RGB: R-B>12 and max(R,G,B)-min(R,G,B)>14; x1/y1 exclusive. This detects colored body against painted neutral checker. These are NOT alpha bounds and may omit dark outline pixels.",
+  "hand_method": "Approximate anatomical LEFT wrist centers manually inspected in raw1254square source, normalized x/width,y/height. These are review guides, not final PixelRespecter/runtime grips.",
+  "alpha_review": "All five outputs RGB without alpha. Opaque checker is a known rejected delivery property. Source pose approval does not approve direct runtime use.",
+  "recovery": "Use idle.png as the third attack/recovery pose; no additional recovery generated.",
+  "assets": [
+    {
+      "direction": "nw",
+      "pose": "idle",
+      "file": "idle.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "has_alpha": false,
+      "sha256": "b48af18d0ebc080798a1cb04d3cc15a9477c9092cf631e3703b20d6788658698",
+      "estimated_warm_foreground_bounds": [
+        462,
+        126,
+        779,
+        1093
+      ],
+      "exact_prompt": "idle.prompt.txt",
+      "tool_metadata": "idle.tool.json",
+      "approximate_anatomical_left_wrist_pixels": [
+        494,
+        647
+      ],
+      "approximate_anatomical_left_wrist_normalized": [
+        0.393939,
+        0.515949
+      ],
+      "visual_review": "Full back-left45degree view; chest hidden. Near anatomical left arm on screen-left."
+    },
+    {
+      "direction": "nw",
+      "pose": "walk0",
+      "file": "walk0.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "has_alpha": false,
+      "sha256": "8113745a16d7a2516fd94187425d2ab237065841adfe3cc3b71a0c705683a63f",
+      "estimated_warm_foreground_bounds": [
+        448,
+        130,
+        814,
+        1094
+      ],
+      "exact_prompt": "walk0.prompt.txt",
+      "tool_metadata": "walk0.tool.json",
+      "approximate_anatomical_left_wrist_pixels": [
+        521,
+        629
+      ],
+      "approximate_anatomical_left_wrist_normalized": [
+        0.41547,
+        0.501595
+      ],
+      "visual_review": "Contact A after arm-only repair: near left leg forward/high-left, far right leg trails low-right. Near left arm lowered/back near hip; far right forward fist visible beyond torso's left edge, limb otherwise occluded. Stride is longer than contact B."
+    },
+    {
+      "direction": "nw",
+      "pose": "walk1",
+      "file": "walk1.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "has_alpha": false,
+      "sha256": "44ddc9d020685492544290a5c8f334f28e914c32e8c704431b7c8627404e1165",
+      "estimated_warm_foreground_bounds": [
+        420,
+        126,
+        827,
+        1114
+      ],
+      "exact_prompt": "walk1.prompt.txt",
+      "tool_metadata": "walk1.tool.json",
+      "approximate_anatomical_left_wrist_pixels": [
+        465,
+        477
+      ],
+      "approximate_anatomical_left_wrist_normalized": [
+        0.370813,
+        0.380383
+      ],
+      "visual_review": "Contact B after fresh idle-anchored regeneration: near left leg trails to lower-left, far right foot forward/higher-right. Left arm forward, right arm back. Closest sole near1113 is21px below idle; head scale retained. Both contacts require gameplay-scale cadence review."
+    },
+    {
+      "direction": "nw",
+      "pose": "strike0",
+      "file": "strike0.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "has_alpha": false,
+      "sha256": "0974d91300ac7d000551faf07aa99dd2468c607762e20b8906567096137dbf55",
+      "estimated_warm_foreground_bounds": [
+        417,
+        126,
+        780,
+        1093
+      ],
+      "exact_prompt": "strike0.prompt.txt",
+      "tool_metadata": "strike0.tool.json",
+      "approximate_anatomical_left_wrist_pixels": [
+        475,
+        297
+      ],
+      "approximate_anatomical_left_wrist_normalized": [
+        0.378788,
+        0.236842
+      ],
+      "visual_review": "Same near left arm bends beside shoulder/head, far right hand low. Full back view and both planted feet preserve idle."
+    },
+    {
+      "direction": "nw",
+      "pose": "strike1",
+      "file": "strike1.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "has_alpha": false,
+      "sha256": "96360a10dc3f14bd896f3087216e19c13351d90cfa5091742f3961524d0d20ba",
+      "estimated_warm_foreground_bounds": [
+        307,
+        126,
+        781,
+        1092
+      ],
+      "exact_prompt": "strike1.prompt.txt",
+      "tool_metadata": "strike1.tool.json",
+      "approximate_anatomical_left_wrist_pixels": [
+        363,
+        236
+      ],
+      "approximate_anatomical_left_wrist_normalized": [
+        0.289474,
+        0.188198
+      ],
+      "visual_review": "Same near left arm reaches upper-left, left fist clear of head, right hand remains low. Feet/head preserve anticipation; chest remains hidden."
+    }
+  ],
+  "rejected_attempts": [
+    {
+      "file": "walk0-rejected-arms.png",
+      "prompt": "walk0-rejected-arms.prompt.txt",
+      "tool_metadata": "walk0-rejected-arms.tool.json",
+      "reason": "Left arm and left leg both forward. Selected repair changes only arms."
+    },
+    {
+      "file": "walk1-rejected-leg-ambiguity.png",
+      "prompt": "walk1-rejected-leg-ambiguity.prompt.txt",
+      "tool_metadata": "walk1-rejected-leg-ambiguity.tool.json",
+      "reason": "Opposite near/far leg identity remained ambiguous/repeated previous lower-right trailing geometry."
+    },
+    {
+      "file": "walk1-rejected-scale-and-legs.png",
+      "prompt": "walk1-legs-repair.prompt.txt",
+      "tool_metadata": "walk1-legs-repair.tool.json",
+      "reason": "Ignored requested leg swap and enlarged body/crown to y~55, breaking common scale. Replaced with fresh idle-anchored generation."
+    }
+  ],
+  "validation_scope": "All selected full-resolution outputs visually inspected. PNG size/mode/hash and warm-body bounds measured using Pillow/Numpy without modifying images. No runtime import, animation playback, equipment composite or final gameplay-size visual acceptance performed."
+}

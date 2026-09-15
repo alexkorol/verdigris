@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "output_dir": "processed/female/ne",
+  "report_name": "hero-female-ne.provenance.json",
+  "shared_palette_max_colors": 96,
+  "defaults": {
+    "cell_size": 10,
+    "alpha_mode": "crisp",
+    "canvas": [
+      160,
+      192
+    ],
+    "padding": 32,
+    "fit": [
+      96,
+      128
+    ],
+    "trim": true,
+    "require_transparency": true,
+    "preserve_scale": true,
+    "anchor_source": [
+      627,
+      1085
+    ],
+    "acceptance": "staged_pending_visual_and_runtime_review"
+  },
+  "known_limitations": [
+    "Generated RGB checker mattes require explicitly recorded neutral removal.",
+    "One directional idle defines each clip pivot; source scale variations remain measurable.",
+    "Attack recovery reuses the accepted idle pose; two other poses are independently generated."
+  ],
+  "sheets": [
+    {
+      "source": "derived/female/ne/idle.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_female_ne",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "derived/female/ne/walk0.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_female_walk0_ne",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "derived/female/ne/walk1.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_female_walk1_ne",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "derived/female/ne/strike0.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_female_strike0_ne",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "derived/female/ne/strike1.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_female_strike1_ne",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  ]
+}

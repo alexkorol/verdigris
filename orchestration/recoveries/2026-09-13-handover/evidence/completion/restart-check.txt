@@ -1,0 +1,1 @@
+PASS: complete scion loadouts identical across restart and graphical readmission

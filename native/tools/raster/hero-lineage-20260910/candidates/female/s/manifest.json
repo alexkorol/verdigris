@@ -1,0 +1,227 @@
+{
+  "schema_version": 1,
+  "character": "female original reference",
+  "direction": "s",
+  "status": "source_generation_complete_pending_parent_matte_and_runtime_review",
+  "original_reference": "C:\\Users\\Alex\\Downloads\\ccd7ce15-5d1a-46c4-af49-f305bf7fad90 (1).png",
+  "original_reference_sha256": "9693437c9b6d88674cf64e55749135979c8db8db5576353967b2fe8a57fba742",
+  "canvas": [
+    1254,
+    1254
+  ],
+  "generated_call_count_in_direction": 4,
+  "selected_new_images": 4,
+  "copied_original_count": 1,
+  "model_version_evidence": "Tool identifier image_gen.imagegen; backend model variant is not exposed. Do not infer a version from task terminology.",
+  "image_processing": "No pixel modification, resampling, alpha cleanup, packing, or runtime import performed. Generated tool output bytes copied verbatim.",
+  "measurement_method": "Bounding box (left,top,right-exclusive,bottom-exclusive) of pixels where max(R,G,B)-min(R,G,B)>16 and alpha>128; excludes neutral painted checker. Threshold 32 bounds also recorded. This is foreground measurement only, not an exact silhouette mask or edited image.",
+  "pivot_note": "Shared approximate requested registration at x627,y1100 on the actual 1254 canvas. This is a proposed common pivot, not a measured per-pose foot location; do not independently fit poses. Visible lowest soles differ by stride.",
+  "wrist_note": "Manual approximate anatomical LEFT wrist center, normalized over full unchanged canvas, not body bounds. Expect about +/-15 source pixels; root must apply the same import transform and inspect equipment layers at runtime scale.",
+  "attack_recovery": "Use idle as third runtime recovery frame; no third generated strike pose.",
+  "frames": [
+    {
+      "pose": "idle",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\s\\idle.png",
+      "metadata": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\s\\idle.json",
+      "sha256": "9693437c9b6d88674cf64e55749135979c8db8db5576353967b2fe8a57fba742",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "foreground_bbox": [
+        445,
+        115,
+        809,
+        1106
+      ],
+      "foreground_bbox_threshold32": [
+        445,
+        119,
+        809,
+        1103
+      ],
+      "foreground_height_px": 991,
+      "shared_ground_pivot_px": [
+        627,
+        1100
+      ],
+      "anatomical_left_wrist_px_approx": [
+        786,
+        592
+      ],
+      "anatomical_left_wrist_normalized_canvas_approx": [
+        0.62679,
+        0.47209
+      ],
+      "wrist_uncertainty_px": 15,
+      "review": "Supplied original copied without modification; preserves exact identity and true alpha.",
+      "runtime_accepted": false
+    },
+    {
+      "pose": "walk0",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\s\\walk0.png",
+      "metadata": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\s\\walk0.json",
+      "sha256": "149ccdeae1a56a81fd1507b913f942eea7bbd4b9c9c6031d7a92d50292d61d16",
+      "mode": "RGB",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": null,
+      "foreground_bbox": [
+        449,
+        111,
+        809,
+        1128
+      ],
+      "foreground_bbox_threshold32": [
+        450,
+        112,
+        808,
+        1126
+      ],
+      "foreground_height_px": 1017,
+      "shared_ground_pivot_px": [
+        627,
+        1100
+      ],
+      "anatomical_left_wrist_px_approx": [
+        785,
+        581
+      ],
+      "anatomical_left_wrist_normalized_canvas_approx": [
+        0.626,
+        0.46332
+      ],
+      "wrist_uncertainty_px": 15,
+      "review": "Anatomical RIGHT leg at screen-left leads; LEFT trails. Facing toward viewer preserved. Clear opposing arm balance.",
+      "runtime_accepted": false
+    },
+    {
+      "pose": "walk1",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\s\\walk1.png",
+      "metadata": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\s\\walk1.json",
+      "sha256": "f14b3d3cf60634c5413c3649d49c37fcfdeea9005073d45194d551b29882b1af",
+      "mode": "RGB",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": null,
+      "foreground_bbox": [
+        467,
+        114,
+        802,
+        1151
+      ],
+      "foreground_bbox_threshold32": [
+        470,
+        116,
+        801,
+        1148
+      ],
+      "foreground_height_px": 1037,
+      "shared_ground_pivot_px": [
+        627,
+        1100
+      ],
+      "anatomical_left_wrist_px_approx": [
+        779,
+        554
+      ],
+      "anatomical_left_wrist_normalized_canvas_approx": [
+        0.62121,
+        0.44179
+      ],
+      "wrist_uncertainty_px": 15,
+      "review": "Anatomical LEFT leg at screen-right leads; RIGHT trails. Facing toward viewer preserved. Forward sole reaches y1151 versus idle y1106; review ground registration without independently fitting body scale.",
+      "runtime_accepted": false
+    },
+    {
+      "pose": "strike0",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\s\\strike0.png",
+      "metadata": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\s\\strike0.json",
+      "sha256": "b77a3b5b9f16a1b942a1e54f54fa03530d49f9dbbe54796be3dc8bd8f36d363c",
+      "mode": "RGB",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": null,
+      "foreground_bbox": [
+        439,
+        116,
+        818,
+        1107
+      ],
+      "foreground_bbox_threshold32": [
+        439,
+        117,
+        818,
+        1105
+      ],
+      "foreground_height_px": 991,
+      "shared_ground_pivot_px": [
+        627,
+        1100
+      ],
+      "anatomical_left_wrist_px_approx": [
+        773,
+        350
+      ],
+      "anatomical_left_wrist_normalized_canvas_approx": [
+        0.61643,
+        0.27911
+      ],
+      "wrist_uncertainty_px": 15,
+      "review": "Anatomical LEFT fist at screen-right cocked near shoulder. Other arm low and feet planted.",
+      "runtime_accepted": false
+    },
+    {
+      "pose": "strike1",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\s\\strike1.png",
+      "metadata": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\s\\strike1.json",
+      "sha256": "0fb697f53e2fee2352800dbc91a3263448226d22964116d4569658397628c08c",
+      "mode": "RGB",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": null,
+      "foreground_bbox": [
+        440,
+        115,
+        760,
+        1108
+      ],
+      "foreground_bbox_threshold32": [
+        441,
+        116,
+        759,
+        1105
+      ],
+      "foreground_height_px": 993,
+      "shared_ground_pivot_px": [
+        627,
+        1100
+      ],
+      "anatomical_left_wrist_px_approx": [
+        704,
+        465
+      ],
+      "anatomical_left_wrist_normalized_canvas_approx": [
+        0.5614,
+        0.37081
+      ],
+      "wrist_uncertainty_px": 15,
+      "review": "Anatomical LEFT arm foreshortened toward viewer/down; empty fist near center-right. Other arm low, feet planted.",
+      "runtime_accepted": false
+    }
+  ],
+  "additional_attempts": []
+}

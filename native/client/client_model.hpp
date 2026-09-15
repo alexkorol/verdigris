@@ -25,6 +25,16 @@ struct ClientPlayer {
   int resource_max = 50;
   int attack = 12;
   bool alive = true;
+  bool has_display_position = false;
+  double display_x = 0.0;
+  double display_y = 0.0;
+  std::string appearance = "male";
+  int defense = 0;
+  int gear_attack = 0;
+  bool combat_stats_present = false;
+  bool total_ratings_present = false;
+  int attack_rating = 0;
+  int defense_rating = 0;
 };
 
 struct ClientMonster {
@@ -61,6 +71,9 @@ struct ClientItemSlot {
   int quantity = 1;
   std::string equip_slot;
   bool two_handed = false;
+  std::string art_key; // Authoritative vessel form/material, presentation only.
+  std::string pack_id = "main";
+  std::vector<std::string> compatible_packs;
 };
 
 struct ClientWornItem {
@@ -122,6 +135,7 @@ struct ClientChartScreen {
 // server-authored verb list ("talk", "trade", "bank", "examine").
 struct ClientNpc {
   int id = 0;
+  std::string art_identity;
   std::string name;
   double x = 0.0;
   double y = 0.0;
@@ -164,6 +178,7 @@ struct ClientPassiveProgression {
   std::vector<std::string> nodes;
   std::vector<std::string> conduits;
   std::string selected_node;
+  std::vector<std::string> inventory_unlocks;
 };
 
 // TASK-0145 Gate-B chronicle state, exactly as carried by the accepted wire
@@ -175,6 +190,7 @@ struct ClientScionEntry {
   std::string name;
   int level = 1;
   bool mortal = false;
+  std::string appearance = "male";
 };
 
 struct ClientCryptEntry {
@@ -184,6 +200,7 @@ struct ClientCryptEntry {
   // "" (no relic record) | "lost" | "queued" | "recovered"
   std::string relic_status;
   int relic_count = 0;
+  std::string appearance = "male";
 };
 
 struct ClientHouseEntry {
@@ -214,7 +231,13 @@ const ClientHouseEntry* find_chronicle_house(const ClientChronicle& chronicle,
 const ClientScionEntry* find_chronicle_scion(const ClientChronicle& chronicle,
                                              const std::string& scion_id);
 
+struct ClientStarterSlice {
+  bool active = false;
+  std::string phase, occupation, objective;
+  int wave = 0, retries = 0;
+};
 struct ClientModel {
+  ClientStarterSlice starter;
   ClientPlayer player;
   std::vector<ClientItemSlot> inventory;
   std::vector<ClientWornItem> worn;
@@ -225,6 +248,7 @@ struct ClientModel {
   ClientBankScreen bank;
   ClientChartScreen chart;
   // stats-manager attributes from the dev:state snapshot.
+  bool attributes_present = false;
   int attr_strength = 10;
   int attr_dexterity = 10;
   int attr_intelligence = 10;

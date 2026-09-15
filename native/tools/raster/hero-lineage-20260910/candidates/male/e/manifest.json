@@ -1,0 +1,260 @@
+{
+  "schema_version": 1,
+  "owner": "bestiary_assets",
+  "character": "male",
+  "direction": "e",
+  "status": "source candidates selected; pending parent native reconstruction and game review",
+  "original_identity": {
+    "path": "C:\\Users\\Alex\\Downloads\\ChatGPT Image Sep 10, 2026, 05_22_21 PM.png",
+    "sha256": "fa6bb5a57dbb0791095abc6078920ae3e834782e3db8dd24b95e16c8f37b5e1f",
+    "size": [
+      1254,
+      1254
+    ],
+    "alpha128_bbox": [
+      432,
+      128,
+      822,
+      1098
+    ],
+    "standing_height_px": 970
+  },
+  "canvas_authority": "Original1254square source; raw generation never fitted/rescaled/repainted.",
+  "requested_common_source_pivot": [
+    627,
+    1098
+  ],
+  "source_pivot_caveat": "Requested anchor is not proof of registration. Body and foot offsets in review require common-scale parent reconstruction; do not independently fit each silhouette.",
+  "left_wrist_convention": "Anatomical LEFT. Source x right and y down. Normalized by1254. Forearm direction is elbow-to-wrist screen angle (0right,+90down), NOT a verified weapon angle; hands are empty. Occluded wrists are estimates.",
+  "workflow": {
+    "type": "Reference-preserving isolated single-pose built-in edits; original identity always retained. Idle direction normally added; successful opposite-pose geometry used for targeted repairs.",
+    "sources": [
+      "https://x.com/elle_elle_e/status/2097439673308389840",
+      "https://www.flixly.ai/blog/stop-motion-chatgpt-images-2-5",
+      "https://x.com/higgsfield/status/2097514684811554911"
+    ],
+    "adaptation": "Our controlled one-character direction/motion adaptation of separate-frame and explicit-reference-role workflows; not a claim these creators tested this character or produced these outputs. Tool exposes no selectable model variant."
+  },
+  "frames": [
+    {
+      "pose": "idle",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\e\\idle.png",
+      "sha256": "aa077e8bda65b7888568b3d3369f023a604ae7aeb2040474decc1f0bf74eb8d1",
+      "selected_raw_stem": "idle",
+      "prompt": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\e\\idle.prompt.txt",
+      "tool_output": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\e\\idle.tool-output.json",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "alpha": {
+        "has_channel": false,
+        "min": 255,
+        "max": 255,
+        "zero_pixels": 0,
+        "partial_pixels": 0,
+        "verdict": "FAIL: opaque painted checkerboard; raw unchanged"
+      },
+      "estimated_foreground_bbox": [
+        526,
+        125,
+        733,
+        1105
+      ],
+      "bbox_method": "Warm/saturated foreground mask: RGB max-min>15 and mean<225; diagnostic estimate, NOT alpha and not used to edit pixels",
+      "estimated_body_extent_px": 980,
+      "left_wrist": {
+        "source_xy": [
+          671,
+          632
+        ],
+        "normalized_xy": [
+          0.53509,
+          0.50399
+        ],
+        "visible": false,
+        "confidence": "low; occluded and inferred",
+        "forearm_direction_deg": null
+      },
+      "visual_review": "Right-facing profile. Anatomical left arm is far and occluded; visible foreground hanging arm is anatomical right. Left wrist location is inferred, not measured."
+    },
+    {
+      "pose": "walk0",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\e\\walk0.png",
+      "sha256": "7784a3d773b4e59d7266010fed60d72bf9ecc963cfc5f8627b86b92eaab39303",
+      "selected_raw_stem": "walk0",
+      "prompt": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\e\\walk0.prompt.txt",
+      "tool_output": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\e\\walk0.tool-output.json",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "alpha": {
+        "has_channel": false,
+        "min": 255,
+        "max": 255,
+        "zero_pixels": 0,
+        "partial_pixels": 0,
+        "verdict": "FAIL: opaque painted checkerboard; raw unchanged"
+      },
+      "estimated_foreground_bbox": [
+        365,
+        124,
+        888,
+        1076
+      ],
+      "bbox_method": "Warm/saturated foreground mask: RGB max-min>15 and mean<225; diagnostic estimate, NOT alpha and not used to edit pixels",
+      "estimated_body_extent_px": 952,
+      "left_wrist": {
+        "source_xy": [
+          501,
+          580
+        ],
+        "normalized_xy": [
+          0.39952,
+          0.46252
+        ],
+        "visible": true,
+        "confidence": "medium approximate visual measurement",
+        "forearm_direction_deg": 98
+      },
+      "visual_review": "Open right-facing stride with near right arm forward and far left arm back. Tunic hides exact hip connection; paired support should be reviewed at native scale."
+    },
+    {
+      "pose": "walk1",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\e\\walk1.png",
+      "sha256": "e95377d8c6cb3a500c0b27b42e889fd6198e35433fbf490d870eaa0707103e9f",
+      "selected_raw_stem": "walk1-repair",
+      "prompt": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\e\\walk1.prompt.txt",
+      "tool_output": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\e\\walk1.tool-output.json",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "alpha": {
+        "has_channel": false,
+        "min": 255,
+        "max": 255,
+        "zero_pixels": 0,
+        "partial_pixels": 0,
+        "verdict": "FAIL: opaque painted checkerboard; raw unchanged"
+      },
+      "estimated_foreground_bbox": [
+        367,
+        126,
+        907,
+        1077
+      ],
+      "bbox_method": "Warm/saturated foreground mask: RGB max-min>15 and mean<225; diagnostic estimate, NOT alpha and not used to edit pixels",
+      "estimated_body_extent_px": 951,
+      "left_wrist": {
+        "source_xy": [
+          778,
+          486
+        ],
+        "normalized_xy": [
+          0.62041,
+          0.38756
+        ],
+        "visible": true,
+        "confidence": "medium approximate visual measurement",
+        "forearm_direction_deg": 6
+      },
+      "visual_review": "Selected repair reverses near/right arm backward and far/left arm forward. Front thigh now intended near/right; hip ownership remains partly occluded. First repeated pose rejected."
+    },
+    {
+      "pose": "strike0",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\e\\strike0.png",
+      "sha256": "4cb52ce6698c7113281ab4b91f6195079790c2fc28b6e77366d00fe5de4f375e",
+      "selected_raw_stem": "strike0",
+      "prompt": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\e\\strike0.prompt.txt",
+      "tool_output": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\e\\strike0.tool-output.json",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "alpha": {
+        "has_channel": false,
+        "min": 255,
+        "max": 255,
+        "zero_pixels": 0,
+        "partial_pixels": 0,
+        "verdict": "FAIL: opaque painted checkerboard; raw unchanged"
+      },
+      "estimated_foreground_bbox": [
+        525,
+        125,
+        762,
+        1106
+      ],
+      "bbox_method": "Warm/saturated foreground mask: RGB max-min>15 and mean<225; diagnostic estimate, NOT alpha and not used to edit pixels",
+      "estimated_body_extent_px": 981,
+      "left_wrist": {
+        "source_xy": [
+          730,
+          362
+        ],
+        "normalized_xy": [
+          0.58214,
+          0.28868
+        ],
+        "visible": true,
+        "confidence": "medium approximate visual measurement",
+        "forearm_direction_deg": -78
+      },
+      "visual_review": "Far anatomical-left fist cocked in front of upper chest; near/right arm unchanged down. Body size matches idle."
+    },
+    {
+      "pose": "strike1",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\e\\strike1.png",
+      "sha256": "b0011aa9640049153e8fb0a1025c0f852fbd78de6be75a90f5459a2e59c02813",
+      "selected_raw_stem": "strike1",
+      "prompt": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\e\\strike1.prompt.txt",
+      "tool_output": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\e\\strike1.tool-output.json",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "alpha": {
+        "has_channel": false,
+        "min": 255,
+        "max": 255,
+        "zero_pixels": 0,
+        "partial_pixels": 0,
+        "verdict": "FAIL: opaque painted checkerboard; raw unchanged"
+      },
+      "estimated_foreground_bbox": [
+        524,
+        124,
+        1022,
+        1106
+      ],
+      "bbox_method": "Warm/saturated foreground mask: RGB max-min>15 and mean<225; diagnostic estimate, NOT alpha and not used to edit pixels",
+      "estimated_body_extent_px": 982,
+      "left_wrist": {
+        "source_xy": [
+          954,
+          322
+        ],
+        "normalized_xy": [
+          0.76077,
+          0.25678
+        ],
+        "visible": true,
+        "confidence": "medium approximate visual measurement",
+        "forearm_direction_deg": 0
+      },
+      "visual_review": "Far anatomical-left arm extended right, partly occluded at shoulder; near/right arm stays down. Planted feet and body scale match idle."
+    }
+  ],
+  "retained_attempts": [
+    "walk1-rejected-repeated-phase.png",
+    "walk1-repair.png"
+  ],
+  "production_changes": "None: no runtime/catalog/code/build/Git edits."
+}

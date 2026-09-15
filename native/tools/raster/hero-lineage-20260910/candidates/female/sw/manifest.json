@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "character": "female original reference",
+  "direction": "sw",
+  "status": "source_generation_complete_pending_parent_matte_and_runtime_review",
+  "original_reference": "C:\\Users\\Alex\\Downloads\\ccd7ce15-5d1a-46c4-af49-f305bf7fad90 (1).png",
+  "original_reference_sha256": "9693437c9b6d88674cf64e55749135979c8db8db5576353967b2fe8a57fba742",
+  "canvas": [
+    1254,
+    1254
+  ],
+  "generated_call_count_in_direction": 6,
+  "selected_new_images": 5,
+  "copied_original_count": 0,
+  "model_version_evidence": "Tool identifier image_gen.imagegen; backend model variant is not exposed. Do not infer a version from task terminology.",
+  "image_processing": "No pixel modification, resampling, alpha cleanup, packing, or runtime import performed. Generated tool output bytes copied verbatim.",
+  "measurement_method": "Bounding box (left,top,right-exclusive,bottom-exclusive) of pixels where max(R,G,B)-min(R,G,B)>16 and alpha>128; excludes neutral painted checker. Threshold 32 bounds also recorded. This is foreground measurement only, not an exact silhouette mask or edited image.",
+  "pivot_note": "Shared approximate requested registration at x627,y1100 on the actual 1254 canvas. This is a proposed common pivot, not a measured per-pose foot location; do not independently fit poses. Visible lowest soles differ by stride.",
+  "wrist_note": "Manual approximate anatomical LEFT wrist center, normalized over full unchanged canvas, not body bounds. Expect about +/-15 source pixels; root must apply the same import transform and inspect equipment layers at runtime scale.",
+  "attack_recovery": "Use idle as third runtime recovery frame; no third generated strike pose.",
+  "frames": [
+    {
+      "pose": "idle",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\sw\\idle.png",
+      "metadata": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\sw\\idle.json",
+      "sha256": "333b4774b8eed3b0ea98f577a9dab86eede831a1a61bdc831558266b604f8e0e",
+      "mode": "RGB",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": null,
+      "foreground_bbox": [
+        482,
+        128,
+        781,
+        1126
+      ],
+      "foreground_bbox_threshold32": [
+        482,
+        130,
+        780,
+        1125
+      ],
+      "foreground_height_px": 998,
+      "shared_ground_pivot_px": [
+        627,
+        1100
+      ],
+      "anatomical_left_wrist_px_approx": [
+        755,
+        627
+      ],
+      "anatomical_left_wrist_normalized_canvas_approx": [
+        0.60207,
+        0.5
+      ],
+      "wrist_uncertainty_px": 15,
+      "review": "Adult identity, beige kit and SW front-three-quarter facing preserved. Relaxed empty hands.",
+      "runtime_accepted": false
+    },
+    {
+      "pose": "walk0",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\sw\\walk0.png",
+      "metadata": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\sw\\walk0.json",
+      "sha256": "504761ab206b59a18833c59c884009320820359305f4ef79fbf118e65d772b62",
+      "mode": "RGB",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": null,
+      "foreground_bbox": [
+        432,
+        126,
+        834,
+        1132
+      ],
+      "foreground_bbox_threshold32": [
+        432,
+        127,
+        833,
+        1130
+      ],
+      "foreground_height_px": 1006,
+      "shared_ground_pivot_px": [
+        627,
+        1100
+      ],
+      "anatomical_left_wrist_px_approx": [
+        805,
+        589
+      ],
+      "anatomical_left_wrist_normalized_canvas_approx": [
+        0.64195,
+        0.4697
+      ],
+      "wrist_uncertainty_px": 15,
+      "review": "Anatomical RIGHT far leg at screen-left leads; LEFT near leg at screen-right trails. Face remains SW.",
+      "runtime_accepted": false
+    },
+    {
+      "pose": "walk1",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\sw\\walk1.png",
+      "metadata": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\sw\\walk1.json",
+      "sha256": "b521cfd7eb088586249c9412ec0112f23055deb7a60591016263cf08b298320c",
+      "mode": "RGB",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": null,
+      "foreground_bbox": [
+        477,
+        129,
+        800,
+        1126
+      ],
+      "foreground_bbox_threshold32": [
+        477,
+        130,
+        798,
+        1125
+      ],
+      "foreground_height_px": 997,
+      "shared_ground_pivot_px": [
+        627,
+        1100
+      ],
+      "anatomical_left_wrist_px_approx": [
+        772,
+        629
+      ],
+      "anatomical_left_wrist_normalized_canvas_approx": [
+        0.61563,
+        0.50159
+      ],
+      "wrist_uncertainty_px": 15,
+      "review": "Repair visibly changes to anatomical LEFT near leg at screen-right leading, with RIGHT leg trailing screen-left. Face remains SW. Forward foot projects toward lower-right despite SW face, and arm counter-swing is mild; needs playback review.",
+      "runtime_accepted": false
+    },
+    {
+      "pose": "strike0",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\sw\\strike0.png",
+      "metadata": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\sw\\strike0.json",
+      "sha256": "d268de26e0df136e66c7f692b38e6e1d8e142121f839bb00df8fe5164f3056f0",
+      "mode": "RGB",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": null,
+      "foreground_bbox": [
+        476,
+        127,
+        775,
+        1126
+      ],
+      "foreground_bbox_threshold32": [
+        477,
+        129,
+        774,
+        1126
+      ],
+      "foreground_height_px": 999,
+      "shared_ground_pivot_px": [
+        627,
+        1100
+      ],
+      "anatomical_left_wrist_px_approx": [
+        707,
+        401
+      ],
+      "anatomical_left_wrist_normalized_canvas_approx": [
+        0.5638,
+        0.31978
+      ],
+      "wrist_uncertainty_px": 15,
+      "review": "Anatomical LEFT near arm at screen-right cocked toward shoulder; RIGHT far arm low. Feet planted.",
+      "runtime_accepted": false
+    },
+    {
+      "pose": "strike1",
+      "file": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\sw\\strike1.png",
+      "metadata": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\sw\\strike1.json",
+      "sha256": "02011c117e3a958c07a6a796e5c27f78783fc25927f04e230fdcbb0b3ee31c93",
+      "mode": "RGB",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": null,
+      "foreground_bbox": [
+        442,
+        128,
+        775,
+        1129
+      ],
+      "foreground_bbox_threshold32": [
+        443,
+        129,
+        774,
+        1128
+      ],
+      "foreground_height_px": 1001,
+      "shared_ground_pivot_px": [
+        627,
+        1100
+      ],
+      "anatomical_left_wrist_px_approx": [
+        513,
+        423
+      ],
+      "anatomical_left_wrist_normalized_canvas_approx": [
+        0.40909,
+        0.33732
+      ],
+      "wrist_uncertainty_px": 15,
+      "review": "Anatomical LEFT near arm extends across front toward screen-left/down. RIGHT far arm remains low. Feet planted with modest torso turn.",
+      "runtime_accepted": false
+    }
+  ],
+  "additional_attempts": [
+    {
+      "metadata": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\sw\\walk1-v1-rejected.json",
+      "status": "rejected_repeated_walk_contact",
+      "source_path": "C:\\Users\\Alex\\.codex\\generated_images\\01a08b3d-0739-7b22-86a3-6475fe34a823\\exec-0b1534f6-1a4a-497c-99e4-1c0e3ce85471.png",
+      "review": "First walk1 output repeated the walk0 leading-leg arrangement rather than clearly switching anatomical support. Superseded by v2 selected in canonical walk1.png."
+    },
+    {
+      "metadata": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\female\\sw\\walk1-v2.json",
+      "status": "pose_selected_alpha_failed",
+      "source_path": "C:\\Users\\Alex\\.codex\\generated_images\\01a08b3d-0739-7b22-86a3-6475fe34a823\\exec-b9efe3db-ed71-4eb5-afb2-684973f649ad.png",
+      "review": "Repair visibly changes to anatomical LEFT near leg at screen-right leading, with RIGHT leg trailing screen-left. Face remains SW. Forward foot projects toward lower-right despite SW face, and arm counter-swing is mild; needs playback review."
+    }
+  ]
+}

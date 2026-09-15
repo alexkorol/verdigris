@@ -44,6 +44,10 @@ struct ClientCommand {
     UseAction,      // `target` = action name ("melee", ...)
     PickUp,         // `target` = ground item uuid; empty => underfoot
     Equip,          // `target` = item uuid
+    MoveInventory, // target UUID, value = destination backpack cell
+    Unequip,        // `target` = worn seat; server rejects if backpack is full
+    UnequipToInventory, // target UUID, extra worn seat, value exact destination cell
+    DropInventory,  // target UUID, extra worn seat if equipped; authority drops at actor's feet
     EnterZone,      // `target` = route/node id
     Extract,
     // TASK-0145 Gate-B chronicles intents. The session translates them into
@@ -51,6 +55,7 @@ struct ClientCommand {
     FoundHouse,     // `target` = House display name
     CreateScion,    // `target` = Scion display name
     SelectScion,    // `target` = scion id; value!=0 => mortal oath
+    StarterAction,  // target = occupation id or interact; server owns transitions
     SetOut,         // `target` = scion id (plain admission / road purse)
     NpcAction,      // `target` = wire action id ("player:npc:talk", ...);
                     // value = town NPC id
@@ -65,7 +70,9 @@ struct ClientCommand {
   int dy = 0;
   int value = 0;
   std::string target;
-  std::string extra;  // MenuAction: the item id/uuid riding queueItem.item
+  std::string house_id; // Optional explicit House for CreateScion, validated by server.
+  std::string extra;  // CreateScion: appearance; MenuAction: item id/uuid
+  std::string pack_id = "main"; // destination compartment for inventory moves
 
   static ClientCommand login(std::string guest_id, bool quick_guest);
   static ClientCommand move(int dx, int dy);
@@ -76,9 +83,10 @@ struct ClientCommand {
   static ClientCommand enter_zone(std::string node_id);
   static ClientCommand extract();
   static ClientCommand found_house(std::string house_name);
-  static ClientCommand create_scion(std::string scion_name);
+  static ClientCommand create_scion(std::string scion_name, std::string appearance = "male");
   static ClientCommand select_scion(std::string scion_id, bool mortal_oath);
-  static ClientCommand set_out(std::string scion_id);
+  static ClientCommand set_out(std::string scion_id, bool starter_slice = false);
+  static ClientCommand starter_action(std::string action);
   static ClientCommand npc_action(int npc_id, std::string action_id);
   static ClientCommand menu_action(std::string action_id, std::string item_ref,
                                    int value);

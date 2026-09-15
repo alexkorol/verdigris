@@ -53,6 +53,9 @@ struct EffectFx {
   bool speculative = false;
   std::string actor_family;
   bool actor_elite = false;
+  // Exact authored identity and facing survive removal from live snapshots.
+  std::string actor_art_identity;
+  verdigris::Vec2 actor_facing{0, 1};
 };
 
 inline constexpr int kActorFallTtlTicks = 160;
@@ -96,6 +99,8 @@ struct WorldActor {
   int resource_max = 0;
   int attack = 0;
   int defense = 0;
+  int gear_attack = 0;
+  bool combat_stats_present = false;
   int level = 1;
   int cooldown_ticks = 0;
   int war_cry_ticks_remaining = 0;
@@ -111,6 +116,7 @@ struct WorldActor {
   const verdigris::Vec2& displayed_position() const {
     return has_display_position ? display_position : position;
   }
+  std::string appearance = "male";
 };
 
 struct WorldCarriedItem {
@@ -123,6 +129,9 @@ struct WorldCarriedItem {
   int quantity = 1;
   std::string equip_seat;
   bool two_handed = false;
+  int grid_slot = -1;
+  std::string pack_id = "main";
+  std::vector<std::string> compatible_packs;
 };
 
 // A town NPC as the presentation sees it: authoritative roster entry with a
@@ -132,6 +141,9 @@ struct WorldNpc {
   std::string name;
   verdigris::Vec2 position{};
   std::vector<std::string> actions;
+  // Optional authored identity from a scene binding, never inferred from an
+  // NPC's display name or position in the roster.
+  std::string art_identity;
 };
 
 // TASK-0153: owner-facing expedition phase. The local path reads the core's

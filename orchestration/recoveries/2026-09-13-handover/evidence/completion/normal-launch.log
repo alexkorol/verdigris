@@ -1,0 +1,9 @@
+2026-09-14T03:01:25.3383603Z root=C:\Users\Alex\Documents\Verdigris Native 2026-09-13\ profile=C:\Users\Alex\Documents\Verdigris Native 2026-09-13\profile isolatedSettings=False
+2026-09-14T03:01:25.7288785Z verdigris_server.exe pid=20476 6520
+2026-09-14T03:01:25.7628764Z server: verdigris_server listening on ws://127.0.0.1:6520
+2026-09-14T03:01:25.7688756Z verdigris_client.exe pid=38900 --remote 127.0.0.1 6520 review-player
+2026-09-14T03:01:25.9189260Z client: source=43c104c5acca73805ebb6184079a7fb0d9c7be17 dirty=0 renderer=Fable perspective=1 authored-poses=96 asset-root=C:\Users\Alex\Documents\Verdigris Native 2026-09-13\native\client\assets\raster\runtime
+2026-09-14T03:08:14.6228414Z client error: native-exit: confirmed menu quit
+2026-09-14T03:08:14.6628833Z client exit=0
+2026-09-14T03:08:14.6638821Z cleaned pid=38900 exit=0
+2026-09-14T03:08:14.8138818Z cleaned pid=20476 exit=0

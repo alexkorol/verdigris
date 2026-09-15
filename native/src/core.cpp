@@ -1,6 +1,9 @@
 #include "verdigris/core.hpp"
+#include "verdigris/inventory_extensions.hpp"
+#include "verdigris/starter_layout.hpp"
 
 #include <cmath>
+#include <atomic>
 #include <cctype>
 #include <charconv>
 #include <iomanip>
@@ -213,7 +216,8 @@ Command Command::extract() {
   return {CommandType::ExtractToHouse, 0, 0, ActionType::Wait, {}};
 }
 
-Simulation::Simulation(std::uint64_t seed, const std::string& house_name) : rng_(seed) {
+Simulation::Simulation(std::uint64_t seed, const std::string& house_name,
+                       const std::string& appearance) : rng_(seed) {
   house_.id = rng_.token("house");
   house_.name = house_name;
   house_.routes = {
@@ -224,6 +228,7 @@ Simulation::Simulation(std::uint64_t seed, const std::string& house_name) : rng_
   house_.unlocked_routes.push_back("route:tin:1:0");
   scion_.id = rng_.token("scion");
   scion_.name = "First Scion";
+  scion_.appearance = player_appearance_id(appearance);
   scion_.actor_id = rng_.token("actor");
   Actor player{scion_.actor_id, ActorKind::Player, player_stats(), {0, 0}, true, 0, std::nullopt};
   actors_.push_back(player);
@@ -1149,12 +1154,13 @@ void Simulation::grant_seasonal_reward(const std::string& reward) {
   emit(EventType::SeasonalRewardGranted, {}, {}, {}, reward);
 }
 
-void Simulation::create_successor(const std::string& name) {
+void Simulation::create_successor(const std::string& name, const std::string& appearance) {
   if (scion_.alive) return;
   fallen_scions_.push_back(scion_);
   scion_ = {};
   scion_.id = rng_.token("scion");
   scion_.name = name;
+  scion_.appearance = player_appearance_id(appearance);
   scion_.actor_id = rng_.token("actor");
   Actor player{scion_.actor_id, ActorKind::Player, player_stats(), {0, 0}, true, 0, std::nullopt};
   actors_.clear();
@@ -1268,6 +1274,7 @@ void put_trophies(std::ostringstream& output, const std::string& key,
 void put_scion(std::ostringstream& output, const std::string& key, const Scion& scion) {
   put_text(output, key + ".id", scion.id);
   put_text(output, key + ".name", scion.name);
+  put_text(output, key + ".appearance", player_appearance_id(scion.appearance));
   put_number(output, key + ".level", scion.level);
   put_bool(output, key + ".alive", scion.alive);
   put_text(output, key + ".actorId", scion.actor_id);
@@ -1410,6 +1417,8 @@ Scion read_scion(const SnapshotFields& fields, const std::string& key) {
   Scion scion;
   scion.id = required_text(fields, key + ".id");
   scion.name = required_text(fields, key + ".name");
+  if (fields.find(key + ".appearance") != fields.end())
+    scion.appearance = player_appearance_id(required_text(fields, key + ".appearance"));
   scion.level = required_number<int>(fields, key + ".level");
   scion.alive = required_bool(fields, key + ".alive");
   scion.actor_id = required_text(fields, key + ".actorId");
@@ -1680,7 +1689,10 @@ constexpr int kInstanceMonsterCount = 20;
 constexpr int kN3TrashLife = 30;
 constexpr int kN3PlayerDamage = 18;
 constexpr int kN3PlayerAttackIntervalMs = 350;
-constexpr int kN3MonsterDamage = 5;
+constexpr int kN3PlayerWindupMs = 100;
+// Actor centres are one tile apart at ordinary adjacent contact. The extra
+// quarter tile allows a short blade to connect without requiring overlap.
+constexpr double kN3MeleeReachTiles = 1.25;
 constexpr int kN3BossLife = 120;
 constexpr int kN3BossDamage = 12;
 constexpr int kN3BossTelegraphRadius = 2;
@@ -1743,6 +1755,8 @@ void WorldSimulation::register_step(const std::string& direction, int duration_m
   last_step_.duration_ms = duration_ms;
   last_step_.direction = direction;
   last_step_.blocked = blocked;
+  last_step_.action = "move";
+  last_step_.from = position_;
 }
 
 bool WorldSimulation::apply_movement_sample(const std::string& direction, std::int64_t now_ms) {
@@ -1760,15 +1774,43 @@ bool WorldSimulation::apply_movement_sample(const std::string& direction, std::i
     return false;
   }
 
+  const WorldPosition from = position_;
   const Vec2 previous_tile = tile_movement::occupied_tile(position_);
   position_.x = tile_movement::round_position(position_.x + delta->x);
   position_.y = tile_movement::round_position(position_.y + delta->y);
   register_step(direction, static_cast<int>(tile_movement::kSampleMs), false, now_ms);
+  last_step_.from = from;
 
   const Vec2 current_tile = tile_movement::occupied_tile(position_);
   if (current_tile.x != previous_tile.x || current_tile.y != previous_tile.y) {
     check_stair_transition();
   }
+  return true;
+}
+
+bool WorldSimulation::dash(const std::string& direction, std::int64_t now_ms) {
+  now_ms = std::max<std::int64_t>(0, now_ms);
+  const auto delta = tile_movement::movement_delta(direction);
+  if (!in_instance() || !delta || now_ms < next_dash_ms_) return false;
+  // Validate the whole swept route before moving: blocked dashes never
+  // consume distance or cooldown. A portal is the end of this scene's path.
+  const WorldPosition from = position_;
+  WorldPosition destination = position_;
+  for (int step = 0; step < kDashMovementTicks; ++step) {
+    if (is_blocked(destination, *delta)) return false;
+    destination.x = tile_movement::round_position(destination.x + delta->x);
+    destination.y = tile_movement::round_position(destination.y + delta->y);
+    const auto tile = tile_movement::occupied_tile(destination);
+    if ((tile.x == metadata_.stairs_up.x && tile.y == metadata_.stairs_up.y) ||
+        (tile.x == metadata_.stairs_down.x && tile.y == metadata_.stairs_down.y)) break;
+  }
+  position_ = destination;
+  facing_ = direction;
+  next_dash_ms_ = now_ms + kDashCooldownTicks * kSimulationTickMs;
+  register_step(direction, static_cast<int>(tile_movement::kSampleMs), false, now_ms);
+  last_step_.action = "dash";
+  last_step_.from = from;
+  check_stair_transition();
   return true;
 }
 
@@ -1813,7 +1855,41 @@ void WorldSimulation::reset_to_town() {
   return_to_town();
 }
 
+void WorldSimulation::enter_starter_village() {
+  reset_to_town();
+  scene_type_="instance";scene_id_="owner-demo-prologue";scene_name_="Village Palisade";
+  metadata_={};metadata_.theme="wilds";metadata_.layout="village";metadata_.depth=1;
+  // Exit is a normal interaction after victory; stepping on a tile cannot skip the crisis.
+  metadata_.stairs_up={-10,-10};metadata_.stairs_down={-20,-20};block_stairs_down_=true;
+  grid_.width=32;grid_.height=32;grid_.walkable.assign(32*32,0);
+  for(int y=3;y<29;++y)for(int x=3;x<29;++x)grid_.walkable[y*32+x]=1;
+  for(int x=3;x<29;++x)if(x<15||x>17)grid_.walkable[8*32+x]=0;
+  for(const auto& prop:starter_layout::village().props) if(prop.solid) {
+    const int x=static_cast<int>(std::round(prop.x)),y=static_cast<int>(std::round(prop.y));
+    if(x>=3 && x<29 && y>=3 && y<29)grid_.walkable[y*32+x]=0;
+  }
+  for(int y=18;y<=19;++y)for(int x=18;x<=19;++x)grid_.walkable[y*32+x]=0;
+  position_={16,23};facing_="up";monsters_.clear();ground_items_.clear();
+  active_target_.clear();player_attack_active_=false;last_pursuit_tick_ms_=-1;
+}
+
+void WorldSimulation::spawn_starter_wave(int wave) {
+  monsters_.clear();active_target_.clear();player_attack_active_=false;
+  const int count=wave==3?1:wave==2?3:2;
+  for(int i=0;i<count;++i) {
+    WorldMonster m;m.uuid="village-wave-"+std::to_string(wave)+"-"+std::to_string(i);
+    m.id=wave==3?"village-leader":"village-invader";
+    m.name=wave==3?"Palisade Breaker":"Palisade Invader";
+    m.x=14+i*2;m.y=wave==3?17:15;
+    m.level=1;m.life_max=m.life=wave==3?65:wave==2?22:18;
+    m.boss=wave==3;m.rarity=m.boss?"elite":"common";m.coins=0;
+    m.tags={"prologue"};monsters_.push_back(std::move(m));
+  }
+  last_pursuit_tick_ms_=-1;
+}
+
 void WorldSimulation::return_to_town() {
+  next_dash_ms_ = 0;
   last_pursuit_tick_ms_ = -1;
   scene_type_ = "town";
   scene_id_ = "town:verdigris";
@@ -1826,6 +1902,7 @@ void WorldSimulation::return_to_town() {
   ground_items_ = std::move(town_ground_items_);
   town_ground_items_.clear();
   active_target_.clear();
+  player_attack_active_ = false;
   grid_.width = kTownSize;
   grid_.height = kTownSize;
   grid_.walkable.assign(static_cast<std::size_t>(kTownSize) * kTownSize, 1);
@@ -1867,6 +1944,7 @@ std::string WorldSimulation::zone_display_name(const std::string& template_id,
 }
 
 void WorldSimulation::generate_instance() {
+  next_dash_ms_ = 0;
   last_pursuit_tick_ms_ = -1;
   const std::string& layout = metadata_.layout;
   const std::string effective = layout.empty() ? "warren" : layout;
@@ -2056,6 +2134,7 @@ void WorldSimulation::enter_solo_instance(const std::string& template_id, const 
   }
   active_target_.clear();
   boss_warning_seen_ = false;
+  player_attack_active_ = false;
   next_boss_telegraph_ms_ = 0;
   generate_instance();
 
@@ -2100,6 +2179,19 @@ bool grid_line_clear(const TileGrid& grid, Vec2 from, Vec2 to) {
 namespace {
 double world_tile_distance(WorldPosition a, WorldPosition b) {
   return std::max(std::abs(a.x - b.x), std::abs(a.y - b.y));
+}
+
+bool world_melee_contact(WorldPosition from, WorldPosition to) {
+  return std::hypot(to.x - from.x, to.y - from.y) <= kN3MeleeReachTiles + 1e-6;
+}
+
+bool world_melee_aim(WorldPosition from, WorldPosition to, Vec2 facing) {
+  const double dx = to.x - from.x, dy = to.y - from.y;
+  const double dot = dx * facing.x + dy * facing.y;
+  // A 90-degree forward cone; overlapping centres remain hittable.
+  return dx * dx + dy * dy < 1e-9 ||
+      (dot > 0 && dot * dot * 2 + 1e-9 >=
+          (dx * dx + dy * dy) * (facing.x * facing.x + facing.y * facing.y));
 }
 
 bool world_grid_step_clear(const TileGrid& grid, Vec2 from, Vec2 to) {
@@ -2228,19 +2320,17 @@ void WorldSimulation::advance_monster_movement(std::int64_t now_ms, bool player_
       if (!monster.pursuit_active && distance <= world_pursuit::kAcquireTiles && visible)
         monster.pursuit_active = true;
       if (!monster.pursuit_active) continue;
-      const int contact = active_target_ == monster.uuid ? 2 : 1;
-      if (visible && std::abs(monster.x - player_tile.x) <= contact &&
-          std::abs(monster.y - player_tile.y) <= contact) continue;
+      if (visible && world_melee_contact(from, position_)) continue;
       const auto waypoint = monster_waypoint(index);
       if (!waypoint) continue;
       const double dx = waypoint->x - from.x, dy = waypoint->y - from.y;
       const double length = std::hypot(dx, dy);
       if (length <= 1e-6) continue;
-      double amount = tile_movement::kMoveDistance * enemy_stats(monster.level).move_speed /
+      double amount = tile_movement::kPursuitMoveDistance * enemy_stats(monster.level).move_speed /
                       world_scale::kPlayerMoveSpeed;
       amount = std::min(amount, length);
       if (waypoint->x == position_.x && waypoint->y == position_.y)
-        amount = std::min(amount, std::max(0.0, distance - contact) * length / distance);
+        amount = std::min(amount, std::max(0.0, length - kN3MeleeReachTiles));
       const WorldPosition to{tile_movement::round_position(from.x + dx / length * amount),
                              tile_movement::round_position(from.y + dy / length * amount)};
       if (world_tile_distance(monster.pursuit_home, to) > world_pursuit::kHomeLeashTiles ||
@@ -2270,57 +2360,35 @@ std::vector<WorldCombatEvent> WorldSimulation::start_player_attack(int player_le
   player_level_ = std::max(1, player_level);
   const Vec2 here = tile_movement::occupied_tile(position_);
   WorldMonster* chosen = nullptr;
-  int best = std::numeric_limits<int>::max();
-  // A boss telegraph is an authored encounter contract; when the player is
-  // standing on its doorstep, prefer the named boss over incidental pack
-  // members sharing the tile ring.
+  double best = std::numeric_limits<double>::max();
+  Vec2 aim{};
+  if (direction.find("left") != std::string::npos) aim.x = -1;
+  if (direction.find("right") != std::string::npos) aim.x = 1;
+  if (direction.find("up") != std::string::npos) aim.y = -1;
+  if (direction.find("down") != std::string::npos) aim.y = 1;
+  if (aim.x == 0 && aim.y == 0) aim.y = 1;
   for (auto& monster : monsters_) {
-    if (!monster.alive || !monster.boss) continue;
-    const int distance = std::abs(monster.x - here.x) + std::abs(monster.y - here.y);
-    if (distance <= 2 && grid_line_clear(grid_, here, {monster.x, monster.y})) {
-      chosen = &monster; best = distance; break;
-    }
+    const WorldPosition target = monster.world_position();
+    if (!monster.alive || !world_melee_contact(position_, target) ||
+        !world_melee_aim(position_, target, aim) ||
+        !grid_line_clear(grid_, here, tile_movement::occupied_tile(target))) continue;
+    const double distance = std::hypot(target.x - position_.x, target.y - position_.y);
+    if (distance < best) { best = distance; chosen = &monster; }
   }
   if (!chosen) {
-    for (auto& monster : monsters_) {
-      if (!monster.alive || !monster.empowered) continue;
-      const int distance = std::abs(monster.x - here.x) + std::abs(monster.y - here.y);
-      if (distance <= 2 && grid_line_clear(grid_, here, {monster.x, monster.y})) {
-        chosen = &monster; best = distance; break;
-      }
-    }
+    player_attack_active_ = false;
+    active_target_.clear();
+    return {};
   }
-  if (!chosen) {
-    // Nearest alive monster wins (combat/index.js nearest-target aim). The
-    // scan must keep improving `best` — an early-out here silently locks the
-    // aim onto the first spawn in the pack list. Among equally-near monsters
-    // the aimed direction breaks the tie (the browser swings where the
-    // player faces), so repeated aimed swings hold focus on one target
-    // instead of drifting across a pack (healer-race focus).
-    int aim_dx = 0, aim_dy = 0;
-    if (direction.find("left") != std::string::npos) aim_dx = -1;
-    if (direction.find("right") != std::string::npos) aim_dx = 1;
-    if (direction.find("up") != std::string::npos) aim_dy = -1;
-    if (direction.find("down") != std::string::npos) aim_dy = 1;
-    int best_aim = std::numeric_limits<int>::min();
-    for (auto& monster : monsters_) {
-      if (!monster.alive) continue;
-      const int distance = std::abs(monster.x - here.x) + std::abs(monster.y - here.y);
-      if (!grid_line_clear(grid_, here, {monster.x, monster.y})) continue;
-      const int aim = aim_dx * (monster.x - here.x) + aim_dy * (monster.y - here.y);
-      if (distance < best || (distance == best && aim > best_aim)) {
-        best = distance; best_aim = aim; chosen = &monster;
-      }
-    }
-  }
-  if (!chosen) return {};
+  const bool fresh_swing = !player_attack_active_;
   active_target_ = chosen->uuid;
-  // Input selects a target; only resolved contact advances the attack clock.
-  // Retriggers, target switches, and disengaging/re-engaging must not shorten
-  // the recovery already owed by the previous hit. A fresh attack is immediate.
-  next_player_attack_ms_ = std::max(
-      next_player_attack_ms_,
-      static_cast<std::uint64_t>(std::max<std::int64_t>(0, now_ms)));
+  player_attack_facing_ = aim;
+  player_attack_active_ = true;
+  // Fresh contact has a visible windup. Held/repeated inputs must neither
+  // restart that windup nor bypass recovery from an earlier hit or miss.
+  if (fresh_swing) next_player_attack_ms_ = std::max(
+      next_player_attack_ms_, static_cast<std::uint64_t>(
+          std::max<std::int64_t>(0, now_ms)) + kN3PlayerWindupMs);
   (void)player_attack;
   return {};
 }
@@ -2351,7 +2419,7 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
     const Vec2 here = tile_movement::occupied_tile(position_);
     for (auto& monster : monsters_) {
       if (!monster.alive || monster.boss) continue;
-      if (std::abs(monster.x - here.x) > 1 || std::abs(monster.y - here.y) > 1) continue;
+      if (!world_melee_contact(position_, monster.world_position())) continue;
       if (!grid_line_clear(grid_, here, {monster.x, monster.y})) continue;
       if (monster.next_attack_ms == 0) {
         // First contact: a short, per-monster staggered windup instead of
@@ -2388,22 +2456,29 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
   if (active_target_.empty()) return events;
   WorldMonster* target = nullptr;
   for (auto& monster : monsters_) if (monster.uuid == active_target_ && monster.alive) { target = &monster; break; }
-  if (!target) { active_target_.clear(); return events; }
-  { // JS combat: walking out of melee reach disengages - the swing loop must
-    // not chase a target across the map (build-comparison parking relies on it).
+  if (!target) { active_target_.clear(); player_attack_active_ = false; return events; }
+  { // The engagement radius belongs to boss mechanics, never player damage.
     const Vec2 here = tile_movement::occupied_tile(position_);
     if (std::abs(target->x - here.x) > 4 || std::abs(target->y - here.y) > 4) {
       active_target_.clear();
+      player_attack_active_ = false;
       return events;
     }
     if (!grid_line_clear(grid_, here, {target->x, target->y})) {
       active_target_.clear();
+      player_attack_active_ = false;
       return events;
     }
   }
   if (player_attack <= 0) return events;  // another session owns the swing
-  fprintf(stderr,"[swing] tgt=%s now=%llu next=%llu range-ok\n",active_target_.c_str(),(unsigned long long)now,(unsigned long long)next_player_attack_ms_);
-  if (now >= next_player_attack_ms_) {
+  if (player_attack_active_ &&
+      (!world_melee_contact(position_, target->world_position()) ||
+       !world_melee_aim(position_, target->world_position(), player_attack_facing_))) {
+    player_attack_active_ = false;
+    // Keep an announced boss mechanic alive; ordinary targets disengage.
+    if (!target->boss) { active_target_.clear(); return events; }
+  }
+  if (player_attack_active_ && now >= next_player_attack_ms_) {
     // N4 hit pipeline (server/core/combat/index.js applyHitToMonster):
     // base roll -> Beastbane vs 'beast'-tagged targets -> critical multiplier
     // on the beastbane-adjusted figure (force-critical consumed first).
@@ -2441,6 +2516,7 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       // dropMonsterLoot) — coins always, rarity-gated gear roll.
       drop_monster_loot(*target, player_mods_.goods_found);
       active_target_.clear();
+      player_attack_active_ = false;
       return events;
     }
   }
@@ -2473,15 +2549,6 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       // resolved dodge/hit rather than relying on a hidden wall-clock thread.
       next_boss_telegraph_ms_ = now;
     }
-  } else if (now >= target->next_attack_ms && std::abs(target->x - tile_movement::occupied_tile(position_).x) <= 2
-             && std::abs(target->y - tile_movement::occupied_tile(position_).y) <= 2 &&
-             grid_line_clear(grid_, tile_movement::occupied_tile(position_), {target->x, target->y})) {
-    const int damage = target->empowered ? kN3MonsterDamage + 2 : kN3MonsterDamage;
-    player_life = std::max(0, player_life - damage);
-    WorldCombatEvent impact; impact.type = "hit"; impact.attacker_id = target->uuid; impact.attacker_name = target->name;
-    impact.target_id = player_uuid_; impact.target_name = "Adventurer"; impact.skill_id = "monster:attack";
-    impact.amount = damage; impact.health = player_life; impact.health_max = player_life_max; impact.died = player_life == 0;
-    events.push_back(impact); target->next_attack_ms = now + 1500;
   }
   return events;
 }
@@ -3107,6 +3174,7 @@ const ItemDef kItemCatalogue[] = {
     {"hide-girdle", "Hide Girdle", "armor", "belt", false, false, {0, 0, 0, 0}, {1, 1, 1, 0}, 0, 0, "", ""},
     // jewelry.js amulets: the single-session regression grants garnet-amulet.
     {"garnet-amulet", "Garnet Amulet", "armor", "necklace", false, false, {23, 22, 13, 1}, {24, 25, 13, 4}, 0, 0, "", ""},
+    {"wooden-club", "Weathered Branch", "weapon", "right_hand", false, false, {0, 0, 2, 0}, {}, 0, 0, "", ""},
     // weapons.js / verdigris.js curated bases.
     {"bronze-sword", "Bronze Sword", "weapon", "right_hand", false, false, {4, 3, -2, 0}, {0, 2, 1, 0}, 0, 0, "", ""},
     {"bronze-pike", "Bronze Pike", "weapon", "right_hand", false, true, {13, 5, 0, 0}, {1, 1, 0, 0}, 1, 4, "spear", "bronze"},
@@ -3140,7 +3208,7 @@ const ItemDef kItemCatalogue[] = {
 
 // Process-wide instance identity source (factory.js uuid v4): uniqueness is
 // the only contract the wire and the take/equip verbs rely on.
-std::uint64_t g_item_uuid_serial = 0;
+std::atomic<std::uint64_t> g_item_uuid_serial{0};
 
 std::string next_item_uuid() {
   const std::uint64_t value = ++g_item_uuid_serial;
@@ -3245,6 +3313,15 @@ ItemSize resolve_item_size(const ItemDef& def, const VesselBlock* vessel) {
   return {1, 1};
 }
 
+void reserve_game_item_identity(const std::string& uuid) {
+  if(uuid.size()!=36 || uuid.compare(0,24,"00000000-0000-4000-8000-")!=0) return;
+  std::uint64_t value=0;
+  const auto parsed=std::from_chars(uuid.data()+24,uuid.data()+36,value,16);
+  if(parsed.ec!=std::errc{} || parsed.ptr!=uuid.data()+36)return;
+  auto current=g_item_uuid_serial.load();
+  while(current<value && !g_item_uuid_serial.compare_exchange_weak(current,value)) {}
+}
+
 std::optional<GameItem> create_game_item(const std::string& item_id,
                                          const CreateItemOptions& options) {
   // factory.js createById/createFromBase.
@@ -3314,22 +3391,53 @@ std::optional<GameItem> create_game_item(const std::string& item_id,
 // ── PlayerInventory (inventory.js + inventory-footprints.js) ─────────────
 
 bool PlayerInventory::fits_at(const GameItem& item, int slot) const {
-  const int x0 = slot % kColumns;
-  const int y0 = slot / kColumns;
+  const int columns=inventory_extensions::columns(item.pack_id),rows=inventory_extensions::rows(item.pack_id);
+  if (!columns || slot < 0 || slot >= columns*rows || item.size.width<1 || item.size.height<1) return false;
+  const int x0 = slot % columns;
+  const int y0 = slot / columns;
   for (int dy = 0; dy < item.size.height; ++dy) {
     for (int dx = 0; dx < item.size.width; ++dx) {
       const int x = x0 + dx;
       const int y = y0 + dy;
-      if (x >= kColumns || y >= kRows) return false;
+      if (x >= columns || y >= rows) return false;
       for (const auto& other : items_) {
-        if (other.slot < 0) continue;  // unplaced stacks block nothing
-        const int ox = other.slot % kColumns;
-        const int oy = other.slot / kColumns;
+        if (other.slot < 0 || other.id == "coins" || other.pack_id!=item.pack_id) continue;
+        const int ox = other.slot % columns;
+        const int oy = other.slot / columns;
         if (x >= ox && x < ox + other.size.width && y >= oy && y < oy + other.size.height) {
           return false;
         }
       }
     }
+  }
+  return true;
+}
+
+bool PlayerInventory::move_or_swap(const std::string& uuid, int slot, const std::string& pack) {
+  const int columns=inventory_extensions::columns(pack),rows=inventory_extensions::rows(pack);
+  if(!columns || slot<0 || slot>=columns*rows) return false;
+  auto* source=find_by_uuid(uuid);
+  if(!source || source->slot<0 || source->id=="coins" || !can_store_in_pack(*source,pack)) return false;
+  const auto before=items_;
+  const int old_slot=source->slot;
+  const auto old_pack=source->pack_id;
+  GameItem* target=nullptr;
+  for(auto& other:items_) {
+    if(other.uuid==uuid || other.slot<0 || other.id=="coins" || other.pack_id!=pack) continue;
+    const int x=slot%columns,y=slot/columns,ox=other.slot%columns,oy=other.slot/columns;
+    if(x>=ox && x<ox+other.size.width && y>=oy && y<oy+other.size.height) { target=&other;break; }
+  }
+  const int destination=target?target->slot:slot;
+  if(target && !can_store_in_pack(*target,old_pack))return false;
+  source->slot=-1;
+  if(target) target->slot=-1;
+  source->pack_id=pack;
+  if(!fits_at(*source,destination)) { items_=before; return false; }
+  source->slot=destination;
+  if(target) {
+    target->pack_id=old_pack;
+    if(!fits_at(*target,old_slot)) { items_=before;return false; }
+    target->slot=old_slot;
   }
   return true;
 }
@@ -3344,19 +3452,21 @@ int PlayerInventory::first_fit(const GameItem& item) const {
 
 PlayerInventory::AddResult PlayerInventory::add(GameItem item) {
   AddResult result;
+  item.pack_id="main"; // new grants/pickups enter the backpack or purse
   if (item.stackable) {
     // inventory.js: an existing stack of the same id absorbs the quantity;
     // the balance never needs a free cell and never overflows.
     for (auto& existing : items_) {
       if (existing.id == item.id) {
         existing.qty += item.qty;
+        if (existing.id == "coins") existing.slot = -1;
         result.added = item.qty;
         return result;
       }
     }
-    // JS parity: a new stack occupies a real backpack cell like any item;
-    // -1 only when the grid is genuinely full (the balance still counts).
-    item.slot = first_fit(item);
+    // Currency is a balance, never a backpack footprint. Other existing
+    // stack behavior is unchanged.
+    item.slot = item.id == "coins" ? -1 : first_fit(item);
     result.added = item.qty;
     items_.push_back(std::move(item));
     return result;
@@ -3370,6 +3480,25 @@ PlayerInventory::AddResult PlayerInventory::add(GameItem item) {
   result.added = 1;
   items_.push_back(std::move(item));
   return result;
+}
+
+bool PlayerInventory::can_store_in_pack(const GameItem& item,const std::string& pack) {
+  if(item.id=="coins")return false;
+  if(pack=="main")return true;
+  const auto* def=item_def(item.id);
+  const auto kind=item.vessel?item.vessel->item.kind:def?def->type:std::string{};
+  if(pack=="spoils")return kind=="trophy";
+  if(pack=="preparations")return kind=="reagent" || kind=="tool";
+  if(pack=="reliquary")return kind=="curio" || kind=="relic" || kind=="chart";
+  return false;
+}
+
+bool PlayerInventory::add_at(GameItem item, int slot,const std::string& pack) {
+  item.pack_id=pack;
+  if (find_by_uuid(item.uuid) || !can_store_in_pack(item,pack) || !fits_at(item, slot)) return false;
+  item.slot = slot;
+  items_.push_back(std::move(item));
+  return true;
 }
 
 bool PlayerInventory::remove_by_uuid(const std::string& uuid, GameItem* out) {
@@ -3430,7 +3559,7 @@ bool PlayerInventory::spend_coins(int amount) {
 const std::vector<std::string>& WearSet::physical_slots() {
   static const std::vector<std::string> slots = {
       "right_hand", "left_hand", "armor", "head", "back", "belt",
-      "gloves", "feet", "ring", "ring2", "necklace",
+      "gloves", "feet", "ring", "ring2", "necklace", "warhorn", "quick_rig", "attendant",
   };
   return slots;
 }
@@ -3610,6 +3739,8 @@ Vec2 WorldSimulation::resolve_loot_tile(int x, int y) const {
 }
 
 void WorldSimulation::drop_monster_loot(const WorldMonster& monster, int goods_found_percent) {
+  // The forgiving opening pays its reward once at victory, never per retry.
+  if (scene_id_ == "owner-demo-prologue") return;
   // loot.js dropMonsterLoot: coin bounty always (Wealthy-boosted), then a
   // rarity-gated gear roll. Relic/trophy circulation and the first-find
   // grant are Chronicles/encounter features — N5 stubs (see the report).
@@ -3690,6 +3821,7 @@ void WorldSimulation::transition_floor(int depth) {
   metadata_.depth = clamped_depth;
   ground_items_.clear();
   active_target_.clear();
+  player_attack_active_ = false;
   boss_warning_seen_ = false;
   next_boss_telegraph_ms_ = 0;
   generate_instance();

@@ -89,10 +89,11 @@ ClientCommand ClientCommand::found_house(std::string house_name) {
   command.target = std::move(house_name);
   return command;
 }
-ClientCommand ClientCommand::create_scion(std::string scion_name) {
+ClientCommand ClientCommand::create_scion(std::string scion_name, std::string appearance) {
   ClientCommand command;
   command.type = Type::CreateScion;
   command.target = std::move(scion_name);
+  command.extra = verdigris::player_appearance_id(appearance);
   return command;
 }
 ClientCommand ClientCommand::select_scion(std::string scion_id, bool mortal_oath) {
@@ -102,9 +103,14 @@ ClientCommand ClientCommand::select_scion(std::string scion_id, bool mortal_oath
   command.value = mortal_oath ? 1 : 0;
   return command;
 }
-ClientCommand ClientCommand::set_out(std::string scion_id) {
+ClientCommand ClientCommand::starter_action(std::string action) {
+  ClientCommand command; command.type = Type::StarterAction;
+  command.target = std::move(action); return command;
+}
+ClientCommand ClientCommand::set_out(std::string scion_id, bool starter_slice) {
   ClientCommand command;
   command.type = Type::SetOut;
+  command.value = starter_slice ? 1 : 0;
   command.target = std::move(scion_id);
   return command;
 }
@@ -136,13 +142,13 @@ ClientCommand ClientCommand::allocate_node(std::string node_id) {
   return command;
 }
 
-LocalCoreSession::LocalCoreSession(std::uint64_t seed, std::string house_name)
-    : seed_(seed), house_name_(std::move(house_name)) {}
+LocalCoreSession::LocalCoreSession(std::uint64_t seed, std::string house_name, std::string appearance)
+    : seed_(seed), house_name_(std::move(house_name)), appearance_(verdigris::player_appearance_id(appearance)) {}
 
 LocalCoreSession::~LocalCoreSession() { shutdown(); }
 
 bool LocalCoreSession::start(std::string*) {
-  simulation_ = std::make_unique<verdigris::Simulation>(seed_, house_name_);
+  simulation_ = std::make_unique<verdigris::Simulation>(seed_, house_name_, appearance_);
   pending_commands_.clear();
   pending_events_.clear();
   ground_positions_.clear();
@@ -196,6 +202,13 @@ void LocalCoreSession::submit(const ClientCommand& command) {
     case ClientCommand::Type::Equip:
       queue_command(verdigris::Command::equip(command.target));
       break;
+      case ClientCommand::Type::MoveInventory:
+      case ClientCommand::Type::DropInventory:
+        break; // Local simulation fixtures have no persistent backpack grid.
+      case ClientCommand::Type::UnequipToInventory:
+      case ClientCommand::Type::Unequip:
+      queue_command(verdigris::Command::unequip());
+      break;
     case ClientCommand::Type::EnterZone:
       queue_command(verdigris::Command::enter(command.target));
       break;
@@ -207,6 +220,7 @@ void LocalCoreSession::submit(const ClientCommand& command) {
       break;
     case ClientCommand::Type::CreateScion:
     case ClientCommand::Type::SelectScion:
+    case ClientCommand::Type::StarterAction:
     case ClientCommand::Type::SetOut:
     case ClientCommand::Type::NpcAction:
     case ClientCommand::Type::MenuAction:
@@ -275,6 +289,7 @@ void LocalCoreSession::refresh_model() {
   // Rendering/event ownership follows the live actor. The persistent Scion
   // identity remains in the chronicle roster and active_scion_id below.
   model_.player.uuid = scion.actor_id;
+  model_.player.appearance = verdigris::player_appearance_id(scion.appearance);
   model_.player.display_name = scion.name;
   model_.player.level = scion.level;
   model_.player.alive = scion.alive;
@@ -286,6 +301,11 @@ void LocalCoreSession::refresh_model() {
     model_.player.resource = actor->stats.resource;
     model_.player.resource_max = actor->stats.resource_max;
     model_.player.attack = actor->stats.attack;
+    model_.player.defense = actor->stats.defense;
+    model_.player.combat_stats_present = true;
+    model_.player.gear_attack = 0;
+    for (const auto& item : simulation_->scion().carried_items)
+      if (item.equipped) model_.player.gear_attack = item.attack_bonus;
     model_.player.facing = local_model_facing(actor->facing);
   }
   const auto& instance = simulation_->instance();
@@ -347,7 +367,7 @@ void LocalCoreSession::refresh_model() {
   local_house.id = simulation_->house().id.empty() ? "local" : simulation_->house().id;
   local_house.name = model_.house_name;
   local_house.scions.clear();
-  local_house.scions.push_back({scion.id, scion.name, scion.level, false});
+  local_house.scions.push_back({scion.id, scion.name, scion.level, false, scion.appearance});
   local_house.crypt.clear();
   model_.chronicle.active_house_id = local_house.id;
   model_.chronicle.active_scion_id = scion.alive ? scion.id : std::string{};
@@ -383,7 +403,10 @@ void LocalCoreSession::translate_new_events() {
       case verdigris::EventType::DamageApplied: out.type = PresentationEventType::DamageApplied; break;
       case verdigris::EventType::ActorDied: out.type = PresentationEventType::ActorDied; break;
       case verdigris::EventType::ItemDropped: out.type = PresentationEventType::ItemDropped; break;
-      case verdigris::EventType::ItemPickedUp: out.type = PresentationEventType::ItemPickedUp; break;
+      case verdigris::EventType::BuffApplied: out.type = PresentationEventType::BuffApplied; break;
+      case verdigris::EventType::ItemPickedUp:
+        pending_events_.push_back({PresentationEventType::PickupConfirmed,event.actor_id,event.item_id,event.text,event.value});
+        out.type = PresentationEventType::ItemPickedUp; break;
       case verdigris::EventType::ItemEquipped: out.type = PresentationEventType::ItemEquipped; break;
       case verdigris::EventType::ItemExtracted: out.type = PresentationEventType::ExtractionCompleted; break;
       // TASK-0122 Phase A: the previously-dropped lifecycle events now cross

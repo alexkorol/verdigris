@@ -1,0 +1,2073 @@
+{
+  "accepted": true,
+  "scope": "Minimal native gameplay integration candidate, not owner final art approval",
+  "technique": "ImageGen painted appearance reconstructed to native pixels, depth-tested on editable Blender rigs, rendered at48px/metre with Box1.0 and binaryalpha128",
+  "source": "Preserved starter-projection/accepted production; no new animation generation or image resampling",
+  "selection": "One idle, four walk, six strike, two hit, four death frames per cardinal view. Faster locomotion shares this same walk set.",
+  "clips": [
+    {
+      "identity": "player_male_club",
+      "action": "attack",
+      "direction": "front",
+      "frames": [
+        "male/frames/male-club-attack-front-00.png",
+        "male/frames/male-club-attack-front-03.png",
+        "male/frames/male-club-attack-front-06.png",
+        "male/frames/male-club-attack-front-09.png",
+        "male/frames/male-club-attack-front-12.png",
+        "male/frames/male-club-attack-front-15.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 7.5,
+      "loop": false
+    },
+    {
+      "identity": "player_male_club",
+      "action": "attack",
+      "direction": "right",
+      "frames": [
+        "male/frames/male-club-attack-right-00.png",
+        "male/frames/male-club-attack-right-03.png",
+        "male/frames/male-club-attack-right-06.png",
+        "male/frames/male-club-attack-right-09.png",
+        "male/frames/male-club-attack-right-12.png",
+        "male/frames/male-club-attack-right-15.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 7.5,
+      "loop": false
+    },
+    {
+      "identity": "player_male_club",
+      "action": "attack",
+      "direction": "back",
+      "frames": [
+        "male/frames/male-club-attack-back-00.png",
+        "male/frames/male-club-attack-back-03.png",
+        "male/frames/male-club-attack-back-06.png",
+        "male/frames/male-club-attack-back-09.png",
+        "male/frames/male-club-attack-back-12.png",
+        "male/frames/male-club-attack-back-15.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 7.5,
+      "loop": false
+    },
+    {
+      "identity": "player_male_club",
+      "action": "attack",
+      "direction": "left",
+      "frames": [
+        "male/frames/male-club-attack-left-00.png",
+        "male/frames/male-club-attack-left-03.png",
+        "male/frames/male-club-attack-left-06.png",
+        "male/frames/male-club-attack-left-09.png",
+        "male/frames/male-club-attack-left-12.png",
+        "male/frames/male-club-attack-left-15.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 7.5,
+      "loop": false
+    },
+    {
+      "identity": "player_male_club",
+      "action": "death",
+      "direction": "front",
+      "frames": [
+        "male/frames/male-club-death-front-00.png",
+        "male/frames/male-club-death-front-02.png",
+        "male/frames/male-club-death-front-05.png",
+        "male/frames/male-club-death-front-07.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": false
+    },
+    {
+      "identity": "player_male_club",
+      "action": "death",
+      "direction": "right",
+      "frames": [
+        "male/frames/male-club-death-right-00.png",
+        "male/frames/male-club-death-right-02.png",
+        "male/frames/male-club-death-right-05.png",
+        "male/frames/male-club-death-right-07.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": false
+    },
+    {
+      "identity": "player_male_club",
+      "action": "death",
+      "direction": "back",
+      "frames": [
+        "male/frames/male-club-death-back-00.png",
+        "male/frames/male-club-death-back-02.png",
+        "male/frames/male-club-death-back-05.png",
+        "male/frames/male-club-death-back-07.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": false
+    },
+    {
+      "identity": "player_male_club",
+      "action": "death",
+      "direction": "left",
+      "frames": [
+        "male/frames/male-club-death-left-00.png",
+        "male/frames/male-club-death-left-02.png",
+        "male/frames/male-club-death-left-05.png",
+        "male/frames/male-club-death-left-07.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": false
+    },
+    {
+      "identity": "player_male_club",
+      "action": "hit",
+      "direction": "front",
+      "frames": [
+        "male/frames/male-club-hit-front-00.png",
+        "male/frames/male-club-hit-front-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 2,
+      "loop": false
+    },
+    {
+      "identity": "player_male_club",
+      "action": "hit",
+      "direction": "right",
+      "frames": [
+        "male/frames/male-club-hit-right-00.png",
+        "male/frames/male-club-hit-right-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 2,
+      "loop": false
+    },
+    {
+      "identity": "player_male_club",
+      "action": "hit",
+      "direction": "back",
+      "frames": [
+        "male/frames/male-club-hit-back-00.png",
+        "male/frames/male-club-hit-back-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 2,
+      "loop": false
+    },
+    {
+      "identity": "player_male_club",
+      "action": "hit",
+      "direction": "left",
+      "frames": [
+        "male/frames/male-club-hit-left-00.png",
+        "male/frames/male-club-hit-left-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 2,
+      "loop": false
+    },
+    {
+      "identity": "player_male_club",
+      "action": "idle",
+      "direction": "front",
+      "frames": [
+        "male/frames/male-club-idle-front-00.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "player_male_club",
+      "action": "idle",
+      "direction": "right",
+      "frames": [
+        "male/frames/male-club-idle-right-00.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "player_male_club",
+      "action": "idle",
+      "direction": "back",
+      "frames": [
+        "male/frames/male-club-idle-back-00.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "player_male_club",
+      "action": "idle",
+      "direction": "left",
+      "frames": [
+        "male/frames/male-club-idle-left-00.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "player_male_club",
+      "action": "walk",
+      "direction": "front",
+      "frames": [
+        "male/frames/male-club-walk-front-00.png",
+        "male/frames/male-club-walk-front-02.png",
+        "male/frames/male-club-walk-front-04.png",
+        "male/frames/male-club-walk-front-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": true
+    },
+    {
+      "identity": "player_male_club",
+      "action": "sprint",
+      "direction": "front",
+      "frames": [
+        "male/frames/male-club-walk-front-00.png",
+        "male/frames/male-club-walk-front-02.png",
+        "male/frames/male-club-walk-front-04.png",
+        "male/frames/male-club-walk-front-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_male_club",
+      "action": "walk",
+      "direction": "right",
+      "frames": [
+        "male/frames/male-club-walk-right-00.png",
+        "male/frames/male-club-walk-right-02.png",
+        "male/frames/male-club-walk-right-04.png",
+        "male/frames/male-club-walk-right-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": true
+    },
+    {
+      "identity": "player_male_club",
+      "action": "sprint",
+      "direction": "right",
+      "frames": [
+        "male/frames/male-club-walk-right-00.png",
+        "male/frames/male-club-walk-right-02.png",
+        "male/frames/male-club-walk-right-04.png",
+        "male/frames/male-club-walk-right-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_male_club",
+      "action": "walk",
+      "direction": "back",
+      "frames": [
+        "male/frames/male-club-walk-back-00.png",
+        "male/frames/male-club-walk-back-02.png",
+        "male/frames/male-club-walk-back-04.png",
+        "male/frames/male-club-walk-back-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": true
+    },
+    {
+      "identity": "player_male_club",
+      "action": "sprint",
+      "direction": "back",
+      "frames": [
+        "male/frames/male-club-walk-back-00.png",
+        "male/frames/male-club-walk-back-02.png",
+        "male/frames/male-club-walk-back-04.png",
+        "male/frames/male-club-walk-back-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_male_club",
+      "action": "walk",
+      "direction": "left",
+      "frames": [
+        "male/frames/male-club-walk-left-00.png",
+        "male/frames/male-club-walk-left-02.png",
+        "male/frames/male-club-walk-left-04.png",
+        "male/frames/male-club-walk-left-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": true
+    },
+    {
+      "identity": "player_male_club",
+      "action": "sprint",
+      "direction": "left",
+      "frames": [
+        "male/frames/male-club-walk-left-00.png",
+        "male/frames/male-club-walk-left-02.png",
+        "male/frames/male-club-walk-left-04.png",
+        "male/frames/male-club-walk-left-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "idle",
+      "direction": "front",
+      "frames": [
+        "male/frames/male-idle-front-00.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "idle",
+      "direction": "right",
+      "frames": [
+        "male/frames/male-idle-right-00.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "idle",
+      "direction": "back",
+      "frames": [
+        "male/frames/male-idle-back-00.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "idle",
+      "direction": "left",
+      "frames": [
+        "male/frames/male-idle-left-00.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "attack",
+      "direction": "front",
+      "frames": [
+        "male/frames/male-unarmed-attack-front-00.png",
+        "male/frames/male-unarmed-attack-front-03.png",
+        "male/frames/male-unarmed-attack-front-06.png",
+        "male/frames/male-unarmed-attack-front-09.png",
+        "male/frames/male-unarmed-attack-front-12.png",
+        "male/frames/male-unarmed-attack-front-15.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 7.5,
+      "loop": false
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "attack",
+      "direction": "right",
+      "frames": [
+        "male/frames/male-unarmed-attack-right-00.png",
+        "male/frames/male-unarmed-attack-right-03.png",
+        "male/frames/male-unarmed-attack-right-06.png",
+        "male/frames/male-unarmed-attack-right-09.png",
+        "male/frames/male-unarmed-attack-right-12.png",
+        "male/frames/male-unarmed-attack-right-15.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 7.5,
+      "loop": false
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "attack",
+      "direction": "back",
+      "frames": [
+        "male/frames/male-unarmed-attack-back-00.png",
+        "male/frames/male-unarmed-attack-back-03.png",
+        "male/frames/male-unarmed-attack-back-06.png",
+        "male/frames/male-unarmed-attack-back-09.png",
+        "male/frames/male-unarmed-attack-back-12.png",
+        "male/frames/male-unarmed-attack-back-15.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 7.5,
+      "loop": false
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "attack",
+      "direction": "left",
+      "frames": [
+        "male/frames/male-unarmed-attack-left-00.png",
+        "male/frames/male-unarmed-attack-left-03.png",
+        "male/frames/male-unarmed-attack-left-06.png",
+        "male/frames/male-unarmed-attack-left-09.png",
+        "male/frames/male-unarmed-attack-left-12.png",
+        "male/frames/male-unarmed-attack-left-15.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 7.5,
+      "loop": false
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "death",
+      "direction": "front",
+      "frames": [
+        "male/frames/male-unarmed-death-front-00.png",
+        "male/frames/male-unarmed-death-front-02.png",
+        "male/frames/male-unarmed-death-front-05.png",
+        "male/frames/male-unarmed-death-front-07.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": false
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "death",
+      "direction": "right",
+      "frames": [
+        "male/frames/male-unarmed-death-right-00.png",
+        "male/frames/male-unarmed-death-right-02.png",
+        "male/frames/male-unarmed-death-right-05.png",
+        "male/frames/male-unarmed-death-right-07.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": false
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "death",
+      "direction": "back",
+      "frames": [
+        "male/frames/male-unarmed-death-back-00.png",
+        "male/frames/male-unarmed-death-back-02.png",
+        "male/frames/male-unarmed-death-back-05.png",
+        "male/frames/male-unarmed-death-back-07.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": false
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "death",
+      "direction": "left",
+      "frames": [
+        "male/frames/male-unarmed-death-left-00.png",
+        "male/frames/male-unarmed-death-left-02.png",
+        "male/frames/male-unarmed-death-left-05.png",
+        "male/frames/male-unarmed-death-left-07.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": false
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "hit",
+      "direction": "front",
+      "frames": [
+        "male/frames/male-unarmed-hit-front-00.png",
+        "male/frames/male-unarmed-hit-front-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 2,
+      "loop": false
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "hit",
+      "direction": "right",
+      "frames": [
+        "male/frames/male-unarmed-hit-right-00.png",
+        "male/frames/male-unarmed-hit-right-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 2,
+      "loop": false
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "hit",
+      "direction": "back",
+      "frames": [
+        "male/frames/male-unarmed-hit-back-00.png",
+        "male/frames/male-unarmed-hit-back-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 2,
+      "loop": false
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "hit",
+      "direction": "left",
+      "frames": [
+        "male/frames/male-unarmed-hit-left-00.png",
+        "male/frames/male-unarmed-hit-left-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 2,
+      "loop": false
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "walk",
+      "direction": "front",
+      "frames": [
+        "male/frames/male-walk-front-00.png",
+        "male/frames/male-walk-front-02.png",
+        "male/frames/male-walk-front-04.png",
+        "male/frames/male-walk-front-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "sprint",
+      "direction": "front",
+      "frames": [
+        "male/frames/male-walk-front-00.png",
+        "male/frames/male-walk-front-02.png",
+        "male/frames/male-walk-front-04.png",
+        "male/frames/male-walk-front-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "walk",
+      "direction": "right",
+      "frames": [
+        "male/frames/male-walk-right-00.png",
+        "male/frames/male-walk-right-02.png",
+        "male/frames/male-walk-right-04.png",
+        "male/frames/male-walk-right-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "sprint",
+      "direction": "right",
+      "frames": [
+        "male/frames/male-walk-right-00.png",
+        "male/frames/male-walk-right-02.png",
+        "male/frames/male-walk-right-04.png",
+        "male/frames/male-walk-right-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "walk",
+      "direction": "back",
+      "frames": [
+        "male/frames/male-walk-back-00.png",
+        "male/frames/male-walk-back-02.png",
+        "male/frames/male-walk-back-04.png",
+        "male/frames/male-walk-back-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "sprint",
+      "direction": "back",
+      "frames": [
+        "male/frames/male-walk-back-00.png",
+        "male/frames/male-walk-back-02.png",
+        "male/frames/male-walk-back-04.png",
+        "male/frames/male-walk-back-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "walk",
+      "direction": "left",
+      "frames": [
+        "male/frames/male-walk-left-00.png",
+        "male/frames/male-walk-left-02.png",
+        "male/frames/male-walk-left-04.png",
+        "male/frames/male-walk-left-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "sprint",
+      "direction": "left",
+      "frames": [
+        "male/frames/male-walk-left-00.png",
+        "male/frames/male-walk-left-02.png",
+        "male/frames/male-walk-left-04.png",
+        "male/frames/male-walk-left-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_female_club",
+      "action": "attack",
+      "direction": "front",
+      "frames": [
+        "female/frames/female-club-attack-front-00.png",
+        "female/frames/female-club-attack-front-03.png",
+        "female/frames/female-club-attack-front-06.png",
+        "female/frames/female-club-attack-front-09.png",
+        "female/frames/female-club-attack-front-12.png",
+        "female/frames/female-club-attack-front-15.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 7.5,
+      "loop": false
+    },
+    {
+      "identity": "player_female_club",
+      "action": "attack",
+      "direction": "right",
+      "frames": [
+        "female/frames/female-club-attack-right-00.png",
+        "female/frames/female-club-attack-right-03.png",
+        "female/frames/female-club-attack-right-06.png",
+        "female/frames/female-club-attack-right-09.png",
+        "female/frames/female-club-attack-right-12.png",
+        "female/frames/female-club-attack-right-15.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 7.5,
+      "loop": false
+    },
+    {
+      "identity": "player_female_club",
+      "action": "attack",
+      "direction": "back",
+      "frames": [
+        "female/frames/female-club-attack-back-00.png",
+        "female/frames/female-club-attack-back-03.png",
+        "female/frames/female-club-attack-back-06.png",
+        "female/frames/female-club-attack-back-09.png",
+        "female/frames/female-club-attack-back-12.png",
+        "female/frames/female-club-attack-back-15.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 7.5,
+      "loop": false
+    },
+    {
+      "identity": "player_female_club",
+      "action": "attack",
+      "direction": "left",
+      "frames": [
+        "female/frames/female-club-attack-left-00.png",
+        "female/frames/female-club-attack-left-03.png",
+        "female/frames/female-club-attack-left-06.png",
+        "female/frames/female-club-attack-left-09.png",
+        "female/frames/female-club-attack-left-12.png",
+        "female/frames/female-club-attack-left-15.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 7.5,
+      "loop": false
+    },
+    {
+      "identity": "player_female_club",
+      "action": "death",
+      "direction": "front",
+      "frames": [
+        "female/frames/female-club-death-front-00.png",
+        "female/frames/female-club-death-front-02.png",
+        "female/frames/female-club-death-front-05.png",
+        "female/frames/female-club-death-front-07.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": false
+    },
+    {
+      "identity": "player_female_club",
+      "action": "death",
+      "direction": "right",
+      "frames": [
+        "female/frames/female-club-death-right-00.png",
+        "female/frames/female-club-death-right-02.png",
+        "female/frames/female-club-death-right-05.png",
+        "female/frames/female-club-death-right-07.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": false
+    },
+    {
+      "identity": "player_female_club",
+      "action": "death",
+      "direction": "back",
+      "frames": [
+        "female/frames/female-club-death-back-00.png",
+        "female/frames/female-club-death-back-02.png",
+        "female/frames/female-club-death-back-05.png",
+        "female/frames/female-club-death-back-07.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": false
+    },
+    {
+      "identity": "player_female_club",
+      "action": "death",
+      "direction": "left",
+      "frames": [
+        "female/frames/female-club-death-left-00.png",
+        "female/frames/female-club-death-left-02.png",
+        "female/frames/female-club-death-left-05.png",
+        "female/frames/female-club-death-left-07.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": false
+    },
+    {
+      "identity": "player_female_club",
+      "action": "hit",
+      "direction": "front",
+      "frames": [
+        "female/frames/female-club-hit-front-00.png",
+        "female/frames/female-club-hit-front-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 2,
+      "loop": false
+    },
+    {
+      "identity": "player_female_club",
+      "action": "hit",
+      "direction": "right",
+      "frames": [
+        "female/frames/female-club-hit-right-00.png",
+        "female/frames/female-club-hit-right-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 2,
+      "loop": false
+    },
+    {
+      "identity": "player_female_club",
+      "action": "hit",
+      "direction": "back",
+      "frames": [
+        "female/frames/female-club-hit-back-00.png",
+        "female/frames/female-club-hit-back-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 2,
+      "loop": false
+    },
+    {
+      "identity": "player_female_club",
+      "action": "hit",
+      "direction": "left",
+      "frames": [
+        "female/frames/female-club-hit-left-00.png",
+        "female/frames/female-club-hit-left-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 2,
+      "loop": false
+    },
+    {
+      "identity": "player_female_club",
+      "action": "idle",
+      "direction": "front",
+      "frames": [
+        "female/frames/female-club-idle-front-00.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "player_female_club",
+      "action": "idle",
+      "direction": "right",
+      "frames": [
+        "female/frames/female-club-idle-right-00.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "player_female_club",
+      "action": "idle",
+      "direction": "back",
+      "frames": [
+        "female/frames/female-club-idle-back-00.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "player_female_club",
+      "action": "idle",
+      "direction": "left",
+      "frames": [
+        "female/frames/female-club-idle-left-00.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "player_female_club",
+      "action": "walk",
+      "direction": "front",
+      "frames": [
+        "female/frames/female-club-walk-front-00.png",
+        "female/frames/female-club-walk-front-02.png",
+        "female/frames/female-club-walk-front-04.png",
+        "female/frames/female-club-walk-front-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": true
+    },
+    {
+      "identity": "player_female_club",
+      "action": "sprint",
+      "direction": "front",
+      "frames": [
+        "female/frames/female-club-walk-front-00.png",
+        "female/frames/female-club-walk-front-02.png",
+        "female/frames/female-club-walk-front-04.png",
+        "female/frames/female-club-walk-front-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_female_club",
+      "action": "walk",
+      "direction": "right",
+      "frames": [
+        "female/frames/female-club-walk-right-00.png",
+        "female/frames/female-club-walk-right-02.png",
+        "female/frames/female-club-walk-right-04.png",
+        "female/frames/female-club-walk-right-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": true
+    },
+    {
+      "identity": "player_female_club",
+      "action": "sprint",
+      "direction": "right",
+      "frames": [
+        "female/frames/female-club-walk-right-00.png",
+        "female/frames/female-club-walk-right-02.png",
+        "female/frames/female-club-walk-right-04.png",
+        "female/frames/female-club-walk-right-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_female_club",
+      "action": "walk",
+      "direction": "back",
+      "frames": [
+        "female/frames/female-club-walk-back-00.png",
+        "female/frames/female-club-walk-back-02.png",
+        "female/frames/female-club-walk-back-04.png",
+        "female/frames/female-club-walk-back-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": true
+    },
+    {
+      "identity": "player_female_club",
+      "action": "sprint",
+      "direction": "back",
+      "frames": [
+        "female/frames/female-club-walk-back-00.png",
+        "female/frames/female-club-walk-back-02.png",
+        "female/frames/female-club-walk-back-04.png",
+        "female/frames/female-club-walk-back-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_female_club",
+      "action": "walk",
+      "direction": "left",
+      "frames": [
+        "female/frames/female-club-walk-left-00.png",
+        "female/frames/female-club-walk-left-02.png",
+        "female/frames/female-club-walk-left-04.png",
+        "female/frames/female-club-walk-left-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": true
+    },
+    {
+      "identity": "player_female_club",
+      "action": "sprint",
+      "direction": "left",
+      "frames": [
+        "female/frames/female-club-walk-left-00.png",
+        "female/frames/female-club-walk-left-02.png",
+        "female/frames/female-club-walk-left-04.png",
+        "female/frames/female-club-walk-left-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "idle",
+      "direction": "front",
+      "frames": [
+        "female/frames/female-idle-front-00.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "idle",
+      "direction": "right",
+      "frames": [
+        "female/frames/female-idle-right-00.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "idle",
+      "direction": "back",
+      "frames": [
+        "female/frames/female-idle-back-00.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "idle",
+      "direction": "left",
+      "frames": [
+        "female/frames/female-idle-left-00.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "attack",
+      "direction": "front",
+      "frames": [
+        "female/frames/female-unarmed-attack-front-00.png",
+        "female/frames/female-unarmed-attack-front-03.png",
+        "female/frames/female-unarmed-attack-front-06.png",
+        "female/frames/female-unarmed-attack-front-09.png",
+        "female/frames/female-unarmed-attack-front-12.png",
+        "female/frames/female-unarmed-attack-front-15.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 7.5,
+      "loop": false
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "attack",
+      "direction": "right",
+      "frames": [
+        "female/frames/female-unarmed-attack-right-00.png",
+        "female/frames/female-unarmed-attack-right-03.png",
+        "female/frames/female-unarmed-attack-right-06.png",
+        "female/frames/female-unarmed-attack-right-09.png",
+        "female/frames/female-unarmed-attack-right-12.png",
+        "female/frames/female-unarmed-attack-right-15.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 7.5,
+      "loop": false
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "attack",
+      "direction": "back",
+      "frames": [
+        "female/frames/female-unarmed-attack-back-00.png",
+        "female/frames/female-unarmed-attack-back-03.png",
+        "female/frames/female-unarmed-attack-back-06.png",
+        "female/frames/female-unarmed-attack-back-09.png",
+        "female/frames/female-unarmed-attack-back-12.png",
+        "female/frames/female-unarmed-attack-back-15.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 7.5,
+      "loop": false
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "attack",
+      "direction": "left",
+      "frames": [
+        "female/frames/female-unarmed-attack-left-00.png",
+        "female/frames/female-unarmed-attack-left-03.png",
+        "female/frames/female-unarmed-attack-left-06.png",
+        "female/frames/female-unarmed-attack-left-09.png",
+        "female/frames/female-unarmed-attack-left-12.png",
+        "female/frames/female-unarmed-attack-left-15.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 7.5,
+      "loop": false
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "death",
+      "direction": "front",
+      "frames": [
+        "female/frames/female-unarmed-death-front-00.png",
+        "female/frames/female-unarmed-death-front-02.png",
+        "female/frames/female-unarmed-death-front-05.png",
+        "female/frames/female-unarmed-death-front-07.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": false
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "death",
+      "direction": "right",
+      "frames": [
+        "female/frames/female-unarmed-death-right-00.png",
+        "female/frames/female-unarmed-death-right-02.png",
+        "female/frames/female-unarmed-death-right-05.png",
+        "female/frames/female-unarmed-death-right-07.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": false
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "death",
+      "direction": "back",
+      "frames": [
+        "female/frames/female-unarmed-death-back-00.png",
+        "female/frames/female-unarmed-death-back-02.png",
+        "female/frames/female-unarmed-death-back-05.png",
+        "female/frames/female-unarmed-death-back-07.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": false
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "death",
+      "direction": "left",
+      "frames": [
+        "female/frames/female-unarmed-death-left-00.png",
+        "female/frames/female-unarmed-death-left-02.png",
+        "female/frames/female-unarmed-death-left-05.png",
+        "female/frames/female-unarmed-death-left-07.png"
+      ],
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": false
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "hit",
+      "direction": "front",
+      "frames": [
+        "female/frames/female-unarmed-hit-front-00.png",
+        "female/frames/female-unarmed-hit-front-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 2,
+      "loop": false
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "hit",
+      "direction": "right",
+      "frames": [
+        "female/frames/female-unarmed-hit-right-00.png",
+        "female/frames/female-unarmed-hit-right-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 2,
+      "loop": false
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "hit",
+      "direction": "back",
+      "frames": [
+        "female/frames/female-unarmed-hit-back-00.png",
+        "female/frames/female-unarmed-hit-back-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 2,
+      "loop": false
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "hit",
+      "direction": "left",
+      "frames": [
+        "female/frames/female-unarmed-hit-left-00.png",
+        "female/frames/female-unarmed-hit-left-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 2,
+      "loop": false
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "walk",
+      "direction": "front",
+      "frames": [
+        "female/frames/female-walk-front-00.png",
+        "female/frames/female-walk-front-02.png",
+        "female/frames/female-walk-front-04.png",
+        "female/frames/female-walk-front-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": true
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "sprint",
+      "direction": "front",
+      "frames": [
+        "female/frames/female-walk-front-00.png",
+        "female/frames/female-walk-front-02.png",
+        "female/frames/female-walk-front-04.png",
+        "female/frames/female-walk-front-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "walk",
+      "direction": "right",
+      "frames": [
+        "female/frames/female-walk-right-00.png",
+        "female/frames/female-walk-right-02.png",
+        "female/frames/female-walk-right-04.png",
+        "female/frames/female-walk-right-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": true
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "sprint",
+      "direction": "right",
+      "frames": [
+        "female/frames/female-walk-right-00.png",
+        "female/frames/female-walk-right-02.png",
+        "female/frames/female-walk-right-04.png",
+        "female/frames/female-walk-right-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "walk",
+      "direction": "back",
+      "frames": [
+        "female/frames/female-walk-back-00.png",
+        "female/frames/female-walk-back-02.png",
+        "female/frames/female-walk-back-04.png",
+        "female/frames/female-walk-back-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": true
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "sprint",
+      "direction": "back",
+      "frames": [
+        "female/frames/female-walk-back-00.png",
+        "female/frames/female-walk-back-02.png",
+        "female/frames/female-walk-back-04.png",
+        "female/frames/female-walk-back-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "walk",
+      "direction": "left",
+      "frames": [
+        "female/frames/female-walk-left-00.png",
+        "female/frames/female-walk-left-02.png",
+        "female/frames/female-walk-left-04.png",
+        "female/frames/female-walk-left-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 4,
+      "loop": true
+    },
+    {
+      "identity": "player_female_unarmed",
+      "action": "sprint",
+      "direction": "left",
+      "frames": [
+        "female/frames/female-walk-left-00.png",
+        "female/frames/female-walk-left-02.png",
+        "female/frames/female-walk-left-04.png",
+        "female/frames/female-walk-left-06.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    }
+  ]
+}

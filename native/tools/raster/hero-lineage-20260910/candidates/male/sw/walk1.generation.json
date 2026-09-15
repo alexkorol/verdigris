@@ -1,0 +1,39 @@
+{
+  "tool": "image_gen.imagegen",
+  "model_selection": "not exposed",
+  "generated_path": "C:\\Users\\Alex\\.codex\\generated_images\\01a0896d-63f4-7432-b1cd-d54c4e9b5ee0\\exec-be6f05c2-3fdb-494c-8aba-413c6bfd86e6.png",
+  "output_hint": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a0896d-63f4-7432-b1cd-d54c4e9b5ee0 as C:\\Users\\Alex\\.codex\\generated_images\\01a0896d-63f4-7432-b1cd-d54c4e9b5ee0\\exec-be6f05c2-3fdb-494c-8aba-413c6bfd86e6.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "prompt": "Edit Image1 while preserving its successful opposite-support walking pose. Image2 is the exact original identity. Image3 is the correct body heading: match its lower-left45-degree front three-quarter view with the WHOLE body, including chest, belt, hips, knees and sandal toe direction. Change only the heading from Image1's too-frontal torso into Image3's diagonal torso. Keep Image1's planted and trailing foot placement, leg support, knee bend and arm counter-swing; do not replace the walking legs with idle legs. The torso and feet must face the same diagonal direction as the head, with no change in identity or scale. Preserve the original man's exact adult face, brown hair, plain beige belted short-sleeved tunic, bare lower legs, leather sandals, realistic body proportions and physically shaded fine raster rendering. Do not simplify into a cartoon or redesign him. Both hands remain empty. Keep the fixed elevated frontal camera, original apparent body size (about970 pixels crown-to-sole), original square1254 canvas, and central ground anchor at x627,y1098. Do not zoom or fit the pose to the frame. Actual transparent alpha, whole silhouette visible with ample margins, no floor, cast shadow, text or other objects. Output one isolated pose.",
+  "references": [
+    "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/male/sw/walk1-guide.png",
+    "C:/Users/Alex/Downloads/ChatGPT Image Sep 10, 2026, 05_22_21 PM.png",
+    "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/male/sw/idle.png"
+  ],
+  "recipe": {
+    "source_url": "https://x.com/elle_elle_e/status/2097440118718316964",
+    "adaptation": "Separate reference-led images retaining original identity, size and placement; this new physical-form character request supersedes old raster style simplification rules. Pose beats are our explicit contact and anticipation/contact adaptation."
+  },
+  "reference_records": [
+    {
+      "index": 1,
+      "submitted_path": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\sw\\walk1-guide.png",
+      "sha256": "56ca01ad32e876f5e75151a0500aee8a24dfd0410a6f2cebffa8e94d9fdb254d",
+      "retained_path": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\sw\\walk1-guide.png",
+      "viewed_before_call": true
+    },
+    {
+      "index": 2,
+      "submitted_path": "C:\\Users\\Alex\\Downloads\\ChatGPT Image Sep 10, 2026, 05_22_21 PM.png",
+      "sha256": "fa6bb5a57dbb0791095abc6078920ae3e834782e3db8dd24b95e16c8f37b5e1f",
+      "retained_path": "C:\\Users\\Alex\\Downloads\\ChatGPT Image Sep 10, 2026, 05_22_21 PM.png",
+      "viewed_before_call": true
+    },
+    {
+      "index": 3,
+      "submitted_path": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\sw\\idle.png",
+      "sha256": "ffe27ce8921c942cee361feddf20299ea8d1717c929ea3028ed7429c1bb68486",
+      "retained_path": "C:\\Users\\Alex\\Documents\\ChatGPT\\verdigris-fable-renderer\\native\\tools\\raster\\hero-lineage-20260910\\candidates\\male\\sw\\idle.png",
+      "viewed_before_call": true
+    }
+  ]
+}

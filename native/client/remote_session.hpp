@@ -55,6 +55,10 @@ class RemoteProtocolSession final : public IClientSession {
                              const verdigris::networking::JsonValue& source);
   void sample_monster_display();
   void clear_monster_display();
+  void apply_player_movement(const verdigris::networking::Envelope& envelope);
+  void sample_player_display();
+  void clear_player_display();
+  void apply_ground_items(const verdigris::networking::JsonValue& items, bool announce);
   struct MonsterMovement {
     std::uint64_t sequence = 0;
     double from_x = 0.0, from_y = 0.0, to_x = 0.0, to_y = 0.0;
@@ -64,6 +68,10 @@ class RemoteProtocolSession final : public IClientSession {
     std::chrono::steady_clock::time_point received_at{};
   };
   std::unordered_map<std::string, MonsterMovement> monster_movement_;
+  MonsterMovement player_movement_;
+  bool has_player_movement_ = false;
+  bool has_player_sequence_ = false;
+  std::uint64_t last_player_sequence_ = 0;
   void fail(ConnectionState state, const std::string& error);
 
   std::string host_;

@@ -1,0 +1,15 @@
+{
+  "tool": "built-in image_gen",
+  "arguments": {
+    "prompt": "Edit the supplied character reference, preserving this exact adult male character and its existing rendered pixel texture, facial anatomy, dark brown hair, skin tones, plain beige short-sleeved knee-length tunic, simple brown belt and brown sandals. Change only his facing and stance to one neutral idle pose facing WEST: a true left-facing side profile, nose pointing horizontally left, shoulders and hips viewed side-on. Keep the same fixed elevated frontal game camera looking downward; rotate the man on the ground, not the camera or the ground axes. Match the original realistic adult proportions and shading; no cartoon simplification or new design.\nOne isolated full-body figure, relaxed empty hands beside his body, both sandal soles grounded, natural narrow standing stance. 1280x1280 square canvas; maintain original body scale about 980 pixels crown to soles, crown about 140 and shared ground baseline y=1120, body centered near x=640. Keep the entire silhouette with generous clear margins. Use actual transparent alpha background with no backdrop, ground plane, cast shadow, checkerboard or text. Return one image, one pose only. No weapons, armor, jewelry, additional clothes or new equipment.",
+    "referenced_image_paths": [
+      "C:/Users/Alex/Downloads/ChatGPT Image Sep 10, 2026, 05_22_21 PM.png"
+    ]
+  },
+  "result_metadata": {
+    "output_hint": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a089c3-5390-76a2-8353-a73d7b52eeb8 as C:\\Users\\Alex\\.codex\\generated_images\\01a089c3-5390-76a2-8353-a73d7b52eeb8\\exec-7e79167f-0159-4375-9d35-78a96f913b22.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  "workflow_source": "https://www.flixly.ai/blog/stop-motion-chatgpt-images-2-5",
+  "source_access_note": "Locally documented original workflow already verified in prior audit; web re-open this turn returned non-retryable safe-open error. Adaptation: original character reference retained; one isolated directional edit.",
+  "state": "pending_visual_alpha_review"
+}

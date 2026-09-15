@@ -1,0 +1,18 @@
+{
+  "generator": "Built-in image_gen tool; original production artwork, no external game assets copied.",
+  "reference": "Owner-provided Nox screenshot used to understand tactile pre-rendered menu controls; Verdigris artwork uses an original Bronze Age gateway and landscape.",
+  "assets": [
+    {
+      "file": "bronze-gateway.png",
+      "source": "exec-f20a8f5e-8985-4c7c-9abf-235270e4faca.png",
+      "prompt": "Production raster background for original Bronze Age native PC ARPG Verdigris. 16:9 high-detail background, no text or buttons. Late-1990s tactile pre-rendered menus, carved wood, cast bronze, deep shadows. Left third monumental cedar and patinated bronze portal/rack with carved uprights and top lintel, quiet near-black interior for four controls x12-42%, y32-78%, amber lamps and sculpted sun-disc. Right two-thirds ancient ruined causeway, olive trees, blue-green mist, distant mountains, night with a hint of dawn. Dark cedar, warm bronze, petrol green and amber, crisp silhouettes. No swords, gothic armor, sci-fi, characters, text, logos or watermark.",
+      "sha256": "7be3e3a1ec3692ac8125cff1bfd5d9e9c4c108918eade0de6984f5ac0a035073"
+    },
+    {
+      "file": "amber-control.png",
+      "source": "exec-0b10389a-41b6-4c53-a86e-ce30f1b78034.png",
+      "prompt": "Single production UI button with true transparent alpha, wide 3:1, entire object uncropped. Symmetric front-on, thick sculpted bronze endcaps and cedar rails, turquoise patina, four fasteners and amber terminals. Long dark oxblood enamel/obsidian inset, very wide clean empty label region, subtle flame marbling, believable physical depth, polished worn edges, readable at 400x88. Late-1990s fantasy craftsmanship. No text, symbols, logos, extra objects, backdrop or checkerboard. Modest transparent margin.",
+      "sha256": "b72e5f0e47351702fd7432e3d0a7ef0929ff3d9ecd8ba9a7ad7b5eb0cb7a0133"
+    }
+  ]
+}

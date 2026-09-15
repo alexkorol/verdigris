@@ -1,0 +1,33 @@
+2026-09-14T14:54:06.9314569Z root=C:\Users\Alex\Documents\Verdigris Native 2026-09-13\ profile=C:\Users\Alex\Documents\Verdigris Native 2026-09-13\profile isolatedSettings=False
+
+2026-09-14T14:54:07.2545580Z verdigris_server.exe pid=11104 6520
+
+2026-09-14T14:54:07.2565563Z image=C:\Users\Alex\Documents\Verdigris Native 2026-09-13\native\build\verdigris_server.exe cwd=C:\Users\Alex\Documents\Verdigris Native 2026-09-13\
+
+2026-09-14T14:54:07.2885563Z server: verdigris_server listening on ws://127.0.0.1:6520
+
+2026-09-14T14:54:07.2935574Z verdigris_client.exe pid=39352 --remote 127.0.0.1 6520 review-player --verify-launch smoke
+
+2026-09-14T14:54:07.3095562Z image=C:\Users\Alex\Documents\Verdigris Native 2026-09-13\native\build\verdigris_client.exe cwd=C:\Users\Alex\Documents\Verdigris Native 2026-09-13\
+
+2026-09-14T14:54:07.4279487Z client: source=30ed52c842cc0500db2b3cf0a6397454c52410c8 dirty=0 renderer=Fable perspective=1 authored-poses=96 asset-root=C:\Users\Alex\Documents\Verdigris Native 2026-09-13\native\client\assets\raster\runtime
+
+2026-09-14T14:54:09.3518385Z client error: native-exit: WM_DESTROY
+
+2026-09-14T14:54:09.3814546Z client:     ok: launch-check: actual launcher-owned server supplies Chronicle
+
+2026-09-14T14:54:09.3814546Z client:     ok: launch-check: normal title and perspective configuration
+
+2026-09-14T14:54:09.3814546Z client:     ok: launch-check: production title renders with packaged assets
+
+2026-09-14T14:54:09.3814546Z client:     ok: launch-check: Quit requires confirmation
+
+2026-09-14T14:54:09.3824566Z client:     ok: launch-check: confirmation requests clean exit
+
+2026-09-14T14:54:09.3824566Z client: launch-check: PASS phase=smoke source=30ed52c842cc0500db2b3cf0a6397454c52410c8
+
+2026-09-14T14:54:09.3894541Z client exit=0
+
+2026-09-14T14:54:09.3904555Z cleaned pid=39352 exit=0
+
+2026-09-14T14:54:09.4724574Z cleaned pid=11104 exit=0

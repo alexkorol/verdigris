@@ -55,9 +55,10 @@ The backend snapshots connected players in the background. Chronicle scions and 
 ## Useful commands
 
 - `npm run test:unit` - Vitest-powered unit tests.
-- `npm run playtest` - Boot a disposable game server and play the full core loop over the real WebSocket protocol.
+- `npm run playtest` - Historical browser/reference protocol harness; use only for explicit browser/parity work.
 - `npm run test:e2e` - Build the client, boot the real game server, and exercise browser-critical guest play in Chromium.
-- `npm run verify` - Run lint, stylelint, unit tests, the production build, the goal harness, and the browser smoke test.
+- `npm run verify` - Build and run the native package, native tests, denylist, and native client scenario suite.
+- `npm run verify:legacy` - Opt-in legacy browser/reference lint, unit, build, playtest, and browser smoke chain.
 - `npm run lint` / `npm run lint:css` - JS/Vue and stylesheet checks.
 - `npm run build` - Production client bundle.
 - `npm run preview` - Serve the production build locally for smoke testing.

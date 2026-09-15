@@ -1,0 +1,15 @@
+{
+  "tool": "built-in image_gen",
+  "arguments": {
+    "prompt": "Use case: identity-preserve.\nImage 1 is the NORTHWEST anticipation edit target. Image 2 is the accepted northwest idle; image 3 is the original identity and fine rendered detail anchor.\nMake the CONTACT frame of the same short anatomical LEFT-handed melee swing. Extend the SAME left near arm from the raised elbow toward UPPER-LEFT, away from the body in the direction he faces. The left shoulder remains on screen-left around(535,345), left elbow goes near(415,315), wrist/fist reaches near(325,265). The closed fist must be clear to the LEFT of the head, slightly above shoulder height. One connected upper arm/forearm, believable foreshortening. The far RIGHT hand stays low at the waist. No arm swap and no second attack hand.\nPreserve the head, hair, feet, legs, belt and body size/positions; planted stance exactly the same as image1. Modest torso rotation only, with back and left shoulder still toward viewer, chest hidden, true back-left45degree heading. Same elevated fixed camera and1254square canvas. Original adult anatomy, beige belted tunic, sandals, detailed pixel-render shading and colors. One full-body sprite with clear margin, no equipment/effects/text. Actual transparent alpha background without painted checker or shadow.",
+    "referenced_image_paths": [
+      "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/male/nw/strike0.png",
+      "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/male/nw/idle.png",
+      "C:/Users/Alex/Downloads/ChatGPT Image Sep 10, 2026, 05_22_21 PM.png"
+    ]
+  },
+  "result_metadata": {
+    "output_hint": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a089c3-5390-76a2-8353-a73d7b52eeb8 as C:\\Users\\Alex\\.codex\\generated_images\\01a089c3-5390-76a2-8353-a73d7b52eeb8\\exec-35ae28c4-e64b-4903-9f9d-5d0a5e71077d.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  "state": "pending_visual_review"
+}

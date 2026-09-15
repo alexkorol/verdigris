@@ -1,0 +1,5 @@
+Image 1 is the north-facing idle to animate. Image 2 is the original male identity and physical-rendering reference; preserve his exact adult build, brown hair, plain beige belted tunic, bare lower legs and sandals. Keep the camera fixed above and behind him, face hidden, heading straight toward the top.
+
+Produce one walking contact pose A. His anatomical LEFT leg on screen-left reaches forward away from us and plants higher in the image. His RIGHT leg on screen-right trails toward us, heel lifted with a little sandal sole visible. Left arm swings back toward us; right arm swings forward. Make the left hip-to-knee connection and rear right calf readable. A restrained natural walking stride, empty hands, no running or new gear.
+
+Retain original apparent body scale (about970px standing height), same actor center and ground anchor around x627,y1098 on the actual1254 square canvas. Do not move the camera or simplify his physical appearance. Actual transparent RGBA, including limb gaps; no checker, floor, shadow or labels.

@@ -1,0 +1,38 @@
+== scenario typography ==
+    ok: type: bundled font registered from executable-relative asset
+    ok: type: selected face is bundled family, never a system substitution
+    ok: type: role resources reused across paints
+    ok: type: selected face is bundled family, never a system substitution
+    ok: type: role resources reused across paints
+    ok: type: integer scale doubles actual advances and line metrics
+    ok: type: actual GDI glyphs contain only ink and transparent backing, no antialias fringes
+    ok: type: native shared-role specimen saved
+    ok: type: UTF-8 smart quotes retain bundled glyphs
+    ok: type: unsupported supplementary character is one explicit same-family replacement
+    ok: type: ellipsis uses three same-family periods
+    ok: type: typing replaces selection at the caret
+    ok: type: backspace and delete operate around moved caret
+    ok: type: select-all replacement works
+    ok: type: established name length limit retained
+    ok: type: production title captured
+    ok: type: production settings captured
+    ok: type: production name field selection and scrolling captured (fixture roster)
+    ok: type: painting other fields does not move focused caret
+    ok: type: full long name fits or scrolls with caret inside field
+    ok: type: existing log with multiline fixture and production world labels captured
+    ok: type: actual existing message log is painted
+    ok: type: production title captured
+    ok: type: production settings captured
+    ok: type: production name field selection and scrolling captured (fixture roster)
+    ok: type: painting other fields does not move focused caret
+    ok: type: full long name fits or scrolls with caret inside field
+    ok: type: existing log with multiline fixture and production world labels captured
+    ok: type: actual existing message log is painted
+    ok: type: production title captured
+    ok: type: production settings captured
+    ok: type: production name field selection and scrolling captured (fixture roster)
+    ok: type: painting other fields does not move focused caret
+    ok: type: full long name fits or scrolls with caret inside field
+    ok: type: existing log with multiline fixture and production world labels captured
+    ok: type: actual existing message log is painted
+   PASS (0 failures)

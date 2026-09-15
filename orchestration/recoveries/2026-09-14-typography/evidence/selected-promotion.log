@@ -1,0 +1,15 @@
+PASS package hashes: 1270
+PASS required runtime resources: 349
+PASS embedded executable source identity: cefd238b234c0c489abb2718e6b86ba001672c6c clean
+PASS simultaneous trailing-separator alias refused
+PASS profile opens again after previous lock closes
+Retained disposable fixture: C:\Users\Alex\AppData\Local\Temp\verdigris-lock-test-913d9d27fc52443483dd8c055070b615
+PASS package hashes: 1270
+PASS required runtime resources: 349
+PASS embedded executable source identity: cefd238b234c0c489abb2718e6b86ba001672c6c clean
+PASS simultaneous trailing-separator alias refused
+PASS profile opens again after previous lock closes
+Retained disposable fixture: C:\Users\Alex\AppData\Local\Temp\verdigris-lock-test-04cd8bbb6fb74c8c907bc857d5aab060
+Installed source: cefd238b234c0c489abb2718e6b86ba001672c6c
+Promoted 1270 files; preserved 1 saves byte-for-byte and settings (absent).
+Rollback: C:\Users\Alex\Documents\ChatGPT\verdigris-typography-sans-20260914\native\build\typography-sans\rollback-20260913213044

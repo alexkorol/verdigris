@@ -1,0 +1,2 @@
+PASS exact normal entry, working directory, actual child images, normal profile, perspective startup, confirmed menu quit and owned-process cleanup. Source=b21054d63f9e3647238b97b23553967fe3756bf1
+PASS 1 existing saves preserved (additive schema and purse-coordinate migration only); settings=absent. Entry SHA256=2A8754CFD12605EBF5205E05AFC5E1A0550BD5D6F796AE542DEDD824616DBF57

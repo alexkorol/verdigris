@@ -1,0 +1,240 @@
+{
+  "source_repository": "https://github.com/alexkorol/WIZARD",
+  "source_commit": "00be6a0fe4ecfbd0b7862249012308268f92f0d7",
+  "conversion": "byte-for-byte PNG copy; no pixelization, crop or recoloring",
+  "layout_source": "tools/rpg_inventory/index.html .doll-wrap / .doll-col / .pack-grids",
+  "assets": [
+    {
+      "file": "bracers_bronzeplate.png",
+      "source": "tools/rpg_inventory/assets/bracers_bronzeplate.png",
+      "sha256": "dc69d6d537f250a2f8ba9002a820e54f5fd39143381700ac469b7cf2d2ccf396"
+    },
+    {
+      "file": "bracers_skymetal.png",
+      "source": "tools/rpg_inventory/assets/bracers_skymetal.png",
+      "sha256": "56f55a7a0c1237f78a816ed6d08f60de9633592c97a9a0934bb9e2cba8498719"
+    },
+    {
+      "file": "crest_bronze.png",
+      "source": "tools/rpg_inventory/assets/crest_bronze.png",
+      "sha256": "5e068819a0c3b5c9af03f9edc2e79bd5d88268f9065e5f3d035f48e1b6eab5ec"
+    },
+    {
+      "file": "crest_copper.png",
+      "source": "tools/rpg_inventory/assets/crest_copper.png",
+      "sha256": "c7f15b9285293761f51f52a4b6bdfa764af7eaa18dfafe2969a584aef83c72bb"
+    },
+    {
+      "file": "crest_hide.png",
+      "source": "tools/rpg_inventory/assets/crest_hide.png",
+      "sha256": "6748b4e20dbb1e52a09575c663a2545731a0e87aa41d1319b083b92e9d031c6a"
+    },
+    {
+      "file": "crest_jade.png",
+      "source": "tools/rpg_inventory/assets/crest_jade.png",
+      "sha256": "433d3b802a934c71dda42821d14934f7208ea943cceb071f27c96e6abee1bff2"
+    },
+    {
+      "file": "girdle_bronzeplate.png",
+      "source": "tools/rpg_inventory/assets/girdle_bronzeplate.png",
+      "sha256": "a72311c150a15974456865b7dc8e0dcb313344ce4365f9fbdffb24318d9cb21a"
+    },
+    {
+      "file": "girdle_copper.png",
+      "source": "tools/rpg_inventory/assets/girdle_copper.png",
+      "sha256": "64bc4af1ad93b719ca5101b210afd277f032e4b5559cee51b31ef035802ddc55"
+    },
+    {
+      "file": "girdle_hide.png",
+      "source": "tools/rpg_inventory/assets/girdle_hide.png",
+      "sha256": "92aeb8e6492a131ed94e4af94d4ea50569f4983a2dd1caa3ccd00ecb5df9390a"
+    },
+    {
+      "file": "girdle_quilted.png",
+      "source": "tools/rpg_inventory/assets/girdle_quilted.png",
+      "sha256": "fbcad4c10ca1dcd8bc997520f9e86d9f4045e554f485fc0ea9abb3394746f447"
+    },
+    {
+      "file": "girdle_skymetal.png",
+      "source": "tools/rpg_inventory/assets/girdle_skymetal.png",
+      "sha256": "986cfb236787c9d287780da02ae24f67895e6620b370acbb57b29388a0e69280"
+    },
+    {
+      "file": "gorget_copper.png",
+      "source": "tools/rpg_inventory/assets/gorget_copper.png",
+      "sha256": "e4aa438d0b8df2673c245d73b157edc517b785c385fdc104057bf94aaa066e9a"
+    },
+    {
+      "file": "gorget_jade.png",
+      "source": "tools/rpg_inventory/assets/gorget_jade.png",
+      "sha256": "07493177c61e5ae0d25436d8d32f5b833868c2e602ea8b0499020d1681da9f76"
+    },
+    {
+      "file": "gorget_skymetal.png",
+      "source": "tools/rpg_inventory/assets/gorget_skymetal.png",
+      "sha256": "f07263bda5198e43ed476f283903a30c292bbcbfe8b73c0f2d215d6a0e024707"
+    },
+    {
+      "file": "hideshield_bronze.png",
+      "source": "tools/rpg_inventory/assets/hideshield_bronze.png",
+      "sha256": "16eb29bbefd827a66e3f91ffef0028aa3d6d5c1588af1d51b9a6130bf9f9d267"
+    },
+    {
+      "file": "hideshield_bronzescale.png",
+      "source": "tools/rpg_inventory/assets/hideshield_bronzescale.png",
+      "sha256": "27afb93e1c25895245ac4bd76d82113c6b4623dcc7e4b9c40b0d1421f17a465d"
+    },
+    {
+      "file": "hideshield_hide.png",
+      "source": "tools/rpg_inventory/assets/hideshield_hide.png",
+      "sha256": "a0129f9a5a63cd3e8dbdbabb765cefde79c82fd033e7179fd4d474a6bbbe7611"
+    },
+    {
+      "file": "hideshield_oxhide.png",
+      "source": "tools/rpg_inventory/assets/hideshield_oxhide.png",
+      "sha256": "6eede6d6da177790d7b2f5e71286776043cb0cc7dee9ac172d4f5b1ca6f92fc6"
+    },
+    {
+      "file": "hideshield_rawhide_oval.png",
+      "source": "tools/rpg_inventory/assets/hideshield_rawhide_oval.png",
+      "sha256": "22f5e2cb3040980d54d9ef8bbee7e8af00e268eca1e799faabee8557b67b3c5b"
+    },
+    {
+      "file": "ring_amber.png",
+      "source": "tools/rpg_inventory/assets/ring_amber.png",
+      "sha256": "da6ff2acaa0a20ce01af4f50df4e4a44276fabe9c9d40d44b73471034859a07a"
+    },
+    {
+      "file": "ring_bone.png",
+      "source": "tools/rpg_inventory/assets/ring_bone.png",
+      "sha256": "330dca5bbcc9d13a497509e7832d47b85c1caa5e8a853e31ef26161835434ae7"
+    },
+    {
+      "file": "ring_copper.png",
+      "source": "tools/rpg_inventory/assets/ring_copper.png",
+      "sha256": "da6c4e063690b6b3ac3a8158219c55af5504cc289d0797fc62e0adcf498d0de7"
+    },
+    {
+      "file": "ring_jade.png",
+      "source": "tools/rpg_inventory/assets/ring_jade.png",
+      "sha256": "e3a0b8780fbbb232619f34713d29f3b2c5b4d98c031aadb9161610bf92e92e5e"
+    },
+    {
+      "file": "ring_skymetal.png",
+      "source": "tools/rpg_inventory/assets/ring_skymetal.png",
+      "sha256": "9e11576a6f8963b2a6bd5d2b07a0641d8b3c9066cd92f032174f2bd18327d399"
+    },
+    {
+      "file": "sandals_hide.png",
+      "source": "tools/rpg_inventory/assets/sandals_hide.png",
+      "sha256": "3ee3b8f1102f030fda80b6f45d7b1284b0d095d74da8c88fc16bbd788ad69021"
+    },
+    {
+      "file": "sandals_quilted.png",
+      "source": "tools/rpg_inventory/assets/sandals_quilted.png",
+      "sha256": "dfb0e0e5585fd630047170d876be5992cba3b62aea123d58f713cca7e51aea33"
+    },
+    {
+      "file": "spear_bone.png",
+      "source": "tools/rpg_inventory/assets/spear_bone.png",
+      "sha256": "d119bcc1960306c9fcd335f3636c4677fba6debae0184700cc3dd21b21b41b3e"
+    },
+    {
+      "file": "spear_copper.png",
+      "source": "tools/rpg_inventory/assets/spear_copper.png",
+      "sha256": "b78cb4067cfbaca3ed07f7ead3b9f2b6ecf146d7aa667abcb205b454a72a8cd2"
+    },
+    {
+      "file": "spear_flint.png",
+      "source": "tools/rpg_inventory/assets/spear_flint.png",
+      "sha256": "43932c29c68a8fd3c53795eb4a61797b608a4e7984468d6e67d5331ceeb34b21"
+    },
+    {
+      "file": "spear_obsidian.png",
+      "source": "tools/rpg_inventory/assets/spear_obsidian.png",
+      "sha256": "df70e142fcb82b3e55f73653a10b4d61555dfa2f8364839c4bd9aeb11ffe66cc"
+    },
+    {
+      "file": "spear_skymetal.png",
+      "source": "tools/rpg_inventory/assets/spear_skymetal.png",
+      "sha256": "81fccaa3f1ddc409a32b6debfb43191e624f0e2a5bb56376cb0ebe5555d3e3bb"
+    },
+    {
+      "file": "wrap_bronzescale.png",
+      "source": "tools/rpg_inventory/assets/wrap_bronzescale.png",
+      "sha256": "bdfa29d3c6e6a98e95deac0b4e867886e471bb196f6322d0d2f123c03029f803"
+    },
+    {
+      "file": "wrap_hide.png",
+      "source": "tools/rpg_inventory/assets/wrap_hide.png",
+      "sha256": "0c13cdf96791a8c0915588b6588f2f9f301eda9bb9b5778128717c234d1934cd"
+    },
+    {
+      "file": "wrap_hide_lamellar.png",
+      "source": "tools/rpg_inventory/assets/wrap_hide_lamellar.png",
+      "sha256": "7a6a1ca2adee2ba321651b9e39c190c8050bf52f56b6e0efc3f2d0f10102c158"
+    },
+    {
+      "file": "wrap_quilted.png",
+      "source": "tools/rpg_inventory/assets/wrap_quilted.png",
+      "sha256": "83aa865657c45b7fc33b67aeb4f94a11e624ba40a4f06feaee95b88150cc2629"
+    },
+    {
+      "file": "wrap_studded.png",
+      "source": "tools/rpg_inventory/assets/wrap_studded.png",
+      "sha256": "91de5b22a7b997901159bc802d5746650c1a3fbeb43dbaaf954132440a177884"
+    },
+    {
+      "file": "frame_ornate.png",
+      "source": "tools/rpg_inventory/assets/frame_ornate.png",
+      "sha256": "10b9549460343430a46104e22c453966c23319aaf4a79adb001e9e21e7a6661f"
+    },
+    {
+      "file": "slot_texture.png",
+      "source": "tools/rpg_inventory/assets/slot_texture.png",
+      "sha256": "2d36a5342dbc20c30153bddcfb11c7c7a786c360f55a8db308a04fda9f23ae66"
+    },
+    {
+      "file": "crest_bone.png",
+      "source": "tools/rpg_inventory/assets/crest_bone.png",
+      "source_commit": "56b81edb836c5738244b999f464eae0af287cb4e",
+      "purpose": "Artwork for an existing native form/material retained in native/src/core.cpp; no content or balance changes",
+      "sha256": "b2e571e1f6be599debca3576a22ecfd39a554e908bbf956b5e1641fd0ac9af86"
+    },
+    {
+      "file": "gorget_bone.png",
+      "source": "tools/rpg_inventory/assets/gorget_bone.png",
+      "source_commit": "56b81edb836c5738244b999f464eae0af287cb4e",
+      "purpose": "Artwork for an existing native form/material retained in native/src/core.cpp; no content or balance changes",
+      "sha256": "ad9171c149de8a704fa4209891001481ef8b6f4cade503b56161734281f55da7"
+    },
+    {
+      "file": "gorget_amber.png",
+      "source": "tools/rpg_inventory/assets/gorget_amber.png",
+      "source_commit": "56b81edb836c5738244b999f464eae0af287cb4e",
+      "purpose": "Artwork for an existing native form/material retained in native/src/core.cpp; no content or balance changes",
+      "sha256": "002a59f050da0ab463bdc69fb62f4ad17458b41f6ea23aff306626efa73e60b5"
+    },
+    {
+      "file": "grips_hide.png",
+      "source": "tools/rpg_inventory/assets/grips_hide.png",
+      "source_commit": "56b81edb836c5738244b999f464eae0af287cb4e",
+      "purpose": "Artwork for an existing native form/material retained in native/src/core.cpp; no content or balance changes",
+      "sha256": "b3e50aa3c77381fb64c067eaf41953b72f0e2f7afefbdbace42b4826168b473c"
+    },
+    {
+      "file": "grips_quilted.png",
+      "source": "tools/rpg_inventory/assets/grips_quilted.png",
+      "source_commit": "56b81edb836c5738244b999f464eae0af287cb4e",
+      "purpose": "Artwork for an existing native form/material retained in native/src/core.cpp; no content or balance changes",
+      "sha256": "32aead1f54b3a77e1c45fa24cefd56d96a8f8d365b872348636a50d91e12e9f4"
+    },
+    {
+      "file": "grips_bronzescale.png",
+      "source": "tools/rpg_inventory/assets/grips_bronzescale.png",
+      "source_commit": "56b81edb836c5738244b999f464eae0af287cb4e",
+      "purpose": "Artwork for an existing native form/material retained in native/src/core.cpp; no content or balance changes",
+      "sha256": "4282309fb32967f4f26893ac6e77d045e56d1d8c85d3645ce3f4c71a00e09285"
+    }
+  ]
+}

@@ -18,7 +18,8 @@ namespace verdigris::client {
 
 class LocalCoreSession final : public IClientSession {
  public:
-  explicit LocalCoreSession(std::uint64_t seed, std::string house_name = "House Verdigris");
+  explicit LocalCoreSession(std::uint64_t seed, std::string house_name = "House Verdigris",
+                            std::string appearance = "male");
   ~LocalCoreSession() override;
 
   bool start(std::string* error = nullptr) override;
@@ -47,6 +48,7 @@ class LocalCoreSession final : public IClientSession {
 
   std::uint64_t seed_;
   std::string house_name_;
+  std::string appearance_;
   move::AimHold aim_hold_{};
   std::unique_ptr<verdigris::Simulation> simulation_;
   std::vector<verdigris::Command> pending_commands_;

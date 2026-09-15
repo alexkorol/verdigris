@@ -74,6 +74,9 @@ inline constexpr int kSceneryColliderRadius = kMeleeRange / 2;
 
 // A dash is a short, readable burst measured in ordinary movement ticks.
 inline constexpr int kDashMovementTicks = 10;
+// Provisional burst lockout: one shared dash-distance window. Dash does not
+// grant invulnerability or spend a resource in the current native rules.
+inline constexpr int kDashCooldownTicks = kDashMovementTicks;
 
 // Curated gameplay constants needed by presentation.  Mechanics and the
 // read-only catalog use these same definitions; clients must not mirror the
@@ -207,6 +210,12 @@ struct LegendEntry {
   bool operator==(const LegendEntry& other) const;
 };
 
+// Appearance selects art only. Normalize saved/wire values before using them
+// as asset keys; older saves and unsupported values use the original male art.
+inline const char* player_appearance_id(const std::string& value) {
+  return value == "female" ? "female" : "male";
+}
+
 struct Scion {
   std::string id;
   std::string name;
@@ -216,6 +225,7 @@ struct Scion {
   std::vector<Trophy> carried_trophies;
   std::vector<Item> carried_items;
   std::vector<std::string> deeds;
+  std::string appearance = "male";
 };
 
 enum class EventType {
@@ -329,7 +339,8 @@ bool navigation_segment_blocked(const std::vector<NavigationObstacle>& obstacles
 
 class Simulation {
  public:
-  explicit Simulation(std::uint64_t seed, const std::string& house_name = "House Verdigris");
+  explicit Simulation(std::uint64_t seed, const std::string& house_name = "House Verdigris",
+                      const std::string& appearance = "male");
 
   void dispatch(const Command& command);
   // One 50 ms authority step, including when commands is empty. Repeated
@@ -346,7 +357,7 @@ class Simulation {
   std::vector<Vec2> navigation_anchors() const;
   bool movement_blocked(Vec2 from, Vec2 to) const;
   void set_seasonal_mechanic(SeasonalMechanic* mechanic);
-  void create_successor(const std::string& name);
+  void create_successor(const std::string& name, const std::string& appearance = "male");
 
   const House& house() const;
   const Scion& scion() const;
@@ -656,6 +667,7 @@ struct GameItem {
   int bonus_attributes = 0;
   std::optional<VesselBlock> vessel;
   std::string bound_to;
+  std::string pack_id = "main";
 
   int item_level() const { return vessel ? vessel->item.ilvl : 0; }
 };
@@ -669,6 +681,7 @@ struct CreateItemOptions {
 };
 
 // factory.js createById/createFromBase. Returns nullopt for unknown ids.
+void reserve_game_item_identity(const std::string& uuid);
 std::optional<GameItem> create_game_item(const std::string& item_id,
                                          const CreateItemOptions& options);
 
@@ -692,9 +705,12 @@ class PlayerInventory {
   // overflows; other items place first-fit. One instance per call — callers
   // loop for multi-quantity grants so each roll gets its own rng draw.
   AddResult add(GameItem item);
+  bool add_at(GameItem item, int slot, const std::string& pack = "main");
+  static bool can_store_in_pack(const GameItem& item, const std::string& pack);
   bool remove_by_uuid(const std::string& uuid, GameItem* out);
   GameItem* find_by_uuid(const std::string& uuid);
   const GameItem* find_by_uuid(const std::string& uuid) const;
+  bool move_or_swap(const std::string& uuid, int slot, const std::string& pack = "main");
   int coin_total() const;
   bool spend_coins(int amount);  // false when coin_total() < amount
 
@@ -783,11 +799,14 @@ struct WorldPosition {
 };
 
 namespace tile_movement {
-// Browser feel constants (post-0037): one tile takes 150 ms, a held key
-// samples every 50 ms, so each sample moves exactly 1/3 tile.
-inline constexpr double kTileTravelMs = 150.0;
+// A starting Scion walks four tiles per second. Keep the responsive 50 ms
+// input cadence; later movement bonuses should increase distance, not tick rate.
+inline constexpr double kTileTravelMs = 250.0;
 inline constexpr double kSampleMs = 50.0;
 inline constexpr double kMoveDistance = kSampleMs / kTileTravelMs;
+// Enemy pursuit has its own baseline; tuning starting player speed must not
+// silently slow the opposition by the same percentage.
+inline constexpr double kPursuitMoveDistance = kSampleMs / 150.0;
 inline constexpr int kPositionPrecision = 6;
 
 // Normalised 8-way sample delta (PLAYER_MOVE_DISTANCE along the vector).
@@ -898,6 +917,8 @@ struct MovementStepInfo {
   int duration_ms = 0;
   std::string direction;
   bool blocked = false;
+  std::string action;  // move or accepted dash; additive presentation metadata
+  WorldPosition from{};
 };
 
 struct ZoneDescriptor {
@@ -950,18 +971,22 @@ class WorldSimulation {
     }
     return false;
   }
-  void kill_all_monsters() { for (auto& monster : monsters_) { monster.alive = false; monster.life = 0; } active_target_.clear(); }
+  void kill_all_monsters() { for (auto& monster : monsters_) { monster.alive = false; monster.life = 0; } active_target_.clear(); player_attack_active_ = false; }
   const TileGrid& grid() const { return grid_; }
   bool in_instance() const { return scene_type_ == "instance"; }
 
   // One player:move sample.  Returns true when the step was applied.
   bool apply_movement_sample(const std::string& direction, std::int64_t now_ms);
+  bool dash(const std::string& direction, std::int64_t now_ms);
   // dev:teleport: floors onto the target tile, then runs the portal check
   // (landing on the entry stairs returns to town, like the JS game loop).
   void teleport(int x, int y, std::int64_t now_ms);
   // Fresh world admission lands at the town spawn (JS direct-admission: every
   // login re-enters the world at the plaza, whatever a prior session left).
   void reset_to_town();
+  // Authored first-slice map and encounters use the normal movement/combat authority.
+  void enter_starter_village();
+  void spawn_starter_wave(int wave);
   // instance:enterSolo: validates template/layout against the Adventure table
   // (unknown template -> dungeon, unknown layout -> theme default), saves the
   // pre-instance position on first entry, and places the player at a spawn.
@@ -1061,6 +1086,9 @@ public:
   const std::string& engaged_by() const { return engaged_by_; }
 private:
   std::uint64_t next_player_attack_ms_ = 0;
+  bool player_attack_active_ = false;
+  Vec2 player_attack_facing_{0, 1};
+  std::int64_t next_dash_ms_ = 0;
   std::uint64_t next_boss_telegraph_ms_ = 0;
   std::int64_t last_pursuit_tick_ms_ = -1;
   bool boss_warning_seen_ = false;

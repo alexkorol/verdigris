@@ -1,0 +1,29 @@
+{
+  "status": "proposal only; owner review pending; no runtime import",
+  "generation": "one built-in imagegen call",
+  "output_size": [
+    1536,
+    1024
+  ],
+  "logical_guide_size": [
+    768,
+    512
+  ],
+  "guide_enlargement": 2,
+  "guide_horizontal_pixels_per_metre": 48,
+  "native_scale_review": "nearest-neighbor display reduction only; not Pixel Respecter reconstruction or certified sprite extraction",
+  "construction_reference": "Wolfgang F. A. Lobisser, EXARC 2018/2, https://exarc.net/issue-2018-2/ea/construction-bronze-age-longhouse-model (CC BY 4.0 article); photo used for construction only",
+  "review": [
+    "Open lane and broad building placement retained.",
+    "Natural foliage replaces geometric guide leaves.",
+    "Well shape drifted from square to round.",
+    "Ground texture is too fine/busy for final calibrated sprite production.",
+    "Character exterior is approximate at scene scale; this image is not a replacement character sheet."
+  ],
+  "files": {
+    "composition-proposal.png": "544ca1a1dc8dec40955db509ab5431a7bf4ef19a26d635d9025c1cf4a9e774d4",
+    "guide-native.png": "aac8af10abe4ebbe9ae1395ef9de9baf89af01640bf55ea849118b8897f6fb8f",
+    "guide-2x.png": "4c9c0fc076369ac55580cec87fad301fc0534de8a9dca74f8702f0d0d15a4aa8",
+    "prompt.txt": "b15d0a47ca50c85e1ee769b87118fa65a4a367f31b31a9401b461b948f039d94"
+  }
+}

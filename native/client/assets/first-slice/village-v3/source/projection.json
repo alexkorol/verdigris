@@ -1,0 +1,23 @@
+{
+  "pixels_per_metre": 48,
+  "camera_elevation_degrees": 45,
+  "frame": [
+    384,
+    384
+  ],
+  "anchor": [
+    192,
+    354
+  ],
+  "atlas": [
+    768,
+    768
+  ],
+  "integer_enlargement": 2,
+  "groups": [
+    "longhouse",
+    "mature-tree",
+    "palisade",
+    "square-well"
+  ]
+}

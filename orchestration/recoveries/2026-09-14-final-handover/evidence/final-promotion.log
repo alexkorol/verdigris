@@ -1,0 +1,16 @@
+PASS package hashes: 1270
+PASS required runtime resources: 349
+PASS embedded executable source identity: 2651bd4985e698fade744b8aeea5c84f9c251d57 clean
+PASS simultaneous trailing-separator alias refused
+PASS profile opens again after previous lock closes
+Retained disposable fixture: C:\Users\Alex\AppData\Local\Temp\verdigris-lock-test-43f91416007f4eb78ef97d5f56fa751b
+Promoted 1270 package files; 1 saves and normal settings preserved byte-for-byte. Rollback=C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\build\normal-launch-rollback-before-2651bd498
+PASS package hashes: 1270
+PASS required runtime resources: 349
+PASS embedded executable source identity: 2651bd4985e698fade744b8aeea5c84f9c251d57 clean
+PASS simultaneous trailing-separator alias refused
+PASS profile opens again after previous lock closes
+Retained disposable fixture: C:\Users\Alex\AppData\Local\Temp\verdigris-lock-test-4f522f32532c4ff099ad7f555be96eb6
+PASS exact normal entry, working directory, actual child images, normal profile, perspective startup, confirmed menu quit and owned-process cleanup. Source=2651bd4985e698fade744b8aeea5c84f9c251d57
+PASS 1 existing saves preserved (additive schema and purse-coordinate migration only); settings=absent. Entry SHA256=34DC1993D07150D53CB65A885FCB48C18FA566AA4DB2E78CD04F9C3A4F004FCE
+PASS normal launch handover: C:\Users\Alex\Documents\Verdigris Native 2026-09-13\Verdigris.exe source=2651bd4985e698fade744b8aeea5c84f9c251d57

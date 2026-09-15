@@ -42,6 +42,7 @@ namespace detail {
 // in rear views. These SE anchors were measured on the accepted 80x96 idle and
 // four common-canvas walk frames, then inspected with all five weapons at 1x/3x.
 inline constexpr PoseMetadata kPoses[] = {
+#include "lineage_equipment.inc"
     {"hero_se", {80, 96}, {50.5, 66.5}, {49, 65, 52, 69}, false, false, false},
     {"hero_walk0_se", {80, 96}, {50.5, 66.5}, {49, 65, 53, 69}, false, false, false},
     {"hero_walk1_se", {80, 96}, {50.5, 64.5}, {49, 63, 52, 67}, false, false, false},
@@ -138,6 +139,7 @@ inline constexpr PoseMetadata kPoses[] = {
 // right-facing actor. The staff has no distinct wrapped grip: its measured
 // mid-shaft contact leaves its bottom near the idle actor's ground line.
 inline constexpr WeaponMetadata kWeapons[] = {
+    {"weapon_handstone", {12, 18}, {5.5, 14.5}, false, true},
     {"weapon_axe", {32, 64}, {22.5, 57.5}, true, true},
     {"weapon_sword", {32, 64}, {15.5, 55.5}, false, true},
     {"weapon_staff", {32, 64}, {15.5, 35.5}, false},

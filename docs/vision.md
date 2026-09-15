@@ -84,10 +84,12 @@ skill-tree reopening, zone labels, and physical pointer equip/unequip.
 
 ## Release runway toward 1.0
 
-The release gate is `npm run verify`: lint and style checks, the complete unit
-suite, production build, every real-server playtest scenario, and the built-game
-browser loop. The remaining product work is intentionally narrower than the
-original prototype roadmap:
+The release gate is the native package: `npm run verify` builds the native
+executables, runs native tests and client scenarios, and produces the actual
+owner-visible game. The Vue/Node implementation remains a historical browser
+reference; its complete chain is opt-in via `npm run verify:legacy`. The
+remaining product work is intentionally narrower than the original prototype
+roadmap:
 
 1. **Campaign breadth:** extend the authoritative four-commission campaign
    toward the 23 quest points reserved by the passive tree, with named zones,

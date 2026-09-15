@@ -1,0 +1,63 @@
+{
+  "duration": 0.1,
+  "loop": false,
+  "layers": [
+    {
+      "name": "gather",
+      "spawn": "burst",
+      "space": "world",
+      "blend": "additive",
+      "count": 12,
+      "lifetime": [
+        0.32,
+        0.48
+      ],
+      "sizeStart": [
+        6,
+        6
+      ],
+      "sizeEnd": [
+        1,
+        1
+      ],
+      "colorStart": [
+        1,
+        0.88,
+        0.35,
+        0.9
+      ],
+      "colorEnd": [
+        1,
+        0.45,
+        0.1,
+        0
+      ],
+      "frames": [
+        "spark"
+      ],
+      "shape": "ring",
+      "radius": 25,
+      "radialSpeed": -45,
+      "positionMin": [
+        0,
+        0,
+        8
+      ],
+      "positionMax": [
+        0,
+        0,
+        12
+      ],
+      "velocityMin": [
+        0,
+        0,
+        55
+      ],
+      "velocityMax": [
+        0,
+        0,
+        85
+      ]
+    }
+  ]
+}

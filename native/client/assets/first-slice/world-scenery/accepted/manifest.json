@@ -1,0 +1,290 @@
+{
+  "version": 2,
+  "pipeline": "Blender native reference -> built-in imagegen material paint -> Pixel Respecter grid reconstruction -> integer translation -> native visual review",
+  "world_pixels_per_metre": 48,
+  "base_cell_pixels": 48,
+  "assets": [
+    {
+      "id": "hut",
+      "frame": [
+        256,
+        256
+      ],
+      "anchor": [
+        128,
+        192
+      ],
+      "pixels_per_metre": 48,
+      "projection": "perspective calibrated at ground pivot",
+      "camera_depth_metres": 12.75,
+      "source_objects": "parity_dwelling_west",
+      "sprite": "sprites/hut.png",
+      "source": "source/hut.png",
+      "reference": "references/hut.png",
+      "editable_blender": "blender/hut.blend",
+      "report": "reports/hut.json",
+      "sha256": "77cc29e2ad98bc189e1350f92e83b5fafee4f96987dd5ea80722b7a18e3756be",
+      "source_sha256": "7a418fe3305e0ad6390dc73d12994658aeb105a5cfa1bb77e97a92ce33028ff9",
+      "reference_sha256": "a788d790a0474c4e9fe6bc9af03f80a29438eb4fc5b7965ba67da3ddd9821697",
+      "blend_sha256": "7ea07ae4f964e71e92c23c59205a9415c9e42530a92e18198019af9f9ee93948",
+      "native_bbox": [
+        30,
+        49,
+        226,
+        242
+      ],
+      "agent_visual_review": true,
+      "silhouette_iou": 0.9699504076657981
+    },
+    {
+      "id": "square-well",
+      "frame": [
+        256,
+        256
+      ],
+      "anchor": [
+        128,
+        200
+      ],
+      "pixels_per_metre": 48,
+      "footprint_metres": [
+        1.9,
+        1.5
+      ],
+      "projection": "orthographic",
+      "camera_elevation_degrees": 34.2157,
+      "sprite": "sprites/square-well.png",
+      "source": "source/square-well.png",
+      "reference": "references/square-well.png",
+      "editable_blender": "blender/square-well.blend",
+      "report": "reports/square-well.json",
+      "sha256": "5cd15ac1aa5908ce898027fca77a964af78672607ba382aa4ba2ebab354c6c3c",
+      "source_sha256": "badfb4cd7f99ea8d06618db1f7976d4755aa1a4b72f115c10ebf77fc351151c7",
+      "reference_sha256": "70d70a928f644ca0e8dc8f0488ffed5d214b99832d6e2a42f8609320542d95bc",
+      "blend_sha256": "3371445bd89c7c8277bf611541af60473cfc7bfc8895bd80c8f13b6636750574",
+      "native_bbox": [
+        78,
+        117,
+        178,
+        220
+      ],
+      "agent_visual_review": true,
+      "silhouette_iou": 0.8718742557751845
+    },
+    {
+      "id": "palisade-intact",
+      "frame": [
+        256,
+        256
+      ],
+      "anchor": [
+        128,
+        200
+      ],
+      "pixels_per_metre": 48,
+      "footprint_metres": [
+        2.8,
+        0.35
+      ],
+      "projection": "orthographic",
+      "camera_elevation_degrees": 34.2157,
+      "sprite": "sprites/palisade-intact.png",
+      "source": "source/palisade-intact.png",
+      "reference": "references/palisade-intact.png",
+      "editable_blender": "blender/palisade-intact.blend",
+      "report": "reports/palisade-intact.json",
+      "sha256": "0800990b65eb91e0aea8dfe8b023d84e8251389fa18f9417d7b49e0e385da9b2",
+      "source_sha256": "b832f2654b02653dccf381e07039666bf755c2e4ee9519f4d8a5f48ec06cd9bb",
+      "reference_sha256": "3c87f19f73d2ebd4345a7364694da900e1294dded35e271cb270ec642c1c18cb",
+      "blend_sha256": "f3fd233d3cf609af7f3e5967ca26271fa625b1cf1c3126db18e2cbad4b1f2c09",
+      "native_bbox": [
+        64,
+        117,
+        193,
+        203
+      ],
+      "agent_visual_review": true,
+      "silhouette_iou": 0.9820336020200058
+    },
+    {
+      "id": "palisade-breached",
+      "frame": [
+        256,
+        256
+      ],
+      "anchor": [
+        128,
+        200
+      ],
+      "pixels_per_metre": 48,
+      "footprint_metres": [
+        2.8,
+        0.35
+      ],
+      "projection": "orthographic",
+      "camera_elevation_degrees": 34.2157,
+      "sprite": "sprites/palisade-breached.png",
+      "source": "source/palisade-breached.png",
+      "reference": "references/palisade-breached.png",
+      "editable_blender": "blender/palisade-breached.blend",
+      "report": "reports/palisade-breached.json",
+      "sha256": "85e7d2a660876effe7b2e49c304c6475ceacb2671fcc876f8d0d08c2dd0f26a5",
+      "source_sha256": "9b3837f1a252811036d348b14aaa761f801e8dc13480ff555066386251010460",
+      "reference_sha256": "db73f9f97d90a706e4f59f4239f73e7fff9ffbfa1ad040a282872a63d98df97d",
+      "blend_sha256": "0ec79d8ae397728767fd3adae5a4164f7405178096b8bf8bb04d6c5baba29a03",
+      "native_bbox": [
+        62,
+        118,
+        193,
+        203
+      ],
+      "agent_visual_review": true,
+      "silhouette_iou": 0.9324590163934426
+    },
+    {
+      "id": "fieldstone-cluster",
+      "frame": [
+        256,
+        256
+      ],
+      "anchor": [
+        128,
+        200
+      ],
+      "pixels_per_metre": 48,
+      "footprint_metres": [
+        1.6,
+        1.0
+      ],
+      "projection": "orthographic",
+      "camera_elevation_degrees": 34.2157,
+      "sprite": "sprites/fieldstone-cluster.png",
+      "source": "source/fieldstone-cluster.png",
+      "reference": "references/fieldstone-cluster.png",
+      "editable_blender": "blender/fieldstone-cluster.blend",
+      "report": "reports/fieldstone-cluster.json",
+      "sha256": "e6717879722ed442466fe6eaa4a7fec49e3b999652a32ebed4333809609f00d1",
+      "source_sha256": "89bdf4307e7feae33c01db22dacfd7092b3c3a64bd360c3b350686b4b9e2263f",
+      "reference_sha256": "1ba678833d6e44354dfa78346927e8ee7eb4d95a50086ee6401caccddbc7a31e",
+      "blend_sha256": "065c3c63772b19984db11d9f1b6e9633705e55921cf1387542bc652045821523",
+      "native_bbox": [
+        88,
+        168,
+        170,
+        213
+      ],
+      "agent_visual_review": true,
+      "silhouette_iou": 0.8889856334349151
+    },
+    {
+      "id": "tree",
+      "frame": [
+        256,
+        256
+      ],
+      "anchor": [
+        128,
+        232
+      ],
+      "pixels_per_metre": 48,
+      "projection": "perspective calibrated at ground pivot",
+      "camera_depth_metres": 12.75,
+      "source_objects": "parity_tree_west",
+      "sprite": "sprites/tree.png",
+      "source": "source/tree.png",
+      "reference": "references/tree.png",
+      "editable_blender": "blender/tree.blend",
+      "report": "reports/tree.json",
+      "sha256": "6e11f4a0076eb5dbdab15526807ba536fda1e46773f133111efe037573707fcb",
+      "source_sha256": "b71442611599be4844fd0a258278829457c3a0e516bbca25b8c0113a467255c5",
+      "reference_sha256": "ac521ccc0bf7cdba6063db4ce18044425e58e52ecca13ef3c47713b1138460fd",
+      "blend_sha256": "5ef6384797988a165dd624bbb3d561d4a5ebd7fb6ddca0d0ee50e8c065592416",
+      "native_bbox": [
+        37,
+        55,
+        233,
+        241
+      ],
+      "agent_visual_review": true,
+      "silhouette_iou": 0.8996856559863233
+    },
+    {
+      "id": "worn-earth-patch",
+      "frame": [
+        256,
+        256
+      ],
+      "anchor": [
+        128,
+        200
+      ],
+      "pixels_per_metre": 48,
+      "footprint_metres": [
+        2.4,
+        2.4
+      ],
+      "projection": "orthographic",
+      "camera_elevation_degrees": 34.2157,
+      "sprite": "sprites/worn-earth-patch.png",
+      "source": "source/worn-earth-patch.png",
+      "reference": "references/worn-earth-patch.png",
+      "editable_blender": "blender/worn-earth-patch.blend",
+      "report": "reports/worn-earth-patch.json",
+      "sha256": "5a493d44f1a0a1783a609d93cacb49bf9da0d622a363fe40b3f12970894621ff",
+      "source_sha256": "2cdeebac52f9be8f473da78184c959262d2a37d16688a3490f2846474eaea651",
+      "reference_sha256": "780d5b188c4d625f4e29d8a063f3cbfb48844626bdcc205ecf092b2ae24624a3",
+      "blend_sha256": "ac6df7c1694ae7c3f259e77fd4c64fe55040c4af184e808119f1815af7253eef",
+      "native_bbox": [
+        71,
+        170,
+        185,
+        231
+      ],
+      "agent_visual_review": true,
+      "silhouette_iou": 0.9727510265024263
+    },
+    {
+      "id": "woodland-shrub",
+      "frame": [
+        256,
+        256
+      ],
+      "anchor": [
+        128,
+        200
+      ],
+      "pixels_per_metre": 48,
+      "footprint_metres": [
+        1.5,
+        1.5
+      ],
+      "projection": "orthographic",
+      "camera_elevation_degrees": 34.2157,
+      "sprite": "sprites/woodland-shrub.png",
+      "source": "source/woodland-shrub.png",
+      "reference": "references/woodland-shrub.png",
+      "editable_blender": "blender/woodland-shrub.blend",
+      "report": "reports/woodland-shrub.json",
+      "sha256": "94029f2da3c5069fd0fafbaf869be005213e2ad2d31733d34269d441440bf7f1",
+      "source_sha256": "cbb561db2c78bacf4b7d76a7eb654c55f643086a627079d4df7d5feb8fc95022",
+      "reference_sha256": "d983e01026e5fdf541abc46803a0e8b8f4069b8c233950366e99043a94f45758",
+      "blend_sha256": "00242263e6b15515bbdbc6c8c01e8ce4ca5ecb0d38d32d3d628325e9545580cf",
+      "native_bbox": [
+        97,
+        169,
+        147,
+        203
+      ],
+      "agent_visual_review": true,
+      "silhouette_iou": 0.8086486486486486
+    }
+  ],
+  "rejected_attempts": [
+    {
+      "id": "woodland-shrub-first-attempt",
+      "reason": "Generated silhouette grew; IoU0.612 below0.75 gate. Repaired with a targeted5x reference paint; accepted retry IoU0.809."
+    }
+  ],
+  "rendering_contract": "Sprite dimensions are padding-inclusive. Use anchor to place at projected ground pivot; native 1:1 at48px/metre. Apply the same world zoom to players and scenery, never fit sprites by ink bounds. Worn-earth-patch is a ground decal, not a seamless tiling texture.",
+  "integration_status": "Assets reviewed; in-game integration and scene acceptance are separate."
+}

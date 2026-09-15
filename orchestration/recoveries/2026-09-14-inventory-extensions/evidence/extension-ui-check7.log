@@ -1,0 +1,466 @@
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+main.cpp
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusHeaders.h(701): warning C4458: declaration of 'nativeCap' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusHeaders.h(716): note: see declaration of 'Gdiplus::CustomLineCap::nativeCap'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusImageAttributes.h(368): warning C4458: declaration of 'nativeImageAttr' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusImageAttributes.h(382): note: see declaration of 'Gdiplus::ImageAttributes::nativeImageAttr'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusMatrix.h(301): warning C4458: declaration of 'nativeMatrix' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusMatrix.h(315): note: see declaration of 'Gdiplus::Matrix::nativeMatrix'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusBrush.h(95): warning C4458: declaration of 'nativeBrush' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusBrush.h(108): note: see declaration of 'Gdiplus::Brush::nativeBrush'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPen.h(467): warning C4458: declaration of 'nativePen' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPen.h(481): note: see declaration of 'Gdiplus::Pen::nativePen'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(891): warning C4458: declaration of 'nativePath' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(905): note: see declaration of 'Gdiplus::GraphicsPath::nativePath'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(1078): warning C4458: declaration of 'nativeIterator' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(1092): note: see declaration of 'Gdiplus::GraphicsPathIterator::nativeIterator'
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4022): warning C4100: 'bounds': unreferenced formal parameter
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4525): warning C4244: 'argument': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4525): warning C4244: 'argument': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4561): warning C4244: '=': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4623): warning C4244: '=': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4624): warning C4244: '=': conversion from 'const int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4624): warning C4244: '=': conversion from 'const int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4674): warning C4244: 'argument': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4674): warning C4244: 'argument': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4695): warning C4244: '=': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4695): warning C4244: '=': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4696): warning C4244: '=': conversion from 'const int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4696): warning C4244: '=': conversion from 'const int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4699): warning C4244: 'argument': conversion from 'const int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4699): warning C4244: 'argument': conversion from 'const int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4699): warning C4244: 'argument': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4702): warning C4244: 'argument': conversion from 'const int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4702): warning C4244: 'argument': conversion from 'const int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4702): warning C4244: 'argument': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4702): warning C4244: 'argument': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(5840): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(12023): warning C4456: declaration of 'expect_x' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(12017): note: see declaration of 'expect_x'
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(12024): warning C4456: declaration of 'expect_y' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(12018): note: see declaration of 'expect_y'
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(12361): warning C4456: declaration of 'route' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(12320): note: see declaration of 'route'
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(14993): warning C4456: declaration of 'strip' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(14955): note: see declaration of 'strip'
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\inventory_scenarios.hpp(240): warning C4244: 'argument': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\inventory_scenarios.hpp(240): warning C4244: 'argument': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\inventory_scenarios.hpp(487): warning C4456: declaration of 'tooltip' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\inventory_scenarios.hpp(225): note: see declaration of 'tooltip'
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\typography_scenarios.hpp(32): warning C4310: cast truncates constant value
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(21638): warning C4456: declaration of 'here' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(21590): note: see declaration of 'here'
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(21932): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.29.30133\include\memory(3382): warning C4244: 'argument': conversion from '_Ty' to 'uint16_t', possible loss of data
+        with
+        [
+            _Ty=int
+        ]
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(20638): note: see reference to function template instantiation 'std::unique_ptr<verdigris::client::RemoteProtocolSession,std::default_delete<verdigris::client::RemoteProtocolSession>> std::make_unique<verdigris::client::RemoteProtocolSession,const char(&)[10],int,const char(&)[20],bool,0>(const char (&)[10],int &&,const char (&)[20],bool &&)' being compiled
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+== scenario inventory-equipment ==
+    ok: inventory: isolated server starts
+    ok: inventory: normal client connects
+    ok: inventory: admitted with authoritative combat fields
+    ok: inventory: login has combat stats
+    ok: inventory: fixture reaches real backpack
+    ok: inventory: fixture reaches real backpack
+    ok: inventory: fixture reaches real backpack
+    ok: inventory: fixture reaches real backpack
+    ok: inventory: fixture reaches real backpack
+    ok: inventory: fixture reaches real backpack
+    ok: inventory: fixture reaches real backpack
+    ok: inventory: fixture reaches real backpack
+    ok: inventory: fixture reaches real backpack
+    ok: inventory: fixture reaches real backpack
+    ok: inventory: fixture reaches real backpack
+    ok: extensions: no auxiliary controls appear before skill-tree unlock
+    ok: extensions: reserved seats are absent from main paperdoll
+    ok: extensions: reserved seats are absent from main paperdoll
+    ok: extensions: reserved seats are absent from main paperdoll
+    ok: inventory: spear occupies its authoritative multi-cell footprint
+    ok: inventory: full footprint rejects bottom-right overflow
+    ok: inventory: redundant equipment action strip is removed
+    ok: inventory: currency is not draggable backpack content
+    ok: handover: actual server fixture before equipment
+    ok: handover: open inventory owns route, talk and wheel input
+    ok: inventory: actual held drag and destination captured before the drop
+    ok: inventory: real rejected placement and reason captured
+    ok: inventory: UI drag and release do not leave an attack latched
+    ok: inventory: wrong seat rejects without sending a fake equip
+    ok: inventory: actual held drag and destination captured before the drop
+    ok: inventory: UI drag and release do not leave an attack latched
+    ok: inventory: drag equips exact requested seat on server
+    ok: inventory: server acknowledgement completes equip feedback
+    ok: handover: selected UUID survives inventory-to-wear reordering
+    ok: handover: each equip conserves all item UUIDs and quantities
+    ok: inventory: UI drag and release do not leave an attack latched
+    ok: inventory: drag equips exact requested seat on server
+    ok: inventory: server acknowledgement completes equip feedback
+    ok: handover: selected UUID survives inventory-to-wear reordering
+    ok: handover: each equip conserves all item UUIDs and quantities
+    ok: inventory: UI drag and release do not leave an attack latched
+    ok: inventory: drag equips exact requested seat on server
+    ok: inventory: server acknowledgement completes equip feedback
+    ok: handover: selected UUID survives inventory-to-wear reordering
+    ok: handover: each equip conserves all item UUIDs and quantities
+    ok: inventory: UI drag and release do not leave an attack latched
+    ok: inventory: drag equips exact requested seat on server
+    ok: inventory: server acknowledgement completes equip feedback
+    ok: handover: selected UUID survives inventory-to-wear reordering
+    ok: handover: each equip conserves all item UUIDs and quantities
+    ok: inventory: UI drag and release do not leave an attack latched
+    ok: inventory: drag equips exact requested seat on server
+    ok: inventory: server acknowledgement completes equip feedback
+    ok: handover: selected UUID survives inventory-to-wear reordering
+    ok: handover: each equip conserves all item UUIDs and quantities
+    ok: inventory: UI drag and release do not leave an attack latched
+    ok: inventory: drag equips exact requested seat on server
+    ok: inventory: server acknowledgement completes equip feedback
+    ok: handover: selected UUID survives inventory-to-wear reordering
+    ok: handover: each equip conserves all item UUIDs and quantities
+    ok: inventory: UI drag and release do not leave an attack latched
+    ok: inventory: drag equips exact requested seat on server
+    ok: inventory: server acknowledgement completes equip feedback
+    ok: handover: selected UUID survives inventory-to-wear reordering
+    ok: handover: each equip conserves all item UUIDs and quantities
+    ok: inventory: UI drag and release do not leave an attack latched
+    ok: inventory: drag equips exact requested seat on server
+    ok: inventory: server acknowledgement completes equip feedback
+    ok: handover: selected UUID survives inventory-to-wear reordering
+    ok: handover: each equip conserves all item UUIDs and quantities
+    ok: inventory: UI drag and release do not leave an attack latched
+    ok: inventory: drag equips exact requested seat on server
+    ok: inventory: server acknowledgement completes equip feedback
+    ok: handover: selected UUID survives inventory-to-wear reordering
+    ok: handover: each equip conserves all item UUIDs and quantities
+    ok: inventory: worn weapon does not duplicate in backpack
+    ok: inventory: server rejects wrong seat and clears pending state
+    ok: inventory: UI drag and release do not leave an attack latched
+    ok: inventory: two-handed conflict retains both owned items
+    ok: inventory: worn seat begins a drag and has an exact backpack destination
+    ok: inventory: seat-to-backpack drag waits for authority
+    ok: inventory: seat-to-backpack drag returns the exact item through server
+    ok: inventory: server accepts the exact dragged destination
+    ok: inventory: seat-to-backpack conserves identities and quantities
+    ok: inventory: UI drag and release do not leave an attack latched
+    ok: inventory: shield can use freed off hand
+    ok: inventory: handstone is selectable in the backpack
+    ok: inventory: UI drag and release do not leave an attack latched
+    ok: inventory: one-handed weapon coexists with shield
+    ok: inventory: drag equip consumes combat input
+    ok: handover: equipment controls submit zero world attacks
+    ok: handover: server explicitly supplies displayed total ratings
+    ok: handover: actual equipment and server stats after equip
+    ok: handover: displayed rating exactly matches server field
+    ok: inventory: gear stats reach presentation from authority
+    inventory art: right_hand -> handaxe_flint (Flint Handaxe)
+    inventory art: left_hand -> hideshield_hide (Hide Shield)
+    inventory art: armor -> wrap_hide (Hide Wrap)
+    inventory art: head -> crest_hide (Hide Crest)
+    inventory art: belt ->  (Hide Girdle)
+    inventory art: gloves ->  (Bronze Gloves)
+    inventory art: feet -> sandals_hide (Hide Sandals)
+    inventory art: ring -> ring_bone (Copper Whisper)
+    inventory art: ring2 ->  (Gold Ring)
+    inventory art: necklace -> gorget_bone (Copper Whisper)
+    ok: inventory: actual production panel captured
+    ok: inventory: complete item rectangle stays inside panel
+    ok: inventory: actual production panel captured
+    ok: inventory: complete item rectangle stays inside panel
+    ok: inventory: actual production panel captured
+    ok: inventory: complete item rectangle stays inside panel
+    ok: inventory: actual production panel captured
+    ok: inventory: complete item rectangle stays inside panel
+    ok: inventory: acknowledged equipment and authoritative stats captured together
+    ok: inventory: equipment tooltip and compact character sheet captured together
+    ok: inventory: contextual tooltip does not cover character values
+    ok: handover: fixture has a real free destination
+    ok: handover: backpack move waits for server
+    ok: handover: backpack operation acknowledged
+    ok: handover: drawn backpack uses accepted server coordinates
+    ok: handover: rearrangement conserves every item and quantity
+    ok: handover: Escape cancels drag before closing another view
+    ok: inventory: focus-loss cancellation conserves authoritative inventory
+    ok: inventory: clickable Close consumes input and closes the pane
+    ok: inventory: Equipment button opens the same inventory without attacking
+    ok: inventory: shield unequips independently
+    ok: inventory: UI drag and release do not leave an attack latched
+    ok: inventory: swap restores larger spear
+    ok: inventory: fixture reaches real backpack
+    ok: inventory: fixture reaches real backpack
+    ok: inventory: full backpack exposes every authoritative item
+    ok: inventory: full-pack swap rejects atomically without spilling displaced gear
+    ok: handover: keyboard unequip waits for server, including full-pack rejection
+    ok: inventory: full backpack rejects unequip without losing or spilling item
+    ok: handover: rejected Unequip re-enables action
+    ok: handover: rejected operation and retained equipment captured
+    ok: handover: fresh server reloads isolated persisted profile
+    ok: handover: fresh client reconnects to reloaded profile
+    ok: handover: restart retains all owned UUIDs and quantities
+    ok: handover: restart retains exact equipment seats and backpack positions
+    ok: extensions: fixture has earned allocation budget
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: production tree click receives authoritative allocation
+    ok: extensions: real tree paths unlock six drawers
+    ok: inventory: another visible pane rejects world drop
+    ok: inventory: uncovered world remains a drop target with character pane open
+    ok: extensions: left-edge button opens its own drawer
+    ok: extensions: actual production drawer captured
+    ok: extensions: drawer stays inside viewport
+    ok: extensions: equipment and 4x4 storage have distinct geometry
+    ok: extensions: Escape closes only the topmost drawer
+    ok: extensions: left-edge button opens its own drawer
+    ok: extensions: actual production drawer captured
+    ok: extensions: drawer stays inside viewport
+    ok: extensions: equipment and 4x4 storage have distinct geometry
+    ok: extensions: Escape closes only the topmost drawer
+    ok: extensions: left-edge button opens its own drawer
+    ok: extensions: actual production drawer captured
+    ok: extensions: drawer stays inside viewport
+    ok: extensions: equipment and 4x4 storage have distinct geometry
+    ok: extensions: Escape closes only the topmost drawer
+    ok: extensions: left-edge button opens its own drawer
+    ok: extensions: actual production drawer captured
+    ok: extensions: drawer stays inside viewport
+    ok: extensions: equipment and 4x4 storage have distinct geometry
+    ok: extensions: Escape closes only the topmost drawer
+    ok: extensions: left-edge button opens its own drawer
+    ok: extensions: actual production drawer captured
+    ok: extensions: drawer stays inside viewport
+    ok: extensions: equipment and 4x4 storage have distinct geometry
+    ok: extensions: Escape closes only the topmost drawer
+    ok: extensions: left-edge button opens its own drawer
+    ok: extensions: actual production drawer captured
+    ok: extensions: drawer stays inside viewport
+    ok: extensions: equipment and 4x4 storage have distinct geometry
+    ok: extensions: Escape closes only the topmost drawer
+    ok: extensions: left-edge button opens its own drawer
+    ok: extensions: actual production drawer captured
+    ok: extensions: drawer stays inside viewport
+    ok: extensions: equipment and 4x4 storage have distinct geometry
+    ok: extensions: Escape closes only the topmost drawer
+    ok: extensions: left-edge button opens its own drawer
+    ok: extensions: actual production drawer captured
+    ok: extensions: drawer stays inside viewport
+    ok: extensions: equipment and 4x4 storage have distinct geometry
+    ok: extensions: Escape closes only the topmost drawer
+    ok: extensions: left-edge button opens its own drawer
+    ok: extensions: actual production drawer captured
+    ok: extensions: drawer stays inside viewport
+    ok: extensions: equipment and 4x4 storage have distinct geometry
+    ok: extensions: Escape closes only the topmost drawer
+    ok: extensions: left-edge button opens its own drawer
+    ok: extensions: actual production drawer captured
+    ok: extensions: drawer stays inside viewport
+    ok: extensions: equipment and 4x4 storage have distinct geometry
+    ok: extensions: Escape closes only the topmost drawer
+    ok: extensions: left-edge button opens its own drawer
+    ok: extensions: actual production drawer captured
+    ok: extensions: drawer stays inside viewport
+    ok: extensions: equipment and 4x4 storage have distinct geometry
+    ok: extensions: Escape closes only the topmost drawer
+    ok: extensions: left-edge button opens its own drawer
+    ok: extensions: actual production drawer captured
+    ok: extensions: drawer stays inside viewport
+    ok: extensions: equipment and 4x4 storage have distinct geometry
+    ok: extensions: Escape closes only the topmost drawer
+    ok: extensions: left-edge button opens its own drawer
+    ok: extensions: actual production drawer captured
+    ok: extensions: drawer stays inside viewport
+    ok: extensions: equipment and 4x4 storage have distinct geometry
+    ok: extensions: Escape closes only the topmost drawer
+    ok: extensions: left-edge button opens its own drawer
+    ok: extensions: actual production drawer captured
+    ok: extensions: drawer stays inside viewport
+    ok: extensions: equipment and 4x4 storage have distinct geometry
+    ok: extensions: Escape closes only the topmost drawer
+    ok: extensions: left-edge button opens its own drawer
+    ok: extensions: actual production drawer captured
+    ok: extensions: drawer stays inside viewport
+    ok: extensions: equipment and 4x4 storage have distinct geometry
+    ok: extensions: Escape closes only the topmost drawer
+    ok: extensions: left-edge button opens its own drawer
+    ok: extensions: actual production drawer captured
+    ok: extensions: drawer stays inside viewport
+    ok: extensions: equipment and 4x4 storage have distinct geometry
+    ok: extensions: Escape closes only the topmost drawer
+    ok: extensions: left-edge button opens its own drawer
+    ok: extensions: actual production drawer captured
+    ok: extensions: drawer stays inside viewport
+    ok: extensions: equipment and 4x4 storage have distinct geometry
+    ok: extensions: Escape closes only the topmost drawer
+    ok: extensions: left-edge button opens its own drawer
+    ok: extensions: actual production drawer captured
+    ok: extensions: drawer stays inside viewport
+    ok: extensions: equipment and 4x4 storage have distinct geometry
+    ok: extensions: Escape closes only the topmost drawer
+    ok: extensions: drawer and tab clicks do not attack through UI
+    ok: extensions: isolated fixture profile is readable
+    ok: extensions: server restarts with same QA profile
+    ok: extensions: fresh client reloads all six authoritative unlocks
+    ok: extensions: auxiliary equipment fixture is carried
+    ok: extensions: full item footprint starts actual drag
+    ok: extensions: drawer transfer waits for authority
+    ok: extensions: drawer transfer receives server acknowledgement
+    ok: extensions: actual drag equips auxiliary seat
+    ok: extensions: full item footprint starts actual drag
+    ok: extensions: drawer transfer waits for authority
+    ok: extensions: drawer transfer receives server acknowledgement
+    ok: extensions: worn auxiliary item returns to backpack through drag
+    ok: extensions: full item footprint starts actual drag
+    ok: extensions: drawer transfer waits for authority
+    ok: extensions: drawer transfer receives server acknowledgement
+    ok: extensions: auxiliary equipment fixture is carried
+    ok: extensions: full item footprint starts actual drag
+    ok: extensions: drawer transfer waits for authority
+    ok: extensions: drawer transfer receives server acknowledgement
+    ok: extensions: actual drag equips auxiliary seat
+    ok: extensions: full item footprint starts actual drag
+    ok: extensions: drawer transfer waits for authority
+    ok: extensions: drawer transfer receives server acknowledgement
+    ok: extensions: worn auxiliary item returns to backpack through drag
+    ok: extensions: full item footprint starts actual drag
+    ok: extensions: drawer transfer waits for authority
+    ok: extensions: drawer transfer receives server acknowledgement
+    ok: extensions: auxiliary equipment fixture is carried
+    ok: extensions: full item footprint starts actual drag
+    ok: extensions: drawer transfer waits for authority
+    ok: extensions: drawer transfer receives server acknowledgement
+    ok: extensions: actual drag equips auxiliary seat
+    ok: extensions: full item footprint starts actual drag
+    ok: extensions: drawer transfer waits for authority
+    ok: extensions: drawer transfer receives server acknowledgement
+    ok: extensions: worn auxiliary item returns to backpack through drag
+    ok: extensions: full item footprint starts actual drag
+    ok: extensions: drawer transfer waits for authority
+    ok: extensions: drawer transfer receives server acknowledgement
+    ok: extensions: category fixture is carried
+    ok: extensions: full item footprint starts actual drag
+    ok: extensions: drawer transfer waits for authority
+    ok: extensions: drawer transfer receives server acknowledgement
+    ok: extensions: drag lands in exact compartment cell
+    ok: extensions: full item footprint starts actual drag
+    ok: extensions: drawer transfer waits for authority
+    ok: extensions: drawer transfer receives server acknowledgement
+    ok: extensions: extra storage returns exact item to main backpack
+    ok: extensions: full item footprint starts actual drag
+    ok: extensions: drawer transfer waits for authority
+    ok: extensions: drawer transfer receives server acknowledgement
+    ok: extensions: labeled QA item in real compartment captured
+    ok: extensions: category fixture is carried
+    ok: extensions: full item footprint starts actual drag
+    ok: extensions: drawer transfer waits for authority
+    ok: extensions: drawer transfer receives server acknowledgement
+    ok: extensions: drag lands in exact compartment cell
+    ok: extensions: full item footprint starts actual drag
+    ok: extensions: drawer transfer waits for authority
+    ok: extensions: drawer transfer receives server acknowledgement
+    ok: extensions: extra storage returns exact item to main backpack
+    ok: extensions: full item footprint starts actual drag
+    ok: extensions: drawer transfer waits for authority
+    ok: extensions: drawer transfer receives server acknowledgement
+    ok: extensions: labeled QA item in real compartment captured
+    ok: extensions: category fixture is carried
+    ok: extensions: full item footprint starts actual drag
+    ok: extensions: drawer transfer waits for authority
+    ok: extensions: drawer transfer receives server acknowledgement
+    ok: extensions: drag lands in exact compartment cell
+    ok: extensions: full item footprint starts actual drag
+    ok: extensions: drawer transfer waits for authority
+    ok: extensions: drawer transfer receives server acknowledgement
+    ok: extensions: extra storage returns exact item to main backpack
+    ok: extensions: full item footprint starts actual drag
+    ok: extensions: drawer transfer waits for authority
+    ok: extensions: drawer transfer receives server acknowledgement
+    ok: extensions: labeled QA item in real compartment captured
+    ok: extensions: populated compartments restart on same profile
+    ok: extensions: populated profile reconnects
+    ok: extensions: worn auxiliary item persists through process restart
+    ok: extensions: worn auxiliary item persists through process restart
+    ok: extensions: worn auxiliary item persists through process restart
+    ok: extensions: exact compartment UUID and cell persist through restart
+    ok: extensions: exact compartment UUID and cell persist through restart
+    ok: extensions: exact compartment UUID and cell persist through restart
+    ok: inventory: readability fixture uses an actual backpack item
+    ok: handover: labeled long-name/count presentation stress captured
+    ok: handover: stress capture really uses the full synthetic name
+    ok: handover: full-name tooltip remains within viewport
+    ok: handover: selected item tooltip stays keyboard-accessible
+    ok: handover: labeled long-name/count presentation stress captured
+    ok: handover: stress capture really uses the full synthetic name
+    ok: handover: full-name tooltip remains within viewport
+    ok: handover: selected item tooltip stays keyboard-accessible
+    ok: handover: labeled long-name/count presentation stress captured
+    ok: handover: stress capture really uses the full synthetic name
+    ok: handover: full-name tooltip remains within viewport
+    ok: handover: selected item tooltip stays keyboard-accessible
+    ok: extensions: Escape keeps a keyboard-revealed drawer closed on subsequent paint
+native-exit: WM_DESTROY
+   PASS (0 failures)

@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import fnmatch
 import json
+import os
 import pathlib
 import re
 from collections.abc import Iterable, Mapping, Sequence
@@ -187,8 +188,22 @@ def scan_tree() -> list[str]:
     assert isinstance(identifiers, list)
     assert isinstance(allowlist, list)
     failures: list[str] = []
-    for path in sorted(NATIVE.rglob("*")):
-        if not path.is_file() or path.suffix.casefold() not in EXTENSIONS:
+    # Walk each physical directory once. Windows junctions in generated QA
+    # installations can point back into native; rglob traversed those cycles
+    # before applying any exemption. Keep the existing file/term scope.
+    seen: set[pathlib.Path] = set()
+    paths: list[pathlib.Path] = []
+    for directory, children, files in os.walk(NATIVE, followlinks=True):
+        parent = pathlib.Path(directory)
+        physical = parent.resolve()
+        if physical in seen or (parent != NATIVE and _is_exempt(parent, config)):
+            children[:] = []
+            continue
+        seen.add(physical)
+        children[:] = sorted(children)
+        paths.extend(parent / filename for filename in files)
+    for path in sorted(paths):
+        if path.suffix.casefold() not in EXTENSIONS:
             continue
         if _is_exempt(path, config):
             continue

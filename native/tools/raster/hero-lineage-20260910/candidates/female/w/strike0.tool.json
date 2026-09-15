@@ -1,0 +1,9 @@
+{
+  "tool": "image_gen.imagegen",
+  "model": "not exposed",
+  "references": [
+    "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/female/w/idle.png",
+    "C:/Users/Alex/Downloads/ccd7ce15-5d1a-46c4-af49-f305bf7fad90 (1).png"
+  ],
+  "output_hint": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a0896d-f479-7771-ac35-fcb037ed6aa9 as C:\\Users\\Alex\\.codex\\generated_images\\01a0896d-f479-7771-ac35-fcb037ed6aa9\\exec-4f127dd0-e3fa-4443-bfb4-ac45cb3b99be.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+}

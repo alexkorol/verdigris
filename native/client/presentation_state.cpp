@@ -36,6 +36,7 @@ void bound_effects(std::vector<EffectFx>& effects) {
 }  // namespace
 
 const char* monster_art_family(const WorldActor& monster, const WorldView& world) {
+  if (world.route_id == "owner-demo-prologue") return "raider";
   return monster.behaviour == "ranged" ? "archer"
       : world.theme == "crypt" ? "wight"
       : world.theme == "wilds" || world.theme == "marsh" ? "beast"
@@ -76,6 +77,8 @@ bool present_actor_death(std::vector<EffectFx>& effects, const WorldView& world,
   fall.actor_id = monster.id;
   fall.actor_family = monster_art_family(monster, world);
   fall.actor_elite = monster.elite;
+  fall.actor_art_identity = monster.kind;
+  fall.actor_facing = monster.facing;
   effects.push_back(std::move(fall));
   bound_effects(effects);
   return true;
@@ -133,6 +136,7 @@ void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& s
   world.carried_trophies = sim.scion().carried_trophies.size();
   if (const auto* player = sim.actor(sim.scion().actor_id)) {
     world.player.id = player->id;
+    world.player.appearance = verdigris::player_appearance_id(sim.scion().appearance);
     world.player.position = player->position;
     world.player.facing = player->facing;
     world.player.life = player->stats.life;
@@ -141,6 +145,10 @@ void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& s
     world.player.resource_max = player->stats.resource_max;
     world.player.attack = player->stats.attack;
     world.player.defense = player->stats.defense;
+    world.player.combat_stats_present = true;
+    world.player.gear_attack = 0;
+    for (const auto& item : sim.scion().carried_items)
+      if (item.equipped) world.player.gear_attack = item.attack_bonus;
     world.player.level = player->stats.level;
     world.player.cooldown_ticks = player->cooldown_ticks;
     world.player.war_cry_ticks_remaining = player->war_cry_ticks_remaining;
@@ -215,14 +223,25 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
                                                 : model.player.uuid);
   world.route_id = model.scene.id;
   world.player.id = model.player.uuid;
+  world.player.appearance = verdigris::player_appearance_id(model.player.appearance);
   world.player.position = {static_cast<int>(std::lround(protocol_to_world(model.player.x))),
                            static_cast<int>(std::lround(protocol_to_world(model.player.y)))};
+  world.player.has_display_position = model.player.has_display_position &&
+      std::isfinite(model.player.display_x) && std::isfinite(model.player.display_y);
+  world.player.display_position = world.player.position;
+  if (world.player.has_display_position)
+    world.player.display_position = {
+        static_cast<int>(std::lround(protocol_to_world(model.player.display_x))),
+        static_cast<int>(std::lround(protocol_to_world(model.player.display_y)))};
   world.player.facing = facing_vector(model.player.facing);
   world.player.life = model.player.life;
   world.player.life_max = model.player.life_max;
   world.player.resource = model.player.resource;
   world.player.resource_max = model.player.resource_max;
   world.player.attack = model.player.attack;
+  world.player.defense = model.player.defense;
+  world.player.gear_attack = model.player.gear_attack;
+  world.player.combat_stats_present = model.player.combat_stats_present;
   world.player.level = model.player.level;
   world.player.alive = model.player.alive;
   world.has_extraction = model.scene.has_stairs_up;
@@ -293,6 +312,7 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     WorldNpc npc;
     npc.id = source.id;
     npc.name = source.name;
+    npc.art_identity = source.art_identity;
     npc.position = {static_cast<int>(std::lround(protocol_to_world(source.x))),
                     static_cast<int>(std::lround(protocol_to_world(source.y)))};
     npc.actions = source.actions;
@@ -300,10 +320,11 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
   }
   world.carried.clear();
   for (const auto& item : model.inventory) {
+    if (item.id == "coins") continue; // authoritative balance, not a draggable item
     const std::string label = item.name.empty() ? item.id : item.name;
     world.carried.push_back({item.uuid, label, item.attack_rating, false,
                              item.width, item.height, item.quantity,
-                             item.equip_slot, item.two_handed});
+                             item.equip_slot, item.two_handed, item.slot, item.pack_id, item.compatible_packs});
   }
   // Worn equipment is authoritative and lives outside the backpack. Keep it
   // in the same presentation collection so the gear pane can render the
@@ -314,7 +335,7 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
       const std::string label = item.name.empty() ? item.id : item.name;
       world.carried.push_back({item.uuid, label, item.attack_rating, true,
                                item.width, item.height, item.quantity,
-                               worn.seat, item.two_handed});
+                               worn.seat, item.two_handed, -1, item.pack_id, item.compatible_packs});
     }
   } else if (!model.equipped.uuid.empty()) {
     const std::string label =
@@ -398,6 +419,22 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
   const double ex = static_cast<double>(at.x);
   const double ey = static_cast<double>(at.y);
   switch (event.type) {
+    case PresentationEventType::PlayerDashed: {
+      if (event.actor_id != world.player.id || !world.player.alive) break;
+      const double dx = static_cast<double>(event.to_x) - event.from_x;
+      const double dy = static_cast<double>(event.to_y) - event.from_y;
+      const double distance = std::hypot(dx, dy);
+      if (distance <= 0.0 || distance > protocol_to_world(4.0)) break;
+      for (int i = 0; i < phase_a::kDashDustPoints; ++i) {
+        const double t = static_cast<double>(i) / (phase_a::kDashDustPoints - 1);
+        EffectFx dust{EffectFx::Kind::Dust, event.from_x + dx * t,
+                      event.from_y + dy * t, std::atan2(dy, dx), 0,
+                      phase_a::kDashDustTtlTicks};
+        dust.actor_id = event.actor_id;
+        fx.effects.push_back(std::move(dust));
+      }
+      break;
+    }
     case PresentationEventType::AttackStarted: {
       const auto warning = fx.telegraphs.find(event.actor_id);
       const bool committed = warning != fx.telegraphs.end();
@@ -535,10 +572,12 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
                               phase_a::kWarcryFadeTtlTicks});
       break;
     case PresentationEventType::ItemDropped: {
-      verdigris::Vec2 drop = fx.last_death_pos;
-      if (drop.x == 0 && drop.y == 0) drop = at;
-      drop.x += (fx.loot_scatter % 3 - 1) * 40;
-      drop.y += ((fx.loot_scatter / 3) % 3 - 1) * 40 + 30;
+      verdigris::Vec2 drop = event.has_actor_pose ? at : fx.last_death_pos;
+      if (!event.has_actor_pose) {
+        if (drop.x == 0 && drop.y == 0) drop = at;
+        drop.x += (fx.loot_scatter % 3 - 1) * 40;
+        drop.y += ((fx.loot_scatter / 3) % 3 - 1) * 40 + 30;
+      }
       ++fx.loot_scatter;
       const std::string id = event.item_id.empty() ? ("drop-" + std::to_string(fx.loot_scatter))
                                                    : event.item_id;

@@ -19,6 +19,8 @@ enum class PresentationEventType {
   ItemDropped,
   ItemPickedUp,
   ItemEquipped,
+  EquipRejected,
+  InventoryAccepted,
   ExtractionCompleted,
   ScionDied,
   ScionLost,           // TASK-0122 Phase A: permanent Scion loss beat
@@ -26,6 +28,10 @@ enum class PresentationEventType {
   Telegraph,
   Message,             // human-readable server/system line in `text`
   ProtocolError,       // malformed or unexpected envelope in `text`
+  LevelUp,             // Explicit confirmed advancement; never inferred on login.
+  PlayerDashed,        // accepted authority travel; from/to are world units
+  BuffApplied,         // explicit accepted buff, never inferred from UI input
+  PickupConfirmed,     // actual ground admission, not an inventory refresh
 };
 
 struct PresentationEvent {
@@ -60,6 +66,8 @@ struct PresentationEvent {
 namespace phase_a {
 
 inline constexpr int kTickMs = 50;
+inline constexpr int kDashDustPoints = 4;
+inline constexpr int kDashDustTtlTicks = 6;
 
 // Critical-hit treatment (consumes shipped combat:hit critical/attackStyle).
 inline constexpr int kCriticalNumberTtlTicks = 16;   // 800 ms, vs 600 ms normal

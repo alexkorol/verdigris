@@ -76,12 +76,40 @@ fully green suite. These rules close that hole:
    input or per event (effects, logs, labels) needs a cap or rate limit at
    the point of growth.
 
+## Native UI owner contract
+
+Follow [NATIVE_UI_ACCEPTANCE.md](docs/product/NATIVE_UI_ACCEPTANCE.md) for native
+UI implementation and verification. The consolidated native game is the product;
+deliver changes there, not in isolated demonstrations. Owner visual references
+constrain composition and assets: generic colors and borders are not equivalent.
+Normal player UI must exclude development diagnostics, placeholder copy,
+redundant instructions and overlapping controls. Reported defects remain open
+obligations until the affected behavior is demonstrated fixed in the package.
+Passing tests establishes neither visual quality nor owner acceptance. Commit
+and push independently verified implementation under the standing policy;
+incomplete checks must be reported accurately, not turned into a blanket push
+ban. Documentation supports the deliverable: resume implementation after updating
+it without another planning approval. This contract supersedes older UI checks
+that require permanent mixer diagnostics, placeholder text or instruction strips.
+
 ## Historical browser reference
 
-The Vue/Node game remains a playable reference and design laboratory. Do not
-mechanically port it or restore Delaford defaults merely to satisfy a legacy
-test. Browser changes still require the existing `npm run playtest` gate; native
-changes require the commands documented in `native/README.md`.
+The Vue/Node game remains a historical playable reference and design
+laboratory. Do not mechanically port it or restore Delaford defaults merely to
+satisfy a legacy test. Browser changes still require the existing
+`npm run playtest` gate; native changes require the commands documented in
+`native/README.md`.
+
+For a native-only task, the acceptance product is the native package and its
+actual client. The default `npm run verify` now delegates to
+`powershell -NoProfile -ExecutionPolicy Bypass -File
+native/tools/verify-native.ps1` (also available as `npm run verify:native`). It
+builds the native executables, runs native tests and the client scenario suite,
+and keeps scenario evidence in a contained native build folder. Do not run
+`npm run playtest` as a native acceptance gate: it is the historical
+JavaScript/browser protocol harness. Run it only when browser files or an
+explicit browser/parity task are in scope. The former browser chain remains
+available only as the opt-in `npm run verify:legacy` workflow.
 
 Before claiming a browser gameplay change works, run the real protocol harness
 (`npm run playtest`) and, for client/UI changes, the browser gate

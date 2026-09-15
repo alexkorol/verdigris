@@ -1,5 +1,438 @@
 # Native reconstitution handoff
 
+## Starter preview integration — 2026-09-15
+
+Active branch: `codex/starter-slice-20260915`, PR #61 into `master`.
+The owner requested merge and publication of the Windows preview. Normal
+branch pushes alone must not be reported as a shipped release.
+
+The release candidate at `Z:/Code/.packages/verdigris-starter-release-final-c8cff89ac`
+is built from clean source `c8cff89ac2158ebb16b80f152f9f044f40d19ade`.
+All packaged scenarios, two launcher lifecycles, source/resource checks, and
+same-profile settings restart passed. Its production starter capture was
+inspected. The archive contains only manifest resources, with no QA profiles
+or saves; every archived resource hash was checked. Enemy art remains
+provisional. The starter uses seeded woodland scenery instead of house sprites.
+
+Integration uncovered CMake-only defects: missing audio linkage, wrong runtime
+asset directory, a single-config preset without a release build type, and an
+unnormalized capture-root ancestor. The hidden inventory fixture now allows
+its requested test viewport beyond a small desktop's default tracking limits
+and asserts that input and painted dimensions agree. The nested-directory
+capture/frame-budget regression passed. Hosted CI must be checked again after
+these repairs; do not describe its earlier failed run as passing.
+
+Follow-up hosted run resolved capture and input failures. Its remaining GPU
+timings used Microsoft Basic Render Driver (software, 103 ms readback wait),
+and the legacy orb loader missed its relative asset directory. The loader now
+resolves from the executable. Hosted CI explicitly runs all functionality but
+defers four physical-GPU timing checks only on that Microsoft adapter. Normal
+`--scenario all` and packaged release verification retain every timing gate.
+The c8cff89ac release package passed that full, non-deferred mode locally.
+
+Publication is still pending at this record. Verify PR merge, tag identity,
+and public release assets before reporting shipment. The release tag must
+identify the exact packaged source above, even if later integration-only fixes
+are present on master. Preserve all original commits when merging.
+
+## Current handover — gameplay particles installed
+
+Normal entry: `C:/Users/Alex/Documents/Verdigris Native 2026-09-13/Verdigris.exe`.
+Installed clean source: `30ed52c842cc0500db2b3cf0a6397454c52410c8`.
+Checkout: `C:/Users/Alex/Documents/ChatGPT/verdigris-consolidated-20260913`.
+Working branch: `codex/native-consolidated-20260913`; shared baseline:
+`codex/native-reconstitution`. Implementation pushed to both, remote SHAs verified.
+Later handover commits contain only this record/evidence, not new game code.
+
+Existing playable War Cry, dash, critical contact and ground pickup now emit
+native particles from confirmed events. World-space rings expand/gather using
+the existing tiny atlas and fixed 32-emitter/384-particle budgets. Inventory
+refreshes and rejected actions cannot fabricate these effects. Existing level-up,
+melee/death, menu, inventory and Crossroads persistence improvements remain.
+The renderer now copies directly to the native DIB, materializing a separate
+owned diagnostic snapshot only on request; exact pixel checks cover that path.
+
+Eight native suites and **82 exact packaged scenarios passed**. Same executable
+and same isolated QA profile saved/reloaded Effects 70%. Final package timing:
+258 particles 37.449 ms, sustained inventory drag 36.519 ms (39.433 ms peak),
+moving fullscreen 24.3 ms; all unchanged 40 ms average gates passed. Final
+production particle captures and the actual normal 3440x1440 title were inspected.
+Normal launch passed source/child paths/cwd/profile/perspective/menu Quit/cleanup.
+The existing save is byte-identical before/after launch; normal settings stayed
+absent. No owner game was killed and no QA profile was promoted.
+
+Rollback: `native/build/normal-launch-rollback-before-30ed52c84/`.
+Package: `native/build/player-package-30ed52c84/`.
+Report: `orchestration/recoveries/2026-09-14-gameplay-particles/REPORT.md`.
+The first candidate failed drag performance and was never promoted; the report
+records the cause, code fix and successful replacement checks. No failed check
+or verification task remains. Further content scope remains playable fire-vessel
+tags/sockets, Burning Touch and authoritative flying projectiles. Their recipes
+are preserved; none are falsely presented as existing gameplay. Continue
+implementation and verified commit/push under the standing owner authorization.
+
+## Previous handover — illustrated menus and native particles installed
+
+Normal entry: `C:/Users/Alex/Documents/Verdigris Native 2026-09-13/Verdigris.exe`.
+Installed clean source: `3cee73d2667dfcf7e77b4cdd910399bcc20b933f`.
+Checkout: `C:/Users/Alex/Documents/ChatGPT/verdigris-consolidated-20260913`.
+Working branch: `codex/native-consolidated-20260913`; shared baseline:
+`codex/native-reconstitution`. Both receive the same verified implementation
+and handover through ordinary fast-forward pushes. No competing launch.
+
+The title/settings/pause/quit menu now has original illustrated cedar/bronze
+art and physical enamel controls. The real button-based House/Scion creation,
+name fields, appearance choices and Continue remain intact. The bounded native
+particle module has external recipes and a tiny atlas: layered level-up column,
+descending streaks, sparks, dust, embers, contact flare and reusable trails.
+Confirmed server XP crossings trigger level-up; login does not replay it.
+
+All eight native suites and **81 exact packaged scenarios passed**. The same
+executable saved/reloaded Effects 70% in one isolated QA profile. Production
+captures, including the actual normal 3440x1440 title, were inspected. Sustained
+drag averaged 34.582 ms and moving fullscreen 25.3 ms under unchanged 40 ms gates.
+Normal-entry smoke verified source, child images, cwd/profile, perspective
+startup, confirmed menu quit and process cleanup. The owner's save remained
+byte-identical even after normal launch; normal settings remained absent.
+Crossroads items/coins/equipment preservation and bank recovery remain included.
+
+Full prior installation/save rollback:
+`native/build/normal-launch-rollback-before-3cee73d26/`.
+No owner game process was killed and no QA profile was promoted. Build/verification
+used app-owned native diagnostics without Computer Use or desktop input.
+
+Remaining content work: a playable fire-bowl item/tag and per-frame sockets,
+Burning Touch gameplay and authoritative flying-projectile gameplay. Their
+recipes/API are shipped; they are not invented new combat actions. No failed
+check or verification task remains. Continue authorized implementation and
+commit/push completed verified work without adding an approval checkpoint.
+Only handover/evidence changes follow the packaged source.
+
+Report and captures: `orchestration/recoveries/2026-09-14-menu-particles/REPORT.md`.
+Module/trigger details: `native/client/vfx/README.md`.
+
+## Previous handover — Crossroads return fixed and installed
+
+Normal entry: `C:\Users\Alex\Documents\Verdigris Native 2026-09-13\Verdigris.exe`.
+Installed clean source: `34e855c1a4124cba42fd8c008863094454578c42`.
+Safe return retains the living Scion's items, coins, equipped seats and ratings.
+The owner's existing 370 coins were recovered from legacy extraction storage
+into Rhea's Countinghouse bank; use its single-click **withdraw all** row.
+No equipment ownership or seat was guessed, and no QA profile was promoted.
+
+All 80 final packaged scenarios, eight native suites, same-executable/same-QA-
+profile settings restart, copied-save migration/restart and the installed
+normal-entry smoke passed. Actual window, bank and return captures inspected.
+Final drag average 39.880 ms; moving fullscreen average 25.4 ms, under the
+unchanged 40 ms average gate. Earlier failed candidates were never installed;
+their failures and corrections are retained in the report.
+
+The owner game closed naturally before promotion; no owner process was killed.
+Full rollback including the prior save:
+`native/build/normal-launch-rollback-before-34e855c1a/`.
+Only documentation/evidence commits follow the packaged source. Publish the
+handover to both `codex/native-consolidated-20260913` and the preserved shared
+baseline `codex/native-reconstitution` by normal fast-forward push.
+See `orchestration/recoveries/2026-09-14-crossroads-return/REPORT.md`.
+
+## Previous handover — inventory extensions baseline
+
+Normal entry: `C:\Users\Alex\Documents\Verdigris Native 2026-09-13\Verdigris.exe`.
+Installed source: `2651bd4985e698fade744b8aeea5c84f9c251d57` (clean).
+Both `codex/native-consolidated-20260913` and `codex/native-reconstitution` now
+contain that implementation; subsequent handover commits contain only evidence
+and documentation. Shared baseline advanced by fast-forward, without lost work.
+Checkout: `C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913`.
+
+All 80 final packaged scenarios, eight native suites, same-QA-profile Effects
+70% save/reload, and the installed normal-entry smoke passed. Actual source,
+assets, child paths, working directory, normal profile and clean owned-process
+shutdown were checked. Production inventory/drawer/drag captures were inspected,
+including 960x600 and 3440x1440. Final sustained drag average 37.140 ms; moving
+fullscreen average 25.3 ms, both below the unchanged 40 ms average gate.
+
+Owner save values and quantities were preserved. First normal startup added
+compartment/passive-tree schema fields and removed currency's obsolete cell;
+the raw save hash therefore changed. Normal settings remained absent/unchanged.
+Previous full installation and save retained at
+`native/build/normal-launch-rollback-before-2651bd498/`.
+
+Builds and passes no longer depend on Computer Use: use
+`native/tools/verify-player-package.ps1` for a package, followed by
+`native/tools/test-normal-launch.ps1` for the installed entry. Both run app-owned
+hidden diagnostics without desktop input. Computer Use stayed stopped; the
+interrupted human walkthrough is not relabeled complete or owner acceptance.
+No build/test/push is still running or blocked. Evidence, limits and exact
+commands: `orchestration/recoveries/2026-09-14-final-handover/REPORT.md`.
+
+## Historical checkpoints (superseded by the current handover above)
+
+## Combined inventory / m5x7 implementation — final package gate in progress
+
+The owner-selected m5x7 typography history is merged with all six inventory
+extensions. Removed inventory controls remain removed. Inventory well pixels
+are now cached by dimensions/focus/texture with bounded storage: sustained
+3440x1440 dragging of actual weapon art passes at 36.290 ms average (unchanged
+40 ms gate), down from 75–84 ms before the repair. Production captures inspected.
+Eight native suites and the focused real-server inventory scenario passed.
+
+Unattended launcher save/reload checks passed on the same QA profile; title-only
+normal-profile smoke passed in a physical development fixture, including a copy
+of the owner's existing save. Actual owner installation/profile remain unchanged
+at this checkpoint. Exact clean packaging, package scenarios, installed normal
+entry verification and shared baseline promotion are the remaining operations.
+Continue them without requesting another approval or restarting Computer Use.
+See orchestration/recoveries/2026-09-14-final-handover/REPORT.md.
+
+## Inventory extensions implemented — final combined packaging remains
+
+All six skill-gated left-edge drawers now exist, with server-owned unlocks,
+per-Scion storage and real drag transfers. Eight native suites and 80 client
+scenarios passed; the enhanced inventory run also verifies populated drawer
+transfers/restarts and keyboard reveal/close behavior after the last focused
+fixes. Evidence and exact verification limits:
+orchestration/recoveries/2026-09-14-inventory-extensions/REPORT.md.
+
+Merge the newer owner-selected m5x7 branch before the next clean package;
+preserve its text metrics without restoring the removed inventory action strip.
+Sustained drag verification, the exact final package gate, and authorized normal
+launch/shared baseline promotion remain. Normal cefd238b2 and owner saves are
+untouched by this milestone. The goal remains active; no new approval gate.
+
+## Current verification and installation — unattended checks available
+
+The clean inventory-drag package at native/build/player-package-1d3db8ab7/
+Verdigris.exe passed all 80 packaged scenarios, package hashes/resources and two
+same-profile launcher lifecycles, including Effects 70% persistence and clean
+owned-process shutdown. All eight native suites passed. Computer Use is not
+required: run native/tools/verify-player-package.ps1 with explicit package and
+contained evidence directories. It retains production captures for inspection.
+
+The normal Documents/Verdigris Native 2026-09-13/Verdigris.exe was independently
+updated by the typography task to source cefd238b234c0c489abb2718e6b86ba001672c6c
+(m5x7). Preserve that work; the inventory QA package has the earlier font and
+must not replace it wholesale. Owner save hash remains unchanged. Six gated
+inventory drawers remain unfinished, with a local core-tested storage foundation
+preserved outside the package. Shared baseline still d0179c8b3. No Computer Use
+or owner-approval gate blocks implementation. Exact evidence and limitations:
+orchestration/recoveries/2026-09-14-inventory-drag/REPORT.md.
+
+## 2026-09-14 — Native typography implementation verified
+
+The consolidated client uses the bundled CC0 Verdigris Novel family through
+shared roles, crisp integer raster sizes and matching Unicode draw/measurement
+paths. Name fields have measured editing/selection/scrolling; the existing log
+wraps. The reference font is unidentified and Novel is a finer, more condensed
+approximation. Equipment/stat fixes and the normal-entry handover below remain
+intact. Full native acceptance passed eight suites and 80 client scenarios; the
+final DPI-aware build also passed typography checks. Clean packaging and final
+live installation verification follow this milestone. Details and inspected
+evidence: `orchestration/recoveries/2026-09-14-typography/REPORT.md`.
+
+
+## 2026-09-14 - Owner-selected pixel sans typography
+
+Normal installation now contains source cefd238b234c0c489abb2718e6b86ba001672c6c
+at C:\Users\Alex\Documents\Verdigris Native 2026-09-13\Verdigris.exe.
+All 80 packaged scenarios and 1,270 installed hashes pass; 349 required resources
+and embedded clean source identity pass. Existing save bytes and settings are
+preserved. Final normal-window inspection awaits the owner's manual launch,
+because desktop input was stopped with Escape. Packaged captures were inspected.
+Rollback is native/build/typography-sans/rollback-20260913213044/installation.
+
+
+The owner selected m5x7 at 32px em from actual native captures. Bundled as
+Verdigris Sans (CC0), it supersedes Novel and the interim Pixel Operator trials.
+Preserve the 2px authored steps and 14px capitals for ordinary text when
+integrating concurrent inventory work. Fix layout using actual metrics rather
+than changing the selected font to hide clipping. Small numeric counters use 16px em.
+The exact Nox font remains unidentified; unsupported glyphs explicitly use '?'.
+
+The typography work is isolated from c00ade08e on
+codex/native-typography-sans-20260914, preserving unrelated inventory edits in
+verdigris-consolidated-20260913. Existing equipment/stat repairs remain included.
+Standing authorization includes committing verified work and pushing the working
+branch. Validation, evidence and installation identity are recorded in
+orchestration/recoveries/2026-09-14-typography/REPORT.md.
+
+## 2026-09-13 - Normal-launch handover complete
+
+Normal entry: C:\Users\Alex\Documents\Verdigris Native 2026-09-13\Verdigris.exe.
+It now launches packaged source 43c104c5acca73805ebb6184079a7fb0d9c7be17 with
+its installed assets and normal profile. The previous installation and original
+save remain in native/build/normal-launch-rollback-8731c3646/installation.
+Every preexisting owner-save field is unchanged; startup adds inventory schema
+fields. Normal settings remain untouched. Confirmed menu quit closed the owned
+client/server cleanly, with zero remaining Verdigris processes.
+
+The final package passed 79/79 scenarios and eight native suites. Resumed live
+checks proved same-profile Effects persistence, moved and equipped loadouts
+across separate process restarts without duplicate starter grants, perspective
+movement, bounded route thrust feedback, Return to title and Continue. Installed
+verification passed all 1266 hashes and 346 required resources. Authoritative
+stats/moves, UUID selection, pending/rejection handling and saved loadout fixes
+preserve the accepted inventory composition and consolidated renderer history.
+
+Both codex/native-consolidated-20260913 and codex/native-reconstitution carry
+the verified implementation; later handover commits change only evidence/docs.
+Concurrent uncommitted source edits are preserved and excluded from this package.
+Build and verify those changes before replacing the normal installation again.
+
+Evidence and exact limitations: orchestration/recoveries/2026-09-13-handover/REPORT.md.
+Explorer double-click automation failed; Windows launch of that same top-level
+normal launcher proved its real client/server/profile lifecycle. Bounded live
+thrust feedback does not prove enemy damage; packaged melee/animation scenarios
+provide separate coverage. Seat-to-backpack drag did not transfer the dagger;
+Unequip worked. Back-item factory support and reserved-seat mechanics remain
+outside this handover. No new acceptance or planning approval is required.
+
+## 2026-09-13 - Native UI repair verified package
+
+Inventory and character presentation now follow the owner WIZARD composition.
+Native capacity/seats, perspective, authored animation and gameplay authority
+are preserved. Packaged source f8770d4e7ff493c49ee06122ca2c100f8e9aba26 passed
+79/79 packaged scenarios and all eight native test executables passed. The
+actual launcher completed button-based House/female Scion creation, movement,
+Return to title and Continue. Effects 90% persisted across a fresh process on
+the same package and isolated profile. A separately timed live attack-frame
+capture remains incomplete after a clean client exit; do not call it passed.
+
+Exact executable and committed before/after evidence:
+orchestration/recoveries/2026-09-13-ui-repair/REPORT.md
+Normal launch and owner saves remain unchanged. Continue implementation on
+codex/native-consolidated-20260913 with the standing commit/push authorization.
+Later report/handoff commits do not change the packaged game code.
+
+
+## 2026-09-13 - Inventory and equipment integration
+
+Continued implementation on codex/native-consolidated-20260913 above 1d732241b,
+without waiting for launch promotion. The preserved unfinished checkout's
+footprint, seat and combat-field work has been integrated and completed:
+12x7 backpack with actual item rectangles; exact seat drops and both rings;
+remote U-to-unequip; authoritative acknowledgements and combat ratings; atomic
+rejection of incompatible or full-backpack operations. The newer renderer,
+animation, movement, melee and progression remain intact.
+
+All native test executables pass, including the death/succession/relic/reconnect
+journey. The new inventory-equipment scenario exercises real Win32 handlers
+against a native server. Regressions found in the wider scenario suite were
+fixed and their scenarios rerun. The exact package gate and evidence are in
+orchestration/recoveries/2026-09-13-inventory/REPORT.md.
+
+Owner saves, preserved checkouts and normal launch entries are unchanged.
+Separately, the earlier package's fresh-process Effects 90% check passed using
+the same QA profile; physical Escape left its other live walkthrough steps
+unfinished. That does not block authorized inventory development.
+
+
+## 2026-09-13 — Packaged verification result
+
+The clean package from `3bd164d34f189d1438dc68990667312e8ecd721f` at
+`C:/Users/Alex/Documents/Verdigris Native 2026-09-13/Verdigris.exe` passed all
+78 packaged scenarios, resource/hash checks and embedded source identity.
+Live title/settings/card screens were viewed; 90% Effects was saved through
+the UI. The user stopped desktop control with Escape during live verification.
+The full live walkthrough and fresh-process settings reload remain incomplete;
+normal launch is unchanged. Exact hashes, evidence, preservation decisions and
+remaining acceptance are in
+`orchestration/recoveries/2026-09-13-consolidation/REPORT.md`.
+
+## 2026-09-13 — Native application consolidation
+
+Owner-authorized integration in `codex/native-consolidated-20260913`, based on
+`5c388d9fd` with recovered history `443fb2503` merged in full. The perspective
+renderer, actor assets/attachments, camera and gameplay fixes are preserved.
+Title/settings/pause now connect to the existing character cards rather than
+the old text ledger. Added names, House selection for creation, keyboard focus,
+character management after admission, and returning-player Continue.
+
+Build identity is embedded by both MSVC and CMake and checked against the
+package manifest. Normal remote startup validates all 96 authored poses and
+logs its actual asset root. Existing checkouts/saves and the normal launch
+entry were not changed. Unfinished playable-checkout inventory/equipment work
+remains preserved there; its useful build identity work was integrated.
+
+The full development gate (native build, core/network/camera/session/events/
+audio/settings tests, all client scenarios, existing performance bounds) passed.
+The newly added `consolidated-flow` covers production Win32 button/name input
+and real socket admission/reconnect. Final clean-package and live desktop
+acceptance are recorded separately in the consolidation REPORT; a development
+pass alone is not package acceptance.
+
+## 2026-09-11 — Level, close melee, and starting movement
+
+Owner-authorized narrow fixes in `verdigris-fable-renderer`:
+
+- The remote client now mirrors authoritative level on login, scene admission,
+  and state refresh. Partial movement/state updates retain the last valid level.
+- Exact combat XP persists per House/Scion, including kills resolved by the
+  server timer. Selecting another Scion restores that character's progression;
+  a new Scion starts at level 1. Legacy recorded levels migrate at their XP floor.
+  Older XP that was never recorded cannot be recovered.
+- Remote short melee now uses continuous circular reach (1.25 tiles), a forward
+  aiming cone, line of sight, and a 100 ms initial wind-up. Leaving contact
+  cancels damage; recovery remains 350 ms. Ordinary enemy contact uses the same
+  close boundary. Boss area attacks retain their separate geometry.
+- Starting remote movement is four tiles/second (40% below the previous
+  baseline); 50 ms input sampling and enemy pursuit speed are preserved. Dash
+  distance follows the reduced movement distance. No new movement bonuses yet.
+
+An isolated save earned level 2 through real combat, was reconstructed from
+disk, and displayed level 2 in both the live HUD and character panel. The owner
+played that review session; its normal exit was followed by review-server cleanup.
+Evidence is under `.ci-artifacts/level-contact-20260912/` (UTC date).
+
+Validation: supported MSVC build, core/network/camera/presentation/audio suites,
+all 76 client scenarios (one repaired contact fixture rerun), and browser
+playtest 32/32 pass. The complete session suite also passes, including ordinary
+combat/death/succession, exact heirloom recovery and reconnect. Its test driver
+now aims at observed enemies and fights bosses at close range. No art changed.
+Larger priorities and the
+sprite-generation hold are recorded in [narrow-passes.md](narrow-passes.md).
+
+## 2026-09-10 — Fable renderer and selectable eight-direction Scions
+
+The resumed owner work is implemented in the isolated
+`verdigris-fable-renderer` worktree on `codex/fable-renderer-20260910`.
+The actual Fable demo archive and recent character-prompt chats were read.
+The normal client now uses the reference camera/terrain/lighting pipeline,
+bounded asynchronous terrain rebasing, nearest-sampled pixel actors, fresh
+mouse aim and responsive movement. Server authority retains collision,
+dash, loot, extraction and House/Scion state.
+
+The owner's two character references now supply selectable male/female
+appearances: eight directions, two walk contacts and three attack entries
+(anticipation/contact plus idle recovery),96 runtime PNGs and96 equipment
+sockets. Seven parallel workers handled generation, import and integration;
+exact prompts, selected/rejected sources, actual Pixel Respecter provenance
+and playback previews are retained. Appearance persists per Scion, survives
+restart, and is restored when selecting a saved roster entry. Creation IDs
+now avoid persisted living/crypt collisions after server restart. Town return
+clears stale upstairs and refreshes stored items.
+
+Final supported build and76/76 client scenarios pass, including fresh-aim
+prediction, all96 authored asset selectors and the real female creation/
+male successor path. Core/network/session/presentation/audio/camera suites
+and browser32/32 also passed. GTX1660SUPER Fable3440×1440 averages28.555ms;
+streamed travel averages24.530ms with44.126ms peak, below the unchanged40ms
+average gate. Root viewed all equipped poses and native-scale loops, created
+and played the female, restarted and played the saved male, and captured a
+live attack following a new opposite-facing click.
+
+The normal server/client is left at the1280×800 picker for owner testing;
+saved Secondborn(male) and Thirdborn(female) can set out directly. The
+animation review is open at `http://127.0.0.1:8873/global-playback.html`.
+Relaunch with `native/tools/play-native.ps1`; F11 toggles window mode.
+WASD moves, LMB strikes, Space dashes. Owner art acceptance remains pending:
+side/diagonal gait consistency, female NW hair variation, idle recovery and
+the visual mismatch with older scenery remain visible. This wave does not
+claim a manual completed expedition or full Fable art/UI parity.
+
+[Exact lineage evidence and captures](../../native/client/assets/raster/reviews/2026-09-10-lineage/README.md),
+[source/import record](hero-lineage-20260910.md), and
+[Fable implementation](fable-integration.md).
+
 ## 2026-09-12 — Standing commit/push preference
 
 The owner reported recurring friction from blanket push bans. `AGENTS.md`
@@ -350,6 +783,40 @@ establish acceptance of the current native changes.
   remain explicitly unmeasured. No visual overhaul is claimed.
 - Local integration branch: `codex/diablo-reference-study-20260908` in
   `C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study`. No push or merge.
+## 2026-09-12 — Native title, Settings, and return flow (Codex Lane A)
+
+- `native/client/main.cpp` connects the owner launch to a title with House &
+  Scion, Settings, and Quit. The existing authoritative Chronicles actions now
+  have clickable rows, arrow/Tab focus, Enter/Space confirmation, and Back.
+  Escape dismisses gameplay panes before opening the session menu. Return to
+  title retains the current session; Continue Scion resumes it without a second
+  admission or purse request. Online menus explicitly say the world continues.
+- Settings uses Lane B's per-user persistence API for mute and separate effects
+  and music volumes. Minus/plus buttons and arrow keys apply and save the real
+  audio preferences, including visible load/save errors. Existing WIZARD splash
+  texture, Framekit chrome, and skin controls are reused; no art was invented.
+- `--scenario frontend-flow` passes 13 checks through a real hidden Win32 input
+  target, including mouse, keyboard, controller, quit cancellation, and blocked
+  gameplay input. The full 62-scenario run had one resource-envelope timing
+  failure under concurrent live/build/session load (69.6 ms); isolated rerun
+  passed at 15.1 ms. Frame-budget passed at 26.2 ms / 3440x1440.
+- MSVC compilation, denylist, core, networking, camera, presentation-event,
+  audio-mixer, and settings tests pass. The first concurrent session suite ended
+  with one failed check; the isolated complete rerun passed. Its initial label
+  was lost in truncated console output, so its cause is not established.
+- Live `play-native.ps1 -Port 6537` used disposable save/preferences paths under
+  `native/build/frontend-evidence`, completed title -> House -> Scion -> game ->
+  session menu -> title -> Quit, and exited 0 with no orphan process PIDs.
+  Captures `title-live.png`, `settings-live.png`, `chronicles-live.png`,
+  `house-live.png`, `scion-live.png`, `game-live.png`, `pause-live.png`, and
+  `returned-title-live.png` were viewed at 3440x1440. Logs are
+  `scenarios-all.txt`, `resource-envelope-isolated.txt`, and
+  `session-isolated.txt` in that evidence directory. The clicked Effects minus
+  button persisted `sfx=900` in its isolated `settings.ini`.
+- Checkout began 15 commits behind origin with an unrelated dirty loop journal;
+  the coordinator explicitly directed scoped work without reset/fast-forward.
+  No owner-save edits or push were performed. Parent coordinator owns the
+  browser playtest and overall integration decision.
 
 ## 2026-09-07 — Owner playtest persistence/combat/UI fix pass (Codex)
 
@@ -2127,3 +2594,105 @@ Load-bearing findings for successors:
 
 Remaining axes: presentation deltas #3/#4 (surface density TASK-0078,
 panels/typography unspecced), Gate B Chronicles client (TASK-0077).
+
+
+## 2026-09-14 — first-slice art milestone (Codex)
+
+Branch `codex/first-slice-art-20260914`, isolated worktree. Published art scope: 128 reviewed player locomotion PNGs (male/female, walk/sprint, four cardinal directions, eight phases). Fixed 96x96 canvas, [48,80] rig anchor, 48px/metre. Undyed linen without trim; shorter practical female cut; female braid centered behind the head. Includes editable Blender sources, native references, original generated alpha PNGs and hash-checked reconstruction reports under `native/client/assets/first-slice/reviewed`.
+
+This is NOT completion of the owner request for all village-defense prologue assets. Native game integration, idle/combat/equipment, NPCs, monsters and scenery remain unfinished. Rejected local generations are excluded from the versioned reviewed pack. Do not use old candidate files when their source hash no longer matches the report. The experimental attack renderer still has hand-pose and skin-mask defects and is not approved for painting or runtime.
+
+Validation: package validator loaded all128 PNGs and checked RGBA/binary alpha,96x96 size, unique phases, source/reference/output hashes, fixed anchor, whole-cycle registration and per-frame silhouette gates. Both full64-frame contact sheets were visually inspected at2x; no gameplay change is claimed. Native baseline build/tests and fable-world scenario passed before asset work; no client source or game behavior was changed by this milestone. Standing owner policy permits committing and normal pushing verified implementation; do not add a blanket push ban.
+
+
+### Starter exterior reference update
+
+The user supplied and endorsed `native/client/assets/first-slice/concept/starter-player-exterior.png`. This exact image is now the appearance reference. It supersedes earlier short-hair, mandatory centered-back-braid, thin-belt and open-sandal-only assumptions. Preserve its long naturally draped female braid, male wavy hair and jaw beard, coarse untrimmed flax, substantial rope belts, asymmetric sporty female tunic, woven footwear and low wooden-club grips. The 128-frame milestone predates this concept and is not a completed match. No Blender or generated sprite change is claimed by this reference-only update.
+
+## 2026-09-15 — first-slice nonplayer art milestone (Codex)
+
+On `codex/first-slice-art-20260914`, the user requested parallel production of the complete Village Palisade first-slice asset pack. Accepted nonplayer output: 16 static NPC cardinal views, eight scenery sprites, four starter inventory icons, and 64 pack-wolf idle/walk frames. Self-contained accepted folders under `native/client/assets/first-slice/` preserve source/reference/output hashes, prompts, reconstruction reports, and editable Blender sources where applicable. Root independently viewed the final contacts and targeted corrections. World pixel density remains 48px/metre with declared pivots; inventory icons are not world-scale sprites.
+
+The current starter exterior reference remains authoritative. New player and monster combat/death/boss art is still in production; partial animation families must not replace complete gameplay art or silently fill missing actions with idle/old sheets. Native integration and ground pixel-parity fixes are concurrent work and are not certified by this art-only milestone. A pre-change native fable-world timing run measured41.681ms versus the40ms bound while concurrent renders were running; full final native acceptance remains required without relaxing that limit.
+
+Nine prior ChatGPT generation conversations were moved into the existing Pixel Art and Game Dev project and verified in its listing. Any future web generation must stay in that project. The user's latest instruction switches new generation to the built-in imagegen skill while web requests are rate-limited. Inspect decoded alpha and composites: RGB stored beneath alpha0 is not a visible halo and must not trigger needless regeneration.
+
+## 2026-09-15 — native art integration milestone (Codex)
+
+The native client now reads explicit accepted clip manifests with ordered frames, cardinal directions, per-clip canvas and ground pivots at 48 pixels per world tile. Source PNG bytes are installed unchanged. Gameplay actor activation requires every required action and direction; players additionally require both unarmed and club families for the same appearance. Imports replace the whole appearance cohort rather than retaining old actions or equipment variants. Different action padding is legitimate (96x96/[48,80] to 128x128/[64,96]) and does not resize the character. Static NPC identities are explicit scene bindings. Accepted inventory icons fit their actual item footprints independently of world sprite placement.
+
+Terrain now samples 48 logical texels per tile on a rectangular 3840x3072 patch, preserving the existing 80x64 world extent, camera and asynchronous streaming. Point sampling avoids a second implied pixel grid. Resident-plus-bake CPU memory is approximately 98 MiB. Pre-rendered ground footprints use bounded depth bias to keep below-pivot bases visible without moving the sprite rectangle or UVs.
+
+Validation: native build/tests passed, installer cohort-replacement tests passed, legacy denylist passed, and all 83 native client scenarios passed with exit 0 after final source changes. The first-slice scenario checks actual GPU art traces, anchor preservation, terrain overlap, incomplete-family gating and a below-pivot depth regression. Evidence is under `native/build/first-slice-integration`, with suite log `native/build/first-slice-all-scenarios.log`. On GTX 1660 SUPER at 3440x1440, the final suite measured 26.382 ms average native frames and 24.448 ms average streamed frames (50.078 ms peak), 1214.154 ms background bake, 7.417 ms upload, and 102559336 peak CPU terrain bytes. The existing 40 ms average gate was not relaxed. Fresh native hut, well, NPC and inventory captures were independently viewed by the root agent; the live-window/package gate is coordinated by root separately.
+
+This is an integration milestone, not a complete first-slice deliverable: the local inspected runtime currently contains 92 accepted nonplayer PNGs, while new player and monster combat/boss families remain in production. Incomplete animated families stay out of gameplay. The inspection fixture uses the production renderer but does not implement the authoritative Village Palisade story or assign old Crossroads NPC names to prologue roles. Do not mistake the retained legacy player in these captures for the new approved exterior.
+
+### Local launcher renderer correction
+
+Root's live-window review caught a startup seam the fixtures missed: `play-native.ps1 -Local` left perspective and authored-actor rendering disabled, unlike remote startup, and therefore used the old GDI art path. Both launch modes now construct their state through the same product-renderer initializer. A targeted first-slice regression checks this startup configuration and an accepted tree draw from normally generated scenery without fixture bindings; it passes. The real local launcher was then driven through Enter and captured using `capture-window.ps1`; `native/build/first-slice-integration/live-native-game-routing-fixed.png` was viewed and confirms accepted trees/huts and the pixel-parity terrain. The launcher exited cleanly without orphan processes. Distinct storehut, gateway, shrine and column assets remain legacy where no accepted replacement exists. The local testbed's idle combat death is unchanged and is not an art-routing failure.
+
+### 2026-09-15 — approved exterior walk milestone and live-path correction
+
+Added 24 inspected frames under `native/client/assets/first-slice/starter-v2/accepted`: male front/back walk and female front walk, eight phases each. Exact imagegen calls, original RGBA, uploaded guides, native references, editable Blender scenes and source/reference/output hashes are preserved. These are partial clips; gameplay activation remains blocked until coherent unarmed and club families have all required actions/directions. Native canvas96x96, pivot48,80 and48px/metre remain unchanged. Recorded sheet/row registration does not recenter individual poses or discard foreground. Registration and final silhouette alpha cutoffs are now explicitly distinguished in reports. Five durable exterior/reconstruction scripts syntax-compile; packaging verifies copied references and hashes.
+
+Root launched `native/tools/play-native.ps1 -Local`, captured and viewed the3440x1440 live title and game (`native/build/first-slice-integration/live-native-{window,game}.png`), then closed only that test process; launcher verified no orphan process. This caught a real integration gap: local startup used the old GDI renderer while remote startup and fixtures used the new product renderer. The native lane is correcting shared startup configuration; the old-scene capture is failure evidence, not visual acceptance. The83-scenario code milestone `ed5c062` passed but did not catch that startup-path difference. Re-run the real launcher after its correction.
+
+### 2026-09-15 — boss locomotion and native runtime asset packaging
+
+The accepted nonplayer collection now has156 sprites:128 pack-wolf/well-alpha idle/walk frames,16 NPC views,8 scenery sprites and4 inventory icons. The boss's initial softer right-walk paint was rejected and replaced to match the other directional contours. Root and world lane inspected revised outputs; the self-contained monster pack includes original generation sheets, exact guides/prompts, editable Blender sources, native refs and reconstruction/hash reports. Combat families remain incomplete and inactive in gameplay.
+
+`native/client/assets/first-slice/runtime/manifest.tsv` and its156 PNGs are now versioned, with the scenery/monster import JSONs in runtime-imports. Every runtime PNG was independently checked byte-for-byte against accepted sources, including binary alpha and declared frame geometry; no stale/unreferenced runtime PNGs are present. Monster generation/package scripts syntax-compile. The prior92-sprite runtime passed all83 native scenarios; this addition installs the64 reviewed boss locomotion frames without enabling incomplete gameplay families.
+
+Live startup correction5ead862 is verified: root viewed `native/build/first-slice-integration/live-native-game-routing-fixed.png`, showing accepted trees and generic hut through the production renderer. Distinct old landmarks and old actor families are still visible where no complete corresponding replacement exists; this is not completion of the village-defense gameplay or all first-slice animation coverage.
+
+### Retained monster death routing
+
+Death events now retain the exact monster art identity and committed facing after live snapshots remove the actor. Fable resolves that complete family's death clip, including its action-specific canvas/pivot, advances by clip FPS, and holds the last frame through corpse retention/fade. It suppresses duplicate live-dead drawing and never substitutes the old raider death for an active complete new family. Existing incomplete-family gating and gameplay timings are unchanged.
+
+Full native build/tests, the first-slice-art scenario, and the existing raster-feedback lifecycle scenario pass. The focused test drives a real lethal hit through LocalCoreSession, removes the actor in a snapshot before draining its death event, and checks same-family GPU routing across death phases and final-frame hold. It temporarily reuses accepted wolf pixels as diagnostic clips and restores the registry; those pixels are not death-art acceptance or runtime promotion. Evidence logs: `native/build/first-slice-lifecycle-build.log`, `first-slice-lifecycle-scenario.log`, and `first-slice-legacy-lifecycle-scenario.log`.
+
+Forthcoming 16-phase attack art must place authoritative contact at index8 (normalized phase0.5). Existing melee presentation lasts six50ms ticks and sweep eight; predicted input begins at phase0 and contact reconciles to phase0.5. Attack manifest FPS does not stretch gameplay timing. See `native/tools/README-first-slice-art.md` for the import and cadence contract.
+
+### Player death equipment retention
+
+Core death clears carried items before the next render, so deriving the dead player's art from current inventory selected unarmed instead of the equipped club. World synchronization now retains only the last living visual appearance, held variant and facing. Fable uses that snapshot during the same player's death while keeping complete-family gates. LocalCoreSession also retires the scene to `surface` in the same death snapshot; this single alive-to-dead transition preserves the visual identity, while later scene changes or a successor clear it and the death clock. Lost gameplay items remain lost.
+
+The client recompiles and first-slice-art, death-disconnect and raster-feedback scenarios pass. The focused regression uses actual core equip, enemy lethal damage and inventory clearing through both direct local and session adapters, checks GPU selection of the club death rather than unarmed, and creates a successor to verify reset. Its temporary diagnostic pixel mappings are restored and never exported as player artwork. Evidence: `native/build/first-slice-player-death-scenario.log`, `first-slice-player-death-disconnect.log`, and `first-slice-player-death-feedback.log`.
+
+### 2026-09-15 — keep art studies out of player packages
+
+Package creation previously copied the entire first-slice directory recursively, including ignored failed generations and editable source scenes. It now copies only runtime/manifest.tsv and its referenced PNGs. The shared resource validator checks frame-name/content hash agreement and rejects missing/empty manifests; package validation rejects any additional first-slice source or stale PNG. Artist sources remain versioned separately for editing and provenance. PowerShell parse checks pass, the live156-PNG inventory selects157 files, full required native resources validate (518), and empty/path-escape negative probes fail as expected. A complete clean-commit player package build remains pending final actor assets; these checks do not claim that package exists yet.
+
+### 2026-09-15 — monster attack/hit milestone
+
+The frozen accepted monster pack now contains176 frames/28 clips: four-cardinal pack-wolf idle/walk/attack/hit and well-alpha idle/walk/hit. Root sampled the new native-scale contacts after the world-art lane reviewed each accepted clip. The short attack is the authored neck/torso lunge; no jaw animation is claimed. Boss side-attack and both death families remain outside this milestone, and incomplete actor families remain inactive in gameplay.
+
+The native runtime now includes204 nonplayer PNGs/56 clips. Every PNG matches an accepted source hash, declared dimensions, binary alpha and48px/metre. No unreferenced runtime PNG remains. Four durable monster builders/transfer/package helpers syntax-compile. The accepted archive adds original CC0 Quaternius wolf source and source-credit metadata. The native death-equipment fix c464ced87 passed first-slice-art, death-disconnect and raster-feedback against this runtime; final complete-actor package and full native gates remain pending.
+
+### 2026-09-15 — owner reduced scope and rejected environment/monster direction
+
+Owner explicitly stopped excessive frame production and rejected current monsters, huts, trees and the gate/portal visible in screenshots. All parallel workers are stopped; do not resume their former frame targets. They also reached the account usage limit. Preserve their unfinished changes. Current local1036-frame runtime was an integration candidate, not a finished owner-approved package. No new player package was promoted.
+
+Read the current hold in native/client/assets/first-slice/README.md. Resume with a minimal Village Palisade set and a small visual composition/guide review using actual owner/project references before generation. Do not interpret the word packs as approved wolves, or inherited Crossroads gateway art as prologue direction. Defer separate sprint/equipment/diagonal expansion and long animation cycles. Player projection still has a verified contrast-loss investigation; native locomotion-cadence fix and tests are local unfinished worker changes. Do not claim these final checks passed.
+
+### 2026-09-15 — single village composition proposal
+
+Owner said do it after the reduced-scope reset. Produced one local Blender layout and one built-in imagegen composition, stored in docs/art-review/2026-09-15-village-composition. Both original and768px display preview were viewed. The packed scene, exact prompt, source references and explicit drift findings are preserved. This proposal is not runtime art or owner approval; no animation workers restarted and no production imports were made.
+
+
+### 2026-09-15 — native Village Palisade playable implementation
+
+Working branch `codex/starter-slice-20260915`, isolated worktree `Z:/Code/.worktrees/verdigris-starter-slice`, based on a60c87c7. The old dirty art worktree and its unfinished larger frame batches are preserved. Standing owner authorization includes committing verified work and pushing this working branch; no extra push approval is needed.
+
+New native Scions now enter Village Palisade: occupation, civilian branch, two packs, well boss, forgiving retry, first level/skill point, and explicit passage to Crossroads. The server owns phase/reward/persistence, with distinct per-Scion records and compatibility for previously admitted saves. The native client exposes the choices and uses the same progression for general interaction. Core authority tests include actual combat and lethal retry; the starter-slice client scenario covers the real socket/reducer/production painter. See native/STARTER-SLICE.md for controls and scope.
+
+Installed minimal existing male/female unarmed/branch cardinal clips without generating another animation batch. Sprint shares walking. Four Blender-guided ImageGen village props replace the old hut/tree/portal composition in this scene. Their source guides, paint, true alpha and transfer provenance are retained. Live play was launched and captured with the repository tools, and reviewed; that caught overlapping/stale objective prompts and a delayed level-display update, corrected before packaging. Enemy art is the older human raider family and remains provisional. This implementation does not imply owner approval of that family, the earlier wolves, or all final art. Keep art expansion small.
+
+The full native gate, focused starter regression, and packaged verification logs belong under native/build and the review package's qa folder. Consult the actual exit results before asserting acceptance; no browser gate substitutes for native acceptance. Native visual review is separate from owner art approval.
+
+
+### 2026-09-15 — procedural starter scenery replaces whole-building sprites
+
+Owner rejected single-sprite houses because their baked perspective does not fit the map. The Village Palisade now uses shared seeded generation (`native/include/verdigris/starter_layout.hpp`) for clustered trees/shrubs, rocks/grass and winding paths with a reserved defense clearing. Both native authority and client consume the same placement recipe. Removed both house billboards and their rectangular collision footprints; trunk and rock tiles now provide the actual obstacles. No new image generations or animation batches. Existing small cutouts retain 48 pixels/metre, independent of object bounds. The house source art remains preserved but is not placed in this scene. Crossroads and other historical route layouts are not redesigned by this focused starter-map change.
+
+Tests cover seed replay/variation, bounds, the released house footprint, authoritative obstacle matching, and reachability between the start, well, encounters and exit. Inspect the procedural-village captures and the packaged verification results for this revision. Standing commit/push authorization remains in effect on the working branch.

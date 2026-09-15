@@ -1,0 +1,26 @@
+# Generation work stays local. Only the explicitly reviewed milestone is versioned.
+/*
+!/.gitignore
+!/README.md
+!/reviewed/
+!/concept/
+!/world-scenery/
+/world-scenery/*
+!/world-scenery/accepted/
+!/monsters-v2/
+/monsters-v2/*
+!/monsters-v2/accepted/
+!/ui-art/
+/ui-art/*
+!/ui-art/accepted/
+!/npcs-v2/
+/npcs-v2/*
+!/npcs-v2/accepted/
+!/starter-v2/
+/starter-v2/*
+!/starter-v2/accepted/
+!/runtime/
+!/runtime-imports/
+
+!/starter-minimal/
+!/village-v3/

@@ -1,0 +1,3 @@
+# Local execution logs and the temporary review server state.
+*.log
+*.pid

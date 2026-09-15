@@ -1,4 +1,5 @@
 #pragma once
+#include "verdigris/inventory_extensions.hpp"
 
 #include <cstdint>
 #include <filesystem>
@@ -110,6 +111,19 @@ class ProtocolSession {
   void adopt_world(std::shared_ptr<WorldSimulation> world, const std::string& scene_id, const std::function<void(const Envelope&)>& emit);
 
  private:
+  struct StarterProgress {
+    std::string phase;
+    std::string occupation;
+    int wave = 0;
+    int retries = 0;
+  };
+  std::map<std::string, StarterProgress> starter_progress_;
+  const StarterProgress* starter_progress() const;
+  bool starter_active() const;
+  JsonValue starter_payload() const;
+  void restore_starter_world();
+  void handle_starter_action(const std::string& action, const std::function<void(const Envelope&)>& emit);
+  void advance_starter_combat(const std::function<void(const Envelope&)>& emit);
   std::string player_payload() const;
   JsonValue snapshot() const;
   JsonValue scene_payload() const;
@@ -147,6 +161,7 @@ class ProtocolSession {
   void maybe_complete_first_goal(const std::function<void(const Envelope&)>& emit);
   JsonValue quests_json() const;
   JsonValue passive_tree_json() const;
+  bool inventory_extension_unlocked(const inventory_extensions::Definition* definition) const;
   void tree_attributes(int* strength, int* dexterity, int* intelligence) const;
   void handle_skilltree_save(const JsonValue& payload, const std::function<void(const Envelope&)>& emit);
   void emit_bank_screen(const std::function<void(const Envelope&)>& emit) const;
@@ -219,6 +234,10 @@ class ProtocolSession {
   std::string active_skill_id_ = "primary-attack";
   // N6 combat experience (experience.js / shared/ui.js curve).
   long long combat_xp_ = 0;
+  // Server-owned progression, separate from client-authored Chronicle metadata.
+  std::map<std::string, long long> scion_combat_xp_;
+  void checkpoint_scion_progression();
+  void restore_scion_progression();
   void maybe_respawn(std::int64_t now_ms);
   void handle_final_death(const std::function<void(const Envelope&)>& emit);
   // N5: Chronicles auth (server/core/services/chronicles.js + chronicles store).
@@ -241,13 +260,17 @@ class ProtocolSession {
   JsonValue chronicles_state_payload(const std::string& created_scion_id) const;
   void ensure_chronicle_house(const std::string& id, const std::string& name);
   void ensure_chronicle_scion(const std::string& house_id, const std::string& id,
-                              const std::string& name, bool mortal);
+                              const std::string& name, bool mortal, const std::string& appearance = "male");
   // N4: the real item pipeline state (12x7 backpack + wear seats); the forge
   // itself lives on the world (JS module singleton).
+  JsonValue loadout_json() const;
+  bool restore_loadout(const JsonValue& data);
+  void change_loadout(const std::string& house, const std::string& scion);
+  std::map<std::string,JsonValue> scion_loadouts_;
   PlayerInventory inventory_;
   WearSet wear_;
-  // Protocol House bank (JS has no player:extract; core Simulation::house is
-  // const from this layer). Extraction and stairs-up both drain here.
+  // Legacy extraction storage, migrated into the accessible bank on load.
+  // Safe return never drains the Scion's inventory or equipment.
   std::vector<GameItem> house_store_;
   Mulberry32 session_rng_;
   std::unique_ptr<Simulation> simulation_;

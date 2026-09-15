@@ -1,0 +1,5 @@
+{
+  "generation": 7,
+  "prompt": "Use case: background-extraction. Image 1 is the exact edit target: a square FrameKit panel with a mistaken grey and white checkerboard painted OUTSIDE its outer gold frame. Change only that exterior checkerboard to genuinely transparent alpha pixels. Preserve every pixel of the panel itself, its full square silhouette, exterior gold rail, pale stone band, geometric top band, four inset corners and opaque dark charcoal center. Do not change material, proportions, artwork or brightness. The interior dark center MUST remain opaque. Output a PNG with real alpha and zero exterior checkerboard, no added text or background. This is a single targeted correction to an unapproved art study.",
+  "result": "Failed: baked checkerboard remains; RGB output."
+}

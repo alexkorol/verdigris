@@ -1,0 +1,5 @@
+Edit the supplied image by turning this exact adult man to a strict right-facing side profile, heading horizontally toward the right of the image. Rotate only the actor under the same fixed elevated straight-grid camera. His nose points right; show the natural side view of his head and body, with no three-quarter front pose.
+
+Preserve his exact adult face, short brown hair, natural physical rendering and proportions, plain beige short-sleeved tunic with simple brown belt, bare lower legs and brown sandals. Both hands are empty and arms rest naturally. His anatomical right side is nearer the viewer; his left arm is the farther arm. Neutral idle, feet planted. No cartoon simplification or new kit.
+
+Keep the original actual1254 square canvas, about970px standing body height and ground anchor around x627,y1098. One isolated full body, same light and material detail. True transparent RGBA including limb gaps, no checker, floor, shadow or labels.

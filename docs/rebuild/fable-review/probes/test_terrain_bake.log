@@ -1,0 +1,32 @@
+PASS prepare succeeds
+INITIAL ms=1273.833 cpu=690.748 upload=6.903 backend=NVIDIA GeForce GTX 1660 SUPER
+PASS initial load owns one complete terrain packet
+PASS prepare succeeds
+X_START main_ms=0.037
+PASS X travel keeps old patch and starts exactly one worker
+PASS rapid repeated frames cannot enqueue more jobs
+PASS one worker completes within bounded observation
+PASS X boundary texture phase is byte-identical in shared coverage
+PASS X boundary geometry and elevation are exact on shared mesh vertices
+PASS prepare succeeds
+Y_START main_ms=0.039
+PASS Y travel keeps old patch while worker runs
+PASS one worker completes within bounded observation
+PASS Y boundary texture phase is byte-identical in shared coverage
+PASS Y boundary geometry and elevation are exact on shared mesh vertices
+PASS prepare succeeds
+PASS GPU reset reuploads retained matching RGBA without CPU rebake
+PASS prepare succeeds
+PASS one worker completes within bounded observation
+PASS return to resident bucket retires stale patch without swap
+PASS prepare succeeds
+PASS prepare succeeds
+PASS route load safely joins/discards old route then adopts matching packet
+PASS prepare succeeds
+PASS prepare succeeds
+PASS source-generation change retires immutable old job before replacement
+PASS current plus one job CPU memory is bounded below 40 MiB
+STATS started=8 completed=8 adopted=5 discarded=3 reused=143 waits=5 failed=0 retained=17867716 peak=37343568 cpu=677.426 upload=9.424
+PASS prepare succeeds
+PASS destructor fixture has an active worker
+PASS renderer destructor joined active worker before resources retired

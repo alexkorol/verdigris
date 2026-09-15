@@ -1,0 +1,41 @@
+{
+  "authority": "User supplied and endorsed as the starting-character exterior concept",
+  "image": "starter-player-exterior.png",
+  "sha256": "9352b701a3b50815c46ebb37bc3cca9193d3355c19ff8f73ed7e7013d7fff210",
+  "image_size": [
+    1024,
+    1536
+  ],
+  "scope": "Male and female starter exterior: anatomy, facial/hair design, clothing silhouette, materials, footwear and basic wooden club",
+  "male": "Athletic adult; wavy medium-length brown hair and short jaw beard; rough sleeveless flax tunic with split neckline, above-knee ragged hem, substantial rope belt, woven footwear with ankle ties.",
+  "female": "Athletic adult; long loosely braided hair with flyaways and natural drape as shown; rough sleeveless flax tunic with shorter asymmetric hem and side opening, substantial rope belt, woven footwear with ankle ties.",
+  "shared": "Untrimmed muted natural flax/taupe fabric, visible crude weave, frayed edges, natural rope, worn branch clubs with low relaxed grips. Match this reference without embellishment.",
+  "supersedes": [
+    "Short female haircut",
+    "Mandatory centered-back braid placement",
+    "Generic thin belt and uniform straight hem",
+    "Open sandals as an exclusive footwear requirement"
+  ],
+  "retained_pipeline": {
+    "native_canvas": [
+      96,
+      96
+    ],
+    "rig_anchor": [
+      48,
+      80
+    ],
+    "pixels_per_metre": 48,
+    "order": [
+      "Blender geometry and poses",
+      "Native pixel render",
+      "Exact nearest-neighbor guide enlargement",
+      "Imagegen simulated-pixel-art paint pass",
+      "Pixel Respecter reconstruction",
+      "Native-scale and animation review",
+      "Game integration"
+    ],
+    "output_alpha": "True PNG alpha; the concept background is not sprite artwork"
+  },
+  "existing_pack_status": "The 128-frame reviewed locomotion milestone predates this concept and is not a visual match or approval of the new exterior."
+}

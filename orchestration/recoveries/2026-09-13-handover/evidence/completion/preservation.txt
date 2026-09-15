@@ -1,0 +1,7 @@
+PASS: every preexisting normal-save field unchanged after title-only startup and confirmed menu quit.
+Added schema fields: bankItems, houseStore, kittedScions, scionLoadouts.
+Original save retained in normal-launch-rollback-8731c3646/installation/profile/saves/review-player.json.
+Migrated save SHA256: 50EC9C97FBB9DE9CC172FDBA4BEAB27155A984971334FE9C72031249FB847FFF
+Normal settings.ini exists: False
+PASS: zero remaining Verdigris launcher/client/server processes.
+PASS: installed package gate verified 1266 files, 346 required resources and source 43c104c5acca73805ebb6184079a7fb0d9c7be17.

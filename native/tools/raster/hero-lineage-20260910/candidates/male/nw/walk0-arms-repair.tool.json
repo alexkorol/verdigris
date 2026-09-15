@@ -1,0 +1,15 @@
+{
+  "tool": "built-in image_gen",
+  "arguments": {
+    "prompt": "Use case: precise-object-edit.\nImage 1 is the edit target: preserve its exact head, torso, tunic, belt, hips, both legs and both sandals, their pixel positions and overlap. Image 2 is the directional idle, image 3 is the original man's identity/rendering reference.\nChange ONLY the two arm poses to the opposite walking counter-swing. The near anatomical LEFT arm attached to the sleeve on screen LEFT must swing BACK: its upper arm descends beside the back/left edge of the torso, elbow slightly bent, wrist/relaxed hand near (560,660), just outside the left hip. The far anatomical RIGHT arm attached to the screen RIGHT sleeve must swing FORWARD toward upper-left and be mostly occluded behind the torso. Do not keep the conspicuous forward bent fist at (440,480); that left fist must instead be lowered beside the near hip. The forward LEFT foot and trailing RIGHT leg must remain unchanged.\nSame full back-left 45-degree view, chest hidden, original rendered adult proportions/materials/colors. Exact 1254-square canvas and body scale. Empty hands, single full-body isolated sprite. Request true transparent alpha background without painted checker. No text, extra gear or shadow.",
+    "referenced_image_paths": [
+      "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/male/nw/walk0-rejected-arms.png",
+      "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/male/nw/idle.png",
+      "C:/Users/Alex/Downloads/ChatGPT Image Sep 10, 2026, 05_22_21 PM.png"
+    ]
+  },
+  "result_metadata": {
+    "output_hint": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a089c3-5390-76a2-8353-a73d7b52eeb8 as C:\\Users\\Alex\\.codex\\generated_images\\01a089c3-5390-76a2-8353-a73d7b52eeb8\\exec-56e04f57-d29b-4ee2-9819-972c6bcc8bcf.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  "state": "pending_visual_review"
+}

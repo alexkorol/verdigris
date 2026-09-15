@@ -1,0 +1,273 @@
+{
+  "id": "woodland-shrub",
+  "source_sha256": "cbb561db2c78bacf4b7d76a7eb654c55f643086a627079d4df7d5feb8fc95022",
+  "reference_sha256": "d983e01026e5fdf541abc46803a0e8b8f4069b8c233950366e99043a94f45758",
+  "returned_size": [
+    1254,
+    1254
+  ],
+  "pixel_grid": {
+    "size": 5,
+    "source": "autocorr",
+    "offset": [
+      1,
+      3
+    ],
+    "score": 0.0,
+    "variance": 0.0,
+    "gated_out": false
+  },
+  "all_grid_candidates": [
+    {
+      "size": 190,
+      "source": "fold",
+      "offset": [
+        144,
+        166
+      ],
+      "score": 0.2378097608262495,
+      "variance": 444.2891540527344,
+      "gated_out": false
+    },
+    {
+      "size": 145,
+      "source": "fold",
+      "offset": [
+        73,
+        115
+      ],
+      "score": 0.04366420878041981,
+      "variance": 14.800406455993652,
+      "gated_out": false
+    },
+    {
+      "size": 146,
+      "source": "fold",
+      "offset": [
+        101,
+        110
+      ],
+      "score": 0.03364278354535337,
+      "variance": 14.701129913330078,
+      "gated_out": false
+    },
+    {
+      "size": 185,
+      "source": "fold",
+      "offset": [
+        159,
+        100
+      ],
+      "score": 0.03256085105245113,
+      "variance": 14.310738563537598,
+      "gated_out": false
+    },
+    {
+      "size": 184,
+      "source": "fold",
+      "offset": [
+        162,
+        104
+      ],
+      "score": 0.03232212980460218,
+      "variance": 14.475907325744629,
+      "gated_out": false
+    },
+    {
+      "size": 181,
+      "source": "fold",
+      "offset": [
+        171,
+        116
+      ],
+      "score": 0.03145260863563291,
+      "variance": 14.984489440917969,
+      "gated_out": false
+    },
+    {
+      "size": 180,
+      "source": "fold",
+      "offset": [
+        174,
+        120
+      ],
+      "score": 0.031133149963620203,
+      "variance": 15.16118335723877,
+      "gated_out": false
+    },
+    {
+      "size": 175,
+      "source": "fold",
+      "offset": [
+        14,
+        140
+      ],
+      "score": 0.021125769118941314,
+      "variance": 16.086177825927734,
+      "gated_out": false
+    },
+    {
+      "size": 3,
+      "source": "fine",
+      "offset": [
+        2,
+        1
+      ],
+      "score": 0.0,
+      "variance": 0.0,
+      "gated_out": false
+    },
+    {
+      "size": 4,
+      "source": "fine",
+      "offset": [
+        2,
+        0
+      ],
+      "score": 0.0,
+      "variance": 0.0,
+      "gated_out": false
+    },
+    {
+      "size": 5,
+      "source": "autocorr",
+      "offset": [
+        1,
+        3
+      ],
+      "score": 0.0,
+      "variance": 0.0,
+      "gated_out": false
+    },
+    {
+      "size": 6,
+      "source": "fine",
+      "offset": [
+        5,
+        4
+      ],
+      "score": 0.0,
+      "variance": 0.0,
+      "gated_out": false
+    },
+    {
+      "size": 7,
+      "source": "fine",
+      "offset": [
+        0,
+        5
+      ],
+      "score": 0.0,
+      "variance": 0.0,
+      "gated_out": false
+    },
+    {
+      "size": 8,
+      "source": "fine",
+      "offset": [
+        2,
+        0
+      ],
+      "score": 0.0,
+      "variance": 0.0,
+      "gated_out": false
+    },
+    {
+      "size": 10,
+      "source": "autocorr",
+      "offset": [
+        1,
+        3
+      ],
+      "score": 0.0,
+      "variance": 0.0,
+      "gated_out": false
+    },
+    {
+      "size": 14,
+      "source": "autocorr",
+      "offset": [
+        7,
+        12
+      ],
+      "score": 0.0,
+      "variance": 0.0,
+      "gated_out": false
+    },
+    {
+      "size": 15,
+      "source": "autocorr",
+      "offset": [
+        6,
+        9
+      ],
+      "score": 0.0,
+      "variance": 0.0,
+      "gated_out": false
+    },
+    {
+      "size": 19,
+      "source": "autocorr",
+      "offset": [
+        11,
+        7
+      ],
+      "score": 0.0,
+      "variance": -0.1875,
+      "gated_out": false
+    },
+    {
+      "size": 24,
+      "source": "autocorr",
+      "offset": [
+        11,
+        22
+      ],
+      "score": 0.0,
+      "variance": -0.3645833432674408,
+      "gated_out": false
+    },
+    {
+      "size": 29,
+      "source": "autocorr",
+      "offset": [
+        17,
+        26
+      ],
+      "score": 0.0,
+      "variance": -0.4609375,
+      "gated_out": false
+    },
+    {
+      "size": 34,
+      "source": "autocorr",
+      "offset": [
+        0,
+        2
+      ],
+      "score": 0.0,
+      "variance": -0.515625,
+      "gated_out": false
+    }
+  ],
+  "translation": [
+    3,
+    4
+  ],
+  "silhouette_iou": 0.8086486486486486,
+  "canvas": [
+    256,
+    256
+  ],
+  "bbox": [
+    97,
+    169,
+    147,
+    203
+  ],
+  "rescaling": false,
+  "alpha_policy": "Original alpha threshold128; no color key",
+  "visual_acceptance": true,
+  "review_notes": "Inspected at native scale and nearest-neighbor 2x against Blender reference; no checkerboard, shape clipping, silhouette scaling or source corner holes.",
+  "output_sha256": "94029f2da3c5069fd0fafbaf869be005213e2ad2d31733d34269d441440bf7f1"
+}

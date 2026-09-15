@@ -1,0 +1,18 @@
+2026-09-14T04:31:59.7127054Z root=C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\build\player-package-1d3db8ab7\ profile=C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\build\player-package-1d3db8ab7\qa\verification2\launcher-qa-1d7e68b29d094d6792b5ad95fa8e9534 isolatedSettings=True
+2026-09-14T04:31:59.7407073Z verdigris_server.exe pid=19896 6520
+2026-09-14T04:31:59.7667067Z server: verdigris_server listening on ws://127.0.0.1:6520
+2026-09-14T04:31:59.7717084Z verdigris_client.exe pid=36600 --remote 127.0.0.1 6520 review-player --verify-launch reload
+2026-09-14T04:31:59.9307090Z client: source=1d3db8ab7b838180dc5f70aafa97c81fd3052723 dirty=0 renderer=Fable perspective=1 authored-poses=96 asset-root=C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\build\player-package-1d3db8ab7\native\client\assets\raster\runtime
+2026-09-14T04:32:01.3537082Z client error: native-exit: WM_DESTROY
+2026-09-14T04:32:01.3867058Z client:     ok: launch-check: actual launcher-owned server supplies Chronicle
+2026-09-14T04:32:01.3877071Z client:     ok: launch-check: normal title and perspective configuration
+2026-09-14T04:32:01.3877071Z client:     ok: launch-check: production title renders with packaged assets
+2026-09-14T04:32:01.3877071Z client:     ok: launch-check: menu navigation opens Settings
+2026-09-14T04:32:01.3877071Z client:     ok: launch-check: fresh process restores Effects 70% in same profile
+2026-09-14T04:32:01.3887103Z client:     ok: launch-check: production Settings renders
+2026-09-14T04:32:01.3887103Z client:     ok: launch-check: Quit requires confirmation
+2026-09-14T04:32:01.3887103Z client:     ok: launch-check: confirmation requests clean exit
+2026-09-14T04:32:01.3887103Z client: launch-check: PASS phase=reload source=1d3db8ab7b838180dc5f70aafa97c81fd3052723
+2026-09-14T04:32:01.3947079Z client exit=0
+2026-09-14T04:32:01.3957057Z cleaned pid=36600 exit=0
+2026-09-14T04:32:01.4647096Z cleaned pid=19896 exit=0

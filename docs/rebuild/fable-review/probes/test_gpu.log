@@ -1,0 +1,58 @@
+PASS real hardware D3D11 initializes
+ADAPTER NVIDIA GeForce GTX 1660 SUPER vendor=10de device=21c4 feature=b000
+PASS mipmapped terrain upload
+PASS straight alpha sprite upload
+PASS point wall texture upload
+PASS same revision reuses texture
+PASS offscreen terrain renders and reads back
+PASS shared projected billboard renders
+PASS focus sprite point samples exact RGB
+PASS transparent hole preserves terrain
+PASS bottom-center anchor agrees with terrain focus projection
+PASS left texels retain nearest sampling
+PASS repeat frames are deterministic without texture allocation
+PASS flip moves source texels about same pivot
+PASS flash silhouette preserves alpha holes
+PASS weapon/effect screen-plane rotation renders
+PASS near wall mesh depth occludes sprite
+PASS transparent wall blends above retained actor without depth deletion
+PASS world grade renders
+PASS quarter-resolution projected light brightens graded world
+PASS continuous defocus/fog render distant sprite
+PASS small depth change produces distinct continuous DoF frame
+PASS zero viewport fails explicitly without poisoning renderer
+PASS NaN camera rejected
+PASS out-of-range mesh index rejected
+PASS missing texture rejected explicitly
+PASS light packet count bounded
+PASS valid frame recovers after rejected inputs
+PASS translucent ground mesh blends through alpha hole before standing sprite
+PASS foreground-Y ground billboard sorts beneath actor and remains visible through alpha hole
+PASS ordinary foreground-Y billboard still occludes actor
+PASS actual GPU triangle clips at affine near plane with unchanged x/y projection
+PASS continuous blur reference depth renders
+PASS continuous blur adjacent depth renders
+PASS subpixel DoF change remains continuous with fixed projected pose
+DOF adjacent_depth_changed_bytes=4042 max_channel_delta=2
+PASS oversized mip chain rejected before allocation or source read
+PASS cloud-free reference renders
+PASS screen-space cloud lightmap renders
+PASS cloud has exact reference inner tint and clear exterior
+PASS cloud radius0.45 to1 uses continuous linear radial fade
+PASS local light under clear sky renders
+PASS local light beneath cloud renders
+PASS cloud multiplies ambient before lights without dimming local additive contribution
+PASS cloud ambient-only state restored
+PASS cloud pixels remain screen-stationary under camera pan without resource uploads
+PASS zero-strength cloud preserves original pixels
+PASS overlapping clouds multiply rather than add shadow tint
+PASS cloud count is bounded at8
+PASS zero cloud radius rejected
+PASS NaN screen cloud rejected
+PASS cloud strength outside0to1 rejected
+PASS empty cloud packet retains prior renderer pixels after errors
+PASS actual HDC composite succeeds
+PASS HDC bytes equal exact GPU BGRA readback
+PASS texture LRU enforces count and byte bounds
+PASS explicit device reset clears device-bound cache and recovers hardware
+RESULT failures=0

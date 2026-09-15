@@ -1,0 +1,14 @@
+{
+  "tool": "built-in image_gen",
+  "arguments": {
+    "prompt": "Use case: identity-preserve.\nImage 1 is the accepted LEFT PROFILE idle and is the edit target. Image 2 is the original man's identity and finely rendered pixel-art detail reference. Preserve the adult anatomy, head, hair, beige belted tunic, bare lower legs and sandals exactly.\nMake ONE anticipation pose for a short empty-hand one-handed melee swing toward WEST/screen left. His anatomical LEFT arm is the near, visible arm. Bend this arm so its closed fist is cocked beside the near shoulder, fist around (615,360), elbow drawn backward toward screen-right around (760,475). Keep the far RIGHT hand relaxed near his waist, mostly hidden. Only modest torso rotation. Nose, head and feet still face straight left in true profile; do not turn chest toward viewer.\nKeep the feet planted exactly where image1 puts them, pelvis/head unchanged in position and size. Same elevated camera, same1254square framing, no zoom or recentering, crown near128, footbaseline1098-1117 as original idle. One isolated full-body sprite. Preserve detailed rendered shading and reference colors, no cartoon simplification or added equipment. Actual transparent alpha background, no painted checker, no castshadow, text or extra poses.",
+    "referenced_image_paths": [
+      "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/male/w/idle.png",
+      "C:/Users/Alex/Downloads/ChatGPT Image Sep 10, 2026, 05_22_21 PM.png"
+    ]
+  },
+  "result_metadata": {
+    "output_hint": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a089c3-5390-76a2-8353-a73d7b52eeb8 as C:\\Users\\Alex\\.codex\\generated_images\\01a089c3-5390-76a2-8353-a73d7b52eeb8\\exec-14927774-1d3c-4db7-9bbc-21d843e98bef.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  "state": "pending_visual_review"
+}

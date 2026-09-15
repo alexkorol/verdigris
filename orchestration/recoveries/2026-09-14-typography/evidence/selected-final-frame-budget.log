@@ -1,0 +1,37 @@
+== scenario frame-budget ==
+    ok: frame-budget: 32bpp surface allocated
+    frame-budget machine: display 3440x1440 | 12 logical CPUs | OS Win32 | present GDI (upload n/a)
+    frame-budget: 31.4 ms average over 20 frames at 3440x1440
+    frame-budget last paint: sim-sync in paint | floor 13.7 | world 15.9 | hud 5.7 | upload 0.0 | total 35.3 | net n/a
+    ok: frame-budget: fullscreen frame stays under 40 ms
+    ok: frame-budget: unnamed hardware cannot skip the paint fields
+    ok: frame-budget: movement corridor clears unchanged scenery
+    frame-budget moving[00]: 37.4 ms | floor 12.3 | world 20.0 | hud 5.1 | new ground tiles 0
+    frame-budget moving[01]: 33.0 ms | floor 11.4 | world 16.3 | hud 5.3 | new ground tiles 0
+    frame-budget moving[02]: 48.2 ms | floor 28.2 | world 15.3 | hud 4.8 | new ground tiles 16
+    frame-budget moving[03]: 41.3 ms | floor 18.9 | world 17.3 | hud 5.0 | new ground tiles 8
+    frame-budget moving[04]: 34.8 ms | floor 10.6 | world 18.7 | hud 5.5 | new ground tiles 0
+    frame-budget moving[05]: 35.4 ms | floor 11.9 | world 18.4 | hud 5.0 | new ground tiles 0
+    frame-budget moving[06]: 35.1 ms | floor 12.6 | world 17.6 | hud 4.9 | new ground tiles 0
+    frame-budget moving[07]: 35.5 ms | floor 12.8 | world 17.8 | hud 4.8 | new ground tiles 0
+    frame-budget moving[08]: 35.3 ms | floor 12.2 | world 17.7 | hud 5.3 | new ground tiles 0
+    frame-budget moving[09]: 37.0 ms | floor 14.4 | world 16.9 | hud 5.7 | new ground tiles 0
+    frame-budget moving[10]: 36.6 ms | floor 13.5 | world 18.1 | hud 5.0 | new ground tiles 0
+    frame-budget moving[11]: 35.4 ms | floor 11.9 | world 17.4 | hud 6.1 | new ground tiles 0
+    frame-budget moving[12]: 29.6 ms | floor 10.7 | world 13.4 | hud 5.5 | new ground tiles 0
+    frame-budget moving[13]: 31.6 ms | floor 13.7 | world 13.0 | hud 4.8 | new ground tiles 0
+    frame-budget moving[14]: 29.7 ms | floor 10.3 | world 14.5 | hud 4.9 | new ground tiles 0
+    frame-budget moving[15]: 30.8 ms | floor 11.9 | world 14.3 | hud 4.6 | new ground tiles 0
+    frame-budget moving[16]: 29.9 ms | floor 12.8 | world 13.0 | hud 4.1 | new ground tiles 0
+    frame-budget moving[17]: 28.6 ms | floor 10.3 | world 13.8 | hud 4.5 | new ground tiles 0
+    frame-budget moving[18]: 29.3 ms | floor 11.4 | world 12.6 | hud 5.2 | new ground tiles 0
+    frame-budget moving[19]: 30.5 ms | floor 12.6 | world 13.3 | hud 4.5 | new ground tiles 0
+    ok: frame-budget: movement preserves the loaded scenery layout
+    ok: frame-budget: measured paints follow actual authoritative travel
+    frame-budget moving: 34.2 ms average, 48.2 ms peak over 20 frames
+    ok: frame-budget: moving fullscreen frame stays under 40 ms
+    ok: frame-budget: report opened
+    ok: frame-budget: owner HUD capture written
+    ok: frame-budget: live HUD names Named machine and Paint fields
+    ok: frame-budget: live HUD rejects unnamed hardware
+   PASS (0 failures)

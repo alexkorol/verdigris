@@ -1,0 +1,216 @@
+{
+  "duration": 1.5,
+  "loop": false,
+  "layers": [
+    {
+      "name": "vertical-core",
+      "spawn": "burst",
+      "space": "local",
+      "blend": "additive",
+      "count": 1,
+      "lifetime": [
+        0.8,
+        0.8
+      ],
+      "sizeStart": [
+        16,
+        280
+      ],
+      "sizeEnd": [
+        4,
+        300
+      ],
+      "colorStart": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "colorEnd": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "frames": [
+        "column"
+      ],
+      "positionMin": [
+        0,
+        0,
+        140
+      ],
+      "positionMax": [
+        0,
+        0,
+        140
+      ],
+      "glow": true
+    },
+    {
+      "name": "falling-streaks",
+      "spawn": "continuous",
+      "space": "local",
+      "blend": "additive",
+      "count": 8,
+      "lifetime": [
+        0.35,
+        0.65
+      ],
+      "sizeStart": [
+        7,
+        32
+      ],
+      "sizeEnd": [
+        3,
+        12
+      ],
+      "colorStart": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "colorEnd": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "frames": [
+        "streak"
+      ],
+      "rate": 52,
+      "duration": 0.95,
+      "positionMin": [
+        -34,
+        -14,
+        90
+      ],
+      "positionMax": [
+        34,
+        14,
+        310
+      ],
+      "velocityMin": [
+        -3,
+        -3,
+        -300
+      ],
+      "velocityMax": [
+        3,
+        3,
+        -190
+      ]
+    },
+    {
+      "name": "body-sparkle",
+      "spawn": "burst",
+      "space": "local",
+      "blend": "additive",
+      "count": 18,
+      "lifetime": [
+        0.2,
+        0.4
+      ],
+      "sizeStart": [
+        10,
+        10
+      ],
+      "sizeEnd": [
+        2,
+        2
+      ],
+      "colorStart": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "colorEnd": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "frames": [
+        "spark"
+      ],
+      "positionMin": [
+        -18,
+        -12,
+        30
+      ],
+      "positionMax": [
+        18,
+        12,
+        100
+      ],
+      "velocityMin": [
+        -50,
+        -25,
+        -25
+      ],
+      "velocityMax": [
+        50,
+        25,
+        90
+      ]
+    },
+    {
+      "name": "residual-motes",
+      "spawn": "burst",
+      "space": "local",
+      "blend": "additive",
+      "count": 12,
+      "lifetime": [
+        0.65,
+        1.5
+      ],
+      "sizeStart": [
+        4,
+        4
+      ],
+      "sizeEnd": [
+        1,
+        1
+      ],
+      "colorStart": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "colorEnd": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "frames": [
+        "dot"
+      ],
+      "delay": 0.35,
+      "positionMin": [
+        -28,
+        -12,
+        12
+      ],
+      "positionMax": [
+        28,
+        12,
+        90
+      ],
+      "velocityMin": [
+        -6,
+        -4,
+        15
+      ],
+      "velocityMax": [
+        6,
+        4,
+        35
+      ]
+    }
+  ]
+}

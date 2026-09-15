@@ -1,0 +1,3 @@
+Normal save unchanged: C5CFAC37532FE1A6B7413B4BC8AD1E4A8B8602C5C899CAE9D410E5BAD722045C
+Normal settings file remains absent.
+Normal launch not promoted; Computer Use stopped by physical Escape.

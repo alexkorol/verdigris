@@ -1,0 +1,10 @@
+2026-09-14T01:41:58.5306580Z root=C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\build\player-package-a317b898d\ profile=C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\build\player-package-071f87f53\qa\live-profile isolatedSettings=True
+2026-09-14T01:41:59.0208117Z verdigris_server.exe pid=1800 6520
+2026-09-14T01:41:59.0448898Z server: verdigris_server listening on ws://127.0.0.1:6520
+2026-09-14T01:41:59.0516817Z verdigris_client.exe pid=38444 --remote 127.0.0.1 6520 review-player
+2026-09-14T01:41:59.1903223Z client: source=a317b898da30795227a43a41594d67de6d4bb276 dirty=0 renderer=Fable perspective=1 authored-poses=96 asset-root=C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\build\player-package-a317b898d\native\client\assets\raster\runtime
+2026-09-14T01:48:12.7811601Z client error: native-exit: WM_CLOSE (window/system close request)
+2026-09-14T01:48:12.7944223Z client error: native-exit: WM_DESTROY
+2026-09-14T01:48:13.0010803Z client exit=0
+2026-09-14T01:48:13.0092156Z cleaned pid=38444 exit=0
+2026-09-14T01:48:13.0915507Z cleaned pid=1800 exit=0

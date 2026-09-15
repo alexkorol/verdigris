@@ -1,0 +1,60 @@
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS discriminator: ActorDied "monster" maps to the kill cue
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: scion death ingests silently
+PASS discriminator: ScionLost still ingests
+PASS discriminator: one Scion death schedules exactly the Scion-loss cue
+PASS silence: no unknown event schedules a cue
+PASS silence: drained schedule is empty
+PASS silence: recording sink received nothing
+PASS ordering: every known cue is voiced once
+PASS ordering: voiced cues ascend by scheduled tick
+PASS ordering: ties resolve by mixer arrival sequence
+PASS bus: default is full volume, unmuted
+PASS bus: volume setter stores permille
+PASS bus: effective gain scales authored gain exactly
+PASS bus: muted bus is silenced while the other still voices
+PASS bus: zero volume silences without mute
+PASS bus: volume clamps above full
+PASS bus: volume clamps below zero
+PASS cap: voice cap bounds the drained schedule
+PASS cap: steal-oldest evicts the earliest same-priority voice
+PASS cap: higher-priority newcomer steals the oldest lower-priority voice
+PASS cap: a lower-priority newcomer never steals a higher-priority voice
+PASS cap: music bus cap is enforced independently of the sfx bus
+PASS byte-identical: ordinary hit ingests
+PASS byte-identical: critical hit ingests
+PASS byte-identical: enemy defeat ingests
+PASS byte-identical: Scion loss ingests
+PASS byte-identical: war-cry expiry ingests
+PASS byte-identical: ordinary hit ingests
+PASS byte-identical: critical hit ingests
+PASS byte-identical: enemy defeat ingests
+PASS byte-identical: Scion loss ingests
+PASS byte-identical: war-cry expiry ingests
+PASS serialization: two independent runs are byte-identical
+PASS serialization: schedule matches the pinned canonical form
+PASS serialization: sink recorded exactly the voiced schedule
+--- begin canonical schedule ---
+cue[000003] tick=5 bus=sfx prio=world id=kill wave=sawtooth 196->49Hz 240ms gain=560 effective=560
+cue[000004] tick=5 bus=sfx prio=player id=scion-lost wave=sine 165->41Hz 900ms gain=700 effective=700
+cue[000005] tick=7 bus=sfx prio=player id=warcry-expire wave=sine 392->262Hz 300ms gain=420 effective=420
+cue[000001] tick=10 bus=sfx prio=player id=hit wave=sine 220->110Hz 90ms gain=480 effective=480
+cue[000002] tick=10 bus=sfx prio=player id=crit wave=square 440->110Hz 150ms gain=640 effective=640
+cue[000006] tick=12 bus=music prio=ui id=menu-loop wave=sine 262->262Hz 1000ms gain=300 effective=300
+--- end canonical schedule ---
+all audio mixer checks passed

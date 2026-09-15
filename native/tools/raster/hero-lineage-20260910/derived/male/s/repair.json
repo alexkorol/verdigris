@@ -1,0 +1,118 @@
+{
+  "anchor_source": [
+    627,
+    1098
+  ],
+  "sources": [
+    {
+      "source": "candidates/male/s/idle.png",
+      "source_sha256": "fa6bb5a57dbb0791095abc6078920ae3e834782e3db8dd24b95e16c8f37b5e1f",
+      "source_mode": "RGBA",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "actual_source_alpha": true,
+      "repair": "original_alpha_threshold80_largest_connected_body",
+      "body_bounds": [
+        431,
+        127,
+        822,
+        1098
+      ],
+      "body_pixels": 216909,
+      "removed_component_pixels": 0,
+      "derived": "derived/male/s/idle.png",
+      "derived_sha256": "d6d87ce4d68ced0a1159fe41ef45ea50c45bbb875442f930505e355f06c45bf2",
+      "pose": "idle"
+    },
+    {
+      "source": "candidates/male/s/walk0.png",
+      "source_sha256": "bd03fa8db82071e2df12897b05bd71c68e197c13053b8fd2c5cbe3d9894f0d7a",
+      "source_mode": "RGB",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "actual_source_alpha": false,
+      "repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "body_bounds": [
+        437,
+        128,
+        816,
+        1114
+      ],
+      "body_pixels": 203706,
+      "removed_component_pixels": 0,
+      "derived": "derived/male/s/walk0.png",
+      "derived_sha256": "ce3e60d40acc073de9ab35a9db8cf138cf721573dd599098358de3030f5a3a98",
+      "pose": "walk0"
+    },
+    {
+      "source": "candidates/male/s/walk1.png",
+      "source_sha256": "f9cc22295af3ad036c768bd79552cc5a8bcedb98d2a1a91c9a900e82c9333471",
+      "source_mode": "RGB",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "actual_source_alpha": false,
+      "repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "body_bounds": [
+        427,
+        128,
+        819,
+        1131
+      ],
+      "body_pixels": 211220,
+      "removed_component_pixels": 0,
+      "derived": "derived/male/s/walk1.png",
+      "derived_sha256": "3e0844f14de4e930bd56e2dd0b00eec762347f284758a0c5d57c0d541993d295",
+      "pose": "walk1"
+    },
+    {
+      "source": "candidates/male/s/strike0.png",
+      "source_sha256": "9190e353edd5bdf0bab6293992e30d03cb451f51a4c15640e5320bc10b53ba4c",
+      "source_mode": "RGB",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "actual_source_alpha": false,
+      "repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "body_bounds": [
+        420,
+        145,
+        875,
+        1100
+      ],
+      "body_pixels": 214292,
+      "removed_component_pixels": 0,
+      "derived": "derived/male/s/strike0.png",
+      "derived_sha256": "399e84316d914d8aa0dce9c9127d5924553a10ebafca7facf8babdc65cb1b404",
+      "pose": "strike0"
+    },
+    {
+      "source": "candidates/male/s/strike1.png",
+      "source_sha256": "0d8f20478e35e397efbdb7e9f67835427ecd74013945a735a9faf6afa0dcc288",
+      "source_mode": "RGB",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "actual_source_alpha": false,
+      "repair": "neutral_checker_chroma18_min120_largest_connected_body",
+      "body_bounds": [
+        417,
+        144,
+        792,
+        1101
+      ],
+      "body_pixels": 200812,
+      "removed_component_pixels": 0,
+      "derived": "derived/male/s/strike1.png",
+      "derived_sha256": "3a7b34416567a5244477c6b14cf0f4eda4d76ebcaf2759659723d983ba8fafe0",
+      "pose": "strike1"
+    }
+  ]
+}

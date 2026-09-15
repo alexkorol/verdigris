@@ -1,0 +1,14 @@
+{
+  "tool": "built-in image_gen",
+  "arguments": {
+    "prompt": "Use case: identity-preserve.\nImage 1 is the accepted NORTHWEST idle edit target. Image 2 is the original male identity/detail reference.\nMake ONE anticipation pose for an empty-hand short one-handed melee attack toward upper-left. Move only his anatomical LEFT near arm (attached to the sleeve on screen-left): bend its elbow down-left of the shoulder and cock the left fist beside the left shoulder/head, fist around(490,330), elbow around(450,475). Keep his anatomical RIGHT far hand relaxed low at the right waist as in the idle. A small preparation twist of the torso only.\nHe still shows his full BACK and left shoulder, facing upper-left45degrees, chest and front neckline hidden. Preserve head/hair, pelvis, hem, both legs and both planted sandals at exactly the idle positions and scale. Same elevated fixed camera, same1254square canvas, crown128 and footbaseline1098. Exact original adult anatomy and detailed rendered pixel shading, plain beige tunic/belt/sandals/colors. No new equipment, no cartoon simplification, no glow or trails. One isolated full body, true transparent alpha background without checker pixels, no text or ground shadow.",
+    "referenced_image_paths": [
+      "C:/Users/Alex/Documents/ChatGPT/verdigris-fable-renderer/native/tools/raster/hero-lineage-20260910/candidates/male/nw/idle.png",
+      "C:/Users/Alex/Downloads/ChatGPT Image Sep 10, 2026, 05_22_21 PM.png"
+    ]
+  },
+  "result_metadata": {
+    "output_hint": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a089c3-5390-76a2-8353-a73d7b52eeb8 as C:\\Users\\Alex\\.codex\\generated_images\\01a089c3-5390-76a2-8353-a73d7b52eeb8\\exec-d1fc4417-676d-437b-9d74-b7f8d80a085d.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  "state": "pending_visual_review"
+}

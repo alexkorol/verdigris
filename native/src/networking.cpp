@@ -1,9 +1,11 @@
 #include "verdigris/networking.hpp"
+#include "verdigris/inventory_extensions.hpp"
 
 #include <algorithm>
 #include <array>
 #include <atomic>
 #include <chrono>
+#include <cmath>
 #include <cctype>
 #include <cstdlib>
 #include <cstring>
@@ -31,6 +33,9 @@ constexpr socket_t invalid_socket = -1;
 
 namespace verdigris::networking {
 namespace {
+
+long long xp_for_level(int level);
+int level_from_xp(long long exp);
 
 void close_socket(socket_t socket) {
   if (socket == invalid_socket) return;
@@ -291,6 +296,42 @@ bool scion_record_mortal(const JsonValue& chronicle, const std::string& house_id
 
 // ── N4 item wire shapes (server/player/handlers/dev.js buildStateSnapshot) ──
 
+const JsonValue* find_scion_record(const JsonValue& chronicle, const std::string& house_id,
+                                    const std::string& scion_id) {
+  const auto* houses = chronicle["houses"].array();
+  if (!houses) return nullptr;
+  for (const auto& house : *houses) {
+    if (as_string(house.get("id")) != house_id) continue;
+    for (const char* roster : {"scions", "crypt"}) {
+      const auto* entries = house[roster].array();
+      if (!entries) continue;
+      for (const auto& entry : *entries)
+        if (as_string(entry.get("id")) == scion_id) return &entry;
+    }
+  }
+  return nullptr;
+}
+const JsonValue* find_scion_house(const JsonValue& chronicle, const std::string& scion_id,
+                                bool include_crypt = false) {
+  const auto* houses = chronicle["houses"].array();
+  if (!houses || scion_id.empty()) return nullptr;
+  for (const auto& house : *houses) {
+    for (const char* roster : {"scions", "crypt"}) {
+      if (!include_crypt && std::string(roster) == "crypt") continue;
+      const auto* entries = house[roster].array();
+      if (!entries) continue;
+      for (const auto& entry : *entries)
+        if (as_string(entry.get("id")) == scion_id) return &house;
+    }
+  }
+  return nullptr;
+}
+std::string scion_record_appearance(const JsonValue& chronicle, const std::string& house_id,
+                                    const std::string& scion_id) {
+  const auto* record = find_scion_record(chronicle, house_id, scion_id);
+  return player_appearance_id(record ? as_string(record->get("appearance")) : "");
+}
+
 JsonValue ratings_json(const ChannelRatings& ratings) {
   JsonValue::Object out;
   put(out, "stab", ratings.stab);
@@ -414,6 +455,8 @@ int item_level_of(const GameItem& item) { return item.item_level(); }
 // dev.js snapshotItem.
 JsonValue snapshot_item_json(const GameItem& item) {
   JsonValue::Object out;
+  put(out, "equipSlot", item.equip_slot);
+  put(out, "twoHanded", item.two_handed);
   put(out, "id", item.id);
   put(out, "uuid", item.uuid);
   put(out, "name", item.name);
@@ -431,6 +474,13 @@ JsonValue snapshot_item_json(const GameItem& item) {
 // dev.js itemIdentity (server/shared item identity projection).
 JsonValue item_identity_json(const GameItem& item) {
   JsonValue::Object out;
+  put(out,"packId",item.pack_id);
+  JsonValue::Array eligible;
+  for(const char* pack:{"main","spoils","preparations","reliquary"})
+    if(PlayerInventory::can_store_in_pack(item,pack))eligible.emplace_back(pack);
+  put(out,"packEligibility",std::move(eligible));
+  put(out, "equipSlot", item.equip_slot);
+  put(out, "twoHanded", item.two_handed);
   put(out, "slot", item.slot >= 0 ? JsonValue(item.slot) : JsonValue(nullptr));
   put(out, "id", item.id);
   put(out, "uuid", item.uuid);
@@ -439,7 +489,8 @@ JsonValue item_identity_json(const GameItem& item) {
   put(out, "qty", item.qty);
   if (item.slot >= 0) {
     put(out, "slot", item.slot);
-    put(out, "position", JsonValue::Object{{"x", item.slot % 12}, {"y", item.slot / 12}});
+    const int columns=(std::max)(1,inventory_extensions::columns(item.pack_id));
+    put(out, "position", JsonValue::Object{{"x", item.slot % columns}, {"y", item.slot / columns}});
   } else {
     put(out, "slot", nullptr);
     put(out, "position", nullptr);
@@ -465,6 +516,42 @@ JsonValue item_identity_json(const GameItem& item) {
   put(out, "combatBonuses", modifiers_json(item.combat_bonuses));
   put(out, "size", JsonValue::Object{{"width", item.size.width}, {"height", item.size.height}});
   return JsonValue(std::move(out));
+}
+
+JsonValue saved_item_json(const GameItem& item) {
+  auto out=item_identity_json(item);
+  (*out.object())["stackable"]=item.stackable;
+  return out;
+}
+GameItem load_saved_item(const JsonValue& row) {
+  GameItem item;
+  item.id=as_string(row.get("id"));item.uuid=as_string(row.get("uuid"));
+  reserve_game_item_identity(item.uuid);
+  item.name=as_string(row.get("name"));item.display_name=as_string(row.get("displayName"));
+  item.qty=as_int(row.get("qty"),1);item.slot=as_int(row.get("slot"),-1);
+  item.pack_id=as_string(row.get("packId"),"main");
+  item.stackable=as_bool(row.get("stackable"));item.two_handed=as_bool(row.get("twoHanded"));
+  item.equip_slot=as_string(row.get("equipSlot"));item.bound_to=as_string(row.get("boundTo"));
+  if(const auto* size=row.get("size")) item.size={as_int(size->get("width"),1),as_int(size->get("height"),1)};
+  auto ratings=[](const JsonValue* value) { ChannelRatings out;
+    if(value) {out.stab=as_int(value->get("stab"));out.slash=as_int(value->get("slash"));out.crush=as_int(value->get("crush"));out.range=as_int(value->get("range"));} return out; };
+  if(const auto* stats=row.get("stats")) {item.attack=ratings(stats->get("attack"));item.defense=ratings(stats->get("defense"));}
+  if(const auto* mods=row.get("combatBonuses")) {
+    item.combat_bonuses={as_int(mods->get("blockChance")),as_int(mods->get("criticalChance")),as_int(mods->get("goodsFound")),as_int(mods->get("damageAgainstBeasts"))};
+  }
+  if(const auto* b=row.get("resourceBonuses")) {item.bonus_health=as_int(b->get("health"));item.bonus_mana=as_int(b->get("mana"));}
+  if(const auto* a=row.get("attributes")) item.bonus_attributes=as_int(a->get("strength"));
+  if(const auto* vessel=row.get("vessel");vessel && vessel->get("item")) {
+    const auto& v=*vessel->get("item");VesselItem source;
+    source.id=as_string(v.get("id"));source.form_id=as_string(v.get("formId"));source.material_id=as_string(v.get("materialId"));source.kind=as_string(v.get("kind"));
+    source.w=as_int(v.get("w"),1);source.h=as_int(v.get("h"),1);source.ilvl=as_int(v.get("ilvl"),10);
+    source.vessel=as_int(v.get("vessel"));source.scars=as_int(v.get("scars"));source.patience=as_int(v.get("patience"));source.patience_max=as_int(v.get("patienceMax"));
+    source.epithet_name=as_string(v.get("epithetName"));
+    if(const auto* brands=v.get("brands");brands && brands->array()) for(const auto& b:*brands->array())
+      source.brands.push_back({as_string(b.get("id")),as_string(b.get("modId")),as_int(b.get("tier"),1),as_int(b.get("value"))});
+    item.vessel=VesselForge{}.make_block(source);
+  }
+  return item;
 }
 
 // dev.js groundItems entry.
@@ -613,6 +700,106 @@ void ProtocolSession::set_direct_emit(std::function<void(const Envelope&)> emit)
   direct_emit_ = std::move(emit);
 }
 
+namespace {
+// Validate bounded native allocations before deriving inventory access from
+// them. Client-provided unlock flags and point totals never grant authority.
+bool normalize_passive_allocation(const JsonValue& source,int budget,JsonValue& result,std::string& reason) {
+  const auto* nodes=source.get("nodes");const auto* conduits=source.get("conduits");
+  auto reject=[&](const char* message){reason=message;return false;};
+  if(!source.object() || !nodes || !nodes->array() || !conduits || !conduits->array() ||
+     nodes->array()->empty() || nodes->array()->size()>141 || conduits->array()->size()>140)
+    return reject("Invalid skill-tree allocation");
+  std::set<std::string> allocated,edges;
+  for(const auto& node:*nodes->array()) {
+    int q=0,r=0;
+    if(!node.string() || !inventory_extensions::node_position(*node.string(),q,r) || !allocated.insert(*node.string()).second)
+      return reject("Invalid skill-tree node");
+  }
+  if(!allocated.count("0,0"))return reject("The skill tree must include its origin");
+  std::set<std::string> reached{"0,0"};
+  bool changed=true;
+  while(changed){changed=false;for(const auto& node:allocated)if(!reached.count(node))
+    for(const auto& connected:reached)if(inventory_extensions::adjacent(node,connected)){
+      reached.insert(node);changed=true;break;
+    }}
+  if(reached.size()!=allocated.size())return reject("Connect this node to your allocated tree");
+  for(const auto& conduit:*conduits->array()) {
+    if(!conduit.string())return reject("Invalid skill-tree conduit");
+    const auto& id=*conduit.string();const auto split=id.find(':');
+    if(split==std::string::npos)return reject("Invalid skill-tree conduit");
+    const auto a=id.substr(0,split),b=id.substr(split+1);
+    if(a>=b || !allocated.count(a) || !allocated.count(b) || !inventory_extensions::adjacent(a,b) || !edges.insert(id).second)
+      return reject("Invalid skill-tree conduit");
+  }
+  if(static_cast<int>(allocated.size()+edges.size())-1>budget)return reject("Not enough skill points");
+  std::string selected=as_string(source.get("selectedNodeId"));
+  if(!allocated.count(selected))selected="0,0";
+  result=JsonValue::Object{{"schemaVersion",2},{"nodes",*nodes},{"conduits",*conduits},{"selectedNodeId",selected}};
+  return true;
+}
+bool allocation_contains(const JsonValue& tree,std::string_view id) {
+  if(const auto* nodes=tree.get("nodes");nodes && nodes->array())
+    for(const auto& node:*nodes->array())if(node.string() && *node.string()==id)return true;
+  return false;
+}
+}
+bool ProtocolSession::inventory_extension_unlocked(const inventory_extensions::Definition* definition) const {
+  return !definition || (passive_tree_saved_ && allocation_contains(passive_tree_,definition->node));
+}
+
+JsonValue ProtocolSession::loadout_json() const {
+  JsonValue::Array pack;for(const auto& item:inventory_.items())pack.push_back(saved_item_json(item));
+  JsonValue::Object worn;for(const auto& [seat,item]:wear_.slots())put(worn,seat,saved_item_json(item));
+  return JsonValue::Object{{"inventory",std::move(pack)},{"wear",std::move(worn)},
+      {"passiveTree",passive_tree_json()},{"treeQuestPoints",tree_quest_points_}};
+}
+bool ProtocolSession::restore_loadout(const JsonValue& data) {
+  const auto* pack=data.get("inventory");const auto* worn=data.get("wear");
+  if(!pack || !pack->array() || !worn || !worn->object()) return false;
+  JsonValue next_tree;std::string tree_error;bool tree_saved=false;
+  if(const auto* tree=data.get("passiveTree");tree && tree->object()) {
+    // Disk load is structural validation; the active Scion level is restored
+    // separately during admission. Never erase a valid saved unlock on restart.
+    if(!normalize_passive_allocation(*tree,140,next_tree,tree_error))return false;
+    tree_saved=true;
+  }
+  PlayerInventory next;WearSet next_wear;std::set<std::string> ids;std::set<std::pair<std::string,int>> occupied;
+  for(const auto& row:*pack->array()) {
+    auto item=load_saved_item(row);
+    if(item.uuid.empty() || item.qty<=0 || !ids.insert(item.uuid).second) return false;
+    // Migrate old purses out of the grid without changing identity or amount.
+    if(item.id=="coins") {item.slot=-1;item.pack_id="main";next.items().push_back(std::move(item));continue;}
+    const int columns=inventory_extensions::columns(item.pack_id),rows=inventory_extensions::rows(item.pack_id);
+    if(!columns || !PlayerInventory::can_store_in_pack(item,item.pack_id) || item.slot<0 || item.slot>=columns*rows ||
+       item.size.width<1 || item.size.height<1 || item.slot%columns+item.size.width>columns || item.slot/columns+item.size.height>rows) return false;
+    for(int y=0;y<item.size.height;++y)for(int x=0;x<item.size.width;++x)
+      if(!occupied.emplace(item.pack_id,item.slot+y*columns+x).second) return false;
+    next.items().push_back(std::move(item));
+  }
+  for(const auto& [seat,row]:*worn->object()) {
+    auto item=load_saved_item(row);
+    if(item.uuid.empty() || item.qty<=0 || !ids.insert(item.uuid).second || !WearSet::can_use_seat(item.equip_slot,seat)) return false;
+    next_wear.equip(std::move(item),seat);
+  }
+  if(const auto* main=next_wear.in_seat("right_hand");main && main->two_handed && next_wear.in_seat("left_hand"))return false;
+  inventory_=std::move(next);wear_=std::move(next_wear);
+  passive_tree_=std::move(next_tree);passive_tree_saved_=tree_saved;
+  tree_quest_points_=std::clamp(as_int(data.get("treeQuestPoints"),0),0,23);
+  sync_combat_mods();return true;
+}
+void ProtocolSession::change_loadout(const std::string& house,const std::string& scion) {
+  const auto previous=active_house_id_+":"+active_scion_id_,next=house+":"+scion;
+  if(previous==next)return;
+  scion_loadouts_[previous]=loadout_json();
+  if(auto found=scion_loadouts_.find(next);found!=scion_loadouts_.end()) { restore_loadout(found->second);return; }
+  if(active_scion_id_.empty())return; // First admission keeps the fresh purse.
+  inventory_.clear();wear_.clear();
+  passive_tree_={};passive_tree_saved_=false;tree_quest_points_=0;
+  CreateItemOptions purse;purse.quantity=100;
+  if(auto coins=create_game_item("coins",purse))inventory_.add(std::move(*coins));
+  sync_combat_mods();
+}
+
 void ProtocolSession::attach_persistence(const std::filesystem::path& path) {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   persistence_path_ = path;
@@ -630,8 +817,107 @@ void ProtocolSession::attach_persistence(const std::filesystem::path& path) {
   active_house_name_ = as_string(saved.get("activeHouseName"));
   active_scion_id_ = as_string(saved.get("activeScionId"));
   active_scion_name_ = as_string(saved.get("activeScionName"));
+  kitted_scions_.clear();
+  if(const auto* admitted=saved.get("kittedScions");admitted && admitted->array()) {
+    for(const auto& id:*admitted->array())if(id.string() && !id.string()->empty())kitted_scions_.insert(*id.string());
+  } else {
+    // Older saves omitted the one-time admission marker. A previously active
+    // Scion (or stored Scion loadout) has already received its starter kit.
+    if(!active_scion_id_.empty())kitted_scions_.insert(active_scion_id_);
+    if(const auto* loadouts=saved.get("scionLoadouts");loadouts && loadouts->object())
+      for(const auto& [key,loadout]:*loadouts->object()) {
+        const auto separator=key.find(':');
+        if(separator!=std::string::npos && separator+1<key.size())kitted_scions_.insert(key.substr(separator+1));
+      }
+  }
+  if (const auto* entries = saved.get("starterProgress"); entries && entries->object()) {
+    for (const auto& [id, row] : *entries->object()) {
+      const std::string phase = as_string(row.get("phase"));
+      if (phase != "occupation" && phase != "tool" && phase != "wave" &&
+          phase != "rally" && phase != "victory" && phase != "departed") continue;
+      starter_progress_[id] = {phase, as_string(row.get("occupation")),
+                              std::clamp(as_int(row.get("wave"), 0), 0, 3),
+                              (std::max)(0, as_int(row.get("retries"), 0))};
+    }
+  }
   username_ = as_string(saved.get("username"));
   house_treasury_ = as_int(saved.get("houseTreasury"), 0);
+  scion_combat_xp_.clear();
+  if (const auto* progression = saved.get("scionCombatXp"); progression && progression->object()) {
+    for (const auto& [id, value] : *progression->object()) {
+      const double xp = value.number().value_or(0);
+      if (std::isfinite(xp) && xp >= 0 && xp <= 1.0e12)
+        scion_combat_xp_[id] = static_cast<long long>(xp);
+    }
+  }
+  // Older disk saves retained a roster level but no XP. Preserve that level
+  // at its XP floor; never migrate client-submitted Chronicle level fields.
+  if (const auto* houses = chronicle_.get("houses"); houses && houses->array()) {
+    for (const auto& house : *houses->array()) {
+      for (const char* roster : {"scions", "crypt"}) {
+        const auto* records = house.get(roster);
+        if (!records || !records->array()) continue;
+        for (const auto& record : *records->array()) {
+          const std::string key = as_string(house.get("id")) + ":" + as_string(record.get("id"));
+          const double level = record["level"].number().value_or(1);
+          if (!scion_combat_xp_.count(key) && std::isfinite(level) && level > 1 && level <= 200)
+            scion_combat_xp_[key] = xp_for_level(static_cast<int>(level));
+        }
+      }
+    }
+  }
+  restore_scion_progression();
+  if(const auto* loadouts=saved.get("scionLoadouts");loadouts && loadouts->object()) {
+    scion_loadouts_=*loadouts->object();
+    for(const auto& [key,loadout]:scion_loadouts_) {
+      if(const auto* pack=loadout.get("inventory");pack && pack->array())for(const auto& row:*pack->array())reserve_game_item_identity(as_string(row.get("uuid")));
+      if(const auto* worn=loadout.get("wear");worn && worn->object())for(const auto& [seat,row]:*worn->object())reserve_game_item_identity(as_string(row.get("uuid")));
+    }
+    if(auto it=scion_loadouts_.find(active_house_id_+":"+active_scion_id_);it!=scion_loadouts_.end())
+      if(!restore_loadout(it->second)) { persistence_path_.clear();return; } // Never overwrite an invalid saved loadout.
+  }
+  if(const auto* stored=saved.get("houseStore");stored && stored->array()) {
+    house_store_.clear();for(const auto& row:*stored->array())house_store_.push_back(load_saved_item(row));
+  }
+  if(const auto* stored=saved.get("bankItems");stored && stored->array()) {
+    bank_.clear();for(const auto& row:*stored->array())bank_.push_back(load_saved_item(row));
+  }
+  // Older safe-return code stripped the whole loadout into an inaccessible
+  // extraction-only store. Preserve those exact records in the existing bank,
+  // where the owner can withdraw them deliberately. Clearing only after the
+  // transfer makes the next persisted load idempotent; no Scion/seat is guessed.
+  for(auto& item:house_store_)bank_.push_back(std::move(item));
+  house_store_.clear();
+  restore_starter_world();
+}
+
+void ProtocolSession::checkpoint_scion_progression() {
+  scion_combat_xp_[active_house_id_ + ":" + active_scion_id_] = combat_xp_;
+  auto* house = find_chronicle_house_object(chronicle_, active_house_id_);
+  if (!house) return;
+  for (const char* roster : {"scions", "crypt"}) {
+    auto it = house->find(roster);
+    if (it == house->end() || !it->second.array()) continue;
+    for (auto& entry : *it->second.array()) {
+      if (as_string(entry.get("id")) != active_scion_id_ || !entry.object()) continue;
+      (*entry.object())["level"] = level_from_xp(combat_xp_);
+      return;
+    }
+  }
+}
+
+void ProtocolSession::restore_scion_progression() {
+  const auto saved = scion_combat_xp_.find(active_house_id_ + ":" + active_scion_id_);
+  combat_xp_ = saved == scion_combat_xp_.end() ? 0 : saved->second;
+  const int level = level_from_xp(combat_xp_);
+  if (auto* actor = simulation_->actor(simulation_->scion().actor_id)) {
+    actor->stats.level = level;
+    actor->stats.attack = level == 1 ? 12 : 12 + level * 3;
+    actor->stats.life_max = level == 1 ? 100 : 100 + level * 10;
+    actor->stats.life = actor->stats.life_max;
+  }
+  world_->set_level(level);
+  checkpoint_scion_progression();
 }
 
 void ProtocolSession::persist() const {
@@ -642,6 +928,11 @@ void ProtocolSession::persist() const {
   if (ec) return;
   JsonValue::Object saved;
   put(saved, "version", 1);
+  JsonValue::Object starter_entries;
+  for (const auto& [id, progress] : starter_progress_)
+    put(starter_entries, id, JsonValue::Object{{"phase", progress.phase}, {"occupation", progress.occupation},
+                                             {"wave", progress.wave}, {"retries", progress.retries}});
+  put(saved, "starterProgress", std::move(starter_entries));
   put(saved, "identity", identity_);
   put(saved, "username", username_);
   put(saved, "chronicle", chronicle_);
@@ -650,7 +941,20 @@ void ProtocolSession::persist() const {
   put(saved, "activeHouseName", active_house_name_);
   put(saved, "activeScionId", active_scion_id_);
   put(saved, "activeScionName", active_scion_name_);
+  JsonValue::Array admitted;for(const auto& id:kitted_scions_)admitted.push_back(id);
+  put(saved,"kittedScions",std::move(admitted));
   put(saved, "houseTreasury", house_treasury_);
+  JsonValue::Object progression;
+  for (const auto& [id, xp] : scion_combat_xp_) put(progression, id, static_cast<double>(xp));
+  put(progression, active_house_id_ + ":" + active_scion_id_, static_cast<double>(combat_xp_));
+  put(saved, "scionCombatXp", std::move(progression));
+  JsonValue::Object loadouts=scion_loadouts_;
+  // This key already exists after loading or switching Scions. The current
+  // authoritative loadout must replace it; put() only inserts missing keys.
+  loadouts.insert_or_assign(active_house_id_+":"+active_scion_id_,loadout_json());
+  put(saved,"scionLoadouts",std::move(loadouts));
+  JsonValue::Array stored;for(const auto& item:house_store_)stored.push_back(saved_item_json(item));put(saved,"houseStore",std::move(stored));
+  JsonValue::Array bank;for(const auto& item:bank_)bank.push_back(saved_item_json(item));put(saved,"bankItems",std::move(bank));
   const auto temp = persistence_path_.wstring() + L".tmp";
   std::ofstream output(temp, std::ios::binary | std::ios::trunc);
   if (!output) return;
@@ -698,7 +1002,7 @@ void ProtocolSession::reset_world_for_new_socket() {
   // lifecycle blocked respawn.mjs; a leftover Chronicle draft broke
   // mortality.mjs's seeded revision).
   std::lock_guard<std::recursive_mutex> lock(mutex_);
-  tree_quest_points_ = 0;  // JS: a rebuilt Player starts with questPoints 0
+  // Native Scion loadouts retain earned tree quest points across login.
   if (lifecycle_ != "permadead") {
     // A soft death clears on re-login (fresh Player), but a mortal Scion's
     // final death is Chronicle history - reconnecting must NOT resurrect
@@ -730,16 +1034,21 @@ void ProtocolSession::reset_world_for_new_socket() {
     actor->stats.life = actor->stats.life_max;  // fresh Player logs in healthy
   }
   world_->reset_to_town();
+  restore_starter_world();
 }
 void ProtocolSession::set_broadcast(std::function<void(const Envelope&)> broadcast) { std::lock_guard<std::recursive_mutex> lock(mutex_); broadcast_=std::move(broadcast); }
 std::int64_t ProtocolSession::now_ms() { return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count(); }
 std::string ProtocolSession::player_payload() const {
   JsonValue::Object player; const auto position=world_->position();
+  put(player,"starterSlice",starter_payload());
+  put(player,"appearance",scion_record_appearance(chronicle_,active_house_id_,active_scion_id_));
   put(player,"uuid",identity_); put(player,"username",!username_.empty()?username_:(active_scion_name_.empty()?identity_:active_scion_name_)); put(player,"socket_id",socket_id_); put(player,"sceneId",world_->scene_id()); put(player,"x",position.x); put(player,"y",position.y); put(player,"facing",world_->facing());
   { const auto* actor=simulation_->actor(simulation_->scion().actor_id); put(player,"level",actor?actor->stats.level:1); }
   put(player,"passiveTree",passive_tree_json());
+  put(player,"wearDetails",wear_details_json());
+  put(player,"combat",combat_totals_json());
   put(player,"quests",quests_json());
-  JsonValue::Array slots; for (const auto& item:inventory_.items()) { JsonValue::Object value; put(value,"id",item.id); put(value,"uuid",item.uuid); put(value,"name",item.name); if(item.slot>=0) put(value,"slot",item.slot); else put(value,"slot",nullptr); slots.emplace_back(std::move(value)); }
+  JsonValue::Array slots; for (const auto& item:inventory_.items()) slots.emplace_back(item_identity_json(item));
   JsonValue::Object inventory; put(inventory,"slots",std::move(slots)); put(player,"inventory",std::move(inventory));
   JsonValue::Object chronicles; put(chronicles,"mortal",mortal_oath_); put(chronicles,"scionId",active_scion_id_.empty()?JsonValue(nullptr):JsonValue(active_scion_id_)); put(chronicles,"houseId",active_house_id_.empty()?JsonValue(nullptr):JsonValue(active_house_id_)); put(player,"chronicles",std::move(chronicles));
   return JsonValue(std::move(player)).stringify();
@@ -910,18 +1219,31 @@ const int kWagonPitches[8][2] = {{47,112},{42,109},{34,109},{29,112},{29,118},{3
 }  // namespace
 namespace {
 struct TownNpc { int id; const char* name; const char* examine; int x; int y; const char* actions[2]; int action_count; };
-// server/core/data/npcs.js - the Crossroads roster.
+// The existing Crossroads services share a compact north-facing arrival court.
+// IDs and verbs retain their authority; context menus and range checks use
+// these same positions around the fountain and its adjacent arrival tile.
 const TownNpc kTownNpcs[] = {
-    {1, "Aldwyn the Guide", "A weathered wayfinder who watches over the Crossroads' newest scions.", 34, 116, {"talk", "examine"}, 2},
-    {2, "Mara, General Trader", "Keeps the general stall at the Crossroads bazaar. Buys most things, sells the rest.", 49, 103, {"trade", "examine"}, 2},
-    {3, "Ludovicus, Weapons Trader", "Sells iron for the road. Claims every axe on his boards outlived its first three owners.", 19, 113, {"examine", "trade"}, 2},
-    {4, "Rhea of the Countinghouse", "Keeps the countinghouse tent: personal storage, honest scales, no questions.", 31, 121, {"examine", "bank"}, 2},
+    {1, "Aldwyn the Guide", "A weathered wayfinder who watches over the Crossroads' newest scions.", 35, 114, {"talk", "examine"}, 2},
+    {2, "Mara, General Trader", "Keeps the general stall at the Crossroads bazaar. Buys most things, sells the rest.", 41, 112, {"trade", "examine"}, 2},
+    {3, "Ludovicus, Weapons Trader", "Sells iron for the road. Claims every axe on his boards outlived its first three owners.", 34, 111, {"examine", "trade"}, 2},
+    {4, "Rhea of the Countinghouse", "Keeps the countinghouse tent: personal storage, honest scales, no questions.", 38, 110, {"examine", "bank"}, 2},
 };
 }  // namespace
 
 JsonValue ProtocolSession::combat_totals_json() const {
   const auto totals = wear_.totals();
   JsonValue::Object combat;
+  if (const auto* actor = simulation_->actor(simulation_->scion().actor_id)) {
+    put(combat, "baseAttack", actor->stats.attack);
+    put(combat, "baseDefense", actor->stats.defense);
+    put(combat, "gearDefense", (std::max)(0, (std::max)((std::max)(totals.defense.stab, totals.defense.slash),
+                                                     (std::max)(totals.defense.crush, totals.defense.range))));
+    const int gear = (std::max)(0, (std::max)((std::max)(totals.attack.stab, totals.attack.slash),
+                                           (std::max)(totals.attack.crush, totals.attack.range)));
+    put(combat, "gearAttack", gear);
+    put(combat, "attackRating", actor->stats.attack+gear);
+    put(combat, "defenseRating", actor->stats.defense+(std::max)(0,(std::max)((std::max)(totals.defense.stab,totals.defense.slash),(std::max)(totals.defense.crush,totals.defense.range))));
+  }
   put(combat, "attack", ratings_json(totals.attack));
   put(combat, "defense", ratings_json(totals.defense));
   put(combat, "blockChance", totals.modifiers.block_chance);
@@ -956,7 +1278,7 @@ JsonValue ProtocolSession::scene_payload() const {
   return JsonValue(std::move(scene));
 }
 JsonValue ProtocolSession::movement_step_payload() const {
-  const auto& step=world_->last_step(); JsonValue::Object value; put(value,"sequence",static_cast<double>(step.sequence)); put(value,"startedAt",static_cast<double>(step.started_at_ms)); put(value,"duration",step.duration_ms); if(step.direction.empty()) put(value,"direction",nullptr); else put(value,"direction",step.direction); put(value,"blocked",step.blocked); return JsonValue(std::move(value));
+  const auto& step=world_->last_step(); JsonValue::Object value; put(value,"sequence",static_cast<double>(step.sequence)); put(value,"startedAt",static_cast<double>(step.started_at_ms)); put(value,"duration",step.duration_ms); if(step.direction.empty()) put(value,"direction",nullptr); else put(value,"direction",step.direction); put(value,"blocked",step.blocked); put(value,"action",step.action); put(value,"fromX",step.from.x); put(value,"fromY",step.from.y); return JsonValue(std::move(value));
 }
 namespace {
 long long xp_for_level(int level);
@@ -1016,6 +1338,7 @@ void ProtocolSession::emit_monster_state(
 JsonValue ProtocolSession::snapshot() const {
   JsonValue::Object state; const auto& scion=simulation_->scion(); const auto* actor=simulation_->actor(scion.actor_id); const auto position=world_->position();
   put(state,"uuid",identity_); put(state,"x",position.x); put(state,"y",position.y); put(state,"sceneId",world_->scene_id()); put(state,"sceneType",world_->scene_type()); put(state,"sceneName",world_->scene_name());
+  put(state,"starterSlice",starter_payload());
   put(state,"lifecycle",lifecycle_);
   put(state,"lifecycleMode",lifecycle_mode_);
   put(state,"theme",world_->in_instance()?world_->metadata().theme:std::string("town"));
@@ -1059,6 +1382,12 @@ JsonValue ProtocolSession::snapshot() const {
       put(entry, "actions", std::move(actions));
       npcs.emplace_back(std::move(entry));
     }
+  }
+  if (starter_active()) {
+    npcs.emplace_back(JsonValue::Object{{"id",101},{"name","Village Defender"},{"x",16},{"y",22},
+        {"tileX",16},{"tileY",22},{"artIdentity","defender"},{"actions",JsonValue::Array{"talk"}}});
+    npcs.emplace_back(JsonValue::Object{{"id",102},{"name","Well Keeper"},{"x",16},{"y",20},
+        {"tileX",16},{"tileY",20},{"artIdentity","scribe"},{"actions",JsonValue::Array{"talk"}}});
   }
   put(state,"npcs",std::move(npcs));
   { // dev.js: chroniclesRecord mirrors chroniclesStore.snapshot(uuid).
@@ -1104,6 +1433,7 @@ JsonValue ProtocolSession::snapshot() const {
     put(state,"sceneMetadata",std::move(town_meta));
   }
   // N4: the real item pipeline snapshot (dev.js buildStateSnapshot).
+  put(state,"appearance",scion_record_appearance(chronicle_,active_house_id_,active_scion_id_));
   put(state,"level",actor?actor->stats.level:1);
   JsonValue::Array items; for (const auto& item:inventory_.items()) items.emplace_back(snapshot_item_json(item)); put(state,"inventory",std::move(items));
   JsonValue::Array details; for (const auto& item:inventory_.items()) details.emplace_back(item_identity_json(item)); put(state,"inventoryDetails",std::move(details));
@@ -1164,8 +1494,11 @@ void ProtocolSession::emit_ground_change(const std::function<void(const Envelope
   // `data`, so wrap the array at data.data like core:refresh:inventory.
   const JsonValue items = dropped_items_json();
   JsonValue::Object body; put(body, "data", items);
-  emit_world(Envelope{"world:itemDropped", JsonValue(body)}, emit);
-  emit_world(Envelope{"item:change", JsonValue(std::move(body))}, emit);
+  Envelope dropped{"world:itemDropped", JsonValue(body)};
+  dropped.meta = JsonValue::Object{{"sceneId", world_->scene_id()}};
+  emit_world(dropped, emit);
+  dropped.event = "item:change";
+  emit_world(dropped, emit);
 }
 void ProtocolSession::emit_equip_state(const std::function<void(const Envelope&)>& emit) const {
   // JS player:equippedAnItem carries the public projection (wear). Native
@@ -1179,26 +1512,9 @@ void ProtocolSession::emit_equip_state(const std::function<void(const Envelope&)
   emit(Envelope{"player:equippedAnItem", JsonValue(std::move(data))});
 }
 void ProtocolSession::finish_extraction(const std::function<void(const Envelope&)>& emit) {
-  // Drain backpack + wear into the House store. JS has no player:extract;
-  // the response envelope reuses that name (see REPORT).
+  // A living Scion returning safely keeps equipment, compartments and purse.
+  // House storage is an explicit player action, not a side effect of stairs.
   int banked_items = 0;
-  std::vector<std::string> uuids;
-  uuids.reserve(inventory_.items().size());
-  for (const auto& item : inventory_.items()) uuids.push_back(item.uuid);
-  for (const auto& uuid : uuids) {
-    GameItem item;
-    if (inventory_.remove_by_uuid(uuid, &item)) {
-      house_store_.push_back(std::move(item));
-      ++banked_items;
-    }
-  }
-  for (const auto& seat : WearSet::physical_slots()) {
-    auto worn = wear_.unequip(seat);
-    if (worn) {
-      house_store_.push_back(std::move(*worn));
-      ++banked_items;
-    }
-  }
   sync_combat_mods();
   JsonValue::Array stored;
   for (const auto& item : house_store_) stored.emplace_back(item_identity_json(item));
@@ -1208,7 +1524,7 @@ void ProtocolSession::finish_extraction(const std::function<void(const Envelope&
   put(summary, "storedItems", std::move(stored));
   put(summary, "storedTrophies", JsonValue::Array{});
   emit(Envelope{"player:extract", JsonValue(std::move(summary))});
-  emit_message(emit, "Banked " + std::to_string(banked_items) + " items into the House store.");
+  emit_message(emit, "Returned safely to Crossroads. Your equipment, items and coins are retained.");
   emit_inventory_refresh(emit);
   emit_equip_state(emit);
 }
@@ -1282,34 +1598,46 @@ void ProtocolSession::handle_equip(const JsonValue& payload, const std::function
   const auto* item_data=payload.get("item");
   const std::string uuid=as_string(item_data?item_data->get("uuid"):nullptr);
   const std::string target=as_string(item_data?item_data->get("targetSlot"):nullptr);
-  GameItem item;
-  if (uuid.empty()||!inventory_.remove_by_uuid(uuid,&item)) {
-    // JS sendInventoryError: game:send:message + inventory refresh, no mutation.
-    emit_message(emit,"That item is no longer in your inventory.");
+  auto reject = [&](const std::string& reason) {
+    emit_message(emit, reason);
+    emit(Envelope{"item:equip:rejected", JsonValue::Object{{"uuid", uuid}, {"reason", reason}}});
     emit_inventory_refresh(emit);
-    return;
+  };
+  const GameItem* candidate = inventory_.find_by_uuid(uuid);
+  if (!candidate) { reject("That item is no longer in your inventory."); return; }
+  const ItemDef* def = item_def(candidate->id);
+  const std::string base = !candidate->equip_slot.empty() ? candidate->equip_slot : (def ? def->slot : "");
+  if (base.empty() || (!target.empty() && !WearSet::can_use_seat(base, target))) {
+    reject("This item does not fit that seat."); return;
   }
-  const ItemDef* def=item_def(item.id);
-  const std::string base=!item.equip_slot.empty()?item.equip_slot:(def?def->slot:"");
-  if (base.empty()) { inventory_.add(std::move(item)); emit_inventory_refresh(emit); return; }
-  const std::string seat=wear_.resolve_seat(base,target);
-  auto displaced=wear_.equip(std::move(item),seat);
-  bool spilled=false;
+  const std::string seat = wear_.resolve_seat(base, target);
+  if(!inventory_extension_unlocked(inventory_extensions::for_seat(seat))) {
+    reject("Unlock this equipment seat in the skill tree first.");return;
+  }
+  const auto* main_hand = wear_.in_seat("right_hand");
+  if ((seat == "right_hand" && candidate->two_handed && wear_.in_seat("left_hand")) ||
+      (seat == "left_hand" && main_hand && main_hand->two_handed)) {
+    reject("A two-handed weapon needs both hands free."); return;
+  }
+  // Atomic swap: lack of room never spills an owned item onto the floor.
+  const auto inventory_before = inventory_;
+  const auto wear_before = wear_;
+  GameItem item;
+  inventory_.remove_by_uuid(uuid, &item);
+  auto displaced = wear_.equip(std::move(item), seat);
   if (displaced) {
-    displaced->slot=-1;
-    auto result=inventory_.add(std::move(*displaced));
-    // Full backpack mid-swap: the displaced piece spills bound at the feet
-    // (JS aborts the equip instead; documented N4 simplification — the
-    // scenario set never swaps onto a full grid).
-    const auto position=world_->position();
-    for (auto& spill:result.overflow) { world_->add_ground_item(std::move(spill),position.x,position.y); spilled=true; }
+    displaced->slot = -1;
+    if (!inventory_.add(std::move(*displaced)).overflow.empty()) {
+      inventory_ = inventory_before; wear_ = wear_before;
+      reject("Make room in your backpack before swapping equipment."); return;
+    }
   }
   sync_combat_mods();
   emit_inventory_refresh(emit);
   emit_equip_state(emit);
   quest_trigger("equip-vessel", emit);
-  if (spilled) emit_ground_change(emit);
 }
+
 JsonValue ProtocolSession::quests_json() const {
   JsonValue::Object first_goal;
   put(first_goal, "stage", first_goal_stage_);
@@ -1355,6 +1683,11 @@ void ProtocolSession::tree_attributes(int* strength, int* dexterity, int* intell
       }
     }
   }
+  if (const auto* starter = starter_progress()) {
+    if (starter->occupation == "field_hand") ++str_total;
+    if (starter->occupation == "scout") ++dex_total;
+    if (starter->occupation == "scribe") ++int_total;
+  }
   if (strength) *strength = str_total;
   if (dexterity) *dexterity = dex_total;
   if (intelligence) *intelligence = int_total;
@@ -1364,13 +1697,13 @@ JsonValue ProtocolSession::passive_tree_json() const {
   // min(140, min(max(2, level), 117) + min(questPoints, 23)).
   const auto* actor = simulation_->actor(simulation_->scion().actor_id);
   const int level = actor ? actor->stats.level : 1;
-  const int earned = (std::min)(140, (std::min)((std::max)(2, level), 117) +
+  const int earned = (std::min)(140, (std::min)(starter_progress() ? (std::max)(0,level-1) : (std::max)(2, level), 117) +
                                      (std::min)((std::max)(0, tree_quest_points_), 23));
   JsonValue::Array nodes;
   JsonValue::Array conduits;
   std::string selected = "0,0";
   JsonValue::Array class_order;
-  int spent = 1;
+  int spent = 0;
   if (passive_tree_saved_) {
     if (const auto* saved_nodes = passive_tree_.get("nodes"); saved_nodes && saved_nodes->array()) {
       nodes = *saved_nodes->array();
@@ -1393,18 +1726,36 @@ JsonValue ProtocolSession::passive_tree_json() const {
   put(tree, "earned", earned);
   put(tree, "selectedNodeId", selected);
   put(tree, "classOrder", std::move(class_order));
+  JsonValue::Array unlocks;
+  for(const auto& definition:inventory_extensions::definitions)
+    if(inventory_extension_unlocked(&definition))unlocks.emplace_back(std::string(definition.unlock));
+  put(tree,"inventoryUnlocks",std::move(unlocks));
   return JsonValue(std::move(tree));
 }
 
 void ProtocolSession::handle_skilltree_save(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) {
-  const auto* snapshot = payload.get("snapshot");
-  if (!snapshot || !snapshot->object()) return;
-  passive_tree_ = *snapshot;
-  passive_tree_saved_ = true;
-  JsonValue::Object data;
-  put(data, "player", JsonValue::Object{{"socket_id", socket_id_}});
-  put(data, "passiveTree", passive_tree_json());
-  emit(Envelope{"player:skilltree:update", JsonValue(std::move(data))});
+  const auto* snapshot=payload.get("snapshot");
+  JsonValue normalized;std::string reason;
+  const auto authoritative=passive_tree_json();
+  bool accepted=snapshot && normalize_passive_allocation(*snapshot,as_int(authoritative.get("earned"),0),normalized,reason);
+  if(accepted && passive_tree_saved_) {
+    // The native pane has allocation, not respec. Never let stale saves revoke
+    // an existing route or strand an occupied, unlocked inventory extension.
+    for(const auto& node:*passive_tree_["nodes"].array())
+      if(!allocation_contains(normalized,*node.string())){accepted=false;reason="Existing skill choices must be retained";break;}
+    if(accepted)for(const auto& edge:*passive_tree_["conduits"].array()) {
+      const auto& next=*normalized["conduits"].array();
+      if(std::none_of(next.begin(),next.end(),[&](const JsonValue& v){return v.stringify()==edge.stringify();})) {
+        accepted=false;reason="Existing conduit choices must be retained";break;
+      }
+    }
+  }
+  if(accepted){passive_tree_=std::move(normalized);passive_tree_saved_=true;sync_combat_mods();persist();}
+  else if(reason.empty())reason="Invalid skill-tree allocation";
+  emit(Envelope{"player:skilltree:update",JsonValue::Object{{"player",JsonValue::Object{{"socket_id",socket_id_}}},
+      {"passiveTree",passive_tree_json()},{"accepted",accepted},{"reason",accepted?"":reason}}});
+  if(!accepted)emit_message(emit,reason);
+  else emit_equip_state(emit);
 }
 
 namespace {
@@ -1790,9 +2141,13 @@ void ProtocolSession::handle_npc_talk(const JsonValue& payload, const std::funct
   // actions/index.js player:npc:talk - Aldwyn only, town only, chebyshev<=1.
   const auto* item = payload.get("item");
   const int npc_id = as_int(item ? item->get("id") : nullptr, -1);
+  if (starter_active() && (npc_id == 101 || npc_id == 102)) {
+    handle_starter_action("interact", emit); return;
+  }
   if (npc_id != 1 || world_->in_instance()) return;
   const Vec2 tile = tile_movement::occupied_tile(world_->position());
-  if ((std::max)(std::abs(tile.x - 34), std::abs(tile.y - 116)) > 1) return;
+  const auto& guide = kTownNpcs[0];
+  if ((std::max)(std::abs(tile.x - guide.x), std::abs(tile.y - guide.y)) > 1) return;
   if (first_goal_stage_ == "available") {
     first_goal_stage_ = "clear-floor";
     first_goal_started_ms_ = now_ms();
@@ -1826,7 +2181,9 @@ void ProtocolSession::auto_pickup_gold(const std::function<void(const Envelope&)
     GameItem item;
     if (!world_->take_ground_item(uuid,&item)) continue;
     item.slot=-1;
+    const auto item_id=item.id;const int quantity=item.qty;
     inventory_.add(std::move(item));
+    emit(Envelope{"player:pickup-confirmed",JsonValue::Object{{"actorId",identity_},{"itemId",item_id},{"quantity",quantity}}});
     changed=true;
   }
   if (changed) { emit_inventory_refresh(emit); emit_ground_change(emit); }
@@ -1891,7 +2248,11 @@ void ProtocolSession::handle_take_ground(const std::string& uuid, const std::fun
   if (!relic_scion_id.empty()) mark_relic_recovered(relic_scion_id);
   quest_trigger("loot", emit);
   if (took_vessel) quest_trigger("loot-vessel", emit);
+  const auto item_id=item.id;const int quantity=item.qty;
   auto result=inventory_.add(std::move(item));
+  int admitted=quantity;
+  for(const auto& spill:result.overflow)admitted-=spill.qty;
+  if(admitted>0)emit(Envelope{"player:pickup-confirmed",JsonValue::Object{{"actorId",identity_},{"itemId",item_id},{"quantity",admitted}}});
   bool spilled=false;
   for (auto& spill:result.overflow) { world_->add_ground_item(std::move(spill),gx,gy); spilled=true; }  // no room: stays on the ground
   emit_inventory_refresh(emit);
@@ -2153,16 +2514,20 @@ void ProtocolSession::handle_menu_action(const JsonValue& payload, const std::fu
   }
   if (action_id=="player:bank:withdraw") {
     const int qty = as_int(item_ref ? item_ref->get("qty") : nullptr, 1);
+    if(qty<=0)return;
     for (std::size_t i = 0; i < bank_.size(); ++i) {
       if (bank_[i].uuid != uuid) continue;
       GameItem out = bank_[i];
-      if (out.stackable && out.qty > qty) {
-        bank_[i].qty -= qty;
-        out.qty = qty;
+      if(out.stackable)out.qty=(std::min)(out.qty,qty);
+      if(inventory_.add(out).added<=0) {
+        emit_message(emit,"Make room in your backpack before withdrawing.");
+        emit_bank_screen(emit);return;
+      }
+      if (out.stackable && bank_[i].qty > out.qty) {
+        bank_[i].qty -= out.qty;
       } else {
         bank_.erase(bank_.begin() + static_cast<long long>(i));
       }
-      inventory_.add(std::move(out));
       emit_inventory_refresh(emit);
       emit_bank_screen(emit);
       break;
@@ -2218,16 +2583,92 @@ void ProtocolSession::handle_menu_action(const JsonValue& payload, const std::fu
 void ProtocolSession::handle_inventory_commit(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) {
   // player:inventory:commit world-drop: the production inventory drop verb.
   const std::string action=as_string(payload.get("action"));
+  const auto requested_pack=as_string(payload.get("packId"));
+  const std::string pack=requested_pack.empty()?"main":requested_pack;
+  const int columns=inventory_extensions::columns(pack),rows=inventory_extensions::rows(pack);
+  const bool unlocked=columns && inventory_extension_unlocked(inventory_extensions::for_pack(pack));
+  if(action=="unequip") {
+    const auto* ref=payload.get("item");
+    const auto uuid=as_string(ref?ref->get("uuid"):nullptr);
+    const auto seat=as_string(payload.get("seat"));
+    const auto* requested=payload.get("slot");
+    const bool valid=requested && requested->number() && std::isfinite(*requested->number()) &&
+        *requested->number()>=0 && *requested->number()<columns*rows &&
+        std::floor(*requested->number())==*requested->number();
+    const auto* worn=wear_.in_seat(seat);
+    bool accepted=false;
+    std::string reason="That equipment changed; try again";
+    if(valid && unlocked && worn && worn->uuid==uuid) {
+      const auto before_inventory=inventory_;
+      const auto before_wear=wear_;
+      const int slot=as_int(requested,-1);
+      std::string displaced_uuid;
+      for(const auto& candidate:inventory_.items()) {
+        if(candidate.slot<0 || candidate.pack_id!=pack)continue;
+        const int x=slot%columns,y=slot/columns;
+        const int cx=candidate.slot%columns,cy=candidate.slot/columns;
+        if(x>=cx && x<cx+candidate.size.width && y>=cy && y<cy+candidate.size.height) {
+          displaced_uuid=candidate.uuid;break;
+        }
+      }
+      auto incoming=wear_.unequip(seat);
+      int destination=slot;
+      bool compatible=true;
+      if(!displaced_uuid.empty()) {
+        GameItem displaced;
+        inventory_.remove_by_uuid(displaced_uuid,&displaced);
+        destination=displaced.slot;
+        const auto* main=wear_.in_seat("right_hand");
+        compatible=WearSet::can_use_seat(displaced.equip_slot,seat) &&
+            !(displaced.two_handed && seat=="right_hand" && wear_.in_seat("left_hand")) &&
+            !(seat=="left_hand" && main && main->two_handed);
+        if(compatible)wear_.equip(std::move(displaced),seat);
+      }
+      accepted=compatible && inventory_.add_at(std::move(*incoming),destination,pack);
+      reason=compatible?"Not enough space for this item":"That item cannot replace this equipment";
+      if(!accepted){inventory_=before_inventory;wear_=before_wear;}
+      else sync_combat_mods();
+    } else if(!unlocked)reason="Unlock this compartment in the skill tree first";
+    else if(!valid)reason="Drop inside the compartment";
+    emit_inventory_refresh(emit);emit_equip_state(emit);
+    emit(Envelope{"inventory:operation",JsonValue::Object{{"uuid",uuid},{"accepted",accepted},{"reason",accepted?"":reason}}});
+    return;
+  }
+  if(action=="move") {
+    const auto* ref=payload.get("item");
+    const auto uuid=as_string(ref?ref->get("uuid"):nullptr);
+    const auto* requested=payload.get("slot");
+    const bool valid=requested && requested->number() && std::isfinite(*requested->number()) &&
+        *requested->number()>=0 && *requested->number()<columns*rows &&
+        std::floor(*requested->number())==*requested->number();
+    const bool accepted=valid && unlocked && inventory_.move_or_swap(uuid,as_int(requested,-1),pack);
+    emit_inventory_refresh(emit);
+    emit(Envelope{"inventory:operation",JsonValue::Object{{"uuid",uuid},{"accepted",accepted},
+        {"reason",accepted?"":!unlocked?"Unlock this compartment in the skill tree first":"This item does not fit here"}}});
+    return;
+  }
   if (action!="world-drop") return;
   const auto* item_ref=payload.get("item");
   const std::string uuid=as_string(item_ref?item_ref->get("uuid"):nullptr);
   GameItem item;
-  if (uuid.empty()||!inventory_.remove_by_uuid(uuid,&item)) return;
+  const auto seat=as_string(payload.get("seat"));
+  bool accepted=false;
+  if(!uuid.empty() && !seat.empty()) {
+    const auto* worn=wear_.in_seat(seat);
+    if(worn && worn->uuid==uuid) {item=std::move(*wear_.unequip(seat));accepted=true;sync_combat_mods();}
+  } else if(const auto* carried=inventory_.find_by_uuid(uuid);carried && carried->id!="coins")
+    accepted=inventory_.remove_by_uuid(uuid,&item);
+  if(!accepted) {
+    emit(Envelope{"inventory:operation",JsonValue::Object{{"uuid",uuid},{"accepted",false},{"reason","That item cannot be dropped"}}});
+    return;
+  }
   item.slot=-1;
   const auto position=world_->position();
   world_->add_ground_item(std::move(item),position.x,position.y);
   emit_inventory_refresh(emit);
+  emit_equip_state(emit);
   emit_ground_change(emit);
+  emit(Envelope{"inventory:operation",JsonValue::Object{{"uuid",uuid},{"accepted",true},{"reason",""}}});
 }
 void ProtocolSession::emit_combat_event(const WorldCombatEvent& event, const std::function<void(const Envelope&)>& emit) {
   if (event.type == "telegraph") {
@@ -2272,6 +2713,11 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
   if (respawn_protection_until_ms_ > now && actor->stats.life < life_before) {
     actor->stats.life = life_before;
   }
+  if (starter_active()) {
+    for (const auto& event : events) emit_combat_event(event, emit);
+    advance_starter_combat(emit);
+    return;
+  }
   bool loot = false;
   for (const auto& event : events) {
     emit_combat_event(event, emit);
@@ -2301,8 +2747,11 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
           actor->stats.life_max = 100 + derived * 10;
           actor->stats.life = actor->stats.life_max;
           world_->set_level(derived);
+          emit(Envelope{"player:level-up",JsonValue::Object{{"actorId",identity_},{"level",derived}}});
           emit_message(emit, "You are now level " + std::to_string(derived) + "!");
         }
+        checkpoint_scion_progression();
+        persist();
       }
       // world-web: the node Warden falls - dead stays dead, the road opens.
       if (!current_node_id_.empty()) {
@@ -2358,9 +2807,113 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
     handle_final_death(emit);
   }
 }
+// Server-owned starter progression. Reconnects replay only the current combat
+// checkpoint, while occupation, equipment and victory rewards remain durable.
+const ProtocolSession::StarterProgress* ProtocolSession::starter_progress() const {
+  const auto found = starter_progress_.find(active_house_id_ + ":" + active_scion_id_);
+  return found == starter_progress_.end() ? nullptr : &found->second;
+}
+bool ProtocolSession::starter_active() const {
+  const auto* progress = starter_progress();
+  return progress && progress->phase != "departed";
+}
+JsonValue ProtocolSession::starter_payload() const {
+  const auto* progress = starter_progress();
+  if (!progress) return JsonValue::Object{{"active", false}};
+  std::string objective;
+  if (progress->phase == "occupation") objective = "Before the alarm: how did you serve the village?";
+  else if (progress->phase == "tool") objective = "Speak to the defender beside you. Take a branch and help hold the breach.";
+  else if (progress->phase == "wave") objective = progress->wave == 3 ? "Defeat the breaker at the village well." :
+      "Hold the breach. Defeat the attackers (wave " + std::to_string(progress->wave) + " of 2).";
+  else if (progress->phase == "rally") objective = progress->wave == 3 ?
+      "Regroup beside the well. The breaker has entered the village." : "Regroup beside the well before the next attack.";
+  else if (progress->phase == "victory") objective = "Village defended. Choose your first skill, then leave by the north passage.";
+  return JsonValue::Object{{"active", starter_active()}, {"phase", progress->phase},
+      {"occupation", progress->occupation}, {"wave", progress->wave}, {"retries", progress->retries}, {"objective", objective}};
+}
+void ProtocolSession::restore_starter_world() {
+  if (!starter_active()) return;
+  world_->enter_starter_village();
+  if (starter_progress()->phase == "wave") world_->spawn_starter_wave(starter_progress()->wave);
+}
+void ProtocolSession::handle_starter_action(const std::string& action, const std::function<void(const Envelope&)>& emit) {
+  if (!starter_active() || pending_chronicles_ || world_->scene_id() != "owner-demo-prologue") return;
+  auto& progress = starter_progress_.at(active_house_id_ + ":" + active_scion_id_);
+  auto* actor = simulation_->actor(simulation_->scion().actor_id);
+  if (!actor || actor->stats.life <= 0) return;
+  const auto at = tile_movement::occupied_tile(world_->position());
+  const auto is_near = [&](int x, int y) { return (std::max)(std::abs(at.x-x), std::abs(at.y-y)) <= 2; };
+  if (progress.phase == "occupation") {
+    if (action != "field_hand" && action != "scout" && action != "scribe") return;
+    progress.occupation = action; progress.phase = "tool";
+    emit_message(emit, "The palisade shakes. A defender calls: take a branch. We must keep them away from the well.");
+  } else if (action == "interact" && progress.phase == "tool") {
+    if (!is_near(16,22)) { emit_message(emit, "Return to the defender south of the well."); return; }
+    // Check both seats and backpack: replaying a retry never mints another tool.
+    const GameItem* tool = wear_.in_seat("right_hand");
+    if (!tool || tool->id != "wooden-club") {
+      std::string existing;
+      for (const auto& item : inventory_.items()) if (item.id == "wooden-club") { existing = item.uuid; break; }
+      std::optional<GameItem> club;
+      if (existing.empty()) club = create_game_item("wooden-club", CreateItemOptions{});
+      else { GameItem item; if (inventory_.remove_by_uuid(existing, &item)) club = std::move(item); }
+      if (!club) return;
+      if (auto prior = wear_.unequip("right_hand")) inventory_.add(std::move(*prior));
+      wear_.equip(std::move(*club), "right_hand"); sync_combat_mods();
+    }
+    progress.phase = "wave"; progress.wave = 1; world_->spawn_starter_wave(1);
+    emit_equip_state(emit); emit_inventory_refresh(emit);
+    emit_message(emit, "Hold the breach. Advance toward the palisade and strike with your branch.");
+  } else if (action == "interact" && progress.phase == "rally") {
+    if (!is_near(16,20)) { emit_message(emit, "Regroup at the west side of the well."); return; }
+    actor->stats.life = actor->stats.life_max;
+    progress.phase = "wave"; world_->spawn_starter_wave(progress.wave);
+    emit_message(emit, progress.wave == 3 ? "The breaker reaches the well. Stand your ground." : "A second pack forces its way through the breach.");
+  } else if (action == "interact" && progress.phase == "victory") {
+    if (!is_near(16,8)) { emit_message(emit, "The north passage is clear. Leave for Crossroads when you are ready."); return; }
+    progress.phase = "departed"; world_->reset_to_town(); world_->teleport(38,116,now_ms());
+    emit_message(emit, "The village holds. Your House takes the road to Crossroads.");
+    persist(); emit_login(emit); return;
+  } else return;
+  persist(); emit(Envelope{"starter:update", starter_payload()}); emit_monster_state(now_ms(), emit);
+}
+void ProtocolSession::advance_starter_combat(const std::function<void(const Envelope&)>& emit) {
+  auto& progress = starter_progress_.at(active_house_id_ + ":" + active_scion_id_);
+  auto* actor = simulation_->actor(simulation_->scion().actor_id);
+  if (!actor) return;
+  if (actor->stats.life <= 0) {
+    ++progress.retries; progress.phase = "tool"; progress.wave = 0;
+    lifecycle_ = "alive"; respawn_at_ms_ = 0; prepare_final_death_ = false;
+    actor->stats.life = actor->stats.life_max;
+    restore_starter_world(); persist(); emit_login(emit);
+    emit_message(emit, "The defenders pull you to safety. Keep your equipment and try again."); return;
+  }
+  if (progress.phase != "wave" || world_->monsters().empty() ||
+      std::any_of(world_->monsters().begin(), world_->monsters().end(), [](const auto& m) { return m.alive; })) return;
+  if (progress.wave < 3) { ++progress.wave; progress.phase = "rally"; }
+  else {
+    progress.phase = "victory";
+    combat_xp_ = (std::max)(combat_xp_, xp_for_level(2));
+    checkpoint_scion_progression(); restore_scion_progression();
+    emit(Envelope{"player:level-up", JsonValue::Object{{"actorId", identity_}, {"level", actor->stats.level}}});
+    emit(Envelope{"player:skilltree:update", JsonValue::Object{
+        {"player", JsonValue::Object{{"socket_id",socket_id_}}}, {"passiveTree",passive_tree_json()}}});
+    emit_message(emit, "The village is safe. Level 2: your first skill point is ready.");
+  }
+  persist(); emit(Envelope{"starter:update", starter_payload()});
+}
 void ProtocolSession::handle_extract(const std::function<void(const Envelope&)>& emit) {
+  if (starter_active()) { handle_starter_action("interact", emit); return; }
   if (!world_->in_instance()) {
     emit_message(emit, "There is no extraction here.");
+    return;
+  }
+  const auto* actor = simulation_->actor(simulation_->scion().actor_id);
+  const Vec2 at = tile_movement::occupied_tile(world_->position());
+  const auto exit = world_->metadata().stairs_up;
+  if (!actor || actor->stats.life <= 0 ||
+      (std::max)(std::abs(at.x - exit.x), std::abs(at.y - exit.y)) > 1) {
+    emit_message(emit, "Reach the exit stairs to return to the surface.");
     return;
   }
   world_->return_to_surface();
@@ -2516,7 +3069,7 @@ void ProtocolSession::ensure_chronicle_house(const std::string& id, const std::s
   (*root)["activeHouseId"] = JsonValue(id);
 }
 void ProtocolSession::ensure_chronicle_scion(const std::string& house_id, const std::string& id,
-                                             const std::string& name, bool mortal) {
+                                             const std::string& name, bool mortal, const std::string& appearance) {
   JsonValue::Object* root = chronicle_.object();
   if (!root) return;
   auto houses_it = root->find("houses");
@@ -2537,6 +3090,7 @@ void ProtocolSession::ensure_chronicle_scion(const std::string& house_id, const 
     JsonValue::Object scion;
     put(scion, "id", id);
     put(scion, "name", name);
+    put(scion, "appearance", player_appearance_id(appearance));
     put(scion, "level", 1);
     put(scion, "mortal", mortal);
     put(scion, "deeds", JsonValue::Array{});
@@ -2546,7 +3100,7 @@ void ProtocolSession::ensure_chronicle_scion(const std::string& house_id, const 
 }
 void ProtocolSession::emit_login(const std::function<void(const Envelope&)>& emit) const { Envelope response{"player:login",JsonValue::Object{}}; parse_json(login_payload(),response.data); emit(response); }
 void ProtocolSession::emit_world(const Envelope& envelope, const std::function<void(const Envelope&)>& emit) const { if (broadcast_) broadcast_(envelope); else emit(envelope); }
-void ProtocolSession::emit_transition(const std::function<void(const Envelope&)>& emit, const char* event) const { JsonValue::Object data; put(data,"player",JsonValue::Object{{"socket_id",socket_id_}}); put(data,"scene",scene_payload()); JsonValue player_state; parse_json(player_payload(),player_state); JsonValue::Object state_fields; if (const auto* fields=player_state.object()) { for (const auto& key:{"uuid","x","y","sceneId"}) if (const auto* field=player_state.get(key)) put(state_fields,key,*field); } put(data,"playerState",std::move(state_fields)); emit_world(Envelope{event,JsonValue(std::move(data))},emit); }
+void ProtocolSession::emit_transition(const std::function<void(const Envelope&)>& emit, const char* event) const { JsonValue::Object data; put(data,"player",JsonValue::Object{{"socket_id",socket_id_}}); put(data,"scene",scene_payload()); JsonValue player_state; parse_json(player_payload(),player_state); JsonValue::Object state_fields; if (const auto* fields=player_state.object()) { for (const auto& key:{"uuid","x","y","sceneId","appearance"}) if (const auto* field=player_state.get(key)) put(state_fields,key,*field); } put(data,"playerState",std::move(state_fields)); emit_world(Envelope{event,JsonValue(std::move(data))},emit); }
 void ProtocolSession::emit_movement(const std::function<void(const Envelope&)>& emit) const { JsonValue data; parse_json(player_payload(),data); Envelope movement{"player:movement",std::move(data)}; movement.meta=movement_step_payload(); emit_world(movement,emit); }
 void ProtocolSession::emit_message(const std::function<void(const Envelope&)>& emit, const std::string& text) const { emit(Envelope{"game:send:message",JsonValue::Object{{"text",text}}}); }
 void ProtocolSession::handle(const Envelope& envelope, const std::function<void(const Envelope&)>& emit) {
@@ -2556,6 +3110,16 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
   // for direct-call paths; std::recursive_mutex makes both safe.
   std::lock_guard<std::recursive_mutex> handle_lock(mutex_);
   const auto* payload=envelope.data.object()?&envelope.data:nullptr;
+  if (envelope.event == "starter:action") {
+    handle_starter_action(as_string(payload ? payload->get("action") : nullptr), emit);
+    return;
+  }
+  if (starter_active() && (envelope.event == "world:zone:enter" || envelope.event == "instance:enterSolo" ||
+                          envelope.event == "world:road:chart" || envelope.event == "wagon:outfit:buy")) {
+    emit_message(emit, "The road is not safe yet. Help defend the village."); return;
+  }
+  if (starter_active() && starter_progress()->phase == "occupation" &&
+      (envelope.event == "player:move" || envelope.event == "player:skill:trigger")) return;
   if (envelope.event=="world:zone:enter") { const auto node=as_string(payload?payload->get("nodeId"):nullptr,"tin:1:0"); simulation_->dispatch(Command::enter(node.rfind("route:",0)==0?node:"route:"+node)); { std::string web_road; int web_tier=0; int web_index=0; if (parse_node_id(node,&web_road,&web_tier,&web_index)) { enter_road_node(node, emit); return; } } current_node_id_.clear(); world_->set_block_stairs_down(false); world_->set_stairs_up_returns_to_town(false); world_->enter_solo_instance("dungeon",""); emit_transition(emit,"world:scene:transition"); emit_ground_change(emit); last_instance_theme_ = world_->metadata().theme; last_instance_layout_ = world_->metadata().layout; quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); return; }
   if (envelope.event=="instance:enterSolo") { current_node_id_.clear(); world_->set_block_stairs_down(false); world_->set_stairs_up_returns_to_town(false); world_->enter_solo_instance(as_string(payload?payload->get("template"):nullptr,"dungeon"),as_string(payload?payload->get("layout"):nullptr,"")); emit_transition(emit,"party:scene:transition"); emit_ground_change(emit); last_instance_theme_ = world_->metadata().theme; last_instance_layout_ = world_->metadata().layout; quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); return; }
   if (envelope.event=="player:move") { const auto direction=as_string(payload?payload->get("direction"):nullptr); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); if (world_->apply_movement_sample(direction,now_ms())) { emit_movement(emit); auto_pickup_gold(emit); quest_trigger("move", emit); check_road_gates(emit); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool scene_changed=world_->scene_id()!=scene_before; if (depth_changed||scene_changed) { if (was_instance&&!world_->in_instance()) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); maybe_complete_first_goal(emit); quest_trigger("return-surface", emit, zone_id_for_instance(last_instance_theme_, last_instance_layout_), last_instance_theme_); } if (depth_changed) quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); if (depth_changed && !current_node_id_.empty() && !current_child_id_.empty()) { current_node_id_ = current_child_id_; current_node_tier_ += 1; current_node_name_ = current_child_name_.empty() ? current_node_name_ : current_child_name_; current_child_id_.clear(); world_->set_block_stairs_down(true); } emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) emit_ground_change(emit); } } return; }
@@ -2677,7 +3241,42 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     }
     return;
   }
-  if (envelope.event=="player:skill:trigger") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor&&world_->in_instance()){ if (respawn_protection_until_ms_ > 0) respawn_protection_until_ms_ = 0; active_skill_id_=as_string(payload?payload->get("skillId"):nullptr,"primary-attack"); if (active_skill_id_ == "war-cry") { if (actor->stats.resource < presentation_constants::kWarCryResourceCost) { emit_message(emit,"Not enough resource for War Cry."); return; } actor->stats.resource -= presentation_constants::kWarCryResourceCost; actor->war_cry_attack_bonus = presentation_constants::kWarCryAttackBonus; actor->war_cry_ticks_remaining = presentation_constants::kWarCryDurationTicks; emit_message(emit,"War Cry: attack empowered."); return; } world_->set_engaged_by(identity_); const auto direction=as_string(payload?payload->get("direction"):nullptr,"down"); const auto wear_totals=wear_.totals(); const int wear_bonus=(std::max)((std::max)(wear_totals.attack.stab,wear_totals.attack.slash),(std::max)(wear_totals.attack.crush,wear_totals.attack.range)); world_->start_player_attack(actor->stats.level,actor->stats.attack+(std::max)(0,wear_bonus),now_ms(),direction); process_combat(now_ms(),emit); /* real-clock cadence: polls advance combat */ } return; }
+  if (envelope.event == "player:skill:trigger" &&
+      as_string(payload ? payload->get("skillId") : nullptr) == "dash") {
+    auto* actor = simulation_->actor(simulation_->scion().actor_id);
+    if (!actor || actor->stats.life <= 0 || !world_->in_instance()) return;
+    const std::string scene_before = world_->scene_id();
+    const int depth_before = world_->metadata().depth;
+    const std::string direction = as_string(payload ? payload->get("direction") : nullptr);
+    if (!world_->dash(direction, now_ms())) return;
+    emit_movement(emit);
+    auto_pickup_gold(emit);
+    quest_trigger("move", emit);
+    check_road_gates(emit);
+    if (world_->scene_id() != scene_before) {
+      if (!world_->in_instance()) {
+        emit_message(emit, "The party returns to the surface.");
+        finish_extraction(emit);
+        maybe_complete_first_goal(emit);
+        quest_trigger("return-surface", emit, zone_id_for_instance(last_instance_theme_, last_instance_layout_), last_instance_theme_);
+      } else if (world_->metadata().depth != depth_before) {
+        emit_ground_change(emit);
+        quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth);
+      }
+      if (world_->in_instance() && world_->metadata().depth != depth_before &&
+          !current_node_id_.empty() && !current_child_id_.empty()) {
+        current_node_id_ = current_child_id_;
+        current_node_tier_ += 1;
+        if (!current_child_name_.empty()) current_node_name_ = current_child_name_;
+        current_child_id_.clear();
+        world_->set_block_stairs_down(true);
+      }
+      emit_transition(emit, "party:scene:transition");
+      if (world_->in_instance()) emit_ground_change(emit);
+    }
+    return;
+  }
+  if (envelope.event=="player:skill:trigger") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor&&world_->in_instance()){ if (respawn_protection_until_ms_ > 0) respawn_protection_until_ms_ = 0; active_skill_id_=as_string(payload?payload->get("skillId"):nullptr,"primary-attack"); if (active_skill_id_ == "war-cry") { if (actor->stats.resource < presentation_constants::kWarCryResourceCost) { emit_message(emit,"Not enough resource for War Cry."); return; } actor->stats.resource -= presentation_constants::kWarCryResourceCost; actor->war_cry_attack_bonus = presentation_constants::kWarCryAttackBonus; actor->war_cry_ticks_remaining = presentation_constants::kWarCryDurationTicks; emit(Envelope{"player:buff-applied", JsonValue::Object{{"actorId",identity_},{"buffId","war-cry"}}}); emit_message(emit,"War Cry: attack empowered."); return; } world_->set_engaged_by(identity_); const auto direction=as_string(payload?payload->get("direction"):nullptr,"down"); const auto wear_totals=wear_.totals(); const int wear_bonus=(std::max)((std::max)(wear_totals.attack.stab,wear_totals.attack.slash),(std::max)(wear_totals.attack.crush,wear_totals.attack.range)); world_->start_player_attack(actor->stats.level,actor->stats.attack+(std::max)(0,wear_bonus),now_ms(),direction); process_combat(now_ms(),emit); /* real-clock cadence: polls advance combat */ } return; }
   if (envelope.event=="dev:give") { if (payload) handle_give(*payload,emit); return; }
   if (envelope.event=="dev:drop") { if (payload) handle_drop(*payload,emit); return; }
   if (envelope.event=="dev:forcecritical") { world_->player_combat_mods().force_critical=true; emit_message(emit,"Your next strike will be a critical hit."); return; }
@@ -2690,6 +3289,29 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     put(party,"id","native-party-"+std::to_string(party_serial++));
     put(party,"members",JsonValue::Array{});
     emit(Envelope{"party:update",JsonValue::Object{{"party",std::move(party)}}});
+    return;
+  }
+  if (envelope.event == "item:unequip") {
+    const std::string seat = as_string(payload ? payload->get("seat") : nullptr);
+    const auto* equipped=wear_.in_seat(seat);
+    if(!equipped) {
+      emit(Envelope{"inventory:operation",JsonValue::Object{{"uuid",as_string(payload?payload->get("uuid"):nullptr)},
+          {"accepted",false},{"reason","That seat is now empty"}}});
+      return;
+    }
+    const auto uuid=equipped->uuid;
+    const auto inventory_before = inventory_;
+    const auto wear_before = wear_;
+    auto item = wear_.unequip(seat);
+    item->slot = -1;
+    const bool accepted=inventory_.add(std::move(*item)).overflow.empty();
+    if (!accepted) {
+      inventory_ = inventory_before; wear_ = wear_before;
+      emit_message(emit, "Make room in your backpack before unequipping.");
+    } else sync_combat_mods();
+    emit_inventory_refresh(emit); emit_equip_state(emit);
+    emit(Envelope{"inventory:operation",JsonValue::Object{{"uuid",uuid},{"accepted",accepted},
+        {"reason",accepted?"":"Make room in your backpack before unequipping."}}});
     return;
   }
   if (envelope.event=="item:equip") { if (payload) handle_equip(*payload,emit); return; }
@@ -2755,15 +3377,28 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     static std::atomic<std::uint64_t> scion_serial{1};
     const std::string house_id=as_string(payload?payload->get("houseId"):nullptr);
     const std::string name=as_string(payload?payload->get("name"):nullptr,"Scion");
-    const std::string scion_id="scion-"+std::to_string(scion_serial++);
-    ensure_chronicle_scion(house_id,scion_id,name,false);
+    // A process restart resets the counter, while saved living/crypt IDs remain.
+    std::string scion_id;
+    do { scion_id="scion-"+std::to_string(scion_serial++); }
+    while (find_scion_house(chronicle_,scion_id,true));
+    ensure_chronicle_scion(house_id,scion_id,name,false,as_string(payload?payload->get("appearance"):nullptr));
     active_scion_name_=name;
     chronicles_revision_+=1;
     emit(Envelope{"chronicles:state",chronicles_state_payload(scion_id)});
     return;
   }
   if (envelope.event=="chronicles:scion:set-out") {
-    active_scion_id_=as_string(payload?payload->get("scionId"):nullptr);
+    const std::string scion_id=as_string(payload?payload->get("scionId"):nullptr);
+    const auto* house=find_scion_house(chronicle_,scion_id);
+    if (!house) { emit_message(emit,"Choose a living Scion from your House roster."); return; }
+    checkpoint_scion_progression();
+    change_loadout(as_string(house->get("id")),scion_id);
+    active_house_id_=as_string(house->get("id"));
+    active_house_name_=as_string(house->get("name"));
+    active_scion_id_=scion_id;
+    restore_scion_progression();
+    if (const auto* record = find_scion_record(chronicle_, active_house_id_, active_scion_id_))
+      active_scion_name_ = as_string(record->get("name"), active_scion_name_);
     pending_chronicles_=false;
     // JS beginScionSession parity (server/core/services/chronicles.js:210-219):
     // EVERY Chronicles set-out admits the scion under the hard lifecycle -
@@ -2779,8 +3414,20 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     respawn_protection_until_ms_=0;
     prepare_final_death_=false;
     set_scion_record_mortal(chronicle_, active_house_id_, active_scion_id_, true);
-    // crossroads: the scion spawns beside their House wagon pitch, and the
-    // first set-out of the day claims the road purse into the ledger.
+    const std::string starter_key = active_house_id_ + ":" + active_scion_id_;
+    const bool fresh_starter = as_bool(payload ? payload->get("starterSlice") : nullptr, false) &&
+                               !kitted_scions_.count(active_scion_id_) && !starter_progress_.count(starter_key);
+    if (fresh_starter) {
+      starter_progress_[starter_key] = {"occupation", "", 0, 0};
+      // The crisis starts with civilian clothing. No market purse or bronze weapon.
+      inventory_.clear(); wear_.clear(); sync_combat_mods();
+      kitted_scions_.insert(active_scion_id_);
+    }
+    if (starter_active()) {
+      restore_starter_world(); persist(); emit_login(emit); return;
+    }
+    // Keep the House wagon pitch and daily road purse. Admission itself
+    // uses the open tile just south of the fountain, clear of its bowl.
     {
       std::uint32_t hash = 5381;
       for (unsigned char c : active_house_id_) hash = hash * 33 + c;
@@ -2801,7 +3448,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
       if (coins<100) { CreateItemOptions o; o.quantity=100-coins; auto purse=create_game_item("coins",o); if (purse) inventory_.add(std::move(*purse)); }
     }
     world_->reset_to_town();
-    world_->teleport(kWagonPitches[home_pitch_index_][0], kWagonPitches[home_pitch_index_][1] + 1, now_ms());
+    world_->teleport(38, 116, now_ms());
     emit_login(emit);
     return;
   }
@@ -2889,9 +3536,14 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     return;
   }
   if (envelope.event=="player:chronicles:select") {
+    checkpoint_scion_progression();
+    change_loadout(as_string(payload?payload->get("houseId"):nullptr),as_string(payload?payload->get("scionId"):nullptr));
     active_scion_id_=as_string(payload?payload->get("scionId"):nullptr);
     active_house_id_=as_string(payload?payload->get("houseId"):nullptr);
+    restore_scion_progression();
     active_scion_name_=as_string(payload?payload->get("scionName"):nullptr);
+    if (const auto* record = find_scion_record(chronicle_, active_house_id_, active_scion_id_))
+      active_scion_name_ = as_string(record->get("name"), active_scion_name_);
     mortal_oath_=as_bool(payload?payload->get("mortal"):nullptr,false);
     lifecycle_mode_=mortal_oath_?"hard":"soft";
     lifecycle_="alive"; lifecycle_deaths_=0; respawn_at_ms_=0; respawn_protection_until_ms_=0; prepare_final_death_=false;
@@ -2906,9 +3558,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     active_quest_=0; quest_objective_=0; quests_completed_.clear(); quest_points_=0; tree_quest_points_=0;
     // A new scion starts with the fresh-scion profile (purse only), never a
     // duplicate of the previous scion's equipment.
-    wear_.clear(); inventory_.clear();
-    CreateItemOptions purse; purse.quantity=100;
-    auto coins=create_game_item("coins",purse); if (coins) inventory_.add(std::move(*coins));
+    // change_loadout retains an existing living Scion; a new Scion gets only its own purse.
     // JS parity (createScionSessionProfile): an admitted scion arrives with
     // full resources. The Simulation actor is reused across scions, so the
     // heir must not inherit the fallen scion's lethal wound - leaving life 0

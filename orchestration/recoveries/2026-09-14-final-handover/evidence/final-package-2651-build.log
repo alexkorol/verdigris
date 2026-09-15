@@ -1,0 +1,238 @@
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+core.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\src\core.cpp(2362): warning C4100: 'player_level': unreferenced formal parameter
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+seasonal.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+networking.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\src\networking.cpp(3479): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+core_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+networking_tests.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\tests\networking_tests.cpp(578): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+camera2d_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+fable_camera_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+local_session.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+remote_session.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\remote_session.cpp(421): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+presentation_state.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+session_tests.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\tests\session_tests.cpp(1213): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+presentation_events_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+cue_spec.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+event_cues.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+audio_mixer.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+audio_mixer_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+user_settings_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+server_main.cpp
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\src\server_main.cpp(16): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\src\server_main.cpp(22): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+main.cpp
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusHeaders.h(701): warning C4458: declaration of 'nativeCap' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusHeaders.h(716): note: see declaration of 'Gdiplus::CustomLineCap::nativeCap'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusImageAttributes.h(368): warning C4458: declaration of 'nativeImageAttr' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusImageAttributes.h(382): note: see declaration of 'Gdiplus::ImageAttributes::nativeImageAttr'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusMatrix.h(301): warning C4458: declaration of 'nativeMatrix' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusMatrix.h(315): note: see declaration of 'Gdiplus::Matrix::nativeMatrix'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusBrush.h(95): warning C4458: declaration of 'nativeBrush' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusBrush.h(108): note: see declaration of 'Gdiplus::Brush::nativeBrush'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPen.h(467): warning C4458: declaration of 'nativePen' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPen.h(481): note: see declaration of 'Gdiplus::Pen::nativePen'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(891): warning C4458: declaration of 'nativePath' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(905): note: see declaration of 'Gdiplus::GraphicsPath::nativePath'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(1078): warning C4458: declaration of 'nativeIterator' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(1092): note: see declaration of 'Gdiplus::GraphicsPathIterator::nativeIterator'
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4047): warning C4100: 'bounds': unreferenced formal parameter
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4553): warning C4244: 'argument': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4553): warning C4244: 'argument': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4589): warning C4244: '=': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4651): warning C4244: '=': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4652): warning C4244: '=': conversion from 'const int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4652): warning C4244: '=': conversion from 'const int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4702): warning C4244: 'argument': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4702): warning C4244: 'argument': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4723): warning C4244: '=': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4723): warning C4244: '=': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4724): warning C4244: '=': conversion from 'const int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4724): warning C4244: '=': conversion from 'const int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4727): warning C4244: 'argument': conversion from 'const int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4727): warning C4244: 'argument': conversion from 'const int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4727): warning C4244: 'argument': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4730): warning C4244: 'argument': conversion from 'const int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4730): warning C4244: 'argument': conversion from 'const int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4730): warning C4244: 'argument': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(4730): warning C4244: 'argument': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(5871): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(12054): warning C4456: declaration of 'expect_x' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(12048): note: see declaration of 'expect_x'
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(12055): warning C4456: declaration of 'expect_y' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(12049): note: see declaration of 'expect_y'
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(12392): warning C4456: declaration of 'route' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(12351): note: see declaration of 'route'
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(15024): warning C4456: declaration of 'strip' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(14986): note: see declaration of 'strip'
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\inventory_scenarios.hpp(240): warning C4244: 'argument': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\inventory_scenarios.hpp(240): warning C4244: 'argument': conversion from 'int' to 'uint8_t', possible loss of data
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\inventory_scenarios.hpp(524): warning C4456: declaration of 'tooltip' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\inventory_scenarios.hpp(225): note: see declaration of 'tooltip'
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\typography_scenarios.hpp(34): warning C4310: cast truncates constant value
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(21669): warning C4456: declaration of 'here' hides previous local declaration
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(21621): note: see declaration of 'here'
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(21964): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(21965): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.29.30133\include\memory(3382): warning C4244: 'argument': conversion from '_Ty' to 'uint16_t', possible loss of data
+        with
+        [
+            _Ty=int
+        ]
+C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\client\main.cpp(20669): note: see reference to function template instantiation 'std::unique_ptr<verdigris::client::RemoteProtocolSession,std::default_delete<verdigris::client::RemoteProtocolSession>> std::make_unique<verdigris::client::RemoteProtocolSession,const char(&)[10],int,const char(&)[20],bool,0>(const char (&)[10],int &&,const char (&)[20],bool &&)' being compiled
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+remote_play.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+native legacy denylist: PASS
+Native review package: C:\Users\Alex\Documents\ChatGPT\verdigris-consolidated-20260913\native\build\player-package-2651bd498\Verdigris.exe
+Files: 1270; source: 2651bd4985e698fade744b8aeea5c84f9c251d57; preserved source-status entries: 0

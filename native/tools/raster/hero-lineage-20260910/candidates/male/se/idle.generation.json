@@ -1,0 +1,23 @@
+{
+  "tool": "image_gen.imagegen",
+  "model_selection": "not exposed",
+  "generated_path": "C:\\Users\\Alex\\.codex\\generated_images\\01a0896d-63f4-7432-b1cd-d54c4e9b5ee0\\exec-2c5deb5a-b9d6-4078-badc-eb6a699f2e3a.png",
+  "output_hint": "Generated images are saved to C:\\Users\\Alex\\.codex\\generated_images\\01a0896d-63f4-7432-b1cd-d54c4e9b5ee0 as C:\\Users\\Alex\\.codex\\generated_images\\01a0896d-63f4-7432-b1cd-d54c4e9b5ee0\\exec-2c5deb5a-b9d6-4078-badc-eb6a699f2e3a.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "prompt": "Edit this exact man into one neutral standing pose facing diagonally toward the lower-right, 45 degrees from his current direct-front heading. Keep the camera fixed at the same elevated frontal angle; rotate the man's body, not the camera. Show his face and chest in a front three-quarter view. Preserve the exact adult face, brown hair, plain beige short-sleeved belted tunic, bare lower legs, leather sandals, muscular adult proportions, realistic rendered volume and existing fine raster detail. No redesign or cartoon simplification. Empty relaxed hands, feet comfortably planted. Keep his original apparent body size, approximately 980 pixels tall, centered around x640 with ground anchor at y1120 on a square1280 canvas and ample empty margin. Keep the whole silhouette, genuine transparent alpha, no floor, shadows, text or other objects. One isolated pose.",
+  "references": [
+    "C:/Users/Alex/Downloads/ChatGPT Image Sep 10, 2026, 05_22_21 PM.png"
+  ],
+  "recipe": {
+    "source_url": "https://x.com/elle_elle_e/status/2097440118718316964",
+    "adaptation": "Separate reference-led images retaining original identity, size and placement; this new physical-form character request supersedes old raster style simplification rules. Pose beats are our explicit contact and anticipation/contact adaptation."
+  },
+  "reference_records": [
+    {
+      "index": 1,
+      "submitted_path": "C:\\Users\\Alex\\Downloads\\ChatGPT Image Sep 10, 2026, 05_22_21 PM.png",
+      "sha256": "fa6bb5a57dbb0791095abc6078920ae3e834782e3db8dd24b95e16c8f37b5e1f",
+      "retained_path": "C:\\Users\\Alex\\Downloads\\ChatGPT Image Sep 10, 2026, 05_22_21 PM.png",
+      "viewed_before_call": true
+    }
+  ]
+}
