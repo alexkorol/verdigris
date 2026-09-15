@@ -200,6 +200,19 @@ int main() {
         const auto owned_a = found_and_select(*a, "Protocol House A", true);
         const auto original = a->snapshot(); const auto items_a = inventory(original);
         check(!items_a.empty(), "Ordinary first set-out has real owned inventory to preserve");
+        // Raw protocol fields are optional for compatibility, but supplied actor
+        // or scene references must fence stale in-connection gameplay intents.
+        a->command("player:move", {{"direction", "up"}, {"sequence", 1},
+            {"sceneId", "instance:retired-protocol-fixture"}, {"actingActorId", text(original["uuid"])}});
+        auto stale_scene = a->until("service:result");
+        check(text(stale_scene["status"]) == "rejected" && text(stale_scene["reason"]) == "This command belongs to a retired actor or scene.", "Stale scene rejects raw gameplay intent");
+        a->command("player:move", {{"direction", "down"}, {"sequence", 2},
+            {"sceneId", text(original["sceneId"])}, {"actingActorId", "actor:foreign-protocol-fixture"}});
+        auto stale_actor = a->until("service:result");
+        check(text(stale_actor["status"]) == "rejected" && text(stale_actor["reason"]) == "This command belongs to a retired actor or scene.", "Foreign actingActorId rejects raw gameplay intent");
+        const auto after_stale = a->snapshot();
+        check(after_stale["x"].number() == original["x"].number() && after_stale["y"].number() == original["y"].number() && inventory(after_stale) == items_a,
+            "Stale scene/actor commands leave position and possessions unchanged");
         auto b = std::make_unique<Peer>(runtime.port); b->authenticate(code_b, true);
         b->command("chronicles:scion:create", {{"houseId", owned_a.first}, {"name", "Foreign Scion"}});
         b->until("game:send:message");
@@ -225,6 +238,9 @@ int main() {
         check(restored_a->account == account_a, "Store restart preserves authenticated account identity");
         check(houses(after_a).size() == 1 && text(houses(after_a).front()["id"]) == owned_a.first, "Store restart preserves owned House");
         check(text(after_a["chronicles"]["scionId"]) == owned_a.second && text(after_a["lifecycle"]) == "alive", "Store restart preserves selected living Scion");
+        const auto* living = houses(after_a).front()["scions"].array();
+        check(living && living->size() == 1 && text(living->front()["id"]) == owned_a.second && after_a["hp"]["current"].number().value_or(0) > 0,
+            "Restored selected Scion remains in the living roster with positive life");
         check(inventory(after_a) == items_a, "Store restart preserves exact private item UUIDs and item data");
         check(inventory(after_b) == items_b, "Store restart independently preserves second account possessions");
         check(text(houses(after_b).front()["id"]) == owned_b.first, "Store restart does not copy the first House into second account");
