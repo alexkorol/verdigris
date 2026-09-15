@@ -40,8 +40,21 @@ void paint_frontend(ClientState& state,HDC dc,const RECT& bounds,render::List& r
   SelectObject(dc,fit<.8?skin::font_heading():skin::font_title());
   SIZE title{};skin::text_extent(dc,heading,static_cast<int>(std::strlen(heading)),&title);
   const int title_y=oy+static_cast<int>(231*fit);
-  SetTextColor(dc,RGB(27,13,6));skin::text_out(dc,cx-title.cx/2+2,title_y+2,heading,static_cast<int>(std::strlen(heading)));
-  SetTextColor(dc,RGB(239,199,116));skin::text_out(dc,cx-title.cx/2,title_y,heading,static_cast<int>(std::strlen(heading)));
+  bool title_art=false;
+  const auto& ink=state.billboards.menu_title_ink;
+  if(state.frontend==Frontend::Title&&state.billboards.menu_title.ready()&&state.billboards.alpha_blend&&ink.right>ink.left&&ink.bottom>ink.top) {
+    const int sw=ink.right-ink.left,sh=ink.bottom-ink.top;
+    const double scale=std::min(470*fit/sw,78*fit/sh);
+    const int tw=std::max(1,int(sw*scale)),th=std::max(1,int(sh*scale));
+    const int tx=cx-tw/2,ty=oy+int(250*fit)-th/2;
+    title_art=state.billboards.alpha_blend(dc,tx,ty,tw,th,state.billboards.menu_title.dc,
+        ink.left,ink.top,sw,sh,BLENDFUNCTION{AC_SRC_OVER,0,255,AC_SRC_ALPHA})!=0;
+    if(title_art)rl.push_back({render::Op::Hud,double(tx),double(ty),0,0,"frontend:title-art"});
+  }
+  if(!title_art) {
+    SetTextColor(dc,RGB(27,13,6));skin::text_out(dc,cx-title.cx/2+2,title_y+2,heading,static_cast<int>(std::strlen(heading)));
+    SetTextColor(dc,RGB(239,199,116));skin::text_out(dc,cx-title.cx/2,title_y,heading,static_cast<int>(std::strlen(heading)));
+  }
   rl.push_back({render::Op::Hud,double(cx-width/2),double(title_y),0,0,std::string("frontend:")+heading});
   rl.push_back({render::Op::Hud,0,0,0,0,"frontend:illustrated-gateway"});
   const auto rows=frontend_rows(state);

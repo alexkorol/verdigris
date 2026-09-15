@@ -8,9 +8,13 @@ int scenario_menu_particles() {
   scenario_check(state.particles.assets.ready() && state.particles.assets.effects.size()==11,"vfx: eleven external recipes and tiny atlas load");
   if(!state.particles.assets.ready()) {std::printf("%s\n",state.particles.assets.error.c_str());return scenario_failures;}
   scenario_check(state.billboards.menu_gateway.ready() && state.billboards.menu_control.ready(),"menu: both authored production images loaded");
+  scenario_check(state.billboards.menu_title.ready()&&state.billboards.menu_title_ink.right>state.billboards.menu_title_ink.left,"menu: fantasy title asset has visible alpha ink");
+  const auto title_ink=state.billboards.menu_title_ink;
+  scenario_check(title_ink.right-title_ink.left>4*(title_ink.bottom-title_ink.top),"menu: nearly invisible canvas specks do not shrink the wide title lettering");
   for(const auto size:std::array<std::array<int,2>,3>{{{960,600},{1920,1080},{640,480}}}) {
     open_frontend(state,Frontend::Title);
     scenario_check(reference_present(state,size[0],size[1],dir+"/relic-title-"+std::to_string(size[0])+".png"),"menu: exact production title captured at supported size");
+    scenario_check(render_list_has(state,render::Op::Hud,"frontend:title-art"),"menu: main title renders generated art instead of font fallback");
     bool contained=true;
     for(const auto& hit:state.menu_hits)contained&=hit.rect.left>=0&&hit.rect.right<=size[0]&&hit.rect.top>=0&&hit.rect.bottom<=size[1];
     scenario_check(contained && state.menu_hits.size()==4,"menu: four existing controls stay within viewport");

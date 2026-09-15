@@ -5,6 +5,7 @@ function Get-NativePackageResources([string]$Root) {
   $required = @(
     'native/build/verdigris_client.exe', 'native/build/verdigris_server.exe',
     'native/client/assets/menu/bronze-gateway.png', 'native/client/assets/menu/amber-control.png',
+    'native/client/assets/menu/title-gold-v1.png',
     'native/client/assets/effects/particles.atlas.json',
     'native/client/assets/effects/level_up.effect.json',
     'native/client/assets/effects/melee_hit_small.effect.json',

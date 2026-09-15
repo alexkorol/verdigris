@@ -1,0 +1,22 @@
+{
+  "generator": "Built-in image_gen tool; generated title lettering.",
+  "source": "exec-c7443769-9b6b-4621-818f-5e1630ea3e28.png",
+  "prompt": "Standalone transparent PNG fantasy game title lettering. Text exactly \"VERDIGRIS\" (V E R D I G R I S), once. The word is only the required lettering, NOT a material or color instruction. Elegant sculpted high-fantasy serif capitals with graceful sharp terminals and restrained engraved flourishes, warm luminous GOLD letter faces, amber highlights, rich brown recessed shadows. Natural gold metal throughout. NO green, NO turquoise, NO teal, NO blue patina, NO oxidation, NO green gems, NO vegetation. Sophisticated handcrafted fantasy title, legible at about 470x70 pixels; clean strong strokes, generous readable spacing, letters as the ornament. Wide shallow single line; visible artwork approximately 7:1. Front-on, fully contained, small transparent margin; high resolution for reduction. True transparent alpha around and inside the letters. No backing panel, scenery, crest, tagline, watermark, checkerboard, or other text. This will sit over the dark aperture above the controls of an existing illustrated wooden gateway menu. Generate the wordmark alone.",
+  "sha256": "0c74c1efca9512b4af20540431213c95415eb024288559ff665d9b0a389dae5f",
+  "dimensions": [
+    2083,
+    755
+  ],
+  "transparentPixels": 1228486,
+  "opaquePixels": 282648,
+  "greenDominantPixels": 0,
+  "paletteCheck": "Among alpha >128 pixels: green > red *1.1 and green > blue *1.05. Read-only pixel check, no image processing.",
+  "direction": "Natural gold title lettering. The name supplies the literal text only; it is not a palette instruction. Existing small pixel typography and menu background/controls retained.",
+  "rejected": [
+    {
+      "source": "exec-ff448f3e-34be-481f-956b-c1d20a3ddd25.png",
+      "reason": "Name-derived green patina contradicted explicit owner art direction; never added to runtime."
+    }
+  ],
+  "guide": "native/client/assets/raster/AGENTS.md:21; native/client/assets/raster/PROMPTING.md:23"
+}

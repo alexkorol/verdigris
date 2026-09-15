@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## Fantasy title follow-up — September 15
+
+The main menu title now uses generated natural-gold fantasy lettering, composed
+over the existing gateway. Small pixel text and existing artwork remain intact.
+The project name is not a palette instruction; the initial green-patina candidate
+was rejected and never enabled. Focused native menu checks and 640/1920 captures
+passed. Fresh r5 package verification is tracked in
+`orchestration/recoveries/2026-09-15-title-art/STATUS.md`.
+
 ## Service/co-op branch — isolated QA delivery, September 14
 
 Task branch: `codex/native-service-coop-20260914`, based on consolidated

@@ -247,6 +247,8 @@ struct BillboardAssets {
   SpriteBitmap splash;
   SpriteBitmap menu_gateway;
   SpriteBitmap menu_control;
+  SpriteBitmap menu_title;
+  RECT menu_title_ink{};
   std::unordered_map<std::string, SpriteBitmap> item_art;
   // Web-client UI assets (src/assets): the wizard orb statue plate with its
   // alpha matte, its orb-disc mask, and the ornate nine-slice pane frame.
@@ -294,6 +296,7 @@ struct BillboardAssets {
     splash.reset();
     menu_gateway.reset();
     menu_control.reset();
+    menu_title.reset();
     orb_art.reset();
     orb_mask.reset();
     ornate_frame.reset();
@@ -1342,6 +1345,25 @@ void refresh_art_status(BillboardAssets& assets) {
 // Resolve and load the vendored WIZARD framekit chrome and item art. The
 // wizard pack lives under native/client/assets/wizard; candidates cover the
 // repo-root working directory and the build-directory executable.
+// Measure generated title ink once on load. Transparent canvas margins do not
+// change its apparent size, and no pixel scan enters the menu paint loop.
+RECT menu_title_ink_bounds(const SpriteBitmap& sprite) {
+  DIBSECTION dib{};
+  if(!sprite.ready() || GetObject(sprite.bitmap,sizeof(dib),&dib)!=sizeof(dib) || !dib.dsBm.bmBits)return {};
+  RECT ink{sprite.width,sprite.height,0,0};
+  const auto* pixels=static_cast<const unsigned char*>(dib.dsBm.bmBits);
+  for(int y=0;y<sprite.height;++y)for(int x=0;x<sprite.width;++x) {
+    // Generated alpha may contain near-invisible distant specks. They must
+    // not shrink the readable lettering to fit an otherwise empty canvas.
+    if(pixels[y*dib.dsBm.bmWidthBytes+x*4+3]<16)continue;
+    ink.left=std::min(ink.left,LONG(x));ink.right=std::max(ink.right,LONG(x+1));
+    ink.top=std::min(ink.top,LONG(y));ink.bottom=std::max(ink.bottom,LONG(y+1));
+  }
+  if(ink.right<=ink.left||ink.bottom<=ink.top)return {};
+  return {std::max(0L,ink.left-4),std::max(0L,ink.top-4),
+      std::min(LONG(sprite.width),ink.right+4),std::min(LONG(sprite.height),ink.bottom+4)};
+}
+
 void load_framekit_assets(BillboardAssets& assets) {
   std::vector<std::string> candidates;
   candidates.push_back("native/client/assets/wizard");
@@ -1356,6 +1378,8 @@ void load_framekit_assets(BillboardAssets& assets) {
     load_sprite(assets, root + "/splash/background_fallback.png", assets.splash);
     load_sprite(assets, root + "/../menu/bronze-gateway.png", assets.menu_gateway);
     load_sprite(assets, root + "/../menu/amber-control.png", assets.menu_control);
+    load_sprite(assets, root + "/../menu/title-gold-v1.png", assets.menu_title);
+    assets.menu_title_ink=menu_title_ink_bounds(assets.menu_title);
     load_sprite(assets, root + "/inventory/slot_texture.png", assets.inventory_texture);
     const bool chrome_loaded =
         load_sprite(assets, root + "/framekit/textures/panel.png",
