@@ -1,0 +1,11 @@
+{
+  "filename": "Verdigris-village-npcs-editable.zip",
+  "bytes": 28396215,
+  "sha256": "1eb02bf3b7a94563c39df77ee7733550e8933182307b6dbede016b6a3d7f4afe",
+  "scenes": {
+    "defender/scenes/defender-idle.blend": "6afa5cb1a482561a10fdb1c3b6d004e7d14642692251ad94ca193b494c049405",
+    "defender/scenes/defender-reference.blend": "00538db342a1ad0c6e55acf5e92f15c96f0dbea29a9084df4eba352bc83f680f",
+    "scribe/scenes/scribe-idle.blend": "97e9af58faa3c7a48c4c9fc610a76daca2aa87987e6c6a7bea6f04bde132963b",
+    "scribe/scenes/scribe-reference.blend": "b5fc64ec16e1d5b772bb05d322f266521832b9e5f2f313d69c39415cf8779f9a"
+  }
+}

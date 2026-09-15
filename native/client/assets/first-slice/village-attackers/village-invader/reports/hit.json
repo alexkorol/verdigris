@@ -1,0 +1,22 @@
+{
+  "source": "male-club-hit-projection.blend",
+  "source_sha256": "3b9e77658281763ad470f20cfed49963c77788e88880949b16c4e8d82947887b",
+  "geometry_sha256": "a0650cdd9cd42b9632ea3e118c4c497d18ea1d9ca095a8b04e63626843a3bd50",
+  "appearance_sha256": "f5b343cb9fbb04bb64d855c27780011151c408e9f5f442a1fb670d481189bd25",
+  "source_frames": [
+    1,
+    29
+  ],
+  "frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "pixels_per_metre": 48,
+  "filter": "BOX 1.0",
+  "identity": "village-invader",
+  "action": "hit"
+}

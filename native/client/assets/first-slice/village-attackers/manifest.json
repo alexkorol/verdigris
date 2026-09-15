@@ -1,0 +1,1345 @@
+{
+  "accepted": true,
+  "scope": "Village-defense prologue: human invader and breaker",
+  "technique": "Distinct editable MakeHuman anatomy/hair variants; reviewed CMU/Quaternius motion; Blender guides -> ImageGen appearance -> Pixel Respecter -> depth-tested vertex projection -> native Blender rendering. No generated animation poses.",
+  "clips": [
+    {
+      "identity": "village-invader",
+      "action": "idle",
+      "direction": "front",
+      "fps": 1,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-invader/accepted/village-invader-idle-front-00.png"
+      ]
+    },
+    {
+      "identity": "village-invader",
+      "action": "idle",
+      "direction": "right",
+      "fps": 1,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-invader/accepted/village-invader-idle-right-00.png"
+      ]
+    },
+    {
+      "identity": "village-invader",
+      "action": "idle",
+      "direction": "back",
+      "fps": 1,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-invader/accepted/village-invader-idle-back-00.png"
+      ]
+    },
+    {
+      "identity": "village-invader",
+      "action": "idle",
+      "direction": "left",
+      "fps": 1,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-invader/accepted/village-invader-idle-left-00.png"
+      ]
+    },
+    {
+      "identity": "village-invader",
+      "action": "walk",
+      "direction": "front",
+      "fps": 6,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-invader/accepted/village-invader-walk-front-00.png",
+        "village-invader/accepted/village-invader-walk-front-01.png",
+        "village-invader/accepted/village-invader-walk-front-02.png",
+        "village-invader/accepted/village-invader-walk-front-03.png"
+      ]
+    },
+    {
+      "identity": "village-invader",
+      "action": "walk",
+      "direction": "right",
+      "fps": 6,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-invader/accepted/village-invader-walk-right-00.png",
+        "village-invader/accepted/village-invader-walk-right-01.png",
+        "village-invader/accepted/village-invader-walk-right-02.png",
+        "village-invader/accepted/village-invader-walk-right-03.png"
+      ]
+    },
+    {
+      "identity": "village-invader",
+      "action": "walk",
+      "direction": "back",
+      "fps": 6,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-invader/accepted/village-invader-walk-back-00.png",
+        "village-invader/accepted/village-invader-walk-back-01.png",
+        "village-invader/accepted/village-invader-walk-back-02.png",
+        "village-invader/accepted/village-invader-walk-back-03.png"
+      ]
+    },
+    {
+      "identity": "village-invader",
+      "action": "walk",
+      "direction": "left",
+      "fps": 6,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-invader/accepted/village-invader-walk-left-00.png",
+        "village-invader/accepted/village-invader-walk-left-01.png",
+        "village-invader/accepted/village-invader-walk-left-02.png",
+        "village-invader/accepted/village-invader-walk-left-03.png"
+      ]
+    },
+    {
+      "identity": "village-invader",
+      "action": "attack",
+      "direction": "front",
+      "fps": 10,
+      "loop": false,
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-invader/accepted/village-invader-attack-front-00.png",
+        "village-invader/accepted/village-invader-attack-front-01.png",
+        "village-invader/accepted/village-invader-attack-front-02.png",
+        "village-invader/accepted/village-invader-attack-front-03.png",
+        "village-invader/accepted/village-invader-attack-front-04.png",
+        "village-invader/accepted/village-invader-attack-front-05.png"
+      ]
+    },
+    {
+      "identity": "village-invader",
+      "action": "attack",
+      "direction": "right",
+      "fps": 10,
+      "loop": false,
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-invader/accepted/village-invader-attack-right-00.png",
+        "village-invader/accepted/village-invader-attack-right-01.png",
+        "village-invader/accepted/village-invader-attack-right-02.png",
+        "village-invader/accepted/village-invader-attack-right-03.png",
+        "village-invader/accepted/village-invader-attack-right-04.png",
+        "village-invader/accepted/village-invader-attack-right-05.png"
+      ]
+    },
+    {
+      "identity": "village-invader",
+      "action": "attack",
+      "direction": "back",
+      "fps": 10,
+      "loop": false,
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-invader/accepted/village-invader-attack-back-00.png",
+        "village-invader/accepted/village-invader-attack-back-01.png",
+        "village-invader/accepted/village-invader-attack-back-02.png",
+        "village-invader/accepted/village-invader-attack-back-03.png",
+        "village-invader/accepted/village-invader-attack-back-04.png",
+        "village-invader/accepted/village-invader-attack-back-05.png"
+      ]
+    },
+    {
+      "identity": "village-invader",
+      "action": "attack",
+      "direction": "left",
+      "fps": 10,
+      "loop": false,
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-invader/accepted/village-invader-attack-left-00.png",
+        "village-invader/accepted/village-invader-attack-left-01.png",
+        "village-invader/accepted/village-invader-attack-left-02.png",
+        "village-invader/accepted/village-invader-attack-left-03.png",
+        "village-invader/accepted/village-invader-attack-left-04.png",
+        "village-invader/accepted/village-invader-attack-left-05.png"
+      ]
+    },
+    {
+      "identity": "village-invader",
+      "action": "hit",
+      "direction": "front",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-invader/accepted/village-invader-hit-front-00.png",
+        "village-invader/accepted/village-invader-hit-front-01.png"
+      ]
+    },
+    {
+      "identity": "village-invader",
+      "action": "hit",
+      "direction": "right",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-invader/accepted/village-invader-hit-right-00.png",
+        "village-invader/accepted/village-invader-hit-right-01.png"
+      ]
+    },
+    {
+      "identity": "village-invader",
+      "action": "hit",
+      "direction": "back",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-invader/accepted/village-invader-hit-back-00.png",
+        "village-invader/accepted/village-invader-hit-back-01.png"
+      ]
+    },
+    {
+      "identity": "village-invader",
+      "action": "hit",
+      "direction": "left",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-invader/accepted/village-invader-hit-left-00.png",
+        "village-invader/accepted/village-invader-hit-left-01.png"
+      ]
+    },
+    {
+      "identity": "village-invader",
+      "action": "death",
+      "direction": "front",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-invader/accepted/village-invader-death-front-00.png",
+        "village-invader/accepted/village-invader-death-front-01.png",
+        "village-invader/accepted/village-invader-death-front-02.png",
+        "village-invader/accepted/village-invader-death-front-03.png"
+      ]
+    },
+    {
+      "identity": "village-invader",
+      "action": "death",
+      "direction": "right",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-invader/accepted/village-invader-death-right-00.png",
+        "village-invader/accepted/village-invader-death-right-01.png",
+        "village-invader/accepted/village-invader-death-right-02.png",
+        "village-invader/accepted/village-invader-death-right-03.png"
+      ]
+    },
+    {
+      "identity": "village-invader",
+      "action": "death",
+      "direction": "back",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-invader/accepted/village-invader-death-back-00.png",
+        "village-invader/accepted/village-invader-death-back-01.png",
+        "village-invader/accepted/village-invader-death-back-02.png",
+        "village-invader/accepted/village-invader-death-back-03.png"
+      ]
+    },
+    {
+      "identity": "village-invader",
+      "action": "death",
+      "direction": "left",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-invader/accepted/village-invader-death-left-00.png",
+        "village-invader/accepted/village-invader-death-left-01.png",
+        "village-invader/accepted/village-invader-death-left-02.png",
+        "village-invader/accepted/village-invader-death-left-03.png"
+      ]
+    },
+    {
+      "identity": "village-leader",
+      "action": "idle",
+      "direction": "front",
+      "fps": 1,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-leader/accepted/village-leader-idle-front-00.png"
+      ]
+    },
+    {
+      "identity": "village-leader",
+      "action": "idle",
+      "direction": "right",
+      "fps": 1,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-leader/accepted/village-leader-idle-right-00.png"
+      ]
+    },
+    {
+      "identity": "village-leader",
+      "action": "idle",
+      "direction": "back",
+      "fps": 1,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-leader/accepted/village-leader-idle-back-00.png"
+      ]
+    },
+    {
+      "identity": "village-leader",
+      "action": "idle",
+      "direction": "left",
+      "fps": 1,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-leader/accepted/village-leader-idle-left-00.png"
+      ]
+    },
+    {
+      "identity": "village-leader",
+      "action": "walk",
+      "direction": "front",
+      "fps": 6,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-leader/accepted/village-leader-walk-front-00.png",
+        "village-leader/accepted/village-leader-walk-front-01.png",
+        "village-leader/accepted/village-leader-walk-front-02.png",
+        "village-leader/accepted/village-leader-walk-front-03.png"
+      ]
+    },
+    {
+      "identity": "village-leader",
+      "action": "walk",
+      "direction": "right",
+      "fps": 6,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-leader/accepted/village-leader-walk-right-00.png",
+        "village-leader/accepted/village-leader-walk-right-01.png",
+        "village-leader/accepted/village-leader-walk-right-02.png",
+        "village-leader/accepted/village-leader-walk-right-03.png"
+      ]
+    },
+    {
+      "identity": "village-leader",
+      "action": "walk",
+      "direction": "back",
+      "fps": 6,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-leader/accepted/village-leader-walk-back-00.png",
+        "village-leader/accepted/village-leader-walk-back-01.png",
+        "village-leader/accepted/village-leader-walk-back-02.png",
+        "village-leader/accepted/village-leader-walk-back-03.png"
+      ]
+    },
+    {
+      "identity": "village-leader",
+      "action": "walk",
+      "direction": "left",
+      "fps": 6,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-leader/accepted/village-leader-walk-left-00.png",
+        "village-leader/accepted/village-leader-walk-left-01.png",
+        "village-leader/accepted/village-leader-walk-left-02.png",
+        "village-leader/accepted/village-leader-walk-left-03.png"
+      ]
+    },
+    {
+      "identity": "village-leader",
+      "action": "attack",
+      "direction": "front",
+      "fps": 10,
+      "loop": false,
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-leader/accepted/village-leader-attack-front-00.png",
+        "village-leader/accepted/village-leader-attack-front-01.png",
+        "village-leader/accepted/village-leader-attack-front-02.png",
+        "village-leader/accepted/village-leader-attack-front-03.png",
+        "village-leader/accepted/village-leader-attack-front-04.png",
+        "village-leader/accepted/village-leader-attack-front-05.png"
+      ]
+    },
+    {
+      "identity": "village-leader",
+      "action": "attack",
+      "direction": "right",
+      "fps": 10,
+      "loop": false,
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-leader/accepted/village-leader-attack-right-00.png",
+        "village-leader/accepted/village-leader-attack-right-01.png",
+        "village-leader/accepted/village-leader-attack-right-02.png",
+        "village-leader/accepted/village-leader-attack-right-03.png",
+        "village-leader/accepted/village-leader-attack-right-04.png",
+        "village-leader/accepted/village-leader-attack-right-05.png"
+      ]
+    },
+    {
+      "identity": "village-leader",
+      "action": "attack",
+      "direction": "back",
+      "fps": 10,
+      "loop": false,
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-leader/accepted/village-leader-attack-back-00.png",
+        "village-leader/accepted/village-leader-attack-back-01.png",
+        "village-leader/accepted/village-leader-attack-back-02.png",
+        "village-leader/accepted/village-leader-attack-back-03.png",
+        "village-leader/accepted/village-leader-attack-back-04.png",
+        "village-leader/accepted/village-leader-attack-back-05.png"
+      ]
+    },
+    {
+      "identity": "village-leader",
+      "action": "attack",
+      "direction": "left",
+      "fps": 10,
+      "loop": false,
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-leader/accepted/village-leader-attack-left-00.png",
+        "village-leader/accepted/village-leader-attack-left-01.png",
+        "village-leader/accepted/village-leader-attack-left-02.png",
+        "village-leader/accepted/village-leader-attack-left-03.png",
+        "village-leader/accepted/village-leader-attack-left-04.png",
+        "village-leader/accepted/village-leader-attack-left-05.png"
+      ]
+    },
+    {
+      "identity": "village-leader",
+      "action": "hit",
+      "direction": "front",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-leader/accepted/village-leader-hit-front-00.png",
+        "village-leader/accepted/village-leader-hit-front-01.png"
+      ]
+    },
+    {
+      "identity": "village-leader",
+      "action": "hit",
+      "direction": "right",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-leader/accepted/village-leader-hit-right-00.png",
+        "village-leader/accepted/village-leader-hit-right-01.png"
+      ]
+    },
+    {
+      "identity": "village-leader",
+      "action": "hit",
+      "direction": "back",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-leader/accepted/village-leader-hit-back-00.png",
+        "village-leader/accepted/village-leader-hit-back-01.png"
+      ]
+    },
+    {
+      "identity": "village-leader",
+      "action": "hit",
+      "direction": "left",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-leader/accepted/village-leader-hit-left-00.png",
+        "village-leader/accepted/village-leader-hit-left-01.png"
+      ]
+    },
+    {
+      "identity": "village-leader",
+      "action": "death",
+      "direction": "front",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-leader/accepted/village-leader-death-front-00.png",
+        "village-leader/accepted/village-leader-death-front-01.png",
+        "village-leader/accepted/village-leader-death-front-02.png",
+        "village-leader/accepted/village-leader-death-front-03.png"
+      ]
+    },
+    {
+      "identity": "village-leader",
+      "action": "death",
+      "direction": "right",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-leader/accepted/village-leader-death-right-00.png",
+        "village-leader/accepted/village-leader-death-right-01.png",
+        "village-leader/accepted/village-leader-death-right-02.png",
+        "village-leader/accepted/village-leader-death-right-03.png"
+      ]
+    },
+    {
+      "identity": "village-leader",
+      "action": "death",
+      "direction": "back",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-leader/accepted/village-leader-death-back-00.png",
+        "village-leader/accepted/village-leader-death-back-01.png",
+        "village-leader/accepted/village-leader-death-back-02.png",
+        "village-leader/accepted/village-leader-death-back-03.png"
+      ]
+    },
+    {
+      "identity": "village-leader",
+      "action": "death",
+      "direction": "left",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "village-leader/accepted/village-leader-death-left-00.png",
+        "village-leader/accepted/village-leader-death-left-01.png",
+        "village-leader/accepted/village-leader-death-left-02.png",
+        "village-leader/accepted/village-leader-death-left-03.png"
+      ]
+    }
+  ],
+  "provenance": {
+    "village-invader": {
+      "transfer": {
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_sha256": "02b960af7308a4fa1e543537b743ecfc6eb046c8329b317e3a9b1062af1427e9",
+        "native_atlas": [
+          256,
+          256
+        ],
+        "method": "Per-view uniform appearance registration; Pixel Respecter manual4 dominant-color/majority-alpha reconstruction. Blender alone supplies final silhouette, animation pixels and pivots.",
+        "views": [
+          {
+            "direction": "front",
+            "source_pixels_per_native_cell": 5.297911176481591,
+            "translation_in_source_slot": [
+              57.82932254632433,
+              73.46638874074743
+            ],
+            "silhouette_iou": 0.8550420168067226
+          },
+          {
+            "direction": "right",
+            "source_pixels_per_native_cell": 5.189176071687568,
+            "translation_in_source_slot": [
+              64.34307093753276,
+              79.15500219890917
+            ],
+            "silhouette_iou": 0.8200537153088631
+          },
+          {
+            "direction": "back",
+            "source_pixels_per_native_cell": 5.401652976754784,
+            "translation_in_source_slot": [
+              56.014044636961955,
+              68.50367004838397
+            ],
+            "silhouette_iou": 0.8589647411852963
+          },
+          {
+            "direction": "left",
+            "source_pixels_per_native_cell": 5.334079873786234,
+            "translation_in_source_slot": [
+              69.80048818663697,
+              65.26402753794396
+            ],
+            "silhouette_iou": 0.7917383820998278
+          }
+        ]
+      },
+      "actions": {
+        "idle": {
+          "source": "male-club-idle-projection.blend",
+          "source_sha256": "6524e844d724dc6df791e1c930afeeaf818d9a0663d87ec799b4ed2d4ec6d1ce",
+          "geometry_sha256": "a0650cdd9cd42b9632ea3e118c4c497d18ea1d9ca095a8b04e63626843a3bd50",
+          "appearance_sha256": "f5b343cb9fbb04bb64d855c27780011151c408e9f5f442a1fb670d481189bd25",
+          "source_frames": [
+            1
+          ],
+          "frame": [
+            96,
+            96
+          ],
+          "anchor": [
+            48,
+            80
+          ],
+          "pixels_per_metre": 48,
+          "filter": "BOX 1.0",
+          "identity": "village-invader",
+          "action": "idle"
+        },
+        "walk": {
+          "source": "male-club-walk-projection.blend",
+          "source_sha256": "c4f7c64bd45bdb37f583acc48dc96cda86eeeb5bf7132fc1cc612d48fdabe800",
+          "geometry_sha256": "a0650cdd9cd42b9632ea3e118c4c497d18ea1d9ca095a8b04e63626843a3bd50",
+          "appearance_sha256": "f5b343cb9fbb04bb64d855c27780011151c408e9f5f442a1fb670d481189bd25",
+          "source_frames": [
+            72,
+            80,
+            88,
+            96
+          ],
+          "frame": [
+            96,
+            96
+          ],
+          "anchor": [
+            48,
+            80
+          ],
+          "pixels_per_metre": 48,
+          "filter": "BOX 1.0",
+          "identity": "village-invader",
+          "action": "walk"
+        },
+        "attack": {
+          "source": "male-club-attack-projection.blend",
+          "source_sha256": "268705077d9c428d24979ca5d16569d2b9ec9a08841c941666d2c8f2324ad16e",
+          "geometry_sha256": "a0650cdd9cd42b9632ea3e118c4c497d18ea1d9ca095a8b04e63626843a3bd50",
+          "appearance_sha256": "f5b343cb9fbb04bb64d855c27780011151c408e9f5f442a1fb670d481189bd25",
+          "source_frames": [
+            1,
+            13,
+            25,
+            37,
+            49,
+            61
+          ],
+          "frame": [
+            128,
+            128
+          ],
+          "anchor": [
+            64,
+            96
+          ],
+          "pixels_per_metre": 48,
+          "filter": "BOX 1.0",
+          "identity": "village-invader",
+          "action": "attack"
+        },
+        "hit": {
+          "source": "male-club-hit-projection.blend",
+          "source_sha256": "3b9e77658281763ad470f20cfed49963c77788e88880949b16c4e8d82947887b",
+          "geometry_sha256": "a0650cdd9cd42b9632ea3e118c4c497d18ea1d9ca095a8b04e63626843a3bd50",
+          "appearance_sha256": "f5b343cb9fbb04bb64d855c27780011151c408e9f5f442a1fb670d481189bd25",
+          "source_frames": [
+            1,
+            29
+          ],
+          "frame": [
+            96,
+            96
+          ],
+          "anchor": [
+            48,
+            80
+          ],
+          "pixels_per_metre": 48,
+          "filter": "BOX 1.0",
+          "identity": "village-invader",
+          "action": "hit"
+        },
+        "death": {
+          "source": "male-club-death-projection.blend",
+          "source_sha256": "ffeae321547e781c5d8fa0c19ecc71bab954b17f160c26a4b477b543cb5db145",
+          "geometry_sha256": "a0650cdd9cd42b9632ea3e118c4c497d18ea1d9ca095a8b04e63626843a3bd50",
+          "appearance_sha256": "f5b343cb9fbb04bb64d855c27780011151c408e9f5f442a1fb670d481189bd25",
+          "source_frames": [
+            1,
+            9,
+            13,
+            29
+          ],
+          "frame": [
+            128,
+            128
+          ],
+          "anchor": [
+            64,
+            96
+          ],
+          "pixels_per_metre": 48,
+          "filter": "BOX 1.0",
+          "identity": "village-invader",
+          "action": "death"
+        }
+      }
+    },
+    "village-leader": {
+      "transfer": {
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_sha256": "361867f81df8a4bf93ee43642e44cbf87a730c3996433b323a1430909a1c84e2",
+        "native_atlas": [
+          256,
+          256
+        ],
+        "method": "Per-view uniform appearance registration; Pixel Respecter manual4 dominant-color/majority-alpha reconstruction. Blender alone supplies final silhouette, animation pixels and pivots.",
+        "views": [
+          {
+            "direction": "front",
+            "source_pixels_per_native_cell": 6.015501066091841,
+            "translation_in_source_slot": [
+              39.8372052881583,
+              66.2774794392408
+            ],
+            "silhouette_iou": 0.8588888888888889
+          },
+          {
+            "direction": "right",
+            "source_pixels_per_native_cell": 5.8690066995246815,
+            "translation_in_source_slot": [
+              38.446344187384554,
+              69.21435369520255
+            ],
+            "silhouette_iou": 0.8359433258762118
+          },
+          {
+            "direction": "back",
+            "source_pixels_per_native_cell": 6.039183541274741,
+            "translation_in_source_slot": [
+              41.46167158492026,
+              42.00153923339562
+            ],
+            "silhouette_iou": 0.8796241926012919
+          },
+          {
+            "direction": "left",
+            "source_pixels_per_native_cell": 5.896635401245685,
+            "translation_in_source_slot": [
+              38.21684655889111,
+              47.267660822696605
+            ],
+            "silhouette_iou": 0.819164265129683
+          }
+        ]
+      },
+      "actions": {
+        "idle": {
+          "source": "male-club-idle-projection.blend",
+          "source_sha256": "6524e844d724dc6df791e1c930afeeaf818d9a0663d87ec799b4ed2d4ec6d1ce",
+          "geometry_sha256": "88f66933873171ff21dc7d68079788d05751ae9fc2026a33a1008aaf3f8c6865",
+          "appearance_sha256": "6ab71ff9e45e6bdae371d28d009882345c28ea319acdda458e83260df6e66370",
+          "source_frames": [
+            1
+          ],
+          "frame": [
+            96,
+            96
+          ],
+          "anchor": [
+            48,
+            80
+          ],
+          "pixels_per_metre": 48,
+          "filter": "BOX 1.0",
+          "identity": "village-leader",
+          "action": "idle"
+        },
+        "walk": {
+          "source": "male-club-walk-projection.blend",
+          "source_sha256": "c4f7c64bd45bdb37f583acc48dc96cda86eeeb5bf7132fc1cc612d48fdabe800",
+          "geometry_sha256": "88f66933873171ff21dc7d68079788d05751ae9fc2026a33a1008aaf3f8c6865",
+          "appearance_sha256": "6ab71ff9e45e6bdae371d28d009882345c28ea319acdda458e83260df6e66370",
+          "source_frames": [
+            72,
+            80,
+            88,
+            96
+          ],
+          "frame": [
+            96,
+            96
+          ],
+          "anchor": [
+            48,
+            80
+          ],
+          "pixels_per_metre": 48,
+          "filter": "BOX 1.0",
+          "identity": "village-leader",
+          "action": "walk"
+        },
+        "attack": {
+          "source": "male-club-attack-projection.blend",
+          "source_sha256": "268705077d9c428d24979ca5d16569d2b9ec9a08841c941666d2c8f2324ad16e",
+          "geometry_sha256": "88f66933873171ff21dc7d68079788d05751ae9fc2026a33a1008aaf3f8c6865",
+          "appearance_sha256": "6ab71ff9e45e6bdae371d28d009882345c28ea319acdda458e83260df6e66370",
+          "source_frames": [
+            1,
+            13,
+            25,
+            37,
+            49,
+            61
+          ],
+          "frame": [
+            128,
+            128
+          ],
+          "anchor": [
+            64,
+            96
+          ],
+          "pixels_per_metre": 48,
+          "filter": "BOX 1.0",
+          "identity": "village-leader",
+          "action": "attack"
+        },
+        "hit": {
+          "source": "male-club-hit-projection.blend",
+          "source_sha256": "3b9e77658281763ad470f20cfed49963c77788e88880949b16c4e8d82947887b",
+          "geometry_sha256": "88f66933873171ff21dc7d68079788d05751ae9fc2026a33a1008aaf3f8c6865",
+          "appearance_sha256": "6ab71ff9e45e6bdae371d28d009882345c28ea319acdda458e83260df6e66370",
+          "source_frames": [
+            1,
+            29
+          ],
+          "frame": [
+            96,
+            96
+          ],
+          "anchor": [
+            48,
+            80
+          ],
+          "pixels_per_metre": 48,
+          "filter": "BOX 1.0",
+          "identity": "village-leader",
+          "action": "hit"
+        },
+        "death": {
+          "source": "male-club-death-projection.blend",
+          "source_sha256": "ffeae321547e781c5d8fa0c19ecc71bab954b17f160c26a4b477b543cb5db145",
+          "geometry_sha256": "88f66933873171ff21dc7d68079788d05751ae9fc2026a33a1008aaf3f8c6865",
+          "appearance_sha256": "6ab71ff9e45e6bdae371d28d009882345c28ea319acdda458e83260df6e66370",
+          "source_frames": [
+            1,
+            9,
+            13,
+            29
+          ],
+          "frame": [
+            128,
+            128
+          ],
+          "anchor": [
+            64,
+            96
+          ],
+          "pixels_per_metre": 48,
+          "filter": "BOX 1.0",
+          "identity": "village-leader",
+          "action": "death"
+        }
+      }
+    }
+  },
+  "frame_sha256": {
+    "village-invader/accepted/village-invader-idle-front-00.png": "55b77b695a79d0fd331b26b2b4e657260b304cb9e6c7343d11d8246803531faa",
+    "village-invader/accepted/village-invader-idle-right-00.png": "13181d20e14090932c9815249f114b2e89e0085cdb0155bf1017117ed8b7c4dd",
+    "village-invader/accepted/village-invader-idle-back-00.png": "8b8ea9d468fdeba5e74a946603d55e76efa3ff8288c8ae9bc0bd8b3bc9145e7e",
+    "village-invader/accepted/village-invader-idle-left-00.png": "e9ca49a099bc51fbee411fddb593eaebaebaa53b7d120ebce12bdd29d4ccaa12",
+    "village-invader/accepted/village-invader-walk-front-00.png": "fab7815be16d30c41cb2e8430b3c57b042190116b217dade92bc1b23f3fac4e2",
+    "village-invader/accepted/village-invader-walk-front-01.png": "48c356636e4f91da1a7a01e6f8ea631d61b4c97063b53c37d0e79a06a3d4eff1",
+    "village-invader/accepted/village-invader-walk-front-02.png": "3709850c8bdad860cb271e42c97250871674c9548bcbdec8547e2dd1afc16f78",
+    "village-invader/accepted/village-invader-walk-front-03.png": "48ccfb54bee00a3f595c6f5e94ff201e75c7a0df3821f01664a1effc5cca3696",
+    "village-invader/accepted/village-invader-walk-right-00.png": "75170996b15cb0e05c24425f57cadd227c5ca6f9cd8d931f2ec36fff926cbee9",
+    "village-invader/accepted/village-invader-walk-right-01.png": "726215ae618d8a40106e6e97ddaf3419c1e5a40f4d093b8890d5ef20b5616523",
+    "village-invader/accepted/village-invader-walk-right-02.png": "b8d7538c26bc624f622d3c45df4b09a76e2e6a13bdf577ca8230e1bdf01f404a",
+    "village-invader/accepted/village-invader-walk-right-03.png": "e3e6f15ff8234d9ff84348ab417489063c4eae0c1cd62cfa70c7093c104311c9",
+    "village-invader/accepted/village-invader-walk-back-00.png": "9eef55bcb0a3ea891f04067ef688f7603d7b17b10203f68a49ecf9324fed1e33",
+    "village-invader/accepted/village-invader-walk-back-01.png": "c23c8ab9861104e626e72c2580a10c0227ff52d5ef0c4b8ad8e039d84a6e7ede",
+    "village-invader/accepted/village-invader-walk-back-02.png": "0894774c9048c466041781535856a758c984a7dea31d79c0206f7f51cec851d0",
+    "village-invader/accepted/village-invader-walk-back-03.png": "5f2129cc63e8a0f216e055d1240c71ec3599784d5953f54349f0a855ae4edf2c",
+    "village-invader/accepted/village-invader-walk-left-00.png": "6df9b2899acf41903a17427184298b1fc4c3d6024b355612b13d47ba71d469fe",
+    "village-invader/accepted/village-invader-walk-left-01.png": "dfa02bfdfad4a169514a688a4acd6ef4d8585f5c8e2d7e3c48987d95e2e353f2",
+    "village-invader/accepted/village-invader-walk-left-02.png": "f38a7d7679aafa6e0649d9708cf8c98c19d5035027e2a38e35ae5413235ad4b7",
+    "village-invader/accepted/village-invader-walk-left-03.png": "3ddf7c3175f3d25bb7ed6d727ee3e0ba2e2efed62e4c738bd8719a6aec45a997",
+    "village-invader/accepted/village-invader-attack-front-00.png": "1ef4ef28baaa5118480d6a9e657a40c87bbcb6ecc5b5c0d490756871030a13a5",
+    "village-invader/accepted/village-invader-attack-front-01.png": "d595bf632440ef3fc09d67f7e0bd09be083df69964cfc7ccf684c828a88de3a1",
+    "village-invader/accepted/village-invader-attack-front-02.png": "fa54eb85efa6be76c431643eccd6105d0c83957fe70f1a7f163f91156b985710",
+    "village-invader/accepted/village-invader-attack-front-03.png": "83919abbb994ce8c5367638f9075741030c96a2e2fe35e4770f22b2df4e4e397",
+    "village-invader/accepted/village-invader-attack-front-04.png": "6e997bc52cf4ac7f59c437e327bf0cc1b5f0b5c6d4e8a144df4c277a9adb71fd",
+    "village-invader/accepted/village-invader-attack-front-05.png": "1ef4ef28baaa5118480d6a9e657a40c87bbcb6ecc5b5c0d490756871030a13a5",
+    "village-invader/accepted/village-invader-attack-right-00.png": "8c8ba7b4a5a468ab99b0564ebe0be0b9e3c6d7c03699ede568c78980695c0061",
+    "village-invader/accepted/village-invader-attack-right-01.png": "4fb577430334b353cee7c0d5d530d0009699ca9a674ac266789d1c61f323e4c0",
+    "village-invader/accepted/village-invader-attack-right-02.png": "b271b8869002c08cf5525155b88f69c3c6fb25ac7bfef65ad6170bd7bd4910ce",
+    "village-invader/accepted/village-invader-attack-right-03.png": "b551076c7f87814632d73d068a495d2bb41a017eb0645c616fe8d51c590aac90",
+    "village-invader/accepted/village-invader-attack-right-04.png": "a2f46c72fa8f0450f3ede21c5f619b1d660f3bc979a6d7780a32469a103b8598",
+    "village-invader/accepted/village-invader-attack-right-05.png": "8c8ba7b4a5a468ab99b0564ebe0be0b9e3c6d7c03699ede568c78980695c0061",
+    "village-invader/accepted/village-invader-attack-back-00.png": "58be849cdce06219e3f04c822431aa5224cc5af55f6bf0df5c4b83619ac06481",
+    "village-invader/accepted/village-invader-attack-back-01.png": "d9657b9dae555622011d4e2c49c2741425d767920e6764881e264eeb0111c4d5",
+    "village-invader/accepted/village-invader-attack-back-02.png": "a809d27475efa6521e618243d701c3b6219e9023ef2796dfc6ff8e4c336559b1",
+    "village-invader/accepted/village-invader-attack-back-03.png": "81f21774b55d721eedf82c3ace69354311754936d72b9c35dde3e7b80670aa7c",
+    "village-invader/accepted/village-invader-attack-back-04.png": "2635041fe51654630d695a3f53a2737f4326307cb95ee6806fdb0c2ee9aef075",
+    "village-invader/accepted/village-invader-attack-back-05.png": "58be849cdce06219e3f04c822431aa5224cc5af55f6bf0df5c4b83619ac06481",
+    "village-invader/accepted/village-invader-attack-left-00.png": "4dd8bb0e3074dc1e1bde762436477c2f8ae82e6d3af175d439a3489204d38922",
+    "village-invader/accepted/village-invader-attack-left-01.png": "9eb5ff78357f3b15e5245f610a53dad50db5d6a4ca899e96063d44cf13e16dca",
+    "village-invader/accepted/village-invader-attack-left-02.png": "c2795713350846d00b1d9d9bc3917003726e022f97fbccd9cf1a7c3e11d22f83",
+    "village-invader/accepted/village-invader-attack-left-03.png": "97e407db2aeb26c7fbfba07801927a4a70e8e1ebe0da57b59d086dd27342d973",
+    "village-invader/accepted/village-invader-attack-left-04.png": "32b1a943085ea8977c11a91cf7bff7bf3110f2af5a0a4034751952a492366014",
+    "village-invader/accepted/village-invader-attack-left-05.png": "4dd8bb0e3074dc1e1bde762436477c2f8ae82e6d3af175d439a3489204d38922",
+    "village-invader/accepted/village-invader-hit-front-00.png": "7b8829434ca1391613f9ee9aa700bc726ca0f053b5c213adfac260d1d6ab5847",
+    "village-invader/accepted/village-invader-hit-front-01.png": "477a5997135ed9438c9d66a73734dcbf442bcc2aabe1924675c744d53aa7a7e2",
+    "village-invader/accepted/village-invader-hit-right-00.png": "b55dad69eba2fb7690e5e0603eb4609e9c2e2f763ad2d50100b0be5c06cbf88f",
+    "village-invader/accepted/village-invader-hit-right-01.png": "2df0af33f4c4c55062efb848c48dc270f614e86a7e42d4527912c093ea9f63a5",
+    "village-invader/accepted/village-invader-hit-back-00.png": "a64d823e792317d4abaabeec3eb0615d3417bc281c8d359811e37b1651cf8648",
+    "village-invader/accepted/village-invader-hit-back-01.png": "5756bdade9042b4b24546dbd7663c860a4d90b6397f0d36a576939edd6ae6394",
+    "village-invader/accepted/village-invader-hit-left-00.png": "a93a5085b65c1b38f052408e7879e8d42f579cf223f42a7abeed302776c12b97",
+    "village-invader/accepted/village-invader-hit-left-01.png": "15214459152dca8e76d635241c91c69e60cceaabe51c4bc554127d50ba196d0f",
+    "village-invader/accepted/village-invader-death-front-00.png": "5316d5b34c108a1bc85a91aa9b0f771a0dba1fca7f26976275e46ae3e5e12d3a",
+    "village-invader/accepted/village-invader-death-front-01.png": "17d72fe055a34b4a9092a5f8fa3ccf22b6979b2562817c7321c26525f33fb855",
+    "village-invader/accepted/village-invader-death-front-02.png": "a1d1af5007c2d6c555dde35665ff76455ad108ca15e31543138eb6d60fc32b5b",
+    "village-invader/accepted/village-invader-death-front-03.png": "e6d41dd8935bbddcbcf622c1120a444e3e80a4a8948cf3b09272e84530682fa6",
+    "village-invader/accepted/village-invader-death-right-00.png": "b0d6ac934002af41be42de00da80d596dfeba12dfe0284a7f78b2e72951ffd32",
+    "village-invader/accepted/village-invader-death-right-01.png": "03f341abf44cb8151c7eb5fdc45f45a3033caccdb41c4982b9ed243419f782c5",
+    "village-invader/accepted/village-invader-death-right-02.png": "efa564823063e2dbf44157abf942d9c39ffaf1c2b12c627cee20f329e381a021",
+    "village-invader/accepted/village-invader-death-right-03.png": "33a15f7d6916653b00f26b9f39c8c4b056ef09d87a705be9942bbd481a61966d",
+    "village-invader/accepted/village-invader-death-back-00.png": "48bfdd5af15c6a58d85f42f6eaccd851798a71333573ec09eff45c1cdba806e1",
+    "village-invader/accepted/village-invader-death-back-01.png": "298aa8f045714d22efb736b6d2e1df0d1c305ec7ab6aff0413ede58527e9c5ee",
+    "village-invader/accepted/village-invader-death-back-02.png": "427c8d2e69f5657550acf5603658a60ba41f6a811d7be32bd06569d5e91f6ae6",
+    "village-invader/accepted/village-invader-death-back-03.png": "cc9a87b22719cd36626d3b7e05cbbaf8065d30437a263df856f7c877b3081057",
+    "village-invader/accepted/village-invader-death-left-00.png": "5c0da91148a91409dae8282e3c3ee55425b7aa5392b4d811f9a00d46c867c460",
+    "village-invader/accepted/village-invader-death-left-01.png": "07bb61e97a10fee4924274691d4a1d7fb042d4aa8b086d32ee153115e27c3d22",
+    "village-invader/accepted/village-invader-death-left-02.png": "c2fd3fc3b727cfed6d697726dc40a7db0abe56369f7153ae44b25a7bdd893b7c",
+    "village-invader/accepted/village-invader-death-left-03.png": "c8cacac017bec975a7288348efe1c05b940b6aedd934316157277cea1563023a",
+    "village-leader/accepted/village-leader-idle-front-00.png": "687ca43e5f0fc55e9d4672edfb0a7005443c6aba13012dfb2cef36da076702fa",
+    "village-leader/accepted/village-leader-idle-right-00.png": "627bf3c34c334984e748be86ec2a9415ede1cbc32a744eb6956f63913a22e6a3",
+    "village-leader/accepted/village-leader-idle-back-00.png": "61c5728bcb81a1c5f4730ea1b346270330e2157f3223747c55087c469db2face",
+    "village-leader/accepted/village-leader-idle-left-00.png": "84ad6c458b20d29889be8eaecdc55db333b0841a153cd96d242432567a987cc9",
+    "village-leader/accepted/village-leader-walk-front-00.png": "7990bea80805e277f1384cd3daa2f701eb9d09cb0a088e2344cafe7edf8bc060",
+    "village-leader/accepted/village-leader-walk-front-01.png": "7b4208ea6aaae23c268725cc9fba0f39b303c318fe137daca30b8dd07d99a7e3",
+    "village-leader/accepted/village-leader-walk-front-02.png": "ae5dfcc48eb5ce6db9f524473773f87cfbe7e5095c5045d026d25654b9325dcb",
+    "village-leader/accepted/village-leader-walk-front-03.png": "57a481bc228e9040dc7b08ca63d8c36094fd9486b20f435a3ec25fcbdb6f241c",
+    "village-leader/accepted/village-leader-walk-right-00.png": "a5bc5ead40bcc8b7c49ea4e9e66a4466b849c4d71a1b36c2bc0fc404676c1a25",
+    "village-leader/accepted/village-leader-walk-right-01.png": "c91dcbf0cc0561e91f370e7d7f4b7e8125d516a00bcc35b87082fdfe54115e40",
+    "village-leader/accepted/village-leader-walk-right-02.png": "87aad478e51242bedfa034375ad423081f8c24d5bdf588981fcecf24675be509",
+    "village-leader/accepted/village-leader-walk-right-03.png": "5496d54d7cb17bd47866aafeb93dcb9d2b550d6c9e82602758b0ca4ec1c192d8",
+    "village-leader/accepted/village-leader-walk-back-00.png": "291a7a51a4bda1b4665e108964a32df48b71fdedd4bd577ea1101fd844fb8281",
+    "village-leader/accepted/village-leader-walk-back-01.png": "8ca1859d2bcaa7e94d719565ff3b21cbeeb9734c39bd60f7e4632b86903594ba",
+    "village-leader/accepted/village-leader-walk-back-02.png": "48bbaca30f4818b9cbe7c61f174e266d500b4b8c80280c893ac511204748390a",
+    "village-leader/accepted/village-leader-walk-back-03.png": "5ba8f58a7cacce662a418a69440228a14eb2877c015c43e1eb4d340a130ddbec",
+    "village-leader/accepted/village-leader-walk-left-00.png": "71d04b14391e523daf483ca0a797dd7971efc938d7101b3a08a08265fa39626e",
+    "village-leader/accepted/village-leader-walk-left-01.png": "982464087ebec91b871ba61b74d0314848d95fa63c1c539ae5fa5f8615e19720",
+    "village-leader/accepted/village-leader-walk-left-02.png": "4a3d262bdbb5af306982582a3cc0f1971f624f6958194f2830eb1cf7666c74ae",
+    "village-leader/accepted/village-leader-walk-left-03.png": "f5b58800cb05cce2d69a8a30bec40b636ea580cd880a55dd60b650fd763fc3a1",
+    "village-leader/accepted/village-leader-attack-front-00.png": "fad207e6a5c6a89a72a00996562e090bfe01cac3108155b70a7cc587cd4f61a0",
+    "village-leader/accepted/village-leader-attack-front-01.png": "f648d283ed7ff7d08bfe5b0cd948db3430995bb3dd16ae33bb1cc620fce45cf2",
+    "village-leader/accepted/village-leader-attack-front-02.png": "b3a20b81e2e831a477c072d382ab9af1521c28a3072b4d7dfa47729d449eb775",
+    "village-leader/accepted/village-leader-attack-front-03.png": "a47431613ea44e1977d32e69a380976148b85e55077b312f156672f3990d7c0d",
+    "village-leader/accepted/village-leader-attack-front-04.png": "3ade5217d9858ac9efa711d9e41ebcdcff70af76958f32ae8a0d528c4676a86f",
+    "village-leader/accepted/village-leader-attack-front-05.png": "fad207e6a5c6a89a72a00996562e090bfe01cac3108155b70a7cc587cd4f61a0",
+    "village-leader/accepted/village-leader-attack-right-00.png": "c23c498daeed7ce9d749724cc28c63261a44b10e8f597a57b1ae897e34c46da3",
+    "village-leader/accepted/village-leader-attack-right-01.png": "06a0b0e766062e26e2173974cf02c1158297615cd51d5417280889d15535dfaa",
+    "village-leader/accepted/village-leader-attack-right-02.png": "8d7a7f59a90db1b5d72efdcba8aba9bbe3175b3f41d39790a26a468dde9db007",
+    "village-leader/accepted/village-leader-attack-right-03.png": "f644a89f14114072d46f9207282a46f14d84da6546d4d969fa79531b09ee3aef",
+    "village-leader/accepted/village-leader-attack-right-04.png": "a0c7ea534ed7e23ccbc7f8c5a1c5d81ef69280fc1d348a32eef802d22fd9694d",
+    "village-leader/accepted/village-leader-attack-right-05.png": "c23c498daeed7ce9d749724cc28c63261a44b10e8f597a57b1ae897e34c46da3",
+    "village-leader/accepted/village-leader-attack-back-00.png": "a9285024d5f9012149f11723e737d859a60c6ad1cfad6ea6ba649f1bb597365f",
+    "village-leader/accepted/village-leader-attack-back-01.png": "1317c94c8ca4bc0feb6cd8ee0ef2a35cd4a8c38002c44c211f404e9f15ab1a38",
+    "village-leader/accepted/village-leader-attack-back-02.png": "14ab3bbab18b05460a17fdd0d6c61c1d2941d24c48217c4481033ef3b3cf7386",
+    "village-leader/accepted/village-leader-attack-back-03.png": "5c618bbd081ea7a42736adacbf0d9623c8ced71fea900af39d604b84e9d34cf6",
+    "village-leader/accepted/village-leader-attack-back-04.png": "01c6a27513faff263c4cb2ec248570a90222121df61f9a75c188d1e1b5e087f0",
+    "village-leader/accepted/village-leader-attack-back-05.png": "a9285024d5f9012149f11723e737d859a60c6ad1cfad6ea6ba649f1bb597365f",
+    "village-leader/accepted/village-leader-attack-left-00.png": "8354efab8907095d42828cbf3f83e7c494dc3b27de1d2fca5b088ea0c695aa77",
+    "village-leader/accepted/village-leader-attack-left-01.png": "5fa481d84203e6763d46b6963e8154e0e312157edda7e8ef736fe6eaac3959b8",
+    "village-leader/accepted/village-leader-attack-left-02.png": "57fdc18120a72709c8d8acc35ab6a80c057d37d573b400f7456f907eddda4d84",
+    "village-leader/accepted/village-leader-attack-left-03.png": "9da911f447046a245dbe0a0155f3e637c8f98a0e369676beebb8cfe182864b88",
+    "village-leader/accepted/village-leader-attack-left-04.png": "812b042bd50a87d5f1a57aab8719f909b1f6a97ceac7c18971e9c92b24c67543",
+    "village-leader/accepted/village-leader-attack-left-05.png": "8354efab8907095d42828cbf3f83e7c494dc3b27de1d2fca5b088ea0c695aa77",
+    "village-leader/accepted/village-leader-hit-front-00.png": "78edb7549220c6f2980eddd20b6076eba710400436332d5294a2b2f86a1a29d1",
+    "village-leader/accepted/village-leader-hit-front-01.png": "7d2791179261270a6c35c51070344e992432f5260a7b7c4fe10e9c29c8b58571",
+    "village-leader/accepted/village-leader-hit-right-00.png": "a165a8ee8bb46d8c6e48db9a0766d642a6b39dc0c42fbe6438bc09079e60fd8a",
+    "village-leader/accepted/village-leader-hit-right-01.png": "503d48b0a06a9fc48b62f570b71ea92e0cf6eda117802b8a1c4ba678b74df79a",
+    "village-leader/accepted/village-leader-hit-back-00.png": "465a7edd954a14acc32faa2868e3c025a220f4397c3a0885528f9399750cccfe",
+    "village-leader/accepted/village-leader-hit-back-01.png": "9a4b3ebc39ec44cd6b863cd6eb64891f0f479debda485dff99614eed72cef26c",
+    "village-leader/accepted/village-leader-hit-left-00.png": "69436720be74e7042a81064678cd952fbcf59ed201496e5d74114a4b18805345",
+    "village-leader/accepted/village-leader-hit-left-01.png": "bc3193f545ae0a05bbd15815016f32759cd1d8d48fc02516ef1eb77d0ec68c97",
+    "village-leader/accepted/village-leader-death-front-00.png": "0f9e4a1153acdf4b2c6399249af560c667ddc2887ecfee16563d7432e489a47c",
+    "village-leader/accepted/village-leader-death-front-01.png": "0022c1c887e424f3520656ca44687763790395ad8fe23caf6411cd76563358e8",
+    "village-leader/accepted/village-leader-death-front-02.png": "671626671e1ddc21757b92ce5fa623e5f1b1fff937083142071cfe0f543fac59",
+    "village-leader/accepted/village-leader-death-front-03.png": "e842295900a8534cfbd6d8ff012eb2c914647f4fbb776695612f476ee2b29573",
+    "village-leader/accepted/village-leader-death-right-00.png": "f4557e31933743f1dba58fd946dcc1381fce3d8cba7bd90ded10f9ee5a72a705",
+    "village-leader/accepted/village-leader-death-right-01.png": "e37d3269d0d5236f9e937da02345942ba6739d7d156a08d93cf9c0373be59fa5",
+    "village-leader/accepted/village-leader-death-right-02.png": "4691a5b6382fdc6737608feb04cb2f2e143c36ea94009dd6c7db0ef52e4dda74",
+    "village-leader/accepted/village-leader-death-right-03.png": "8480b203225933c77cbd7cff3f839cbb94b68bc12b01ac36db92848af5366855",
+    "village-leader/accepted/village-leader-death-back-00.png": "1ff398883789a612741deab4a43318e866711f6cac3e53a2b5208399965b421d",
+    "village-leader/accepted/village-leader-death-back-01.png": "c742f8e7dc9efdc3bf41c4667520aad60999102cbabb0208d8be4d047a69730d",
+    "village-leader/accepted/village-leader-death-back-02.png": "023202f0129d7690e8ce2cb51043afe25ccce22c3bdb0e816fab7f1833d21c54",
+    "village-leader/accepted/village-leader-death-back-03.png": "7b97b2891ebc373fe09d27aac8c9066d2900d2e68871e6fa4f297d4aa9ec03e4",
+    "village-leader/accepted/village-leader-death-left-00.png": "26cb4f47fccbea8b71087715705abb57507cbc5248966836968eb64f968c90aa",
+    "village-leader/accepted/village-leader-death-left-01.png": "e1d09ed248783ff4f0de487848c08235aa74d664e2080dc3a362b16a16481c43",
+    "village-leader/accepted/village-leader-death-left-02.png": "2ebc0c750775f11ef1f51429dcb11a165c18d21a01770e923d03dc8d1a92f27a",
+    "village-leader/accepted/village-leader-death-left-03.png": "edd62592d7cbc742add1b040bb98e066ef829b9d60497f9ada40531c9784d429"
+  }
+}

@@ -163,6 +163,105 @@ void first_slice_player_death_equipment_lifecycle() {
   }
 }
 
+void first_slice_village_enemy_rendering() {
+  using namespace verdigris::client;
+  const auto& art=first_slice_art::registry();
+  const auto capture_dir=art_wave_capture_dir();
+  auto state=make_product_client();scenario_begin(*state);load_billboards(state->billboards);
+  state->simulation.reset();state->session.reset();
+  state->world.route_id="owner-demo-prologue";state->world.theme="wilds";
+  state->world.monsters.clear();state->world.npcs.clear();state->world.loot_names.clear();state->loot_positions.clear();
+  state->scenery.clear();state->effects.clear();state->telegraphs.clear();
+  state->world.player.appearance="male";state->world.player.alive=true;
+  for(auto& item:state->world.carried)item.equipped=false;
+  scenario_follow_camera(*state);
+  auto& renderer=fable_world::renderer();
+  struct RestoreClock { ULONGLONG& clock;ULONGLONG saved;~RestoreClock(){clock=saved;} }
+      restore_clock{renderer.clock_start,renderer.clock_start};
+  const std::array<verdigris::Vec2,4> facing{{{0,1},{1,0},{0,-1},{-1,0}}};
+  const std::array<const char*,4> directions{{"front","right","back","left"}};
+  const auto clean_trace=[&]() {
+    return renderer.gpu.error().empty()&&std::none_of(state->render_list.begin(),state->render_list.end(),[](const auto& op){
+      return op.label.find("raider")!=std::string::npos||op.label.rfind("art-missing:",0)==0;
+    })&&std::any_of(state->render_list.begin(),state->render_list.end(),[](const auto& op){
+      return op.op==render::Op::Player&&op.label.rfind("fs_player_",0)==0;
+    });
+  };
+  for(const auto* identity:{"village-invader","village-leader"}) {
+    // Installed production clips are mandatory. Do not fabricate a complete
+    // family from legacy raider/wolf pixels to make this acceptance gate pass.
+    bool complete=art.ready(identity);
+    for(const auto* action:{"idle","walk","attack","hit","death"})for(const auto* dir:directions) {
+      const auto* c=art.find(identity,action,dir);
+      const bool padded=std::string(action)=="attack"||std::string(action)=="death";
+      complete&=c&&!c->frames.empty()&&c->fps>0&&c->width==(padded?128:96)&&c->height==(padded?128:96)&&
+          c->anchor_x==(padded?64:48)&&c->anchor_y==(padded?96:80)&&c->pixels_per_metre==48;
+    }
+    scenario_check(complete,(std::string("first-slice-art: ")+identity+" requires all 20 real clips with fixed 48px/metre pivots").c_str());
+    if(!complete)continue; // Failure was recorded; avoid dereferencing missing clips.
+    WorldActor enemy;enemy.id=std::string("inspection-")+identity;enemy.kind=identity;enemy.name=identity;
+    enemy.elite=std::string(identity)=="village-leader";enemy.alive=true;enemy.life=enemy.life_max=40;
+    enemy.position={state->world.player.position.x+int(2*kTileUnits),state->world.player.position.y};
+    for(std::size_t d=0;d<directions.size();++d) {
+      enemy.facing=facing[d];
+      for(const auto* action:{"idle","walk","attack","hit","death"}) {
+        const auto& clip=*art.find(identity,action,directions[d]);
+        bool all_frames=true;
+        for(std::size_t frame=0;frame<clip.frames.size();++frame) {
+          const double phase=(frame+.5)/clip.frames.size();
+          state->world.monsters={enemy};state->effects.clear();state->telegraphs.clear();state->tick_accum_ms=0;
+          auto& motion=state->motions[enemy.id];motion={};
+          if(clip.action=="walk") {motion.moving=1;motion.travel_direction=enemy.facing;motion.walk_phase=phase;}
+          else if(clip.action=="death") {state->world.monsters.front().alive=false;motion.death_age_ms=phase*clip.frames.size()*1000/clip.fps;}
+          else if(clip.action=="attack"||clip.action=="hit") {
+            EffectFx fx;fx.kind=clip.action=="attack"?EffectFx::Kind::Swing:EffectFx::Kind::TargetFlash;
+            fx.actor_id=enemy.id;fx.wx=enemy.position.x;fx.wy=enemy.position.y;
+            fx.angle=std::atan2(double(enemy.facing.y),double(enemy.facing.x));
+            fx.ttl=int(clip.frames.size()*2);fx.age=int(frame*2+1);
+            fx.style=enemy.elite?"ground-slam":"blunt";state->effects.push_back(fx);
+          } else renderer.clock_start=GetTickCount64()-ULONGLONG((frame+.5)*1000/clip.fps);
+          renderer.hitstop_until=0;
+          const bool capture=d==0&&clip.action=="attack"&&frame==clip.frames.size()/2;
+          const auto path=capture?capture_dir+"\\first-slice-"+identity+"-attack.png":std::string{};
+          const bool painted=reference_present(*state,1280,800,path);
+          const auto expected="art:"+clip.frames[frame];
+          all_frames&=painted&&(!capture||!capture_dir.empty())&&clean_trace()&&
+              std::count_if(state->render_list.begin(),state->render_list.end(),[&](const auto& op){return op.label==expected;})==1;
+          if(clip.action!="death")all_frames&=std::count_if(state->render_list.begin(),state->render_list.end(),[&](const auto& op){
+            return op.op==render::Op::Monster&&op.label==clip.frames[frame]&&op.x==enemy.position.x&&op.y==enemy.position.y;
+          })==1;
+        }
+        scenario_check(all_frames,(std::string("first-slice-art: production ")+identity+"/"+action+"/"+directions[d]+" draws every frame beside the player without fallback").c_str());
+      }
+      // Exercise the same retained presentation object used after authority
+      // removes a dead actor. Its exact identity/facing must outlive the actor.
+      state->effects.clear();state->world.monsters={enemy};
+      bool retained=present_actor_death(state->effects,state->world,enemy);
+      state->world.monsters.clear();
+      if(!retained||state->effects.empty()) {
+        scenario_check(false,"first-slice-art: village enemy creates a retained corpse");
+        continue;
+      }
+      const auto& death=*art.find(identity,"death",directions[d]);
+      for(std::size_t frame=0;frame<=death.frames.size();++frame) {
+        auto& fall=state->effects.front();
+        const double ticks=(frame==death.frames.size()?death.frames.size()+2.0:frame+.5)*20/death.fps;
+        fall.age=int(ticks);state->tick_accum_ms=(ticks-fall.age)*50;renderer.hitstop_until=0;
+        const auto& expected=death.frames[std::min(frame,death.frames.size()-1)];
+        const bool capture=d==0&&frame==death.frames.size();
+        const auto path=capture?capture_dir+"\\first-slice-"+identity+"-retained-death.png":std::string{};
+        retained&=reference_present(*state,1280,800,path)&&(!capture||!capture_dir.empty())&&clean_trace()&&
+            fall.actor_art_identity==identity&&fall.actor_facing.x==enemy.facing.x&&fall.actor_facing.y==enemy.facing.y&&
+            std::count_if(state->render_list.begin(),state->render_list.end(),[&](const auto& op){
+              return op.op==render::Op::Death&&op.label=="art:actor-fall:"+enemy.id+":"+expected&&
+                  op.x==enemy.position.x&&op.y==enemy.position.y;
+            })==1&&render::count(state->render_list,render::Op::Monster)==0;
+      }
+      scenario_check(retained,(std::string("first-slice-art: removed ")+identity+"/"+directions[d]+" retains its own death sequence, final corpse and pivot").c_str());
+    }
+  }
+}
+
 int scenario_first_slice_art() {
   using namespace first_slice_art;
   auto product=make_product_client();
@@ -180,6 +279,7 @@ int scenario_first_slice_art() {
   }
   first_slice_retained_death_lifecycle();
   first_slice_player_death_equipment_lifecycle();
+  first_slice_village_enemy_rendering();
   {
     ClientState motion_probe;motion_probe.world.player.position={0,0};advance_actor_motion(motion_probe,0);
     bool ordinary_walk=true;int previous_step=0;

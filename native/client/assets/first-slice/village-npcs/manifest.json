@@ -1,0 +1,321 @@
+{
+  "accepted": true,
+  "scope": "Village-defense prologue: defender and well keeper static cardinal views",
+  "technique": "Distinct editable MakeHuman anatomy/hair variants; reviewed CMU/Quaternius motion; Blender guides -> ImageGen appearance -> Pixel Respecter -> depth-tested vertex projection -> native Blender rendering. No generated animation poses.",
+  "clips": [
+    {
+      "identity": "defender",
+      "action": "idle",
+      "direction": "front",
+      "fps": 1,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "defender/accepted/defender-idle-front-00.png"
+      ]
+    },
+    {
+      "identity": "defender",
+      "action": "idle",
+      "direction": "right",
+      "fps": 1,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "defender/accepted/defender-idle-right-00.png"
+      ]
+    },
+    {
+      "identity": "defender",
+      "action": "idle",
+      "direction": "back",
+      "fps": 1,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "defender/accepted/defender-idle-back-00.png"
+      ]
+    },
+    {
+      "identity": "defender",
+      "action": "idle",
+      "direction": "left",
+      "fps": 1,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "defender/accepted/defender-idle-left-00.png"
+      ]
+    },
+    {
+      "identity": "scribe",
+      "action": "idle",
+      "direction": "front",
+      "fps": 1,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "scribe/accepted/scribe-idle-front-00.png"
+      ]
+    },
+    {
+      "identity": "scribe",
+      "action": "idle",
+      "direction": "right",
+      "fps": 1,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "scribe/accepted/scribe-idle-right-00.png"
+      ]
+    },
+    {
+      "identity": "scribe",
+      "action": "idle",
+      "direction": "back",
+      "fps": 1,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "scribe/accepted/scribe-idle-back-00.png"
+      ]
+    },
+    {
+      "identity": "scribe",
+      "action": "idle",
+      "direction": "left",
+      "fps": 1,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        "scribe/accepted/scribe-idle-left-00.png"
+      ]
+    }
+  ],
+  "provenance": {
+    "defender": {
+      "transfer": {
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_sha256": "5a9df11c3eebfbe8d8ddae7f52685ccd8bfb76a91ec09ce07a85e3f8fa0db840",
+        "native_atlas": [
+          256,
+          256
+        ],
+        "method": "Per-view uniform appearance registration; Pixel Respecter manual4 dominant-color/majority-alpha reconstruction. Blender alone supplies final silhouette, animation pixels and pivots.",
+        "views": [
+          {
+            "direction": "front",
+            "source_pixels_per_native_cell": 6.329593271744382,
+            "translation_in_source_slot": [
+              12.387165017219193,
+              39.34852860194877
+            ],
+            "silhouette_iou": 0.8723975822699799
+          },
+          {
+            "direction": "right",
+            "source_pixels_per_native_cell": 6.260032334971283,
+            "translation_in_source_slot": [
+              15.835783751676594,
+              41.73209924323241
+            ],
+            "silhouette_iou": 0.868231046931408
+          },
+          {
+            "direction": "back",
+            "source_pixels_per_native_cell": 6.1844544164465916,
+            "translation_in_source_slot": [
+              23.17436167660594,
+              36.55336996624073
+            ],
+            "silhouette_iou": 0.8859011627906976
+          },
+          {
+            "direction": "left",
+            "source_pixels_per_native_cell": 6.262182128979975,
+            "translation_in_source_slot": [
+              45.46464540937213,
+              18.47077190112251
+            ],
+            "silhouette_iou": 0.8642413487133984
+          }
+        ]
+      },
+      "actions": {
+        "idle": {
+          "source": "male-club-idle-projection.blend",
+          "source_sha256": "6524e844d724dc6df791e1c930afeeaf818d9a0663d87ec799b4ed2d4ec6d1ce",
+          "geometry_sha256": "ca66025126ba30e5bf3adf3c530389fce6de4586629b98dee79b097f1b8f9b3a",
+          "appearance_sha256": "b75d3fbb1cbe5d35f9cd6ab552e6561189abf3cce19e05c16ec4dbfb4b0abdf1",
+          "source_frames": [
+            1
+          ],
+          "frame": [
+            96,
+            96
+          ],
+          "anchor": [
+            48,
+            80
+          ],
+          "pixels_per_metre": 48,
+          "filter": "BOX 1.0",
+          "identity": "defender",
+          "action": "idle"
+        }
+      }
+    },
+    "scribe": {
+      "transfer": {
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_sha256": "f3680c954c442d2508f030ecc6fd9f64df47f9c72280f3fdb6909efac4fd86d8",
+        "native_atlas": [
+          256,
+          256
+        ],
+        "method": "Per-view uniform appearance registration; Pixel Respecter manual4 dominant-color/majority-alpha reconstruction. Blender alone supplies final silhouette, animation pixels and pivots.",
+        "views": [
+          {
+            "direction": "front",
+            "source_pixels_per_native_cell": 6.0027349318230465,
+            "translation_in_source_slot": [
+              19.07697528045293,
+              34.926342711265725
+            ],
+            "silhouette_iou": 0.8735207100591716
+          },
+          {
+            "direction": "right",
+            "source_pixels_per_native_cell": 5.923740145385114,
+            "translation_in_source_slot": [
+              29.5106761394035,
+              47.084219057332746
+            ],
+            "silhouette_iou": 0.8759124087591241
+          },
+          {
+            "direction": "back",
+            "source_pixels_per_native_cell": 5.9786456033930175,
+            "translation_in_source_slot": [
+              35.17257003075289,
+              48.647149462081686
+            ],
+            "silhouette_iou": 0.8806214227309894
+          },
+          {
+            "direction": "left",
+            "source_pixels_per_native_cell": 5.816966377488965,
+            "translation_in_source_slot": [
+              61.41574031312932,
+              40.77147329782346
+            ],
+            "silhouette_iou": 0.8251681075888568
+          }
+        ]
+      },
+      "actions": {
+        "idle": {
+          "source": "female-club-idle-projection.blend",
+          "source_sha256": "0d45af97353a0856193e9a8a46a631aee6872e4a5d76ccbe1822a83698b606f6",
+          "geometry_sha256": "c185bc998131022f522063c04ca7e5e7ff89f3e36adf4f2f9b1edd27efb814ef",
+          "appearance_sha256": "632f96780c937d9fe1f8b30e16d04fa4d819c491a0daa2cba19e4ce14851526f",
+          "source_frames": [
+            1
+          ],
+          "frame": [
+            96,
+            96
+          ],
+          "anchor": [
+            48,
+            80
+          ],
+          "pixels_per_metre": 48,
+          "filter": "BOX 1.0",
+          "identity": "scribe",
+          "action": "idle"
+        }
+      }
+    }
+  },
+  "frame_sha256": {
+    "defender/accepted/defender-idle-front-00.png": "55ab64b124238c9bb2d6ea5eedf5bde8e0f59fa64e6170d7c51a691e1c07a983",
+    "defender/accepted/defender-idle-right-00.png": "ed80d073220cc2705485d385d02b5fc21fa978b58e4dba2c2f343dce279cdfbf",
+    "defender/accepted/defender-idle-back-00.png": "bb437cdf25d84533d51ac4e5baac9f86986184ded805d353a54b9b28654f8691",
+    "defender/accepted/defender-idle-left-00.png": "4e5a534222627cc9c051f6906527708e1c2c11e0eb1762a8552a9894943d1d71",
+    "scribe/accepted/scribe-idle-front-00.png": "f4efd2ca38edbdcf077953c094a3d43cad518f0b03ea1cebe0664293ec14f928",
+    "scribe/accepted/scribe-idle-right-00.png": "a3f055ef2463d4fcba6609586210e162b6ac4f0e4ecb3d8c5b5583e3ee62fd2e",
+    "scribe/accepted/scribe-idle-back-00.png": "92f191a354dee03ca475b68c171e347e635d79312ad5b99fb585a833564bbc67",
+    "scribe/accepted/scribe-idle-left-00.png": "b1c7ec699f9aeb54650f0c637a6364f1da5c67db16063fee7d9cc118bd562642"
+  }
+}

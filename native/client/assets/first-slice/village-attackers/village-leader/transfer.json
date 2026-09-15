@@ -1,0 +1,50 @@
+{
+  "source_size": [
+    1254,
+    1254
+  ],
+  "source_sha256": "361867f81df8a4bf93ee43642e44cbf87a730c3996433b323a1430909a1c84e2",
+  "native_atlas": [
+    256,
+    256
+  ],
+  "method": "Per-view uniform appearance registration; Pixel Respecter manual4 dominant-color/majority-alpha reconstruction. Blender alone supplies final silhouette, animation pixels and pivots.",
+  "views": [
+    {
+      "direction": "front",
+      "source_pixels_per_native_cell": 6.015501066091841,
+      "translation_in_source_slot": [
+        39.8372052881583,
+        66.2774794392408
+      ],
+      "silhouette_iou": 0.8588888888888889
+    },
+    {
+      "direction": "right",
+      "source_pixels_per_native_cell": 5.8690066995246815,
+      "translation_in_source_slot": [
+        38.446344187384554,
+        69.21435369520255
+      ],
+      "silhouette_iou": 0.8359433258762118
+    },
+    {
+      "direction": "back",
+      "source_pixels_per_native_cell": 6.039183541274741,
+      "translation_in_source_slot": [
+        41.46167158492026,
+        42.00153923339562
+      ],
+      "silhouette_iou": 0.8796241926012919
+    },
+    {
+      "direction": "left",
+      "source_pixels_per_native_cell": 5.896635401245685,
+      "translation_in_source_slot": [
+        38.21684655889111,
+        47.267660822696605
+      ],
+      "silhouette_iou": 0.819164265129683
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "source": "male-club-death-projection.blend",
+  "source_sha256": "ffeae321547e781c5d8fa0c19ecc71bab954b17f160c26a4b477b543cb5db145",
+  "geometry_sha256": "88f66933873171ff21dc7d68079788d05751ae9fc2026a33a1008aaf3f8c6865",
+  "appearance_sha256": "6ab71ff9e45e6bdae371d28d009882345c28ea319acdda458e83260df6e66370",
+  "source_frames": [
+    1,
+    9,
+    13,
+    29
+  ],
+  "frame": [
+    128,
+    128
+  ],
+  "anchor": [
+    64,
+    96
+  ],
+  "pixels_per_metre": 48,
+  "filter": "BOX 1.0",
+  "identity": "village-leader",
+  "action": "death"
+}

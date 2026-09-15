@@ -1,0 +1,26 @@
+{
+  "source": "male-club-attack-projection.blend",
+  "source_sha256": "268705077d9c428d24979ca5d16569d2b9ec9a08841c941666d2c8f2324ad16e",
+  "geometry_sha256": "88f66933873171ff21dc7d68079788d05751ae9fc2026a33a1008aaf3f8c6865",
+  "appearance_sha256": "6ab71ff9e45e6bdae371d28d009882345c28ea319acdda458e83260df6e66370",
+  "source_frames": [
+    1,
+    13,
+    25,
+    37,
+    49,
+    61
+  ],
+  "frame": [
+    128,
+    128
+  ],
+  "anchor": [
+    64,
+    96
+  ],
+  "pixels_per_metre": 48,
+  "filter": "BOX 1.0",
+  "identity": "village-leader",
+  "action": "attack"
+}

@@ -1,4 +1,13 @@
-# First-slice art — incomplete
+# First-slice art
+
+## Current Village Palisade integration — 2026-09-15
+
+The playable prologue uses `starter-minimal` male/female unarmed and club clips,
+the two bound NPCs, procedural woodland/palisade/well scenery, inventory/UI art,
+and complete `village-attackers` human enemy cohorts. These exact enemy IDs now
+have idle, walk, strike, hit and death in all four directions. The old raider
+fallback and incomplete wolves are not the prologue enemy appearance. The notes
+below describe earlier candidates and remain historical rejection context.
 
 ## Owner review hold — 2026-09-15
 

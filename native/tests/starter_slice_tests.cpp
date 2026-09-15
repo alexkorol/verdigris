@@ -80,6 +80,40 @@ struct Fixture {
   void start() { action("field_hand"); at(16,22); action("interact"); }
 };
 
+void test_enemy_attack_timing_preserves_damage_cadence() {
+  verdigris::WorldSimulation world(81,"timing-player");
+  world.enter_starter_village(); world.spawn_starter_wave(1); world.teleport(14,16,0);
+  int life=100;
+  world.advance_combat(1,1,life,100,1000);
+  const auto deadline=world.monsters().front().next_attack_ms;
+  check(deadline>=1400 && deadline<=2299 && life==100, "initial staggered contact deadline remains unchanged");
+  const auto warning=world.advance_combat(1,1,life,100,static_cast<std::int64_t>(deadline-250));
+  check(warning.size()==1 && warning.front().type=="telegraph" && warning.front().duration_ms==250 &&
+      warning.front().skill_id=="monster:club-strike" && warning.front().has_actor_pose,
+      "pack publishes the real remaining windup with authoritative actor pose");
+  check(world.advance_combat(1,1,life,100,static_cast<std::int64_t>(deadline-100)).empty() && life==100,
+      "windup publishes once and cannot cause early damage");
+  const auto impact=world.advance_combat(1,1,life,100,static_cast<std::int64_t>(deadline));
+  check(impact.size()==2 && impact[0].type=="attack" && impact[1].type=="hit" &&
+      impact[0].attacker_id==impact[1].attacker_id && impact[0].duration_ms==600 &&
+      impact[1].skill_id=="monster:club-strike" && life==97,
+      "pack contact emits one timed action before its original three damage");
+  check(world.monsters().front().next_attack_ms==deadline+1200,
+      "animation events leave the original repeat cooldown unchanged");
+  world.enter_starter_village();world.spawn_starter_wave(3);world.teleport(14,18,0);life=100;
+  const auto slam_warning=world.advance_combat(1,1,life,100,1000);
+  check(slam_warning.size()==1 && slam_warning[0].type=="telegraph" && slam_warning[0].duration_ms==1000,
+      "boss preserves its original one-second windup");
+  world.teleport(18,17,1500);
+  const auto miss=world.advance_combat(1,1,life,100,2000);
+  check(miss.size()==1 && miss[0].type=="attack" && miss[0].skill_id=="boss:ground-slam" && life==100,
+      "dodged boss slam still emits its visible action without phantom damage");
+  world.advance_combat(1,1,life,100,2001);world.teleport(14,18,2500);
+  const auto hit=world.advance_combat(1,1,life,100,3001);
+  check(hit.size()==2 && hit[0].type=="attack" && hit[1].type=="hit" && life==88,
+      "undodged boss slam preserves twelve damage and one action event");
+}
+
 void test_admission_choice_and_tool() {
   Fixture f;
   check(f.session.shared_world()->scene_id() == "owner-demo-prologue" && phase(f.session) == "occupation", "new starter arrives at threatened village");
@@ -143,10 +177,19 @@ void test_combat_and_forgiving_retry() {
   check(state(f.session)["xp"]["current"].number().value_or(-2) == initial_xp, "individual prologue kills cannot farm experience");
   check(f.session.shared_world()->ground_items().empty(), "individual prologue kills cannot farm loot");
   // Exercise the real lethal-hit path, not the unrelated developer kill verb.
+  f.events.clear();
   f.send("dev:hurt", {{"amount", 100000}});
   for (const auto& m : f.session.shared_world()->monsters()) if (m.alive) { f.at(m.x, m.y + 1); break; }
   for (int step = 0; step < 150 && phase(f.session) != "tool"; ++step) f.tick();
   const auto retried = state(f.session);
+  bool announced_before_damage=false;
+  for(std::size_t i=0;i+1<f.events.size();++i) if(f.events[i].event=="combat:attack" && f.events[i+1].event=="combat:hit") {
+    const auto& action=f.events[i].data; const auto& damage=f.events[i+1].data;
+    announced_before_damage = text(action["attackerId"])==text(damage["attackerId"]) &&
+        text(action["skillId"])=="monster:club-strike" && action["durationMs"].number().value_or(0)==600 &&
+        action["actorX"].number().has_value() && action["facingY"].number().has_value();
+  }
+  check(announced_before_damage,"real protocol combat announces exact attack timing before lethal damage");
   check(phase(f.session) == "tool" && text(retried["lifecycle"]) == "alive", "lethal encounter damage retries without creating a dead Scion");
   check(retried["hp"]["current"].number() == retried["hp"]["max"].number(), "retry restores full health");
   check(f.session.shared_world()->scene_id() == "owner-demo-prologue" && f.session.shared_world()->monsters().empty(), "retry resets encounters inside the village");
@@ -203,6 +246,7 @@ void test_victory_persistence_and_scion_isolation() {
 
 int main() {
   try {
+    test_enemy_attack_timing_preserves_damage_cadence();
     test_admission_choice_and_tool();
     std::cout << "  admission, occupation, tool and early-exit authority passed\n";
     test_combat_and_forgiving_retry();

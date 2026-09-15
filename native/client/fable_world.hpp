@@ -502,8 +502,20 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
       s=sprite("effect_dust"+std::to_string(std::min(3,int((1-life)*4))),fx.wx,fx.wy,52+(1-life)*20);
       if(s) s->anchor_y=.65f;
     } else if(fx.kind==EffectFx::Kind::Swing || fx.kind==EffectFx::Kind::SweepArc) {
-      s=sprite("effect_slash0",fx.wx+std::cos(fx.angle)*42,fx.wy+std::sin(fx.angle)*42,fx.kind==EffectFx::Kind::SweepArc?110:70);
-      if(s){s->anchor_y=.5f;s->elevation+=38;s->rotation=float(fx.angle);s->additive=true;}
+      const auto held=equipped_held(state);
+      const bool blunt=fx.style=="blunt"||fx.style=="ground-slam"||
+          (fx.actor_id==state.world.player.id&&
+           (held==vector_art::Held::None||held==vector_art::Held::Club||held==vector_art::Held::Handstone));
+      // Preserve the strike timeline for animation; wood and fists do not
+      // emit a luminous sword arc. A resolved heavy slam disturbs the ground.
+      if(fx.style=="ground-slam"&&life<=.5f) {
+        s=sprite("effect_dust"+std::to_string(std::min(3,int((1-life*2)*4))),
+            fx.wx+std::cos(fx.angle)*42,fx.wy+std::sin(fx.angle)*42,90);
+        if(s)s->anchor_y=.65f;
+      } else if(!blunt) {
+        s=sprite("effect_slash0",fx.wx+std::cos(fx.angle)*42,fx.wy+std::sin(fx.angle)*42,fx.kind==EffectFx::Kind::SweepArc?110:70);
+        if(s){s->anchor_y=.5f;s->elevation+=38;s->rotation=float(fx.angle);s->additive=true;}
+      }
     } else if(fx.kind==EffectFx::Kind::ActorFall) {
       const auto& art=first_slice_art::registry();
       if(art.ready(fx.actor_art_identity)) {

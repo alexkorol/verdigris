@@ -1,0 +1,21 @@
+{
+  "source": "male-club-idle-projection.blend",
+  "source_sha256": "6524e844d724dc6df791e1c930afeeaf818d9a0663d87ec799b4ed2d4ec6d1ce",
+  "geometry_sha256": "ca66025126ba30e5bf3adf3c530389fce6de4586629b98dee79b097f1b8f9b3a",
+  "appearance_sha256": "b75d3fbb1cbe5d35f9cd6ab552e6561189abf3cce19e05c16ec4dbfb4b0abdf1",
+  "source_frames": [
+    1
+  ],
+  "frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "pixels_per_metre": 48,
+  "filter": "BOX 1.0",
+  "identity": "defender",
+  "action": "idle"
+}

@@ -461,6 +461,14 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       const Vec2 contact = event.has_actor_pose ? Vec2{event.actor_x, event.actor_y} : actor->position;
       present_strike(fx.effects, event.actor_id, contact, swing_angle,
                      event.text == "sweep", false);
+      for (auto& strike : fx.effects) if (strike.actor_id == event.actor_id &&
+          (strike.kind == EffectFx::Kind::Swing || strike.kind == EffectFx::Kind::SweepArc)) {
+        strike.style = event.style;
+        if (event.action_duration_ms > 0) {
+          strike.ttl = std::clamp((event.action_duration_ms + 49) / 50, 2, 100);
+          strike.age = strike.ttl / 2; // authority resolved contact; show follow-through
+        }
+      }
       break;
     }
     case PresentationEventType::DamageApplied: {
@@ -510,6 +518,8 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       const auto spec = actions::spec_from_payload(
           event.text, event.value, verdigris::Simulation::presentation_catalog());
       actions::apply_spec(telegraph, spec);
+      if (event.action_duration_ms > 0)
+        telegraph.windup_ticks = std::clamp((event.action_duration_ms + 49) / 50, 1, 100);
       fx.telegraphs[event.actor_id.empty() ? "foe" : event.actor_id] =
           std::move(telegraph);
       break;

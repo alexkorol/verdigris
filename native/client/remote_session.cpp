@@ -1140,6 +1140,21 @@ static void apply_starter_fields(ClientModel& model, const JsonValue* data) {
   model.starter.wave = static_cast<int>(json_number(data->get("wave"), 0));
   model.starter.retries = static_cast<int>(json_number(data->get("retries"), 0));
 }
+static void apply_action_pose(PresentationEvent& event, const JsonValue& data) {
+  const auto* x = data.get("actorX"); const auto* y = data.get("actorY");
+  const auto* fx = data.get("facingX"); const auto* fy = data.get("facingY");
+  if (!x || !y || !fx || !fy || !x->number() || !y->number() || !fx->number() || !fy->number()) return;
+  if (!std::isfinite(*x->number()) || !std::isfinite(*y->number()) ||
+      !std::isfinite(*fx->number()) || !std::isfinite(*fy->number()) ||
+      std::abs(*x->number()) > 100000 || std::abs(*y->number()) > 100000 ||
+      std::abs(*fx->number()) > 1 || std::abs(*fy->number()) > 1) return;
+  event.has_actor_pose = true;
+  event.actor_x = static_cast<int>(std::lround(protocol_to_world(*x->number())));
+  event.actor_y = static_cast<int>(std::lround(protocol_to_world(*y->number())));
+  event.facing_x = static_cast<int>(*fx->number()); event.facing_y = static_cast<int>(*fy->number());
+  const double duration = json_number(data.get("durationMs"));
+  event.action_duration_ms = std::isfinite(duration) ? static_cast<int>(std::clamp(duration, 0.0, 5000.0)) : 0;
+}
 void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
   if (envelope.event == "starter:update") { apply_starter_fields(model_, &envelope.data); return; }
   if(envelope.event=="inventory:operation") {
@@ -1434,6 +1449,17 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     }
     return;
   }
+  if (envelope.event == "combat:attack") {
+    const auto* attacker = json_string(envelope.data.get("attackerId"));
+    const auto* skill = json_string(envelope.data.get("skillId"));
+    if (!attacker || !skill || !find_monster(model_, *attacker) ||
+        (*skill != "monster:club-strike" && *skill != "boss:ground-slam")) return;
+    PresentationEvent event{PresentationEventType::AttackStarted,*attacker,"",*skill,0};
+    event.style = *skill == "boss:ground-slam" ? "ground-slam" : "blunt";
+    apply_action_pose(event,envelope.data);
+    if (!event.has_actor_pose) return;
+    pending_events_.push_back(std::move(event)); return;
+  }
   if (envelope.event == "monster:telegraph") {
     const auto* attacker = json_string(envelope.data.get("attackerId"));
     const auto* name = json_string(envelope.data.get("attackerName"));
@@ -1442,10 +1468,12 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     const bool elite = skill_id.find("sweep") != std::string::npos ||
                        skill_id.find("boss") != std::string::npos;
     upsert_monster(model_, attacker ? *attacker : "", name ? *name : "", elite);
-    pending_events_.push_back({PresentationEventType::Telegraph,
+    PresentationEvent event{PresentationEventType::Telegraph,
                                attacker ? *attacker : "", "",
                                std::string(name ? *name : "") + " " + skill_id,
-                               static_cast<int>(json_number(envelope.data.get("durationMs")))});
+                               static_cast<int>(json_number(envelope.data.get("durationMs")))};
+    apply_action_pose(event,envelope.data);
+    pending_events_.push_back(std::move(event));
     return;
   }
   if (envelope.event == "combat:hit") {

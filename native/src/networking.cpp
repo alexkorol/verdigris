@@ -2671,9 +2671,19 @@ void ProtocolSession::handle_inventory_commit(const JsonValue& payload, const st
   emit(Envelope{"inventory:operation",JsonValue::Object{{"uuid",uuid},{"accepted",true},{"reason",""}}});
 }
 void ProtocolSession::emit_combat_event(const WorldCombatEvent& event, const std::function<void(const Envelope&)>& emit) {
+  if (event.type == "attack") {
+    JsonValue::Object data{{"attackerId",event.attacker_id},{"skillId",event.skill_id},
+        {"durationMs",event.duration_ms},{"actorX",event.actor_x},{"actorY",event.actor_y},
+        {"facingX",event.facing_x},{"facingY",event.facing_y}};
+    emit_world(Envelope{"combat:attack",std::move(data)},emit); return;
+  }
   if (event.type == "telegraph") {
     JsonValue::Object data; put(data,"attackerId",event.attacker_id); put(data,"attackerName",event.attacker_name); put(data,"skillId",event.skill_id);
     put(data,"x",event.x); put(data,"y",event.y); put(data,"radius",event.radius); put(data,"durationMs",event.duration_ms);
+    if (event.has_actor_pose) {
+      put(data,"actorX",event.actor_x);put(data,"actorY",event.actor_y);
+      put(data,"facingX",event.facing_x);put(data,"facingY",event.facing_y);
+    }
     emit_world(Envelope{"monster:telegraph",JsonValue(std::move(data))},emit); return;
   }
   // N4: kill rewards go through world_->drop_monster_loot inside

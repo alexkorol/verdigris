@@ -1,0 +1,24 @@
+{
+  "source": "male-club-walk-projection.blend",
+  "source_sha256": "c4f7c64bd45bdb37f583acc48dc96cda86eeeb5bf7132fc1cc612d48fdabe800",
+  "geometry_sha256": "a0650cdd9cd42b9632ea3e118c4c497d18ea1d9ca095a8b04e63626843a3bd50",
+  "appearance_sha256": "f5b343cb9fbb04bb64d855c27780011151c408e9f5f442a1fb670d481189bd25",
+  "source_frames": [
+    72,
+    80,
+    88,
+    96
+  ],
+  "frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "pixels_per_metre": 48,
+  "filter": "BOX 1.0",
+  "identity": "village-invader",
+  "action": "walk"
+}
