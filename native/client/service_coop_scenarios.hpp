@@ -18,6 +18,9 @@ struct Run {
   ClientState state;HWND window=nullptr;raster_art::detail::Surface surface;
   std::filesystem::path root,output;std::string role,other,actor_id,other_id,house_id,scion_id,town_id,instance_id;
   Json::Array checks;int failures=0;bool own_hit=false;int move_x=0,move_y=0;double max_frame_ms=0,total_frame_ms=0;int frames=0;
+  bool charge_accepted=false,warden_credit=false,reward_received=false,reconnected=false;
+  std::vector<double> steady_samples;std::string measured_scene;int scene_frames=0;
+  int points_before=0,points_after=0;std::string inventory_after;
   explicit Run(std::filesystem::path path,std::string side):root(std::move(path)),output(root/side),role(std::move(side)),other(role=="A"?"B":"A") {}
   ~Run(){if(state.session)state.session->shutdown();if(window){SetWindowLongPtr(window,GWLP_USERDATA,0);DestroyWindow(window);}}
   void require(bool ok,const std::string& label) {
@@ -29,6 +32,13 @@ struct Run {
     const auto until=std::chrono::steady_clock::now()+std::chrono::milliseconds(50);
     timer_step(window,state);paint_scene(state,surface.dc,RECT{0,0,1280,800});
     own_hit=own_hit||model().last_outgoing_hit>0;
+    charge_accepted=charge_accepted||model().last_message.find("No road holds past a living Warden")!=std::string::npos;
+    warden_credit=warden_credit||model().last_message.find("Your party defeated the first Warden")!=std::string::npos||model().last_message.find("Your first Warden is down")!=std::string::npos;
+    reward_received=reward_received||model().last_message.find("You kept your word")!=std::string::npos;
+    if(measured_scene!=model().scene.id){measured_scene=model().scene.id;scene_frames=0;}
+    if(state.screen==Screen::Expedition&&state.frontend==Frontend::None&&!state.party_open) {
+      if(++scene_frames>20 && steady_samples.size()<12000)steady_samples.push_back(state.last_paint_ms);
+    }
     total_frame_ms+=state.last_paint_ms;max_frame_ms=std::max(max_frame_ms,state.last_paint_ms);++frames;
     std::this_thread::sleep_until(until);
   }
@@ -85,6 +95,74 @@ struct Run {
     }
     if(finish<0||finish==start)return {0,0};while(parent[finish]!=start)finish=parent[finish];return {finish%w-sx,finish/w-sy};
   }
+  std::string inventory_signature()const {
+    std::vector<std::string> rows;
+    for(const auto& item:model().inventory)rows.push_back(item.uuid+":"+item.id+":"+std::to_string(item.quantity));
+    for(const auto& worn:model().worn)rows.push_back(worn.item.uuid+":"+worn.item.id+":"+std::to_string(worn.item.quantity)+":"+worn.seat);
+    std::sort(rows.begin(),rows.end());std::string signature;for(const auto& row:rows)signature+=row+"\n";return signature;
+  }
+  bool approach(double x,double y,double reach=0.65,int timeout_ms=30000) {
+    const auto deadline=std::chrono::steady_clock::now()+std::chrono::milliseconds(timeout_ms);const auto origin_scene=model().scene.id;
+    while(std::chrono::steady_clock::now()<deadline&&model().player.alive) {
+      if(model().scene.id!=origin_scene){movement(0,0);return true;}
+      if(std::hypot(x-model().player.x,y-model().player.y)<=reach){movement(0,0);settle(200);return true;}
+      const auto [dx,dy]=step_toward(x,y);if(!dx&&!dy){movement(0,0);return std::hypot(x-model().player.x,y-model().player.y)<=1.0;}
+      movement(dx,dy);settle(100);
+    }
+    movement(0,0);return false;
+  }
+  void accept_charge_and_frame_town() {
+    const verdigris::client::ClientNpc* guide=nullptr;
+    for(const auto& npc:model().npcs)if(npc.id==1&&npc.name.find("Aldwyn")!=std::string::npos){guide=&npc;break;}
+    require(guide!=nullptr,"public Aldwyn roster entry is available");const double gx=guide->x,gy=guide->y;
+    require(approach(gx,gy,1.0),"ordinary movement reaches Aldwyn");settle();
+    const auto at=project(state.camera,RECT{0,0,1280,800},verdigris::client::protocol_to_world(gx),verdigris::client::protocol_to_world(gy));
+    const int body=at.y-int(kTileUnits*.7*at.scale);click(RECT{at.x-1,body-1,at.x+1,body+1});
+    require(wait([&]{return charge_accepted;}),"ordinary NPC interaction accepts Aldwyn's charge");
+    points_before=model().progression.earned_points;
+    require(approach(gx+(role=="A"?0:1),gy+1,0.65),"ordinary movement frames separate Scions in arrival court");
+    barrier("charge-and-court");settle(1000);capture("town-peers-clear");
+  }
+  bool combat_step(int frame,const std::string& prefix) {
+    const verdigris::client::ClientMonster* target=nullptr;double nearest=1e9;
+    for(const auto& m:model().monsters)if(m.alive){const double d=std::hypot(m.x-model().player.x,m.y-model().player.y);if(d<nearest){nearest=d;target=&m;}}
+    if(!target)return false;const double tx=target->x,ty=target->y;
+    if(nearest>1.25){const auto [dx,dy]=step_toward(tx,ty);movement(dx,dy);}
+    else {
+      movement(0,0);const auto at=project(state.camera,RECT{0,0,1280,800},verdigris::client::protocol_to_world(tx),verdigris::client::protocol_to_world(ty));
+      SendMessage(window,WM_MOUSEMOVE,0,MAKELPARAM(at.x,at.y));settle(100);click(RECT{at.x-1,at.y-1,at.x+1,at.y+1});
+    }
+    settle(150);if(frame<12||frame%30==0)capture(prefix+"-"+std::to_string(frame));return true;
+  }
+  void complete_and_reconnect(const std::string& endpoint) {
+    const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(120);int frame=0;
+    key('R',true);key('R',false);
+    while(std::chrono::steady_clock::now()<deadline&&model().player.alive) {
+      if(!combat_step(frame++,"warden-fight"))break;
+    }
+    movement(0,0);settle();require(model().player.alive,"own Scion survives shared Warden encounter");
+    require(std::none_of(model().monsters.begin(),model().monsters.end(),[](const auto& m){return m.alive;}),"shared first floor is cleared by ordinary combat");
+    require(wait([&]{return warden_credit;},5000),"this House receives shared first-Warden credit");barrier("warden-cleared");capture("warden-cleared");
+    if(!model().ground.empty()&&(role=="A"||model().ground.size()>1)) {
+      const auto drop=role=="A"?model().ground.front():model().ground.back();
+      if(approach(drop.x,drop.y,1.0,15000)) {key('X',true);key('X',false);settle(1000);}
+    }
+    capture("owned-loot");barrier("loot-observed");
+    const auto exit=model().scene;require(exit.has_stairs_up,"authoritative extraction position exists");
+    require(approach(exit.stairs_up_x,exit.stairs_up_y,1.0,45000)||model().scene.type!="instance","ordinary return movement reaches extraction");
+    if(model().scene.type=="instance")require(party("party:returnToTown"),"native Return to town control requests extraction");
+    require(wait([&]{return model().scene.type!="instance";}),"own Scion returns to town without replacing ally world");party_open(false);
+    require(wait([&]{return reward_received;}),"own House reward is acknowledged after return");
+    points_after=model().progression.earned_points;require(points_after>points_before,"authoritative passive budget includes earned progression");
+    settle(1000);inventory_after=inventory_signature();capture("returned-house-progress");barrier("returned");
+    state.session->shutdown();state.frontend=Frontend::Title;state.screen=Screen::Chronicles;
+    state.session=verdigris::client::RemoteProtocolSession::online(endpoint);std::string error;
+    require(state.session->start(&error),"new connection starts without enrollment credentials");
+    require(wait([&]{return model().authenticated&&model().player.uuid==actor_id&&!model().chronicles_pending;},20000),"cached protected credential reconnects original actor");
+    require(wait([&]{return inventory_signature()==inventory_after&&model().progression.earned_points==points_after;}),"reconnect preserves exact owned items and passive budget");
+    require(model().chronicle.active_house_id==house_id&&model().chronicle.active_scion_id==scion_id&&model().player.alive,"reconnect retains owned living House and Scion");
+    key(VK_RETURN,true);key(VK_RETURN,false);settle();reconnected=true;capture("reconnected");barrier("reconnected");
+  }
   void move_phase(const std::string& moving_role) {
     party_open(false);settle();const auto self_before=model().player;const auto peer_before=peer()?*peer():verdigris::client::ClientPlayer{};
     if(role!=moving_role)mark("watch-"+moving_role);
@@ -134,7 +212,7 @@ struct Run {
     require(!actor_id.empty()&&!other_id.empty()&&actor_id!=other_id&&house_id!=field(ally,"house")&&scion_id!=field(ally,"scion"),"distinct actors, Houses and Scions across processes");
     require(wait([&]{return peer()!=nullptr&&peer()->scene_id==model().scene.id;}),"same-room peer arrives from authoritative service");
     require(peer()->appearance!=(model().player.appearance),"both real accounts retain distinct authored appearances");
-    move_phase("A");move_phase("B");capture("town-peers");require(render::count(state.render_list,render::Op::Player)>=2,"native GPU paints both live service actors");
+    move_phase("A");move_phase("B");accept_charge_and_frame_town();capture("town-peers");require(render::count(state.render_list,render::Op::Player)>=2,"native GPU paints both live service actors");
     if(role=="A") {
       require(party("party:create"),"native Create party control");require(wait([&]{return !model().party.id.empty();}),"party creation acknowledged");
       require(party("party:invite",other_id),"native Invite targets visible intended actor");
@@ -150,24 +228,17 @@ struct Run {
     require(wait([&]{return peer()&&peer()->scene_id==instance_id&&!model().monsters.empty()&&model().map_width>0;}),"shared actor, enemy and navigation snapshots arrive");capture("shared-expedition");
     const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(35);int frame=0;
     while(std::chrono::steady_clock::now()<deadline&&!own_hit&&model().player.alive) {
-      const verdigris::client::ClientMonster* target=nullptr;double nearest=1e9;
-      for(const auto& m:model().monsters)if(m.alive){const double d=std::hypot(m.x-model().player.x,m.y-model().player.y);if(d<nearest){nearest=d;target=&m;}}
-      if(!target)break;
-      const double tx=target->x,ty=target->y;
-      if(nearest>1.25){const auto [dx,dy]=step_toward(tx,ty);movement(dx,dy);}
-      else {
-        movement(0,0);const auto at=project(state.camera,RECT{0,0,1280,800},verdigris::client::protocol_to_world(tx),verdigris::client::protocol_to_world(ty));
-        SendMessage(window,WM_MOUSEMOVE,0,MAKELPARAM(at.x,at.y));settle(100);click(RECT{at.x-1,at.y-1,at.x+1,at.y+1});
-      }
-      settle(150);if(frame<12)capture("fight-motion-"+std::to_string(frame));++frame;
+      if(!combat_step(frame,"fight-motion"))break;++frame;
     }
     movement(0,0);require(own_hit,"this actor lands a real shared-encounter hit through native controls");mark("fought");
     require(wait([&]{return std::filesystem::exists(root/(other+"-fought"));},40000),"both native players participate in shared combat");capture("shared-fight");
     const double old_zoom=state.camera.zoom;state.camera.zoom=kCameraDefaultZoom*zoom_height_factor(1440);capture("shared-fight-fullscreen",3440,1440);state.camera.zoom=old_zoom;
-    barrier("finished");
+    complete_and_reconnect(endpoint);barrier("finished");
   }
   void report(const std::string& error) {
-    Json result=Json::Object{{"status",error.empty()?"passed":"failed"},{"role",role},{"pid",int(GetCurrentProcessId())},{"build",VERDIGRIS_BUILD_ID},{"actor",actor_id},{"peer",other_id},{"house",house_id},{"scion",scion_id},{"town",town_id},{"instance",instance_id},{"own_hit",own_hit},{"checks",checks},{"error",error},{"frames",frames},{"average_paint_ms",frames?total_frame_ms/frames:0},{"peak_paint_ms",max_frame_ms},{"topology","two separate native client processes and independent service; app-owned hidden windows"}};
+    auto sorted=steady_samples;std::sort(sorted.begin(),sorted.end());double sum=0;for(double sample:sorted)sum+=sample;
+    const auto percentile=[&](double p){return sorted.empty()?0.0:sorted[std::min(sorted.size()-1,std::size_t((sorted.size()-1)*p))];};
+    Json result=Json::Object{{"status",error.empty()?"passed":"failed"},{"role",role},{"pid",int(GetCurrentProcessId())},{"build",VERDIGRIS_BUILD_ID},{"actor",actor_id},{"peer",other_id},{"house",house_id},{"scion",scion_id},{"town",town_id},{"instance",instance_id},{"own_hit",own_hit},{"charge_accepted",charge_accepted},{"warden_credit",warden_credit},{"reward_received",reward_received},{"reconnected",reconnected},{"points_before",points_before},{"points_after",points_after},{"inventory_signature",inventory_after},{"steady_paint_samples",int(sorted.size())},{"steady_average_paint_ms",sorted.empty()?0.0:sum/sorted.size()},{"steady_p50_paint_ms",percentile(.50)},{"steady_p95_paint_ms",percentile(.95)},{"steady_peak_paint_ms",sorted.empty()?0.0:sorted.back()},{"steady_sample_rule","First 20 gameplay frames per authoritative scene excluded; frontends and open party panels excluded; concurrent clients on one machine"},{"checks",checks},{"error",error},{"frames",frames},{"average_paint_ms",frames?total_frame_ms/frames:0},{"peak_paint_ms",max_frame_ms},{"topology","two separate native client processes and independent service; app-owned hidden windows"}};
     write(output/"result.json",result.stringify());
   }
 };
