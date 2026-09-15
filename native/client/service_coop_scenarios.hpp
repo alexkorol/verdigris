@@ -169,7 +169,10 @@ struct Run {
       if(!combat_step(frame++,"warden-fight"))break;
     }
     movement(0,0);settle();require(model().player.alive,"own Scion survives shared Warden encounter");
-    require(model().scene.id==instance_id&&!model().monsters.empty()&&std::none_of(model().monsters.begin(),model().monsters.end(),[](const auto& m){return m.alive;}),"shared first floor is cleared by ordinary combat");
+    // Full snapshots retire defeated monsters, so a cleared room may have
+    // an empty roster. Exact scene identity and the Warden acknowledgement
+    // below distinguish that legitimate state from accidental extraction.
+    require(model().scene.id==instance_id&&std::none_of(model().monsters.begin(),model().monsters.end(),[](const auto& m){return m.alive;}),"shared first floor is cleared by ordinary combat");
     require(wait([&]{return warden_credit;},5000),"this House receives shared first-Warden credit");barrier("warden-cleared");capture("warden-cleared");
     if(!model().ground.empty()&&(role=="A"||model().ground.size()>1)) {
       const auto drop=role=="A"?model().ground.front():model().ground.back();
