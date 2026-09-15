@@ -3,6 +3,9 @@
 Status: Implemented and locally tested. Integration/packaging/player acceptance
 belong to the parent service/co-op task; this lane makes no gameplay claim.
 
+Implementation commit: `2dca7f4ba33734f56e7b853e800b2691ac0b78c5`, pushed and
+remote-verified (`git ls-remote`) on `origin/codex/native-service-store-20260914`.
+
 ## Implementation
 
 New `service_store.hpp`, `service_store.cpp`, `service_store_tests.cpp` only.

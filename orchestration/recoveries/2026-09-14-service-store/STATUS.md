@@ -13,7 +13,8 @@ Owned paths: native/include/verdigris/service_store.hpp,
 native/src/service_store.cpp, native/tests/service_store_tests.cpp, this recovery.
 Parent owns protocol, simulation, build integration, packages, and final acceptance.
 Clean preflight; origin fetched; new branch has no upstream until normal push -u.
-Verified implementation will be committed, pushed, and remote-checked.
+Implementation commit 2dca7f4ba33734f56e7b853e800b2691ac0b78c5 was pushed to
+origin/codex/native-service-store-20260914; git ls-remote matched the full SHA.
 
 Implemented and locally tested: 95 focused assertions, 16-thread races,
 two real process crash recoveries, online backup/restore; production object
