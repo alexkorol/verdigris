@@ -57,6 +57,7 @@ struct Sprite {
   bool ground_layer = false;
   bool crisp = false; // Small atlas signals retain their point-sampled silhouette.
   std::array<float,4> uv{0,0,1,1};
+  float depth_bias = 0; // Ground footprint in front of an interior image pivot.
 };
 struct Light {
   float x = 0, y = 0, elevation = 0, radius = 1;
@@ -101,6 +102,7 @@ struct GpuVertex {
   float x, y, elevation, u, v;
   float r = 1, g = 1, b = 1, alpha = 1;
   float sprite_width = 0, sprite_height = 0, flash = 0, mode = 0;
+  float depth_bias = 0;
 };
 struct alignas(16) Constants {
   float viewport[4]{};  // W,H,camX,camY
@@ -132,6 +134,7 @@ SamplerState linearSampler : register(s2);
 struct VertexIn {
   float3 world : POSITION; float2 uv : TEXCOORD0; float4 tint : COLOR0;
   float4 sprite : TEXCOORD1;
+  float depthBias : TEXCOORD2;
 };
 struct WorldOut {
   float4 position : SV_POSITION; float2 uv : TEXCOORD0;
@@ -147,6 +150,12 @@ WorldOut worldVS(VertexIn input) {
   // and triangle interpolation; the reference's quadratic z changes neither
   // screen x/y nor UV, but clips triangles at the wrong near-plane location.
   float zc = depthInfo.z * (dz - depthInfo.y) / (depthInfo.z - depthInfo.y);
+  // Only depth changes: preserve the authored screen rectangle and UV grid.
+  // A pre-rendered footprint can extend toward the camera below its ground pivot.
+  if(input.depthBias>0) {
+    float depthDz=max(depthInfo.y,dz-input.depthBias);
+    zc = depthInfo.z * (depthDz-depthInfo.y) / (depthInfo.z-depthInfo.y) * dz/depthDz;
+  }
   o.position = float4(xc, yc, zc, dz);
   o.uv = input.uv; o.dz = dz; o.tint = input.tint; o.sprite = input.sprite;
   return o;
@@ -316,8 +325,9 @@ class Renderer {
       {"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
       {"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,12,D3D11_INPUT_PER_VERTEX_DATA,0},
       {"COLOR",0,DXGI_FORMAT_R32G32B32A32_FLOAT,0,20,D3D11_INPUT_PER_VERTEX_DATA,0},
-      {"TEXCOORD",1,DXGI_FORMAT_R32G32B32A32_FLOAT,0,36,D3D11_INPUT_PER_VERTEX_DATA,0}};
-    if (FAILED(hr=device_->CreateInputLayout(input,4,code->GetBufferPointer(),code->GetBufferSize(),
+      {"TEXCOORD",1,DXGI_FORMAT_R32G32B32A32_FLOAT,0,36,D3D11_INPUT_PER_VERTEX_DATA,0},
+      {"TEXCOORD",2,DXGI_FORMAT_R32_FLOAT,0,52,D3D11_INPUT_PER_VERTEX_DATA,0}};
+    if (FAILED(hr=device_->CreateInputLayout(input,5,code->GetBufferPointer(),code->GetBufferSize(),
                               input_.ReleaseAndGetAddressOf()))) return fail("world vertex layout",hr);
     if (!compile("fullVS","vs_5_0",code)) return false;
     if (FAILED(hr=device_->CreateVertexShader(code->GetBufferPointer(),code->GetBufferSize(),nullptr,
@@ -580,9 +590,9 @@ class Renderer {
     for(const auto& m:scene.world_meshes) if(m.opacity>=1&&!mesh(m)) return false;
     for(const auto& sprite:scene.sprites) {
       for(float f:{sprite.x,sprite.y,sprite.elevation,sprite.width,sprite.height,sprite.anchor_x,sprite.anchor_y,
-                   sprite.opacity,sprite.tint_r,sprite.tint_g,sprite.tint_b,sprite.flash,sprite.rotation,sprite.uv[0],sprite.uv[1],sprite.uv[2],sprite.uv[3]})
+                   sprite.opacity,sprite.tint_r,sprite.tint_g,sprite.tint_b,sprite.flash,sprite.rotation,sprite.uv[0],sprite.uv[1],sprite.uv[2],sprite.uv[3],sprite.depth_bias})
         if(!std::isfinite(f)) return fail("nonfinite billboard",E_INVALIDARG);
-      if(sprite.width<=0||sprite.height<=0||sprite.opacity<0||sprite.opacity>1||sprite.uv[0]<0||sprite.uv[1]<0||sprite.uv[2]>1||sprite.uv[3]>1||sprite.uv[0]>=sprite.uv[2]||sprite.uv[1]>=sprite.uv[3]||!textures_.contains(sprite.texture))
+      if(sprite.width<=0||sprite.height<=0||sprite.opacity<0||sprite.opacity>1||sprite.depth_bias<0||sprite.uv[0]<0||sprite.uv[1]<0||sprite.uv[2]>1||sprite.uv[3]>1||sprite.uv[0]>=sprite.uv[2]||sprite.uv[1]>=sprite.uv[3]||!textures_.contains(sprite.texture))
         return fail("invalid billboard or missing texture",E_INVALIDARG);
       const float dz=scene.camera.d0-sprite.y;
       if(dz<scene.camera.near_depth||dz>scene.camera.far_depth||sprite.opacity==0) continue;
@@ -605,7 +615,7 @@ class Renderer {
         const float x=(u-s.anchor_x)*s.width,y=(v-s.anchor_y)*s.height;
         vertices_.push_back({s.x+cosine*x-sine*y,s.y,s.elevation-sine*x-cosine*y,
             s.uv[0]+(s.flip?1-u:u)*(s.uv[2]-s.uv[0]),s.uv[1]+v*(s.uv[3]-s.uv[1]),
-            s.tint_r,s.tint_g,s.tint_b,s.opacity,s.width,s.height,s.flash,s.crisp?3.f:2.f});
+            s.tint_r,s.tint_g,s.tint_b,s.opacity,s.width,s.height,s.flash,s.crisp?3.f:2.f,s.depth_bias});
       }
       for(UINT i:{0u,2u,1u,1u,2u,3u}) indices_.push_back(base+i);
       const int blend=s.additive?2:1;

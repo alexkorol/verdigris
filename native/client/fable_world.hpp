@@ -34,14 +34,27 @@ struct TerrainBakeStats {
   std::size_t retained_bytes = 0, peak_bytes = 0;
   bool running = false;
 };
-inline constexpr int kTerrainSize = 2048, kTerrainNx = 176, kTerrainNy = 140;
-// Conservative CPU budget includes current RGBA/mesh, one job's result,
-// immutable inputs and its temporary coverage lattice. No extra result queue.
+// One world tile always contains 48 authored ground texels in both axes.
+inline constexpr int kTerrainPixelsPerTile = 48;
+inline constexpr int kTerrainTilesX = 80, kTerrainTilesY = 64;
+inline constexpr int kTerrainWidth = kTerrainTilesX*kTerrainPixelsPerTile;
+inline constexpr int kTerrainHeight = kTerrainTilesY*kTerrainPixelsPerTile;
+inline constexpr int kTerrainNx = 176, kTerrainNy = 140;
+inline constexpr int kTerrainFieldStep = 8;
+inline constexpr int kTerrainFieldWidth = kTerrainWidth/kTerrainFieldStep+1;
+inline constexpr int kTerrainFieldHeight = kTerrainHeight/kTerrainFieldStep+1;
+// GPU upload_texture accepts rectangular dimensions up to 8192. Keep this
+// bound explicit so a future world extent cannot silently exceed that API.
+static_assert(kTerrainWidth<=8192 && kTerrainHeight<=8192);
+// Conservative CPU budget: resident packet plus one job, including coverage,
+// two reusable interpolation rows and the logical tile's material lookup.
 inline constexpr std::size_t kTerrainJobBytes =
-    std::size_t(kTerrainSize)*kTerrainSize*4 +
+    std::size_t(kTerrainWidth)*kTerrainHeight*4 +
     std::size_t(kTerrainNx+1)*(kTerrainNy+1)*sizeof(fable_gpu::Vertex) +
     std::size_t(kTerrainNx)*kTerrainNy*6*sizeof(std::uint32_t) +
-    std::size_t(256)*256*sizeof(raster_ground::Coverage) + sizeof(TerrainBakeInput);
+    (std::size_t(kTerrainFieldWidth)*kTerrainFieldHeight+2*kTerrainWidth)*sizeof(raster_ground::Coverage) +
+    std::size_t(kTerrainPixelsPerTile)*kTerrainPixelsPerTile*144*sizeof(std::uint32_t) +
+    std::size_t(kTerrainWidth)*sizeof(int) + sizeof(TerrainBakeInput);
 
 inline TerrainBakeResult bake_terrain(const TerrainBakeInput& input) {
   const auto started = std::chrono::steady_clock::now();
@@ -49,29 +62,57 @@ inline TerrainBakeResult bake_terrain(const TerrainBakeInput& input) {
   result.key=input.key;result.scene_key=input.scene_key;result.generation=input.generation;
   result.min_x=input.min_x;result.min_y=input.min_y;result.max_x=input.max_x;result.max_y=input.max_y;
   const double min_x=input.min_x,min_y=input.min_y,max_x=input.max_x,max_y=input.max_y;
-  constexpr int size=kTerrainSize,block=8,side=size/block;
-  result.rgba.resize(std::size_t(size)*size*4);
-  std::vector<raster_ground::Coverage> fields(side*side);
-  for(int y=0;y<side;++y) for(int x=0;x<side;++x)
-    fields[y*side+x]=raster_ground::coverage(input.layout,
-        min_x+(x*block+block*.5)*(max_x-min_x)/size,
-        min_y+(y*block+block*.5)*(max_y-min_y)/size);
-  for(int y=0;y<size;++y) for(int x=0;x<size;++x) {
-    const double wx=min_x+(x+.5)*(max_x-min_x)/size;
-    const double wy=min_y+(y+.5)*(max_y-min_y)/size;
-    const int px=(static_cast<int>(std::floor(wx/kTileUnits*64))%64+64)%64;
-    const int py=(static_cast<int>(std::floor(wy/kTileUnits*64))%64+64)%64;
-    const int bx=x/block,by=y/block,bx1=std::min(side-1,bx+1),by1=std::min(side-1,by+1);
-    const double fx=double(x%block)/block,fy=double(y%block)/block;
-    const auto mix=[](const auto& a,const auto& b,double t){return raster_ground::Coverage{
-        a.road+(b.road-a.road)*t,a.planting+(b.planting-a.planting)*t,a.shade+(b.shade-a.shade)*t};};
-    auto field=mix(mix(fields[by*side+bx],fields[by*side+bx1],fx),
-        mix(fields[by1*side+bx],fields[by1*side+bx1],fx),fy);
-    if(!input.interior) field.planting=std::max(field.planting,.72*(1-field.road));
-    const auto pixel=raster_ground::detail::material(input.earth[py*64+px],input.moss[py*64+px],field);
-    const std::size_t at=(std::size_t(y)*size+x)*4;
-    result.rgba[at]=static_cast<std::uint8_t>(pixel>>16);result.rgba[at+1]=static_cast<std::uint8_t>(pixel>>8);
-    result.rgba[at+2]=static_cast<std::uint8_t>(pixel);result.rgba[at+3]=255;
+  constexpr int width=kTerrainWidth,height=kTerrainHeight,block=kTerrainFieldStep;
+  constexpr int field_width=kTerrainFieldWidth,field_height=kTerrainFieldHeight;
+  result.rgba.resize(std::size_t(width)*height*4);
+  std::vector<raster_ground::Coverage> fields(std::size_t(field_width)*field_height);
+  // Lattice nodes coincide with output pixel centers, including the guard
+  // row/column. Tile-aligned patch changes preserve identical world samples.
+  for(int y=0;y<field_height;++y) for(int x=0;x<field_width;++x)
+    fields[y*field_width+x]=raster_ground::coverage(input.layout,
+        min_x+(x*block+.5)*(max_x-min_x)/width,
+        min_y+(y*block+.5)*(max_y-min_y)/height);
+  // Nearest-neighbor sample the old 64px material into one 48px logical tile.
+  // Repeating this discrete lookup never introduces fractional texture detail.
+  std::vector<std::array<std::uint32_t,144>> colors(kTerrainPixelsPerTile*kTerrainPixelsPerTile);
+  for(int y=0;y<kTerrainPixelsPerTile;++y) for(int x=0;x<kTerrainPixelsPerTile;++x) {
+    const int px=(2*x+1)*raster_ground::kTilePixels/(2*kTerrainPixelsPerTile);
+    const int py=(2*y+1)*raster_ground::kTilePixels/(2*kTerrainPixelsPerTile);
+    auto& palette=colors[y*kTerrainPixelsPerTile+x];
+    for(int shade=0;shade<4;++shade) for(int planting=0;planting<6;++planting) for(int road=0;road<6;++road)
+      palette[shade*36+planting*6+road]=raster_ground::detail::material(
+          input.earth[py*raster_ground::kTilePixels+px],input.moss[py*raster_ground::kTilePixels+px],
+          {road/5.0,planting/5.0,shade/3.0});
+  }
+  const auto logical_coordinate=[](double world) {
+    const auto pixel=static_cast<long long>(std::floor(world/kTileUnits*kTerrainPixelsPerTile));
+    return static_cast<int>((pixel%kTerrainPixelsPerTile+kTerrainPixelsPerTile)%kTerrainPixelsPerTile);
+  };
+  std::vector<int> columns(width);
+  for(int x=0;x<width;++x) columns[x]=logical_coordinate(min_x+(x+.5)*(max_x-min_x)/width);
+  const auto mix=[](const auto& a,const auto& b,double t){return raster_ground::Coverage{
+      a.road+(b.road-a.road)*t,a.planting+(b.planting-a.planting)*t,a.shade+(b.shade-a.shade)*t};};
+  std::vector<raster_ground::Coverage> top(width),bottom(width);
+  const auto horizontal=[&](int row,auto& destination) {
+    const auto* source=fields.data()+row*field_width;
+    for(int x=0;x<width;++x) destination[x]=mix(source[x/block],source[x/block+1],double(x%block)/block);
+  };
+  horizontal(0,top);horizontal(1,bottom);
+  for(int y=0;y<height;++y) {
+    if(y>0 && y%block==0) {top.swap(bottom);horizontal(y/block+1,bottom);}
+    const int py=logical_coordinate(min_y+(y+.5)*(max_y-min_y)/height);
+    const double fy=double(y%block)/block;
+    auto* output=result.rgba.data()+std::size_t(y)*width*4;
+    for(int x=0;x<width;++x) {
+      auto field=mix(top[x],bottom[x],fy);
+      if(!input.interior) field.planting=std::max(field.planting,.72*(1-field.road));
+      const int road=std::clamp(static_cast<int>(field.road*5+.5),0,5);
+      const int planting=std::clamp(static_cast<int>(field.planting*5+.5),0,5);
+      const int shade=std::clamp(static_cast<int>(field.shade*3+.5),0,3);
+      const auto pixel=colors[py*kTerrainPixelsPerTile+columns[x]][shade*36+planting*6+road];
+      output[x*4]=static_cast<std::uint8_t>(pixel>>16);output[x*4+1]=static_cast<std::uint8_t>(pixel>>8);
+      output[x*4+2]=static_cast<std::uint8_t>(pixel);output[x*4+3]=255;
+    }
   }
   result.vertices.reserve(std::size_t(kTerrainNx+1)*(kTerrainNy+1));
   result.indices.reserve(std::size_t(kTerrainNx)*kTerrainNy*6);
@@ -174,7 +215,7 @@ struct Renderer {
   bool adopt_terrain(TerrainBakeResult&& result) {
     const auto started=std::chrono::steady_clock::now();
     const auto revision=terrain_revision+1;
-    if(!gpu.upload_texture(1,kTerrainSize,kTerrainSize,result.rgba.data(),kTerrainSize*4,true,revision)) {
+    if(!gpu.upload_texture(1,kTerrainWidth,kTerrainHeight,result.rgba.data(),kTerrainWidth*4,false,revision)) {
       bake_error=gpu.error();++bake_stats.failed;return false;
     }
     // Publish bounds, geometry and matching texture together on the main
@@ -232,7 +273,7 @@ struct Renderer {
     if(!finish_terrain_job(scene_key,key,loading)) return false;
     if(terrain_scene_key==scene_key && !terrain_rgba.empty() && !gpu.has_texture(1,terrain_revision)) {
       const auto started=std::chrono::steady_clock::now();
-      if(!gpu.upload_texture(1,kTerrainSize,kTerrainSize,terrain_rgba.data(),kTerrainSize*4,true,terrain_revision)) return false;
+      if(!gpu.upload_texture(1,kTerrainWidth,kTerrainHeight,terrain_rgba.data(),kTerrainWidth*4,false,terrain_revision)) return false;
       bake_stats.last_upload_ms=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-started).count();
     }
     if(terrain_scene_key==scene_key && terrain_key==key) { update_bake_bytes();return true; }
@@ -244,7 +285,7 @@ struct Renderer {
     TerrainBakeInput input;
     input.key=key;input.scene_key=scene_key;input.generation=generation;input.interior=interior;
     input.min_x=(cx-32)*kTileUnits;input.min_y=(cy-40)*kTileUnits;
-    input.max_x=input.min_x+80*kTileUnits;input.max_y=input.min_y+64*kTileUnits;
+    input.max_x=input.min_x+kTerrainTilesX*kTileUnits;input.max_y=input.min_y+kTerrainTilesY*kTileUnits;
     // Snapshot these main-thread caches before launching. The worker uses
     // only pure coverage/material/height functions and its owned vectors.
     const auto& patterns=raster_ground::detail::cache().patterns;
@@ -313,15 +354,49 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
     sprites.push_back({tex.id,float(x),float(y),height(x,y),float(h*tex.width/native),float(h*tex.height/native),tex.anchor_x,tex.anchor_y});
     return &sprites.back();
   };
+  const auto authored_sprite=[&](const first_slice_art::Clip& clip,double phase,double x,double y)->fable_gpu::Sprite* {
+    const auto& name=clip.frame(phase);
+    const auto size=raster_art::dimensions(name.c_str());
+    if(size.width!=clip.width||size.height!=clip.height)return nullptr;
+    // One world metre is one base tile. Frame padding, body pose and object
+    // size never influence this scale or the artist-authored ground pivot.
+    auto* result=sprite(name,x,y,clip.height*kTileUnits/clip.pixels_per_metre);
+    if(result) {
+      result->anchor_x=float(clip.anchor_x)/clip.width;
+      result->anchor_y=float(clip.anchor_y)/clip.height;
+      result->crisp=true;
+      result->ground_layer=clip.identity=="worn-earth-patch";
+      const auto ink=raster_art::content_bounds(name.c_str());
+      const double below=std::max(0L,ink.bottom-clip.anchor_y)*kTileUnits/clip.pixels_per_metre;
+      const double ground_projection=p.a-result->elevation*p.k;
+      if(below>0&&ground_projection>0) {
+        const double dz=p.d0-y;
+        const double front_dz=dz*ground_projection/(ground_projection+below*p.k);
+        result->depth_bias=float(std::max(0.0,std::min(dz-p.near_depth,dz-front_dz+kTileUnits*.02)));
+      }
+      trace.push_back({render::Op::Hud,0,0,0,0,"art:"+name});
+    }
+    return result;
+  };
   // A stair marker at the same world Y is part of the floor layer, so its
   // transparent billboard must sort before the player standing on it.
   if(state.world.has_extraction)
     if(auto* s=sprite("exit_stairs",state.world.extraction.x,state.world.extraction.y,66)) s->ground_layer=true;
   // Billboard feet, terrain vertices and light anchors share this sampler.
   for(const auto& item:state.scenery) {
+    if(!item.art_identity.empty()) {
+      if(const auto* clip=first_slice_art::registry().find(item.art_identity,"idle","front"))
+        authored_sprite(*clip,0,item.position.x,item.position.y);
+      continue;
+    }
     const char* name=item.kind==SceneryKind::Tree?"tree":item.kind==SceneryKind::Ruin?"column":
         item.kind==SceneryKind::Shrine?"shrine":item.kind==SceneryKind::Gate?"gate":
         raster_scenery::dwelling_asset(state.world.route_id,item.position.x,item.position.y,kTileUnits);
+    if(const auto* clip=first_slice_art::registry().find(name,"idle","front")) {
+      authored_sprite(*clip,0,item.position.x,item.position.y);
+      shadows.push_back({float(item.position.x),float(item.position.y),float(item.radius*.8)});
+      continue;
+    }
     const auto size=raster_art::dimensions(name); const auto ink=raster_art::content_bounds(name);
     const double visible_height=scenery_height(item.kind)*item.scale*.78;
     shadows.push_back({float(item.position.x),float(item.position.y),float(item.radius*.8)});
@@ -332,7 +407,22 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
       lights.push_back({float(item.position.x),float(item.position.y),height(item.position.x,item.position.y)+30,210,1,.63f,.28f,.4f});
   }
   const auto actor=[&](const WorldActor& a,const char* family,const char* motion_key,bool player) {
-    if(!a.alive) return;
+    const auto held=player?equipped_held(state):vector_art::Held::None;
+    const char* equipment=held==vector_art::Held::None?"unarmed":held==vector_art::Held::Club?"club":
+        held==vector_art::Held::Handstone?"handstone":held==vector_art::Held::Axe?"axe":
+        held==vector_art::Held::Staff?"staff":held==vector_art::Held::Bow?"bow":"sword";
+    const auto identity=player?std::string("player_")+a.appearance+"_"+equipment:a.kind;
+    const auto& art=first_slice_art::registry();
+    const bool active=art.ready(identity)&&(!player||
+        (art.ready(std::string("player_")+a.appearance+"_unarmed")&&art.ready(std::string("player_")+a.appearance+"_club")));
+    if(!a.alive) {
+      if(active) {
+        const auto* clip=art.find(identity,"death",first_slice_art::direction(a.facing.x,a.facing.y));
+        const auto& pos=a.displayed_position();
+        authored_sprite(*clip,std::min(.999999,state.motions[motion_key].death_age_ms*clip->fps/1000/clip->frames.size()),pos.x,pos.y);
+      }
+      return;
+    }
     const auto& pos=a.displayed_position(); const auto& motion=state.motions[motion_key];
     shadows.push_back({float(pos.x),float(pos.y),player?27.f:30.f});
     double ax=a.facing.x,ay=a.facing.y,attack=-1;
@@ -342,6 +432,26 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
     } else if(const auto t=state.telegraphs.find(a.id);t!=state.telegraphs.end()) {
       ax=t->second.facing.x;ay=t->second.facing.y;
       attack=std::clamp(double(state.world.tick-t->second.start_tick)/std::max(1,t->second.windup_ticks)*.4,0.0,.4);
+    }
+    if(active) {
+      const auto* dir=first_slice_art::direction(ax,ay);
+      const EffectFx* hit=nullptr;
+      for(const auto& fx:state.effects)if(fx.kind==EffectFx::Kind::TargetFlash&&fx.actor_id==a.id&&fx.ttl>0)hit=&fx;
+      const auto action=hit?"hit":attack>=0&&attack<1?"attack":motion.moving>.2?(player&&motion.tiles_per_second>5?"sprint":"walk"):"idle";
+      const auto* clip=art.find(identity,action,dir);
+      if(!clip) {
+        // Missing coverage is explicit in the trace, and retains this same
+        // character's idle rather than stitching an older sheet into it.
+        trace.push_back({render::Op::Hud,0,0,0,0,"art-missing:"+identity+"/"+action+"/"+dir});
+        clip=art.find(identity,"idle",dir);
+      }
+      const double phase=clip->action=="hit"?std::min(.999999,(hit->age+state.tick_accum_ms/50.0)/hit->ttl):clip->action=="attack"?attack:clip->action=="idle"?time*clip->fps/clip->frames.size():motion.walk_phase;
+      if(auto* sp=authored_sprite(*clip,phase,pos.x,pos.y)) {
+        for(const auto& fx:state.effects) if(fx.kind==EffectFx::Kind::TargetFlash && fx.actor_id==a.id && fx.ttl>0)
+          sp->flash=std::max(sp->flash,float(std::clamp(1.0-(fx.age+state.tick_accum_ms/50)/fx.ttl,0.0,1.0)*.85));
+        trace.push_back({player?render::Op::Player:render::Op::Monster,double(pos.x),double(pos.y),0,0,clip->frame(phase)});
+      }
+      return;
     }
     const auto name=actor_pose(family,ax,ay,attack,motion.moving,motion.walk_phase);
     // Fixed canvas scale across all frames: the hero has65 ink rows inside
@@ -354,7 +464,12 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
   };
   actor(state.world.player,player_raster_family(state),"player",true);
   for(const auto& a:state.world.monsters) actor(a,verdigris::client::monster_art_family(a,state.world),a.id.c_str(),false);
-  for(const auto& npc:state.world.npcs) sprite("artisan_sw",npc.position.x,npc.position.y,144);
+  for(const auto& npc:state.world.npcs) {
+    if(!npc.art_identity.empty()) {
+      if(const auto* clip=first_slice_art::registry().find(npc.art_identity,"idle","front"))
+        authored_sprite(*clip,time*clip->fps/clip->frames.size(),npc.position.x,npc.position.y);
+    } else sprite("artisan_sw",npc.position.x,npc.position.y,144);
+  }
   for(const auto& [id,pos]:state.loot_positions) {
     const auto n=state.world.loot_names.find(id);
     sprite(raster_loot::sprite(id,n==state.world.loot_names.end()?"":n->second),pos.x,pos.y,25);
@@ -484,7 +599,9 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
     scene.opaque_rect={float(pane.x),float(pane.y),float(pane.x+pane.w),float(pane.y+pane.h)};
   }
   scene.camera={int(p.width),int(p.height),float(p.cam_x),float(p.cam_y),float(p.d0),float(p.k),float(p.a),float(p.horizon),float(p.dzp),float(p.near_depth),float(p.far_depth)};
-  scene.terrain={1,r.terrain_vertices,r.terrain_indices};scene.sprites=sprites;scene.lights=lights;scene.world_meshes=meshes;
+  // Explicit nearest mesh chooses the point-sampled shader path, which does
+  // not require a generated mip chain or blend ground pixels with neighbours.
+  scene.terrain={1,r.terrain_vertices,r.terrain_indices,true};scene.sprites=sprites;scene.lights=lights;scene.world_meshes=meshes;
   if(r.shadow_ready) scene.ground_meshes=ground_meshes;
   const bool interior=state.world.theme=="crypt" || state.world.theme=="dungeon";
   // Fable's exact90-second ambient keyframes, starting in its daylight phase.
@@ -535,7 +652,11 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
     if(!a.alive) continue;
     const auto pos=a.displayed_position(); const auto at=project(state.camera,bounds,pos.x,pos.y);
     if(at.scale<=0 || at.x<0 || at.x>bounds.right || at.y<0 || at.y>bounds.bottom) continue;
-    const int width=std::max(28,int(54*at.scale)),top=at.y-int((a.elite?121:106)*at.scale);
+    double label_lift=a.elite?121:106;
+    const auto& art=first_slice_art::registry();
+    if(art.ready(a.kind))if(const auto* clip=art.find(a.kind,"idle","front"))
+      label_lift=clip->anchor_y*kTileUnits/clip->pixels_per_metre+8;
+    const int width=std::max(28,int(54*at.scale)),top=at.y-int(label_lift*at.scale);
     const RECT back{at.x-width/2-1,top-1,at.x+width/2+1,top+5};
     FillRect(dc,&back,cached_brush(RGB(24,24,23)));
     const int fill=static_cast<int>(width*std::clamp(double(a.life)/std::max(1,a.life_max),0.0,1.0));
@@ -559,7 +680,10 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
     if(at.scale<=0 || at.x<0 || at.x>bounds.right || at.y<0 || at.y>bounds.bottom) continue;
     SetBkMode(dc,TRANSPARENT);SetTextColor(dc,skin::kInk);
     SIZE size{};skin::text_extent(dc,npc.name.c_str(),int(npc.name.size()),&size);
-    const int y=at.y-int(106*at.scale);
+    double label_lift=106;
+    if(!npc.art_identity.empty())if(const auto* clip=first_slice_art::registry().find(npc.art_identity,"idle","front"))
+      label_lift=clip->anchor_y*kTileUnits/clip->pixels_per_metre+size.cy/std::max(.1,at.scale);
+    const int y=at.y-int(label_lift*at.scale);
     SetTextColor(dc,RGB(15,12,9));
     skin::text_out(dc,at.x-size.cx/2+skin::ui_scale(),y+skin::ui_scale(),npc.name.c_str(),int(npc.name.size()));
     SetTextColor(dc,skin::kInk);

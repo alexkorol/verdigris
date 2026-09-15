@@ -131,7 +131,8 @@ void paint_gear_overlay(ClientState& state,HDC dc,const RECT& bounds,render::Lis
       g.DrawEllipse(&gold,cx-d/2,cy-d/2,d,d);
       if(key=="coins") { Gdiplus::SolidBrush b(Gdiplus::Color(255,132,101,43));g.FillEllipse(&b,cx-d/2+2,cy-d/2+2,d-4,d-4); }
       art=true;
-    } else if(state.billboards.item_art.contains(key)) art=draw_item_art(state.billboards,dc,key,r);
+    } else if(first_slice_art::registry().find(key,"icon","front")) art=draw_item_art(state.billboards,dc,key,r);
+    else if(state.billboards.item_art.contains(key)) art=draw_item_art(state.billboards,dc,key,r);
     else if(key.find('_')==std::string::npos && item.equip_seat=="right_hand") art=draw_item_art(state.billboards,dc,key,r);
     if (!art) {
       // An unknown owned item remains named honestly. Never substitute a sword.

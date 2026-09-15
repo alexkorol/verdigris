@@ -138,6 +138,9 @@ struct WorldNpc {
   std::string name;
   verdigris::Vec2 position{};
   std::vector<std::string> actions;
+  // Optional authored identity from a scene binding, never inferred from an
+  // NPC's display name or position in the roster.
+  std::string art_identity;
 };
 
 // TASK-0153: owner-facing expedition phase. The local path reads the core's

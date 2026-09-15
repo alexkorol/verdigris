@@ -55,6 +55,7 @@ namespace phase_a = verdigris::client::phase_a;
 #include "audio_out.hpp"
 #include "vector_art.hpp"
 #include "raster_art.hpp"
+#include "first_slice_art.hpp"
 #include "fable_gpu.hpp"
 #include "raster_ground.hpp"
 #include "raster_walls.hpp"
@@ -318,6 +319,7 @@ struct SceneryItem {
   double scale = 1.0;
   bool solid = true;
   bool dressing = false;
+  std::string art_identity;
 };
 
 // TASK-0145: the two owner-facing screens. Expedition is the historical
@@ -711,6 +713,8 @@ struct ClientState {
     bool has_last = false;
     double walk_phase = 0.0;
     double moving = 0.0;
+    double tiles_per_second = 0.0;
+    double death_age_ms = 0.0;
   };
   std::unordered_map<std::string, ActorMotion> motions;
   double breathe_phase = 0.0;
@@ -1414,6 +1418,19 @@ bool draw_framekit_nine(const BillboardAssets& assets, HDC dc,
 // Aspect-fit alpha blit of an item sprite into a cell; false when unmapped.
 bool draw_item_art(const BillboardAssets& assets, HDC dc, const std::string& id,
                    const RECT& cell) {
+  if(const auto* clip=first_slice_art::registry().find(id,"icon","front")) {
+    const auto ink=raster_art::content_bounds(clip->frames.front().c_str());
+    const int width=ink.right-ink.left,height=ink.bottom-ink.top;
+    if(width<=0||height<=0)return false;
+    // Inventory art has no world pivot. Discard transparent layout padding
+    // when fitting, retaining native texels whenever the owned footprint fits.
+    const double fit=std::min(double(cell.right-cell.left)/width,double(cell.bottom-cell.top)/height);
+    const double scale=fit>=1?std::floor(fit):fit;
+    if(scale<=0)return false;
+    return raster_art::draw_sprite_at_anchor(dc,clip->frames.front().c_str(),
+        (cell.left+cell.right)/2.0,(cell.top+cell.bottom)/2.0,
+        std::max(1,int(clip->height*scale)),(ink.left+ink.right)/2.0,(ink.top+ink.bottom)/2.0);
+  }
   const auto found = assets.item_art.find(id);
   if (found == assets.item_art.end() || !found->second.ready() ||
       !assets.alpha_blend) {
@@ -9306,6 +9323,7 @@ void advance_actor_motion(ClientState& state, double dt_ms) {
       const double dx = static_cast<double>(pos.x - motion.last_pos.x);
       const double dy = static_cast<double>(pos.y - motion.last_pos.y);
       const double moved = std::sqrt(dx * dx + dy * dy);
+      if(dt_ms>0 && moved>.5) motion.tiles_per_second=moved/kTileUnits*1000.0/dt_ms;
       double stride=moved/(kTileUnits*.9);
       // Two contact poses need readable holds at the remote road speed.
       // Keep slow travel distance-driven, and cap rapid travel/dashes to a
@@ -9328,8 +9346,11 @@ void advance_actor_motion(ClientState& state, double dt_ms) {
     motion.has_last = true;
   };
   advance("player", state.world.player.displayed_position());
-  for (const auto& monster : state.world.monsters)
+  state.motions["player"].death_age_ms=state.world.player.alive?0:state.motions["player"].death_age_ms+dt_ms;
+  for (const auto& monster : state.world.monsters) {
     advance(monster.id, monster.displayed_position());
+    state.motions[monster.id].death_age_ms=monster.alive?0:state.motions[monster.id].death_age_ms+dt_ms;
+  }
   if (state.motions.size() > 256) state.motions.clear();
 }
 
@@ -20946,7 +20967,7 @@ int scenario_fable_world() {
         renderer.bake_stats.loading_waits==original_bakes.loading_waits,
         "fable-world: travel keeps presenting the old patch without waiting on CPU baking");
     scenario_check(state.camera.perspective && renderer.bake_stats.failed==0 &&
-        renderer.bake_stats.peak_bytes<48ULL*1024*1024,
+        renderer.bake_stats.peak_bytes<=2*fable_world::kTerrainJobBytes,
         "fable-world: streamed renderer stays on hardware with bounded terrain memory");
     scenario_check(moving_ms/moving_frames<40,
         "fable-world: fullscreen travel including terrain adoption stays below40ms");
@@ -21088,6 +21109,7 @@ int scenario_frontend_flow() {
 #include "inventory_scenarios.hpp"
 #include "typography_scenarios.hpp"
 #include "vfx/particle_scenarios.hpp"
+#include "first_slice_art_scenarios.hpp"
 
 int run_scenarios(const std::string& which) {
   struct Entry {
@@ -21103,6 +21125,7 @@ int run_scenarios(const std::string& which) {
       {"quick-movement-tap", scenario_quick_movement_tap},
       {"lineage-art", scenario_lineage_art},
       {"fable-world", scenario_fable_world},
+      {"first-slice-art", scenario_first_slice_art},
       {"frontend-flow", scenario_frontend_flow},
       {"move-and-camera", scenario_move_and_camera},
       {"first-fight", scenario_first_fight},

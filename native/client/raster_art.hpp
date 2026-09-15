@@ -61,7 +61,9 @@ struct CacheStats {
 
 namespace detail {
 
-inline constexpr std::size_t kMaxAssets = 512;
+// Complete four-direction player/equipment/action cohorts exceed512 small
+// frames. Keep the existing64MiB byte budget; only the metadata count grows.
+inline constexpr std::size_t kMaxAssets = 2048;
 inline constexpr std::size_t kMaxScaledBitmaps = 192;
 inline constexpr std::size_t kMaxSourceBytes = 64u * 1024u * 1024u;
 inline constexpr std::size_t kMaxScaledBytes = 64u * 1024u * 1024u;
@@ -276,7 +278,8 @@ inline Asset* asset(const char* name) {
     fail_asset(c, key, L"runtime directory was not found");
     return nullptr;
   }
-  std::wstring filename = c.root + L"\\";
+  const bool first_slice=key.rfind("fs_",0)==0;
+  std::wstring filename = (first_slice ? parent_path(parent_path(c.root))+L"\\first-slice\\runtime" : c.root) + L"\\";
   filename.append(key.begin(), key.end());
   filename += L".png";
   const DWORD attributes = GetFileAttributesW(filename.c_str());
@@ -495,6 +498,10 @@ inline const std::wstring& asset_root() {
   auto& c = detail::cache();
   detail::discover_root(c);
   return c.root;
+}
+
+inline std::wstring first_slice_root() {
+  return detail::parent_path(detail::parent_path(asset_root()))+L"\\first-slice\\runtime";
 }
 
 inline const std::wstring& last_error() { return detail::cache().error; }
