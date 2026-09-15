@@ -771,6 +771,13 @@ struct ClientState {
   Screen screen = Screen::Expedition;
   bool chronicles_mode = false;  // remote owner path launched at the front door
   bool lineage_art = false;  // Normal play uses the reference-based eight-way actors.
+  struct PlayerArtSnapshot {
+    std::string actor_id, scene, appearance;
+    vector_art::Held held=vector_art::Held::None;
+    verdigris::Vec2 facing{0,1};
+    bool valid=false;
+    bool death_started=false;
+  } player_art_snapshot;
   bool chronicles_oath = false;  // mortal-oath choice applied to the next admission
   std::vector<ChronicleAction> chronicles_menu;
   std::string selected_appearance = "male";
@@ -2150,15 +2157,18 @@ void reconcile_inventory_selection(ClientState& state) {
   state.selected_item_id.clear();
   state.selected_item=state.world.carried.size();
 }
+void sync_player_art_snapshot(ClientState& state);
 void sync_world(ClientState& state) {
   if (state.simulation) {
     verdigris::client::sync_world_from_simulation(state.world, *state.simulation,
                                                  state.local_combat_xp);
+    sync_player_art_snapshot(state);
     return;
   }
   if (!state.session) return;
   const auto& model = state.session->model();
   verdigris::client::sync_world_from_model(state.world, model);
+  sync_player_art_snapshot(state);
   reconcile_inventory_selection(state);
   // Authoritative loot placement: the server snapshot carries every ground
   // item's real position; the event-scatter heuristic anchored on the last
@@ -6642,6 +6652,26 @@ vector_art::Held equipped_held(const ClientState& state) {
     return vector_art::held_from_item(id, name);
   }
   return vector_art::Held::None;
+}
+
+void sync_player_art_snapshot(ClientState& state) {
+  auto& saved=state.player_art_snapshot;
+  const auto& player=state.world.player;
+  if(saved.valid&&!saved.death_started&&!player.alive&&saved.actor_id==player.id) {
+    // Session snapshots retire the instance to "surface" in the same update
+    // that clears equipment. Preserve this one death transition; later scene
+    // changes still invalidate its appearance, as does a successor identity.
+    saved.scene=state.world.route_id;saved.death_started=true;
+    state.motions["player"].death_age_ms=0;
+  }
+  if(saved.actor_id!=player.id||saved.scene!=state.world.route_id) {
+    saved={};
+    state.motions["player"].death_age_ms=0;
+  }
+  if(player.alive&&!player.id.empty()) {
+    saved={player.id,state.world.route_id,player.appearance,equipped_held(state),player.facing,true,false};
+    state.motions["player"].death_age_ms=0;
+  }
 }
 
 HudRect park_review_strip(const ClientState& state, int width, int height,

@@ -90,6 +90,79 @@ void first_slice_retained_death_lifecycle() {
   core_session->shutdown();
 }
 
+void first_slice_player_death_equipment_lifecycle() {
+  using namespace verdigris::client;
+  auto& art=first_slice_art::registry();
+  struct Restore { first_slice_art::Registry& target; first_slice_art::Registry saved;
+    ~Restore(){target=std::move(saved);} } restore{art,art};
+  const auto* source=art.find("pack-wolf","walk","right");
+  std::string club_frame,unarmed_frame;
+  if(source&&source->frames.size()>=8) {
+    const auto fixture=*source;
+    // Distinct existing pixels stand in for diagnostic equipment/direction
+    // branches. No manufactured player art is installed or published.
+    for(const auto* equipment:{"club","unarmed"}) {
+      int index=std::string(equipment)=="club"?0:4;
+      for(const auto* direction:{"front","right","back","left"}) {
+        for(const auto* action:{"idle","walk","sprint","attack","hit","death"}) {
+          auto c=fixture;c.identity=std::string("player_male_")+equipment;c.direction=direction;c.action=action;
+          c.loop=false;c.frames={fixture.frames[index]};
+          art.clips[first_slice_art::key(c.identity,c.action,c.direction)]=std::move(c);
+        }
+        ++index;
+      }
+    }
+    club_frame=fixture.frames[1];unarmed_frame=fixture.frames[5];
+  }
+  for(bool remote_adapter:{false,true}) {
+    auto state=make_product_client();
+    load_billboards(state->billboards);
+    LocalCoreSession* session=nullptr;
+    verdigris::Simulation* sim=nullptr;
+    if(remote_adapter) {
+      auto owner=std::make_unique<LocalCoreSession>(0xC011AB1EULL);session=owner.get();
+      state->session=std::move(owner);std::string error;
+      scenario_check(session->start(&error),"first-slice-art: player death session starts");
+      sim=session->simulation_for_scenarios();
+    } else {state->simulation=std::make_unique<verdigris::Simulation>(0xC011AB1EULL);sim=state->simulation.get();}
+    sim->dispatch(verdigris::Command::enter("route:tin:1:0"));
+    // Fixture grants one real core item; equip, loss and successor rules are
+    // exercised through the existing core rather than simulated UI inventory.
+    auto& scion=const_cast<verdigris::Scion&>(sim->scion());
+    scion.carried_items.push_back({"wooden_club","Wooden club",0});
+    sim->dispatch(verdigris::Command::equip("wooden_club"));
+    auto* player=sim->actor(sim->scion().actor_id);player->position={0,0};player->facing={1,0};
+    if(session)session->poll();sync_world(*state);
+    scenario_check(state->player_art_snapshot.valid&&state->player_art_snapshot.held==vector_art::Held::Club,
+        "first-slice-art: living local/session player records actual equipped club appearance");
+    player->stats.life=1;player->stats.defense=0;
+    const auto foe=sim->spawn_monster({1,0},1,false);sim->actor(foe)->cooldown_ticks=0;
+    player=sim->actor(sim->scion().actor_id);
+    for(int attempt=0;attempt<4&&player->alive;++attempt)sim->dispatch_tick({});
+    if(session)session->poll();sync_world(*state);
+    scenario_check(!state->world.player.alive&&state->world.carried.empty()&&sim->scion().carried_items.empty()&&
+        equipped_held(*state)==vector_art::Held::None&&state->player_art_snapshot.held==vector_art::Held::Club&&
+        state->player_art_snapshot.appearance=="male"&&state->player_art_snapshot.facing.x==1&&state->player_art_snapshot.facing.y==0,
+        "first-slice-art: real player death clears gameplay items while preserving only prior appearance/equipment/facing");
+    if(!club_frame.empty()) {
+      scenario_follow_camera(*state);scenario_present(*state);
+      scenario_check(render_list_has(*state,render::Op::Hud,("art:"+club_frame).c_str())&&
+          !render_list_has(*state,render::Op::Hud,("art:"+unarmed_frame).c_str()),
+          "first-slice-art: cleared inventory renders the retained club death instead of unarmed death");
+    }
+    state->motions["player"].death_age_ms=750;
+    sim->create_successor("Visual successor");sim->dispatch(verdigris::Command::enter("route:tin:1:0"));
+    if(session)session->poll();sync_world(*state);
+    scenario_check(state->world.player.alive&&state->player_art_snapshot.actor_id==state->world.player.id&&
+        state->player_art_snapshot.held==vector_art::Held::None&&state->motions["player"].death_age_ms==0,
+        "first-slice-art: new life resets retained equipment and death clock without restoring lost items");
+    state->world.player.alive=false;sync_player_art_snapshot(*state);
+    state->world.route_id+="/changed";sync_player_art_snapshot(*state);
+    scenario_check(!state->player_art_snapshot.valid,"first-slice-art: scene change clears old player death appearance");
+    if(session)session->shutdown();
+  }
+}
+
 int scenario_first_slice_art() {
   using namespace first_slice_art;
   auto product=make_product_client();
@@ -106,6 +179,7 @@ int scenario_first_slice_art() {
     scenario_check(accepted_tree,"first-slice-art: startup scene consumes accepted tree art without fixture bindings");
   }
   first_slice_retained_death_lifecycle();
+  first_slice_player_death_equipment_lifecycle();
   scenario_check(first_slice_depth_probe(),
       "first-slice-art: footprint depth reveals below-pivot pixels without moving the screen rectangle");
   scenario_check(fable_world::kTerrainWidth==80*48&&fable_world::kTerrainHeight==64*48,

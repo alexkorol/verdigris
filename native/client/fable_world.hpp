@@ -407,19 +407,23 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
       lights.push_back({float(item.position.x),float(item.position.y),height(item.position.x,item.position.y)+30,210,1,.63f,.28f,.4f});
   }
   const auto actor=[&](const WorldActor& a,const char* family,const char* motion_key,bool player) {
-    const auto held=player?equipped_held(state):vector_art::Held::None;
+    const auto& saved=state.player_art_snapshot;
+    const bool retained=player&&!a.alive&&saved.valid&&saved.actor_id==a.id&&saved.scene==state.world.route_id;
+    const auto held=player?(retained?saved.held:equipped_held(state)):vector_art::Held::None;
+    const auto& appearance=retained?saved.appearance:a.appearance;
     const char* equipment=held==vector_art::Held::None?"unarmed":held==vector_art::Held::Club?"club":
         held==vector_art::Held::Handstone?"handstone":held==vector_art::Held::Axe?"axe":
         held==vector_art::Held::Staff?"staff":held==vector_art::Held::Bow?"bow":"sword";
-    const auto identity=player?std::string("player_")+a.appearance+"_"+equipment:a.kind;
+    const auto identity=player?std::string("player_")+appearance+"_"+equipment:a.kind;
     const auto& art=first_slice_art::registry();
     const bool active=art.ready(identity)&&(!player||
-        (art.ready(std::string("player_")+a.appearance+"_unarmed")&&art.ready(std::string("player_")+a.appearance+"_club")));
+        (art.ready(std::string("player_")+appearance+"_unarmed")&&art.ready(std::string("player_")+appearance+"_club")));
     if(!a.alive) {
       if(!player&&std::any_of(state.effects.begin(),state.effects.end(),[&](const auto& fx){
         return fx.kind==EffectFx::Kind::ActorFall&&fx.actor_id==a.id&&fx.age<fx.ttl;}))return;
       if(active) {
-        const auto* clip=art.find(identity,"death",first_slice_art::direction(a.facing.x,a.facing.y));
+        const auto facing=retained?saved.facing:a.facing;
+        const auto* clip=art.find(identity,"death",first_slice_art::direction(facing.x,facing.y));
         const auto& pos=a.displayed_position();
         authored_sprite(*clip,std::min(.999999,state.motions[motion_key].death_age_ms*clip->fps/1000/clip->frames.size()),pos.x,pos.y);
       }

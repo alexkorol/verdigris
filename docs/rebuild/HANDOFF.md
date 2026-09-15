@@ -2618,6 +2618,12 @@ Full native build/tests, the first-slice-art scenario, and the existing raster-f
 
 Forthcoming 16-phase attack art must place authoritative contact at index8 (normalized phase0.5). Existing melee presentation lasts six50ms ticks and sweep eight; predicted input begins at phase0 and contact reconciles to phase0.5. Attack manifest FPS does not stretch gameplay timing. See `native/tools/README-first-slice-art.md` for the import and cadence contract.
 
+### Player death equipment retention
+
+Core death clears carried items before the next render, so deriving the dead player's art from current inventory selected unarmed instead of the equipped club. World synchronization now retains only the last living visual appearance, held variant and facing. Fable uses that snapshot during the same player's death while keeping complete-family gates. LocalCoreSession also retires the scene to `surface` in the same death snapshot; this single alive-to-dead transition preserves the visual identity, while later scene changes or a successor clear it and the death clock. Lost gameplay items remain lost.
+
+The client recompiles and first-slice-art, death-disconnect and raster-feedback scenarios pass. The focused regression uses actual core equip, enemy lethal damage and inventory clearing through both direct local and session adapters, checks GPU selection of the club death rather than unarmed, and creates a successor to verify reset. Its temporary diagnostic pixel mappings are restored and never exported as player artwork. Evidence: `native/build/first-slice-player-death-scenario.log`, `first-slice-player-death-disconnect.log`, and `first-slice-player-death-feedback.log`.
+
 ### 2026-09-15 — keep art studies out of player packages
 
 Package creation previously copied the entire first-slice directory recursively, including ignored failed generations and editable source scenes. It now copies only runtime/manifest.tsv and its referenced PNGs. The shared resource validator checks frame-name/content hash agreement and rejects missing/empty manifests; package validation rejects any additional first-slice source or stale PNG. Artist sources remain versioned separately for editing and provenance. PowerShell parse checks pass, the live156-PNG inventory selects157 files, full required native resources validate (518), and empty/path-escape negative probes fail as expected. A complete clean-commit player package build remains pending final actor assets; these checks do not claim that package exists yet.

@@ -39,6 +39,10 @@ Monster death effects retain the exact authored identity and event facing after
 the live snapshot removes the actor. Death playback uses elapsed time and that
 clip's FPS, canvas and pivot, then holds its last frame until the corpse expires.
 It does not reuse the old raider death when a complete new family is active.
+Player death similarly retains the last living appearance, equipment variant
+and facing after authority clears carried items. The same update may retire the
+instance to the surface; this single death transition retains visual identity.
+A later scene change or a new life clears it. No gameplay item is retained.
 
 Attack clips follow the existing normalized combat beat, not their manifest FPS:
 melee spans six 50 ms ticks; sweep spans eight. Input preparation begins at phase
