@@ -148,7 +148,7 @@ bool Store::open(std::string* error) {
         sqlite3_busy_timeout(impl_->db, 5000);
         // Refuse future schemas before any schema mutation.
         { Statement version(impl_->db, "PRAGMA user_version");
-          require(version.step() == SQLITE_ROW && version.number(0) <= 2, "Unsupported service database schema"); }
+          require(version.step() == SQLITE_ROW && version.number(0) <= 3, "Unsupported service database schema"); }
         { Statement journal(impl_->db, "PRAGMA journal_mode=WAL");
           require(journal.step() == SQLITE_ROW && journal.text(0) == "wal", "Service storage requires SQLite WAL"); }
         exec(impl_->db, "PRAGMA synchronous=FULL; PRAGMA foreign_keys=ON; PRAGMA secure_delete=ON; PRAGMA wal_autocheckpoint=256;");
@@ -162,7 +162,8 @@ bool Store::open(std::string* error) {
             "CREATE TABLE IF NOT EXISTS enrollment(hash TEXT PRIMARY KEY, expires INTEGER NOT NULL);"
             "CREATE TABLE IF NOT EXISTS credentials(hash TEXT PRIMARY KEY, account_id TEXT NOT NULL REFERENCES accounts(id), expires INTEGER NOT NULL, revoked INTEGER NOT NULL DEFAULT 0);"
             "CREATE TABLE IF NOT EXISTS recovery(hash TEXT PRIMARY KEY, account_id TEXT NOT NULL REFERENCES accounts(id), expires INTEGER NOT NULL);"
-            "CREATE TABLE IF NOT EXISTS outcomes(id TEXT PRIMARY KEY); PRAGMA user_version=2;");
+            "CREATE TABLE IF NOT EXISTS outcomes(id TEXT PRIMARY KEY);"
+            "CREATE TABLE IF NOT EXISTS world_state(id INTEGER PRIMARY KEY CHECK(id=1), snapshot TEXT NOT NULL); PRAGMA user_version=3;");
         transaction.commit();
         return true;
     } catch (const std::exception& e) { impl_->close(); set_error(error, e); return false; }
@@ -268,13 +269,33 @@ std::optional<std::string> Store::load_account(const std::string& id, std::strin
 }
 
 bool Store::commit_accounts(const std::map<std::string, std::string>& snapshots, const std::string& outcome, std::string* error) {
+    return commit_impl(snapshots, nullptr, outcome, error);
+}
+
+bool Store::commit_state(const std::map<std::string, std::string>& snapshots, const std::string& global_state,
+                         const std::string& outcome, std::string* error) {
+    return commit_impl(snapshots, &global_state, outcome, error);
+}
+
+std::optional<std::string> Store::load_world_state(std::string* error) {
+    std::lock_guard<std::mutex> guard(impl_->mutex); clear_error(error);
+    try {
+        impl_->ready(); Statement lookup(impl_->db, "SELECT snapshot FROM world_state WHERE id=1");
+        if (lookup.step() == SQLITE_ROW) return lookup.text(0);
+        return std::nullopt;
+    } catch (const std::exception& e) { set_error(error, e); return std::nullopt; }
+}
+
+bool Store::commit_impl(const std::map<std::string, std::string>& snapshots, const std::string* global_state,
+                        const std::string& outcome, std::string* error) {
     std::lock_guard<std::mutex> guard(impl_->mutex); clear_error(error);
     try {
         impl_->ready(); require(outcome.size() <= 256, "Outcome identity too long");
         Transaction transaction(impl_->db);
         if (!outcome.empty() && impl_->has(outcome)) { transaction.commit(); return true; }
-        require(!snapshots.empty() && snapshots.size() <= 256, "Invalid account transaction size");
-        std::size_t total = 0;
+        require((!snapshots.empty() || global_state) && snapshots.size() <= 256, "Invalid account transaction size");
+        std::size_t total = global_state ? global_state->size() : 0;
+        require(total <= max_snapshot_size, "Global state snapshot too large");
         for (const auto& [id, snapshot] : snapshots) {
             require(valid_secret(id, "acct_"), "Invalid account identity");
             require(snapshot.size() <= max_snapshot_size, "Account snapshot too large");
@@ -283,6 +304,10 @@ bool Store::commit_accounts(const std::map<std::string, std::string>& snapshots,
             update.bind(1, snapshot); update.bind(2, id); update.step();
             require(sqlite3_changes(impl_->db) == 1, "Account transaction references an unknown account");
             impl_->interrupt();
+        }
+        if (global_state) {
+            Statement update(impl_->db, "INSERT OR REPLACE INTO world_state(id,snapshot) VALUES(1,?)");
+            update.bind(1, *global_state); update.step(); impl_->interrupt();
         }
         if (!outcome.empty()) {
             Statement insert(impl_->db, "INSERT INTO outcomes(id) VALUES(?)"); insert.bind(1, outcome); insert.step();
