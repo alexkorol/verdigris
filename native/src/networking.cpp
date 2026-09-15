@@ -830,6 +830,16 @@ void ProtocolSession::attach_persistence(const std::filesystem::path& path) {
         if(separator!=std::string::npos && separator+1<key.size())kitted_scions_.insert(key.substr(separator+1));
       }
   }
+  if (const auto* entries = saved.get("starterProgress"); entries && entries->object()) {
+    for (const auto& [id, row] : *entries->object()) {
+      const std::string phase = as_string(row.get("phase"));
+      if (phase != "occupation" && phase != "tool" && phase != "wave" &&
+          phase != "rally" && phase != "victory" && phase != "departed") continue;
+      starter_progress_[id] = {phase, as_string(row.get("occupation")),
+                              std::clamp(as_int(row.get("wave"), 0), 0, 3),
+                              (std::max)(0, as_int(row.get("retries"), 0))};
+    }
+  }
   username_ = as_string(saved.get("username"));
   house_treasury_ = as_int(saved.get("houseTreasury"), 0);
   scion_combat_xp_.clear();
@@ -878,6 +888,7 @@ void ProtocolSession::attach_persistence(const std::filesystem::path& path) {
   // transfer makes the next persisted load idempotent; no Scion/seat is guessed.
   for(auto& item:house_store_)bank_.push_back(std::move(item));
   house_store_.clear();
+  restore_starter_world();
 }
 
 void ProtocolSession::checkpoint_scion_progression() {
@@ -917,6 +928,11 @@ void ProtocolSession::persist() const {
   if (ec) return;
   JsonValue::Object saved;
   put(saved, "version", 1);
+  JsonValue::Object starter_entries;
+  for (const auto& [id, progress] : starter_progress_)
+    put(starter_entries, id, JsonValue::Object{{"phase", progress.phase}, {"occupation", progress.occupation},
+                                             {"wave", progress.wave}, {"retries", progress.retries}});
+  put(saved, "starterProgress", std::move(starter_entries));
   put(saved, "identity", identity_);
   put(saved, "username", username_);
   put(saved, "chronicle", chronicle_);
@@ -1018,11 +1034,13 @@ void ProtocolSession::reset_world_for_new_socket() {
     actor->stats.life = actor->stats.life_max;  // fresh Player logs in healthy
   }
   world_->reset_to_town();
+  restore_starter_world();
 }
 void ProtocolSession::set_broadcast(std::function<void(const Envelope&)> broadcast) { std::lock_guard<std::recursive_mutex> lock(mutex_); broadcast_=std::move(broadcast); }
 std::int64_t ProtocolSession::now_ms() { return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count(); }
 std::string ProtocolSession::player_payload() const {
   JsonValue::Object player; const auto position=world_->position();
+  put(player,"starterSlice",starter_payload());
   put(player,"appearance",scion_record_appearance(chronicle_,active_house_id_,active_scion_id_));
   put(player,"uuid",identity_); put(player,"username",!username_.empty()?username_:(active_scion_name_.empty()?identity_:active_scion_name_)); put(player,"socket_id",socket_id_); put(player,"sceneId",world_->scene_id()); put(player,"x",position.x); put(player,"y",position.y); put(player,"facing",world_->facing());
   { const auto* actor=simulation_->actor(simulation_->scion().actor_id); put(player,"level",actor?actor->stats.level:1); }
@@ -1320,6 +1338,7 @@ void ProtocolSession::emit_monster_state(
 JsonValue ProtocolSession::snapshot() const {
   JsonValue::Object state; const auto& scion=simulation_->scion(); const auto* actor=simulation_->actor(scion.actor_id); const auto position=world_->position();
   put(state,"uuid",identity_); put(state,"x",position.x); put(state,"y",position.y); put(state,"sceneId",world_->scene_id()); put(state,"sceneType",world_->scene_type()); put(state,"sceneName",world_->scene_name());
+  put(state,"starterSlice",starter_payload());
   put(state,"lifecycle",lifecycle_);
   put(state,"lifecycleMode",lifecycle_mode_);
   put(state,"theme",world_->in_instance()?world_->metadata().theme:std::string("town"));
@@ -1363,6 +1382,12 @@ JsonValue ProtocolSession::snapshot() const {
       put(entry, "actions", std::move(actions));
       npcs.emplace_back(std::move(entry));
     }
+  }
+  if (starter_active()) {
+    npcs.emplace_back(JsonValue::Object{{"id",101},{"name","Village Defender"},{"x",16},{"y",22},
+        {"tileX",16},{"tileY",22},{"artIdentity","defender"},{"actions",JsonValue::Array{"talk"}}});
+    npcs.emplace_back(JsonValue::Object{{"id",102},{"name","Well Keeper"},{"x",16},{"y",20},
+        {"tileX",16},{"tileY",20},{"artIdentity","scribe"},{"actions",JsonValue::Array{"talk"}}});
   }
   put(state,"npcs",std::move(npcs));
   { // dev.js: chroniclesRecord mirrors chroniclesStore.snapshot(uuid).
@@ -1658,6 +1683,11 @@ void ProtocolSession::tree_attributes(int* strength, int* dexterity, int* intell
       }
     }
   }
+  if (const auto* starter = starter_progress()) {
+    if (starter->occupation == "field_hand") ++str_total;
+    if (starter->occupation == "scout") ++dex_total;
+    if (starter->occupation == "scribe") ++int_total;
+  }
   if (strength) *strength = str_total;
   if (dexterity) *dexterity = dex_total;
   if (intelligence) *intelligence = int_total;
@@ -1667,7 +1697,7 @@ JsonValue ProtocolSession::passive_tree_json() const {
   // min(140, min(max(2, level), 117) + min(questPoints, 23)).
   const auto* actor = simulation_->actor(simulation_->scion().actor_id);
   const int level = actor ? actor->stats.level : 1;
-  const int earned = (std::min)(140, (std::min)((std::max)(2, level), 117) +
+  const int earned = (std::min)(140, (std::min)(starter_progress() ? (std::max)(0,level-1) : (std::max)(2, level), 117) +
                                      (std::min)((std::max)(0, tree_quest_points_), 23));
   JsonValue::Array nodes;
   JsonValue::Array conduits;
@@ -2111,6 +2141,9 @@ void ProtocolSession::handle_npc_talk(const JsonValue& payload, const std::funct
   // actions/index.js player:npc:talk - Aldwyn only, town only, chebyshev<=1.
   const auto* item = payload.get("item");
   const int npc_id = as_int(item ? item->get("id") : nullptr, -1);
+  if (starter_active() && (npc_id == 101 || npc_id == 102)) {
+    handle_starter_action("interact", emit); return;
+  }
   if (npc_id != 1 || world_->in_instance()) return;
   const Vec2 tile = tile_movement::occupied_tile(world_->position());
   const auto& guide = kTownNpcs[0];
@@ -2680,6 +2713,11 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
   if (respawn_protection_until_ms_ > now && actor->stats.life < life_before) {
     actor->stats.life = life_before;
   }
+  if (starter_active()) {
+    for (const auto& event : events) emit_combat_event(event, emit);
+    advance_starter_combat(emit);
+    return;
+  }
   bool loot = false;
   for (const auto& event : events) {
     emit_combat_event(event, emit);
@@ -2769,7 +2807,103 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
     handle_final_death(emit);
   }
 }
+// Server-owned starter progression. Reconnects replay only the current combat
+// checkpoint, while occupation, equipment and victory rewards remain durable.
+const ProtocolSession::StarterProgress* ProtocolSession::starter_progress() const {
+  const auto found = starter_progress_.find(active_house_id_ + ":" + active_scion_id_);
+  return found == starter_progress_.end() ? nullptr : &found->second;
+}
+bool ProtocolSession::starter_active() const {
+  const auto* progress = starter_progress();
+  return progress && progress->phase != "departed";
+}
+JsonValue ProtocolSession::starter_payload() const {
+  const auto* progress = starter_progress();
+  if (!progress) return JsonValue::Object{{"active", false}};
+  std::string objective;
+  if (progress->phase == "occupation") objective = "Before the alarm: how did you serve the village?";
+  else if (progress->phase == "tool") objective = "Speak to the defender beside you. Take a branch and help hold the breach.";
+  else if (progress->phase == "wave") objective = progress->wave == 3 ? "Defeat the breaker at the village well." :
+      "Hold the breach. Defeat the attackers (wave " + std::to_string(progress->wave) + " of 2).";
+  else if (progress->phase == "rally") objective = progress->wave == 3 ?
+      "Regroup beside the well. The breaker has entered the village." : "Regroup beside the well before the next attack.";
+  else if (progress->phase == "victory") objective = "Village defended. Choose your first skill, then leave by the north passage.";
+  return JsonValue::Object{{"active", starter_active()}, {"phase", progress->phase},
+      {"occupation", progress->occupation}, {"wave", progress->wave}, {"retries", progress->retries}, {"objective", objective}};
+}
+void ProtocolSession::restore_starter_world() {
+  if (!starter_active()) return;
+  world_->enter_starter_village();
+  if (starter_progress()->phase == "wave") world_->spawn_starter_wave(starter_progress()->wave);
+}
+void ProtocolSession::handle_starter_action(const std::string& action, const std::function<void(const Envelope&)>& emit) {
+  if (!starter_active() || pending_chronicles_ || world_->scene_id() != "owner-demo-prologue") return;
+  auto& progress = starter_progress_.at(active_house_id_ + ":" + active_scion_id_);
+  auto* actor = simulation_->actor(simulation_->scion().actor_id);
+  if (!actor || actor->stats.life <= 0) return;
+  const auto at = tile_movement::occupied_tile(world_->position());
+  const auto is_near = [&](int x, int y) { return (std::max)(std::abs(at.x-x), std::abs(at.y-y)) <= 2; };
+  if (progress.phase == "occupation") {
+    if (action != "field_hand" && action != "scout" && action != "scribe") return;
+    progress.occupation = action; progress.phase = "tool";
+    emit_message(emit, "The palisade shakes. A defender calls: take a branch. We must keep them away from the well.");
+  } else if (action == "interact" && progress.phase == "tool") {
+    if (!is_near(16,22)) { emit_message(emit, "Return to the defender south of the well."); return; }
+    // Check both seats and backpack: replaying a retry never mints another tool.
+    const GameItem* tool = wear_.in_seat("right_hand");
+    if (!tool || tool->id != "wooden-club") {
+      std::string existing;
+      for (const auto& item : inventory_.items()) if (item.id == "wooden-club") { existing = item.uuid; break; }
+      std::optional<GameItem> club;
+      if (existing.empty()) club = create_game_item("wooden-club", CreateItemOptions{});
+      else { GameItem item; if (inventory_.remove_by_uuid(existing, &item)) club = std::move(item); }
+      if (!club) return;
+      if (auto prior = wear_.unequip("right_hand")) inventory_.add(std::move(*prior));
+      wear_.equip(std::move(*club), "right_hand"); sync_combat_mods();
+    }
+    progress.phase = "wave"; progress.wave = 1; world_->spawn_starter_wave(1);
+    emit_equip_state(emit); emit_inventory_refresh(emit);
+    emit_message(emit, "Hold the breach. Advance toward the palisade and strike with your branch.");
+  } else if (action == "interact" && progress.phase == "rally") {
+    if (!is_near(16,20)) { emit_message(emit, "Regroup at the west side of the well."); return; }
+    actor->stats.life = actor->stats.life_max;
+    progress.phase = "wave"; world_->spawn_starter_wave(progress.wave);
+    emit_message(emit, progress.wave == 3 ? "The breaker reaches the well. Stand your ground." : "A second pack forces its way through the breach.");
+  } else if (action == "interact" && progress.phase == "victory") {
+    if (!is_near(16,8)) { emit_message(emit, "The north passage is clear. Leave for Crossroads when you are ready."); return; }
+    progress.phase = "departed"; world_->reset_to_town(); world_->teleport(38,116,now_ms());
+    emit_message(emit, "The village holds. Your House takes the road to Crossroads.");
+    persist(); emit_login(emit); return;
+  } else return;
+  persist(); emit(Envelope{"starter:update", starter_payload()}); emit_monster_state(now_ms(), emit);
+}
+void ProtocolSession::advance_starter_combat(const std::function<void(const Envelope&)>& emit) {
+  auto& progress = starter_progress_.at(active_house_id_ + ":" + active_scion_id_);
+  auto* actor = simulation_->actor(simulation_->scion().actor_id);
+  if (!actor) return;
+  if (actor->stats.life <= 0) {
+    ++progress.retries; progress.phase = "tool"; progress.wave = 0;
+    lifecycle_ = "alive"; respawn_at_ms_ = 0; prepare_final_death_ = false;
+    actor->stats.life = actor->stats.life_max;
+    restore_starter_world(); persist(); emit_login(emit);
+    emit_message(emit, "The defenders pull you to safety. Keep your equipment and try again."); return;
+  }
+  if (progress.phase != "wave" || world_->monsters().empty() ||
+      std::any_of(world_->monsters().begin(), world_->monsters().end(), [](const auto& m) { return m.alive; })) return;
+  if (progress.wave < 3) { ++progress.wave; progress.phase = "rally"; }
+  else {
+    progress.phase = "victory";
+    combat_xp_ = (std::max)(combat_xp_, xp_for_level(2));
+    checkpoint_scion_progression(); restore_scion_progression();
+    emit(Envelope{"player:level-up", JsonValue::Object{{"actorId", identity_}, {"level", actor->stats.level}}});
+    emit(Envelope{"player:skilltree:update", JsonValue::Object{
+        {"player", JsonValue::Object{{"socket_id",socket_id_}}}, {"passiveTree",passive_tree_json()}}});
+    emit_message(emit, "The village is safe. Level 2: your first skill point is ready.");
+  }
+  persist(); emit(Envelope{"starter:update", starter_payload()});
+}
 void ProtocolSession::handle_extract(const std::function<void(const Envelope&)>& emit) {
+  if (starter_active()) { handle_starter_action("interact", emit); return; }
   if (!world_->in_instance()) {
     emit_message(emit, "There is no extraction here.");
     return;
@@ -2976,6 +3110,16 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
   // for direct-call paths; std::recursive_mutex makes both safe.
   std::lock_guard<std::recursive_mutex> handle_lock(mutex_);
   const auto* payload=envelope.data.object()?&envelope.data:nullptr;
+  if (envelope.event == "starter:action") {
+    handle_starter_action(as_string(payload ? payload->get("action") : nullptr), emit);
+    return;
+  }
+  if (starter_active() && (envelope.event == "world:zone:enter" || envelope.event == "instance:enterSolo" ||
+                          envelope.event == "world:road:chart" || envelope.event == "wagon:outfit:buy")) {
+    emit_message(emit, "The road is not safe yet. Help defend the village."); return;
+  }
+  if (starter_active() && starter_progress()->phase == "occupation" &&
+      (envelope.event == "player:move" || envelope.event == "player:skill:trigger")) return;
   if (envelope.event=="world:zone:enter") { const auto node=as_string(payload?payload->get("nodeId"):nullptr,"tin:1:0"); simulation_->dispatch(Command::enter(node.rfind("route:",0)==0?node:"route:"+node)); { std::string web_road; int web_tier=0; int web_index=0; if (parse_node_id(node,&web_road,&web_tier,&web_index)) { enter_road_node(node, emit); return; } } current_node_id_.clear(); world_->set_block_stairs_down(false); world_->set_stairs_up_returns_to_town(false); world_->enter_solo_instance("dungeon",""); emit_transition(emit,"world:scene:transition"); emit_ground_change(emit); last_instance_theme_ = world_->metadata().theme; last_instance_layout_ = world_->metadata().layout; quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); return; }
   if (envelope.event=="instance:enterSolo") { current_node_id_.clear(); world_->set_block_stairs_down(false); world_->set_stairs_up_returns_to_town(false); world_->enter_solo_instance(as_string(payload?payload->get("template"):nullptr,"dungeon"),as_string(payload?payload->get("layout"):nullptr,"")); emit_transition(emit,"party:scene:transition"); emit_ground_change(emit); last_instance_theme_ = world_->metadata().theme; last_instance_layout_ = world_->metadata().layout; quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); return; }
   if (envelope.event=="player:move") { const auto direction=as_string(payload?payload->get("direction"):nullptr); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); if (world_->apply_movement_sample(direction,now_ms())) { emit_movement(emit); auto_pickup_gold(emit); quest_trigger("move", emit); check_road_gates(emit); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool scene_changed=world_->scene_id()!=scene_before; if (depth_changed||scene_changed) { if (was_instance&&!world_->in_instance()) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); maybe_complete_first_goal(emit); quest_trigger("return-surface", emit, zone_id_for_instance(last_instance_theme_, last_instance_layout_), last_instance_theme_); } if (depth_changed) quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); if (depth_changed && !current_node_id_.empty() && !current_child_id_.empty()) { current_node_id_ = current_child_id_; current_node_tier_ += 1; current_node_name_ = current_child_name_.empty() ? current_node_name_ : current_child_name_; current_child_id_.clear(); world_->set_block_stairs_down(true); } emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) emit_ground_change(emit); } } return; }
@@ -3270,6 +3414,18 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     respawn_protection_until_ms_=0;
     prepare_final_death_=false;
     set_scion_record_mortal(chronicle_, active_house_id_, active_scion_id_, true);
+    const std::string starter_key = active_house_id_ + ":" + active_scion_id_;
+    const bool fresh_starter = as_bool(payload ? payload->get("starterSlice") : nullptr, false) &&
+                               !kitted_scions_.count(active_scion_id_) && !starter_progress_.count(starter_key);
+    if (fresh_starter) {
+      starter_progress_[starter_key] = {"occupation", "", 0, 0};
+      // The crisis starts with civilian clothing. No market purse or bronze weapon.
+      inventory_.clear(); wear_.clear(); sync_combat_mods();
+      kitted_scions_.insert(active_scion_id_);
+    }
+    if (starter_active()) {
+      restore_starter_world(); persist(); emit_login(emit); return;
+    }
     // Keep the House wagon pitch and daily road purse. Admission itself
     // uses the open tile just south of the fountain, clear of its bowl.
     {

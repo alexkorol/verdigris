@@ -111,6 +111,19 @@ class ProtocolSession {
   void adopt_world(std::shared_ptr<WorldSimulation> world, const std::string& scene_id, const std::function<void(const Envelope&)>& emit);
 
  private:
+  struct StarterProgress {
+    std::string phase;
+    std::string occupation;
+    int wave = 0;
+    int retries = 0;
+  };
+  std::map<std::string, StarterProgress> starter_progress_;
+  const StarterProgress* starter_progress() const;
+  bool starter_active() const;
+  JsonValue starter_payload() const;
+  void restore_starter_world();
+  void handle_starter_action(const std::string& action, const std::function<void(const Envelope&)>& emit);
+  void advance_starter_combat(const std::function<void(const Envelope&)>& emit);
   std::string player_payload() const;
   JsonValue snapshot() const;
   JsonValue scene_payload() const;

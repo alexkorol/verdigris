@@ -103,9 +103,14 @@ ClientCommand ClientCommand::select_scion(std::string scion_id, bool mortal_oath
   command.value = mortal_oath ? 1 : 0;
   return command;
 }
-ClientCommand ClientCommand::set_out(std::string scion_id) {
+ClientCommand ClientCommand::starter_action(std::string action) {
+  ClientCommand command; command.type = Type::StarterAction;
+  command.target = std::move(action); return command;
+}
+ClientCommand ClientCommand::set_out(std::string scion_id, bool starter_slice) {
   ClientCommand command;
   command.type = Type::SetOut;
+  command.value = starter_slice ? 1 : 0;
   command.target = std::move(scion_id);
   return command;
 }
@@ -215,6 +220,7 @@ void LocalCoreSession::submit(const ClientCommand& command) {
       break;
     case ClientCommand::Type::CreateScion:
     case ClientCommand::Type::SelectScion:
+    case ClientCommand::Type::StarterAction:
     case ClientCommand::Type::SetOut:
     case ClientCommand::Type::NpcAction:
     case ClientCommand::Type::MenuAction:

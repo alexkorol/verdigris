@@ -75,7 +75,7 @@ struct Scene {
   std::span<const Light> lights{};
   float ambient_r = 1, ambient_g = 1, ambient_b = 1;
   float sky_r = .38f, sky_g = .39f, sky_b = .40f;
-  float dof_strength = 1, vignette = .18f;
+  float dof_strength = 1, vignette = .18f, haze_strength = 1;
   std::span<const Mesh> world_meshes{};
   std::span<const Mesh> ground_meshes{};  // Contact shadows/corpses before standing geometry.
   std::span<const Cloud> clouds{};
@@ -211,7 +211,7 @@ float4 worldPS(WorldOut i) : SV_TARGET {
   clip(c.a-.001);
   c.rgb = lerp(c.rgb,float3(1,.941176,.760784)*c.a,saturate(i.sprite.z));
   c.rgb *= i.tint.rgb;
-  c.rgb = lerp(c.rgb,sky.rgb*c.a,haze(i.dz));
+  c.rgb = lerp(c.rgb,sky.rgb*c.a,haze(i.dz)*cloudCount.y);
   return c*i.tint.a;
 }
 struct FullOut { float4 position : SV_POSITION; float2 uv : TEXCOORD0; };
@@ -687,6 +687,7 @@ class Renderer {
       c.cloud_color[count][0]=cloud.r;c.cloud_color[count][1]=cloud.g;c.cloud_color[count][2]=cloud.b;++count;
     }
     c.cloud_count[0]=static_cast<float>(count);
+    c.cloud_count[1]=std::clamp(scene.haze_strength,0.f,1.f);
     D3D11_MAPPED_SUBRESOURCE mapped{};const HRESULT hr=context_->Map(constants_.Get(),0,D3D11_MAP_WRITE_DISCARD,0,&mapped);
     if(FAILED(hr)) return fail("frame constants map",hr);
     std::memcpy(mapped.pData,&c,sizeof(c));context_->Unmap(constants_.Get(),0);return true;

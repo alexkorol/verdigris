@@ -3036,18 +3036,18 @@ void remote_level_follows_authority_across_admissions() {
   deliver("readmitted-two", 2);
   auto count_levels=[&] {int count=0;for(const auto& e:session.drain_events())count+=e.type==PresentationEventType::LevelUp;return count;};
   check(count_levels()==0,"level-up: snapshots and admission never fabricate a celebration");
-  deliver("explicit-level-up",2);check(count_levels()==1,"level-up: explicit server event crosses the real session seam once");
-  deliver("foreign-level-up",2);deliver("fractional-level-up",2);
+  deliver("explicit-level-up",3);check(count_levels()==1,"level-up: explicit server event crosses the real session seam once");
+  deliver("foreign-level-up",3);deliver("fractional-level-up",3);
   check(count_levels()==0,"level-up: foreign actor and invalid fractional level are ignored");
-  deliver("confirmed-buff",2);
+  deliver("confirmed-buff",3);
   auto events=session.drain_events();
   check(std::count_if(events.begin(),events.end(),[](const auto& e){return e.type==PresentationEventType::BuffApplied && e.text=="war-cry";})==1,"particles: accepted buff crosses real socket once");
-  deliver("foreign-buff",2);deliver("unknown-buff",2);
+  deliver("foreign-buff",3);deliver("unknown-buff",3);
   events=session.drain_events();
   check(std::none_of(events.begin(),events.end(),[](const auto& e){return e.type==PresentationEventType::BuffApplied;}),"particles: foreign and unknown buffs ignored");
-  deliver("confirmed-pickup",2);events=session.drain_events();
+  deliver("confirmed-pickup",3);events=session.drain_events();
   check(std::count_if(events.begin(),events.end(),[](const auto& e){return e.type==PresentationEventType::PickupConfirmed && e.item_id=="coins" && e.value==37;})==1,"particles: real pickup confirmation retains admitted quantity");
-  deliver("foreign-pickup",2);deliver("fractional-pickup",2);events=session.drain_events();
+  deliver("foreign-pickup",3);deliver("fractional-pickup",3);events=session.drain_events();
   check(std::none_of(events.begin(),events.end(),[](const auto& e){return e.type==PresentationEventType::PickupConfirmed;}),"particles: foreign and malformed pickups ignored");
 
   session.shutdown(); server.stop();
@@ -3448,6 +3448,33 @@ void remote_incoming_melee_actions_follow_wire_evidence() {
   server.stop();
 }
 
+void remote_starter_state_absence_clears_previous_scion() {
+  ScriptedEnvelopeServer server;
+  auto admission = pt_login_frame("");
+  const auto end_player = admission.find("\"facing\":\"down\"") + std::string("\"facing\":\"down\"").size();
+  admission.insert(end_player, R"(,"starterSlice":{"active":true,"phase":"occupation","occupation":"scout","wave":2,"retries":1,"objective":"Defend"})");
+  server.script = {admission, pt_login_frame(""),
+      R"({"event":"starter:update","data":{"active":true,"phase":"rally","occupation":"scribe","wave":3,"retries":2,"objective":"Regroup"}})",
+      R"({"event":"dev:state","data":{"state":{"lifecycle":"alive","sceneId":"town","sceneType":"town"}}})"};
+  std::string error;
+  check(server.start(&error), "starter reducer: scripted server starts");
+  if (!server.port()) return;
+  verdigris::client::RemoteProtocolSession session("127.0.0.1",server.port(),"starter-reducer",true);
+  check(session.start(&error), "starter reducer: remote session starts");
+  check(wait_until(session,3000,[&]{return session.model().starter.active;}), "starter reducer: admitted starter state is visible");
+  const auto cleared = [&] {
+    const auto& s=session.model().starter;
+    return !s.active && s.phase.empty() && s.occupation.empty() && s.objective.empty() && s.wave==0 && s.retries==0;
+  };
+  server.grant_next_frame();
+  check(wait_until(session,2000,cleared), "starter reducer: login without starter state clears the prior character's controls");
+  server.grant_next_frame();
+  check(wait_until(session,2000,[&]{return session.model().starter.phase=="rally";}), "starter reducer: ordinary update restores current starter state");
+  server.grant_next_frame();
+  check(wait_until(session,2000,cleared), "starter reducer: full snapshot without starter state clears stale village progress");
+  session.shutdown(); server.stop();
+}
+
 void remote_passive_tree_absence_stays_absent() {
   ScriptedEnvelopeServer server;
   server.script.push_back(pt_login_frame(""));
@@ -3742,6 +3769,7 @@ int main() {
   remote_monster_delta_preserves_authority_and_interpolates();
   remote_incoming_melee_actions_follow_wire_evidence();
   remote_passive_tree_absence_stays_absent();
+  remote_starter_state_absence_clears_previous_scion();
   remote_passive_tree_payload_hardening();
   gateb_driver_state_machine_controls();
   gate_b_chronicles_reconnect_journey();

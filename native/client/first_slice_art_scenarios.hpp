@@ -180,6 +180,22 @@ int scenario_first_slice_art() {
   }
   first_slice_retained_death_lifecycle();
   first_slice_player_death_equipment_lifecycle();
+  {
+    ClientState motion_probe;motion_probe.world.player.position={0,0};advance_actor_motion(motion_probe,0);
+    bool ordinary_walk=true;int previous_step=0;
+    for(int t=15;t<=300;t+=15) {
+      const int step=t/50;motion_probe.world.player.position.x=step*11;advance_actor_motion(motion_probe,15);
+      if(step!=previous_step)ordinary_walk&=motion_probe.motions["player"].tiles_per_second<5;
+      previous_step=step;
+    }
+    scenario_check(ordinary_walk,"first-slice-art: 50ms walk samples at 15ms render cadence cannot select sprint");
+    for(int t=15;t<=150;t+=15) {
+      motion_probe.world.player.position.x=66+(t/50)*44;advance_actor_motion(motion_probe,15);
+    }
+    scenario_check(motion_probe.motions["player"].tiles_per_second>5,
+        "first-slice-art: genuine faster movement still selects sprint");
+  }
+
   scenario_check(first_slice_depth_probe(),
       "first-slice-art: footprint depth reveals below-pivot pixels without moving the screen rectangle");
   scenario_check(fable_world::kTerrainWidth==80*48&&fable_world::kTerrainHeight==64*48,

@@ -1,0 +1,82 @@
+{
+  "accepted": true,
+  "acceptance_scope": "Agent viewed native-scale cutouts on solid grey; owner acceptance and integrated live-game review pending.",
+  "clips": [
+    {
+      "identity": "village-longhouse",
+      "action": "idle",
+      "direction": "front",
+      "frames": [
+        "sprites/village-longhouse.png"
+      ],
+      "frame": [
+        384,
+        384
+      ],
+      "anchor": [
+        192,
+        354
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "village-tree",
+      "action": "idle",
+      "direction": "front",
+      "frames": [
+        "sprites/village-tree.png"
+      ],
+      "frame": [
+        384,
+        384
+      ],
+      "anchor": [
+        192,
+        354
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "village-palisade",
+      "action": "idle",
+      "direction": "front",
+      "frames": [
+        "sprites/village-palisade.png"
+      ],
+      "frame": [
+        384,
+        384
+      ],
+      "anchor": [
+        192,
+        354
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "identity": "village-well",
+      "action": "idle",
+      "direction": "front",
+      "frames": [
+        "sprites/village-well.png"
+      ],
+      "frame": [
+        384,
+        384
+      ],
+      "anchor": [
+        192,
+        354
+      ],
+      "pixels_per_metre": 48,
+      "fps": 1,
+      "loop": true
+    }
+  ]
+}

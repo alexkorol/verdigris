@@ -85,7 +85,7 @@ int scenario_consolidated_flow() {
                  "consolidation: clicked Scion reaches normal play");
   scenario_follow_camera(state); scenario_present(state);
   scenario_check(state.camera.perspective && fable_world::renderer().gpu.stats().hardware &&
-                 render_list_has(state, render::Op::Player, "hero_female_"),
+                 render_list_has(state, render::Op::Player, "fs_player_female_unarmed_"),
                  "consolidation: same flow reaches hardware perspective and selected animated actor");
   SendMessage(window, WM_KEYDOWN, VK_ESCAPE, 0);
   menu(2);

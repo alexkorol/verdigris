@@ -36,6 +36,7 @@ void bound_effects(std::vector<EffectFx>& effects) {
 }  // namespace
 
 const char* monster_art_family(const WorldActor& monster, const WorldView& world) {
+  if (world.route_id == "owner-demo-prologue") return "raider";
   return monster.behaviour == "ranged" ? "archer"
       : world.theme == "crypt" ? "wight"
       : world.theme == "wilds" || world.theme == "marsh" ? "beast"
@@ -311,6 +312,7 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     WorldNpc npc;
     npc.id = source.id;
     npc.name = source.name;
+    npc.art_identity = source.art_identity;
     npc.position = {static_cast<int>(std::lround(protocol_to_world(source.x))),
                     static_cast<int>(std::lround(protocol_to_world(source.y)))};
     npc.actions = source.actions;

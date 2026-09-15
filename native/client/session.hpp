@@ -55,6 +55,7 @@ struct ClientCommand {
     FoundHouse,     // `target` = House display name
     CreateScion,    // `target` = Scion display name
     SelectScion,    // `target` = scion id; value!=0 => mortal oath
+    StarterAction,  // target = occupation id or interact; server owns transitions
     SetOut,         // `target` = scion id (plain admission / road purse)
     NpcAction,      // `target` = wire action id ("player:npc:talk", ...);
                     // value = town NPC id
@@ -84,7 +85,8 @@ struct ClientCommand {
   static ClientCommand found_house(std::string house_name);
   static ClientCommand create_scion(std::string scion_name, std::string appearance = "male");
   static ClientCommand select_scion(std::string scion_id, bool mortal_oath);
-  static ClientCommand set_out(std::string scion_id);
+  static ClientCommand set_out(std::string scion_id, bool starter_slice = false);
+  static ClientCommand starter_action(std::string action);
   static ClientCommand npc_action(int npc_id, std::string action_id);
   static ClientCommand menu_action(std::string action_id, std::string item_ref,
                                    int value);

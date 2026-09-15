@@ -83,6 +83,7 @@ bool json_bool(const JsonValue* value, bool fallback = false) {
 ClientItemSlot parse_item_slot(const JsonValue& entry) {
   ClientItemSlot slot;
   if (const auto* id = json_string(entry.get("id"))) slot.id = *id;
+  if (slot.id == "wooden-club") slot.art_key = "wooden_club";
   if (const auto* uuid = json_string(entry.get("uuid"))) slot.uuid = *uuid;
   if (const auto* display = json_string(entry.get("displayName"))) slot.name = *display;
   else if (const auto* plain = json_string(entry.get("name"))) slot.name = *plain;
@@ -654,6 +655,11 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
       envelope.data = JsonValue::Object{{"nodeId", JsonValue(command.target)}};
       break;
     case ClientCommand::Type::Extract: {
+      if (model_.starter.active) {
+        envelope.event = "starter:action";
+        envelope.data = JsonValue::Object{{"action", "interact"}};
+        break;
+      }
       const auto& scene = model_.scene;
       if (!model_.player.alive || scene.type != "instance" || !scene.has_stairs_up ||
           (std::max)(std::abs(std::round(model_.player.x) - scene.stairs_up_x),
@@ -703,9 +709,13 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
           {"mortal", JsonValue(command.value != 0)}};
       break;
     }
+    case ClientCommand::Type::StarterAction:
+      envelope.event = "starter:action";
+      envelope.data = JsonValue::Object{{"action", command.target}};
+      break;
     case ClientCommand::Type::SetOut:
       envelope.event = "chronicles:scion:set-out";
-      envelope.data = JsonValue::Object{{"scionId", JsonValue(command.target)}};
+      envelope.data = JsonValue::Object{{"scionId", JsonValue(command.target)}, {"starterSlice", command.value != 0}};
       break;
     case ClientCommand::Type::NpcAction: {
       // The server dispatches NPC verbs through the context-menu action
@@ -1122,7 +1132,16 @@ void RemoteProtocolSession::sample_monster_display() {
   }
 }
 
+static void apply_starter_fields(ClientModel& model, const JsonValue* data) {
+  if (!data) { model.starter={}; return; }
+  model.starter.active = data->get("active") && data->get("active")->boolean().value_or(false);
+  for (auto pair : {std::pair{"phase", &model.starter.phase}, {"occupation", &model.starter.occupation}, {"objective", &model.starter.objective}})
+    *pair.second = json_string(data->get(pair.first)) ? *json_string(data->get(pair.first)) : "";
+  model.starter.wave = static_cast<int>(json_number(data->get("wave"), 0));
+  model.starter.retries = static_cast<int>(json_number(data->get("retries"), 0));
+}
 void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
+  if (envelope.event == "starter:update") { apply_starter_fields(model_, &envelope.data); return; }
   if(envelope.event=="inventory:operation") {
     const auto* id=json_string(envelope.data.get("uuid"));
     const auto* reason=json_string(envelope.data.get("reason"));
@@ -1164,6 +1183,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     clear_player_display();
     if (const auto* player = envelope.data.get("player")) {
       apply_player_fields(model_.player, *player);
+      apply_starter_fields(model_, player->get("starterSlice"));
       if (const auto* username = json_string(player->get("username")))
         model_.player.display_name = *username;
       if (const auto* chronicles = player->get("chronicles")) {
@@ -1546,13 +1566,16 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
   if (envelope.event == "player:level-up") {
     const auto* actor=json_string(envelope.data.get("actorId"));
     const double level=json_number(envelope.data.get("level"),0);
-    if(actor && *actor==model_.player.uuid && std::isfinite(level) && level>1 && level<=10000 && std::floor(level)==level)
+    if(actor && *actor==model_.player.uuid && std::isfinite(level) && level>1 && level<=10000 && std::floor(level)==level) {
+      model_.player.level=static_cast<int>(level);
       pending_events_.push_back({PresentationEventType::LevelUp,*actor,"","",static_cast<int>(level)});
+    }
     return;
   }
   if (envelope.event == "dev:state") {
     const auto* state = envelope.data.get("state");
     if (!state) return;
+    apply_starter_fields(model_, state->get("starterSlice"));
     if (const auto* combat = state->get("combat")) apply_combat_fields(*combat, model_.player);
     apply_player_level(model_.player, *state);
     if (const auto* appearance = json_string(state->get("appearance")))
@@ -1655,6 +1678,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         ClientNpc npc;
         npc.id = static_cast<int>(json_number(entry.get("id"), 0.0));
         if (const auto* name = json_string(entry.get("name"))) npc.name = *name;
+        if (const auto* art = json_string(entry.get("artIdentity"))) npc.art_identity = *art;
         npc.x = json_number(entry.get("x"), 0.0);
         npc.y = json_number(entry.get("y"), 0.0);
         if (const auto* actions = entry.get("actions"); actions && actions->array()) {

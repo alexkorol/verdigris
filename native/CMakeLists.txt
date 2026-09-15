@@ -39,6 +39,9 @@ target_link_libraries(verdigris_core_tests PRIVATE verdigris_core)
 add_executable(verdigris_networking_tests tests/networking_tests.cpp)
 target_link_libraries(verdigris_networking_tests PRIVATE verdigris_networking)
 
+add_executable(verdigris_starter_slice_tests tests/starter_slice_tests.cpp)
+target_link_libraries(verdigris_starter_slice_tests PRIVATE verdigris_networking)
+
 add_executable(verdigris_server src/server_main.cpp)
 target_link_libraries(verdigris_server PRIVATE verdigris_networking)
 
@@ -96,6 +99,7 @@ endif()
 enable_testing()
 add_test(NAME verdigris_core_tests COMMAND verdigris_core_tests)
 add_test(NAME verdigris_networking_tests COMMAND verdigris_networking_tests)
+add_test(NAME verdigris_starter_slice_tests COMMAND verdigris_starter_slice_tests)
 add_test(NAME camera2d_tests COMMAND camera2d_tests)
 add_test(NAME fable_camera_tests COMMAND fable_camera_tests)
 add_test(NAME verdigris_session_tests COMMAND verdigris_session_tests)

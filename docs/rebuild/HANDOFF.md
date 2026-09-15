@@ -2643,3 +2643,14 @@ Read the current hold in native/client/assets/first-slice/README.md. Resume with
 ### 2026-09-15 — single village composition proposal
 
 Owner said do it after the reduced-scope reset. Produced one local Blender layout and one built-in imagegen composition, stored in docs/art-review/2026-09-15-village-composition. Both original and768px display preview were viewed. The packed scene, exact prompt, source references and explicit drift findings are preserved. This proposal is not runtime art or owner approval; no animation workers restarted and no production imports were made.
+
+
+### 2026-09-15 — native Village Palisade playable implementation
+
+Working branch `codex/starter-slice-20260915`, isolated worktree `Z:/Code/.worktrees/verdigris-starter-slice`, based on a60c87c7. The old dirty art worktree and its unfinished larger frame batches are preserved. Standing owner authorization includes committing verified work and pushing this working branch; no extra push approval is needed.
+
+New native Scions now enter Village Palisade: occupation, civilian branch, two packs, well boss, forgiving retry, first level/skill point, and explicit passage to Crossroads. The server owns phase/reward/persistence, with distinct per-Scion records and compatibility for previously admitted saves. The native client exposes the choices and uses the same progression for general interaction. Core authority tests include actual combat and lethal retry; the starter-slice client scenario covers the real socket/reducer/production painter. See native/STARTER-SLICE.md for controls and scope.
+
+Installed minimal existing male/female unarmed/branch cardinal clips without generating another animation batch. Sprint shares walking. Four Blender-guided ImageGen village props replace the old hut/tree/portal composition in this scene. Their source guides, paint, true alpha and transfer provenance are retained. Live play was launched and captured with the repository tools, and reviewed; that caught overlapping/stale objective prompts and a delayed level-display update, corrected before packaging. Enemy art is the older human raider family and remains provisional. This implementation does not imply owner approval of that family, the earlier wolves, or all final art. Keep art expansion small.
+
+The full native gate, focused starter regression, and packaged verification logs belong under native/build and the review package's qa folder. Consult the actual exit results before asserting acceptance; no browser gate substitutes for native acceptance. Native visual review is separate from owner art approval.

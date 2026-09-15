@@ -1854,6 +1854,37 @@ void WorldSimulation::reset_to_town() {
   return_to_town();
 }
 
+void WorldSimulation::enter_starter_village() {
+  reset_to_town();
+  scene_type_="instance";scene_id_="owner-demo-prologue";scene_name_="Village Palisade";
+  metadata_={};metadata_.theme="wilds";metadata_.layout="village";metadata_.depth=1;
+  // Exit is a normal interaction after victory; stepping on a tile cannot skip the crisis.
+  metadata_.stairs_up={-10,-10};metadata_.stairs_down={-20,-20};block_stairs_down_=true;
+  grid_.width=32;grid_.height=32;grid_.walkable.assign(32*32,0);
+  for(int y=3;y<29;++y)for(int x=3;x<29;++x)grid_.walkable[y*32+x]=1;
+  for(int x=3;x<29;++x)if(x<15||x>17)grid_.walkable[8*32+x]=0;
+  for(int y=11;y<=17;++y)for(int x=5;x<=9;++x)grid_.walkable[y*32+x]=0;
+  for(int y=11;y<=17;++y)for(int x=23;x<=27;++x)grid_.walkable[y*32+x]=0;
+  for(int y=18;y<=19;++y)for(int x=18;x<=19;++x)grid_.walkable[y*32+x]=0;
+  position_={16,23};facing_="up";monsters_.clear();ground_items_.clear();
+  active_target_.clear();player_attack_active_=false;last_pursuit_tick_ms_=-1;
+}
+
+void WorldSimulation::spawn_starter_wave(int wave) {
+  monsters_.clear();active_target_.clear();player_attack_active_=false;
+  const int count=wave==3?1:wave==2?3:2;
+  for(int i=0;i<count;++i) {
+    WorldMonster m;m.uuid="village-wave-"+std::to_string(wave)+"-"+std::to_string(i);
+    m.id=wave==3?"village-leader":"village-invader";
+    m.name=wave==3?"Palisade Breaker":"Palisade Invader";
+    m.x=14+i*2;m.y=wave==3?17:15;
+    m.level=1;m.life_max=m.life=wave==3?65:wave==2?22:18;
+    m.boss=wave==3;m.rarity=m.boss?"elite":"common";m.coins=0;
+    m.tags={"prologue"};monsters_.push_back(std::move(m));
+  }
+  last_pursuit_tick_ms_=-1;
+}
+
 void WorldSimulation::return_to_town() {
   next_dash_ms_ = 0;
   last_pursuit_tick_ms_ = -1;
@@ -3140,6 +3171,7 @@ const ItemDef kItemCatalogue[] = {
     {"hide-girdle", "Hide Girdle", "armor", "belt", false, false, {0, 0, 0, 0}, {1, 1, 1, 0}, 0, 0, "", ""},
     // jewelry.js amulets: the single-session regression grants garnet-amulet.
     {"garnet-amulet", "Garnet Amulet", "armor", "necklace", false, false, {23, 22, 13, 1}, {24, 25, 13, 4}, 0, 0, "", ""},
+    {"wooden-club", "Weathered Branch", "weapon", "right_hand", false, false, {0, 0, 2, 0}, {}, 0, 0, "", ""},
     // weapons.js / verdigris.js curated bases.
     {"bronze-sword", "Bronze Sword", "weapon", "right_hand", false, false, {4, 3, -2, 0}, {0, 2, 1, 0}, 0, 0, "", ""},
     {"bronze-pike", "Bronze Pike", "weapon", "right_hand", false, true, {13, 5, 0, 0}, {1, 1, 0, 0}, 1, 4, "spear", "bronze"},
@@ -3704,6 +3736,8 @@ Vec2 WorldSimulation::resolve_loot_tile(int x, int y) const {
 }
 
 void WorldSimulation::drop_monster_loot(const WorldMonster& monster, int goods_found_percent) {
+  // The forgiving opening pays its reward once at victory, never per retry.
+  if (scene_id_ == "owner-demo-prologue") return;
   // loot.js dropMonsterLoot: coin bounty always (Wealthy-boosted), then a
   // rarity-gated gear roll. Relic/trophy circulation and the first-find
   // grant are Chronicles/encounter features — N5 stubs (see the report).

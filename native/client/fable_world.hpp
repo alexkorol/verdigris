@@ -257,13 +257,14 @@ struct Renderer {
       textures.clear();generation=source_generation;failed_job_key.clear();
     }
     const auto& world=state.world;
+    state.camera.scene_zoom_factor=world.route_id=="owner-demo-prologue"?.82:1.0;
     const int cx=static_cast<int>(std::floor(state.camera.x/(kTileUnits*20)))*20;
     const int cy=static_cast<int>(std::floor(state.camera.y/(kTileUnits*16)))*16;
     const std::string key=world.route_id+"|"+world.theme+"|"+std::to_string(cx)+":"+std::to_string(cy);
     const std::string scene_key=world.route_id+"|"+world.theme+"|"+std::to_string(generation)+"|"+
         std::to_string(world.map_width)+":"+std::to_string(world.map_height);
     const bool interior=world.theme=="crypt"||world.theme=="dungeon";
-    state.camera.elevation=fable::make_height_field(interior?fable::SceneElevation::Interior:
+    state.camera.elevation=fable::make_height_field((interior || world.route_id=="owner-demo-prologue")?fable::SceneElevation::Interior:
         fable::SceneElevation::Outdoor,-.5*kTileUnits,-.5*kTileUnits,
         world.map_width>0?world.map_width*kTileUnits:1800,
         world.map_height>0?world.map_height*kTileUnits:1800,scenery_seed(world.route_id),28);
@@ -380,7 +381,7 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
   };
   // A stair marker at the same world Y is part of the floor layer, so its
   // transparent billboard must sort before the player standing on it.
-  if(state.world.has_extraction)
+  if(state.world.has_extraction && state.world.route_id != "owner-demo-prologue")
     if(auto* s=sprite("exit_stairs",state.world.extraction.x,state.world.extraction.y,66)) s->ground_layer=true;
   // Billboard feet, terrain vertices and light anchors share this sampler.
   for(const auto& item:state.scenery) {
@@ -462,7 +463,9 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
     const auto name=actor_pose(family,ax,ay,attack,motion.moving,motion.walk_phase);
     // Fixed canvas scale across all frames: the hero has65 ink rows inside
     // its96-row canvas, the raider57. Never resize each pose to its own ink.
-    if(auto* s=sprite(name,pos.x,pos.y,player?(state.lineage_art?184:140):a.elite?184:160,player?equipped_held(state):vector_art::Held::None)) {
+    const double canvas_height=state.world.route_id=="owner-demo-prologue" ?
+        raster_art::dimensions(name.c_str()).height*kTileUnits/48.0 : player?(state.lineage_art?184:140):a.elite?184:160;
+    if(auto* s=sprite(name,pos.x,pos.y,canvas_height,player?equipped_held(state):vector_art::Held::None)) {
       for(const auto& fx:state.effects) if(fx.kind==EffectFx::Kind::TargetFlash && fx.actor_id==a.id && fx.ttl>0)
         s->flash=std::max(s->flash,float(std::clamp(1.0-(fx.age+state.tick_accum_ms/50)/fx.ttl,0.0,1.0)*.85));
       trace.push_back({player?render::Op::Player:render::Op::Monster,double(pos.x),double(pos.y),0,0,name});
@@ -556,7 +559,7 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
     indices.insert(indices.end(),{n,n+1,n+2,n,n+2,n+3});
   };
   const raster_walls::Grid grid{state.world.map_width,state.world.map_height,state.world.map_walkable};
-  if(grid.valid()) {
+  if(grid.valid() && state.world.route_id != "owner-demo-prologue") {
     const int x0=std::max(0,int(std::floor((state.camera.x-2200)/kTileUnits))),x1=std::min(grid.width-1,int((state.camera.x+2200)/kTileUnits));
     const int y0=std::max(0,int(std::floor((state.camera.y-2500)/kTileUnits))),y1=std::min(grid.height-1,int((state.camera.y+1100)/kTileUnits));
     if(state.world.theme=="dungeon" || state.world.theme=="crypt") {
@@ -625,7 +628,7 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
   // Fable's exact90-second ambient keyframes, starting in its daylight phase.
   constexpr double keys[]{0,.30,.45,.58,.80,.90,1};
   constexpr float colors[][3]={{255,244,224},{255,240,214},{255,205,150},{150,140,205},{110,120,190},{210,180,175},{255,244,224}};
-  const double day=std::fmod(time+22,90)/90;
+  const double day=state.world.route_id=="owner-demo-prologue" ? .25 : std::fmod(time+22,90)/90;
   float ambient[3]{1,1,1};
   for(int n=0;n<6;++n) if(day>=keys[n] && day<=keys[n+1])
     for(int c=0;c<3;++c) ambient[c]=float((colors[n][c]+(colors[n+1][c]-colors[n][c])*(day-keys[n])/(keys[n+1]-keys[n]))/255);
@@ -651,7 +654,8 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
     scene.clouds=clouds;
   }
   scene.sky_r=interior?.18f:.40f;scene.sky_g=interior?.18f:.43f;scene.sky_b=interior?.21f:.43f;
-  scene.dof_strength=.55f;scene.vignette=.16f;
+  scene.dof_strength=state.world.route_id=="owner-demo-prologue"?0.f:.55f;scene.vignette=.16f;
+  scene.haze_strength=state.world.route_id=="owner-demo-prologue"?.12f:1.f;
   // A confirmed contact holds its visible pose for the reference55ms. Network
   // polling, input and authority keep advancing; this is only a sprite packet.
   std::string contacts;

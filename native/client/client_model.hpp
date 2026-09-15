@@ -135,6 +135,7 @@ struct ClientChartScreen {
 // server-authored verb list ("talk", "trade", "bank", "examine").
 struct ClientNpc {
   int id = 0;
+  std::string art_identity;
   std::string name;
   double x = 0.0;
   double y = 0.0;
@@ -230,7 +231,13 @@ const ClientHouseEntry* find_chronicle_house(const ClientChronicle& chronicle,
 const ClientScionEntry* find_chronicle_scion(const ClientChronicle& chronicle,
                                              const std::string& scion_id);
 
+struct ClientStarterSlice {
+  bool active = false;
+  std::string phase, occupation, objective;
+  int wave = 0, retries = 0;
+};
 struct ClientModel {
+  ClientStarterSlice starter;
   ClientPlayer player;
   std::vector<ClientItemSlot> inventory;
   std::vector<ClientWornItem> worn;

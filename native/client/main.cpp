@@ -157,6 +157,7 @@ struct Camera {
   double zoom = kCameraDefaultZoom;  // pixels per world unit (uniform, both axes)
   bool perspective = false;
   fable::HeightField elevation{};
+  double scene_zoom_factor = 1.0;
   double shake_x = 0.0, shake_y = 0.0;
 };
 
@@ -715,6 +716,7 @@ struct ClientState {
     double moving = 0.0;
     double tiles_per_second = 0.0;
     double death_age_ms = 0.0;
+    double velocity_sample_ms = 0.0;
   };
   std::unordered_map<std::string, ActorMotion> motions;
   double breathe_phase = 0.0;
@@ -783,6 +785,8 @@ struct ClientState {
   std::string selected_appearance = "male";
   struct ChronicleHit { RECT rect{}; ChronicleAction action; };
   std::vector<ChronicleHit> chronicle_hits;
+  struct StarterHit { RECT rect{}; std::string action; };
+  std::vector<StarterHit> starter_hits;
   int chronicle_page = 0;
   std::string selected_house_id;
   std::string house_name_input;
@@ -2028,6 +2032,20 @@ void generate_scenery(ClientState& state) {
     return;
   }
 
+  if (route_id == "owner-demo-prologue") {
+    const double t = kTileUnits;
+    const auto prop = [&](const char* identity, SceneryKind kind, double x, double y) {
+      add_scenery(state.scenery,kind,x*t,y*t,0,false,1);
+      state.scenery.back().art_identity=identity;
+    };
+    prop("village-longhouse",SceneryKind::Dwelling,7,17);
+    prop("village-longhouse",SceneryKind::Dwelling,25,17);
+    prop("village-well",SceneryKind::Shrine,18.5,19.5);
+    for(int x=4;x<29;x+=3) if(x<14 || x>18) prop("village-palisade",SceneryKind::Ruin,x,8);
+    for(const auto& at : {std::pair{4,6},std::pair{28,6},std::pair{4,23},std::pair{28,23}})
+      prop("village-tree",SceneryKind::Tree,at.first,at.second);
+    install_scenery_navigation(state); return;
+  }
   SceneryRng rng(scenery_seed(route_id));
   if (route_id.rfind("town:", 0) == 0) {
     // The Crossroads: landmarks anchored on the server's own contract
@@ -2510,7 +2528,7 @@ fable::Projection fable_projection(const Camera& camera, const RECT& bounds) {
   const double user_zoom = camera.zoom /
       (kCameraDefaultZoom * zoom_height_factor(static_cast<int>(bounds.bottom)));
   return fable::make_projection({camera.x + camera.shake_x, camera.y + camera.shake_y,
-      fable::fit_zoom(bounds.right, bounds.bottom, user_zoom),
+      fable::fit_zoom(bounds.right, bounds.bottom, user_zoom*camera.scene_zoom_factor),
       static_cast<double>(bounds.right), static_cast<double>(bounds.bottom)});
 }
 
@@ -3215,13 +3233,20 @@ raster_ground::Layout ground_layout(const std::string& route_id,
   const bool village = route_id.find(":1:") != std::string::npos;
   const bool village_roads = village && (theme == "town" || theme == "tin");
   const bool interior = theme == "dungeon" || theme == "crypt";
-  layout.active = (town || village_roads || interior) && quiet_ground_asset(theme);
+  const bool prologue=route_id=="owner-demo-prologue";
+  layout.active = (town || village_roads || interior || prologue) && quiet_ground_asset(theme);
   if (!layout.active) return layout;
   layout.key = scenery_seed(route_id + "|ground-material-v2");
   // Interior material uses broad shading only. Village paths and tree planting
   // must never become implied passages or greenery on the crypt floor.
   if (interior) return layout;
-  if (town) {
+  if (prologue) {
+    const double t=kTileUnits;
+    layout.road(16*t,26*t,16*t,5*t,1.7*t);
+    layout.road(16*t,20*t,16*t,20*t,3*t);
+    layout.road(16*t,20*t,7*t,18*t,1.1*t);
+    layout.road(16*t,20*t,25*t,18*t,1.1*t);
+  } else if (town) {
     // Existing Crossroads landmark contract, in server tile coordinates.
     // The material only describes the open square and roads already present.
     const double t = kTileUnits;
@@ -5616,8 +5641,8 @@ void submit_chronicle_action(ClientState& state, const ChronicleAction& action) 
   } else if (action.command == "set-out") {
     state.manage_lineage = false;
     state.chronicle_edit.clear();
-    state.session->submit(ClientCommand::set_out(action.arg));
-    show_hint(state, "The wagon rolls out");
+    state.session->submit(ClientCommand::set_out(action.arg, true));
+    show_hint(state, "Your journey begins");
   } else if (action.command == "oath-toggle") {
     state.chronicles_oath = !state.chronicles_oath;
   } else if (action.command == "appearance") {
@@ -9361,11 +9386,16 @@ void advance_actor_motion(ClientState& state, double dt_ms) {
   state.breathe_phase = std::fmod(state.breathe_phase + dt_ms / 2400.0, 1.0);
   const auto advance = [&](const std::string& id, const verdigris::Vec2& pos) {
     auto& motion = state.motions[id];
+    motion.velocity_sample_ms += std::max(0.0,dt_ms);
     if (motion.has_last) {
       const double dx = static_cast<double>(pos.x - motion.last_pos.x);
       const double dy = static_cast<double>(pos.y - motion.last_pos.y);
       const double moved = std::sqrt(dx * dx + dy * dy);
-      if(dt_ms>0 && moved>.5) motion.tiles_per_second=moved/kTileUnits*1000.0/dt_ms;
+      if(motion.velocity_sample_ms>0 && moved>.5) {
+        // Authority positions arrive at a different cadence than rendering.
+        motion.tiles_per_second=moved/kTileUnits*1000.0/motion.velocity_sample_ms;
+        motion.velocity_sample_ms=0;
+      }
       double stride=moved/(kTileUnits*.9);
       // Two contact poses need readable holds at the remote road speed.
       // Keep slow travel distance-driven, and cap rapid travel/dashes to a
@@ -9465,6 +9495,40 @@ void draw_raster_target_flash(HDC dc, const ClientState& state,
 }
 
 #include "fable_world.hpp"
+
+void paint_starter_slice(ClientState& state, HDC dc, const RECT& bounds) {
+  state.starter_hits.clear();
+  if (!state.session || !state.session->model().starter.active || state.screen != Screen::Expedition ||
+      state.frontend != Frontend::None || state.gear_overlay || state.character_pane || state.tree_pane) return;
+  const auto& starter = state.session->model().starter;
+  if (starter.phase=="wave") return; // The normal objective strip owns combat guidance.
+  const int scale = hud_scale(static_cast<int>(bounds.bottom));
+  const bool choosing = starter.phase == "occupation";
+  const int width = std::min(int(bounds.right)-32, (choosing ? 570 : 540)*scale);
+  const int x = (int(bounds.right)-width)/2, y = choosing ? int(bounds.bottom)/3 : 105*scale;
+  const int height = (choosing ? 206 : starter.phase=="wave"?90:130)*scale;
+  RECT panel{x,y,x+width,y+height};
+  skin::panel(dc,panel,skin::kGold,245,6.0f);
+  auto previous=SelectObject(dc,skin::font_body_bold()); SetBkMode(dc,TRANSPARENT); SetTextColor(dc,skin::kGold);
+  const std::string title=choosing ? "Village Palisade - before the alarm" : "Village Palisade";
+  skin::text_out(dc,x+16*scale,y+12*scale,title.c_str(),int(title.size()));
+  SelectObject(dc,skin::font_body()); SetTextColor(dc,RGB(226,217,196));
+  RECT text{x+16*scale,y+38*scale,x+width-16*scale,y+87*scale};
+  skin::draw_text(dc,starter.objective.c_str(),-1,&text,DT_WORDBREAK|DT_NOPREFIX);
+  const auto button=[&](const char* label,const char* action,int left,int top,int w) {
+    RECT box{left,top,left+w,top+34*scale};skin::panel(dc,box,skin::kVerdigris,255,4.f);
+    skin::draw_text(dc,label,-1,&box,DT_CENTER|DT_VCENTER|DT_SINGLELINE|DT_NOPREFIX);
+    state.starter_hits.push_back({box,action});
+  };
+  if(choosing) {
+    const char* labels[]={"1  Field hand  +1 STR","2  Scout  +1 DEX","3  Scribe  +1 INT"};
+    const char* actions[]={"field_hand","scout","scribe"};
+    for(int i=0;i<3;++i)button(labels[i],actions[i],x+16*scale,y+(86+i*38)*scale,width-32*scale);
+  } else if(starter.phase!="wave") {
+    button(starter.phase=="victory"?"F  Leave by the north passage":"F  Speak / regroup","interact",x+16*scale,y+height-39*scale,width-32*scale);
+  }
+  SelectObject(dc,previous);
+}
 
 void paint_scene(ClientState& state, HDC dc, const RECT& bounds,
                  std::span<std::uint8_t> frame_pixels = {}) {
@@ -10210,7 +10274,12 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds,
     std::string objective;
     COLORREF accent = RGB(120, 214, 168);
     const bool carrying = !world.carried.empty() || world.carried_trophies > 0;
-    if (!world.has_extraction) {
+    if (state.session && state.session->model().starter.active) {
+      const auto& starter=state.session->model().starter;
+      objective=starter.phase=="victory"?"Village defended - first skill earned":
+          starter.phase=="wave"?(starter.wave==3?"Defend the well":"Hold the breach - wave "+std::to_string(starter.wave)+" / 2"):
+          "The village needs its defenders";
+    } else if (!world.has_extraction) {
       // In town the NPC roster is the tell; guide toward the story loop
       // instead of the placeholder explore line.
       objective = !world.npcs.empty()
@@ -10784,7 +10853,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds,
         std::max(feedback_left, feedback_left+(feedback_right-feedback_left-widest)/2);
     // Reserve the bottom lane for XP/combat log/action controls. Transient
     // hints live in a small upper-center plate instead of covering the meter.
-    const int toast_y = (state.character_pane?48:120)*hud_scale(static_cast<int>(bounds.bottom));
+    const int toast_y = state.session && state.session->model().starter.active ?
+        int(bounds.bottom)-220*hud_scale(int(bounds.bottom)) :
+        (state.character_pane?48:120)*hud_scale(static_cast<int>(bounds.bottom));
     RECT plate{toast_x - 14, toast_y - 8, toast_x + widest + 14,
                toast_y + block_height + 8};
     skin::panel(dc, plate, skin::kGold, 240, 7.0f);
@@ -10801,6 +10872,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds,
   paint_gear_overlay(state, dc, bounds, rl);
   paint_tree_pane(state, dc, bounds, rl);
   paint_trade_pane(state, dc, bounds, rl);
+  paint_starter_slice(state, dc, bounds);
   state.render_list = std::move(rl);
   QueryPerformanceCounter(&section_t3);
   state.paint_ms_hud = section_ms(section_t2, section_t3);
@@ -11348,6 +11420,17 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       break;
     case WM_KEYDOWN:
       if (!state) break;
+      if (state->session && state->session->model().starter.active && state->frontend==Frontend::None &&
+          state->screen==Screen::Expedition && !state->gear_overlay && !state->character_pane && !state->tree_pane) {
+        const auto& phase=state->session->model().starter.phase;
+        if(phase=="occupation" && wparam>='1' && wparam<='3') {
+          const char* actions[]={"field_hand","scout","scribe"};
+          state->session->submit(verdigris::client::ClientCommand::starter_action(actions[wparam-'1']));break;
+        }
+        if(wparam=='F' && phase!="occupation" && phase!="wave") {
+          state->session->submit(verdigris::client::ClientCommand::starter_action("interact"));break;
+        }
+      }
       verdigris::client::input::note_input(state->input_latency);
       for (const auto action : {verdigris::client::input::Action::Dash,
                                 verdigris::client::input::Action::Thrust,
@@ -11604,6 +11687,14 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         state->mouse.x = GET_X_LPARAM(lparam);
         state->mouse.y = GET_Y_LPARAM(lparam);
         verdigris::client::input::note_input(state->input_latency);
+        if(state->session && state->session->model().starter.active && state->frontend==Frontend::None &&
+           state->screen==Screen::Expedition && !state->gear_overlay && !state->character_pane && !state->tree_pane) {
+          bool clicked=false;
+          for(const auto& hit:state->starter_hits) if(PtInRect(&hit.rect,state->mouse)) {
+            state->session->submit(verdigris::client::ClientCommand::starter_action(hit.action));clicked=true;break;
+          }
+          if(clicked || state->session->model().starter.phase=="occupation")break;
+        }
         state->held_gameplay_attacks.insert(VK_LBUTTON);
         SetCapture(window);  // Receive release even after dragging outside the client.
         if(state->gear_overlay || state->character_pane || state->tree_pane || state->frontend!=Frontend::None) {
@@ -21152,6 +21243,7 @@ int scenario_frontend_flow() {
 #include "typography_scenarios.hpp"
 #include "vfx/particle_scenarios.hpp"
 #include "first_slice_art_scenarios.hpp"
+#include "starter_slice_scenarios.hpp"
 
 int run_scenarios(const std::string& which) {
   struct Entry {
@@ -21168,6 +21260,7 @@ int run_scenarios(const std::string& which) {
       {"lineage-art", scenario_lineage_art},
       {"fable-world", scenario_fable_world},
       {"first-slice-art", scenario_first_slice_art},
+      {"starter-slice", scenario_starter_slice},
       {"frontend-flow", scenario_frontend_flow},
       {"move-and-camera", scenario_move_and_camera},
       {"first-fight", scenario_first_fight},

@@ -103,6 +103,7 @@ $networkingSource = Join-Path $nativeRoot "src\networking.cpp"
 $networkingObject = Join-Path $buildRoot "networking.obj"
 $testExe = Join-Path $buildRoot "verdigris_core_tests.exe"
 $networkingTestExe = Join-Path $buildRoot "verdigris_networking_tests.exe"
+$starterSliceTestExe = Join-Path $buildRoot "verdigris_starter_slice_tests.exe"
 $sessionTestExe = Join-Path $buildRoot "verdigris_session_tests.exe"
 $presentationEventsTestExe = Join-Path $buildRoot "verdigris_presentation_events_tests.exe"
 $audioTestExe = Join-Path $buildRoot "verdigris_audio_mixer_tests.exe"
@@ -132,6 +133,7 @@ Invoke-Msvc ('/c "' + $coreSources[1] + '" /Fo"' + $seasonalObject + '"')
 Invoke-Msvc ('/c "' + $networkingSource + '" /Fo"' + $networkingObject + '"')
 Invoke-Msvc ('/c "' + $nativeRoot + '\tests\core_tests.cpp" /Fo"' + $buildRoot + '\tests.obj"')
 Invoke-Msvc ('/c "' + $nativeRoot + '\tests\networking_tests.cpp" /Fo"' + $buildRoot + '\networking_tests.obj"')
+Invoke-Msvc ('/c "' + $nativeRoot + '\tests\starter_slice_tests.cpp" /Fo"' + $buildRoot + '\starter_slice_tests.obj"')
 Invoke-Msvc ('/c "' + $nativeRoot + '\tests\camera2d_tests.cpp" /Fo"' + $buildRoot + '\camera2d_tests.obj"')
 Invoke-Msvc ('/c "' + $nativeRoot + '\tests\fable_camera_tests.cpp" /Fo"' + $buildRoot + '\fable_camera_tests.obj"')
 Invoke-Msvc ('/c "' + $nativeRoot + '\client\local_session.cpp" /Fo"' + $buildRoot + '\local_session.obj"')
@@ -159,6 +161,7 @@ $remotePlayCompileArguments = '/c "' + $nativeRoot + '\client\remote_play.cpp" /
 Invoke-Msvc $remotePlayCompileArguments -RequireNativeWindowsDefine
 Invoke-Msvc ('"' + $buildRoot + '\tests.obj" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $testExe + '"')
 Invoke-Msvc ('"' + $buildRoot + '\networking_tests.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $networkingTestExe + '" /link ws2_32.lib')
+Invoke-Msvc ('"' + $buildRoot + '\starter_slice_tests.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $starterSliceTestExe + '" /link ws2_32.lib')
 Invoke-Msvc ('"' + $buildRoot + '\server.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $serverExe + '" /link ws2_32.lib')
 Invoke-Msvc ('"' + $buildRoot + '\client.obj" "' + $buildRoot + '\remote_play.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $buildRoot + '\audio_cue_spec.obj" "' + $buildRoot + '\audio_event_cues.obj" "' + $buildRoot + '\audio_audio_mixer.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $clientExe + '" /link user32.lib gdi32.lib ws2_32.lib winmm.lib')
 
@@ -173,6 +176,7 @@ python (Join-Path $nativeRoot "tools\check_legacy_denylist.py")
 if ($LASTEXITCODE -ne 0) { throw "legacy denylist failed" }
 if ($RunTests) { & $testExe; if ($LASTEXITCODE -ne 0) { throw "core tests failed" } }
 if ($RunTests) { & $networkingTestExe; if ($LASTEXITCODE -ne 0) { throw "networking tests failed" } }
+if ($RunTests) { & $starterSliceTestExe; if ($LASTEXITCODE -ne 0) { throw "starter slice tests failed" } }
 if ($RunTests) { & $camera2dTestExe; if ($LASTEXITCODE -ne 0) { throw "camera2d tests failed" } }
 if ($RunTests) { & $fableCameraTestExe; if ($LASTEXITCODE -ne 0) { throw "fable camera tests failed" } }
 if ($RunTests) { & $sessionTestExe; if ($LASTEXITCODE -ne 0) { throw "session tests failed" } }

@@ -1,0 +1,1093 @@
+{
+  "source_manifest_sha256": "a5bee8d38d507c90eed9c8f3572a26b043156cb8f7a6612c178b5ba25f942d22",
+  "frames": [
+    {
+      "file": "male/frames/male-club-attack-front-00.png",
+      "sha256": "873df87574f7fd0aa764fee6b95ff0c3b2e9bca726d6efc293fcfddb565471d2"
+    },
+    {
+      "file": "male/frames/male-club-attack-front-03.png",
+      "sha256": "7fa79c45e4403dba36c4cfd0e6ab6e08d0d3c98ebdece6b6c6e7fa56a0963644"
+    },
+    {
+      "file": "male/frames/male-club-attack-front-06.png",
+      "sha256": "cd83f5748ecd72b2ba5dda7c5c8353c78cac1a0e3046d59caf4172abb390962e"
+    },
+    {
+      "file": "male/frames/male-club-attack-front-09.png",
+      "sha256": "d48e5b0e04c0fb826fd8e9676f99382bdb83f7955bee2817729244de0e9df1df"
+    },
+    {
+      "file": "male/frames/male-club-attack-front-12.png",
+      "sha256": "30283aca2b40a181ca9e8b0bb2717a846b357c3ef4d781e929e5aa74f0f31cf3"
+    },
+    {
+      "file": "male/frames/male-club-attack-front-15.png",
+      "sha256": "873df87574f7fd0aa764fee6b95ff0c3b2e9bca726d6efc293fcfddb565471d2"
+    },
+    {
+      "file": "male/frames/male-club-attack-right-00.png",
+      "sha256": "df836562eb793ac07ce73c0c99b520957370228782c1a33ec682e386d597121f"
+    },
+    {
+      "file": "male/frames/male-club-attack-right-03.png",
+      "sha256": "8ae65bfaef8ad72b80d6909c1054338267495e96d9c8591a3d052dca25d6076b"
+    },
+    {
+      "file": "male/frames/male-club-attack-right-06.png",
+      "sha256": "bdfdc63c00faba289df8883377ab3f2fd7b2bce440297f939a3c156880025b25"
+    },
+    {
+      "file": "male/frames/male-club-attack-right-09.png",
+      "sha256": "90303e73f8ae5f9b93bbb438accd374e770aea109babf836cf6078b39da637bd"
+    },
+    {
+      "file": "male/frames/male-club-attack-right-12.png",
+      "sha256": "0d0f72ae4f6e354114578f2513faf92b5366e57b18366a86daa7c82ce90bfdeb"
+    },
+    {
+      "file": "male/frames/male-club-attack-right-15.png",
+      "sha256": "df836562eb793ac07ce73c0c99b520957370228782c1a33ec682e386d597121f"
+    },
+    {
+      "file": "male/frames/male-club-attack-back-00.png",
+      "sha256": "3a015cde537647a471efd54f4776c6b4a721d9497c5f5da87e803cc572d8c8ae"
+    },
+    {
+      "file": "male/frames/male-club-attack-back-03.png",
+      "sha256": "a20898e7e1856d0151b8694244c061087b045b6ee77c53eb209e0dc45c749a05"
+    },
+    {
+      "file": "male/frames/male-club-attack-back-06.png",
+      "sha256": "2fdce6cccc2c67bb4e1a658173f1955d19a1611926652ce152783b2b994525fb"
+    },
+    {
+      "file": "male/frames/male-club-attack-back-09.png",
+      "sha256": "76361c819e1c18a6d698127ea112d6342db7906298bab07ba5e69b0b1850b867"
+    },
+    {
+      "file": "male/frames/male-club-attack-back-12.png",
+      "sha256": "ffa36a47d38b24a7c9eb649a244b48ba883937af90773c40a45492c6fe256d69"
+    },
+    {
+      "file": "male/frames/male-club-attack-back-15.png",
+      "sha256": "3a015cde537647a471efd54f4776c6b4a721d9497c5f5da87e803cc572d8c8ae"
+    },
+    {
+      "file": "male/frames/male-club-attack-left-00.png",
+      "sha256": "69e435c97a8430839ea42441062e75ed604f5a4887093612dad3852c7f8daa0f"
+    },
+    {
+      "file": "male/frames/male-club-attack-left-03.png",
+      "sha256": "42e2b26e0c3a5abc940d6c037cd188086a12a33fe18d56e29d8e8cbf4ba20d1a"
+    },
+    {
+      "file": "male/frames/male-club-attack-left-06.png",
+      "sha256": "56e6d3d8a2d0f7c53e949b9b2311f8e7c5774413ce6a699c99b5b048639c5bb1"
+    },
+    {
+      "file": "male/frames/male-club-attack-left-09.png",
+      "sha256": "ad18cdf0b12679f8451c141e37d0c61f588250d8639f09809051c7429c305a25"
+    },
+    {
+      "file": "male/frames/male-club-attack-left-12.png",
+      "sha256": "1e51c96fa67165bee1632c228cb0bf50e805c41b14625bca549d3881916f3de7"
+    },
+    {
+      "file": "male/frames/male-club-attack-left-15.png",
+      "sha256": "69e435c97a8430839ea42441062e75ed604f5a4887093612dad3852c7f8daa0f"
+    },
+    {
+      "file": "male/frames/male-club-death-front-00.png",
+      "sha256": "a8e26a9850972689ee31a9caeae3f4acc85efaa7daed8d743df8fbf848ed2642"
+    },
+    {
+      "file": "male/frames/male-club-death-front-02.png",
+      "sha256": "59bd33f7bee654277353c84319fa9b338c9088c2a6cc428985dfe13ac98f2480"
+    },
+    {
+      "file": "male/frames/male-club-death-front-05.png",
+      "sha256": "990857be67b73baa76576c52f3c9e1315afa2f0df87fdc49e9ca3067cff40480"
+    },
+    {
+      "file": "male/frames/male-club-death-front-07.png",
+      "sha256": "1d0bc99ef50f48b301da0b5e590e83b0052b08be837e75aea8aacfa011283942"
+    },
+    {
+      "file": "male/frames/male-club-death-right-00.png",
+      "sha256": "10912eedee9e4b70c187c69272a9878fd9127aed8bd557de60c86420494cb5ed"
+    },
+    {
+      "file": "male/frames/male-club-death-right-02.png",
+      "sha256": "c1eaf855f0591974d30f6d99d2687918be85aac941c1f8c0aa1000d620e248e9"
+    },
+    {
+      "file": "male/frames/male-club-death-right-05.png",
+      "sha256": "7cb315e96f449da4e8798b5ade8d4ab68317beda168d015b099b6e4cc89bb487"
+    },
+    {
+      "file": "male/frames/male-club-death-right-07.png",
+      "sha256": "256f9707367561d88ccbd6dee7186829093e2c4a22ee447997a7ed47699af4da"
+    },
+    {
+      "file": "male/frames/male-club-death-back-00.png",
+      "sha256": "b2e2e5e41853938b999863612ac8c774e0f64e08b114fa3c2e21bf36c8f9fb64"
+    },
+    {
+      "file": "male/frames/male-club-death-back-02.png",
+      "sha256": "e032a1375dc489a536bc2b5d1a0b1a343be27b0c98ccaecad47babeaee97f4fc"
+    },
+    {
+      "file": "male/frames/male-club-death-back-05.png",
+      "sha256": "c84ade7fe04a00dc9e3a1cdb5ffb9cb3e0a047b0f7a88622da5f55a361f69a27"
+    },
+    {
+      "file": "male/frames/male-club-death-back-07.png",
+      "sha256": "c4ed6f326dfcc2451cec399f71d3ad29fa5101ed1e84ab9e74bef738f6fc69ff"
+    },
+    {
+      "file": "male/frames/male-club-death-left-00.png",
+      "sha256": "efef79a989ba98c007510ae32f62d7d2e1f91696ba9f1b541951a31dad000f32"
+    },
+    {
+      "file": "male/frames/male-club-death-left-02.png",
+      "sha256": "f09a9c48bb24c4cbe93d85baaace67e869c47538f50888d8314f0c49dba3707e"
+    },
+    {
+      "file": "male/frames/male-club-death-left-05.png",
+      "sha256": "8294a46bd6b9116773a54196666ccd431c8b4a61e680dd2700528bf907771fbf"
+    },
+    {
+      "file": "male/frames/male-club-death-left-07.png",
+      "sha256": "05a23366dfcd9b6792cdedf7dddb6b076511ca05b6ecfc76d5ccd6e0efc54ca4"
+    },
+    {
+      "file": "male/frames/male-club-hit-front-00.png",
+      "sha256": "f8c5abe7d9088856e715cfc1fd3adea7baf6955a7fa70bbc3520f3dde3a05bad"
+    },
+    {
+      "file": "male/frames/male-club-hit-front-07.png",
+      "sha256": "595f54660adaf3bcbb036574057fa87a2402e3bef2a17ca8a8fb227e59c7e6a0"
+    },
+    {
+      "file": "male/frames/male-club-hit-right-00.png",
+      "sha256": "0864955fc335435219808d234236646b24d00696a6dc733d2fcba0bbd4a6715f"
+    },
+    {
+      "file": "male/frames/male-club-hit-right-07.png",
+      "sha256": "5cb7e14dd98888d40ff26d286ba94bd5e85ac785868fb91c694a32a76d6784b1"
+    },
+    {
+      "file": "male/frames/male-club-hit-back-00.png",
+      "sha256": "bdd4dddc50560ca0baa2191521bb22353f702eaf362df7b824ea1fd28d288dec"
+    },
+    {
+      "file": "male/frames/male-club-hit-back-07.png",
+      "sha256": "5116ba5c831af1b1151522222d1f1f2bf1d1bb949d6d6eda8c71d9e07570884b"
+    },
+    {
+      "file": "male/frames/male-club-hit-left-00.png",
+      "sha256": "1f192efebf8219216e4e29394c38e4be42edbd4da363056ec2d86003be25af2e"
+    },
+    {
+      "file": "male/frames/male-club-hit-left-07.png",
+      "sha256": "46b280dfd359418989631af3135eb8ec058bac2696ff0fb71cea2cb6be62034c"
+    },
+    {
+      "file": "male/frames/male-club-idle-front-00.png",
+      "sha256": "2aa88be8bbbc1b638694cd4f129151968fb55b200cd2c1bb0d6ce7af2e6105ec"
+    },
+    {
+      "file": "male/frames/male-club-idle-right-00.png",
+      "sha256": "c6e74f6e7fd2a3cf94b389292879663f27ef38d0c3ff5f4af7a043ad5eabfeda"
+    },
+    {
+      "file": "male/frames/male-club-idle-back-00.png",
+      "sha256": "62f7787b304cbf57aca6f14fe0d061862bc785ead26636062ff692cf86877623"
+    },
+    {
+      "file": "male/frames/male-club-idle-left-00.png",
+      "sha256": "d2199171dd2d54fd5d7f5de2c2d969b476fde9c04bc8f74112d4ae5aea4d481e"
+    },
+    {
+      "file": "male/frames/male-club-walk-front-00.png",
+      "sha256": "0e5c682539f678906eb87e8906911f549c2eecd359ec33a7bac16eacb0d76546"
+    },
+    {
+      "file": "male/frames/male-club-walk-front-02.png",
+      "sha256": "003a9645c0f1d89eedf963269032d84246091ef98c500224e8ecabe24e9aa69a"
+    },
+    {
+      "file": "male/frames/male-club-walk-front-04.png",
+      "sha256": "05cb49f2010ffea5483f67657c8001b5b957d2f4cafb2129a8b63b0bde04e3d1"
+    },
+    {
+      "file": "male/frames/male-club-walk-front-06.png",
+      "sha256": "55799235748a2267bbe4d54061c8d28f16781e843a9dfe58c9298c1246291795"
+    },
+    {
+      "file": "male/frames/male-club-walk-right-00.png",
+      "sha256": "705b26fc87d56df0d8a28c179f219763288ccb0319454a45d89202c5cf808a12"
+    },
+    {
+      "file": "male/frames/male-club-walk-right-02.png",
+      "sha256": "11c3e9116970cde3b26881e0286d2cd371605ba7c3f3d7c23faaaad8a1200b35"
+    },
+    {
+      "file": "male/frames/male-club-walk-right-04.png",
+      "sha256": "eb119fee5b82e3b0ce203ac433b8610fe63e356193ccf9461e146d5fbcb014aa"
+    },
+    {
+      "file": "male/frames/male-club-walk-right-06.png",
+      "sha256": "d7378c5567679d178e934bc870d35e3232adcf303fb179f9b065cfdecb006dc9"
+    },
+    {
+      "file": "male/frames/male-club-walk-back-00.png",
+      "sha256": "d532e957f7d0bac0060b424780c8f7f01e6ab4217ada4f944242eb0eb7660eb6"
+    },
+    {
+      "file": "male/frames/male-club-walk-back-02.png",
+      "sha256": "5dbf724c4c8facc98b4f2e934620b195b19ea2d24cea66a3660301f31941cfea"
+    },
+    {
+      "file": "male/frames/male-club-walk-back-04.png",
+      "sha256": "3d6d06843c9f255b3ee23bde1df16400dfb15784a7eb445da044a7e888472faa"
+    },
+    {
+      "file": "male/frames/male-club-walk-back-06.png",
+      "sha256": "9980a70ae20c1910dfe3215b1a26621c49d8bcdeb8584647cbdc95ba6ee3c6a0"
+    },
+    {
+      "file": "male/frames/male-club-walk-left-00.png",
+      "sha256": "434d37c43a66b1dc8f9d1c2fb04ef70c5c2d12b2c4aedad606cda81206f9fa14"
+    },
+    {
+      "file": "male/frames/male-club-walk-left-02.png",
+      "sha256": "41a87bc90a4f76ec2800a4ded0bb6a872fa1139dbfb000b91aa5b5e4ff33cbe3"
+    },
+    {
+      "file": "male/frames/male-club-walk-left-04.png",
+      "sha256": "5e21ba8c4567f6d6237912fb9b6fd5b26a0758335226241957b15d0740cb8244"
+    },
+    {
+      "file": "male/frames/male-club-walk-left-06.png",
+      "sha256": "78400c37ea71bc064c60bebb03f7a5f3a1e959081b2134b374d4d06a8961fde9"
+    },
+    {
+      "file": "male/frames/male-idle-front-00.png",
+      "sha256": "65ee38265785a3aa18cfeac7b37fc30f2fdb2ce0b6ffb0690b45c521e8cb6fa0"
+    },
+    {
+      "file": "male/frames/male-idle-right-00.png",
+      "sha256": "cd5fdfa5d59570e4869f465934a30636ae44d857acee5b1c76d68f4a12fb4aea"
+    },
+    {
+      "file": "male/frames/male-idle-back-00.png",
+      "sha256": "8859586a6ed17538164fae2cbfa732ebb34024c4e88d77440c20d510be5a0b8f"
+    },
+    {
+      "file": "male/frames/male-idle-left-00.png",
+      "sha256": "99bc6043910cb0f055848dfaf72f5b963122332f2e3deea65719319becfb4f69"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-front-00.png",
+      "sha256": "0964b469e19c40e73c74d2351adc60e7714f95c3cbb2ac62959cb3615a389c8e"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-front-03.png",
+      "sha256": "b7edf7f1d866018e5287ea39196ac1e734945ca126e88d847baaa7edafe1b9eb"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-front-06.png",
+      "sha256": "068c928cf7dbf27c46479e77d538e06be3d0385dd25cbfdf86bf5e8f6eeaf8b4"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-front-09.png",
+      "sha256": "e3871ab6b7ed3ccf67a4a12ee3531b84923b4e7e237e68621c4c396ba3dae87f"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-front-12.png",
+      "sha256": "b7edf7f1d866018e5287ea39196ac1e734945ca126e88d847baaa7edafe1b9eb"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-front-15.png",
+      "sha256": "0964b469e19c40e73c74d2351adc60e7714f95c3cbb2ac62959cb3615a389c8e"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-right-00.png",
+      "sha256": "c4916d9f31e5e51996a5bbdbc21a5f525395d675b55e37373d42b3f9ee741762"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-right-03.png",
+      "sha256": "c1d98d3158193cbfb540416f220526d42b143f0ddcdf066a6482136c1962abc9"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-right-06.png",
+      "sha256": "4a32c367076e534f0264a6998b9dc27589639f1bd0da9e34a5bede43f42701df"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-right-09.png",
+      "sha256": "4e866f5a9de6280fdd78682481b3bd7dd49d52b761acf74043178d0d4d7809b9"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-right-12.png",
+      "sha256": "c1d98d3158193cbfb540416f220526d42b143f0ddcdf066a6482136c1962abc9"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-right-15.png",
+      "sha256": "c4916d9f31e5e51996a5bbdbc21a5f525395d675b55e37373d42b3f9ee741762"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-back-00.png",
+      "sha256": "eb6b3f8274eeeb3405ad447fcc057f798bea1bb9ed984eca0c86cfc72aaef579"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-back-03.png",
+      "sha256": "fe1640e719acb291de217ecb723dd0ab5c2450f604cbcb7a73ec55b17d8af5dc"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-back-06.png",
+      "sha256": "49173b7c03ad74dcdbdd31fdab94537938e5233177683840ff8d7518ec601cf0"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-back-09.png",
+      "sha256": "8848d5d390ac7d404243f1bdae0eba8a9cb6a633cde98f3125014974a5e820b9"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-back-12.png",
+      "sha256": "fe1640e719acb291de217ecb723dd0ab5c2450f604cbcb7a73ec55b17d8af5dc"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-back-15.png",
+      "sha256": "eb6b3f8274eeeb3405ad447fcc057f798bea1bb9ed984eca0c86cfc72aaef579"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-left-00.png",
+      "sha256": "6d727697b57eb27a701e787aaeef481490171dbfebf69b53b67d66cb2879bc02"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-left-03.png",
+      "sha256": "d840edee825c0fd860359471a590432de8c5249c33ef5795ad65445a95eaf5e6"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-left-06.png",
+      "sha256": "dec5d6ea88c12c85e3fe8333a8ab934669784c71dacc742e25c1f39f24ec7e06"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-left-09.png",
+      "sha256": "db40f4ad2b7572267c360d3b39a90b4893f3a931174eda45b42f30b312e9f30e"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-left-12.png",
+      "sha256": "d840edee825c0fd860359471a590432de8c5249c33ef5795ad65445a95eaf5e6"
+    },
+    {
+      "file": "male/frames/male-unarmed-attack-left-15.png",
+      "sha256": "6d727697b57eb27a701e787aaeef481490171dbfebf69b53b67d66cb2879bc02"
+    },
+    {
+      "file": "male/frames/male-unarmed-death-front-00.png",
+      "sha256": "73156a1c2689c2bf64db420742e9b5ad1cd9264ccc0150d7a55db0880aa0872a"
+    },
+    {
+      "file": "male/frames/male-unarmed-death-front-02.png",
+      "sha256": "aaae838117c4a3408403886cc11b751215d1dfee58d5b866439eca39baa3bc2f"
+    },
+    {
+      "file": "male/frames/male-unarmed-death-front-05.png",
+      "sha256": "32947395b31402b1619a110671c29da792c6fcf475bce8f82adff5dc5cb3d72c"
+    },
+    {
+      "file": "male/frames/male-unarmed-death-front-07.png",
+      "sha256": "11f3efe13d97ae395e909606e4e3b031016c030b7a60fe2c7a9da7a0c067c32a"
+    },
+    {
+      "file": "male/frames/male-unarmed-death-right-00.png",
+      "sha256": "76c97e6eb95c091bee1a73b32bf9a0e3ad0ed7a5d3d7df27c2ca8321c8b09bf5"
+    },
+    {
+      "file": "male/frames/male-unarmed-death-right-02.png",
+      "sha256": "892a55fbaf36f9fd956db6df875ced2a2f76705631649aae83d75c08698f237f"
+    },
+    {
+      "file": "male/frames/male-unarmed-death-right-05.png",
+      "sha256": "8a965e1d4b4a82894fca468685c3a6d24e1e13f7b097b091faab075a407e1700"
+    },
+    {
+      "file": "male/frames/male-unarmed-death-right-07.png",
+      "sha256": "18fe2930bc0530a50377be3174f3e491023ddadf204a3b4535d9394a2d44c8f8"
+    },
+    {
+      "file": "male/frames/male-unarmed-death-back-00.png",
+      "sha256": "d8832c838b703b6d9ae42bae85fbe8b739c645da173ab499ea052bdb3527fb09"
+    },
+    {
+      "file": "male/frames/male-unarmed-death-back-02.png",
+      "sha256": "be869927d53617917d09569e76061993021e506458287e99c4d6e795eb2a9ccc"
+    },
+    {
+      "file": "male/frames/male-unarmed-death-back-05.png",
+      "sha256": "fcd94e0eadc97755ada91be366e5889aa571e39eb379bbbdab503333fd86956b"
+    },
+    {
+      "file": "male/frames/male-unarmed-death-back-07.png",
+      "sha256": "be60111ff102886541f9a267ced26924ee100e23b126690b0b9449770f21d55b"
+    },
+    {
+      "file": "male/frames/male-unarmed-death-left-00.png",
+      "sha256": "96a882878ea5531617612ee206f62f1c7f2bfb9255f18374b6ca0fe9c5095d89"
+    },
+    {
+      "file": "male/frames/male-unarmed-death-left-02.png",
+      "sha256": "52c772e3f4b9c4f5162f98f3651791649e494dfa37280d0f8f5dce738a3cbc8a"
+    },
+    {
+      "file": "male/frames/male-unarmed-death-left-05.png",
+      "sha256": "772a582a1aced4fcd30b845f852b8869d8e26df25c2ba368132ea202b2a95b51"
+    },
+    {
+      "file": "male/frames/male-unarmed-death-left-07.png",
+      "sha256": "654d05ade8cf909e74ed19d5900a3da64abd13502ffe1d63f6e3671abf27ad3f"
+    },
+    {
+      "file": "male/frames/male-unarmed-hit-front-00.png",
+      "sha256": "1bf2b345f9824e90caae701d5f96bdba89623b2c114a4c1bd1bb26cb4d5e3727"
+    },
+    {
+      "file": "male/frames/male-unarmed-hit-front-07.png",
+      "sha256": "6768e5ac0e58217a29dfb65cf7ec5d40c79d4863f6094ad11bcf85d6cc30687c"
+    },
+    {
+      "file": "male/frames/male-unarmed-hit-right-00.png",
+      "sha256": "5d7891c0e43469b023045f72b6563b0b564d25049b4e9aab8d16c73ee003d158"
+    },
+    {
+      "file": "male/frames/male-unarmed-hit-right-07.png",
+      "sha256": "3aa8128e3dd9fe3e44a031a809350e58d64722940255561ee5032cc294d9fa8d"
+    },
+    {
+      "file": "male/frames/male-unarmed-hit-back-00.png",
+      "sha256": "442852fa0c054e4755ee1cd140b352b677ccdc3ebd0ac30eaecae7c49a24beee"
+    },
+    {
+      "file": "male/frames/male-unarmed-hit-back-07.png",
+      "sha256": "ff41bae4350571eb531081e4f01608b4b403bd5c455f01eab16a9b29e505b7c3"
+    },
+    {
+      "file": "male/frames/male-unarmed-hit-left-00.png",
+      "sha256": "17a63027cb22a4e730afbaf0484175669d774e25251ef4c090064cbe1879ab37"
+    },
+    {
+      "file": "male/frames/male-unarmed-hit-left-07.png",
+      "sha256": "8d217ff0f83d013f6d4b3f0c4698abc59fa99ff52843ca689aa2f47d236b6285"
+    },
+    {
+      "file": "male/frames/male-walk-front-00.png",
+      "sha256": "5aed17d001e1a6bbb0f61d758110754c172e299c9725dbc00244107c0475dd86"
+    },
+    {
+      "file": "male/frames/male-walk-front-02.png",
+      "sha256": "2e164c13200cccebc047ebd90261b98bd29c944dd996a4b3b08149d935ff2fd6"
+    },
+    {
+      "file": "male/frames/male-walk-front-04.png",
+      "sha256": "b9f1b05f2560a56b321b7be8cb4e74b84c1bb890a00e39736dfdd90a8909c579"
+    },
+    {
+      "file": "male/frames/male-walk-front-06.png",
+      "sha256": "154075eb7633a1f8e5e6bab92c100fb616bedff4628e0d2b4d58e59d6b845ec8"
+    },
+    {
+      "file": "male/frames/male-walk-right-00.png",
+      "sha256": "6b1fa868a1a087a1a5ce2c272f026c795649be1ba4e3432d3558d50c3243a801"
+    },
+    {
+      "file": "male/frames/male-walk-right-02.png",
+      "sha256": "77d8bc71876e5e699dd133251f50d7fc47e93b926102817a421ee1daa0638706"
+    },
+    {
+      "file": "male/frames/male-walk-right-04.png",
+      "sha256": "eb575fde0d5df9897a12cd31f5beb5c8f2bda34a73f23f78488cdd4d9fcc9a04"
+    },
+    {
+      "file": "male/frames/male-walk-right-06.png",
+      "sha256": "04db37bb6266a186fdd165a17057220bea0ac7f387913cb99a8e41d251eeee6d"
+    },
+    {
+      "file": "male/frames/male-walk-back-00.png",
+      "sha256": "ed8602d260fa78b5c0eed72451e943ce015edb57568c2fa2dbad0544806afdc8"
+    },
+    {
+      "file": "male/frames/male-walk-back-02.png",
+      "sha256": "ad25632b0373f5f3229668537363cf631f37ff2e7cb743e8f966ff68fabbb97f"
+    },
+    {
+      "file": "male/frames/male-walk-back-04.png",
+      "sha256": "0a9782834bd0ae485a8e60d7c07df7df8e278ca89e32268c098d9fa57e9aaa9d"
+    },
+    {
+      "file": "male/frames/male-walk-back-06.png",
+      "sha256": "69701175b87bcfdb6a92b553f25ca24c5e2e5c062623385f7efa5431e499f448"
+    },
+    {
+      "file": "male/frames/male-walk-left-00.png",
+      "sha256": "74a971db65babd6fc292752b48ec271f62f2872f61054d93cd72ed5ec6e537d4"
+    },
+    {
+      "file": "male/frames/male-walk-left-02.png",
+      "sha256": "2b506e97eea723e89e46682ab1dd51560e9d758916eada6b67831a1bd963dda3"
+    },
+    {
+      "file": "male/frames/male-walk-left-04.png",
+      "sha256": "e7cc4a4775cfd6e4e4a0dd8d2f2afbe9aaf86eb5ffe99d7975302648190a3ec4"
+    },
+    {
+      "file": "male/frames/male-walk-left-06.png",
+      "sha256": "ac22e5bd4d5d12eb7a26d14e4f9000d9870410664b937b0743f2d615def24f02"
+    },
+    {
+      "file": "female/frames/female-club-attack-front-00.png",
+      "sha256": "3e9f372b29a358dbdde7e86da354f8567312970d73569edc2c5a3dc1b22255c5"
+    },
+    {
+      "file": "female/frames/female-club-attack-front-03.png",
+      "sha256": "dc98161a04efff99374637cc8433cbc7111acec35b0e7dba8f90c65191961e8f"
+    },
+    {
+      "file": "female/frames/female-club-attack-front-06.png",
+      "sha256": "e1879e0a51a67d8a2e31e9bebd10db35325e2b4a6770a29ef0f94d827259d1c8"
+    },
+    {
+      "file": "female/frames/female-club-attack-front-09.png",
+      "sha256": "e830bd5a7c5b34351027732e7efb7bc970bbe45b351aa72cddf393802e48b51e"
+    },
+    {
+      "file": "female/frames/female-club-attack-front-12.png",
+      "sha256": "815c44ffc88c94ed6c14b21cd73216cbc78b867bac94e4626baab897da2494cd"
+    },
+    {
+      "file": "female/frames/female-club-attack-front-15.png",
+      "sha256": "3e9f372b29a358dbdde7e86da354f8567312970d73569edc2c5a3dc1b22255c5"
+    },
+    {
+      "file": "female/frames/female-club-attack-right-00.png",
+      "sha256": "664b231e98dcbb13b5eed617e6239b6cd6d05413227812f03c97ff4a00a294ab"
+    },
+    {
+      "file": "female/frames/female-club-attack-right-03.png",
+      "sha256": "e1e6617440b8125fe0e772d0c9f667bfade9ce7aa5c4eda9a816f802ff19685f"
+    },
+    {
+      "file": "female/frames/female-club-attack-right-06.png",
+      "sha256": "d5e0764e68a833d35abbb5ebdd5eb6142c12d0b142d59674c222660a368aced4"
+    },
+    {
+      "file": "female/frames/female-club-attack-right-09.png",
+      "sha256": "f7720282082a0bdee54c2bace48dab8f8601561e7ae5f50ccb189330be7e1eff"
+    },
+    {
+      "file": "female/frames/female-club-attack-right-12.png",
+      "sha256": "bcf78d25a1cf7fbc997d9bf345612ab64b742e5f9b3a885991ec7d63fb535be4"
+    },
+    {
+      "file": "female/frames/female-club-attack-right-15.png",
+      "sha256": "664b231e98dcbb13b5eed617e6239b6cd6d05413227812f03c97ff4a00a294ab"
+    },
+    {
+      "file": "female/frames/female-club-attack-back-00.png",
+      "sha256": "f6bec02145729e3c1485f7187aada077c55af5244f0fcf7bd9de56f0b5f43488"
+    },
+    {
+      "file": "female/frames/female-club-attack-back-03.png",
+      "sha256": "8345d0d455acd2e0fa3de6ff80c3abf173266f0cf1cd1f7e53d106fa3da0cf87"
+    },
+    {
+      "file": "female/frames/female-club-attack-back-06.png",
+      "sha256": "256ba9f3870988ed09d95827d3ba014aa4e7d83d1d7c58ff2171da77ca7465bb"
+    },
+    {
+      "file": "female/frames/female-club-attack-back-09.png",
+      "sha256": "685e1d180855f30710bb3d7baa97de112b9e4d9ee4bed86ebfeca9e27bbb28de"
+    },
+    {
+      "file": "female/frames/female-club-attack-back-12.png",
+      "sha256": "568dc9b06570beacd95794ea5e5ab25abdc9fc155c53ea754c923c9a13aafd35"
+    },
+    {
+      "file": "female/frames/female-club-attack-back-15.png",
+      "sha256": "f6bec02145729e3c1485f7187aada077c55af5244f0fcf7bd9de56f0b5f43488"
+    },
+    {
+      "file": "female/frames/female-club-attack-left-00.png",
+      "sha256": "35f234cd5a42d60c104ccbdd021b1053e625f8f578e74577753a8fca3b4fc810"
+    },
+    {
+      "file": "female/frames/female-club-attack-left-03.png",
+      "sha256": "4b8b04d949e1288bad79999334558551f3557222dfd50976037bd6916e1fceb4"
+    },
+    {
+      "file": "female/frames/female-club-attack-left-06.png",
+      "sha256": "87a972364d0b1441ab4983f92597412851d65004140e3314e640ff8731eb8e08"
+    },
+    {
+      "file": "female/frames/female-club-attack-left-09.png",
+      "sha256": "27668c2bad6b7b3234bde45b18f4bb362af1809f78841108dd7283336e543226"
+    },
+    {
+      "file": "female/frames/female-club-attack-left-12.png",
+      "sha256": "0d32e742cf63aa4f92482182985c11cad81021b103fadd0c43cccc41132b1384"
+    },
+    {
+      "file": "female/frames/female-club-attack-left-15.png",
+      "sha256": "35f234cd5a42d60c104ccbdd021b1053e625f8f578e74577753a8fca3b4fc810"
+    },
+    {
+      "file": "female/frames/female-club-death-front-00.png",
+      "sha256": "c10170e213a595583d9e98672740adcfb4b39f0403f1d0568b086206a8f2af6c"
+    },
+    {
+      "file": "female/frames/female-club-death-front-02.png",
+      "sha256": "9656f09897afd2a1eae58598b0b1752c5d30a506e222f85bceb70b2277e2a388"
+    },
+    {
+      "file": "female/frames/female-club-death-front-05.png",
+      "sha256": "f5e6f549fc1dae5d970123af0017ede4afc347e464e36da015af3b9820490942"
+    },
+    {
+      "file": "female/frames/female-club-death-front-07.png",
+      "sha256": "4778c9ae695e44cd73ccbfc5a0c45fb4c2ab7138f87a0bb2c4668475ef0568b0"
+    },
+    {
+      "file": "female/frames/female-club-death-right-00.png",
+      "sha256": "0e0be5d13cdc7de7b9fc50464b89cae0a7e0bafaa672c5d050b1402e4588c6e6"
+    },
+    {
+      "file": "female/frames/female-club-death-right-02.png",
+      "sha256": "48e72843d56730ec0c827159da87a51ce53c5779ea9f5e2dd09fb69acd93718c"
+    },
+    {
+      "file": "female/frames/female-club-death-right-05.png",
+      "sha256": "bbe5329b30baa65e7060d01f76a53e590f52e8868f169390e9d4aad0d8b4a3d5"
+    },
+    {
+      "file": "female/frames/female-club-death-right-07.png",
+      "sha256": "9dea520c9788661b33007c6f5ec2e6e8ada290139629b156df0b718b9f24fe7b"
+    },
+    {
+      "file": "female/frames/female-club-death-back-00.png",
+      "sha256": "0343ed3329e55191fafa3e24bd1e9082e521c2ff93e922794cc1c2ff45667794"
+    },
+    {
+      "file": "female/frames/female-club-death-back-02.png",
+      "sha256": "1461a77f3ecd72dc40f515bfe76313fa5c01b9b3876bd03595a31a823ea205b3"
+    },
+    {
+      "file": "female/frames/female-club-death-back-05.png",
+      "sha256": "ee2ce96d4dd52a8caff40ccf8b322d03d850210c5ed03f64486b53a353d4dcf9"
+    },
+    {
+      "file": "female/frames/female-club-death-back-07.png",
+      "sha256": "74d7b3376bab29bdb4f63bb1bf548ccf79f8bce21bcc649b52fe4baf00ab8b4a"
+    },
+    {
+      "file": "female/frames/female-club-death-left-00.png",
+      "sha256": "8d7111bde6cd4b61edb10decad578500ab96b648fc294e04aec314a0729987fd"
+    },
+    {
+      "file": "female/frames/female-club-death-left-02.png",
+      "sha256": "0098b1dbeabcfd40ed3ab6b22edba005e95ff23d6367d73b2c06099bb885ee22"
+    },
+    {
+      "file": "female/frames/female-club-death-left-05.png",
+      "sha256": "4c349f55f7d199f99ae7b9b031150adb900ff59fb512f18db7084fb4416e38ea"
+    },
+    {
+      "file": "female/frames/female-club-death-left-07.png",
+      "sha256": "87a0a5629d351874dd186435ef722c73fac88e4da4678cc0bde3b0226f83e66a"
+    },
+    {
+      "file": "female/frames/female-club-hit-front-00.png",
+      "sha256": "cc86b1e2ee4100cb3ee20358f458c18ad40895ad09ff181b44b73ae083d0087d"
+    },
+    {
+      "file": "female/frames/female-club-hit-front-07.png",
+      "sha256": "f05ef9c1cddfa29932b663caf4dbbfc525edf8f1f36609277f298205326659ce"
+    },
+    {
+      "file": "female/frames/female-club-hit-right-00.png",
+      "sha256": "a90d0ed7f3a8fafa10217bf491dc88baa549315cf5ebe12e208ae0072d774a44"
+    },
+    {
+      "file": "female/frames/female-club-hit-right-07.png",
+      "sha256": "36daf6cde9c900677a5d28589d844ce452b60b0b976d4b36563007e299820499"
+    },
+    {
+      "file": "female/frames/female-club-hit-back-00.png",
+      "sha256": "f6e000340c0ec0a379a234ec4620673d1a593ea5daf18f3ee6708116250dc7b4"
+    },
+    {
+      "file": "female/frames/female-club-hit-back-07.png",
+      "sha256": "e7faf019498d54ff0ac955c48c6e1fceaccdf579de48fed6e46f5423cb46802c"
+    },
+    {
+      "file": "female/frames/female-club-hit-left-00.png",
+      "sha256": "de42620e69583df835a05c4847cbba40534a494b4d500e971898e188a34904f1"
+    },
+    {
+      "file": "female/frames/female-club-hit-left-07.png",
+      "sha256": "24a26692464f3fcd3569777d5d66fb5c4636eebc7ff0f0c9fa9497e2bb387ff7"
+    },
+    {
+      "file": "female/frames/female-club-idle-front-00.png",
+      "sha256": "283b6b01f27adddb9ebcc2cd0782a09e91ec85800c0ffa0e5af726ed9925cfe3"
+    },
+    {
+      "file": "female/frames/female-club-idle-right-00.png",
+      "sha256": "113b4df3057940c28fc214ead3066bcd4d251d35d6af1f8992eddf19ccf5361b"
+    },
+    {
+      "file": "female/frames/female-club-idle-back-00.png",
+      "sha256": "f87dd3395d1ee68cb39756b2d878799736c52a6752c9e77defce8977a7b5a18e"
+    },
+    {
+      "file": "female/frames/female-club-idle-left-00.png",
+      "sha256": "2d63c9f88eb3750be5cbe87a3bd745d6dae2ef0370500a7071d1df863324b73a"
+    },
+    {
+      "file": "female/frames/female-club-walk-front-00.png",
+      "sha256": "41da892d84e475682b746f14e5e6e75912c04095ec2c370cf6338fb9fbd99906"
+    },
+    {
+      "file": "female/frames/female-club-walk-front-02.png",
+      "sha256": "ee524cb991fd77f96b92d6bf94b9a945ea25000513d9f01ac2756befb5eae0ca"
+    },
+    {
+      "file": "female/frames/female-club-walk-front-04.png",
+      "sha256": "2685bbb94ccdc986bf7c2c908a12f08dfc22f526a00b932bab723cdadc5677b8"
+    },
+    {
+      "file": "female/frames/female-club-walk-front-06.png",
+      "sha256": "c0dd6115d7937b2d867b17f5a3451fe052b165e2397fc417355adc7995ec8192"
+    },
+    {
+      "file": "female/frames/female-club-walk-right-00.png",
+      "sha256": "a5f4b71b74b0212c8fd960ddec5fc373c456095a58dbb31bf004e19b5b579ecc"
+    },
+    {
+      "file": "female/frames/female-club-walk-right-02.png",
+      "sha256": "8dd471e81b5b14bec19e419bcbc7049de415c22cff9c94eb057b35df08204670"
+    },
+    {
+      "file": "female/frames/female-club-walk-right-04.png",
+      "sha256": "314ca3b0ed52742dd0f09bf64261c2a0891b011206337ee2e0a9e1cc1ccaac80"
+    },
+    {
+      "file": "female/frames/female-club-walk-right-06.png",
+      "sha256": "3de9b07fe2119fc122015b2993514dea22ebbfbd05621452d895f303be777ac1"
+    },
+    {
+      "file": "female/frames/female-club-walk-back-00.png",
+      "sha256": "57703c46a8558988fee094f17645ce9481fde3ea5dc086a9ba317a5d3f457d72"
+    },
+    {
+      "file": "female/frames/female-club-walk-back-02.png",
+      "sha256": "2ab78d07475adcbe43915f3b02dd1540aa11b9533f5c1b567f8055ef31713b98"
+    },
+    {
+      "file": "female/frames/female-club-walk-back-04.png",
+      "sha256": "7153bf0c06539ec7a3fc160993f1c2fc7daed30e734917b37757226655e8760d"
+    },
+    {
+      "file": "female/frames/female-club-walk-back-06.png",
+      "sha256": "6567c2812a744402c4b4c995ef716b6dc11618f4aa01bc68898f74ad24e4736c"
+    },
+    {
+      "file": "female/frames/female-club-walk-left-00.png",
+      "sha256": "4aea4edb92773609293e7af94c463eed8ddfa8c5e4eac462e8847182e50bbd94"
+    },
+    {
+      "file": "female/frames/female-club-walk-left-02.png",
+      "sha256": "4765d01f5e14bd289fb7ba357a809346ac8dcd5cf46846bff8dbf573773ac8b2"
+    },
+    {
+      "file": "female/frames/female-club-walk-left-04.png",
+      "sha256": "88dbdc69998ca7dc7af071e335c32f510ceb7e0cc6b44b8cea0c0ab77bf8690c"
+    },
+    {
+      "file": "female/frames/female-club-walk-left-06.png",
+      "sha256": "d4a5d653bd93c24e5fdc850b08176b8c07d05f2c797971302dacd9ce0eb8b95e"
+    },
+    {
+      "file": "female/frames/female-idle-front-00.png",
+      "sha256": "bc8b765e5c168ab0d479da1db775a082de8f677ecec2f4c95289bb70937d28c7"
+    },
+    {
+      "file": "female/frames/female-idle-right-00.png",
+      "sha256": "b19eb5ebe5d9ce6a1c9b2d81597c5949ab8f51c5a7f3ac89ac8e330029a016a3"
+    },
+    {
+      "file": "female/frames/female-idle-back-00.png",
+      "sha256": "503551edb7249018b91ee6e4b63b676c005df0880475e2564ff6620606195ebb"
+    },
+    {
+      "file": "female/frames/female-idle-left-00.png",
+      "sha256": "21cad560afe2bbc66005ca37a5dd3478e555cbaacb444c6bb9f5beb22017598e"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-front-00.png",
+      "sha256": "8618b35e388b255fc1fcb9474cec7f6830f427f0c1ce2efb68351e6edfd1a20e"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-front-03.png",
+      "sha256": "092f3fbf673fd5dbb6694a061d8ce0a823669d065e5117ace44f19ec9eb24c66"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-front-06.png",
+      "sha256": "e11b45d14ef42686c87875672c061a6db16c56a82f3ec0f522b59d7ce26b5a8a"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-front-09.png",
+      "sha256": "93e540ae5ce706d5ae1f268b85d9131b9444fd0092d1ce54745f9ec2965057b9"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-front-12.png",
+      "sha256": "092f3fbf673fd5dbb6694a061d8ce0a823669d065e5117ace44f19ec9eb24c66"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-front-15.png",
+      "sha256": "8618b35e388b255fc1fcb9474cec7f6830f427f0c1ce2efb68351e6edfd1a20e"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-right-00.png",
+      "sha256": "89a35ea71e3d797b29e22f3b4e1471ef8cf12a736de4de47f3110f2262e8e3f7"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-right-03.png",
+      "sha256": "14ec7a3a27563e080c0a8768e5c437530b7455881f9fc365f9b9ac313b036c16"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-right-06.png",
+      "sha256": "9f6bc68a13af02e48fdfc7e04534f2fc0009bbadcffd27b76b775bbffa0c1c71"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-right-09.png",
+      "sha256": "c3d995fe2729989062a858a0b90a72115f2f44927d29f4670b2ed9298d06c95f"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-right-12.png",
+      "sha256": "14ec7a3a27563e080c0a8768e5c437530b7455881f9fc365f9b9ac313b036c16"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-right-15.png",
+      "sha256": "89a35ea71e3d797b29e22f3b4e1471ef8cf12a736de4de47f3110f2262e8e3f7"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-back-00.png",
+      "sha256": "f7e4955014b87b0ffa444d5859e5dadf6198f6d3898ecf3eafefd1d8519b7e02"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-back-03.png",
+      "sha256": "9308b545d8b81fab7c883a8de167627e6be9871efe4d5ac0378ce914fbb13337"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-back-06.png",
+      "sha256": "bfbf45390950848c5d01982786d845e5fad4fc23261da8cfdbc4d7517043c97c"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-back-09.png",
+      "sha256": "4b413333dce702226a9befa0ece696b0d57715a604aa997591c761fdb6006cf2"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-back-12.png",
+      "sha256": "9308b545d8b81fab7c883a8de167627e6be9871efe4d5ac0378ce914fbb13337"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-back-15.png",
+      "sha256": "f7e4955014b87b0ffa444d5859e5dadf6198f6d3898ecf3eafefd1d8519b7e02"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-left-00.png",
+      "sha256": "50facf662f08a9536b95244876d02b1a2ae66ab8d401273aa2a6cefabf8d50a4"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-left-03.png",
+      "sha256": "1f046de760fb3a6323c659a8ac9fe190ec49c4f09574db23b0be6f3097a66284"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-left-06.png",
+      "sha256": "d03971fb9e4fe27e688a9dd4d6ca709ba41e9735d5d900513b2c2cbbd7211dcf"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-left-09.png",
+      "sha256": "f686b249a1dfc611e9bcf9bc0379b77b40c6964c487fff0ceec142c5ee15445b"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-left-12.png",
+      "sha256": "1f046de760fb3a6323c659a8ac9fe190ec49c4f09574db23b0be6f3097a66284"
+    },
+    {
+      "file": "female/frames/female-unarmed-attack-left-15.png",
+      "sha256": "50facf662f08a9536b95244876d02b1a2ae66ab8d401273aa2a6cefabf8d50a4"
+    },
+    {
+      "file": "female/frames/female-unarmed-death-front-00.png",
+      "sha256": "e6dbedd3545038b3e76b6afb0c630fbe5b81c504547e59da657484927372d034"
+    },
+    {
+      "file": "female/frames/female-unarmed-death-front-02.png",
+      "sha256": "0e61cb0e0d103deac76d8dd876a0881b1b7190b4b0e74d57141dd69744c637ee"
+    },
+    {
+      "file": "female/frames/female-unarmed-death-front-05.png",
+      "sha256": "9d9cc7698691e53f5c30108cc0a9359f6fcd19d57e28534035fb9361a27674cf"
+    },
+    {
+      "file": "female/frames/female-unarmed-death-front-07.png",
+      "sha256": "e35692a51d63dae581fe6bd843a5571be453e49d247cb5ebb6d2a29dc88d5c3e"
+    },
+    {
+      "file": "female/frames/female-unarmed-death-right-00.png",
+      "sha256": "651d722b81b4f45d0553e61d929926ab22bbe7dd0713f047d9b7bcb8c84280cb"
+    },
+    {
+      "file": "female/frames/female-unarmed-death-right-02.png",
+      "sha256": "bf9759c6a9445e526ed510a81e0b0ce2cc395bb7a35aec10ecfbe30857286dd6"
+    },
+    {
+      "file": "female/frames/female-unarmed-death-right-05.png",
+      "sha256": "10ec369d14dd794c3562df1479e5e8b803a6148e73ec9263e8945551f5b94c90"
+    },
+    {
+      "file": "female/frames/female-unarmed-death-right-07.png",
+      "sha256": "285c657c6c86f5a568f2365e16539283a5bf395f5328a068f8e9f428932c88fd"
+    },
+    {
+      "file": "female/frames/female-unarmed-death-back-00.png",
+      "sha256": "408598e0b7b70cd600cd338db540d90553367ce21d6d8a8292b425a1c7df37bc"
+    },
+    {
+      "file": "female/frames/female-unarmed-death-back-02.png",
+      "sha256": "517e8260d89fdb214922ad130f6c43c48554135b0991f4ee7a19d253585f8c2b"
+    },
+    {
+      "file": "female/frames/female-unarmed-death-back-05.png",
+      "sha256": "fb042f39fdaa7b97ba73ec42da59915d706d95a094eea8829930a1be1da7a9c3"
+    },
+    {
+      "file": "female/frames/female-unarmed-death-back-07.png",
+      "sha256": "98eb889603022b9bde21d07c8026e4ec06793a9a421d99c26455e76e520f6e72"
+    },
+    {
+      "file": "female/frames/female-unarmed-death-left-00.png",
+      "sha256": "aadf56a11ae8c9129aec59acf2dc880a3bd34a435ed7debd207996ebabefa007"
+    },
+    {
+      "file": "female/frames/female-unarmed-death-left-02.png",
+      "sha256": "a0619aa9d786d0bba14fd6fb66d3b97175a9ed1ae3346795312b527ed627d8a7"
+    },
+    {
+      "file": "female/frames/female-unarmed-death-left-05.png",
+      "sha256": "9a8514b561b3d1d64a1cacecce342429d2eede7803a0542d7195e97b9764ea56"
+    },
+    {
+      "file": "female/frames/female-unarmed-death-left-07.png",
+      "sha256": "698e32e3df0ba91e4f06ca4c81f15013da1db773a5cec801aa868feb1e09a412"
+    },
+    {
+      "file": "female/frames/female-unarmed-hit-front-00.png",
+      "sha256": "e16bb0ae6b38d379043ea5c225ac62b7236c562967f9268cd6c5cd116add319c"
+    },
+    {
+      "file": "female/frames/female-unarmed-hit-front-07.png",
+      "sha256": "9ca48dfc6b2feb368c46181392ec264ff0c612951e5b96ac1ea17ace81ba4a6c"
+    },
+    {
+      "file": "female/frames/female-unarmed-hit-right-00.png",
+      "sha256": "438207326c9a47a8e1d0bee937c2dadf3ecd6d6cf957aaa3ffb872b11c74f017"
+    },
+    {
+      "file": "female/frames/female-unarmed-hit-right-07.png",
+      "sha256": "1c5cf1d664c1bd2935482a11af47dc2aa547415a95055b43d537125822b076ce"
+    },
+    {
+      "file": "female/frames/female-unarmed-hit-back-00.png",
+      "sha256": "548f3029ce64099f4516ad0aeb7aecfc9a2c9e8f111409ac0a737dacc2ff1ccc"
+    },
+    {
+      "file": "female/frames/female-unarmed-hit-back-07.png",
+      "sha256": "60c6e25b8adb82a793172539b7f6d4531fa307de42084cfbe838403a159869b7"
+    },
+    {
+      "file": "female/frames/female-unarmed-hit-left-00.png",
+      "sha256": "a39a8cd1efa479eaacba52fa50932adf91d8969a2d96c79ad750caf65641ac86"
+    },
+    {
+      "file": "female/frames/female-unarmed-hit-left-07.png",
+      "sha256": "e0684afd432649c59ea3208b8eb9aa01aed9476f07004aeac9e759f505e5a8a7"
+    },
+    {
+      "file": "female/frames/female-walk-front-00.png",
+      "sha256": "1277705262b228374f84748a290fe82354083363787882106e0469fc261a7b44"
+    },
+    {
+      "file": "female/frames/female-walk-front-02.png",
+      "sha256": "9d567f99fd704237a6f40fcb9af7f9c9dc192da1d282bac96ad5dd8167e72f1c"
+    },
+    {
+      "file": "female/frames/female-walk-front-04.png",
+      "sha256": "1c2bcb506bebe3df80db5185fa0691b652c4dacb57193b530e7cad68d2bac65f"
+    },
+    {
+      "file": "female/frames/female-walk-front-06.png",
+      "sha256": "9964fb5ae855be745c4466f0b62ffed49ce98866f72e01d7dc4775094182b1bb"
+    },
+    {
+      "file": "female/frames/female-walk-right-00.png",
+      "sha256": "eb5f268c6fa14b2d67ade8e4de32953d54cc4dbb7f4592dce2f81843fce70f6c"
+    },
+    {
+      "file": "female/frames/female-walk-right-02.png",
+      "sha256": "0396b957cbfdc853a53399ac94b59b2939a26029af399b3947f4b8d7f95deca0"
+    },
+    {
+      "file": "female/frames/female-walk-right-04.png",
+      "sha256": "069ef1027af6c4d9b932eebf411ec8ff4c828b2284eecbc524a150c913490a31"
+    },
+    {
+      "file": "female/frames/female-walk-right-06.png",
+      "sha256": "f99bb0c0bdc7953f5517eab46f872174d896cff766505d4b0768bdbb40e0c1c6"
+    },
+    {
+      "file": "female/frames/female-walk-back-00.png",
+      "sha256": "3483f5b403bb53da124b378d8d60fb4f9a8885b8b9f50f3ead6d7dfd83f2c25f"
+    },
+    {
+      "file": "female/frames/female-walk-back-02.png",
+      "sha256": "095af8a49363677209b1f4128d737732b39afc5faab2343219fca95dc3fd07a8"
+    },
+    {
+      "file": "female/frames/female-walk-back-04.png",
+      "sha256": "6e9c36c7ae87a1d10fa0420474a3d035ce1356dc3d8d0e98fa5853e488d71437"
+    },
+    {
+      "file": "female/frames/female-walk-back-06.png",
+      "sha256": "2810895100f2d04351ba3e4a047d786c624a92137549adbb93bde1135e517791"
+    },
+    {
+      "file": "female/frames/female-walk-left-00.png",
+      "sha256": "5d7e0af6a87235b488ff40faa8e1d2e3b60a60919134bde1479a6565f3410488"
+    },
+    {
+      "file": "female/frames/female-walk-left-02.png",
+      "sha256": "4fe1a61343958a14c7daa60b8d6e906e1e5ee2a2bf3959e043904690bd3000d6"
+    },
+    {
+      "file": "female/frames/female-walk-left-04.png",
+      "sha256": "14505ac69ba029b68105eb81a9d4c61132d91343dff9aaec5fbd06034b81f89e"
+    },
+    {
+      "file": "female/frames/female-walk-left-06.png",
+      "sha256": "7132e535a7bc95114cffac16dcd597ba9f89e495ca1e077c5525ffb3e90c01a8"
+    }
+  ]
+}

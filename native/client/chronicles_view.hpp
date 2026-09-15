@@ -74,7 +74,13 @@ void paint_lineage_door(ClientState& state,HDC dc,const RECT& bounds,render::Lis
     const int draw_height=std::min(330*s,int(card.bottom-card.top-40*s)*192/135);
     // Runtime registration leaves32px below the shared foot pivot.
     const int feet=card.bottom-36*s+draw_height*32/192;
-    raster_art::draw_sprite(dc,("hero_"+appearance+"_s").c_str(),(card.left+card.right)/2,feet,draw_height);
+    const auto* current = first_slice_art::registry().find("player_"+appearance+"_unarmed","idle","front");
+    if (current) {
+      const int zoom=std::max(1,std::min(int(card.right-card.left-16*s)/current->width,
+                                       int(card.bottom-card.top-40*s)/current->height));
+      raster_art::draw_sprite(dc,current->frames.front().c_str(),(card.left+card.right)/2,
+          card.bottom-36*s+(current->height-current->anchor_y)*zoom,current->height*zoom);
+    } else raster_art::draw_sprite(dc,("hero_"+appearance+"_s").c_str(),(card.left+card.right)/2,feet,draw_height);
     text(i?"Female":"Male",{card.left+8*s,card.bottom-34*s,card.right-8*s,card.bottom-8*s},
          active?skin::kGold:skin::kInk,skin::font_heading(),DT_CENTER|DT_SINGLELINE);
     state.chronicle_hits.push_back({card,{"","appearance",appearance,""}});

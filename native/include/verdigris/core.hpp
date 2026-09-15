@@ -984,6 +984,9 @@ class WorldSimulation {
   // Fresh world admission lands at the town spawn (JS direct-admission: every
   // login re-enters the world at the plaza, whatever a prior session left).
   void reset_to_town();
+  // Authored first-slice map and encounters use the normal movement/combat authority.
+  void enter_starter_village();
+  void spawn_starter_wave(int wave);
   // instance:enterSolo: validates template/layout against the Adventure table
   // (unknown template -> dungeon, unknown layout -> theme default), saves the
   // pre-instance position on first entry, and places the player at a spawn.

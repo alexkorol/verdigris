@@ -56,7 +56,7 @@ int scenario_lineage_art() {
     sync_world(state);generate_scenery(state);scenario_follow_camera(state);
     scenario_check(reference_present(state,1366,768,dir+"/lineage-"+sex+"-world.png"),"lineage: production hardware scene captured");
     bool correct=false;
-    for(const auto& op:state.render_list) if(op.op==render::Op::Player&&op.label.rfind(std::string("hero_")+sex+"_",0)==0)correct=true;
+    for(const auto& op:state.render_list) if(op.op==render::Op::Player&&op.label.rfind(std::string("fs_player_")+sex+"_unarmed_",0)==0)correct=true;
     scenario_check(correct&&state.camera.perspective,"lineage: hardware scene paints selected appearance");
   }
   return scenario_failures;

@@ -1,0 +1,89 @@
+{
+  "pipeline": "saved Blender geometry -> render at 48 px/metre -> nearest 2x guide -> imagegen paint -> fixed 2x2 representative sample -> binary true alpha",
+  "source_size": [
+    1536,
+    1024
+  ],
+  "logical_atlas": [
+    768,
+    512
+  ],
+  "alpha_threshold": 240,
+  "coverage_rule": "at least 2 of 4 samples",
+  "bbox_fit": false,
+  "per_object_scaling": false,
+  "native_measurements": [
+    {
+      "identity": "village-longhouse",
+      "guide_bbox": [
+        81,
+        24,
+        303,
+        357
+      ],
+      "paint_bbox": [
+        77,
+        11,
+        307,
+        358
+      ],
+      "sha256": "63b7f4e4d8cfc1fff9b7981850e2d9ea86e8e51868bdf462a1a09bfbd17c3aad"
+    },
+    {
+      "identity": "village-tree",
+      "guide_bbox": [
+        86,
+        96,
+        320,
+        363
+      ],
+      "paint_bbox": [
+        80,
+        83,
+        330,
+        364
+      ],
+      "sha256": "efc4252f4363af13b983c6e75c7d349fdbda4eec3b908ecf92045c4a2eace435"
+    },
+    {
+      "identity": "village-palisade",
+      "guide_bbox": [
+        114,
+        276,
+        258,
+        358
+      ],
+      "paint_bbox": [
+        111,
+        273,
+        263,
+        360
+      ],
+      "sha256": "67f7e96ed4427b39a766c820945616b023db66c9aaccd62bf4a3518f71b35301"
+    },
+    {
+      "identity": "village-well",
+      "guide_bbox": [
+        154,
+        290,
+        230,
+        374
+      ],
+      "paint_bbox": [
+        154,
+        281,
+        231,
+        375
+      ],
+      "sha256": "37d236338151dbc7411dae0f2f1344f6611362649aa235dd64b7bd6b1a2bbd10"
+    }
+  ],
+  "limitations": [
+    "ImageGen did not reproduce an exact flat-colour 2x2 lattice; this is fixed-grid material sampling, not proof of lossless recovery of an inferred pixel lattice.",
+    "Longhouse roof ridge is 13 logical pixels higher than the Blender guide and doorway was painted closed; ground contact is retained.",
+    "Tree canopy grew 16 logical pixels wider overall and 13 pixels higher; ground contact is retained.",
+    "Palisade width grew 8 logical pixels overall through stake texture; section overlap may need placement review.",
+    "Player-scale source exemplar was a nearest 8x enlargement of a 96 px mannequin sprite, used for pixel cadence only.",
+    "First square atlas attempt rejected because canvas and layout changed; retained under source/generated-atlas.png."
+  ]
+}
