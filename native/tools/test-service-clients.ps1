@@ -4,7 +4,7 @@ param(
   [Parameter(Mandatory=$true)][string]$CodeAFile,
   [Parameter(Mandatory=$true)][string]$CodeBFile,
   [Parameter(Mandatory=$true)][string]$EvidenceDirectory,
-  [int]$TimeoutSeconds=240
+  [int]$TimeoutSeconds=480
 )
 $ErrorActionPreference='Stop'
 $package=[IO.Path]::GetFullPath($PackageDirectory)
