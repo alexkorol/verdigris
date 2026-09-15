@@ -3140,6 +3140,9 @@ void remote_dash_return_retires_exit_and_preserves_banked_result() {
   session.send_raw("instance:enterSolo", JV::Object{{"template", "dungeon"}, {"layout", "warren"}});
   check(wait_until(session, 3000, [&] { return session.model().scene.type == "instance" && session.model().scene.has_stairs_up; }),
         "dash-return: authored entry publishes an exit");
+  check(session.model().scene.has_stairs_down && session.model().scene.stairs_down_x == 34 &&
+        session.model().scene.stairs_down_y == 20,
+        "dash-return: remote metadata also publishes the authored descent stairs");
   WorldView world;
   sync_world_from_model(world, session.model());
   check(world.has_extraction && world.expedition_phase != ExpeditionPhaseView::Unknown,
@@ -3160,6 +3163,9 @@ void remote_dash_return_retires_exit_and_preserves_banked_result() {
         "dash-return: town clears dungeon stairs and expedition objective immediately");
   check(session.model().scene.stairs_up_x == 0 && session.model().scene.stairs_up_y == 0,
         "dash-return: retired exit coordinates are cleared too");
+  check(!session.model().scene.has_stairs_down && session.model().scene.stairs_down_x == 0 &&
+        session.model().scene.stairs_down_y == 0,
+        "dash-return: town also retires descent availability and coordinates");
   check(carried > 0 && session.model().stored_items == 0 &&
         world.stored_items == 0 && session.model().inventory.size()+session.model().worn.size()==static_cast<std::size_t>(carried),
         "dash-return: safe return keeps carried items and does not auto-bank them");

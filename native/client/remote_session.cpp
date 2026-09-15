@@ -353,6 +353,14 @@ void apply_scene_fields(ClientScene& scene, const JsonValue& source) {
         scene.has_stairs_up = true;
       }
     }
+    if (const auto* stairs = metadata->get("stairsDown")) {
+      if (stairs->get("x") && stairs->get("x")->number() && stairs->get("y") &&
+          stairs->get("y")->number()) {
+        scene.stairs_down_x = *stairs->get("x")->number();
+        scene.stairs_down_y = *stairs->get("y")->number();
+        scene.has_stairs_down = true;
+      }
+    }
   }
 }
 
