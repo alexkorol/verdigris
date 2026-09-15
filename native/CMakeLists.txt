@@ -77,6 +77,10 @@ add_executable(verdigris_user_settings_tests tests/user_settings_tests.cpp)
 target_link_libraries(verdigris_user_settings_tests PRIVATE verdigris_audio)
 
 add_executable(verdigris_client client/main.cpp client/remote_play.cpp)
+# Match build.ps1 and the player package: runtime assets are resolved beside
+# native/build, not the deeper CMake intermediate directory.
+set_target_properties(verdigris_client verdigris_server PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build")
 target_include_directories(verdigris_client PRIVATE client)
 execute_process(COMMAND git rev-parse HEAD WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   OUTPUT_VARIABLE VERDIGRIS_SOURCE_COMMIT OUTPUT_STRIP_TRAILING_WHITESPACE RESULT_VARIABLE VERDIGRIS_GIT_RESULT)
