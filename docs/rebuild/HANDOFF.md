@@ -14,13 +14,26 @@ transactions preserve private possessions and per-House Warden entitlements.
 WinHTTP provides maintained WSS transport; public TLS terminates at the documented
 same-host gateway. Local review retains its separate launcher/profile path.
 
-Integrated native build 7 passed all tests, including four accounts in two
-isolated parties; 83 native graphical scenarios passed. Two actual native
-processes completed ordinary enrollment, House/Scion creation, movement, native
-party controls, shared Warden combat, independent rewards, return and cached
-reconnect: `native/build/graphical-service-20260914-202804/clients/summary.json`.
-Final frozen-package evidence and source identities are recorded in
-`orchestration/recoveries/2026-09-14-service-coop/REPORT.md` as packaging completes.
+Selected player: `C:/Users/Alex/Documents/Verdigris Service QA 2026-09-14-r4`,
+clean source `6bec25d058f937e812b2b78c51d89870f498b7e0`.
+Selected independent host: `C:/Users/Alex/Documents/Verdigris Service Host QA 2026-09-14-r2`,
+clean source `9cfb4aab9e6edc16ba5dd919c263f6673ca63f98`.
+Both have ZIPs beside their directories. Runtime source is pushed and remote-verified.
+
+Exact r4 top-level online launch and two actual native client processes passed
+enrollment, owned House/Scion creation, peer movement, native party controls,
+shared Warden combat, separate inventory/rewards, return and cached reconnect:
+`native/build/packaged-service-r4/clients/summary.json`. All 84 exact packaged
+scenarios, two local-review launcher lifecycles and same-profile settings restart
+passed. Integrated native service suites, 202 Store assertions with five real child
+crashes, host operations/pressure and a bounded four-client/two-instance soak passed.
+
+Online admission now extends the original illustrated gateway menu, with its
+physical controls, Settings and Quit. The generic login panel was removed after
+the owner's correction. Brief feedback fits its content, clears on scene changes
+and expires. Actual packaged menu/gameplay captures were viewed; sampled motion
+sequences and precise identities/performance/limits are recorded in
+`orchestration/recoveries/2026-09-14-service-coop/REPORT.md`.
 
 `coop-v1` remains an explicit QA policy. No normal installation promotion,
 shared/default branch merge, public deployment or owner acceptance is claimed.
