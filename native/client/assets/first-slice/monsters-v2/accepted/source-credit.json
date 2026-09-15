@@ -1,0 +1,10 @@
+{
+  "author": "Quaternius",
+  "title": "Animated animales low poly",
+  "license": "CC0",
+  "author_upload": "https://opengameart.org/content/animated-animales-low-poly",
+  "archive_url": "https://opengameart.org/sites/default/files/Animal%20Pack%20Vol.2%20by%20%40Quaternius.zip",
+  "original_file": "blender/quaternius-wolf-original.blend",
+  "original_sha256": "df8216633505c4b9c88a72393f8ff8e0344861355a30b6a35cca4d03e7800044",
+  "derivation": "Selected Wolf.blend retained byte-for-byte. Rig and authored Idle/Walking actions used for normalized first-slice actors; additional combat actions authored on the same rig. Original author upload and CC0 statement independently verified by world-assets worker on 2026-09-15."
+}

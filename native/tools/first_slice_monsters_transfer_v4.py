@@ -27,8 +27,11 @@ def recover(raw,clip):
         slots.append(recovered.crop((x,y,x+slot_w,y+slot_h)))
         masks.append(np.array(Image.open(p).convert('RGBA'))[:,:,3]>=128)
     best=(-1,0,0)
-    for dy in range(-12,13):
-        for dx in range(-12,13):
+    fixed=layout.get('fixed_translation')
+    shifts_y=[fixed[1]] if fixed is not None else range(-12,13)
+    shifts_x=[fixed[0]] if fixed is not None else range(-12,13)
+    for dy in shifts_y:
+        for dx in shifts_x:
             score=0
             for cell,mask in zip(slots,masks):
                 b=np.array(cell.crop((inset_x-dx,inset-dy,inset_x+w-dx,inset+h-dy)))[:,:,3]>=128
@@ -42,7 +45,8 @@ def recover(raw,clip):
     for i,(ref,slot,mask) in enumerate(zip(refs,slots,masks)):
         frame=slot.crop((inset_x-dx,inset-dy,inset_x+w-dx,inset+h-dy));a=np.array(frame);a[:,:,3]=np.where(a[:,:,3]>=128,255,0);a[a[:,:,3]==0,:3]=0;frame=Image.fromarray(a);box=frame.getbbox();b=a[:,:,3]>0
         iou=np.count_nonzero(b&mask)/max(1,np.count_nonzero(b|mask))
-        if iou<.65:raise ValueError(f'{clip} frame{i} IoU{iou:.3f} fails.65')
+        minimum_iou=.70 if m['action'] in ('attack','hit','death') else .65
+        if iou<minimum_iou:raise ValueError(f'{clip} frame{i} IoU{iou:.3f} fails {minimum_iou}')
         if not box or box[0]<=0 or box[1]<=0 or box[2]>=w or box[3]>=h:raise ValueError(f'Empty/clipped{clip} frame{i}{box}')
         if np.count_nonzero(np.array(slot)[:,:,3]>=128)!=np.count_nonzero(b):raise ValueError('Crop would discardforeground')
         name=Path(ref['src']).name;pending.append((frame,ROOT/'candidates'/name))

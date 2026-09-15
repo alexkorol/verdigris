@@ -14,5 +14,17 @@
   "well-alpha-walk-front",
   "well-alpha-walk-right",
   "well-alpha-walk-back",
-  "well-alpha-walk-left"
+  "well-alpha-walk-left",
+  "pack-wolf-attack-front",
+  "pack-wolf-attack-right",
+  "pack-wolf-attack-back",
+  "pack-wolf-attack-left",
+  "pack-wolf-hit-front",
+  "pack-wolf-hit-right",
+  "pack-wolf-hit-back",
+  "pack-wolf-hit-left",
+  "well-alpha-hit-front",
+  "well-alpha-hit-right",
+  "well-alpha-hit-back",
+  "well-alpha-hit-left"
 ]

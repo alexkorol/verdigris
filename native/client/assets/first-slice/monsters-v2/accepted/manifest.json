@@ -1778,8 +1778,813 @@
       "blender_action": "Walking",
       "reference_guide": "guides/well-alpha-walk-left.png",
       "reference_guide_sha256": "347515d01234795fb458170f3fc36596d29cc2ac55deb3e418b35dd148cda85e"
+    },
+    "pack-wolf-attack-front": {
+      "actor": "pack-wolf",
+      "action": "attack",
+      "direction": "front",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/pack-wolf-attack-front-00.png",
+          "sha256": "d2dcfdfd63ce06fbe8bec05d0aca6a200d520496503978da8231b1ba38669552",
+          "reference": "references/pack-wolf-attack-front-00.png",
+          "reference_sha256": "b27eca2d892fbc6405692d0be14e57ad62650ec1ed779952087e164020e58084",
+          "phase": 0,
+          "source": "originals/pack-wolf-attack-front.png",
+          "source_sha256": "526de134dce2a61d52b57e78e228188a16c1766c2569690a780ad378b197d50d",
+          "silhouette_iou": 0.7662921348314606,
+          "report": "reports/pack-wolf-attack-front.json"
+        },
+        {
+          "file": "frames/pack-wolf-attack-front-01.png",
+          "sha256": "103c86fd1f20b32ab93f14888686bba10ab4772d3d1262e4f7e114aafa69a051",
+          "reference": "references/pack-wolf-attack-front-01.png",
+          "reference_sha256": "6f8b6f0758e5682688d81b0c8f113bccdb604f697544ee10e107bdadc6790dde",
+          "phase": 1,
+          "source": "originals/pack-wolf-attack-front.png",
+          "source_sha256": "526de134dce2a61d52b57e78e228188a16c1766c2569690a780ad378b197d50d",
+          "silhouette_iou": 0.7735042735042735,
+          "report": "reports/pack-wolf-attack-front.json"
+        },
+        {
+          "file": "frames/pack-wolf-attack-front-02.png",
+          "sha256": "f5a7ccf9dcf3109f028bfab853749a2be82f572585ef271734a6645eb486113a",
+          "reference": "references/pack-wolf-attack-front-02.png",
+          "reference_sha256": "fffc856e6ba2d692fb651268f066bdfb84b7a2851f4a639795a62faa277ef20b",
+          "phase": 2,
+          "source": "originals/pack-wolf-attack-front.png",
+          "source_sha256": "526de134dce2a61d52b57e78e228188a16c1766c2569690a780ad378b197d50d",
+          "silhouette_iou": 0.7958333333333333,
+          "report": "reports/pack-wolf-attack-front.json"
+        },
+        {
+          "file": "frames/pack-wolf-attack-front-03.png",
+          "sha256": "498a024812cc609bb854103c051bec0e1863bfc88a1a10e40d02e20b9053dce1",
+          "reference": "references/pack-wolf-attack-front-03.png",
+          "reference_sha256": "5776877d2793d1e637df192ab2ea9ed88b0d86f7fe708a5b58e4d4953bb43d19",
+          "phase": 3,
+          "source": "originals/pack-wolf-attack-front.png",
+          "source_sha256": "526de134dce2a61d52b57e78e228188a16c1766c2569690a780ad378b197d50d",
+          "silhouette_iou": 0.744136460554371,
+          "report": "reports/pack-wolf-attack-front.json"
+        }
+      ],
+      "blender": "blender/pack-wolf-attack.blend",
+      "blender_sha256": "218282b226bbb421f8a074d20880e6c755085d590e3fd2b14c347a1d0c06a044",
+      "blender_action": "Verdigris_pack-wolf_attack",
+      "reference_guide": "guides/pack-wolf-attack-front.png",
+      "reference_guide_sha256": "64d0848be4c2fe4e0ccdb3fd5f0f0a9a2b12af3580ab4564e236e776e1df8375"
+    },
+    "pack-wolf-attack-right": {
+      "actor": "pack-wolf",
+      "action": "attack",
+      "direction": "right",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/pack-wolf-attack-right-00.png",
+          "sha256": "e9cd5fcced022ea53fe70650e05e4908fba33b0fa6664f258b57e04fd34f1439",
+          "reference": "references/pack-wolf-attack-right-00.png",
+          "reference_sha256": "d14f7d7a2719af427191ea5d2c0df1df1959594a4685c38255e73e09a715ecf4",
+          "phase": 0,
+          "source": "originals/pack-wolf-attack-right.png",
+          "source_sha256": "4d752b2a2d9fe0657033bcaeaa2efb5d99cc44446d42247a30b81c1ca71a7888",
+          "silhouette_iou": 0.7849223946784922,
+          "report": "reports/pack-wolf-attack-right.json"
+        },
+        {
+          "file": "frames/pack-wolf-attack-right-01.png",
+          "sha256": "92dc1fa5894a73de8c2ad350fe2f1db0d4d230a7f8c839677002c604e06d273d",
+          "reference": "references/pack-wolf-attack-right-01.png",
+          "reference_sha256": "3bd17a36f6ffe0243480155842dc458e3b5c47e21e267a873430f068863394dd",
+          "phase": 1,
+          "source": "originals/pack-wolf-attack-right.png",
+          "source_sha256": "4d752b2a2d9fe0657033bcaeaa2efb5d99cc44446d42247a30b81c1ca71a7888",
+          "silhouette_iou": 0.7771739130434783,
+          "report": "reports/pack-wolf-attack-right.json"
+        },
+        {
+          "file": "frames/pack-wolf-attack-right-02.png",
+          "sha256": "10897107a89d5f96b8d05d55b395e5cb52430eb57faa6eef91ca46c242ad1a55",
+          "reference": "references/pack-wolf-attack-right-02.png",
+          "reference_sha256": "a3b69039b4eeb490bd1876eabedce668cd0a8de00104497c1acd3c7fcae2300d",
+          "phase": 2,
+          "source": "originals/pack-wolf-attack-right.png",
+          "source_sha256": "4d752b2a2d9fe0657033bcaeaa2efb5d99cc44446d42247a30b81c1ca71a7888",
+          "silhouette_iou": 0.7491995731056563,
+          "report": "reports/pack-wolf-attack-right.json"
+        },
+        {
+          "file": "frames/pack-wolf-attack-right-03.png",
+          "sha256": "30b001897996df8b3708412e3a808d5b99c1afe3d504616779cf81d33bd824c7",
+          "reference": "references/pack-wolf-attack-right-03.png",
+          "reference_sha256": "ff63137b5b1f206f07062794dd507e6ca8cd6780e51a5559386e01bab45a9934",
+          "phase": 3,
+          "source": "originals/pack-wolf-attack-right.png",
+          "source_sha256": "4d752b2a2d9fe0657033bcaeaa2efb5d99cc44446d42247a30b81c1ca71a7888",
+          "silhouette_iou": 0.7596153846153846,
+          "report": "reports/pack-wolf-attack-right.json"
+        }
+      ],
+      "blender": "blender/pack-wolf-attack.blend",
+      "blender_sha256": "218282b226bbb421f8a074d20880e6c755085d590e3fd2b14c347a1d0c06a044",
+      "blender_action": "Verdigris_pack-wolf_attack",
+      "reference_guide": "guides/pack-wolf-attack-right.png",
+      "reference_guide_sha256": "2a3c8a9341fed36bf5e69d58454cca73d03c68d9c696ed7f22211b9b9442c8e8"
+    },
+    "pack-wolf-attack-back": {
+      "actor": "pack-wolf",
+      "action": "attack",
+      "direction": "back",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/pack-wolf-attack-back-00.png",
+          "sha256": "eb3d5a5917081a3a3de38d9c75cfccbedf94c46e2e8866760f954eb9d7e7252b",
+          "reference": "references/pack-wolf-attack-back-00.png",
+          "reference_sha256": "d26fe04d99d111b1f9c40684e1ecf471f0c3146438dfdf8f900c10fa8828618b",
+          "phase": 0,
+          "source": "originals/pack-wolf-attack-back.png",
+          "source_sha256": "c3815fcb6d428c81cd8764ad707f2e5f2c6cc98ebed892d0b8e7de5c739fc13e",
+          "silhouette_iou": 0.7506811989100818,
+          "report": "reports/pack-wolf-attack-back.json"
+        },
+        {
+          "file": "frames/pack-wolf-attack-back-01.png",
+          "sha256": "9c079152d259fd9ca2d2703ce36907afe314a08b4d946538667814d61f0d1be0",
+          "reference": "references/pack-wolf-attack-back-01.png",
+          "reference_sha256": "52b89ed2954cc9fe97ec8b1cfd926f3ec2bf83b7ee833a1d6321ba46d5f13cfd",
+          "phase": 1,
+          "source": "originals/pack-wolf-attack-back.png",
+          "source_sha256": "c3815fcb6d428c81cd8764ad707f2e5f2c6cc98ebed892d0b8e7de5c739fc13e",
+          "silhouette_iou": 0.717983651226158,
+          "report": "reports/pack-wolf-attack-back.json"
+        },
+        {
+          "file": "frames/pack-wolf-attack-back-02.png",
+          "sha256": "07d3592f9a87a546dced2ff1a98d2196a8f10628bd23dc8f556784caa0948bb0",
+          "reference": "references/pack-wolf-attack-back-02.png",
+          "reference_sha256": "4d8d27671d602071f1d89c5953f2401a9acbdfa852e04c70058bcaad52367bcb",
+          "phase": 2,
+          "source": "originals/pack-wolf-attack-back.png",
+          "source_sha256": "c3815fcb6d428c81cd8764ad707f2e5f2c6cc98ebed892d0b8e7de5c739fc13e",
+          "silhouette_iou": 0.7025920873124147,
+          "report": "reports/pack-wolf-attack-back.json"
+        },
+        {
+          "file": "frames/pack-wolf-attack-back-03.png",
+          "sha256": "c1d8e2b19d8ca45f15f24fc39fb1531d4fe00a614c4dd3e838e6ad00e59edf58",
+          "reference": "references/pack-wolf-attack-back-03.png",
+          "reference_sha256": "e4dfb38496ad4487c21f33bfff0a8b5d668a477df4982b778360d9390a59b698",
+          "phase": 3,
+          "source": "originals/pack-wolf-attack-back.png",
+          "source_sha256": "c3815fcb6d428c81cd8764ad707f2e5f2c6cc98ebed892d0b8e7de5c739fc13e",
+          "silhouette_iou": 0.7421981004070556,
+          "report": "reports/pack-wolf-attack-back.json"
+        }
+      ],
+      "blender": "blender/pack-wolf-attack.blend",
+      "blender_sha256": "218282b226bbb421f8a074d20880e6c755085d590e3fd2b14c347a1d0c06a044",
+      "blender_action": "Verdigris_pack-wolf_attack",
+      "reference_guide": "guides/pack-wolf-attack-back.png",
+      "reference_guide_sha256": "f6e0c36156d982ad82d487e4a3c403aa0527cefb35d0f3987824393334429f30"
+    },
+    "pack-wolf-attack-left": {
+      "actor": "pack-wolf",
+      "action": "attack",
+      "direction": "left",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/pack-wolf-attack-left-00.png",
+          "sha256": "85772a570f7b07ef1ccfe4d3a2f791119e1f96d64c16ab081a187763a7ad1955",
+          "reference": "references/pack-wolf-attack-left-00.png",
+          "reference_sha256": "c8ea6fefe2b2f758d0a102851cdb918a71c20d30a0c0f5a72b80caa27a071a26",
+          "phase": 0,
+          "source": "originals/pack-wolf-attack-left.png",
+          "source_sha256": "8ed08d1d0a80bee05b6bbc8e1a7b6e4a384e976ba3e4296f5180e9ed4ff1502f",
+          "silhouette_iou": 0.8428571428571429,
+          "report": "reports/pack-wolf-attack-left.json"
+        },
+        {
+          "file": "frames/pack-wolf-attack-left-01.png",
+          "sha256": "c1c02c3de66a1a6caa992e91471e124e9342eafc9f5eca20fee81ef17e174679",
+          "reference": "references/pack-wolf-attack-left-01.png",
+          "reference_sha256": "a4b15f8647894ccffabcaa66f1b694bb1ac7029434c6996fcfb491dc16514e8c",
+          "phase": 1,
+          "source": "originals/pack-wolf-attack-left.png",
+          "source_sha256": "8ed08d1d0a80bee05b6bbc8e1a7b6e4a384e976ba3e4296f5180e9ed4ff1502f",
+          "silhouette_iou": 0.8535714285714285,
+          "report": "reports/pack-wolf-attack-left.json"
+        },
+        {
+          "file": "frames/pack-wolf-attack-left-02.png",
+          "sha256": "6ba33cf1d5a480d502163a5935cb2470750dc02e43ce6de797f84472abd9ce47",
+          "reference": "references/pack-wolf-attack-left-02.png",
+          "reference_sha256": "31c2dd703128120b0756dbf78d3971e5ef963fd3296104f1ab3b832c435309c6",
+          "phase": 2,
+          "source": "originals/pack-wolf-attack-left.png",
+          "source_sha256": "8ed08d1d0a80bee05b6bbc8e1a7b6e4a384e976ba3e4296f5180e9ed4ff1502f",
+          "silhouette_iou": 0.8408018867924528,
+          "report": "reports/pack-wolf-attack-left.json"
+        },
+        {
+          "file": "frames/pack-wolf-attack-left-03.png",
+          "sha256": "6ed0670516db21c6157e09eb4f20d9d3157aa42859a162903bdbc36009db3885",
+          "reference": "references/pack-wolf-attack-left-03.png",
+          "reference_sha256": "8187e56c8e3aa91a446dc9dff4cc8830df19549da0a016e03299fa8cc91325ab",
+          "phase": 3,
+          "source": "originals/pack-wolf-attack-left.png",
+          "source_sha256": "8ed08d1d0a80bee05b6bbc8e1a7b6e4a384e976ba3e4296f5180e9ed4ff1502f",
+          "silhouette_iou": 0.8323563892145369,
+          "report": "reports/pack-wolf-attack-left.json"
+        }
+      ],
+      "blender": "blender/pack-wolf-attack.blend",
+      "blender_sha256": "218282b226bbb421f8a074d20880e6c755085d590e3fd2b14c347a1d0c06a044",
+      "blender_action": "Verdigris_pack-wolf_attack",
+      "reference_guide": "guides/pack-wolf-attack-left.png",
+      "reference_guide_sha256": "8231c163bb4b1a393c3ad5e6064b2aadec94df3fb65de5b74ef666a5f00f8f92"
+    },
+    "pack-wolf-hit-front": {
+      "actor": "pack-wolf",
+      "action": "hit",
+      "direction": "front",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/pack-wolf-hit-front-00.png",
+          "sha256": "17b1530219acb49992040c5c6135722b05105909505685bceca9c3656e9ca356",
+          "reference": "references/pack-wolf-hit-front-00.png",
+          "reference_sha256": "7d860c6b92b0e81472c8f59766741bed4849d361704118803da340c366ce44fd",
+          "phase": 0,
+          "source": "originals/pack-wolf-hit-front.png",
+          "source_sha256": "ecd28470e4e486191f64c345f4cc153721a107e5e42557db2b75dbdc95299012",
+          "silhouette_iou": 0.78,
+          "report": "reports/pack-wolf-hit-front.json"
+        },
+        {
+          "file": "frames/pack-wolf-hit-front-01.png",
+          "sha256": "87a426d6703bda43f94f8ea034c1518d484fd30a75006deb28ee7a544765b5db",
+          "reference": "references/pack-wolf-hit-front-01.png",
+          "reference_sha256": "c7f1c2b2c6befc8e69d487e9505497d3c72b45c92de2149ce7d05a88d1b2bb19",
+          "phase": 1,
+          "source": "originals/pack-wolf-hit-front.png",
+          "source_sha256": "ecd28470e4e486191f64c345f4cc153721a107e5e42557db2b75dbdc95299012",
+          "silhouette_iou": 0.7635135135135135,
+          "report": "reports/pack-wolf-hit-front.json"
+        },
+        {
+          "file": "frames/pack-wolf-hit-front-02.png",
+          "sha256": "358ef9486242b4dd830e749eaa0f63b0b1ec138a0b8c38892e5c0fe1d893212e",
+          "reference": "references/pack-wolf-hit-front-02.png",
+          "reference_sha256": "d6114c2bb28760cd4d3daa75aba8926a92175815450d7c0e589db761cf919cc1",
+          "phase": 2,
+          "source": "originals/pack-wolf-hit-front.png",
+          "source_sha256": "ecd28470e4e486191f64c345f4cc153721a107e5e42557db2b75dbdc95299012",
+          "silhouette_iou": 0.7683741648106904,
+          "report": "reports/pack-wolf-hit-front.json"
+        },
+        {
+          "file": "frames/pack-wolf-hit-front-03.png",
+          "sha256": "84f9a7efca47fbcccfd8b062a2fe15b8788d8fdebdad6f963a953c4d8d150e9a",
+          "reference": "references/pack-wolf-hit-front-03.png",
+          "reference_sha256": "f203cbca502cca74400137d025a87236829ef9362eeefd26dbfd30fc77f24750",
+          "phase": 3,
+          "source": "originals/pack-wolf-hit-front.png",
+          "source_sha256": "ecd28470e4e486191f64c345f4cc153721a107e5e42557db2b75dbdc95299012",
+          "silhouette_iou": 0.7842696629213484,
+          "report": "reports/pack-wolf-hit-front.json"
+        }
+      ],
+      "blender": "blender/pack-wolf-hit.blend",
+      "blender_sha256": "357da547f0194cd65b98b5290e0504f9dd98da98ab59fd6497b1740335dda5a0",
+      "blender_action": "Verdigris_pack-wolf_hit",
+      "reference_guide": "guides/pack-wolf-hit-front.png",
+      "reference_guide_sha256": "490fab1661ebf710f06551e001fb951194b388bfd3958c3d7c21d1435d3102ae"
+    },
+    "pack-wolf-hit-right": {
+      "actor": "pack-wolf",
+      "action": "hit",
+      "direction": "right",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/pack-wolf-hit-right-00.png",
+          "sha256": "3c6de24d7e42aa8f210d69c5da64874f137f8b13186a775c90cec6c3863fd725",
+          "reference": "references/pack-wolf-hit-right-00.png",
+          "reference_sha256": "2a3c0b1023dc27a021d28f2e45860cfa0a945fc7b10bbee82219cd2ce510a1d6",
+          "phase": 0,
+          "source": "originals/pack-wolf-hit-right.png",
+          "source_sha256": "30259e7cb2e39a36081252e911066b6ff4f3267181dd50b02825884e51b45352",
+          "silhouette_iou": 0.744258872651357,
+          "report": "reports/pack-wolf-hit-right.json"
+        },
+        {
+          "file": "frames/pack-wolf-hit-right-01.png",
+          "sha256": "ba0daa522e236c6862efc54f83a643cbba9c6309556b88e7273194b8c8a0ff92",
+          "reference": "references/pack-wolf-hit-right-01.png",
+          "reference_sha256": "229547e7cfeb2c9ec84236723b4cd57f468e3d838dfdf32bbe35f61d52572661",
+          "phase": 1,
+          "source": "originals/pack-wolf-hit-right.png",
+          "source_sha256": "30259e7cb2e39a36081252e911066b6ff4f3267181dd50b02825884e51b45352",
+          "silhouette_iou": 0.7375,
+          "report": "reports/pack-wolf-hit-right.json"
+        },
+        {
+          "file": "frames/pack-wolf-hit-right-02.png",
+          "sha256": "b5bb0628baf38a3c89be671c2f0bf0cac344727df37302ee201a638c1ce8ab06",
+          "reference": "references/pack-wolf-hit-right-02.png",
+          "reference_sha256": "1741946516a4583a080b24cfcfd5345bae7b4ccde6b30ad1ac1c3e347917432a",
+          "phase": 2,
+          "source": "originals/pack-wolf-hit-right.png",
+          "source_sha256": "30259e7cb2e39a36081252e911066b6ff4f3267181dd50b02825884e51b45352",
+          "silhouette_iou": 0.7492096944151738,
+          "report": "reports/pack-wolf-hit-right.json"
+        },
+        {
+          "file": "frames/pack-wolf-hit-right-03.png",
+          "sha256": "aad9f0504da87dba428934413011ead91e4bbba1ed99bdda183ae4002ac478ef",
+          "reference": "references/pack-wolf-hit-right-03.png",
+          "reference_sha256": "3c6a848d0ddb72d40571b9c63938b836b76e363effdcf4beae4a9957d6362524",
+          "phase": 3,
+          "source": "originals/pack-wolf-hit-right.png",
+          "source_sha256": "30259e7cb2e39a36081252e911066b6ff4f3267181dd50b02825884e51b45352",
+          "silhouette_iou": 0.7497371188222923,
+          "report": "reports/pack-wolf-hit-right.json"
+        }
+      ],
+      "blender": "blender/pack-wolf-hit.blend",
+      "blender_sha256": "357da547f0194cd65b98b5290e0504f9dd98da98ab59fd6497b1740335dda5a0",
+      "blender_action": "Verdigris_pack-wolf_hit",
+      "reference_guide": "guides/pack-wolf-hit-right.png",
+      "reference_guide_sha256": "bacbec6f45677f528e6d9a854b5139e039d5e28297a2104cf510005b29af67bd"
+    },
+    "pack-wolf-hit-back": {
+      "actor": "pack-wolf",
+      "action": "hit",
+      "direction": "back",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/pack-wolf-hit-back-00.png",
+          "sha256": "34ab227b8a36942e1633f6d553b994dc95830c0fab979f19a128cb3ed5cc246c",
+          "reference": "references/pack-wolf-hit-back-00.png",
+          "reference_sha256": "d4cf96d33f9ccbc775797ad73eecfe9308c17fe195462fefbb886ad9251fee4a",
+          "phase": 0,
+          "source": "originals/pack-wolf-hit-back.png",
+          "source_sha256": "65d2717133c2539284eec0c46f5b68b323c56a20559a29b5ec6238624ae577d3",
+          "silhouette_iou": 0.7629009762900977,
+          "report": "reports/pack-wolf-hit-back.json"
+        },
+        {
+          "file": "frames/pack-wolf-hit-back-01.png",
+          "sha256": "627dc427b74c4d55107f343843e9e2436d17ea88a58485fbad6f66b17e26e5eb",
+          "reference": "references/pack-wolf-hit-back-01.png",
+          "reference_sha256": "f58aa1273fd7535de1e34befc453621d54b8364fb9ca49d8cddc20e89724d851",
+          "phase": 1,
+          "source": "originals/pack-wolf-hit-back.png",
+          "source_sha256": "65d2717133c2539284eec0c46f5b68b323c56a20559a29b5ec6238624ae577d3",
+          "silhouette_iou": 0.775766016713092,
+          "report": "reports/pack-wolf-hit-back.json"
+        },
+        {
+          "file": "frames/pack-wolf-hit-back-02.png",
+          "sha256": "65a622050b1b04b9ad2061f354feeb7104c0161679700b980f27f6643743b715",
+          "reference": "references/pack-wolf-hit-back-02.png",
+          "reference_sha256": "6a271221ce27b651571b4e3866a7cd58a3c6457a3223754d8bbaf700d06acf1c",
+          "phase": 2,
+          "source": "originals/pack-wolf-hit-back.png",
+          "source_sha256": "65d2717133c2539284eec0c46f5b68b323c56a20559a29b5ec6238624ae577d3",
+          "silhouette_iou": 0.7621696801112656,
+          "report": "reports/pack-wolf-hit-back.json"
+        },
+        {
+          "file": "frames/pack-wolf-hit-back-03.png",
+          "sha256": "e5110aac0256362ad7170d34fa44387c931fb0196b0a006b0feab5c80c00eb31",
+          "reference": "references/pack-wolf-hit-back-03.png",
+          "reference_sha256": "06a8d587f0349f25b1ab66b9c0f238fc8125bd5429f3c1f1fbfbdb883e7da5be",
+          "phase": 3,
+          "source": "originals/pack-wolf-hit-back.png",
+          "source_sha256": "65d2717133c2539284eec0c46f5b68b323c56a20559a29b5ec6238624ae577d3",
+          "silhouette_iou": 0.760778859527121,
+          "report": "reports/pack-wolf-hit-back.json"
+        }
+      ],
+      "blender": "blender/pack-wolf-hit.blend",
+      "blender_sha256": "357da547f0194cd65b98b5290e0504f9dd98da98ab59fd6497b1740335dda5a0",
+      "blender_action": "Verdigris_pack-wolf_hit",
+      "reference_guide": "guides/pack-wolf-hit-back.png",
+      "reference_guide_sha256": "a3c872a36cf79eb586ea876ae11e2e18460be2ddb67e1ab8dc70827c79e8b1f7"
+    },
+    "pack-wolf-hit-left": {
+      "actor": "pack-wolf",
+      "action": "hit",
+      "direction": "left",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/pack-wolf-hit-left-00.png",
+          "sha256": "6c957008f533bd08c04f6c16297a6ab3ee57e0550726a3a7cc87f21112576537",
+          "reference": "references/pack-wolf-hit-left-00.png",
+          "reference_sha256": "58324646f9d02dae4c2727483199b7f1a2444a62ae2c181fa17f21d11ee86819",
+          "phase": 0,
+          "source": "originals/pack-wolf-hit-left.png",
+          "source_sha256": "4693275996181f1dee9f013aec11ab85e0671e997ffcd9e94bc7eebadc47b4da",
+          "silhouette_iou": 0.8525564803804994,
+          "report": "reports/pack-wolf-hit-left.json"
+        },
+        {
+          "file": "frames/pack-wolf-hit-left-01.png",
+          "sha256": "6d61074d3fd4e2d2ae1d80f37356469b5a92957cad3149eed7ba097453d983a1",
+          "reference": "references/pack-wolf-hit-left-01.png",
+          "reference_sha256": "34d95c424ff06c779e0491b27d51cc9a92c6c678bc85de34b73d69b38db23f9d",
+          "phase": 1,
+          "source": "originals/pack-wolf-hit-left.png",
+          "source_sha256": "4693275996181f1dee9f013aec11ab85e0671e997ffcd9e94bc7eebadc47b4da",
+          "silhouette_iou": 0.8329326923076923,
+          "report": "reports/pack-wolf-hit-left.json"
+        },
+        {
+          "file": "frames/pack-wolf-hit-left-02.png",
+          "sha256": "98734c7bb78af931dd74e580206360272fd1108deac8d133a9feadef5889b578",
+          "reference": "references/pack-wolf-hit-left-02.png",
+          "reference_sha256": "7963448b84d254912957984c79369271f25196642021f3c5bee43d1aaf029127",
+          "phase": 2,
+          "source": "originals/pack-wolf-hit-left.png",
+          "source_sha256": "4693275996181f1dee9f013aec11ab85e0671e997ffcd9e94bc7eebadc47b4da",
+          "silhouette_iou": 0.8392434988179669,
+          "report": "reports/pack-wolf-hit-left.json"
+        },
+        {
+          "file": "frames/pack-wolf-hit-left-03.png",
+          "sha256": "89a69a3c44c24c9934585f9c4cc0c693219c576010e11b08d017d584bfe03021",
+          "reference": "references/pack-wolf-hit-left-03.png",
+          "reference_sha256": "cc451ab0c0892fffe787727f5e4809d03a43810e42ee9820a1db195e73968386",
+          "phase": 3,
+          "source": "originals/pack-wolf-hit-left.png",
+          "source_sha256": "4693275996181f1dee9f013aec11ab85e0671e997ffcd9e94bc7eebadc47b4da",
+          "silhouette_iou": 0.8533969010727056,
+          "report": "reports/pack-wolf-hit-left.json"
+        }
+      ],
+      "blender": "blender/pack-wolf-hit.blend",
+      "blender_sha256": "357da547f0194cd65b98b5290e0504f9dd98da98ab59fd6497b1740335dda5a0",
+      "blender_action": "Verdigris_pack-wolf_hit",
+      "reference_guide": "guides/pack-wolf-hit-left.png",
+      "reference_guide_sha256": "cc763f0c147d01de93aa41dba22b1d239679c6f001d71cf391ab318080a7d95a"
+    },
+    "well-alpha-hit-front": {
+      "actor": "well-alpha",
+      "action": "hit",
+      "direction": "front",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/well-alpha-hit-front-00.png",
+          "sha256": "4811423600d7b0bf7723af0463a7bcb23d184074915359e1c74ac68df6a3b716",
+          "reference": "references/well-alpha-hit-front-00.png",
+          "reference_sha256": "865a26ac2249e4c9e3ce8161fab4c2e63d598de9d4fb51e8656cf53093b7315a",
+          "phase": 0,
+          "source": "originals/well-alpha-hit-front.png",
+          "source_sha256": "102786c57c310aab0d6a870e692fac42717a47dffb11a156350dcb112fd60e1d",
+          "silhouette_iou": 0.8070539419087137,
+          "report": "reports/well-alpha-hit-front.json"
+        },
+        {
+          "file": "frames/well-alpha-hit-front-01.png",
+          "sha256": "460c4d07dd798b28a94c8fffa45874a447594f7e907694f3e26c0c387a5d18aa",
+          "reference": "references/well-alpha-hit-front-01.png",
+          "reference_sha256": "20981df8f0e2fa77beb16200dfe565a17939745040eca788a45a73cc53abf396",
+          "phase": 1,
+          "source": "originals/well-alpha-hit-front.png",
+          "source_sha256": "102786c57c310aab0d6a870e692fac42717a47dffb11a156350dcb112fd60e1d",
+          "silhouette_iou": 0.785639958376691,
+          "report": "reports/well-alpha-hit-front.json"
+        },
+        {
+          "file": "frames/well-alpha-hit-front-02.png",
+          "sha256": "7b3a8e195e522925aa535c8e03549d0e75a86442b0a6733f6b056223f612b247",
+          "reference": "references/well-alpha-hit-front-02.png",
+          "reference_sha256": "e3f4a816c44ad635b91f4dad9d559a96c348abfbfb57f49bb85ab0eddb934c84",
+          "phase": 2,
+          "source": "originals/well-alpha-hit-front.png",
+          "source_sha256": "102786c57c310aab0d6a870e692fac42717a47dffb11a156350dcb112fd60e1d",
+          "silhouette_iou": 0.7985386221294363,
+          "report": "reports/well-alpha-hit-front.json"
+        },
+        {
+          "file": "frames/well-alpha-hit-front-03.png",
+          "sha256": "8c9d32375e2417a9f20af113ed7311b793d4eb06ffd058ad0a4ab1ede53f8234",
+          "reference": "references/well-alpha-hit-front-03.png",
+          "reference_sha256": "7a30e0190646f3fe80e7bb343e4f50cf60af67aad3dfeed8106d85f99748f24d",
+          "phase": 3,
+          "source": "originals/well-alpha-hit-front.png",
+          "source_sha256": "102786c57c310aab0d6a870e692fac42717a47dffb11a156350dcb112fd60e1d",
+          "silhouette_iou": 0.8104166666666667,
+          "report": "reports/well-alpha-hit-front.json"
+        }
+      ],
+      "blender": "blender/well-alpha-hit-canvas128.blend",
+      "blender_sha256": "d8f9a97055bbeddd13ef62d2e81e0e609e102a38f56a78cbff70071b56906fe6",
+      "blender_action": "Verdigris_well-alpha_hit",
+      "reference_guide": "guides/well-alpha-hit-front.png",
+      "reference_guide_sha256": "0bff38638c89a3e3c1f9b467ab6fa3cca75bc1733f1f4efb6a6bd99f8095ab4e"
+    },
+    "well-alpha-hit-right": {
+      "actor": "well-alpha",
+      "action": "hit",
+      "direction": "right",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/well-alpha-hit-right-00.png",
+          "sha256": "b1494716a631e8284d7494de6bb8b1e9a2d571ac820729b1e065e38868cc47ee",
+          "reference": "references/well-alpha-hit-right-00.png",
+          "reference_sha256": "1bf830119f617bf5a074d14e76b853ce1634a99aab783bfce7c568ee714f536c",
+          "phase": 0,
+          "source": "originals/well-alpha-hit-right.png",
+          "source_sha256": "4ea4d683802e4559f31071c812b88d961d01ca66537a2dc3d6b014e4a4e1a86e",
+          "silhouette_iou": 0.866738894907909,
+          "report": "reports/well-alpha-hit-right.json"
+        },
+        {
+          "file": "frames/well-alpha-hit-right-01.png",
+          "sha256": "1e90cae4ca3ce247cacd551808c168e728b77e4256a2c8352591faa471035767",
+          "reference": "references/well-alpha-hit-right-01.png",
+          "reference_sha256": "ef91a3245e0bfe2018c59b05ba9bbee0340e17e1c7352f8e51686e068a98b11e",
+          "phase": 1,
+          "source": "originals/well-alpha-hit-right.png",
+          "source_sha256": "4ea4d683802e4559f31071c812b88d961d01ca66537a2dc3d6b014e4a4e1a86e",
+          "silhouette_iou": 0.8490059108006448,
+          "report": "reports/well-alpha-hit-right.json"
+        },
+        {
+          "file": "frames/well-alpha-hit-right-02.png",
+          "sha256": "d58b1a6b75552379263867f474780bc77114060657b2868a20e14a1d8e03e102",
+          "reference": "references/well-alpha-hit-right-02.png",
+          "reference_sha256": "7fde9d977b30101a48475336ab6e141156aebf201c118c53a8e5ed771d09096b",
+          "phase": 2,
+          "source": "originals/well-alpha-hit-right.png",
+          "source_sha256": "4ea4d683802e4559f31071c812b88d961d01ca66537a2dc3d6b014e4a4e1a86e",
+          "silhouette_iou": 0.862012987012987,
+          "report": "reports/well-alpha-hit-right.json"
+        },
+        {
+          "file": "frames/well-alpha-hit-right-03.png",
+          "sha256": "f2db7c0b252eaee73a4367e011ea8297e968b157a5c66cff7ad7016545aa8cc9",
+          "reference": "references/well-alpha-hit-right-03.png",
+          "reference_sha256": "7e3ae30fb89941597de2b34f4489f28e8d11367440aa58ca108d71b85f96fadc",
+          "phase": 3,
+          "source": "originals/well-alpha-hit-right.png",
+          "source_sha256": "4ea4d683802e4559f31071c812b88d961d01ca66537a2dc3d6b014e4a4e1a86e",
+          "silhouette_iou": 0.8523093447905478,
+          "report": "reports/well-alpha-hit-right.json"
+        }
+      ],
+      "blender": "blender/well-alpha-hit-canvas128.blend",
+      "blender_sha256": "d8f9a97055bbeddd13ef62d2e81e0e609e102a38f56a78cbff70071b56906fe6",
+      "blender_action": "Verdigris_well-alpha_hit",
+      "reference_guide": "guides/well-alpha-hit-right.png",
+      "reference_guide_sha256": "d81f099619f02c594163ad4b2e20e38e81f0af08ad4c5ffc7507ae53d8a07bd4"
+    },
+    "well-alpha-hit-back": {
+      "actor": "well-alpha",
+      "action": "hit",
+      "direction": "back",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/well-alpha-hit-back-00.png",
+          "sha256": "932a01ed2754e82c7f12565daf456dda858b9c5c184fed7905eaa78e0d8efa29",
+          "reference": "references/well-alpha-hit-back-00.png",
+          "reference_sha256": "31bf76fe6a95b872c64c0becb142dcfc4f21f986136fd5d8ae9905104823a41b",
+          "phase": 0,
+          "source": "originals/well-alpha-hit-back.png",
+          "source_sha256": "06bb05a739ad531300f00c83d25722daa66b06dbf9294b81611c9c4650881fe6",
+          "silhouette_iou": 0.8694383661560905,
+          "report": "reports/well-alpha-hit-back.json"
+        },
+        {
+          "file": "frames/well-alpha-hit-back-01.png",
+          "sha256": "8983b11fd5fc0bb21d0d52a8d400a16b29c01565713aafbde0bf4602c636d828",
+          "reference": "references/well-alpha-hit-back-01.png",
+          "reference_sha256": "72d7886f0e0149bd7a7dc8b6c711e213ac5167269e7ea99a290643fb0c350488",
+          "phase": 1,
+          "source": "originals/well-alpha-hit-back.png",
+          "source_sha256": "06bb05a739ad531300f00c83d25722daa66b06dbf9294b81611c9c4650881fe6",
+          "silhouette_iou": 0.8667632150615496,
+          "report": "reports/well-alpha-hit-back.json"
+        },
+        {
+          "file": "frames/well-alpha-hit-back-02.png",
+          "sha256": "28e2d1d9734abe53fe5fe54ef2019730db8952e2d3e1820995d71e21a8dfd070",
+          "reference": "references/well-alpha-hit-back-02.png",
+          "reference_sha256": "a7036a3f21d6a42b36677bec14f7c6acc98eeb684dd0b3366358003c9d4e9e2b",
+          "phase": 2,
+          "source": "originals/well-alpha-hit-back.png",
+          "source_sha256": "06bb05a739ad531300f00c83d25722daa66b06dbf9294b81611c9c4650881fe6",
+          "silhouette_iou": 0.8671988388969522,
+          "report": "reports/well-alpha-hit-back.json"
+        },
+        {
+          "file": "frames/well-alpha-hit-back-03.png",
+          "sha256": "b22425e7a6eb5b71d08dd574cea6c84ac29b6c3c2b94d16b4dfd0c98902e28f2",
+          "reference": "references/well-alpha-hit-back-03.png",
+          "reference_sha256": "d83b77657d19e2bcceefbb5ca7cce307b475db2d5370c7209fbf4dfe7619cf55",
+          "phase": 3,
+          "source": "originals/well-alpha-hit-back.png",
+          "source_sha256": "06bb05a739ad531300f00c83d25722daa66b06dbf9294b81611c9c4650881fe6",
+          "silhouette_iou": 0.8698830409356725,
+          "report": "reports/well-alpha-hit-back.json"
+        }
+      ],
+      "blender": "blender/well-alpha-hit-canvas128.blend",
+      "blender_sha256": "d8f9a97055bbeddd13ef62d2e81e0e609e102a38f56a78cbff70071b56906fe6",
+      "blender_action": "Verdigris_well-alpha_hit",
+      "reference_guide": "guides/well-alpha-hit-back.png",
+      "reference_guide_sha256": "cb807b464b946426c220d51b9acf2e0263ee42eb8a0ee058d7227175947ce865"
+    },
+    "well-alpha-hit-left": {
+      "actor": "well-alpha",
+      "action": "hit",
+      "direction": "left",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/well-alpha-hit-left-00.png",
+          "sha256": "09e2af4b6d3e62beaeb6a5e735828355ac0cfcbc24ed79dae9765999e786e524",
+          "reference": "references/well-alpha-hit-left-00.png",
+          "reference_sha256": "98e15a25d829fe999b7096d23a65ad26d51b275120609f2ec2bfee541022f364",
+          "phase": 0,
+          "source": "originals/well-alpha-hit-left.png",
+          "source_sha256": "2fbaa93bf12eaf507113f1ad7e94c3678d616132fe988f15a835f4ce0d3c7101",
+          "silhouette_iou": 0.8516542155816436,
+          "report": "reports/well-alpha-hit-left.json"
+        },
+        {
+          "file": "frames/well-alpha-hit-left-01.png",
+          "sha256": "67b21d2bf61ef9ca47e71e1f85ebc996048abb66b00ab9fbdc80545cb3f42c0b",
+          "reference": "references/well-alpha-hit-left-01.png",
+          "reference_sha256": "b534b3c8d52e11f45dd81f369803f5e1533c0f1578a90e114bc470408f07c7ff",
+          "phase": 1,
+          "source": "originals/well-alpha-hit-left.png",
+          "source_sha256": "2fbaa93bf12eaf507113f1ad7e94c3678d616132fe988f15a835f4ce0d3c7101",
+          "silhouette_iou": 0.8351177730192719,
+          "report": "reports/well-alpha-hit-left.json"
+        },
+        {
+          "file": "frames/well-alpha-hit-left-02.png",
+          "sha256": "daaa4c4da5d1972d80fe2296dbd2067721f575b4e383075705a1c0ad6f6ef957",
+          "reference": "references/well-alpha-hit-left-02.png",
+          "reference_sha256": "175e61b7b66b80eaf54033be303158a09fdf2f7f1d7f4bbfb8649cdeba2decdf",
+          "phase": 2,
+          "source": "originals/well-alpha-hit-left.png",
+          "source_sha256": "2fbaa93bf12eaf507113f1ad7e94c3678d616132fe988f15a835f4ce0d3c7101",
+          "silhouette_iou": 0.8418259023354565,
+          "report": "reports/well-alpha-hit-left.json"
+        },
+        {
+          "file": "frames/well-alpha-hit-left-03.png",
+          "sha256": "d9b51a64504e28d1fcdb9dd5c3d1779232d8f0d5f5a9f267897da5a6876dfc95",
+          "reference": "references/well-alpha-hit-left-03.png",
+          "reference_sha256": "6ec62a885ea5c22c51e79be620642946cca2289e50d3fc94855c8ebfbbd5f783",
+          "phase": 3,
+          "source": "originals/well-alpha-hit-left.png",
+          "source_sha256": "2fbaa93bf12eaf507113f1ad7e94c3678d616132fe988f15a835f4ce0d3c7101",
+          "silhouette_iou": 0.8443620963472737,
+          "report": "reports/well-alpha-hit-left.json"
+        }
+      ],
+      "blender": "blender/well-alpha-hit-canvas128.blend",
+      "blender_sha256": "d8f9a97055bbeddd13ef62d2e81e0e609e102a38f56a78cbff70071b56906fe6",
+      "blender_action": "Verdigris_well-alpha_hit",
+      "reference_guide": "guides/well-alpha-hit-left.png",
+      "reference_guide_sha256": "46d1ecaa1e0c53e3c66cd0567079d3752e4b04cf08a2dc50d7c390db2a478a29"
     }
   },
   "source": "Blender authored poses, built-in imagegen paint, Pixel Respecter4xgrid reconstruction",
-  "visual_acceptance": "Agent native-scale andintegerzoom inspection; owner acceptance notclaimed"
+  "visual_acceptance": "Agent native-scale andintegerzoom inspection; owner acceptance notclaimed",
+  "model_source": "source-credit.json"
 }

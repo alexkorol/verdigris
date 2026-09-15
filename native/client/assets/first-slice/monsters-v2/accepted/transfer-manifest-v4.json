@@ -1199,6 +1199,678 @@
           1536
         ]
       }
+    },
+    "pack-wolf-attack-front": {
+      "actor": "pack-wolf",
+      "action": "attack",
+      "direction": "front",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/pack-wolf-attack-front-00.png",
+          "sha256": "b27eca2d892fbc6405692d0be14e57ad62650ec1ed779952087e164020e58084",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/pack-wolf-attack-front-01.png",
+          "sha256": "6f8b6f0758e5682688d81b0c8f113bccdb604f697544ee10e107bdadc6790dde",
+          "blender_frame": 1
+        },
+        {
+          "src": "references/pack-wolf-attack-front-02.png",
+          "sha256": "fffc856e6ba2d692fb651268f066bdfb84b7a2851f4a639795a62faa277ef20b",
+          "blender_frame": 2
+        },
+        {
+          "src": "references/pack-wolf-attack-front-03.png",
+          "sha256": "5776877d2793d1e637df192ab2ea9ed88b0d86f7fe708a5b58e4d4953bb43d19",
+          "blender_frame": 3
+        }
+      ],
+      "authored_action": "Verdigris_pack-wolf_attack",
+      "blender_source": "blender/pack-wolf-attack.blend",
+      "layout": {
+        "columns": 2,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "scale": 4,
+        "output": [
+          1536,
+          1024
+        ]
+      }
+    },
+    "pack-wolf-attack-right": {
+      "actor": "pack-wolf",
+      "action": "attack",
+      "direction": "right",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/pack-wolf-attack-right-00.png",
+          "sha256": "d14f7d7a2719af427191ea5d2c0df1df1959594a4685c38255e73e09a715ecf4",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/pack-wolf-attack-right-01.png",
+          "sha256": "3bd17a36f6ffe0243480155842dc458e3b5c47e21e267a873430f068863394dd",
+          "blender_frame": 1
+        },
+        {
+          "src": "references/pack-wolf-attack-right-02.png",
+          "sha256": "a3b69039b4eeb490bd1876eabedce668cd0a8de00104497c1acd3c7fcae2300d",
+          "blender_frame": 2
+        },
+        {
+          "src": "references/pack-wolf-attack-right-03.png",
+          "sha256": "ff63137b5b1f206f07062794dd507e6ca8cd6780e51a5559386e01bab45a9934",
+          "blender_frame": 3
+        }
+      ],
+      "authored_action": "Verdigris_pack-wolf_attack",
+      "blender_source": "blender/pack-wolf-attack.blend",
+      "layout": {
+        "columns": 2,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "scale": 4,
+        "output": [
+          1536,
+          1024
+        ]
+      }
+    },
+    "pack-wolf-attack-back": {
+      "actor": "pack-wolf",
+      "action": "attack",
+      "direction": "back",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/pack-wolf-attack-back-00.png",
+          "sha256": "d26fe04d99d111b1f9c40684e1ecf471f0c3146438dfdf8f900c10fa8828618b",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/pack-wolf-attack-back-01.png",
+          "sha256": "52b89ed2954cc9fe97ec8b1cfd926f3ec2bf83b7ee833a1d6321ba46d5f13cfd",
+          "blender_frame": 1
+        },
+        {
+          "src": "references/pack-wolf-attack-back-02.png",
+          "sha256": "4d8d27671d602071f1d89c5953f2401a9acbdfa852e04c70058bcaad52367bcb",
+          "blender_frame": 2
+        },
+        {
+          "src": "references/pack-wolf-attack-back-03.png",
+          "sha256": "e4dfb38496ad4487c21f33bfff0a8b5d668a477df4982b778360d9390a59b698",
+          "blender_frame": 3
+        }
+      ],
+      "authored_action": "Verdigris_pack-wolf_attack",
+      "blender_source": "blender/pack-wolf-attack.blend",
+      "layout": {
+        "columns": 2,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "scale": 4,
+        "output": [
+          1536,
+          1024
+        ]
+      }
+    },
+    "pack-wolf-attack-left": {
+      "actor": "pack-wolf",
+      "action": "attack",
+      "direction": "left",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/pack-wolf-attack-left-00.png",
+          "sha256": "c8ea6fefe2b2f758d0a102851cdb918a71c20d30a0c0f5a72b80caa27a071a26",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/pack-wolf-attack-left-01.png",
+          "sha256": "a4b15f8647894ccffabcaa66f1b694bb1ac7029434c6996fcfb491dc16514e8c",
+          "blender_frame": 1
+        },
+        {
+          "src": "references/pack-wolf-attack-left-02.png",
+          "sha256": "31c2dd703128120b0756dbf78d3971e5ef963fd3296104f1ab3b832c435309c6",
+          "blender_frame": 2
+        },
+        {
+          "src": "references/pack-wolf-attack-left-03.png",
+          "sha256": "8187e56c8e3aa91a446dc9dff4cc8830df19549da0a016e03299fa8cc91325ab",
+          "blender_frame": 3
+        }
+      ],
+      "authored_action": "Verdigris_pack-wolf_attack",
+      "blender_source": "blender/pack-wolf-attack.blend",
+      "layout": {
+        "columns": 2,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "scale": 4,
+        "output": [
+          1536,
+          1024
+        ]
+      }
+    },
+    "pack-wolf-hit-front": {
+      "actor": "pack-wolf",
+      "action": "hit",
+      "direction": "front",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/pack-wolf-hit-front-00.png",
+          "sha256": "7d860c6b92b0e81472c8f59766741bed4849d361704118803da340c366ce44fd",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/pack-wolf-hit-front-01.png",
+          "sha256": "c7f1c2b2c6befc8e69d487e9505497d3c72b45c92de2149ce7d05a88d1b2bb19",
+          "blender_frame": 1
+        },
+        {
+          "src": "references/pack-wolf-hit-front-02.png",
+          "sha256": "d6114c2bb28760cd4d3daa75aba8926a92175815450d7c0e589db761cf919cc1",
+          "blender_frame": 2
+        },
+        {
+          "src": "references/pack-wolf-hit-front-03.png",
+          "sha256": "f203cbca502cca74400137d025a87236829ef9362eeefd26dbfd30fc77f24750",
+          "blender_frame": 3
+        }
+      ],
+      "authored_action": "Verdigris_pack-wolf_hit",
+      "blender_source": "blender/pack-wolf-hit.blend",
+      "layout": {
+        "columns": 2,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "scale": 4,
+        "output": [
+          1536,
+          1024
+        ]
+      }
+    },
+    "pack-wolf-hit-right": {
+      "actor": "pack-wolf",
+      "action": "hit",
+      "direction": "right",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/pack-wolf-hit-right-00.png",
+          "sha256": "2a3c0b1023dc27a021d28f2e45860cfa0a945fc7b10bbee82219cd2ce510a1d6",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/pack-wolf-hit-right-01.png",
+          "sha256": "229547e7cfeb2c9ec84236723b4cd57f468e3d838dfdf32bbe35f61d52572661",
+          "blender_frame": 1
+        },
+        {
+          "src": "references/pack-wolf-hit-right-02.png",
+          "sha256": "1741946516a4583a080b24cfcfd5345bae7b4ccde6b30ad1ac1c3e347917432a",
+          "blender_frame": 2
+        },
+        {
+          "src": "references/pack-wolf-hit-right-03.png",
+          "sha256": "3c6a848d0ddb72d40571b9c63938b836b76e363effdcf4beae4a9957d6362524",
+          "blender_frame": 3
+        }
+      ],
+      "authored_action": "Verdigris_pack-wolf_hit",
+      "blender_source": "blender/pack-wolf-hit.blend",
+      "layout": {
+        "columns": 2,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "scale": 4,
+        "output": [
+          1536,
+          1024
+        ]
+      }
+    },
+    "pack-wolf-hit-back": {
+      "actor": "pack-wolf",
+      "action": "hit",
+      "direction": "back",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/pack-wolf-hit-back-00.png",
+          "sha256": "d4cf96d33f9ccbc775797ad73eecfe9308c17fe195462fefbb886ad9251fee4a",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/pack-wolf-hit-back-01.png",
+          "sha256": "f58aa1273fd7535de1e34befc453621d54b8364fb9ca49d8cddc20e89724d851",
+          "blender_frame": 1
+        },
+        {
+          "src": "references/pack-wolf-hit-back-02.png",
+          "sha256": "6a271221ce27b651571b4e3866a7cd58a3c6457a3223754d8bbaf700d06acf1c",
+          "blender_frame": 2
+        },
+        {
+          "src": "references/pack-wolf-hit-back-03.png",
+          "sha256": "06a8d587f0349f25b1ab66b9c0f238fc8125bd5429f3c1f1fbfbdb883e7da5be",
+          "blender_frame": 3
+        }
+      ],
+      "authored_action": "Verdigris_pack-wolf_hit",
+      "blender_source": "blender/pack-wolf-hit.blend",
+      "layout": {
+        "columns": 2,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "scale": 4,
+        "output": [
+          1536,
+          1024
+        ]
+      }
+    },
+    "pack-wolf-hit-left": {
+      "actor": "pack-wolf",
+      "action": "hit",
+      "direction": "left",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/pack-wolf-hit-left-00.png",
+          "sha256": "58324646f9d02dae4c2727483199b7f1a2444a62ae2c181fa17f21d11ee86819",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/pack-wolf-hit-left-01.png",
+          "sha256": "34d95c424ff06c779e0491b27d51cc9a92c6c678bc85de34b73d69b38db23f9d",
+          "blender_frame": 1
+        },
+        {
+          "src": "references/pack-wolf-hit-left-02.png",
+          "sha256": "7963448b84d254912957984c79369271f25196642021f3c5bee43d1aaf029127",
+          "blender_frame": 2
+        },
+        {
+          "src": "references/pack-wolf-hit-left-03.png",
+          "sha256": "cc451ab0c0892fffe787727f5e4809d03a43810e42ee9820a1db195e73968386",
+          "blender_frame": 3
+        }
+      ],
+      "authored_action": "Verdigris_pack-wolf_hit",
+      "blender_source": "blender/pack-wolf-hit.blend",
+      "layout": {
+        "columns": 2,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "scale": 4,
+        "output": [
+          1536,
+          1024
+        ]
+      }
+    },
+    "well-alpha-hit-front": {
+      "actor": "well-alpha",
+      "action": "hit",
+      "direction": "front",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/well-alpha-hit-front-00.png",
+          "sha256": "865a26ac2249e4c9e3ce8161fab4c2e63d598de9d4fb51e8656cf53093b7315a",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/well-alpha-hit-front-01.png",
+          "sha256": "20981df8f0e2fa77beb16200dfe565a17939745040eca788a45a73cc53abf396",
+          "blender_frame": 1
+        },
+        {
+          "src": "references/well-alpha-hit-front-02.png",
+          "sha256": "e3f4a816c44ad635b91f4dad9d559a96c348abfbfb57f49bb85ab0eddb934c84",
+          "blender_frame": 2
+        },
+        {
+          "src": "references/well-alpha-hit-front-03.png",
+          "sha256": "7a30e0190646f3fe80e7bb343e4f50cf60af67aad3dfeed8106d85f99748f24d",
+          "blender_frame": 3
+        }
+      ],
+      "authored_action": "Verdigris_well-alpha_hit",
+      "blender_source": "blender/well-alpha-hit-canvas128.blend",
+      "layout": {
+        "columns": 2,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "scale": 4,
+        "output": [
+          1536,
+          1024
+        ]
+      }
+    },
+    "well-alpha-hit-right": {
+      "actor": "well-alpha",
+      "action": "hit",
+      "direction": "right",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/well-alpha-hit-right-00.png",
+          "sha256": "1bf830119f617bf5a074d14e76b853ce1634a99aab783bfce7c568ee714f536c",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/well-alpha-hit-right-01.png",
+          "sha256": "ef91a3245e0bfe2018c59b05ba9bbee0340e17e1c7352f8e51686e068a98b11e",
+          "blender_frame": 1
+        },
+        {
+          "src": "references/well-alpha-hit-right-02.png",
+          "sha256": "7fde9d977b30101a48475336ab6e141156aebf201c118c53a8e5ed771d09096b",
+          "blender_frame": 2
+        },
+        {
+          "src": "references/well-alpha-hit-right-03.png",
+          "sha256": "7e3ae30fb89941597de2b34f4489f28e8d11367440aa58ca108d71b85f96fadc",
+          "blender_frame": 3
+        }
+      ],
+      "authored_action": "Verdigris_well-alpha_hit",
+      "blender_source": "blender/well-alpha-hit-canvas128.blend",
+      "layout": {
+        "columns": 2,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "scale": 4,
+        "output": [
+          1536,
+          1024
+        ]
+      }
+    },
+    "well-alpha-hit-back": {
+      "actor": "well-alpha",
+      "action": "hit",
+      "direction": "back",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/well-alpha-hit-back-00.png",
+          "sha256": "31bf76fe6a95b872c64c0becb142dcfc4f21f986136fd5d8ae9905104823a41b",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/well-alpha-hit-back-01.png",
+          "sha256": "72d7886f0e0149bd7a7dc8b6c711e213ac5167269e7ea99a290643fb0c350488",
+          "blender_frame": 1
+        },
+        {
+          "src": "references/well-alpha-hit-back-02.png",
+          "sha256": "a7036a3f21d6a42b36677bec14f7c6acc98eeb684dd0b3366358003c9d4e9e2b",
+          "blender_frame": 2
+        },
+        {
+          "src": "references/well-alpha-hit-back-03.png",
+          "sha256": "d83b77657d19e2bcceefbb5ca7cce307b475db2d5370c7209fbf4dfe7619cf55",
+          "blender_frame": 3
+        }
+      ],
+      "authored_action": "Verdigris_well-alpha_hit",
+      "blender_source": "blender/well-alpha-hit-canvas128.blend",
+      "layout": {
+        "columns": 2,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "scale": 4,
+        "output": [
+          1536,
+          1024
+        ]
+      }
+    },
+    "well-alpha-hit-left": {
+      "actor": "well-alpha",
+      "action": "hit",
+      "direction": "left",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/well-alpha-hit-left-00.png",
+          "sha256": "98e15a25d829fe999b7096d23a65ad26d51b275120609f2ec2bfee541022f364",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/well-alpha-hit-left-01.png",
+          "sha256": "b534b3c8d52e11f45dd81f369803f5e1533c0f1578a90e114bc470408f07c7ff",
+          "blender_frame": 1
+        },
+        {
+          "src": "references/well-alpha-hit-left-02.png",
+          "sha256": "175e61b7b66b80eaf54033be303158a09fdf2f7f1d7f4bbfb8649cdeba2decdf",
+          "blender_frame": 2
+        },
+        {
+          "src": "references/well-alpha-hit-left-03.png",
+          "sha256": "6ec62a885ea5c22c51e79be620642946cca2289e50d3fc94855c8ebfbbd5f783",
+          "blender_frame": 3
+        }
+      ],
+      "authored_action": "Verdigris_well-alpha_hit",
+      "blender_source": "blender/well-alpha-hit-canvas128.blend",
+      "layout": {
+        "columns": 2,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "scale": 4,
+        "output": [
+          1536,
+          1024
+        ]
+      }
     }
   }
 }

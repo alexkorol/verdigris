@@ -10,6 +10,11 @@ def package(approved):
     variable_layouts=json.loads((ROOT/'transfer-manifest-v4.json').read_text())['clips'] if (ROOT/'transfer-manifest-v4.json').exists() else {}
     manifest={'schema':1,'pixels_per_metre':48,'alpha':'binary native RGBA; original native alpha threshold128, neverRGBkey','clips':{},'source':'Blender authored poses, built-in imagegen paint, Pixel Respecter4xgrid reconstruction','visual_acceptance':'Agent native-scale andintegerzoom inspection; owner acceptance notclaimed'}
     for folder in ('frames','references','originals','reports','blender','guides'):(OUT/folder).mkdir(parents=True,exist_ok=True)
+    if (ROOT/'source-credit.json').exists():
+        credit=json.loads((ROOT/'source-credit.json').read_text());source=ROOT/credit['original_file']
+        assert sha(source)==credit['original_sha256']
+        shutil.copy2(source,OUT/credit['original_file']);shutil.copy2(ROOT/'source-credit.json',OUT/'source-credit.json')
+        manifest['model_source']='source-credit.json'
     for key in approved:
         report=json.loads((ROOT/'review'/f'{key}.json').read_text());source=ROOT/'source'/f'{key}.png'
         assert sha(source)==report['source_sha256']
@@ -22,7 +27,7 @@ def package(approved):
             assert sha(p)==f['sha256'] and sha(r)==f['reference']['sha256']
             im=Image.open(p);assert im.size==tuple(record['frame']) and im.mode=='RGBA'
             assert set(im.getchannel('A').getdata())=={0,255}
-            assert f['silhouette_iou']>=.65
+            assert f['silhouette_iou'] >= (.70 if record['action'] in ('attack','hit','death') else .65)
             shutil.copy2(p,OUT/'frames'/p.name);shutil.copy2(r,OUT/'references'/r.name)
             if clip not in manifest['clips']:
                 manifest['clips'][clip]={k:record[k] for k in ('actor','action','direction','fps','loop','frame','anchor','pixels_per_metre')}
@@ -33,7 +38,7 @@ def package(approved):
         source=Path(refs[clip]['blender_source'])
         if not source.is_absolute():source=ROOT/source
         target=OUT/'blender'/source.name
-        if not target.exists():shutil.copy2(source,target)
+        if not target.exists() or sha(target)!=sha(source):shutil.copy2(source,target)
         record['blender']='blender/'+target.name
         record['blender_sha256']=sha(target)
         record['blender_action']='Idle' if record['action']=='idle' else 'Walking' if record['action']=='walk' else refs[clip].get('authored_action')

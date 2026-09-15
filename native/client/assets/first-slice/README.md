@@ -4,8 +4,9 @@
 
 The Village Palisade art pack now contains 16 static NPC cardinal views in
 `npcs-v2/accepted`, eight scenery sprites in `world-scenery/accepted`, four starter
-inventory icons in `ui-art/accepted`, and 128 pack-wolf/boss idle/walk frames in
-`monsters-v2/accepted`. These folders retain the generation inputs, prompts,
+inventory icons in `ui-art/accepted`, and 176 pack-wolf/boss animation frames in
+`monsters-v2/accepted`: pack idle/walk/attack/hit and boss idle/walk/hit in four
+cardinal directions. Death and boss attack remain in production. These folders retain the generation inputs, prompts,
 reconstruction evidence, and editable Blender sources where applicable. Their
 native outputs have been inspected; this is not acceptance of a complete combat
 set or of the village-defense gameplay implementation.
@@ -14,9 +15,9 @@ World sprites use 48 pixels per metre and declared canvas anchors. Inventory
 icons use their inventory footprint. Preserve these distinct roles when importing.
 The new player appearance and remaining combat animation work are in progress.
 
-`runtime/manifest.tsv` installs those 156 nonplayer PNGs byte-for-byte, with
+`runtime/manifest.tsv` installs those 204 nonplayer PNGs byte-for-byte, with
 conversion manifests in `runtime-imports/`. The native renderer uses complete
-actor-family gates, so these incomplete monster locomotion sets remain available
+actor-family gates, so these incomplete monster action sets remain available
 for inspection and do not silently replace missing combat states. Generic trees
 and huts now load in the normal local launcher; distinct old landmarks without
 matching accepted replacements remain unchanged.

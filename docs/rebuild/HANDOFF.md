@@ -2627,3 +2627,9 @@ The client recompiles and first-slice-art, death-disconnect and raster-feedback 
 ### 2026-09-15 — keep art studies out of player packages
 
 Package creation previously copied the entire first-slice directory recursively, including ignored failed generations and editable source scenes. It now copies only runtime/manifest.tsv and its referenced PNGs. The shared resource validator checks frame-name/content hash agreement and rejects missing/empty manifests; package validation rejects any additional first-slice source or stale PNG. Artist sources remain versioned separately for editing and provenance. PowerShell parse checks pass, the live156-PNG inventory selects157 files, full required native resources validate (518), and empty/path-escape negative probes fail as expected. A complete clean-commit player package build remains pending final actor assets; these checks do not claim that package exists yet.
+
+### 2026-09-15 — monster attack/hit milestone
+
+The frozen accepted monster pack now contains176 frames/28 clips: four-cardinal pack-wolf idle/walk/attack/hit and well-alpha idle/walk/hit. Root sampled the new native-scale contacts after the world-art lane reviewed each accepted clip. The short attack is the authored neck/torso lunge; no jaw animation is claimed. Boss side-attack and both death families remain outside this milestone, and incomplete actor families remain inactive in gameplay.
+
+The native runtime now includes204 nonplayer PNGs/56 clips. Every PNG matches an accepted source hash, declared dimensions, binary alpha and48px/metre. No unreferenced runtime PNG remains. Four durable monster builders/transfer/package helpers syntax-compile. The accepted archive adds original CC0 Quaternius wolf source and source-credit metadata. The native death-equipment fix c464ced87 passed first-slice-art, death-disconnect and raster-feedback against this runtime; final complete-actor package and full native gates remain pending.
