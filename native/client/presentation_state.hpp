@@ -53,6 +53,9 @@ struct EffectFx {
   bool speculative = false;
   std::string actor_family;
   bool actor_elite = false;
+  // Exact authored identity and facing survive removal from live snapshots.
+  std::string actor_art_identity;
+  verdigris::Vec2 actor_facing{0, 1};
 };
 
 inline constexpr int kActorFallTtlTicks = 160;

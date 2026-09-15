@@ -4203,6 +4203,9 @@ void ingest_events(ClientState& state, const RECT& bounds) {
           const int monster_level = std::max(1, subject->stats.level);
           state.local_combat_xp += static_cast<long long>(monster_level) * 12;
           WorldActor fallen;
+          const auto prior=std::find_if(state.world.monsters.begin(),state.world.monsters.end(),
+              [&](const WorldActor& actor){return actor.id==subject->id;});
+          if(prior!=state.world.monsters.end())fallen=*prior;
           fallen.id = subject->id;
           fallen.position = event.has_actor_pose ? event.actor_position : subject->position;
           fallen.facing = event.has_actor_pose ? event.actor_facing : subject->facing;

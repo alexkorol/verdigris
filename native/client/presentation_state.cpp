@@ -76,6 +76,8 @@ bool present_actor_death(std::vector<EffectFx>& effects, const WorldView& world,
   fall.actor_id = monster.id;
   fall.actor_family = monster_art_family(monster, world);
   fall.actor_elite = monster.elite;
+  fall.actor_art_identity = monster.kind;
+  fall.actor_facing = monster.facing;
   effects.push_back(std::move(fall));
   bound_effects(effects);
   return true;

@@ -416,6 +416,8 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
     const bool active=art.ready(identity)&&(!player||
         (art.ready(std::string("player_")+a.appearance+"_unarmed")&&art.ready(std::string("player_")+a.appearance+"_club")));
     if(!a.alive) {
+      if(!player&&std::any_of(state.effects.begin(),state.effects.end(),[&](const auto& fx){
+        return fx.kind==EffectFx::Kind::ActorFall&&fx.actor_id==a.id&&fx.age<fx.ttl;}))return;
       if(active) {
         const auto* clip=art.find(identity,"death",first_slice_art::direction(a.facing.x,a.facing.y));
         const auto& pos=a.displayed_position();
@@ -488,10 +490,22 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
     } else if(fx.kind==EffectFx::Kind::Swing || fx.kind==EffectFx::Kind::SweepArc) {
       s=sprite("effect_slash0",fx.wx+std::cos(fx.angle)*42,fx.wy+std::sin(fx.angle)*42,fx.kind==EffectFx::Kind::SweepArc?110:70);
       if(s){s->anchor_y=.5f;s->elevation+=38;s->rotation=float(fx.angle);s->additive=true;}
-    } else if(fx.kind==EffectFx::Kind::ActorFall && fx.actor_family=="raider" &&
-        std::string(raster_direction(std::cos(fx.angle),std::sin(fx.angle)))=="sw") {
-      s=sprite("raider_death"+std::to_string(std::min(3,int(verdigris::client::actor_fall_phase(fx)*4)))+"_sw",fx.wx,fx.wy,(fx.actor_elite?184:160)*112.0/96);
-      if(s){s->anchor_y=96.f/112;s->opacity=float(verdigris::client::actor_fall_opacity(fx));s->ground_layer=fx.age>=verdigris::client::kActorFallMotionTicks;}
+    } else if(fx.kind==EffectFx::Kind::ActorFall) {
+      const auto& art=first_slice_art::registry();
+      if(art.ready(fx.actor_art_identity)) {
+        const auto* clip=art.find(fx.actor_art_identity,"death",
+            first_slice_art::direction(fx.actor_facing.x,fx.actor_facing.y));
+        const double phase=(fx.age+state.tick_accum_ms/50.0)*.05*clip->fps/clip->frames.size();
+        s=authored_sprite(*clip,std::min(.999999,phase),fx.wx,fx.wy);
+        if(s) {
+          s->opacity=float(verdigris::client::actor_fall_opacity(fx,state.tick_accum_ms/50.0));
+          s->ground_layer=phase>=1;
+          trace.push_back({render::Op::Death,fx.wx,fx.wy,0,0,"art:actor-fall:"+fx.actor_id+":"+clip->frame(std::min(.999999,phase))});
+        }
+      } else if(fx.actor_family=="raider"&&std::string(raster_direction(std::cos(fx.angle),std::sin(fx.angle)))=="sw") {
+        s=sprite("raider_death"+std::to_string(std::min(3,int(verdigris::client::actor_fall_phase(fx)*4)))+"_sw",fx.wx,fx.wy,(fx.actor_elite?184:160)*112.0/96);
+        if(s){s->anchor_y=96.f/112;s->opacity=float(verdigris::client::actor_fall_opacity(fx));s->ground_layer=fx.age>=verdigris::client::kActorFallMotionTicks;}
+      }
       continue;
     }
     if(s) s->opacity=life;

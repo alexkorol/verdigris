@@ -35,6 +35,17 @@ idle, walk, attack, hit and death in all four directions. Partial collections
 can be inspected in the native scenario, but do not replace gameplay actors.
 NPC identities are explicit scene bindings, never inferred from display names.
 
+Monster death effects retain the exact authored identity and event facing after
+the live snapshot removes the actor. Death playback uses elapsed time and that
+clip's FPS, canvas and pivot, then holds its last frame until the corpse expires.
+It does not reuse the old raider death when a complete new family is active.
+
+Attack clips follow the existing normalized combat beat, not their manifest FPS:
+melee spans six 50 ms ticks; sweep spans eight. Input preparation begins at phase
+0 and authoritative contact reconciles to phase 0.5. For 16 frames, index 8 is
+contact, indices 0-7 lead into it, and indices 9-15 recover to idle. This preserves
+gameplay timing; a longer frame list adds pose samples rather than slowing combat.
+
 Imports replace the entire incoming identity's clip list. All equipment variants
 of one player appearance form one replacement cohort: importing a male unarmed
 update also removes old male club entries unless that import includes them. This

@@ -30,6 +30,66 @@ bool first_slice_depth_probe() {
   return a.right>a.left&&a.left==b.left&&a.right==b.right&&a.top==b.top&&b.bottom>=a.bottom+15;
 }
 
+void first_slice_retained_death_lifecycle() {
+  using namespace verdigris::client;
+  auto& art=first_slice_art::registry();
+  const auto* source=art.find("pack-wolf","walk","right");
+  if(!source) {
+    std::puts("    first-slice-art: retained death GPU routing probe requires the accepted pack-wolf source");
+    return;
+  }
+  // Diagnostic routing data only: reuse accepted pixels without claiming they
+  // depict death. Never install these test clips or save them as accepted art.
+  struct Restore { first_slice_art::Registry& target; first_slice_art::Registry saved;
+    ~Restore(){target=std::move(saved);} } restore{art,art};
+  const auto fixture=*source;
+  for(const auto* action:{"idle","walk","attack","hit","death"})
+    for(const auto* direction:{"front","right","back","left"}) {
+      auto c=fixture;c.action=action;c.direction=direction;
+      if(c.action=="death"){c.loop=false;c.anchor_y=76;c.frames.resize(4);}
+      art.clips[first_slice_art::key(c.identity,c.action,c.direction)]=std::move(c);
+    }
+  auto state=make_product_client();
+  load_billboards(state->billboards);
+  auto session=std::make_unique<LocalCoreSession>(0xC011AB1EULL);
+  auto* core_session=session.get();state->session=std::move(session);
+  std::string error;
+  scenario_check(core_session->start(&error),"first-slice-art: retained death session starts");
+  core_session->submit(ClientCommand::enter_zone("route:tin:1:0"));core_session->advance_fixed_tick();
+  auto* sim=core_session->simulation_for_scenarios();
+  auto* player=sim->actor(sim->scion().actor_id);player->position={0,0};player->facing={1,0};
+  const auto foe=sim->spawn_monster({1,0},1,false);sim->actor(foe)->stats.life=1;
+  core_session->poll();sync_world(*state);ingest_session_events(*state);
+  for(auto& actor:state->event_world.monsters)if(actor.id==foe)actor.kind="pack-wolf";
+  core_session->submit(ClientCommand::use_action("melee"));core_session->advance_fixed_tick();
+  core_session->poll();sync_world(*state);
+  scenario_check(std::none_of(state->world.monsters.begin(),state->world.monsters.end(),
+      [&](const auto& actor){return actor.id==foe;}),"first-slice-art: real lethal hit removes the live actor before event drain");
+  ingest_session_events(*state);
+  auto retained=std::find_if(state->effects.begin(),state->effects.end(),[&](const auto& fx){
+    return fx.kind==EffectFx::Kind::ActorFall&&fx.actor_id==foe;});
+  scenario_check(retained!=state->effects.end()&&retained->actor_art_identity=="pack-wolf",
+      "first-slice-art: removed actor retains exact authored identity through session event ingestion");
+  if(retained!=state->effects.end()) {
+    const auto* clip=art.find("pack-wolf","death",first_slice_art::direction(retained->actor_facing.x,retained->actor_facing.y));
+    const auto position=std::pair(retained->wx,retained->wy);
+    // Advance cadence, then beyond the death clip while the corpse persists.
+    for(int age:{0,2,4,6,12}) {
+      retained->age=age;state->tick_accum_ms=0;scenario_follow_camera(*state);scenario_present(*state);
+      const auto frame=clip->frame(std::min(.999999,age*.05*clip->fps/clip->frames.size()));
+      const auto wanted="art:actor-fall:"+foe+":"+frame;
+      scenario_check(std::count_if(state->render_list.begin(),state->render_list.end(),[&](const auto& op){
+          return op.label==wanted&&op.x==position.first&&op.y==position.second;})==1&&
+          std::none_of(state->render_list.begin(),state->render_list.end(),[&](const auto& op){
+            return op.label.find("raider_death")!=std::string::npos;}),
+          "first-slice-art: removed actor draws one same-family death frame at its retained pivot and holds the last frame");
+    }
+    scenario_check(clip->anchor_y==76&&clip->width==96&&clip->pixels_per_metre==48,
+        "first-slice-art: retained death resolves its action-specific pivot without refitting");
+  }
+  core_session->shutdown();
+}
+
 int scenario_first_slice_art() {
   using namespace first_slice_art;
   auto product=make_product_client();
@@ -45,6 +105,7 @@ int scenario_first_slice_art() {
       return item.label.rfind("art:fs_tree_",0)==0;});
     scenario_check(accepted_tree,"first-slice-art: startup scene consumes accepted tree art without fixture bindings");
   }
+  first_slice_retained_death_lifecycle();
   scenario_check(first_slice_depth_probe(),
       "first-slice-art: footprint depth reveals below-pivot pixels without moving the screen rectangle");
   scenario_check(fable_world::kTerrainWidth==80*48&&fable_world::kTerrainHeight==64*48,

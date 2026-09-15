@@ -723,6 +723,7 @@ void actor_fall_uses_immutable_pose_with_known_identity() {
   auto prior = world_with_player_and_foe("right");
   prior.theme = "crypt";
   prior.monsters[0].elite = true;
+  prior.monsters[0].kind = "well-alpha";
   const auto old_monster = prior.monsters[0];
   PresentationEvent death{PresentationEventType::ActorDied, "foe-1", "", "Warden", 0};
   death.has_actor_pose = true;
@@ -739,6 +740,8 @@ void actor_fall_uses_immutable_pose_with_known_identity() {
         "fall event pose: final position and committed facing override stale prior geometry");
   check(fall && fall->actor_id == "foe-1" && fall->actor_family == "wight" && fall->actor_elite,
         "fall event pose: known snapshot still supplies identity family and elite");
+  check(fall && fall->actor_art_identity=="well-alpha"&&fall->actor_facing.x==1&&fall->actor_facing.y==-1,
+        "fall event pose: exact authored identity and facing survive snapshot removal");
   check(dust && dust->wx == 313 && dust->wy == 229 &&
             fx.last_death_pos.x == 313 && fx.last_death_pos.y == 229,
         "fall event pose: dust and loot anchor share the immutable death position");
@@ -748,6 +751,11 @@ void actor_fall_uses_immutable_pose_with_known_identity() {
             prior.monsters[0].facing.y == old_monster.facing.y,
         "fall event pose: presentation does not mutate the retained actor snapshot");
   for (int tick = 0; tick < 3; ++tick) age_presentation_fx(fx);
+  auto removed=prior;
+  removed.monsters.clear();
+  sync_presentation_scene(fx,removed);
+  check(first_kind(fx,EffectFx::Kind::ActorFall)->actor_art_identity=="well-alpha",
+        "fall event pose: empty live snapshot retains the authored corpse identity");
   death.actor_x = 777;
   death.actor_y = 888;
   death.facing_x = -1;
