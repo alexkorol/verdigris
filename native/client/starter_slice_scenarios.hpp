@@ -45,9 +45,9 @@ int scenario_starter_slice() {
     return x >= 0 && y >= 0 && x < model.map_width && y < model.map_height &&
         model.map_walkable[std::size_t(y * model.map_width + x)] != 0;
   };
-  scenario_check(!walkable(7,15) && !walkable(25,15) && !walkable(18,18) &&
+  scenario_check(!walkable(18,18) &&
       walkable(16,22) && walkable(16,20) && walkable(16,8),
-      "starter: houses and well block their footprints while interaction and passage tiles remain open");
+      "starter: well blocks its footprint while interaction and passage tiles remain open");
   sync_world(state); generate_scenery(state); scenario_follow_camera(state);
   scenario_check(std::none_of(state.scenery.begin(),state.scenery.end(),[](const auto& item){return item.kind == SceneryKind::Gate;}),
       "starter: village uses an ordinary passage without the old portal");
@@ -56,8 +56,16 @@ int scenario_starter_slice() {
       return item.art_identity == id && std::abs(item.position.x-x*kTileUnits) < 1 && std::abs(item.position.y-y*kTileUnits) < 1;
     });
   };
-  scenario_check(prop_at("village-longhouse",7,17) && prop_at("village-longhouse",25,17) && prop_at("village-well",18.5,19.5),
-      "starter: authored landmarks align with server collision footprints");
+  scenario_check(prop_at("village-well",18.5,19.5) &&
+      std::none_of(state.scenery.begin(),state.scenery.end(),[](const auto& p){return p.kind==SceneryKind::Dwelling;}),
+      "starter: well stays anchored and no whole-building billboards are planted");
+  scenario_check(state.scenery.size()>60 && state.scenery.size()<240,
+      "starter: bounded procedural dressing replaces sparse landmark props");
+  for(const auto& p:verdigris::starter_layout::village().props) if(p.solid) {
+    const int x=int(std::round(p.x)),y=int(std::round(p.y));
+    if(x>=3 && x<29 && y>=3 && y<29)
+      scenario_check(!walkable(x,y),"starter: visible trunk or rock has authoritative collision");
+  }
   std::string captures;
   const int override_status = capture_root_override(&captures);
   if (override_status < 0) { scenario_check(false,"starter: capture root is valid"); return scenario_failures; }
@@ -83,6 +91,7 @@ int scenario_starter_slice() {
   send_dev_envelope(state,"dev:teleport",{{"x",16},{"y",19}});
   if (!await([&] { return std::abs(state.session->model().player.y-19)<.01; }, "starter: encounter inspection reaches well approach")) return scenario_failures;
   scenario_follow_camera(state);
+  state.hint.clear();state.hint_ticks=0; // Retire the fixture's teleport diagnostic before art review.
   scenario_check(reference_present(state,1280,800,captures+"\\starter-wave-1280x800.png"), "starter: first pack captured through production painter");
   scenario_check(state.starter_hits.empty(), "starter: active combat has no stale interaction or occupation hit targets");
   for (int wave=1; wave<=3; ++wave) {

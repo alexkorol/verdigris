@@ -1,4 +1,5 @@
 #include "verdigris/networking.hpp"
+#include "verdigris/starter_layout.hpp"
 
 #include <algorithm>
 #include <chrono>
@@ -83,6 +84,24 @@ void test_admission_choice_and_tool() {
   Fixture f;
   check(f.session.shared_world()->scene_id() == "owner-demo-prologue" && phase(f.session) == "occupation", "new starter arrives at threatened village");
   const auto& grid = f.session.shared_world()->grid();
+  const auto layout=verdigris::starter_layout::generate();
+  const auto replay=verdigris::starter_layout::generate();
+  const auto variation=verdigris::starter_layout::generate(42);
+  check(layout.props.size()==replay.props.size() && layout.props.size()>60 && layout.props.size()<240,
+        "procedural scenery is deterministic and bounded");
+  bool changed=layout.props.size()!=variation.props.size();
+  for(std::size_t i=0;i<layout.props.size();++i) {
+    const auto& a=layout.props[i];const auto& b=replay.props[i];
+    check(a.x==b.x && a.y==b.y && a.kind==b.kind,"same seed preserves every scenery placement");
+    if(i<variation.props.size())changed|=a.x!=variation.props[i].x || a.y!=variation.props[i].y;
+    const int x=int(std::round(a.x)),y=int(std::round(a.y));
+    if(a.solid && x>=3 && x<29 && y>=3 && y<29)
+      check(!grid.walkable_at(x,y),"tree trunks and rocks match the server obstacle map");
+  }
+  check(changed,"different layout seeds produce different scenery");
+  int openFormerHouse=0;
+  for(int y=11;y<=17;++y)for(int x=5;x<=9;++x)openFormerHouse+=grid.walkable_at(x,y);
+  check(openFormerHouse>20,"removing the house also removes its invisible rectangular wall");
   for (const auto goal : {verdigris::Vec2{16,22}, verdigris::Vec2{16,20}, verdigris::Vec2{14,15}, verdigris::Vec2{16,8}})
     check(reachable(grid, {16,23}, goal), "authority collision map connects the start, tool, rally, enemies and exit");
   check(state(f.session)["passiveTree"]["points"]["skill"].number().value_or(-1) == 0,

@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "verdigris/core.hpp"
+#include "verdigris/starter_layout.hpp"
 #include "verdigris/seasonal.hpp"
 #include "verdigris/networking.hpp"
 #include "camera2d.hpp"
@@ -2038,12 +2039,12 @@ void generate_scenery(ClientState& state) {
       add_scenery(state.scenery,kind,x*t,y*t,0,false,1);
       state.scenery.back().art_identity=identity;
     };
-    prop("village-longhouse",SceneryKind::Dwelling,7,17);
-    prop("village-longhouse",SceneryKind::Dwelling,25,17);
     prop("village-well",SceneryKind::Shrine,18.5,19.5);
     for(int x=4;x<29;x+=3) if(x<14 || x>18) prop("village-palisade",SceneryKind::Ruin,x,8);
-    for(const auto& at : {std::pair{4,6},std::pair{28,6},std::pair{4,23},std::pair{28,23}})
-      prop("village-tree",SceneryKind::Tree,at.first,at.second);
+    using Kind=verdigris::starter_layout::Kind;
+    for(const auto& item:verdigris::starter_layout::village().props)
+      prop(item.kind==Kind::Tree?"village-tree":item.kind==Kind::Shrub?"woodland-shrub":
+          item.kind==Kind::Rock?"rock":"grass",item.kind==Kind::Tree?SceneryKind::Tree:SceneryKind::Ruin,item.x,item.y);
     install_scenery_navigation(state); return;
   }
   SceneryRng rng(scenery_seed(route_id));
@@ -3242,10 +3243,8 @@ raster_ground::Layout ground_layout(const std::string& route_id,
   if (interior) return layout;
   if (prologue) {
     const double t=kTileUnits;
-    layout.road(16*t,26*t,16*t,5*t,1.7*t);
-    layout.road(16*t,20*t,16*t,20*t,3*t);
-    layout.road(16*t,20*t,7*t,18*t,1.1*t);
-    layout.road(16*t,20*t,25*t,18*t,1.1*t);
+    for(const auto& path:verdigris::starter_layout::village().paths)
+      layout.road(path.ax*t,path.ay*t,path.bx*t,path.by*t,path.width*t);
   } else if (town) {
     // Existing Crossroads landmark contract, in server tile coordinates.
     // The material only describes the open square and roads already present.

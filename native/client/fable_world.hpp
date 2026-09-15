@@ -388,6 +388,13 @@ inline bool paint(ClientState& state,HDC dc,const RECT& bounds,render::List& tra
     if(!item.art_identity.empty()) {
       if(const auto* clip=first_slice_art::registry().find(item.art_identity,"idle","front"))
         authored_sprite(*clip,0,item.position.x,item.position.y);
+      else if(item.art_identity=="rock" || item.art_identity=="grass") {
+        // Small existing cutouts use the same 48 px/metre as the authored set.
+        const auto size=raster_art::dimensions(item.art_identity.c_str());
+        if(auto* s=sprite(item.art_identity,item.position.x,item.position.y,size.height*kTileUnits/48.0)) {
+          s->anchor_y=1.f;s->crisp=true;
+        }
+      }
       continue;
     }
     const char* name=item.kind==SceneryKind::Tree?"tree":item.kind==SceneryKind::Ruin?"column":

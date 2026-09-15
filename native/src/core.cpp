@@ -1,5 +1,6 @@
 #include "verdigris/core.hpp"
 #include "verdigris/inventory_extensions.hpp"
+#include "verdigris/starter_layout.hpp"
 
 #include <cmath>
 #include <atomic>
@@ -1863,8 +1864,10 @@ void WorldSimulation::enter_starter_village() {
   grid_.width=32;grid_.height=32;grid_.walkable.assign(32*32,0);
   for(int y=3;y<29;++y)for(int x=3;x<29;++x)grid_.walkable[y*32+x]=1;
   for(int x=3;x<29;++x)if(x<15||x>17)grid_.walkable[8*32+x]=0;
-  for(int y=11;y<=17;++y)for(int x=5;x<=9;++x)grid_.walkable[y*32+x]=0;
-  for(int y=11;y<=17;++y)for(int x=23;x<=27;++x)grid_.walkable[y*32+x]=0;
+  for(const auto& prop:starter_layout::village().props) if(prop.solid) {
+    const int x=static_cast<int>(std::round(prop.x)),y=static_cast<int>(std::round(prop.y));
+    if(x>=3 && x<29 && y>=3 && y<29)grid_.walkable[y*32+x]=0;
+  }
   for(int y=18;y<=19;++y)for(int x=18;x<=19;++x)grid_.walkable[y*32+x]=0;
   position_={16,23};facing_="up";monsters_.clear();ground_items_.clear();
   active_target_.clear();player_attack_active_=false;last_pursuit_tick_ms_=-1;
