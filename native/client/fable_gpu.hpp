@@ -355,6 +355,8 @@ class Renderer {
     D3D11_RASTERIZER_DESC raster{}; raster.FillMode=D3D11_FILL_SOLID;
     raster.CullMode=D3D11_CULL_NONE; raster.DepthClipEnable=TRUE;
     if (FAILED(hr=device_->CreateRasterizerState(&raster,raster_.ReleaseAndGetAddressOf()))) return fail("raster state",hr);
+    raster.ScissorEnable=TRUE;
+    if (FAILED(hr=device_->CreateRasterizerState(&raster,occlusion_raster_.ReleaseAndGetAddressOf()))) return fail("occlusion raster state",hr);
     D3D11_DEPTH_STENCIL_DESC depth{}; depth.DepthEnable=TRUE;
     depth.DepthFunc=D3D11_COMPARISON_LESS_EQUAL; depth.DepthWriteMask=D3D11_DEPTH_WRITE_MASK_ALL;
     if (FAILED(hr=device_->CreateDepthStencilState(&depth,depth_write_.ReleaseAndGetAddressOf()))) return fail("depth state",hr);
@@ -444,6 +446,21 @@ class Renderer {
     ID3D11RenderTargetView* world=world_.target.Get();
     context_->OMSetRenderTargets(1,&world,depth_view_.Get());
     fullscreen(sky_ps_.Get());
+    // Seed near depth behind the opaque inventory before drawing the world.
+    // A shader discard alone still launches expensive foliage shaders under
+    // the panel. Early depth rejection avoids that work without changing a
+    // single visible world pixel. ClearDepthStencilView resets this each frame.
+    const auto pixel_edge=[](float value,int limit) {
+      return static_cast<LONG>(std::clamp(std::ceil(value-.5f),0.f,float(limit)));
+    };
+    const D3D11_RECT hidden{pixel_edge(scene.opaque_rect[0],width_),pixel_edge(scene.opaque_rect[1],height_),
+                           pixel_edge(scene.opaque_rect[2],width_),pixel_edge(scene.opaque_rect[3],height_)};
+    if(hidden.right>hidden.left && hidden.bottom>hidden.top) {
+      context_->RSSetState(occlusion_raster_.Get());context_->RSSetScissorRects(1,&hidden);
+      context_->OMSetDepthStencilState(depth_write_.Get(),0);
+      context_->Draw(3,0);++stats_.draw_calls;
+      context_->RSSetState(raster_.Get());
+    }
     const UINT stride=sizeof(detail::GpuVertex),offset=0;
     ID3D11Buffer* vb=vertex_buffer_.Get();
     context_->IASetVertexBuffers(0,1,&vb,&stride,&offset);
@@ -705,7 +722,7 @@ class Renderer {
   detail::Com<ID3D11VertexShader> world_vs_,full_vs_;
   detail::Com<ID3D11PixelShader> world_ps_,sky_ps_,light_ps_,post_ps_;
   detail::Com<ID3D11InputLayout> input_;detail::Com<ID3D11Buffer> constants_,vertex_buffer_,index_buffer_;
-  detail::Com<ID3D11SamplerState> point_,ground_,linear_;detail::Com<ID3D11RasterizerState> raster_;
+  detail::Com<ID3D11SamplerState> point_,ground_,linear_;detail::Com<ID3D11RasterizerState> raster_,occlusion_raster_;
   detail::Com<ID3D11DepthStencilState> depth_write_,depth_read_,depth_off_;
   detail::Com<ID3D11BlendState> opaque_,alpha_,additive_;
   detail::Target world_,output_,light_;detail::Com<ID3D11Texture2D> depth_image_,staging_;

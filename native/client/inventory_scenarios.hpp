@@ -61,6 +61,19 @@ int scenario_inventory_equipment() {
     scene.opaque_rect={};
     scenario_check(gpu.render(scene,nullptr) && std::equal(before.begin(),before.end(),gpu.pixels_bgra().begin(),gpu.pixels_bgra().end()),
         "inventory: closing the panel restores every world pixel");
+    scene.opaque_rect={-20.2f,50.4f,160.6f,250.7f};
+    scenario_check(gpu.render(scene,nullptr),"inventory: fractional offscreen panel renders");
+    bool clipped_outside_equal=true;
+    const auto clipped=gpu.pixels_bgra();
+    for(int y=0;y<200;++y)for(int x=0;x<320;++x) {
+      if(x+.5f<160.6f && y+.5f>=50.4f)continue;
+      const auto offset=(y*320+x)*4;
+      clipped_outside_equal&=std::equal(before.begin()+offset,before.begin()+offset+4,clipped.begin()+offset);
+    }
+    scenario_check(clipped_outside_equal,"inventory: early depth exclusion preserves fractional boundary and viewport-edge pixels");
+    scene.opaque_rect={};
+    scenario_check(gpu.render(scene,nullptr) && std::equal(before.begin(),before.end(),gpu.pixels_bgra().begin(),gpu.pixels_bgra().end()),
+        "inventory: early occlusion depth cannot survive closing the panel");
   }
   std::unique_ptr<verdigris::networking::WebSocketServer> server;
   unsigned short port = 0;
