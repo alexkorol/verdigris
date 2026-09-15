@@ -31,6 +31,7 @@ struct Run {
   bool charge_accepted=false,warden_credit=false,reward_received=false,reconnected=false;
   std::vector<double> steady_samples;std::string measured_scene;int scene_frames=0;
   int points_before=0,points_after=0;std::string inventory_after;
+  int stagnant_movement_steps=0;
   explicit Run(std::filesystem::path path,std::string side):root(std::move(path)),output(root/side),role(std::move(side)),other(role=="A"?"B":"A") {}
   ~Run(){if(state.session)state.session->shutdown();if(window){SetWindowLongPtr(window,GWLP_USERDATA,0);DestroyWindow(window);}}
   void require(bool ok,const std::string& label) {
@@ -180,6 +181,9 @@ struct Run {
     settle(near_entry?250:100);
     {std::ofstream trace(output/"combat-navigation.jsonl",std::ios::app);
       trace<<Json(Json::Object{{"phase",prefix},{"frame",frame},{"from_x",before.x},{"from_y",before.y},{"target",target_id},{"target_x",tx},{"target_y",ty},{"distance",nearest},{"dx",route_x},{"dy",route_y},{"stairs_x",stairs.stairs_up_x},{"stairs_y",stairs.stairs_up_y},{"to_x",model().player.x},{"to_y",model().player.y},{"scene",model().scene.id},{"own_hit",own_hit}}).stringify()<<'\n';}
+    if((route_x||route_y)&&std::hypot(model().player.x-before.x,model().player.y-before.y)<.05)++stagnant_movement_steps;
+    else stagnant_movement_steps=0;
+    if(stagnant_movement_steps>=5)require(false,"five ordinary movement attempts must advance this client's authoritative pose");
     if(model().scene.id!=instance_id)require(false,"combat movement preserves the shared instance");
     if(frame<12||frame%30==0)capture(prefix+"-"+std::to_string(frame));return true;
   }
