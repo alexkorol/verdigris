@@ -15,9 +15,10 @@ handle owns `service.lock` until destruction, including during schema checks.
 UNC/network/removable data roots are rejected; use a fixed local service disk.
 
 - `open(error)` validates SQLite integrity, refuses future schemas, and requires
-  WAL + synchronous FULL. Schema version 2 contains accounts, hashed enrollment
+  WAL + synchronous FULL. Schema version 3 contains accounts, hashed enrollment
   and account recovery codes, hashed credentials, and globally unique outcome
-  IDs. Version-one stores migrate transactionally without resetting accounts.
+  IDs plus opaque singleton global state. Version-one/two stores migrate
+  transactionally without resetting accounts.
 - `issue_enrollment(now, ttl_ms, error)` returns a one-use 256-bit random code.
   `enroll(code, now, error)` atomically consumes the code and creates independent
   random `acct_` identity plus `ses_` reconnect token. Only SHA256 hashes of
@@ -40,6 +41,14 @@ UNC/network/removable data roots are rejected; use a fixed local service disk.
   64 MiB total, 256-byte outcome ID.
 - `has_outcome(id)` throws on storage errors so failures cannot be mistaken for
   absence. Callers must catch/fail closed. Other operations return error values.
+- `commit_state(accounts,global_state,outcome_id,error)` atomically commits the
+  opaque global ledger with every affected account and outcome record. Empty
+  account batches are allowed for global-only transitions. A duplicate outcome
+  is a no-op for both accounts and global state. Global state is limited to
+  16 MiB and counts toward the existing 64 MiB total transaction bound.
+  `load_world_state(error)` returns null with no error when absent. Existing
+  `commit_accounts` never overwrites global state. Parsing and relic ownership
+  rules remain the parent's authority; this adapter guarantees transactionality.
 - `backup_to(fresh_directory,error)` uses SQLite online backup while callers are
   serialized, closes/checkpoints the backup, then flushes `backup.complete`.
   `restore_backup(backup_directory,fresh_directory,error)` requires that marker,
@@ -79,7 +88,7 @@ cl /nologo /std:c++20 /EHsc /W4 /WX /DVERDIGRIS_SERVICE_STORE_TESTING /Inative/i
 native/build/service_store_tests.exe
 ```
 
-Both exit 0; **145 assertions passed**. Tests cover wrong credential kinds,
+Both exit 0; **202 assertions passed**. Tests cover wrong credential kinds,
 arbitrary guest identities, time overflow, exact enrollment/session expiry,
 revocation and restart, one-use enrollment rollback/replay, private distinct
 snapshots, unknown account failure, duplicate outcomes, limits, 16 concurrent
@@ -87,8 +96,10 @@ enrollment attempts (one winner), 16 concurrent outcome attempts (one shared
 atomic result), failed writes after first account and after outcome insert,
 and scans proving plaintext codes/tokens absent from DB/WAL files.
 
-Two real child processes terminate with code 77 inside an uncommitted transaction
-after the first write and after outcome insertion. Fresh processes successfully
+Five real child processes terminate with code 77 inside uncommitted transactions:
+two account-only failures after the first write and after outcome insertion,
+and three combined account/global failures after account, global, and outcome
+writes. Fresh processes successfully
 open/recover the WAL; both original account snapshots and absence of the failed
 outcome are checked. Live backup then further live changes then restore proves
 backup-point snapshots, credentials, and outcome deduplication survive. Missing,
@@ -98,6 +109,11 @@ foreign account, no new accounts, original valid/expired token revocation, repla
 expired recovery, unknown identity, transaction failure, restart redemption,
 outstanding-code invalidation, 16-thread one-winner redemption, and version-one
 schema migration preserving recovered credentials and House state.
+Combined-state tests also cover absent-vs-error reads, global-only saves,
+ordinary account saves preserving the global ledger, duplicate combined outcome
+no-ops, oversize rejection, and backup/restore of the same source inventory,
+recipient inventory, global ownership snapshot and deduplication point.
+Version-two migration creates an absent global ledger without fabricating state.
 
 Production build (without test macro), `/W4 /WX`: exit 0. `dumpbin /symbols`
 contains neither `test_interrupt_after_writes` nor `TerminateProcess`.

@@ -44,6 +44,15 @@ public:
     // A duplicate outcome is a no-op success. Empty ID = ordinary atomic save.
     bool commit_accounts(const std::map<std::string, std::string>& snapshots,
                          const std::string& outcome_id, std::string* error = nullptr);
+    // Persist opaque service-wide ownership state (e.g. a relic ledger) in the
+    // SAME transaction as every affected account and outcome deduplication.
+    // Empty account batches are allowed. commit_accounts preserves this state.
+    bool commit_state(const std::map<std::string, std::string>& snapshots,
+                      const std::string& global_state, const std::string& outcome_id,
+                      std::string* error = nullptr);
+    // Missing state returns nullopt with an empty error; callers may initialize
+    // a fresh ledger only in that case, never after a storage read error.
+    std::optional<std::string> load_world_state(std::string* error = nullptr);
     bool has_outcome(const std::string& outcome_id);
 
     // Consistent SQLite online backup. Destination directory MUST NOT exist.
@@ -59,6 +68,9 @@ public:
 #endif
 
 private:
+    bool commit_impl(const std::map<std::string, std::string>& snapshots,
+                     const std::string* global_state, const std::string& outcome_id,
+                     std::string* error);
     struct Impl;
     std::unique_ptr<Impl> impl_;
 };
