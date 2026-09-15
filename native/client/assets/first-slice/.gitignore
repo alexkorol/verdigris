@@ -1,0 +1,5 @@
+# Generation work stays local. Only the explicitly reviewed milestone is versioned.
+/*
+!/.gitignore
+!/README.md
+!/reviewed/

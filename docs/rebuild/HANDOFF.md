@@ -2559,3 +2559,12 @@ Load-bearing findings for successors:
 
 Remaining axes: presentation deltas #3/#4 (surface density TASK-0078,
 panels/typography unspecced), Gate B Chronicles client (TASK-0077).
+
+
+## 2026-09-14 — first-slice art milestone (Codex)
+
+Branch `codex/first-slice-art-20260914`, isolated worktree. Published art scope: 128 reviewed player locomotion PNGs (male/female, walk/sprint, four cardinal directions, eight phases). Fixed 96x96 canvas, [48,80] rig anchor, 48px/metre. Undyed linen without trim; shorter practical female cut; female braid centered behind the head. Includes editable Blender sources, native references, original generated alpha PNGs and hash-checked reconstruction reports under `native/client/assets/first-slice/reviewed`.
+
+This is NOT completion of the owner request for all village-defense prologue assets. Native game integration, idle/combat/equipment, NPCs, monsters and scenery remain unfinished. Rejected local generations are excluded from the versioned reviewed pack. Do not use old candidate files when their source hash no longer matches the report. The experimental attack renderer still has hand-pose and skin-mask defects and is not approved for painting or runtime.
+
+Validation: package validator loaded all128 PNGs and checked RGBA/binary alpha,96x96 size, unique phases, source/reference/output hashes, fixed anchor, whole-cycle registration and per-frame silhouette gates. Both full64-frame contact sheets were visually inspected at2x; no gameplay change is claimed. Native baseline build/tests and fable-world scenario passed before asset work; no client source or game behavior was changed by this milestone. Standing owner policy permits committing and normal pushing verified implementation; do not add a blanket push ban.
