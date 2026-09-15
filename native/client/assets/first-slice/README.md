@@ -1,5 +1,20 @@
 # First-slice art — incomplete
 
+## Owner review hold — 2026-09-15
+
+The owner rejected the current monster, hut and tree direction and the gate/portal
+visible in the test scene. Earlier `accepted` folder names record technical/lane
+review only; they do not establish owner approval. Do not publish these as the
+finished first-slice art. The visible gate is inherited scenery, not an approved
+prologue design. Preserve existing outputs for reuse; stop generation expansion.
+
+The owner has reduced scope to basic views and short animations sufficient for
+the Village Palisade slice. Defer separate sprint sets, extra equipment families,
+diagonals and long combat cycles. Settle one scene's visual direction with the
+approved starter character and a few environmental/monster guides before more
+generation. The prologue specification says packs and a square/well boss; it
+does not establish wolves as the approved creature design.
+
 ## Accepted nonplayer assets
 
 The Village Palisade art pack now contains 16 static NPC cardinal views in
