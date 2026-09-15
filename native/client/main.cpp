@@ -794,6 +794,15 @@ struct ClientState {
 
 constexpr std::size_t kMaxPresentationEffects = 128;
 
+std::unique_ptr<ClientState> make_product_client() {
+  auto state=std::make_unique<ClientState>();
+  // Both launcher modes use the production GPU and authored actor path.
+  // Legacy camera defaults remain available only to explicit reference tests.
+  state->camera.perspective=true;
+  state->lineage_art=true;
+  return state;
+}
+
 void add_effect(ClientState& state, EffectFx fx) {
   if (state.effects.size() >= kMaxPresentationEffects) {
     auto oldest = std::find_if(state.effects.begin(), state.effects.end(),
@@ -21937,9 +21946,7 @@ int run_remote_native_client(const char* host, unsigned short port, const char* 
   std::printf("source=%s dirty=%d renderer=Fable perspective=1 authored-poses=96 asset-root=%ls\n",
       VERDIGRIS_BUILD_ID, VERDIGRIS_BUILD_DIRTY, raster_art::asset_root().c_str());
   std::fflush(stdout);
-  auto state = std::make_unique<ClientState>();
-  state->camera.perspective = true;
-  state->lineage_art = true;
+  auto state = make_product_client();
   state->chronicles_mode = chronicles_mode;
   if (chronicles_mode) state->frontend = Frontend::Title;
   state->screen = chronicles_mode ? Screen::Chronicles : Screen::Expedition;
@@ -22098,7 +22105,7 @@ int main(int argc, char** argv) {
     }
   }
   HINSTANCE instance = GetModuleHandle(nullptr);
-  auto state = std::make_unique<ClientState>();
+  auto state = make_product_client();
   state->frontend = Frontend::Title;
   state->simulation = std::make_unique<verdigris::Simulation>(0xC011AB1EULL, "House Verdigris");
   verdigris::EmberHunt seasonal;

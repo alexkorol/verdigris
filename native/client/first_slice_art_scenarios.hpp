@@ -32,6 +32,19 @@ bool first_slice_depth_probe() {
 
 int scenario_first_slice_art() {
   using namespace first_slice_art;
+  auto product=make_product_client();
+  scenario_check(product->camera.perspective&&product->lineage_art,
+      "first-slice-art: local and remote startup select the production authored GPU path");
+  scenario_begin(*product);scenario_follow_camera(*product);
+  const auto startup_dir=art_wave_capture_dir();
+  scenario_check(!startup_dir.empty()&&reference_present(*product,1366,768,startup_dir+"\\first-slice-product-startup.png")&&
+      product->camera.perspective&&fable_world::renderer().gpu.error().empty(),
+      "first-slice-art: actual startup configuration draws the live scenery through the GPU");
+  if(registry().find("tree","idle","front")) {
+    const bool accepted_tree=std::any_of(product->render_list.begin(),product->render_list.end(),[](const auto& item){
+      return item.label.rfind("art:fs_tree_",0)==0;});
+    scenario_check(accepted_tree,"first-slice-art: startup scene consumes accepted tree art without fixture bindings");
+  }
   scenario_check(first_slice_depth_probe(),
       "first-slice-art: footprint depth reveals below-pivot pixels without moving the screen rectangle");
   scenario_check(fable_world::kTerrainWidth==80*48&&fable_world::kTerrainHeight==64*48,
