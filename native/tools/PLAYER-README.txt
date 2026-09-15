@@ -21,7 +21,7 @@ Defeat in the village restarts the defense and keeps your equipment.
 Previously admitted characters keep their saved entry; use a new Scion to review
 the opening. Enemy visuals are provisional human raiders in this build.
 
-This is an unsigned local review build, not a public release or installer.
+This is an unsigned development preview, not an installer or a finished game.
 Windows x64 and the Windows .NET Framework 4.x runtime are required.
 Use a writable extracted folder. Do not run the executable inside a ZIP viewer.
 Move the profile folder separately if keeping review saves across package versions.

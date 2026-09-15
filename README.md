@@ -7,16 +7,17 @@ current game to install, develop, or use for native acceptance.
 
 ## Start here: the native game
 
-Active development is on
-[`codex/native-reconstitution`](https://github.com/alexkorol/verdigris/tree/codex/native-reconstitution).
-The default branch may lag behind it. Use the native branch for the commands
-below; do not build an older checkout and treat it as the current game.
+The default branch, `master`, contains the integrated native game.
+Download the Windows starter preview from
+[GitHub Releases](https://github.com/alexkorol/verdigris/releases), extract the
+whole archive, and run `Verdigris.exe`. No development tools are needed for
+the packaged game.
 
-This is an in-development Windows game, not a completed first playable slice.
-For published builds, consult
-[GitHub Releases](https://github.com/alexkorol/verdigris/releases).
-As of 12 September 2026, this repository has no published release package.
-Local review executables and agent completion reports are not public releases.
+The preview covers House/Scion creation, occupation choice, village defense,
+the well boss, forgiving retry, the first skill point, and departure to
+Crossroads. The starter map uses procedural woodland scenery. This remains
+an in-development preview: enemy art is provisional, and the rest of the
+campaign is unfinished. Release notes identify the tested source commit.
 
 ### Play from source on Windows
 
@@ -27,7 +28,7 @@ Visual Studio Build Tools with the C++ toolchain and Windows SDK.
 For a new checkout:
 
 ```powershell
-git clone --branch codex/native-reconstitution --single-branch https://github.com/alexkorol/verdigris.git verdigris-native
+git clone --branch master --single-branch https://github.com/alexkorol/verdigris.git verdigris-native
 cd verdigris-native
 powershell -NoProfile -File .\native\tools\play-native.ps1
 ```
@@ -46,16 +47,16 @@ executable is not a player package. `-Local` and the bare client executable
 are developer/test paths, not substitutes for the normal server-backed launch.
 
 For detailed controls and platform notes, see the
-[native workspace guide](https://github.com/alexkorol/verdigris/blob/codex/native-reconstitution/native/README.md).
+[native workspace guide](https://github.com/alexkorol/verdigris/blob/master/native/README.md).
 The current native prototype covers House/Scion entry, expeditions, movement,
 combat, loot/equipment, and return/extraction. For the exact implemented state
 and known limitations, use the
-[native handoff](https://github.com/alexkorol/verdigris/blob/codex/native-reconstitution/docs/rebuild/HANDOFF.md).
+[native handoff](https://github.com/alexkorol/verdigris/blob/master/docs/rebuild/HANDOFF.md).
 Do not treat the old browser feature checklist as evidence of native completion.
 
 ## Build and verify native changes
 
-Run these from the native-branch repository root:
+Run these from the repository root:
 
 ```powershell
 # Build the native executables.
@@ -109,9 +110,9 @@ rendered game. Passing those tests does not verify the Windows presentation.
 | `src/`, `server/`, `playtest/`, root JS tooling | Historical browser implementation and its tests |
 
 Before implementing, read the native branch's
-[agent guide](https://github.com/alexkorol/verdigris/blob/codex/native-reconstitution/AGENTS.md),
-[product constitution](https://github.com/alexkorol/verdigris/blob/codex/native-reconstitution/docs/product/VERDIGRIS_CONSTITUTION.md),
-and [coordination protocol](https://github.com/alexkorol/verdigris/blob/codex/native-reconstitution/orchestration/PROTOCOL.md).
+[agent guide](https://github.com/alexkorol/verdigris/blob/master/AGENTS.md),
+[product constitution](https://github.com/alexkorol/verdigris/blob/master/docs/product/VERDIGRIS_CONSTITUTION.md),
+and [coordination protocol](https://github.com/alexkorol/verdigris/blob/master/orchestration/PROTOCOL.md).
 
 Authorized implementation includes committing and pushing verified work to
 its working branch unless the owner requests local-only work. Verify the
