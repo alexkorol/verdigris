@@ -1,0 +1,21 @@
+{
+  "source": "female-club-idle-projection.blend",
+  "source_sha256": "0d45af97353a0856193e9a8a46a631aee6872e4a5d76ccbe1822a83698b606f6",
+  "geometry_sha256": "c185bc998131022f522063c04ca7e5e7ff89f3e36adf4f2f9b1edd27efb814ef",
+  "appearance_sha256": "632f96780c937d9fe1f8b30e16d04fa4d819c491a0daa2cba19e4ce14851526f",
+  "source_frames": [
+    1
+  ],
+  "frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "pixels_per_metre": 48,
+  "filter": "BOX 1.0",
+  "identity": "scribe",
+  "action": "idle"
+}

@@ -61,6 +61,33 @@ int scenario_inventory_equipment() {
     scene.opaque_rect={};
     scenario_check(gpu.render(scene,nullptr) && std::equal(before.begin(),before.end(),gpu.pixels_bgra().begin(),gpu.pixels_bgra().end()),
         "inventory: closing the panel restores every world pixel");
+    scene.opaque_rect={-20.2f,50.4f,160.6f,250.7f};
+    scenario_check(gpu.render(scene,nullptr),"inventory: fractional offscreen panel renders");
+    bool clipped_outside_equal=true;
+    const auto clipped=gpu.pixels_bgra();
+    for(int y=0;y<200;++y)for(int x=0;x<320;++x) {
+      if(x+.5f<160.6f && y+.5f>=50.4f)continue;
+      const auto offset=(y*320+x)*4;
+      clipped_outside_equal&=std::equal(before.begin()+offset,before.begin()+offset+4,clipped.begin()+offset);
+    }
+    scenario_check(clipped_outside_equal,"inventory: early depth exclusion preserves fractional boundary and viewport-edge pixels");
+    scene.opaque_rect={};
+    scenario_check(gpu.render(scene,nullptr) && std::equal(before.begin(),before.end(),gpu.pixels_bgra().begin(),gpu.pixels_bgra().end()),
+        "inventory: early occlusion depth cannot survive closing the panel");
+    // Defocused transparent texels must not tint the sprite edge. In-focus
+    // sprites retain nearest sampling; neither case may expose hidden RGB.
+    const std::array<std::uint8_t,16> dirty{230,40,20,255, 0,255,255,0, 230,40,20,128, 0,255,255,0};
+    const std::array<std::uint8_t,16> clean{230,40,20,255, 0,0,0,0, 230,40,20,128, 0,0,0,0};
+    for(float depth:{0.f,-100.f}) {
+      const std::array<fable_gpu::Sprite,1> edge_sprite{{{2,0,depth,0,280,120,.5f,.5f}}};
+      scene.sprites=edge_sprite;
+      scenario_check(gpu.upload_texture(2,2,2,dirty.data(),8,false,1) && gpu.render(scene,nullptr),
+          "inventory: transparent-edge sprite renders");
+      const std::vector<std::uint8_t> dirty_frame(gpu.pixels_bgra().begin(),gpu.pixels_bgra().end());
+      scenario_check(gpu.upload_texture(2,2,2,clean.data(),8,false,2) && gpu.render(scene,nullptr) &&
+          std::equal(dirty_frame.begin(),dirty_frame.end(),gpu.pixels_bgra().begin(),gpu.pixels_bgra().end()),
+          "inventory: sharp and defocused sprite edges reject transparent RGB halos");
+    }
   }
   std::unique_ptr<verdigris::networking::WebSocketServer> server;
   unsigned short port = 0;

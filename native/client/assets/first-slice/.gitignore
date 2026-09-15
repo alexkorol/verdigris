@@ -24,3 +24,20 @@
 
 !/starter-minimal/
 !/village-v3/
+!/village-attackers/
+/village-attackers/*/frames/
+/village-attackers/*/scenes/
+/village-attackers/*/scenes.zip
+/village-attackers/*/*-2x.png
+/village-attackers/*/*-4x.png
+/village-attackers/*/registration-review.png
+/village-attackers/*/idle-review.png
+/village-attackers/*/motions.gif
+!/village-npcs/
+/village-npcs/*/frames/
+/village-npcs/*/scenes/
+/village-npcs/*/*-2x.png
+/village-npcs/*/*-4x.png
+/village-npcs/*/registration-review.png
+/village-npcs/*/idle-review.png
+/village-npcs/*/motions.gif

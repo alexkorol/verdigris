@@ -1,0 +1,22 @@
+{
+  "source": "male-club-hit-projection.blend",
+  "source_sha256": "3b9e77658281763ad470f20cfed49963c77788e88880949b16c4e8d82947887b",
+  "geometry_sha256": "88f66933873171ff21dc7d68079788d05751ae9fc2026a33a1008aaf3f8c6865",
+  "appearance_sha256": "6ab71ff9e45e6bdae371d28d009882345c28ea319acdda458e83260df6e66370",
+  "source_frames": [
+    1,
+    29
+  ],
+  "frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "pixels_per_metre": 48,
+  "filter": "BOX 1.0",
+  "identity": "village-leader",
+  "action": "hit"
+}

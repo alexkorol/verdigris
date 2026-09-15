@@ -1,0 +1,19 @@
+{
+  "filename": "Verdigris-village-attackers-editable.zip",
+  "bytes": 101212522,
+  "sha256": "ce0c9a52c93ca1c6fb53bdd156d8b001a80b52d0fbdd7921bb804e999806d851",
+  "scenes": {
+    "village-invader/scenes/village-invader-attack.blend": "49dce0c46629d8d552ee6d591d848f68be80281bb57ae658be5f73907e3c230a",
+    "village-invader/scenes/village-invader-death.blend": "7ef529df31c93faa9c8d10b2aa890fa4ef8549591a15f4214d7c82322361f42a",
+    "village-invader/scenes/village-invader-hit.blend": "ea2b27100f28f090d75174c4f1670dc8936f1df21f0912dab9679cd2c2aa3b8d",
+    "village-invader/scenes/village-invader-idle.blend": "725a4b5f83f6fc5e01324c97a80473a5ec16224017d482757377277ee4a1dfa3",
+    "village-invader/scenes/village-invader-reference.blend": "6206bed48c61756cbed39176f49ca368f96a68585f128c9ed8911169e6a14670",
+    "village-invader/scenes/village-invader-walk.blend": "867e51f1561edfb3eb5b84cd029c82bc8525bc2080c2c6b91f2f523f088dc8cc",
+    "village-leader/scenes/village-leader-attack.blend": "0a83581278d9c4fdd655f682315b0ac6f9c00c9b3346371e53bbb9b061f12a6a",
+    "village-leader/scenes/village-leader-death.blend": "82da020e8afdcb75525163a91d9083328fada88edf814083d596c67b9d940f5d",
+    "village-leader/scenes/village-leader-hit.blend": "898e82ed3cd64a4ccfd88b4210adda00464939c6803d9be0acbe3cd940c8d7f7",
+    "village-leader/scenes/village-leader-idle.blend": "73e0ddb9eddd4515921f1619de15fe1a67d8b9505472b610ef6d120d496dd55c",
+    "village-leader/scenes/village-leader-reference.blend": "b1ac003b1c6af4aa46f50db82ee93e7a950817f4429cd23a9553302108f36439",
+    "village-leader/scenes/village-leader-walk.blend": "b5dba6940256e63aa23156aa353c07cd987765b478b358ee874d46ca40b42d45"
+  }
+}

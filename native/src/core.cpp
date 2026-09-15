@@ -2400,6 +2400,20 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
                                                               std::int64_t now_ms) {
   std::vector<WorldCombatEvent> events;
   const auto now = static_cast<std::uint64_t>(std::max<std::int64_t>(0, now_ms));
+  const bool starter = scene_id_ == "owner-demo-prologue";
+  const auto attack_presentation = [&](const WorldMonster& monster, const char* type,
+                                      const char* skill, int duration_ms) {
+    WorldCombatEvent event;
+    event.type = type; event.attacker_id = monster.uuid; event.attacker_name = monster.name;
+    event.target_id = player_uuid_; event.skill_id = skill; event.duration_ms = duration_ms;
+    event.x = monster.x; event.y = monster.y; event.radius = 1; event.attack_style = "crush";
+    const auto at = monster.world_position();
+    event.has_actor_pose = true; event.actor_x = at.x; event.actor_y = at.y;
+    event.facing_x = position_.x > at.x ? 1 : position_.x < at.x ? -1 : 0;
+    event.facing_y = position_.y > at.y ? 1 : position_.y < at.y ? -1 : 0;
+    if (!event.facing_x && !event.facing_y) event.facing_y = 1;
+    return event;
+  };
   if (active_target_.empty()) {
     const Vec2 here = tile_movement::occupied_tile(position_);
     // N5: a scion standing beside a pack member is engaged even without
@@ -2433,7 +2447,16 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
         monster.next_attack_ms = now + 400 + stagger_hash % 900;
         continue;
       }
-      if (now < monster.next_attack_ms) continue;
+      if (now < monster.next_attack_ms) {
+        if (starter && monster.next_attack_ms - now <= 300 &&
+            monster.presentation_attack_warning_ms != monster.next_attack_ms) {
+          monster.presentation_attack_warning_ms = monster.next_attack_ms;
+          events.push_back(attack_presentation(monster, "telegraph", "monster:club-strike",
+              static_cast<int>(monster.next_attack_ms - now)));
+        }
+        continue;
+      }
+      if (starter) events.push_back(attack_presentation(monster, "attack", "monster:club-strike", 600));
       monster.next_attack_ms = now + 1200;
       // Owner balance ruling 2026-08-31: 4 + level*2 outpaced level-1 life
       // by the third simultaneous attacker; contact pressure now scales at
@@ -2445,6 +2468,7 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       impact.attacker_id = monster.uuid;
       impact.attacker_name = monster.name;
       impact.target_id = player_uuid_;
+      if (starter) { impact.skill_id = "monster:club-strike"; impact.attack_style = "crush"; }
       impact.amount = damage;
       impact.health = player_life;
       impact.health_max = player_life_max;
@@ -2528,18 +2552,25 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       WorldCombatEvent warning; warning.type = "telegraph"; warning.attacker_id = target->uuid;
       warning.attacker_name = target->name; warning.target_id = player_uuid_; warning.skill_id = "boss:ground-slam";
       warning.radius = kN3BossTelegraphRadius; warning.duration_ms = kN3BossTelegraphWindowMs; warning.x = target->x; warning.y = target->y;
+      if (starter) {
+        warning = attack_presentation(*target, "telegraph", "boss:ground-slam", kN3BossTelegraphWindowMs);
+        warning.radius = kN3BossTelegraphRadius;
+      }
       events.push_back(warning);
       // Every warning resolves at its authored window below - the server
       // tick thread is the simulation timer, so an instant second-warning
       // resolution would punish a player who already left the circle.
       boss_warning_seen_ = true;
     } else if (target->telegraph_until_ms != 0 && now >= target->telegraph_until_ms) {
+      // The committed slam still animates when the player dodges its damage.
+      if (starter) events.push_back(attack_presentation(*target, "attack", "boss:ground-slam", 600));
       const Vec2 p = tile_movement::occupied_tile(position_);
       if (std::abs(p.x - target->x) <= kN3BossTelegraphRadius && std::abs(p.y - target->y) <= kN3BossTelegraphRadius &&
           grid_line_clear(grid_, p, {target->x, target->y})) {
         player_life = std::max(0, player_life - kN3BossDamage);
         WorldCombatEvent impact; impact.type = "hit"; impact.attacker_id = target->uuid; impact.attacker_name = target->name;
         impact.target_id = player_uuid_; impact.target_name = "Adventurer"; impact.skill_id = "boss:ground-slam";
+        if (starter) impact.attack_style = "crush";
         impact.amount = kN3BossDamage; impact.health = player_life; impact.health_max = player_life_max; impact.died = player_life == 0;
         events.push_back(impact);
       }

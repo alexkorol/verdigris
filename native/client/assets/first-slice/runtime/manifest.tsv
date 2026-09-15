@@ -1,8 +1,8 @@
 # identity action direction fps loop width height anchor_x anchor_y pixels_per_metre frames...
-defender	idle	back	1	1	96	96	48	80	48	fs_defender_idle_back_00_003f11c0b0
-defender	idle	front	1	1	96	96	48	80	48	fs_defender_idle_front_00_c8bf65895f
-defender	idle	left	1	1	96	96	48	80	48	fs_defender_idle_left_00_b37d97a680
-defender	idle	right	1	1	96	96	48	80	48	fs_defender_idle_right_00_4f44534083
+defender	idle	back	1	1	96	96	48	80	48	fs_defender_idle_back_00_bb437cdf25
+defender	idle	front	1	1	96	96	48	80	48	fs_defender_idle_front_00_55ab64b124
+defender	idle	left	1	1	96	96	48	80	48	fs_defender_idle_left_00_4e5a534222
+defender	idle	right	1	1	96	96	48	80	48	fs_defender_idle_right_00_ed80d07322
 field-hand	idle	back	1	1	96	96	48	80	48	fs_field-hand_idle_back_00_5e228626fa
 field-hand	idle	front	1	1	96	96	48	80	48	fs_field-hand_idle_front_00_c8c9d3259e
 field-hand	idle	left	1	1	96	96	48	80	48	fs_field-hand_idle_left_00_ecd6e59cbd
@@ -127,15 +127,55 @@ scout	idle	back	1	1	96	96	48	80	48	fs_scout_idle_back_00_c3ccd51701
 scout	idle	front	1	1	96	96	48	80	48	fs_scout_idle_front_00_56cb259e5b
 scout	idle	left	1	1	96	96	48	80	48	fs_scout_idle_left_00_6bdea82347
 scout	idle	right	1	1	96	96	48	80	48	fs_scout_idle_right_00_cdf41e5893
-scribe	idle	back	1	1	96	96	48	80	48	fs_scribe_idle_back_00_a1ae317c52
-scribe	idle	front	1	1	96	96	48	80	48	fs_scribe_idle_front_00_d1b9cacb02
-scribe	idle	left	1	1	96	96	48	80	48	fs_scribe_idle_left_00_af3f31bd05
-scribe	idle	right	1	1	96	96	48	80	48	fs_scribe_idle_right_00_a49d30dc97
+scribe	idle	back	1	1	96	96	48	80	48	fs_scribe_idle_back_00_92f191a354
+scribe	idle	front	1	1	96	96	48	80	48	fs_scribe_idle_front_00_f4efd2ca38
+scribe	idle	left	1	1	96	96	48	80	48	fs_scribe_idle_left_00_b1c7ec699f
+scribe	idle	right	1	1	96	96	48	80	48	fs_scribe_idle_right_00_a3f055ef24
 square-well	idle	front	1	0	256	256	128	200	48	fs_square-well_idle_front_00_5cd15ac1aa
 starter_flax_tunic_female	icon	front	1	0	48	96	24	48	48	fs_starter_flax_tunic_female_icon_front_00_43ed70518a
 starter_flax_tunic_male	icon	front	1	0	48	96	24	48	48	fs_starter_flax_tunic_male_icon_front_00_b9b4a7922e
 starter_woven_footwear	icon	front	1	0	48	48	24	24	48	fs_starter_woven_footwear_icon_front_00_2020e706b6
 tree	idle	front	1	0	256	256	128	232	48	fs_tree_idle_front_00_6e11f4a007
+village-invader	attack	back	10	0	128	128	64	96	48	fs_village-invader_attack_back_00_58be849cdc	fs_village-invader_attack_back_01_d9657b9dae	fs_village-invader_attack_back_02_a809d27475	fs_village-invader_attack_back_03_81f21774b5	fs_village-invader_attack_back_04_2635041fe5	fs_village-invader_attack_back_05_58be849cdc
+village-invader	attack	front	10	0	128	128	64	96	48	fs_village-invader_attack_front_00_1ef4ef28ba	fs_village-invader_attack_front_01_d595bf6324	fs_village-invader_attack_front_02_fa54eb85ef	fs_village-invader_attack_front_03_83919abbb9	fs_village-invader_attack_front_04_6e997bc52c	fs_village-invader_attack_front_05_1ef4ef28ba
+village-invader	attack	left	10	0	128	128	64	96	48	fs_village-invader_attack_left_00_4dd8bb0e30	fs_village-invader_attack_left_01_9eb5ff7835	fs_village-invader_attack_left_02_c279571335	fs_village-invader_attack_left_03_97e407db2a	fs_village-invader_attack_left_04_32b1a94308	fs_village-invader_attack_left_05_4dd8bb0e30
+village-invader	attack	right	10	0	128	128	64	96	48	fs_village-invader_attack_right_00_8c8ba7b4a5	fs_village-invader_attack_right_01_4fb5774303	fs_village-invader_attack_right_02_b271b88690	fs_village-invader_attack_right_03_b551076c7f	fs_village-invader_attack_right_04_a2f46c72fa	fs_village-invader_attack_right_05_8c8ba7b4a5
+village-invader	death	back	8	0	128	128	64	96	48	fs_village-invader_death_back_00_48bfdd5af1	fs_village-invader_death_back_01_298aa8f045	fs_village-invader_death_back_02_427c8d2e69	fs_village-invader_death_back_03_cc9a87b227
+village-invader	death	front	8	0	128	128	64	96	48	fs_village-invader_death_front_00_5316d5b34c	fs_village-invader_death_front_01_17d72fe055	fs_village-invader_death_front_02_a1d1af5007	fs_village-invader_death_front_03_e6d41dd893
+village-invader	death	left	8	0	128	128	64	96	48	fs_village-invader_death_left_00_5c0da91148	fs_village-invader_death_left_01_07bb61e97a	fs_village-invader_death_left_02_c2fd3fc3b7	fs_village-invader_death_left_03_c8cacac017
+village-invader	death	right	8	0	128	128	64	96	48	fs_village-invader_death_right_00_b0d6ac9340	fs_village-invader_death_right_01_03f341abf4	fs_village-invader_death_right_02_efa5648230	fs_village-invader_death_right_03_33a15f7d69
+village-invader	hit	back	8	0	96	96	48	80	48	fs_village-invader_hit_back_00_a64d823e79	fs_village-invader_hit_back_01_5756bdade9
+village-invader	hit	front	8	0	96	96	48	80	48	fs_village-invader_hit_front_00_7b8829434c	fs_village-invader_hit_front_01_477a599713
+village-invader	hit	left	8	0	96	96	48	80	48	fs_village-invader_hit_left_00_a93a5085b6	fs_village-invader_hit_left_01_1521445915
+village-invader	hit	right	8	0	96	96	48	80	48	fs_village-invader_hit_right_00_b55dad69eb	fs_village-invader_hit_right_01_2df0af33f4
+village-invader	idle	back	1	1	96	96	48	80	48	fs_village-invader_idle_back_00_8b8ea9d468
+village-invader	idle	front	1	1	96	96	48	80	48	fs_village-invader_idle_front_00_55b77b695a
+village-invader	idle	left	1	1	96	96	48	80	48	fs_village-invader_idle_left_00_e9ca49a099
+village-invader	idle	right	1	1	96	96	48	80	48	fs_village-invader_idle_right_00_13181d20e1
+village-invader	walk	back	6	1	96	96	48	80	48	fs_village-invader_walk_back_00_9eef55bcb0	fs_village-invader_walk_back_01_c23c8ab986	fs_village-invader_walk_back_02_0894774c90	fs_village-invader_walk_back_03_5f2129cc63
+village-invader	walk	front	6	1	96	96	48	80	48	fs_village-invader_walk_front_00_fab7815be1	fs_village-invader_walk_front_01_48c356636e	fs_village-invader_walk_front_02_3709850c8b	fs_village-invader_walk_front_03_48ccfb54be
+village-invader	walk	left	6	1	96	96	48	80	48	fs_village-invader_walk_left_00_6df9b2899a	fs_village-invader_walk_left_01_dfa02bfdfa	fs_village-invader_walk_left_02_f38a7d7679	fs_village-invader_walk_left_03_3ddf7c3175
+village-invader	walk	right	6	1	96	96	48	80	48	fs_village-invader_walk_right_00_75170996b1	fs_village-invader_walk_right_01_726215ae61	fs_village-invader_walk_right_02_b8d7538c26	fs_village-invader_walk_right_03_e3e6f15ff8
+village-leader	attack	back	10	0	128	128	64	96	48	fs_village-leader_attack_back_00_a9285024d5	fs_village-leader_attack_back_01_1317c94c8c	fs_village-leader_attack_back_02_14ab3bbab1	fs_village-leader_attack_back_03_5c618bbd08	fs_village-leader_attack_back_04_01c6a27513	fs_village-leader_attack_back_05_a9285024d5
+village-leader	attack	front	10	0	128	128	64	96	48	fs_village-leader_attack_front_00_fad207e6a5	fs_village-leader_attack_front_01_f648d283ed	fs_village-leader_attack_front_02_b3a20b81e2	fs_village-leader_attack_front_03_a47431613e	fs_village-leader_attack_front_04_3ade5217d9	fs_village-leader_attack_front_05_fad207e6a5
+village-leader	attack	left	10	0	128	128	64	96	48	fs_village-leader_attack_left_00_8354efab89	fs_village-leader_attack_left_01_5fa481d842	fs_village-leader_attack_left_02_57fdc18120	fs_village-leader_attack_left_03_9da911f447	fs_village-leader_attack_left_04_812b042bd5	fs_village-leader_attack_left_05_8354efab89
+village-leader	attack	right	10	0	128	128	64	96	48	fs_village-leader_attack_right_00_c23c498dae	fs_village-leader_attack_right_01_06a0b0e766	fs_village-leader_attack_right_02_8d7a7f59a9	fs_village-leader_attack_right_03_f644a89f14	fs_village-leader_attack_right_04_a0c7ea534e	fs_village-leader_attack_right_05_c23c498dae
+village-leader	death	back	8	0	128	128	64	96	48	fs_village-leader_death_back_00_1ff3988837	fs_village-leader_death_back_01_c742f8e7dc	fs_village-leader_death_back_02_023202f012	fs_village-leader_death_back_03_7b97b2891e
+village-leader	death	front	8	0	128	128	64	96	48	fs_village-leader_death_front_00_0f9e4a1153	fs_village-leader_death_front_01_0022c1c887	fs_village-leader_death_front_02_671626671e	fs_village-leader_death_front_03_e842295900
+village-leader	death	left	8	0	128	128	64	96	48	fs_village-leader_death_left_00_26cb4f47fc	fs_village-leader_death_left_01_e1d09ed248	fs_village-leader_death_left_02_2ebc0c7507	fs_village-leader_death_left_03_edd62592d7
+village-leader	death	right	8	0	128	128	64	96	48	fs_village-leader_death_right_00_f4557e3193	fs_village-leader_death_right_01_e37d3269d0	fs_village-leader_death_right_02_4691a5b638	fs_village-leader_death_right_03_8480b20322
+village-leader	hit	back	8	0	96	96	48	80	48	fs_village-leader_hit_back_00_465a7edd95	fs_village-leader_hit_back_01_9a4b3ebc39
+village-leader	hit	front	8	0	96	96	48	80	48	fs_village-leader_hit_front_00_78edb75492	fs_village-leader_hit_front_01_7d27911792
+village-leader	hit	left	8	0	96	96	48	80	48	fs_village-leader_hit_left_00_69436720be	fs_village-leader_hit_left_01_bc3193f545
+village-leader	hit	right	8	0	96	96	48	80	48	fs_village-leader_hit_right_00_a165a8ee8b	fs_village-leader_hit_right_01_503d48b0a0
+village-leader	idle	back	1	1	96	96	48	80	48	fs_village-leader_idle_back_00_61c5728bcb
+village-leader	idle	front	1	1	96	96	48	80	48	fs_village-leader_idle_front_00_687ca43e5f
+village-leader	idle	left	1	1	96	96	48	80	48	fs_village-leader_idle_left_00_84ad6c458b
+village-leader	idle	right	1	1	96	96	48	80	48	fs_village-leader_idle_right_00_627bf3c34c
+village-leader	walk	back	6	1	96	96	48	80	48	fs_village-leader_walk_back_00_291a7a51a4	fs_village-leader_walk_back_01_8ca1859d2b	fs_village-leader_walk_back_02_48bbaca30f	fs_village-leader_walk_back_03_5ba8f58a7c
+village-leader	walk	front	6	1	96	96	48	80	48	fs_village-leader_walk_front_00_7990bea808	fs_village-leader_walk_front_01_7b4208ea6a	fs_village-leader_walk_front_02_ae5dfcc48e	fs_village-leader_walk_front_03_57a481bc22
+village-leader	walk	left	6	1	96	96	48	80	48	fs_village-leader_walk_left_00_71d04b1439	fs_village-leader_walk_left_01_982464087e	fs_village-leader_walk_left_02_4a3d262bdb	fs_village-leader_walk_left_03_f5b58800cb
+village-leader	walk	right	6	1	96	96	48	80	48	fs_village-leader_walk_right_00_a5bc5ead40	fs_village-leader_walk_right_01_c91dcbf0cc	fs_village-leader_walk_right_02_87aad478e5	fs_village-leader_walk_right_03_5496d54d7c
 village-longhouse	idle	front	1	1	384	384	192	354	48	fs_village-longhouse_idle_front_00_63b7f4e4d8
 village-palisade	idle	front	1	1	384	384	192	354	48	fs_village-palisade_idle_front_00_67f7e96ed4
 village-tree	idle	front	1	1	384	384	192	354	48	fs_village-tree_idle_front_00_efc4252f43

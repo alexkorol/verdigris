@@ -3448,6 +3448,66 @@ void remote_incoming_melee_actions_follow_wire_evidence() {
   server.stop();
 }
 
+void remote_starter_attack_timing_reaches_presentation() {
+  using namespace verdigris::client;
+  using JV=verdigris::networking::JsonValue;
+  using E=verdigris::networking::Envelope;
+  ScriptedEnvelopeServer server;
+  server.script.push_back(pt_login_frame(""));
+  const auto add=[&](E event,const char* marker) {
+    server.script.push_back(verdigris::networking::emit_envelope(event));
+    server.script.push_back(verdigris::networking::emit_envelope({"game:send:message",JV::Object{{"text",marker}}}));
+  };
+  add({"dev:state",JV::Object{{"state",JV::Object{{"monsters",JV::Array{
+      JV::Object{{"uuid","club-foe"},{"id","village-invader"},{"x",10},{"y",12},{"behaviour",JV::Object{{"type","melee"}}}},
+      JV::Object{{"uuid","slam-foe"},{"id","village-leader"},{"x",11},{"y",12},{"behaviour",JV::Object{{"type","melee"}}}}
+  }}}}}},"roster");
+  JV::Object action{{"attackerId","club-foe"},{"skillId","monster:club-strike"},{"durationMs",250},
+      {"actorX",10.5},{"actorY",12.25},{"facingX",0},{"facingY",-1}};
+  add({"monster:telegraph",action},"windup");
+  action["durationMs"]=600;add({"combat:attack",action},"contact");
+  add({"combat:hit",JV::Object{{"attackerId","club-foe"},{"targetId","hardening-guest"},
+      {"targetType","player"},{"skillId","monster:club-strike"},{"amount",3},
+      {"health",JV::Object{{"current",97},{"max",100}}}}},"damage");
+  action["attackerId"]="slam-foe";action["skillId"]="boss:ground-slam";
+  add({"combat:attack",action},"dodged-slam");
+  std::string error;check(server.start(&error),"starter attacks: scripted socket starts");
+  if (!server.port()) return;
+  RemoteProtocolSession session("127.0.0.1",server.port(),"starter-attacks",true);
+  check(session.start(&error) && wait_for_state(session,ConnectionState::Ready,3000),"starter attacks: remote session admitted");
+  session.drain_events();
+  const auto deliver=[&](const char* marker) {
+    server.grant_next_frame();server.grant_next_frame();
+    check(wait_until(session,2000,[&]{return session.model().last_message==marker;}),marker);
+    return session.drain_events();
+  };
+  deliver("roster"); WorldView world;sync_world_from_model(world,session.model());PresentationFx fx;
+  const auto windup=deliver("windup");
+  for(const auto& event:windup)apply_presentation_event(fx,world,event,0);
+  check(fx.telegraphs.count("club-foe") && fx.telegraphs.at("club-foe").windup_ticks==5,
+      "starter attacks: published 250ms windup becomes exactly five presentation ticks");
+  const auto contact=deliver("contact");
+  int actions=0;
+  for(const auto& event:contact) {
+    if(event.type==PresentationEventType::AttackStarted)++actions;
+    apply_presentation_event(fx,world,event,5);
+  }
+  const auto* strike=actor_strike(fx.effects,"club-foe");
+  check(actions==1 && strike && strike->style=="blunt" && strike->ttl==12 && strike->age==6 &&
+      strike->wx==std::lround(protocol_to_world(10.5)) && strike->wy==std::lround(protocol_to_world(12.25)) &&
+      std::abs(strike->angle+3.141592653589793/2)<1e-8 && !fx.telegraphs.count("club-foe"),
+      "starter attacks: contact retains committed pose, blunt style and six-tick follow-through");
+  const auto damage=deliver("damage");
+  check(std::none_of(damage.begin(),damage.end(),[](const auto& e){return e.type==PresentationEventType::AttackStarted;}) &&
+      session.model().player.life==97,"starter attacks: damage packet does not replay or reset an announced attack");
+  const auto missed=deliver("dodged-slam");
+  for(const auto& event:missed)apply_presentation_event(fx,world,event,6);
+  strike=actor_strike(fx.effects,"slam-foe");
+  check(strike && strike->style=="ground-slam" && session.model().player.life==97,
+      "starter attacks: boss miss visibly completes with no fabricated damage");
+  session.shutdown();server.stop();
+}
+
 void remote_starter_state_absence_clears_previous_scion() {
   ScriptedEnvelopeServer server;
   auto admission = pt_login_frame("");
@@ -3743,11 +3803,15 @@ void remote_passive_tree_payload_hardening() {
 
 }  // namespace
 
-int main() {
+int main(int argc, char** argv) {
   // CI pipes fully buffer MSVC stdout; a crash then discards every PASS/FAIL
   // line and the failing check is unidentifiable. Unbuffered costs nothing
   // at this volume.
   std::setvbuf(stdout, nullptr, _IONBF, 0);
+  if (argc>1 && std::string(argv[1])=="--starter-attack") {
+    remote_starter_attack_timing_reaches_presentation();
+    return failures ? 1 : 0;
+  }
   local_session_ready_and_deterministic();
   local_fixed_step_is_independent_of_input_and_polling();
   local_fixed_step_preserves_action_order_and_expiry();
@@ -3770,6 +3834,7 @@ int main() {
   remote_incoming_melee_actions_follow_wire_evidence();
   remote_passive_tree_absence_stays_absent();
   remote_starter_state_absence_clears_previous_scion();
+  remote_starter_attack_timing_reaches_presentation();
   remote_passive_tree_payload_hardening();
   gateb_driver_state_machine_controls();
   gate_b_chronicles_reconnect_journey();

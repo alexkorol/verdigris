@@ -57,6 +57,8 @@ struct PresentationEvent {
   int actor_y = 0;
   int facing_x = 0;
   int facing_y = 0;
+  // Explicit authoritative action animation length; zero keeps legacy timing.
+  int action_duration_ms = 0;
 };
 
 // TASK-0122 Phase A: the single named table for every new animation/VFX TTL,

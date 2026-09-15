@@ -19,7 +19,8 @@ After each pack, regroup near the well and press F. Defeat the breaker, spend
 your first skill point in Character, then use F at the north passage to depart.
 Defeat in the village restarts the defense and keeps your equipment.
 Previously admitted characters keep their saved entry; use a new Scion to review
-the opening. Enemy visuals are provisional human raiders in this build.
+the opening. Invaders and the breaker have their own complete four-direction
+walking, striking, hit and death artwork, matched to the starter character scale.
 
 This is an unsigned development preview, not an installer or a finished game.
 Windows x64 and the Windows .NET Framework 4.x runtime are required.

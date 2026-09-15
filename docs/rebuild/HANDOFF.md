@@ -1,5 +1,36 @@
 # Native reconstitution handoff
 
+## Complete prologue actor art — 2026-09-15
+
+Coordinator: codex. Branch `codex/starter-slice-complete-20260915`.
+The owner requested completion of the first slice, specifically replacing the
+provisional enemies. Both actual prologue IDs now have complete distinct human
+art:136 native frames across40 action/direction clips. No raider fallback is used
+for their walking, strikes, hits or deaths. Eight static NPC views also replace
+the visibly mismatched outlined NPCs. Player, NPC, enemy and scenery pixels share
+48px/metre. The new actor work uses editable reviewed anatomy/motion, native
+Blender guides, one ImageGen appearance per character, Pixel Respecter recovery,
+depth-tested projection, and native Blender animation renders. Prompt/source/
+transfer metadata and native contacts are in the two `village-*` asset folders.
+
+Pack contacts now carry explicit attack events/poses and a300ms presentation
+windup; a dodged breaker slam still animates. Existing damage and cooldowns are
+unchanged. Club/fist attacks no longer emit sword slash artwork. The renderer
+regression requires every new enemy frame and direction, checks real asset
+selection and retained corpse identity/pivot, and never substitutes synthetic
+wolf/raider coverage for these identities.
+
+Verified before packaging: full `native/build.ps1 -RunTests`, art importer test,
+`--scenario first-slice-art`, and `--scenario starter-slice` all passed. Native
+contacts and production captures were viewed, including the final NPC/hero/enemy
+composition in `docs/art-review/starter-slice-complete-20260915`. The source
+archives listed by each asset folder's `editable-archive.json` retain the packed
+Blender scenes. Packaged all-scenario verification and publication follow this
+source milestone; record their actual results before reporting shipment.
+
+The prior preview below was published through PR#61 and tag
+`starter-preview-2026-09-15`; its pending-publication wording is historical.
+
 ## Starter preview integration — 2026-09-15
 
 Active branch: `codex/starter-slice-20260915`, PR #61 into `master`.

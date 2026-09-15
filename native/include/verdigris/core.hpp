@@ -846,6 +846,8 @@ struct WorldMonster {
   bool empowered = false;
   bool boss = false;
   std::uint64_t telegraph_until_ms = 0;
+  // Presentation-only marker; never changes contact, pursuit or cooldowns.
+  std::uint64_t presentation_attack_warning_ms = 0;
   std::uint64_t next_attack_ms = 0;
   // N4: loot/behaviour facts the wire snapshot carries (JS m.rewards.coins
   // and m.tags).
@@ -877,7 +879,7 @@ inline constexpr double kHomeLeashTiles = 8.0;
 }  // namespace world_pursuit
 
 struct WorldCombatEvent {
-  std::string type; // hit, death, telegraph, drop
+  std::string type; // hit, death, telegraph, attack, drop
   std::string attacker_id;
   std::string attacker_name;
   std::string target_id;
@@ -899,6 +901,9 @@ struct WorldCombatEvent {
   bool beastbane = false;
   bool critical = false;
   std::string attack_style = "slash";
+  bool has_actor_pose = false;
+  double actor_x = 0, actor_y = 0;
+  int facing_x = 0, facing_y = 0;
 };
 
 struct InstanceMetadata {
