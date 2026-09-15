@@ -14,6 +14,16 @@ inline void write(const std::filesystem::path& path,const std::string& text) {
 }
 inline Json parse(const std::filesystem::path& path) {Json result;verdigris::networking::parse_json(read(path),result);return result;}
 inline std::string field(const Json& value,const std::string& name) {const auto* item=value[name].string();return item?*item:"";}
+// A route waypoint is a tile center, while authority moves in 0.2-tile
+// samples and snapshots arrive later. Keep a whole tile of stopping space.
+inline bool outside_extraction_margin(int x,int y,int stairs_x,int stairs_y) {
+  return std::max(std::abs(x-stairs_x),std::abs(y-stairs_y))>1;
+}
+inline bool extraction_safe_samples(double x,double y,int dx,int dy,int stairs_x,int stairs_y) {
+  for(int sample=1;sample<=3;++sample)
+    if(int(std::lround(x+dx*.2*sample))==stairs_x&&int(std::lround(y+dy*.2*sample))==stairs_y)return false;
+  return true;
+}
 struct Run {
   ClientState state;HWND window=nullptr;raster_art::detail::Surface surface;
   std::filesystem::path root,output;std::string role,other,actor_id,other_id,house_id,scion_id,town_id,instance_id;
@@ -90,11 +100,11 @@ struct Run {
       if(x==tx&&y==ty){finish=at;break;}
       for(const auto [dx,dy]:{std::pair{1,0},{0,1},{-1,0},{0,-1}}) {
         const int nx=x+dx,ny=y+dy;if(!walkable(nx,ny))continue;
-        // Entering the rounded entrance tile extracts immediately. It is
-        // traversable terrain, but never a combat/loot route intermediate.
-        // A character spawned there may walk off; only re-entry is excluded.
+        // A stale snapshot plus one held intent can run beyond a waypoint.
+        // Exclude the neighboring tiles too. A spawn in this margin remains
+        // a valid BFS source, but can only step out of it, never farther in.
         if(!allow_extraction&&m.scene.type=="instance"&&m.scene.has_stairs_up&&
-            nx==int(std::lround(m.scene.stairs_up_x))&&ny==int(std::lround(m.scene.stairs_up_y)))continue;
+            !outside_extraction_margin(nx,ny,int(std::lround(m.scene.stairs_up_x)),int(std::lround(m.scene.stairs_up_y))))continue;
         const int next=ny*w+nx;
         if(parent[next]>=0)continue;parent[next]=at;queue.push_back(next);
       }
@@ -150,7 +160,14 @@ struct Run {
     const verdigris::client::ClientMonster* target=nullptr;double nearest=1e9;
     for(const auto& m:model().monsters)if(m.alive){const double d=std::hypot(m.x-model().player.x,m.y-model().player.y);if(d<nearest){nearest=d;target=&m;}}
     if(!target)return false;const double tx=target->x,ty=target->y;
-    if(nearest>1.25){const auto [dx,dy]=step_toward(tx,ty);movement(dx,dy);}
+    const auto before=model().player;const auto stairs=model().scene;const auto target_id=target->id;
+    int route_x=0,route_y=0;
+    if(nearest>1.25){const auto [dx,dy]=step_toward(tx,ty);route_x=dx;route_y=dy;
+      // Validate every authority sample through the maximum 150 ms held
+      // intent lifetime, using the continuous position rather than its tile.
+      const bool safe=!stairs.has_stairs_up||extraction_safe_samples(before.x,before.y,dx,dy,int(std::lround(stairs.stairs_up_x)),int(std::lround(stairs.stairs_up_y)));
+      if(!safe){route_x=0;route_y=0;}movement(route_x,route_y);
+    }
     else {
       movement(0,0);const auto at=project(state.camera,RECT{0,0,1280,800},verdigris::client::protocol_to_world(tx),verdigris::client::protocol_to_world(ty));
       SendMessage(window,WM_MOUSEMOVE,0,MAKELPARAM(at.x,at.y));settle(100);click(RECT{at.x-1,at.y-1,at.x+1,at.y+1});
@@ -158,7 +175,11 @@ struct Run {
     settle(100);
     // Snapshot encoding can be slower than an authority tick. Release real
     // keys before capture so a route step cannot run past its next corner.
-    movement(0,0);settle(100);
+    movement(0,0);
+    const bool near_entry=stairs.has_stairs_up&&std::hypot(before.x-stairs.stairs_up_x,before.y-stairs.stairs_up_y)<4;
+    settle(near_entry?250:100);
+    {std::ofstream trace(output/"combat-navigation.jsonl",std::ios::app);
+      trace<<Json(Json::Object{{"phase",prefix},{"frame",frame},{"from_x",before.x},{"from_y",before.y},{"target",target_id},{"target_x",tx},{"target_y",ty},{"distance",nearest},{"dx",route_x},{"dy",route_y},{"stairs_x",stairs.stairs_up_x},{"stairs_y",stairs.stairs_up_y},{"to_x",model().player.x},{"to_y",model().player.y},{"scene",model().scene.id},{"own_hit",own_hit}}).stringify()<<'\n';}
     if(model().scene.id!=instance_id)require(false,"combat movement preserves the shared instance");
     if(frame<12||frame%30==0)capture(prefix+"-"+std::to_string(frame));return true;
   }
@@ -215,6 +236,9 @@ struct Run {
   }
   void execute(const std::string& endpoint,const std::filesystem::path& code_file) {
     std::filesystem::create_directories(output);require(!std::filesystem::exists(root/(role+"-started")),"fresh per-role evidence directory");mark("started");
+    require(!outside_extraction_margin(6,20,5,20)&&outside_extraction_margin(7,20,5,20)&&
+        !extraction_safe_samples(6,20,-1,0,5,20)&&extraction_safe_samples(6,20,1,0,5,20)&&
+        extraction_safe_samples(7,20,0,-1,5,20),"navigation regression: recorded entrance geometry and delayed release retain stopping space");
     state.camera.perspective=true;state.lineage_art=true;state.chronicles_mode=true;state.frontend=Frontend::Title;state.screen=Screen::Chronicles;
     state.pad.inject=true;state.pad.connected=false;load_billboards(state.billboards);warm_combat_glyphs();
     require(surface.create(1280,800),"native paint surface allocated");
