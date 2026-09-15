@@ -1,5 +1,32 @@
 # Native reconstitution handoff
 
+## Starter preview integration — 2026-09-15
+
+Active branch: `codex/starter-slice-20260915`, PR #61 into `master`.
+The owner requested merge and publication of the Windows preview. Normal
+branch pushes alone must not be reported as a shipped release.
+
+The release candidate at `Z:/Code/.packages/verdigris-starter-release-final-c8cff89ac`
+is built from clean source `c8cff89ac2158ebb16b80f152f9f044f40d19ade`.
+All packaged scenarios, two launcher lifecycles, source/resource checks, and
+same-profile settings restart passed. Its production starter capture was
+inspected. The archive contains only manifest resources, with no QA profiles
+or saves; every archived resource hash was checked. Enemy art remains
+provisional. The starter uses seeded woodland scenery instead of house sprites.
+
+Integration uncovered CMake-only defects: missing audio linkage, wrong runtime
+asset directory, a single-config preset without a release build type, and an
+unnormalized capture-root ancestor. The hidden inventory fixture now allows
+its requested test viewport beyond a small desktop's default tracking limits
+and asserts that input and painted dimensions agree. The nested-directory
+capture/frame-budget regression passed. Hosted CI must be checked again after
+these repairs; do not describe its earlier failed run as passing.
+
+Publication is still pending at this record. Verify PR merge, tag identity,
+and public release assets before reporting shipment. The release tag must
+identify the exact packaged source above, even if later integration-only fixes
+are present on master. Preserve all original commits when merging.
+
 ## Current handover — gameplay particles installed
 
 Normal entry: `C:/Users/Alex/Documents/Verdigris Native 2026-09-13/Verdigris.exe`.

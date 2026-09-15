@@ -3,6 +3,19 @@
 // The shipped client, production Win32 handlers and a real native server.
 // Dev grants only arrange fixtures; all equips, rejects and unequips use the
 // normal protocol. Run this scenario from the final packaged executable too.
+LRESULT CALLBACK inventory_scenario_window_proc(HWND window, UINT message,
+                                                WPARAM wparam, LPARAM lparam) {
+  // The offscreen fixture deliberately tests viewports larger than a hosted
+  // runner's desktop. DefWindowProc otherwise clamps its client area while
+  // the painter and injected pointer positions still use the requested size.
+  if (message == WM_GETMINMAXINFO) {
+    auto* limits = reinterpret_cast<MINMAXINFO*>(lparam);
+    limits->ptMaxTrackSize = {8192, 8192};
+    return 0;
+  }
+  return window_proc(window, message, wparam, lparam);
+}
+
 int scenario_inventory_equipment() {
   std::setvbuf(stdout, nullptr, _IONBF, 0);
   using namespace verdigris::client;
@@ -105,10 +118,17 @@ int scenario_inventory_equipment() {
   state.gear_overlay = true;
   scenario_follow_camera(state);
   WNDCLASSA wc{}; wc.hInstance = GetModuleHandle(nullptr);
-  wc.lpfnWndProc = window_proc; wc.lpszClassName = "VerdigrisInventoryTest";
+  wc.lpfnWndProc = inventory_scenario_window_proc; wc.lpszClassName = "VerdigrisInventoryTest";
   RegisterClassA(&wc);
   HWND window = CreateWindowExA(0, wc.lpszClassName, "Inventory acceptance", WS_POPUP,
                                 0, 0, 1366, 768, nullptr, nullptr, wc.hInstance, &state);
+  auto resize_fixture = [&](int width, int height) {
+    SetWindowPos(window,nullptr,0,0,width,height,SWP_NOACTIVATE|SWP_NOZORDER);
+    RECT actual{}; GetClientRect(window,&actual);
+    scenario_check(actual.right==width && actual.bottom==height,
+        "inventory: real input viewport matches the rendered fixture dimensions");
+  };
+  resize_fixture(1366,768);
   scenario_present_size(state,1366,768);
   HDC window_dc=GetDC(window);
   paint(window,window_dc);
@@ -427,7 +447,7 @@ int scenario_inventory_equipment() {
   state.character_pane=false;
   const int attacks_before_drawers=state.combat_requests;
   for(const auto size:{std::pair{960,600},std::pair{1280,800},std::pair{3440,1440}}) {
-    SetWindowPos(window,nullptr,0,0,size.first,size.second,SWP_NOACTIVATE|SWP_NOZORDER);
+    resize_fixture(size.first,size.second);
     for(int index=0;index<6;++index) {
       const auto button=inventory_aux_button(size.first,size.second,index);
       const int bx=(button.left+button.right)/2,by=(button.top+button.bottom)/2;
@@ -449,7 +469,7 @@ int scenario_inventory_equipment() {
     }
   }
   scenario_check(state.combat_requests==attacks_before_drawers && !state.primary_down,"extensions: drawer and tab clicks do not attack through UI");
-  SetWindowPos(window,nullptr,0,0,1366,768,SWP_NOACTIVATE|SWP_NOZORDER);
+  resize_fixture(1366,768);
   state.session->shutdown();server->stop();server.reset();
   server=std::make_unique<verdigris::networking::WebSocketServer>(port,qa_saves);
   // Isolated category fixtures exercise the real drawer transport. They are
@@ -541,7 +561,7 @@ int scenario_inventory_equipment() {
   // burst of pointer events; the ghost must use the newest point without moving
   // authoritative items before release. This is not a static mockup/timing loop.
   state.character_pane=false;state.inventory_aux=-1;state.gear_keyboard_focus=false;
-  SetWindowPos(window,nullptr,0,0,3440,1440,SWP_NOACTIVATE|SWP_NOZORDER);
+  resize_fixture(3440,1440);
   refresh_inventory();
   const auto performance_items=identity_snapshot();
   const auto main_geom=make_pack_geom(3440,1440);
@@ -574,7 +594,7 @@ int scenario_inventory_equipment() {
   scenario_check(reference_present(state,3440,1440,dir+"/inventory-sustained-drag.png"),"drag-frame: actual final dragged-item frame captured");
   SendMessage(window,WM_KEYDOWN,VK_ESCAPE,0);SendMessage(window,WM_KEYUP,VK_ESCAPE,0);
   scenario_check(!state.pack_drag_live && state.gear_overlay,"drag-frame: Escape cancels drag without closing inventory");
-  SetWindowPos(window,nullptr,0,0,1366,768,SWP_NOACTIVATE|SWP_NOZORDER);
+  resize_fixture(1366,768);
   state.inventory_aux=-1;state.character_pane=true;
   // Recover a whole stored currency stack through the painted bank row.
   std::string purse_id;int purse_quantity=0;

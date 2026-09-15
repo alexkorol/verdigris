@@ -5856,7 +5856,7 @@ std::string repository_root_for_capture_validation() {
       const bool packaged = manifest != INVALID_FILE_ATTRIBUTES && !(manifest & FILE_ATTRIBUTE_DIRECTORY);
       if (directory_exists(prefix + "\\native") &&
           (directory_exists(prefix + "\\orchestration") || packaged))
-        return prefix;
+        return absolute_path_normalized(prefix);
       prefix += "\\..";
     }
   }
