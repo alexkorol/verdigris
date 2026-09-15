@@ -82,8 +82,11 @@ bool present_actor_death(std::vector<EffectFx>& effects, const WorldView& world,
 }
 
 void sync_presentation_scene(PresentationFx& fx, const WorldView& world) {
-  if (fx.actor_fall_scene_known && fx.actor_fall_route_id != world.route_id)
+  if (fx.actor_fall_scene_known && fx.actor_fall_route_id != world.route_id) {
     clear_actor_falls(fx);
+    fx.hint.clear();
+    fx.hint_ticks = 0;
+  }
   fx.actor_fall_route_id = world.route_id;
   fx.actor_fall_scene_known = true;
 }
@@ -637,8 +640,9 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
         } else {
           // Story, trade, and extraction messages remain readable as a short
           // upper-center toast.
-          fx.hint = event.text;
-          fx.hint_ticks = std::min<int>(400, 100 + static_cast<int>(event.text.size()) * 2);
+          fx.hint = event.text.rfind("No road holds past a living Warden", 0) == 0
+              ? "Defeat the first Warden, then return to Aldwyn." : event.text;
+          fx.hint_ticks = 80;
         }
       }
       break;

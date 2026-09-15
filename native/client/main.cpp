@@ -761,6 +761,7 @@ struct ClientState {
   std::string pack_last_drop;
   std::string hint;
   int hint_ticks = 0;
+  RECT feedback_toast_rect{};
   // TASK-0153 owner Esc contract: Escape closes an open dismissible pane
   // first; only a bare Escape (no pane/modal open) requests application
   // exit. The Win32 path posts the quit from this flag so the deterministic
@@ -2233,6 +2234,8 @@ void ingest_session_events(ClientState& state) {
   state.monster_strikes = std::move(fx.monster_strikes);
   state.actor_fall_route_id = std::move(fx.actor_fall_route_id);
   state.actor_fall_scene_known = fx.actor_fall_scene_known;
+  state.hint = std::move(fx.hint);
+  state.hint_ticks = fx.hint_ticks;
   state.event_world.player = state.world.player;
   state.event_world.monsters = state.world.monsters;
   state.event_world.theme = state.world.theme;
@@ -10690,63 +10693,31 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds,
   // never sit on top of the XP meter or action bar.
   paint_combat_log(state, dc, bounds, rl);
 
-  // The hint/message toast is core play feedback — quest dialogue, trade
-  // receipts, pickup results — not debug telemetry. It renders on the
-  // normal HUD, centered above the quickbar, word-wrapped so long quest
-  // lines never run off the window, and never hides behind F3.
+  // Transient gameplay feedback uses a bounded, quiet plate. Long narrative
+  // text cannot inherit a large HUD font or stretch across the playfield.
+  state.feedback_toast_rect={};
   if (state.hint_ticks > 0 && !state.hint.empty()) {
-    SetBkMode(dc, TRANSPARENT);
+    const int saved=SaveDC(dc);
+    SelectObject(dc,skin::font(skin::TextRole::Compact,1));
+    SetBkMode(dc,TRANSPARENT);
     const int feedback_right=state.gear_overlay?gear_pane_rect(bounds.right,bounds.bottom).x-20:bounds.right;
     const int feedback_left=state.character_pane?minimap_rect(bounds.bottom).x+minimap_rect(bounds.bottom).w+12:24;
-    const int max_width=std::max(160,feedback_right-feedback_left-24);
-    std::vector<std::string> lines;
-    std::string remaining = state.hint;
-    while (!remaining.empty() && lines.size() < 4) {
-      SIZE full{};
-      skin::text_extent(dc, remaining.c_str(),
-                            static_cast<int>(remaining.size()), &full);
-      if (full.cx <= max_width) {
-        lines.push_back(remaining);
-        break;
-      }
-      // Longest prefix that fits, broken at the last space when one exists.
-      std::size_t fit = remaining.size();
-      while (fit > 1) {
-        SIZE part{};
-        skin::text_extent(dc, remaining.c_str(), static_cast<int>(fit), &part);
-        if (part.cx <= max_width) break;
-        --fit;
-      }
-      std::size_t cut = remaining.rfind(' ', fit);
-      if (cut == std::string::npos || cut == 0) cut = fit;
-      lines.push_back(remaining.substr(0, cut));
-      remaining = remaining.substr(remaining[cut] == ' ' ? cut + 1 : cut);
-    }
-    int line_height = 18;
-    int widest = 0;
-    for (const auto& line : lines) {
-      SIZE extent{};
-      skin::text_extent(dc, line.c_str(), static_cast<int>(line.size()),
-                            &extent);
-      widest = std::max(widest, static_cast<int>(extent.cx));
-      line_height = std::max(line_height, static_cast<int>(extent.cy));
-    }
-    const int block_height = line_height * static_cast<int>(lines.size());
-    const int toast_x =
-        std::max(feedback_left, feedback_left+(feedback_right-feedback_left-widest)/2);
-    // Reserve the bottom lane for XP/combat log/action controls. Transient
-    // hints live in a small upper-center plate instead of covering the meter.
-    const int toast_y = (state.character_pane?48:120)*hud_scale(static_cast<int>(bounds.bottom));
-    RECT plate{toast_x - 14, toast_y - 8, toast_x + widest + 14,
-               toast_y + block_height + 8};
-    skin::panel(dc, plate, skin::kGold, 240, 7.0f);
-    SetTextColor(dc, skin::kGold);
-    for (std::size_t i = 0; i < lines.size(); ++i) {
-      skin::text_out(dc, toast_x, toast_y + static_cast<int>(i) * line_height,
-               lines[i].c_str(), static_cast<int>(lines[i].size()));
-    }
+    const int width=std::min(560,std::max(160,feedback_right-feedback_left-24));
+    SIZE line{};skin::text_extent(dc,"Ag",2,&line);
+    const int line_height=std::max(16,int(line.cy));
+    RECT measure{0,0,width-24,0};
+    skin::draw_text(dc,state.hint.c_str(),-1,&measure,DT_CALCRECT|DT_WORDBREAK|DT_NOPREFIX);
+    const int text_height=std::min(2*line_height,std::max(line_height,int(measure.bottom)));
+    const int x=feedback_left+(feedback_right-feedback_left-width)/2;
+    const int y=(state.character_pane?48:120)*hud_scale(static_cast<int>(bounds.bottom));
+    const RECT plate{x,y,x+width,y+text_height+16};
+    state.feedback_toast_rect=plate;
+    skin::panel(dc,plate,skin::kGold,226,7.0f);
+    SetTextColor(dc,skin::kGold);
+    RECT text{plate.left+12,plate.top+8,plate.right-12,plate.bottom-8};
+    skin::draw_text(dc,state.hint.c_str(),-1,&text,DT_WORDBREAK|DT_END_ELLIPSIS|DT_NOPREFIX);
+    RestoreDC(dc,saved);
   }
-
   LARGE_INTEGER section_t3{};
   // Modal panels and their tooltips are above objective/status chrome.
   paint_character_pane(state, dc, bounds, rl);
@@ -21115,6 +21086,29 @@ int scenario_frontend_flow() {
 #include "coop_scenarios.hpp"
 
 #include "service_coop_scenarios.hpp"
+int scenario_feedback_toast() {
+  ClientState state;scenario_begin(state);scenario_follow_camera(state);
+  state.camera.perspective=true;state.lineage_art=true;
+  const auto dir=art_wave_capture_dir();
+  verdigris::client::PresentationFx fx;
+  verdigris::client::apply_presentation_event(fx,state.world,
+      {verdigris::client::PresentationEventType::Message,"","",
+       "No road holds past a living Warden. Take any gate out - the first stretch of every road is on your House's chart - put its Warden down, and come back to me.",0},1);
+  state.hint=fx.hint;state.hint_ticks=fx.hint_ticks;
+  for(const auto size:{std::pair{1280,800},std::pair{3440,1440}}) {
+    state.camera.zoom=kCameraDefaultZoom*zoom_height_factor(size.second);
+    scenario_check(reference_present(state,size.first,size.second,dir+"/feedback-toast-"+std::to_string(size.first)+".png"),"feedback fixture: production gameplay capture");
+    const auto r=state.feedback_toast_rect;
+    scenario_check(r.right>r.left&&r.right-r.left<=560&&r.bottom-r.top<=80,
+        "feedback fixture: compact face fits a 560 by 80 pixel maximum at both viewport sizes");
+  }
+  state.hint=std::string(1000,'W');state.hint_ticks=80;
+  raster_art::detail::Surface surface;scenario_check(surface.create(1280,800),"feedback fixture: stress paint surface");
+  if(surface.dc){paint_scene(state,surface.dc,RECT{0,0,1280,800});const auto r=state.feedback_toast_rect;
+    scenario_check(r.right-r.left<=560&&r.bottom-r.top<=80,"feedback fixture: unbroken long feedback cannot expand plate");}
+  return scenario_failures;
+}
+
 int run_scenarios(const std::string& which) {
   // Requires two externally coordinated clients and an independent service.
   if(which=="service-client")return scenario_service_client();
@@ -21123,6 +21117,7 @@ int run_scenarios(const std::string& which) {
     int (*fn)();
   };
   const Entry entries[] = {
+      {"feedback-toast", scenario_feedback_toast},
       {"coop-presentation", scenario_coop_presentation},
       {"menu-particles", scenario_menu_particles},
       {"gameplay-particles", scenario_gameplay_particles},
