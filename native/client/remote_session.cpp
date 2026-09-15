@@ -1,4 +1,12 @@
 #include "remote_session.hpp"
+#include <filesystem>
+#include <fstream>
+#ifdef _WIN32
+#include <winsock2.h>
+#include <windows.h>
+#include <wincrypt.h>
+#pragma comment(lib,"crypt32.lib")
+#endif
 #include "presentation_state.hpp"
 #include "input/preserve-diagonal-remote-input.hpp"
 #include "input/make-aim-independent-of-motion.hpp"
@@ -407,6 +415,58 @@ RemoteProtocolSession::RemoteProtocolSession(std::string host, std::uint16_t por
     : host_(std::move(host)), port_(port), guest_id_(std::move(guest_id)),
       quick_guest_(quick_guest) {}
 
+std::unique_ptr<RemoteProtocolSession> RemoteProtocolSession::online(std::string endpoint) {
+  auto session=std::make_unique<RemoteProtocolSession>("",0,"",false);
+  session->online_mode_=true;session->endpoint_=std::move(endpoint);
+  session->model_.service_mode=true;session->service_transport_=std::make_unique<ServiceTransport>();
+  return session;
+}
+namespace {
+std::filesystem::path credential_path() {
+  const char* profile=std::getenv("VERDIGRIS_SERVICE_PROFILE");
+  return profile && *profile ? std::filesystem::path(profile)/"service-credential.bin":std::filesystem::path{};
+}
+std::string cached_credential(const std::string& endpoint) {
+#ifdef _WIN32
+  const auto path=credential_path();if(path.empty())return {};
+  std::ifstream input(path,std::ios::binary);std::string bytes((std::istreambuf_iterator<char>(input)),{});
+  if(bytes.empty() || bytes.size()>65536)return {};
+  DATA_BLOB in{static_cast<DWORD>(bytes.size()),reinterpret_cast<BYTE*>(bytes.data())},out{};
+  DATA_BLOB entropy{static_cast<DWORD>(endpoint.size()),reinterpret_cast<BYTE*>(const_cast<char*>(endpoint.data()))};
+  if(!CryptUnprotectData(&in,nullptr,&entropy,nullptr,nullptr,CRYPTPROTECT_UI_FORBIDDEN,&out))return {};
+  std::string token(reinterpret_cast<char*>(out.pbData),out.cbData);SecureZeroMemory(out.pbData,out.cbData);LocalFree(out.pbData);return token;
+#else
+  return {};
+#endif
+}
+void cache_credential(const std::string& token,const std::string& endpoint) {
+#ifdef _WIN32
+  const auto path=credential_path();if(path.empty())return;
+  if(token.empty()){std::error_code ec;std::filesystem::remove(path,ec);return;}
+  DATA_BLOB in{static_cast<DWORD>(token.size()),reinterpret_cast<BYTE*>(const_cast<char*>(token.data()))},out{};
+  DATA_BLOB entropy{static_cast<DWORD>(endpoint.size()),reinterpret_cast<BYTE*>(const_cast<char*>(endpoint.data()))};
+  if(!CryptProtectData(&in,L"Verdigris account",&entropy,nullptr,nullptr,CRYPTPROTECT_UI_FORBIDDEN,&out))return;
+  const auto temp=path.wstring()+L".tmp";
+  {std::ofstream file(temp,std::ios::binary|std::ios::trunc);file.write(reinterpret_cast<char*>(out.pbData),out.cbData);}
+  LocalFree(out.pbData);MoveFileExW(temp.c_str(),path.c_str(),MOVEFILE_REPLACE_EXISTING|MOVEFILE_WRITE_THROUGH);
+#endif
+}
+}
+void RemoteProtocolSession::start_online_connect() {
+  running_=true;connect_done_=false;connect_ok_=false;peer_dropped_=false;
+  connector_=std::make_unique<std::thread>([this]{
+    connect_ok_=service_transport_->connect(endpoint_,&connect_error_);connect_done_=true;
+  });
+}
+void RemoteProtocolSession::online_send_loop() {
+  while(running_) {
+    std::string text;
+    {std::unique_lock lock(outbox_mutex_);outbox_wake_.wait(lock,[&]{return !running_ || !outbox_.empty();});
+      if(!running_)break;text=std::move(outbox_.front());outbox_.pop_front();}
+    std::string error;if(!service_transport_->send(text,&error)){peer_dropped_=true;break;}
+  }
+}
+
 RemoteProtocolSession::~RemoteProtocolSession() { shutdown(); }
 
 bool RemoteProtocolSession::connect_transport(std::string* error) {
@@ -484,6 +544,16 @@ bool RemoteProtocolSession::connect_transport(std::string* error) {
 }
 
 void RemoteProtocolSession::close_transport() {
+  if(online_mode_) {
+    running_=false;outbox_wake_.notify_all();service_transport_->close();
+    if(connector_ && connector_->joinable())connector_->join();connector_.reset();
+    if(sender_ && sender_->joinable())sender_->join();sender_.reset();
+    if(reader_ && reader_->joinable())reader_->join();reader_.reset();
+    {std::lock_guard lock(outbox_mutex_);outbox_.clear();}
+    {std::lock_guard lock(inbox_mutex_);inbox_.clear();}
+    connect_done_=false;peer_revision_=0;move_sequence_=0;peer_movement_.clear();model_.peers.clear();
+    has_player_sequence_=false;clear_monster_display();clear_player_display();return;
+  }
   has_player_sequence_ = false;
   clear_monster_display();
   clear_player_display();
@@ -525,6 +595,7 @@ void RemoteProtocolSession::pump_retry() {
     fail(ConnectionState::Disconnected, "reconnect failed after 3 attempts");
     return;
   }
+  if(online_mode_){++retry_attempt_;state_=ConnectionState::Connecting;start_online_connect();return;}
   std::string error;
   if (connect_transport(&error)) return;
   ++retry_attempt_;
@@ -539,6 +610,7 @@ void RemoteProtocolSession::pump_retry() {
 
 bool RemoteProtocolSession::start(std::string* error) {
   state_.store(ConnectionState::Connecting);
+  if(online_mode_){credential_=cached_credential(endpoint_);start_online_connect();return true;}
 #ifdef _WIN32
   WSADATA data{};
   if (WSAStartup(MAKEWORD(2, 2), &data) != 0) {
@@ -579,7 +651,20 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
   // Present markers live in the client paint path.
   Envelope envelope{"", JsonValue::Object{}};
   switch (command.type) {
+    case ClientCommand::Type::PartyAction:
+      envelope.event=command.target;
+      envelope.data=JsonValue::Object{{"actorId",command.extra},{"partyId",command.extra},{"ready",command.value!=0}};
+      break;
+    case ClientCommand::Type::Authenticate:
+      if(!online_mode_ || state_!=ConnectionState::Connected)return;
+      envelope.event="service:authenticate";
+      envelope.data=JsonValue::Object{{"credential",command.target},{"enroll",command.value!=0},{"protocolVersion",1}};
+      break;
+    case ClientCommand::Type::Logout:
+      if(!online_mode_)return;credential_.clear();cache_credential("",endpoint_);
+      envelope.event="service:logout";break;
     case ClientCommand::Type::Login:
+      if(online_mode_)return;
       envelope.event = "player:login";
       envelope.data = JsonValue::Object{{"guestId", JsonValue(command.target)},
                                         {"quickGuest", JsonValue(command.value != 0)}};
@@ -589,10 +674,10 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
       // the compound names ("up-left", ...), so diagonals go on the wire
       // instead of being collapsed to their vertical component.
       const std::string direction = direction_name(command.dx, command.dy);
-      if (direction.empty()) return;
+      if (direction.empty() && !online_mode_) return;
       last_move_dir_ = direction;
       envelope.event = "player:move";
-      envelope.data = JsonValue::Object{{"direction", JsonValue(direction)}};
+      envelope.data = JsonValue::Object{{"direction", JsonValue(direction)},{"sequence",static_cast<double>(++move_sequence_)}};
       break;
     }
     case ClientCommand::Type::Aim: {
@@ -772,9 +857,21 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
 }
 
 void RemoteProtocolSession::poll() {
-  // Authoritative monster/ground sync: the server's dev:state snapshot is
+  if(online_mode_ && connect_done_.exchange(false)) {
+    if(connector_ && connector_->joinable())connector_->join();connector_.reset();
+    if(connect_ok_) {
+      state_=ConnectionState::Connected;model_.account_error.clear();
+      reader_=std::make_unique<std::thread>(&RemoteProtocolSession::reader_loop,this);
+      sender_=std::make_unique<std::thread>(&RemoteProtocolSession::online_send_loop,this);
+      if(!credential_.empty())send_envelope({"service:authenticate",JsonValue::Object{{"credential",credential_},{"enroll",false},{"protocolVersion",1}}});
+    } else {model_.account_error=connect_error_;begin_retry(connect_error_);}
+  }
+  // Authoritative monster/ground sync: the service snapshot is
   // the source of truth (browser parity) — inference from combat envelopes
   // alone can miss fast kills entirely. Throttled to ~4Hz while Ready.
+  if (online_mode_ && state_==ConnectionState::Connected && std::chrono::steady_clock::now()-last_state_request_>std::chrono::seconds(3)) {
+    last_state_request_=std::chrono::steady_clock::now();send_envelope({"service:ping",JsonValue::Object{}});
+  }
   if (state_.load() == ConnectionState::Ready) {
     const auto now = std::chrono::steady_clock::now();
     if (now - last_state_request_ > std::chrono::milliseconds(250)) {
@@ -784,7 +881,7 @@ void RemoteProtocolSession::poll() {
       const bool need_map =
           model_.map_scene_id.empty() ||
           model_.map_scene_id != model_.player.scene_id;
-      Envelope request{"dev:state",
+      Envelope request{"world:snapshot",
                        JsonValue::Object{{"requestId", JsonValue("model-sync")},
                                          {"includeMap", JsonValue(need_map)}}};
       send_envelope(request);
@@ -815,6 +912,7 @@ void RemoteProtocolSession::poll() {
   pump_retry();
   sample_monster_display();
   sample_player_display();
+  sample_peers();
 }
 
 std::vector<PresentationEvent> RemoteProtocolSession::drain_events() {
@@ -829,6 +927,21 @@ bool RemoteProtocolSession::send_raw(const std::string& event, verdigris::networ
 }
 
 bool RemoteProtocolSession::send_envelope(const Envelope& envelope) {
+  if(online_mode_) {
+    if(!running_ || state_==ConnectionState::Connecting || state_==ConnectionState::Retrying)return false;
+    std::lock_guard lock(outbox_mutex_);
+    if(outbox_.size()>=128){peer_dropped_=true;return false;}
+    auto command=envelope;
+    if(model_.authenticated && !model_.chronicles_pending && !model_.player.uuid.empty() && command.data.object() && command.event!="service:authenticate" && command.event!="service:ping" && command.event!="world:snapshot") {
+      (*command.data.object())["sceneId"]=model_.player.scene_id;
+      (*command.data.object())["actingActorId"]=model_.player.uuid;
+    }
+    if(command.data.object() && command.event!="service:authenticate" && command.event!="service:ping" && command.event!="world:snapshot" && command.event!="player:move") {
+      (*command.data.object())["commandEpoch"]=command_epoch_;
+      (*command.data.object())["commandSequence"]=static_cast<double>(++command_sequence_);
+    }
+    outbox_.push_back(verdigris::networking::emit_envelope(command));outbox_wake_.notify_one();return true;
+  }
   return send_frame(0x1, verdigris::networking::emit_envelope(envelope));
 }
 
@@ -863,6 +976,15 @@ bool RemoteProtocolSession::send_frame(std::uint8_t opcode, const std::string& p
 }
 
 void RemoteProtocolSession::reader_loop() {
+  if(online_mode_) {
+    while(running_) {
+      std::string text,error;if(!service_transport_->receive(text,&error))break;
+      std::lock_guard lock(inbox_mutex_);
+      if(inbox_.size()>=256)break;
+      inbox_.push_back(std::move(text));
+    }
+    if(running_)peer_dropped_=true;return;
+  }
   const auto socket = static_cast<socket_t>(socket_);
   while (running_.load()) {
     std::uint8_t header[2];
@@ -895,6 +1017,7 @@ void RemoteProtocolSession::reader_loop() {
     }
     if (opcode == 0x1) {
       std::lock_guard lock(inbox_mutex_);
+      if(inbox_.size()>=256)break;
       inbox_.push_back(std::move(payload));
     }
   }
@@ -1122,7 +1245,71 @@ void RemoteProtocolSession::sample_monster_display() {
   }
 }
 
+void RemoteProtocolSession::sample_peers() {
+  const auto now=std::chrono::steady_clock::now();
+  for(auto& peer:model_.peers) {
+    auto it=peer_movement_.find(peer.uuid);if(it==peer_movement_.end())continue;
+    const auto& motion=it->second;
+    const auto t=std::clamp(std::chrono::duration<double,std::milli>(now-motion.received_at).count()/50.0,0.0,1.0);
+    peer.display_x=motion.from_x+(motion.to_x-motion.from_x)*t;
+    peer.display_y=motion.from_y+(motion.to_y-motion.from_y)*t;peer.has_display_position=true;
+  }
+}
+
 void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
+  if(envelope.event=="service:authenticated") {
+    credential_=json_string(envelope.data.get("token"))?*json_string(envelope.data.get("token")):"";
+    command_epoch_=json_string(envelope.data.get("commandEpoch"))?*json_string(envelope.data.get("commandEpoch")):"";command_sequence_=0;
+    cache_credential(credential_,endpoint_);model_.authenticated=true;model_.account_error.clear();return;
+  }
+  if(envelope.event=="service:rejected") {
+    model_.account_error=json_string(envelope.data.get("message"))?*json_string(envelope.data.get("message")):"Sign-in rejected";
+    model_.authenticated=false;state_=ConnectionState::Connected;return;
+  }
+  if(envelope.event=="service:logged-out") {
+    model_=ClientModel{};model_.service_mode=true;credential_.clear();state_=ConnectionState::Connected;return;
+  }
+  if(envelope.event=="party:error") {model_.party.error=json_string(envelope.data.get("message"))?*json_string(envelope.data.get("message")):"Party action rejected";return;}
+  if(envelope.event=="party:invited") {
+    const auto* invite=envelope.data.get("invite");model_.party.invite_id.clear();model_.party.invited_by.clear();
+    if(invite){if(auto id=json_string(invite->get("partyId")))model_.party.invite_id=*id;if(auto name=json_string(invite->get("invitedBy")))model_.party.invited_by=*name;}return;
+  }
+  if(envelope.event=="party:update") {
+    model_.party=ClientParty{};
+    if(const auto* party=envelope.data.get("party");party && party->object()) {
+      if(auto id=json_string(party->get("id")))model_.party.id=*id;
+      if(auto id=json_string(party->get("leaderId")))model_.party.leader_id=*id;
+      if(auto state=json_string(party->get("state")))model_.party.state=*state;
+      if(auto members=party->get("members");members && members->array())for(const auto& member:*members->array()) {
+        if(model_.party.members.size()>=32)break;ClientPartyMember m;
+        if(auto id=json_string(member.get("uuid")))m.uuid=*id;if(auto name=json_string(member.get("username")))m.name=*name;
+        m.ready=member["ready"].boolean().value_or(false);model_.party.members.push_back(std::move(m));
+      }
+    }return;
+  }
+  if(envelope.event=="world:actors") {
+    const auto* scene=json_string(envelope.data.get("sceneId"));
+    const auto revision=json_number(envelope.data.get("revision"),0);
+    if(!scene || *scene!=model_.player.scene_id || revision<=peer_revision_)return;
+    const auto* actors=envelope.data.get("actors");if(!actors || !actors->array() || actors->array()->size()>32)return;
+    peer_revision_=static_cast<std::uint64_t>(revision);std::vector<ClientPlayer> peers;
+    std::unordered_map<std::string,MonsterMovement> motions;
+    for(const auto& actor:*actors->array()) {
+      const auto* id=json_string(actor.get("uuid"));if(!id || *id==model_.player.uuid)continue;
+      ClientPlayer p;apply_player_fields(p,actor);p.uuid=*id;p.scene_id=*scene;
+      if(auto name=json_string(actor.get("displayName")))p.display_name=*name;
+      if(auto held=json_string(actor.get("heldItem")))p.held_item=*held;
+      p.alive=actor["alive"].boolean().value_or(false);
+      if(auto hp=actor.get("hp")){p.life=static_cast<int>(json_number(hp->get("current"),0));p.life_max=static_cast<int>(json_number(hp->get("max"),1));}
+      MonsterMovement motion;motion.from_x=p.x;motion.from_y=p.y;motion.to_x=p.x;motion.to_y=p.y;motion.received_at=std::chrono::steady_clock::now();
+      for(const auto& old:model_.peers)if(old.uuid==p.uuid && old.scene_id==p.scene_id && std::hypot(old.x-p.x,old.y-p.y)<4) {
+        motion.from_x=old.has_display_position?old.display_x:old.x;motion.from_y=old.has_display_position?old.display_y:old.y;
+      }
+      motions[p.uuid]=motion;peers.push_back(std::move(p));
+    }
+    model_.peers=std::move(peers);peer_movement_=std::move(motions);return;
+  }
+
   if(envelope.event=="inventory:operation") {
     const auto* id=json_string(envelope.data.get("uuid"));
     const auto* reason=json_string(envelope.data.get("reason"));
@@ -1435,9 +1622,18 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     const int amount = static_cast<int>(json_number(envelope.data.get("amount")));
     const bool died = envelope.data.get("died") && envelope.data.get("died")->boolean() &&
                       *envelope.data.get("died")->boolean();
-    const bool hits_player =
-        (target && *target == model_.player.uuid) ||
-        (target_type && *target_type == "player");
+    const bool hits_player = target && *target == model_.player.uuid;
+    if (target_type && *target_type == "player" && !hits_player) {
+      for(auto& peer:model_.peers) if(target && peer.uuid==*target) {
+        if(const auto* hp=envelope.data.get("health")) {
+          peer.life=static_cast<int>(json_number(hp->get("current"),peer.life));
+          peer.life_max=static_cast<int>(json_number(hp->get("max"),peer.life_max));
+        }
+        if(died)peer.alive=false;
+        pending_events_.push_back({PresentationEventType::DamageApplied,peer.uuid,"","peer-incoming",amount});
+      }
+      return;
+    }
     if (const auto* health = envelope.data.get("health")) {
       if (hits_player) {
         model_.player.life = static_cast<int>(json_number(health->get("current"), model_.player.life));
@@ -1474,7 +1670,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
             {PresentationEventType::ScionDied, model_.player.uuid, "", "", 0});
       }
     } else {
-      model_.last_outgoing_hit = amount;
+      if(!attacker || *attacker==model_.player.uuid) model_.last_outgoing_hit = amount;
       // TASK-0122 Phase A: consume the already-shipped combat:hit parity
       // fields (server networking.cpp emits critical/attackStyle). Copied
       // verbatim into the presentation event; the client never computes them
@@ -1512,7 +1708,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       outgoing.style = style;
       pending_events_.push_back(std::move(outgoing));
       if (died) {
-        ++model_.kills;
+        if(!attacker || *attacker==model_.player.uuid) ++model_.kills;
         foe.alive = false;
         foe.life = 0;
         pending_events_.push_back({PresentationEventType::ActorDied,
@@ -1550,9 +1746,15 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       pending_events_.push_back({PresentationEventType::LevelUp,*actor,"","",static_cast<int>(level)});
     return;
   }
-  if (envelope.event == "dev:state") {
+  if (envelope.event == "dev:state" || envelope.event == "world:snapshot") {
     const auto* state = envelope.data.get("state");
     if (!state) return;
+    if(envelope.event=="world:snapshot") {
+      if(const auto* inventory=state->get("inventoryDetails");inventory && inventory->array()) {
+        model_.inventory.clear();
+        for(const auto& item:*inventory->array())model_.inventory.push_back(parse_item_slot(item));
+      }
+    }
     if (const auto* combat = state->get("combat")) apply_combat_fields(*combat, model_.player);
     apply_player_level(model_.player, *state);
     if (const auto* appearance = json_string(state->get("appearance")))

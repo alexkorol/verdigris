@@ -129,6 +129,8 @@ function Invoke-Msvc([string]$arguments, [switch]$RequireNativeWindowsDefine) {
 
 Invoke-Msvc ('/c "' + $coreSources[0] + '" /Fo"' + $coreObject + '"')
 Invoke-Msvc ('/c "' + $coreSources[1] + '" /Fo"' + $seasonalObject + '"')
+Invoke-Msvc ('/c "' + $nativeRoot + '\src\service_store.cpp" /Fo"' + $buildRoot + '\service_store.obj"')
+Invoke-Msvc ('/c "' + $nativeRoot + '\client\service_transport.cpp" /Fo"' + $buildRoot + '\service_transport.obj"')
 Invoke-Msvc ('/c "' + $networkingSource + '" /Fo"' + $networkingObject + '"')
 Invoke-Msvc ('/c "' + $nativeRoot + '\tests\core_tests.cpp" /Fo"' + $buildRoot + '\tests.obj"')
 Invoke-Msvc ('/c "' + $nativeRoot + '\tests\networking_tests.cpp" /Fo"' + $buildRoot + '\networking_tests.obj"')
@@ -148,7 +150,7 @@ Invoke-Msvc ('/c "' + $nativeRoot + '\audio\event_cues.cpp" /I"' + $nativeRoot +
 Invoke-Msvc ('/c "' + $nativeRoot + '\audio\audio_mixer.cpp" /I"' + $nativeRoot + '\audio" /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\audio_audio_mixer.obj"')
 Invoke-Msvc ('/c "' + $nativeRoot + '\tests\audio_mixer_tests.cpp" /I"' + $nativeRoot + '\audio" /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\audio_mixer_tests.obj"')
 Invoke-Msvc ('/c "' + $nativeRoot + '\tests\user_settings_tests.cpp" /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\user_settings_tests.obj"')
-$serverCompileArguments = '/c "' + $nativeRoot + '\src\server_main.cpp" /Fo"' + $buildRoot + '\server.obj"'
+$serverCompileArguments = '/I"' + $buildRoot + '" /c "' + $nativeRoot + '\src\server_main.cpp" /Fo"' + $buildRoot + '\server.obj"'
 Invoke-Msvc $serverCompileArguments
 $clientCompileArguments = '/c "' + $nativeRoot + '\client\main.cpp" /DVERDIGRIS_NATIVE_WINDOWS=1 /I"' + $nativeRoot + '\client" /I"' + $buildRoot + '" /Fo"' + $buildRoot + '\client.obj"'
 # Guard the compile command itself so dropping the define cannot silently
@@ -158,16 +160,30 @@ Invoke-Msvc $clientCompileArguments -RequireNativeWindowsDefine
 $remotePlayCompileArguments = '/c "' + $nativeRoot + '\client\remote_play.cpp" /DVERDIGRIS_NATIVE_WINDOWS=1 /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\remote_play.obj"'
 Invoke-Msvc $remotePlayCompileArguments -RequireNativeWindowsDefine
 Invoke-Msvc ('"' + $buildRoot + '\tests.obj" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $testExe + '"')
-Invoke-Msvc ('"' + $buildRoot + '\networking_tests.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $networkingTestExe + '" /link ws2_32.lib')
-Invoke-Msvc ('"' + $buildRoot + '\server.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $serverExe + '" /link ws2_32.lib')
-Invoke-Msvc ('"' + $buildRoot + '\client.obj" "' + $buildRoot + '\remote_play.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $buildRoot + '\audio_cue_spec.obj" "' + $buildRoot + '\audio_event_cues.obj" "' + $buildRoot + '\audio_audio_mixer.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $clientExe + '" /link user32.lib gdi32.lib ws2_32.lib winmm.lib')
+Invoke-Msvc ('"' + $buildRoot + '\networking_tests.obj" "' + $networkingObject + '" "' + $buildRoot + '\service_store.obj" "' + $buildRoot + '\service_transport.obj" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $networkingTestExe + '" /link ws2_32.lib')
+Invoke-Msvc ('"' + $buildRoot + '\server.obj" "' + $networkingObject + '" "' + $buildRoot + '\service_store.obj" "' + $buildRoot + '\service_transport.obj" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $serverExe + '" /link ws2_32.lib')
+Invoke-Msvc ('"' + $buildRoot + '\client.obj" "' + $buildRoot + '\remote_play.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $buildRoot + '\audio_cue_spec.obj" "' + $buildRoot + '\audio_event_cues.obj" "' + $buildRoot + '\audio_audio_mixer.obj" "' + $networkingObject + '" "' + $buildRoot + '\service_store.obj" "' + $buildRoot + '\service_transport.obj" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $clientExe + '" /link user32.lib gdi32.lib ws2_32.lib winmm.lib')
 
 Invoke-Msvc ('"' + $buildRoot + '\camera2d_tests.obj" /Fe"' + $camera2dTestExe + '"')
 Invoke-Msvc ('"' + $buildRoot + '\fable_camera_tests.obj" /Fe"' + $fableCameraTestExe + '"')
-Invoke-Msvc ('"' + $buildRoot + '\session_tests.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $sessionTestExe + '" /link ws2_32.lib')
-Invoke-Msvc ('"' + $buildRoot + '\presentation_events_tests.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $presentationEventsTestExe + '" /link ws2_32.lib')
+Invoke-Msvc ('"' + $buildRoot + '\session_tests.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $networkingObject + '" "' + $buildRoot + '\service_store.obj" "' + $buildRoot + '\service_transport.obj" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $sessionTestExe + '" /link ws2_32.lib')
+Invoke-Msvc ('"' + $buildRoot + '\presentation_events_tests.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $networkingObject + '" "' + $buildRoot + '\service_store.obj" "' + $buildRoot + '\service_transport.obj" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $presentationEventsTestExe + '" /link ws2_32.lib')
 Invoke-Msvc ('"' + $buildRoot + '\audio_mixer_tests.obj" "' + $buildRoot + '\audio_cue_spec.obj" "' + $buildRoot + '\audio_event_cues.obj" "' + $buildRoot + '\audio_audio_mixer.obj" /Fe"' + $audioTestExe + '"')
 Invoke-Msvc ('"' + $buildRoot + '\user_settings_tests.obj" "' + $buildRoot + '\audio_cue_spec.obj" "' + $buildRoot + '\audio_event_cues.obj" "' + $buildRoot + '\audio_audio_mixer.obj" /Fe"' + $settingsTestExe + '"')
+
+# Native service regression gates use the same production object files.
+foreach ($name in @('coop_tests','service_authority_tests','service_actor_tests','service_entitlement_tests','service_protocol_tests','service_relic_tests','service_coop_tests')) {
+  Invoke-Msvc ('/c "' + $nativeRoot + '\tests\' + $name + '.cpp" /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\' + $name + '.obj"')
+  Invoke-Msvc ('"' + $buildRoot + '\' + $name + '.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $networkingObject + '" "' + $buildRoot + '\service_store.obj" "' + $buildRoot + '\service_transport.obj" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $buildRoot + '\' + $name + '.exe" /link ws2_32.lib')
+  if ($RunTests) { & (Join-Path $buildRoot ($name + '.exe')); if ($LASTEXITCODE -ne 0) { throw "$name failed" } }
+}
+Invoke-Msvc ('/DVERDIGRIS_SERVICE_STORE_TESTING /c "' + $nativeRoot + '\src\service_store.cpp" /Fo"' + $buildRoot + '\service_store_testing.obj"')
+Invoke-Msvc ('/DVERDIGRIS_SERVICE_STORE_TESTING "' + $nativeRoot + '\tests\service_store_tests.cpp" "' + $buildRoot + '\service_store_testing.obj" /Fo"' + $buildRoot + '\service_store_tests.obj" /Fe"' + $buildRoot + '\service_store_tests.exe"')
+Invoke-Msvc ('"' + $nativeRoot + '\tests\service_transport_tests.cpp" "' + $buildRoot + '\service_transport.obj" /Fo"' + $buildRoot + '\service_transport_tests.obj" /Fe"' + $buildRoot + '\service_transport_tests.exe" /link ws2_32.lib')
+if ($RunTests) {
+  & (Join-Path $buildRoot 'service_store_tests.exe'); if ($LASTEXITCODE -ne 0) { throw 'service store tests failed' }
+  & (Join-Path $buildRoot 'service_transport_tests.exe'); if ($LASTEXITCODE -ne 0) { throw 'service transport tests failed' }
+}
 
 python (Join-Path $nativeRoot "tools\check_legacy_denylist.py")
 if ($LASTEXITCODE -ne 0) { throw "legacy denylist failed" }
@@ -221,7 +237,7 @@ if ($RunServerLifecycleSoak) {
   Invoke-Msvc ('/c "' + $nativeRoot + '\tools\server_lifecycle_soak.cpp" /I"' + $nativeRoot + '\client" /Fo"' + $soakObj + '"')
   # Link against the proven session-seam object set so the soak drives the
   # REAL WebSocketServer through the same client transport the tests use.
-  Invoke-Msvc ('"' + $soakObj + '" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $soakExe + '" /link ws2_32.lib')
+  Invoke-Msvc ('"' + $soakObj + '" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $networkingObject + '" "' + $buildRoot + '\service_store.obj" "' + $buildRoot + '\service_transport.obj" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $soakExe + '" /link ws2_32.lib')
   $soakCaptureDir = Join-Path $nativeRoot "..\orchestration\tasks\TASK-0129-server-lifecycle-soak\captures"
   New-Item -ItemType Directory -Force -Path $soakCaptureDir | Out-Null
   # Timestamped output: each independent gate invocation preserves its own

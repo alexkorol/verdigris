@@ -43,9 +43,9 @@ no secrets; the server does not provide an unbounded application event log.
 ## Explicit QA policy
 
 `--qa-policy coop-v1` acknowledges the implementation's current private-QA
-policy, not an owner ruling for a permanent public economy: up to four party
-participants; 30-second disconnected reservation with frozen input; no late
-entry or post-death objective credit; unfinished instances retire to town on
+policy, not an owner ruling for a permanent public economy: four party
+participants by default (`-PartyCapacity 2..8` / `--party-capacity 2..8`); 30-second disconnected reservation with frozen input; no late
+entry or retrospective disconnected/post-death objective credit; unfinished instances retire to town on
 restart while preserving already committed carried inventory. Accounts/Houses
 remain independent. Final party size, permanent loss/recovery terms and public
 loot policy require their own owner ruling before production promotion.
@@ -128,3 +128,41 @@ directory and writes `service-manifest.json` with SHA-256 hashes. Run
 `verify-service-package.ps1 -PackageDirectory <package>` to verify exact files
 and source identity. Full gameplay, graphics, capacity, backup recovery and
 separate-computer acceptance are additional gates, not claims made by hashes.
+
+## Service contract and recovery evidence
+
+Protocol version 1 is the private QA wire/content compatibility contract. A
+version mismatch is rejected before enrollment is consumed. Production snapshots
+and scene-scoped peer messages expose approved fields; development mutation and
+editable-save surfaces are unavailable. Connection epochs, command sequences,
+and native-client actor/scene fences reject replay and retired-context input.
+On reconnect the owner receives a full snapshot instead of replaying uncertain
+transactions. A repeated mutation sequence cannot grant a second result.
+
+One authority clock schedules gameplay every 50 ms. The local review path keeps
+its existing immediate input and 150 ms transport tick. Runtime bounds are 32
+connections, 128 resident accounts, 512 queued messages (32 per connection),
+16 KiB inbound frames, 160 messages/second per connection, and 2 MiB each for
+staged and outgoing data per connection. Completed readers are reaped; committed
+disconnected accounts retire after the QA grace. An admission during a saturated
+queue can be rejected; clients reconnect after backoff. Initial integration evidence
+covers four players in two instances and adversarial connection pressure, not a
+public load target. See the implementation report for measured soak results.
+
+SQLite schema 3 commits private accounts, the circulation journal, and outcome
+markers in one transaction before gameplay output is published. Each eligible
+House records its own first-Warden entitlement with the shared instance/boss and
+own Scion IDs. Redemption is once per House, including an earned claim recovered
+at Aldwyn after restart. Relics retain exact UUID and source ownership through
+queued, released, and claimed journal states. Retired expeditions requeue only
+unclaimed released relics; a claimed relic requeues only when its later owning
+mortal Scion dies. Persisted source-death history rejects earlier death replays.
+Ordinary ground
+items in unfinished expeditions retire with that volatile instance under this QA
+policy; already committed carried items and earned House claims persist.
+
+Run `native/build.ps1 -RunTests` for actor, authority, entitlement, protocol,
+relic, Store crash/recovery, transport, and existing native suites. Run
+`test-service-clients.ps1` against two disposable accounts for the graphical
+journey; `test-service-operations.ps1`, `test-service-launcher.ps1`, and
+`test-service-pressure.ps1` cover their separate real-process boundaries.

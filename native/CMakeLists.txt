@@ -13,11 +13,12 @@ target_include_directories(verdigris_core PUBLIC include)
 
 add_library(verdigris_networking
   src/networking.cpp
+  src/service_store.cpp
 )
 target_include_directories(verdigris_networking PUBLIC include)
 target_link_libraries(verdigris_networking PUBLIC verdigris_core)
 if (WIN32)
-  target_link_libraries(verdigris_networking PRIVATE ws2_32)
+  target_link_libraries(verdigris_networking PRIVATE ws2_32 bcrypt winsqlite3)
 endif()
 
 # TASK-0157: backend-neutral procedural audio scheduler foundation. Data-only
@@ -49,12 +50,13 @@ target_link_libraries(verdigris_server PRIVATE verdigris_networking)
 add_library(verdigris_client_session
   client/local_session.cpp
   client/remote_session.cpp
+  client/service_transport.cpp
   client/presentation_state.cpp
 )
 target_include_directories(verdigris_client_session PUBLIC client)
 target_link_libraries(verdigris_client_session PUBLIC verdigris_networking)
 if (WIN32)
-  target_link_libraries(verdigris_client_session PUBLIC ws2_32)
+  target_link_libraries(verdigris_client_session PUBLIC ws2_32 winhttp crypt32)
 endif()
 
 add_executable(camera2d_tests tests/camera2d_tests.cpp)
@@ -87,6 +89,7 @@ elseif(VERDIGRIS_SOURCE_STATUS STREQUAL "")
 endif()
 configure_file(build_identity.in.hpp ${CMAKE_CURRENT_BINARY_DIR}/verdigris_build_generated.hpp @ONLY)
 target_include_directories(verdigris_client PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(verdigris_server PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(verdigris_client PRIVATE verdigris_core verdigris_client_session)
 if (WIN32)
   target_compile_definitions(verdigris_client PRIVATE VERDIGRIS_NATIVE_WINDOWS=1)
@@ -103,3 +106,19 @@ add_test(NAME verdigris_presentation_events_tests COMMAND verdigris_presentation
 add_test(NAME verdigris_audio_mixer_tests COMMAND verdigris_audio_mixer_tests)
 add_test(NAME verdigris_user_settings_tests COMMAND verdigris_user_settings_tests)
 add_test(NAME verdigris_client_scenarios COMMAND verdigris_client --scenario all)
+
+if(WIN32)
+  foreach(service_test coop_tests service_authority_tests service_actor_tests service_entitlement_tests service_protocol_tests service_relic_tests service_coop_tests)
+    add_executable(${service_test} tests/${service_test}.cpp)
+    target_link_libraries(${service_test} PRIVATE verdigris_client_session)
+    add_test(NAME ${service_test} COMMAND ${service_test})
+  endforeach()
+  add_executable(service_store_tests tests/service_store_tests.cpp src/service_store.cpp)
+  target_include_directories(service_store_tests PRIVATE include)
+  target_compile_definitions(service_store_tests PRIVATE VERDIGRIS_SERVICE_STORE_TESTING)
+  target_link_libraries(service_store_tests PRIVATE bcrypt winsqlite3)
+  add_test(NAME service_store_tests COMMAND service_store_tests)
+  add_executable(service_transport_tests tests/service_transport_tests.cpp client/service_transport.cpp)
+  target_link_libraries(service_transport_tests PRIVATE winhttp ws2_32)
+  add_test(NAME service_transport_tests COMMAND service_transport_tests)
+endif()

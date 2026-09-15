@@ -21114,7 +21114,10 @@ int scenario_frontend_flow() {
 #include "vfx/particle_scenarios.hpp"
 #include "coop_scenarios.hpp"
 
+#include "service_coop_scenarios.hpp"
 int run_scenarios(const std::string& which) {
+  // Requires two externally coordinated clients and an independent service.
+  if(which=="service-client")return scenario_service_client();
   struct Entry {
     const char* name;
     int (*fn)();

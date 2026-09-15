@@ -1,6 +1,7 @@
 param(
   [Parameter(Mandatory = $true)][string]$DataDirectory,
   [ValidateRange(1,65535)][int]$Port = 6540,
+  [ValidateRange(2,8)][int]$PartyCapacity = 4,
   [Parameter(Mandatory = $true)][ValidateSet('coop-v1')][string]$QaPolicy
 )
 $ErrorActionPreference = 'Stop'
@@ -18,5 +19,5 @@ if (-not (Test-Path -LiteralPath $data)) {
 }
 # Keep the process attached to its operator/process manager. Service mode does
 # not read stdin; closing a client has no relationship to this process.
-& $server --service --data $data --port $Port --qa-policy $QaPolicy
+& $server --service --data $data --port $Port --party-capacity $PartyCapacity --qa-policy $QaPolicy
 exit $LASTEXITCODE

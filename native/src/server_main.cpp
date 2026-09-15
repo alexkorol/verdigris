@@ -120,6 +120,7 @@ std::string environment(const char* name) {
 int run(const std::vector<std::string>& args) {
     if (args.size() == 2 && args[1] == "--build-info") { std::cout << VERDIGRIS_BUILD_ID << " " << (VERDIGRIS_BUILD_DIRTY ? "dirty" : "clean") << "\n"; return 0; }
     std::uint16_t port = 6500;
+    std::size_t party_capacity=4;
     bool service{}, enroll{}, health{}, stop{};
     std::string data, policy, output, backup, restore, recover;
     const auto configured_port = environment("VERDIGRIS_PORT");
@@ -134,6 +135,7 @@ int run(const std::vector<std::string>& args) {
         else if (option == "--recover") recover = next();
         else if (option == "--data") data = next();
         else if (option == "--port") port = parse_port(next());
+        else if (option == "--party-capacity") party_capacity=parse_port(next());
         else if (option == "--qa-policy") policy = next();
         else if (option == "--output") output = next();
         else if (option == "--backup") backup = next();
@@ -170,6 +172,7 @@ int run(const std::vector<std::string>& args) {
     std::filesystem::path saves;
     if (!service) { const auto configured = environment("VERDIGRIS_SAVE_DIR"); if (!configured.empty()) saves = path(configured); else saves = std::filesystem::absolute(path(args[0])).parent_path() / "saves"; }
     verdigris::networking::WebSocketServer server(port, saves, store);
+    if(!server.set_party_capacity(party_capacity))throw std::runtime_error("QA party capacity must be between 2 and 8.");
     if (!server.start(&error)) throw std::runtime_error(error);
     std::signal(SIGINT, signal_stop); std::signal(SIGTERM, signal_stop);
 #ifdef _WIN32

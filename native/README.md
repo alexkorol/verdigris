@@ -3,6 +3,17 @@
 The native C++20 game uses the Fable perspective renderer and directional
 animated Scions. The historical browser reference remains in src/ and server/.
 
+## Private multiplayer service
+
+The native player supports `Verdigris.exe --online "wss://<authorized-host>/game"`.
+Online accounts, owned Houses/Scions, peer actors, party invitations/readiness,
+shared encounters, private inventory, and House entitlements use an independent
+transactional Windows service. Local double-click review remains available.
+See [service operations](tools/SERVICE-OPERATIONS.md) for enrollment, the explicit
+QA policy, secure gateway, backup/recovery, packaging, and verification commands.
+Protocol 1 is a private QA contract; deployment and separate-computer acceptance
+require an authorized host and endpoint.
+
 ## Player typography
 
 All player text uses **Verdigris Sans**, a bundled CC0 derivative of m5x7.

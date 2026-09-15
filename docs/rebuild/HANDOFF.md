@@ -1,5 +1,33 @@
 # Native reconstitution handoff
 
+## Service/co-op branch — isolated QA delivery, September 14
+
+Task branch: `codex/native-service-coop-20260914`, based on consolidated
+`bafd218855608914f4f531a101f8e01cab524408`. Owned checkout:
+`C:/Users/Alex/Documents/ChatGPT/verdigris-service-coop-20260914`.
+This does not replace the installed particle handover below.
+
+The native client now authenticates to an independent Windows service, admits
+owned Houses/living Scions, renders peers, forms parties through native controls,
+and fights with distinct actors in shared isolated encounters. Durable SQLite
+transactions preserve private possessions and per-House Warden entitlements.
+WinHTTP provides maintained WSS transport; public TLS terminates at the documented
+same-host gateway. Local review retains its separate launcher/profile path.
+
+Integrated native build 7 passed all tests, including four accounts in two
+isolated parties; 83 native graphical scenarios passed. Two actual native
+processes completed ordinary enrollment, House/Scion creation, movement, native
+party controls, shared Warden combat, independent rewards, return and cached
+reconnect: `native/build/graphical-service-20260914-202804/clients/summary.json`.
+Final frozen-package evidence and source identities are recorded in
+`orchestration/recoveries/2026-09-14-service-coop/REPORT.md` as packaging completes.
+
+`coop-v1` remains an explicit QA policy. No normal installation promotion,
+shared/default branch merge, public deployment or owner acceptance is claimed.
+Separate-computer and external-network verification require an authorized host,
+domain/certificate arrangement and access path. Publish verified implementation
+to this task branch and verify its remote SHA under the standing push policy.
+
 ## Current handover — gameplay particles installed
 
 Normal entry: `C:/Users/Alex/Documents/Verdigris Native 2026-09-13/Verdigris.exe`.

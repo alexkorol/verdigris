@@ -3562,14 +3562,14 @@ void remote_passive_tree_payload_hardening() {
                       "\"earned\":-3,\"nodes\":[\"n0\"],\"conduits\":[]}"),
        std::string("passiveTree rejected: ") + kEarnedReason,
        "negative earned"},
-      // Non-finite / overflow-like values (strtod accepts these literals).
+      // Reject non-JSON numbers at the protocol boundary before applying a tree.
       {pt_state_frame("{\"schemaVersion\":2,\"points\":{\"skill\":Infinity},"
                       "\"earned\":12,\"nodes\":[\"n0\"],\"conduits\":[]}"),
-       std::string("passiveTree rejected: ") + kPointsReason,
+       "invalid JSON value at byte " + std::to_string(pt_state_frame("{\"schemaVersion\":2,\"points\":{\"skill\":Infinity},\"earned\":12,\"nodes\":[\"n0\"],\"conduits\":[]}").find("Infinity")),
        "bare-Infinity points.skill"},
       {pt_update_frame("{\"schemaVersion\":2,\"points\":{\"skill\":7},"
                        "\"earned\":1e400,\"nodes\":[\"n0\"],\"conduits\":[]}"),
-       std::string("passiveTree rejected: ") + kEarnedReason,
+       "invalid JSON value at byte " + std::to_string(pt_update_frame("{\"schemaVersion\":2,\"points\":{\"skill\":7},\"earned\":1e400,\"nodes\":[\"n0\"],\"conduits\":[]}").find("1e400")),
        "exponent-overflow earned (inf)"},
       {pt_update_frame("{\"schemaVersion\":2,\"points\":{\"skill\":7},"
                        "\"earned\":2147483648,\"nodes\":[\"n0\"],"

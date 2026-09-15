@@ -17,6 +17,8 @@
 #include <vector>
 
 #include "session.hpp"
+#include "service_transport.hpp"
+#include <condition_variable>
 #include "verdigris/networking.hpp"
 
 namespace verdigris::client {
@@ -26,6 +28,7 @@ class RemoteProtocolSession final : public IClientSession {
   RemoteProtocolSession(std::string host, std::uint16_t port,
                         std::string guest_id, bool quick_guest = true);
   ~RemoteProtocolSession() override;
+  static std::unique_ptr<RemoteProtocolSession> online(std::string endpoint);
 
   RemoteProtocolSession(const RemoteProtocolSession&) = delete;
   RemoteProtocolSession& operator=(const RemoteProtocolSession&) = delete;
@@ -74,6 +77,23 @@ class RemoteProtocolSession final : public IClientSession {
   std::uint64_t last_player_sequence_ = 0;
   void fail(ConnectionState state, const std::string& error);
 
+  bool online_mode_=false;
+  std::string endpoint_;
+  std::string credential_;
+  std::string command_epoch_;
+  std::uint64_t command_sequence_=0;
+  std::unique_ptr<ServiceTransport> service_transport_;
+  std::unique_ptr<std::thread> connector_, sender_;
+  std::atomic<bool> connect_done_{false}, connect_ok_{false};
+  std::string connect_error_;
+  std::mutex outbox_mutex_;
+  std::condition_variable outbox_wake_;
+  std::deque<std::string> outbox_;
+  void start_online_connect();
+  void online_send_loop();
+  std::uint64_t move_sequence_=0, peer_revision_=0;
+  std::unordered_map<std::string,MonsterMovement> peer_movement_;
+  void sample_peers();
   std::string host_;
   std::uint16_t port_;
   std::string guest_id_;

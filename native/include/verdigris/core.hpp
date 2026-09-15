@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdint>
 #include <map>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -681,6 +682,7 @@ struct CreateItemOptions {
 };
 
 // factory.js createById/createFromBase. Returns nullopt for unknown ids.
+void set_game_item_namespace(const std::string& prefix);
 void reserve_game_item_identity(const std::string& uuid);
 std::optional<GameItem> create_game_item(const std::string& item_id,
                                          const CreateItemOptions& options);
@@ -934,35 +936,85 @@ const std::vector<ZoneDescriptor>& adventure_zones();
 bool is_zone_template(const std::string& template_id);
 bool is_zone_layout(const std::string& layout);
 
-// Deterministic tile-space world for one player: town scene, solo instance
+// An actor owns input, geometry and recovery. An instance owns encounter time
+// and shared entities; neither type owns sockets, storage or rendering.
+struct WorldPlayerState {
+  std::string player_uuid_;
+  WorldPosition position_{38.0, 115.0};
+  std::string facing_ = "down";
+  std::string active_target_;
+  bool guaranteed_elite_gear_ = false;
+  std::string engaged_by_;
+  std::uint64_t next_player_attack_ms_ = 0;
+  bool player_attack_active_ = false;
+  Vec2 player_attack_facing_{0, 1};
+  std::int64_t next_dash_ms_ = 0;
+  int player_level_ = 1;
+  MovementStepInfo last_step_;
+  PlayerCombatMods player_mods_;
+  bool alive = true;
+  std::vector<WorldCombatEvent> pending_combat;
+};
+struct WorldInstanceState {
+  std::string scene_type_ = "town";
+  std::string scene_id_ = "town:verdigris";
+  std::string scene_name_ = "Verdigris";
+  TileGrid grid_;
+  InstanceMetadata metadata_;
+  std::vector<WorldMonster> monsters_;
+  std::string boss_name_override_;
+  bool spawn_suppressed_ = false;
+  bool block_stairs_down_ = false;
+  bool stairs_up_returns_to_town_ = false;
+  std::uint64_t next_boss_telegraph_ms_ = 0;
+  std::int64_t last_pursuit_tick_ms_ = -1;
+  bool boss_warning_seen_ = false;
+  std::vector<GroundItem> ground_items_;
+  std::uint64_t world_random_state_ = 0x9e3779b97f4a7c15ULL;
+  VesselForge forge_;
+  std::map<std::string, std::weak_ptr<WorldPlayerState>> actors;
+  std::int64_t last_boss_tick_ms=-1;
+};
+
+// Deterministic tile-space actor view: town scene, solo instance
 // scenes, continuous movement, and stair portals.  Transport-agnostic; the
 // networking layer maps envelopes onto these verbs.
 class WorldSimulation {
  public:
   WorldSimulation(std::uint64_t seed, std::string player_uuid);
+  WorldSimulation(const WorldSimulation& other);
+  WorldSimulation& operator=(const WorldSimulation&) = delete;
+  void join_instance(const WorldSimulation& other, bool place_at_other=true);
+  const void* instance_key() const { return instance_.get(); }
+  void set_actor_alive(bool value) { actor_->alive = value; }
+  const std::string& actor_id() const { return actor_->player_uuid_; }
+  void set_actor_id(const std::string& id) {if(id==actor_->player_uuid_)return;instance_->actors.erase(actor_->player_uuid_);actor_->player_uuid_=id;instance_->actors[id]=actor_;}
+  std::size_t participant_count() const;
+
 
   // Scene state.
-  const std::string& scene_id() const { return scene_id_; }
-  const std::string& scene_type() const { return scene_type_; }
-  const std::string& scene_name() const { return scene_name_; }
-  WorldPosition position() const { return position_; }
-  const std::string& facing() const { return facing_; }
-  const MovementStepInfo& last_step() const { return last_step_; }
-  const InstanceMetadata& metadata() const { return metadata_; }
-  const std::vector<WorldMonster>& monsters() const { return monsters_; }
+  const std::string& scene_id() const { return instance_->scene_id_; }
+  const std::string& scene_type() const { return instance_->scene_type_; }
+  const std::string& scene_name() const { return instance_->scene_name_; }
+  WorldPosition position() const { return actor_->position_; }
+  const std::string& facing() const { return actor_->facing_; }
+  const MovementStepInfo& last_step() const { return actor_->last_step_; }
+  const InstanceMetadata& metadata() const { return instance_->metadata_; }
+  const std::vector<WorldMonster>& monsters() const { return instance_->monsters_; }
   // loot.js: Proof of Temper guarantees the first elite gear drop while
   // the slay-elite objective is current (session sets this per tick).
-  void set_guaranteed_elite_gear(bool value) { guaranteed_elite_gear_ = value; }
+  void set_guaranteed_elite_gear(bool value) { actor_->guaranteed_elite_gear_ = value; }
   // world-web node instances: the boss carries the node warden name; a
   // cleared node spawns no monsters at all (dead stays dead).
-  void set_boss_name_override(const std::string& name) { boss_name_override_ = name; }
-  void set_spawn_suppressed(bool value) { spawn_suppressed_ = value; }
-  void set_scene_name(const std::string& name) { scene_name_ = name; }
-  void set_scene_id(const std::string& id) { scene_id_ = id; }
+  void set_boss_name_override(const std::string& name) { instance_->boss_name_override_ = name; }
+  void set_spawn_suppressed(bool value) { instance_->spawn_suppressed_ = value; }
+  void set_scene_name(const std::string& name) { instance_->scene_name_ = name; }
+  void set_scene_id(const std::string& id) { instance_->scene_id_ = id; }
+  void set_instance_namespace(std::string value) { instance_namespace_=std::move(value); }
   // dev:monster:reset - revive one monster at a chosen max health for
   // deterministic comparison trials.
   bool reset_monster(const std::string& uuid, int max_health) {
-    for (auto& monster : monsters_) {
+    for (auto& monster : instance_->monsters_) {
       if (monster.uuid != uuid) continue;
       monster.alive = true;
       if (max_health > 0) monster.life_max = max_health;
@@ -971,9 +1023,9 @@ class WorldSimulation {
     }
     return false;
   }
-  void kill_all_monsters() { for (auto& monster : monsters_) { monster.alive = false; monster.life = 0; } active_target_.clear(); player_attack_active_ = false; }
-  const TileGrid& grid() const { return grid_; }
-  bool in_instance() const { return scene_type_ == "instance"; }
+  void kill_all_monsters() { for (auto& monster : instance_->monsters_) { monster.alive = false; monster.life = 0; } actor_->active_target_.clear(); actor_->player_attack_active_ = false; }
+  const TileGrid& grid() const { return instance_->grid_; }
+  bool in_instance() const { return instance_->scene_type_ == "instance"; }
 
   // One player:move sample.  Returns true when the step was applied.
   bool apply_movement_sample(const std::string& direction, std::int64_t now_ms);
@@ -1015,10 +1067,10 @@ class WorldSimulation {
   // Ground items for the CURRENT scene. The town list is stashed across
   // instance hops; per-floor lists retire with the floor, exactly like JS
   // scene retirement (documented in the N4 report).
-  const std::vector<GroundItem>& ground_items() const { return ground_items_; }
+  const std::vector<GroundItem>& ground_items() const { return instance_->ground_items_; }
   // The per-session forge (JS module singleton): generation reseeds it, the
   // brand service advances its persistent stream.
-  VesselForge& forge() { return forge_; }
+  VesselForge& forge() { return instance_->forge_; }
   // dev:drop / world-drop / overflow spill: place an item on the current
   // scene at the raw (x, y) position.
   void add_ground_item(GameItem item, double x, double y);
@@ -1034,14 +1086,14 @@ class WorldSimulation {
   // Mirrors dropMonsterLoot in server/core/combat/loot.js.
   void drop_monster_loot(const WorldMonster& monster, int goods_found_percent);
   // Equip-aware combat modifiers for the next advance_combat calls.
-  void set_player_combat_mods(const PlayerCombatMods& mods) { player_mods_ = mods; }
-  PlayerCombatMods& player_combat_mods() { return player_mods_; }
+  void set_player_combat_mods(const PlayerCombatMods& mods) { actor_->player_mods_ = mods; }
+  PlayerCombatMods& player_combat_mods() { return actor_->player_mods_; }
 
  private:
   bool can_move_to(double target_x, double target_y) const;
   bool is_blocked(const WorldPosition& origin, const WorldPosition& delta) const;
   bool monster_segment_clear(std::size_t mover, WorldPosition from, WorldPosition to) const;
-  std::optional<WorldPosition> monster_waypoint(std::size_t mover) const;
+  std::optional<WorldPosition> monster_waypoint(std::size_t mover, WorldPosition target) const;
   void register_step(const std::string& direction, int duration_ms, bool blocked,
                      std::int64_t now_ms);
   void generate_instance();
@@ -1056,52 +1108,30 @@ class WorldSimulation {
   Vec2 resolve_loot_tile(int x, int y) const;
   std::uint64_t next_world_random();
 
+  std::shared_ptr<WorldPlayerState> actor_ = std::make_shared<WorldPlayerState>();
+  std::shared_ptr<WorldInstanceState> instance_ = std::make_shared<WorldInstanceState>();
+  void detach_instance();
+  void advance_boss_mechanics(std::int64_t now_ms);
+  WorldPosition nearest_player(WorldPosition from) const;
   std::uint64_t seed_;
-  std::string player_uuid_;
   std::uint64_t serial_ = 0;
+  std::string instance_namespace_;
+  std::uint64_t instance_generation_=0;
 
-  WorldPosition position_{38.0, 115.0};  // town login spawn (TOWN_FALLBACK_SPAWN)
-  std::string facing_ = "down";
-  std::string scene_type_ = "town";
-  std::string scene_id_ = "town:verdigris";
-  std::string scene_name_ = "Verdigris";
-  TileGrid grid_;
-  InstanceMetadata metadata_;
-  std::vector<WorldMonster> monsters_;
-  std::string active_target_;
-  bool guaranteed_elite_gear_ = false;
-  std::string boss_name_override_;
-  bool spawn_suppressed_ = false;
-  bool block_stairs_down_ = false;
-  bool stairs_up_returns_to_town_ = false;
-  std::string engaged_by_;
 public:
-  void set_block_stairs_down(bool value) { block_stairs_down_ = value; }
-  void set_stairs_up_returns_to_town(bool value) { stairs_up_returns_to_town_ = value; }
+  void set_block_stairs_down(bool value) { instance_->block_stairs_down_ = value; }
+  void set_stairs_up_returns_to_town(bool value) { instance_->stairs_up_returns_to_town_ = value; }
   // shared party worlds: swings resolve only on the session that engaged.
-  void set_engaged_by(const std::string& identity) { engaged_by_ = identity; }
-  const std::string& engaged_by() const { return engaged_by_; }
+  void set_engaged_by(const std::string& identity) { actor_->engaged_by_ = identity; }
+  const std::string& engaged_by() const { return actor_->engaged_by_; }
 private:
-  std::uint64_t next_player_attack_ms_ = 0;
-  bool player_attack_active_ = false;
-  Vec2 player_attack_facing_{0, 1};
-  std::int64_t next_dash_ms_ = 0;
-  std::uint64_t next_boss_telegraph_ms_ = 0;
-  std::int64_t last_pursuit_tick_ms_ = -1;
-  bool boss_warning_seen_ = false;
-  int player_level_ = 1;
-  MovementStepInfo last_step_;
   // Where the player entered the current instance chain from (first entry
   // only, not instance->instance hops), restored on stair return.
   bool has_pre_instance_ = false;
   WorldPosition pre_instance_position_{};
   std::string pre_instance_scene_id_;
   // N4 state.
-  std::vector<GroundItem> ground_items_;
   std::vector<GroundItem> town_ground_items_;
-  PlayerCombatMods player_mods_;
-  std::uint64_t world_random_state_ = 0x9e3779b97f4a7c15ULL;
-  VesselForge forge_;
 };
 
 }  // namespace verdigris

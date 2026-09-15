@@ -2,6 +2,8 @@
 #include "verdigris/inventory_extensions.hpp"
 
 #include <cstdint>
+#include <atomic>
+#include <deque>
 #include <filesystem>
 #include <functional>
 #include <memory>
@@ -16,6 +18,7 @@
 #include <vector>
 
 #include "verdigris/core.hpp"
+#include "verdigris/service_store.hpp"
 
 namespace verdigris::networking {
 
@@ -71,6 +74,23 @@ bool parse_json(const std::string& text, JsonValue& out, std::string* error = nu
 bool parse_envelope(const std::string& text, Envelope& out, std::string* error = nullptr);
 std::string emit_envelope(const Envelope& envelope);
 
+// Service-owned circulation journal. It commits with account snapshots; the
+// legacy local-review pool remains separate. Released records are requeued
+// when their volatile expedition retires; claimed records are never reissued.
+class ServiceRelicLedger {
+ public:
+  struct Record {GameItem item;std::string account,house,scion,name,state="queued",instance;std::set<std::string> death_scions;};
+  void queue(const GameItem&,const std::string& account,const std::string& house,const std::string& scion,const std::string& name);
+  std::optional<Record> release(const std::string& account,const std::string& instance);
+  bool claim(const std::string& uuid);
+  void retire_instances(const std::set<std::string>& live);
+  const std::map<std::string,Record>& records() const {return records_;}
+  std::string serialize() const;
+  bool restore(const std::string& text);
+ private:
+  std::map<std::string,Record> records_;
+};
+
 class ProtocolSession {
  public:
   ProtocolSession(std::string identity, std::string socket_id, std::uint64_t seed,
@@ -97,6 +117,11 @@ class ProtocolSession {
   // Scion identity survive a server restart.
   void attach_persistence(const std::filesystem::path& path);
   void persist() const;
+  std::string durable_payload() const;
+  bool restore_durable(const std::string& payload);
+  void enable_service(std::shared_ptr<ServiceRelicLedger> ledger={});
+  bool shared_first_warden();
+
   // World events (movement, scene transitions) are broadcast to every live
   // connection, mirroring the JS server's room broadcast.  Unit tests leave
   // this unset and receive the same envelopes through the requester's emit.
@@ -104,13 +129,34 @@ class ProtocolSession {
   // JS parity: the server runs its own game loop; combat and respawns
   // advance on the tick, not only on inbound envelopes.
   void set_direct_emit(std::function<void(const Envelope&)> emit);
-  void tick(std::int64_t now_ms);
+  void tick(std::int64_t now_ms, bool advance_world = true);
+  void schedule_inputs(bool value) { scheduled_inputs_ = value; }
+  void clear_input() { movement_intent_.clear(); movement_until_ms_=0; }
+  bool actor_alive() const;
+  std::string runtime_actor_id() const {return service_mode_?"actor:"+identity_+":"+active_scion_id_:identity_;}
+  JsonValue public_actor() const;
+  JsonValue gameplay_snapshot(bool include_map) const;
+  const std::string& scene_id() const { return world_->scene_id(); }
+
   void enter_shared_instance(const std::string& scene_id, const std::function<void(const Envelope&)>& emit);
   void leave_to_town(const std::function<void(const Envelope&)>& emit);
   std::shared_ptr<WorldSimulation> shared_world() { return world_; }
   void adopt_world(std::shared_ptr<WorldSimulation> world, const std::string& scene_id, const std::function<void(const Envelope&)>& emit);
 
  private:
+  void apply_move(const std::string& direction, std::int64_t now, const std::function<void(const Envelope&)>& emit);
+  bool service_mode_ = false;
+  std::shared_ptr<ServiceRelicLedger> service_relics_;
+  std::map<std::string,JsonValue> house_progress_;
+  JsonValue::Object house_entitlements_;
+  std::int64_t last_buff_decay_ms_ = 0;
+  JsonValue house_progress() const;
+  void restore_house_progress(const JsonValue&);
+  bool scheduled_inputs_ = false;
+  std::string movement_intent_;
+  std::int64_t movement_until_ms_ = 0;
+  std::uint64_t movement_sequence_ = 0;
+  std::int64_t last_authority_tick_ms_ = -1;
   std::string player_payload() const;
   JsonValue snapshot() const;
   JsonValue scene_payload() const;
@@ -271,9 +317,11 @@ class ProtocolSession {
 };
 
 class WebSocketServer {
+  friend struct WebSocketServerTestAccess;
  public:
   explicit WebSocketServer(std::uint16_t port = 6500,
-                           std::filesystem::path save_directory = {});
+                           std::filesystem::path save_directory = {},
+                           std::shared_ptr<service::Store> store = {});
   ~WebSocketServer();
 
   WebSocketServer(const WebSocketServer&) = delete;
@@ -282,6 +330,8 @@ class WebSocketServer {
   bool start(std::string* error = nullptr);
   void stop();
   std::uint16_t port() const { return port_; }
+  bool set_party_capacity(std::size_t value) {if(running_ || value<2 || value>8)return false;party_capacity_=value;return true;}
+  bool healthy() const {return running_ && !storage_failed_;}
 
  private:
   struct Connection;
@@ -289,13 +339,28 @@ class WebSocketServer {
   void handle_connection(std::shared_ptr<Connection> connection);
   void handle_message(const std::shared_ptr<Connection>& connection, const std::string& text);
   void remove_connection(const std::shared_ptr<Connection>& connection);
-  void broadcast(const Envelope& envelope);
+  void broadcast(const Envelope& envelope, const std::string& source);
+  void publish_presence();
+  struct PendingCommand { std::shared_ptr<Connection> connection; std::string text; };
+  std::deque<PendingCommand> commands_;
+  std::uint64_t revision_ = 0;
 
+
+  std::shared_ptr<service::Store> service_store_;
+  std::shared_ptr<ServiceRelicLedger> service_relics_;
+  std::string committed_world_;
+  std::set<std::string> resolved_wardens_;
+  std::shared_ptr<WorldSimulation> hub_;
+  std::string boot_id_;
+  std::atomic<bool> storage_failed_{false};
+  std::map<std::string,std::string> committed_accounts_;
+  std::map<std::string,std::int64_t> disconnected_at_;
   std::uint16_t port_;
   std::filesystem::path save_directory_;
   std::intptr_t listen_socket_ = -1;
-  bool running_ = false;
+  std::atomic<bool> running_{false};
   std::mutex mutex_;
+  std::recursive_mutex authority_mutex_;
   std::vector<std::shared_ptr<Connection>> connections_;
   std::unordered_map<std::string, std::shared_ptr<ProtocolSession>> sessions_;
   std::unique_ptr<std::thread> accept_thread_;
@@ -303,7 +368,7 @@ class WebSocketServer {
   // Per-connection reader threads hold a raw `this`; they must be JOINED in
   // stop() - a detached thread that wakes after `delete server` dereferences
   // a freed WebSocketServer (session_tests reconnect segfault under load).
-  std::vector<std::thread> connection_threads_;
+  std::vector<std::pair<std::shared_ptr<Connection>,std::thread>> connection_threads_;
   // party.js registry: parties are server state shared across sessions.
   struct ServerParty {
     std::string id;
@@ -312,6 +377,9 @@ class WebSocketServer {
     std::map<std::string, bool> ready;
     std::string state = "lobby";
   };
+  struct Invitation {std::string party, recipient, inviter; std::int64_t expires=0;};
+  std::map<std::string,Invitation> invitations_;
+  std::size_t party_capacity_=4;
   std::map<std::string, ServerParty> parties_;
   std::map<std::string, std::string> party_by_uuid_;
   bool handle_party_event(const std::shared_ptr<Connection>& connection, const Envelope& envelope);
