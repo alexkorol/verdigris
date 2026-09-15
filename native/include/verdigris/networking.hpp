@@ -79,7 +79,7 @@ std::string emit_envelope(const Envelope& envelope);
 // when their volatile expedition retires; claimed records are never reissued.
 class ServiceRelicLedger {
  public:
-  struct Record {GameItem item;std::string account,house,scion,name,state="queued",instance;std::set<std::string> death_scions;};
+  struct Record {GameItem item;std::string account,house,scion,name,state="queued",instance;std::set<std::string> death_scions;std::map<std::string,std::string> recovered_sources;};
   void queue(const GameItem&,const std::string& account,const std::string& house,const std::string& scion,const std::string& name);
   std::optional<Record> release(const std::string& account,const std::string& instance);
   bool claim(const std::string& uuid);

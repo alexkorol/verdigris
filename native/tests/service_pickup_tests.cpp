@@ -79,7 +79,24 @@ void run_case(bool relic,bool reverse,bool full){
     if(relic){ServiceRelicLedger restored;setup(restored.restore(ledger->serialize()),"restore claimed ledger");
         check(!restored.release(a.session.identity(),"restart-instance"),"restored claimed relic cannot reappear on another floor");}
 }
+void receipt_case(){
+    auto ledger=std::make_shared<ServiceRelicLedger>();Actor source("receipt-source",ledger),later("receipt-later",ledger);
+    auto data=saved(source.session);
+    auto& house=data.object()->at("chronicle").object()->at("houses").array()->front();
+    (*house.object())["crypt"]=JsonValue::Array{JsonValue::Object{{"id","fallen-source"},{"name","Fallen"},{"relic",JsonValue::Object{{"status","lost"}}}}};
+    setup(source.session.restore_durable(data.stringify()),"restore offline source House fixture");
+    auto item=create_game_item("bronze-sword",CreateItemOptions{});setup(bool(item),"receipt item fixture");
+    ledger->queue(*item,source.session.identity(),source.house,"fallen-source","Fallen");
+    setup(bool(ledger->release(source.session.identity(),"old-instance"))&&ledger->claim(item->uuid),"another owner recovers source item while source offline");
+    ledger->queue(*item,later.session.identity(),later.house,later.scion,"Later");
+    setup(ledger->restore(ledger->serialize()),"restart after later owner death");
+    source.session.tick(1000);
+    const auto crypt=saved(source.session)["chronicle"]["houses"].array()->front()["crypt"];
+    check(text(crypt.array()->front()["relic"]["status"])=="recovered","returning source House receives prior recovery even after later owner dies and service restarts");
+    source.session.tick(1050);
+    check(saved(source.session)["chronicle"]["houses"].array()->front()["crypt"].stringify()==crypt.stringify(),"historical recovery receipt updates the source crypt exactly once");
+}
 } // namespace
-int main(){try{for(bool relic:{false,true})for(bool reverse:{false,true})for(bool full:{false,true})run_case(relic,reverse,full);}
+int main(){try{for(bool relic:{false,true})for(bool reverse:{false,true})for(bool full:{false,true})run_case(relic,reverse,full);receipt_case();}
 catch(const std::exception& error){std::cerr<<"Pickup fixture failed: "<<error.what()<<'\n';return 2;}
 std::cout<<"service_pickup_tests: "<<checks<<" checks, "<<failures<<" failures\n";return failures?1:0;}

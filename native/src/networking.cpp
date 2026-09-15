@@ -12,6 +12,7 @@
 #include <condition_variable>
 #include <fstream>
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
 
@@ -718,7 +719,7 @@ std::string emit_envelope(const Envelope& envelope) {
 }
 
 void ServiceRelicLedger::queue(const GameItem& item,const std::string& account,const std::string& house,const std::string& scion,const std::string& name) {
-  auto [found,inserted]=records_.emplace(item.uuid,Record{item,account,house,scion,name,"queued","",{scion}});
+  auto [found,inserted]=records_.emplace(item.uuid,Record{item,account,house,scion,name,"queued","",{scion},{}});
   auto& record=found->second;
   // A recovered physical item can fall with a later mortal Scion. Retain all
   // source deaths so replaying any earlier death cannot circulate it again.
@@ -735,6 +736,7 @@ std::optional<ServiceRelicLedger::Record> ServiceRelicLedger::release(const std:
 }
 bool ServiceRelicLedger::claim(const std::string& uuid) {
   auto found=records_.find(uuid);if(found==records_.end() || found->second.state!="released")return false;
+  found->second.recovered_sources[found->second.scion]=found->second.account;
   found->second.state="claimed";found->second.instance.clear();return true;
 }
 void ServiceRelicLedger::retire_instances(const std::set<std::string>& live) {
@@ -746,7 +748,8 @@ std::string ServiceRelicLedger::serialize() const {
   JsonValue::Array rows;
   for(const auto& entry:records_) {const auto& r=entry.second;
     JsonValue::Array deaths;for(const auto& scion:r.death_scions)deaths.push_back(scion);
-    rows.push_back(JsonValue::Object{{"uuid",entry.first},{"item",saved_item_json(r.item)},{"account",r.account},{"house",r.house},{"scion",r.scion},{"name",r.name},{"state",r.state},{"instance",r.instance},{"deathScions",deaths}});
+    JsonValue::Object receipts;for(const auto& source:r.recovered_sources)receipts[source.first]=source.second;
+    rows.push_back(JsonValue::Object{{"uuid",entry.first},{"item",saved_item_json(r.item)},{"account",r.account},{"house",r.house},{"scion",r.scion},{"name",r.name},{"state",r.state},{"instance",r.instance},{"deathScions",deaths},{"recoveredSources",receipts}});
   }
   return JsonValue(JsonValue::Object{{"schema",1},{"relics",rows}}).stringify();
 }
@@ -760,6 +763,14 @@ bool ServiceRelicLedger::restore(const std::string& text) {
     if(const auto* deaths=row.get("deathScions")) {
       if(!deaths->array())return false;
       for(const auto& source:*deaths->array()) {if(!source.string() || source.string()->empty())return false;r.death_scions.insert(*source.string());}
+    }
+    if(r.state=="claimed")r.recovered_sources[r.scion]=r.account;
+    if(const auto* receipts=row.get("recoveredSources")) {
+      if(!receipts->object())return false;
+      for(const auto& source:*receipts->object()) {
+        if(source.first.empty() || !source.second.string() || source.second.string()->empty())return false;
+        r.recovered_sources[source.first]=*source.second.string();
+      }
     }
     if(r.state=="released"){r.state="queued";r.instance.clear();}
     next.emplace(r.item.uuid,std::move(r));
@@ -1150,7 +1161,8 @@ void ProtocolSession::tick(std::int64_t now, bool advance_world) {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   if (!direct_emit_ || now<=last_authority_tick_ms_) return;
   if(service_relics_)for(const auto& entry:service_relics_->records())
-    if(entry.second.account==identity_ && entry.second.state=="claimed")mark_relic_recovered(entry.second.scion);
+    for(const auto& source:entry.second.recovered_sources)
+      if(source.second==identity_)mark_relic_recovered(source.first);
   world_->set_actor_id(runtime_actor_id());
   last_authority_tick_ms_=now;
   if(scheduled_inputs_ && now<=movement_until_ms_ && !movement_intent_.empty()) apply_move(movement_intent_,now,direct_emit_);
@@ -3834,8 +3846,10 @@ bool WebSocketServer::start(std::string* error) {
 #endif
   const auto listener=::socket(AF_INET,SOCK_STREAM,IPPROTO_TCP); if(listener==invalid_socket){if(error)*error="socket failed";return false;} int yes=1; setsockopt(listener,SOL_SOCKET,SO_REUSEADDR,reinterpret_cast<const char*>(&yes),sizeof(yes)); sockaddr_in address{}; address.sin_family=AF_INET; address.sin_addr.s_addr=inet_addr("127.0.0.1"); address.sin_port=htons(port_); if(bind(listener,reinterpret_cast<sockaddr*>(&address),sizeof(address))<0 || listen(listener,16)<0){close_socket(listener);if(error)*error="bind/listen failed";return false;} listen_socket_=static_cast<std::intptr_t>(listener); running_=true; accept_thread_=std::make_unique<std::thread>(&WebSocketServer::accept_loop,this); tick_thread_=std::make_unique<std::thread>([this]{
     auto next=std::chrono::steady_clock::now();
+    std::uint64_t tick_count=0,tick_us=0,tick_peak_us=0,commit_count=0,commit_us=0,commit_peak_us=0;
     while(running_) {
       std::unique_lock authority_lock(authority_mutex_);
+      const auto tick_started=std::chrono::steady_clock::now();
       next+=std::chrono::milliseconds(service_store_?kSimulationTickMs:150);
       std::deque<PendingCommand> pending;
       { std::lock_guard lock(mutex_); pending.swap(commands_); }
@@ -3898,7 +3912,14 @@ bool WebSocketServer::start(std::string* error) {
           if(!live_instances.count(*it))it=resolved_wardens_.erase(it);else ++it;
         auto saved_world=service_relics_->serialize();
         std::string error;
-        if((!changed.empty() || saved_world!=committed_world_) && !service_store_->commit_state(changed,saved_world,milestone?boot_id_+":milestone:"+std::to_string(revision_):"",&error)) {
+        bool committed=true;
+        if(!changed.empty() || saved_world!=committed_world_) {
+          const auto commit_started=std::chrono::steady_clock::now();
+          committed=service_store_->commit_state(changed,saved_world,milestone?boot_id_+":milestone:"+std::to_string(revision_):"",&error);
+          const auto elapsed=static_cast<std::uint64_t>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now()-commit_started).count());
+          ++commit_count;commit_us+=elapsed;commit_peak_us=(std::max)(commit_peak_us,elapsed);
+        }
+        if(!committed) {
           // Failed durability prevents publication; stop admitting/advancing.
           // Restart restores the last committed account transaction.
           storage_failed_=true;for(auto& c:live)c->close();break;
@@ -3924,10 +3945,17 @@ bool WebSocketServer::start(std::string* error) {
           invitations_.erase(id);sessions_.erase(id);committed_accounts_.erase(id);it=disconnected_at_.erase(it);
         }
       }
+      const auto elapsed=static_cast<std::uint64_t>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now()-tick_started).count());
+      ++tick_count;tick_us+=elapsed;tick_peak_us=(std::max)(tick_peak_us,elapsed);
       authority_lock.unlock();
       std::this_thread::sleep_until(next);
       if(std::chrono::steady_clock::now()>next+std::chrono::milliseconds(150)) next=std::chrono::steady_clock::now();
     }
+    // One bounded shutdown record, with no account IDs or message contents.
+    // Authority work includes snapshots/persistence; it excludes scheduled sleep.
+    if(service_store_)std::cout<<"service_metrics ticks="<<tick_count<<" authority_avg_us="<<(tick_count?tick_us/tick_count:0)
+      <<" authority_peak_us="<<tick_peak_us<<" commits="<<commit_count<<" commit_avg_us="<<(commit_count?commit_us/commit_count:0)
+      <<" commit_peak_us="<<commit_peak_us<<std::endl;
   }); return true;
 }
 void WebSocketServer::stop(){ if(!running_)return; running_=false; close_socket(static_cast<socket_t>(listen_socket_)); listen_socket_=-1; if(accept_thread_&&accept_thread_->joinable())accept_thread_->join(); if(tick_thread_&&tick_thread_->joinable())tick_thread_->join();

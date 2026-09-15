@@ -89,6 +89,33 @@ Final frozen-package runs and hashes are recorded separately when produced.
 
 ## Boundaries
 
+## Final candidate correction and package selection
+
+The first clean packages at `Verdigris Service QA 2026-09-14` and
+`Verdigris Service Host QA 2026-09-14` contain source `3bea5e2e3` and are retained
+as an intermediate baseline. Their top-level online launcher passed exact-path
+inspection and left the independent service healthy. They are superseded for
+delivery by fresh `-r2` packages after the following bounded correction.
+
+When a recovered relic later fell with a different owner's Scion, the current
+source record changed. An offline original House could lose its recovery receipt.
+The journal now durably retains source account/Scion recovery receipts separately
+from current circulation ownership. The returning source House reconciles its
+crypt exactly once, including after the later death and service restart.
+
+The final focused rerun passed 39 relic/parser checks, 62 pickup checks (including
+receipt-to-crypt reconciliation), production protocol checks, 21 entitlement
+checks, and 54 four-client party/lifetime checks. Invitation checks now include
+expired, wrong-recipient and duplicate acceptance. Soak scripts exercise four
+accounts/two instances, directional delay/jitter and interruption. One bounded
+shutdown timing record separates authority work and commit latency from RTT.
+
+Final `-r2` package source/hash, exact-package verification, soak and graphical
+results are appended after those runs complete. No first-candidate result is
+silently treated as verification of a later executable.
+
+## External and policy boundaries
+
 `coop-v1` is explicitly QA-only pending an owner policy ruling. Party size defaults
 4 and is configurable 2..8; disconnected input freezes with a 30-second reservation;
 no late entry, retrospective disconnected credit or post-death credit; unfinished

@@ -172,7 +172,7 @@ Invoke-Msvc ('"' + $buildRoot + '\audio_mixer_tests.obj" "' + $buildRoot + '\aud
 Invoke-Msvc ('"' + $buildRoot + '\user_settings_tests.obj" "' + $buildRoot + '\audio_cue_spec.obj" "' + $buildRoot + '\audio_event_cues.obj" "' + $buildRoot + '\audio_audio_mixer.obj" /Fe"' + $settingsTestExe + '"')
 
 # Native service regression gates use the same production object files.
-foreach ($name in @('coop_tests','service_authority_tests','service_actor_tests','service_entitlement_tests','service_protocol_tests','service_relic_tests','service_coop_tests')) {
+foreach ($name in @('coop_tests','service_authority_tests','service_actor_tests','service_entitlement_tests','service_protocol_tests','service_relic_tests','service_pickup_tests','service_coop_tests')) {
   Invoke-Msvc ('/c "' + $nativeRoot + '\tests\' + $name + '.cpp" /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\' + $name + '.obj"')
   Invoke-Msvc ('"' + $buildRoot + '\' + $name + '.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $networkingObject + '" "' + $buildRoot + '\service_store.obj" "' + $buildRoot + '\service_transport.obj" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $buildRoot + '\' + $name + '.exe" /link ws2_32.lib')
   if ($RunTests) { & (Join-Path $buildRoot ($name + '.exe')); if ($LASTEXITCODE -ne 0) { throw "$name failed" } }

@@ -157,6 +157,8 @@ at Aldwyn after restart. Relics retain exact UUID and source ownership through
 queued, released, and claimed journal states. Retired expeditions requeue only
 unclaimed released relics; a claimed relic requeues only when its later owning
 mortal Scion dies. Persisted source-death history rejects earlier death replays.
+Recovery receipts retain the source account/Scion even across another owner's
+later death, so the original House's crypt can reconcile after reconnect/restart.
 Ordinary ground
 items in unfinished expeditions retire with that volatile instance under this QA
 policy; already committed carried items and earned House claims persist.
@@ -166,3 +168,8 @@ relic, Store crash/recovery, transport, and existing native suites. Run
 `test-service-clients.ps1` against two disposable accounts for the graphical
 journey; `test-service-operations.ps1`, `test-service-launcher.ps1`, and
 `test-service-pressure.ps1` cover their separate real-process boundaries.
+`test-service-soak.ps1 -ServerExecutable <exe> -Seconds 120` runs four accounts
+in two instances through explicitly delayed TCP relays and an interruption.
+The single `service_metrics` shutdown log reports authority work and Store commit
+average/peak microseconds. Authority work includes snapshot generation and commits,
+excludes scheduled sleep, and is distinct from client paint time or transport RTT.

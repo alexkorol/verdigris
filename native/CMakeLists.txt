@@ -108,7 +108,7 @@ add_test(NAME verdigris_user_settings_tests COMMAND verdigris_user_settings_test
 add_test(NAME verdigris_client_scenarios COMMAND verdigris_client --scenario all)
 
 if(WIN32)
-  foreach(service_test coop_tests service_authority_tests service_actor_tests service_entitlement_tests service_protocol_tests service_relic_tests service_coop_tests)
+  foreach(service_test coop_tests service_authority_tests service_actor_tests service_entitlement_tests service_protocol_tests service_relic_tests service_pickup_tests service_coop_tests)
     add_executable(${service_test} tests/${service_test}.cpp)
     target_link_libraries(${service_test} PRIVATE verdigris_client_session)
     add_test(NAME ${service_test} COMMAND ${service_test})
