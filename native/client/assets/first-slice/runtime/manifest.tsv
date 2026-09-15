@@ -1,0 +1,45 @@
+# identity action direction fps loop width height anchor_x anchor_y pixels_per_metre frames...
+defender	idle	back	1	1	96	96	48	80	48	fs_defender_idle_back_00_003f11c0b0
+defender	idle	front	1	1	96	96	48	80	48	fs_defender_idle_front_00_c8bf65895f
+defender	idle	left	1	1	96	96	48	80	48	fs_defender_idle_left_00_b37d97a680
+defender	idle	right	1	1	96	96	48	80	48	fs_defender_idle_right_00_4f44534083
+field-hand	idle	back	1	1	96	96	48	80	48	fs_field-hand_idle_back_00_5e228626fa
+field-hand	idle	front	1	1	96	96	48	80	48	fs_field-hand_idle_front_00_c8c9d3259e
+field-hand	idle	left	1	1	96	96	48	80	48	fs_field-hand_idle_left_00_ecd6e59cbd
+field-hand	idle	right	1	1	96	96	48	80	48	fs_field-hand_idle_right_00_754b81f945
+fieldstone-cluster	idle	front	1	0	256	256	128	200	48	fs_fieldstone-cluster_idle_front_00_e671787972
+hut	idle	front	1	0	256	256	128	192	48	fs_hut_idle_front_00_77cc29e2ad
+pack-wolf	idle	back	10	1	96	96	48	80	48	fs_pack-wolf_idle_back_00_ac26a990ca	fs_pack-wolf_idle_back_01_057b3e6b29	fs_pack-wolf_idle_back_02_c0e8ded8d2	fs_pack-wolf_idle_back_03_544b3633d8	fs_pack-wolf_idle_back_04_b9786027dc	fs_pack-wolf_idle_back_05_fbd0a9d9cd	fs_pack-wolf_idle_back_06_2f6ef58194	fs_pack-wolf_idle_back_07_6e220be8c3
+pack-wolf	idle	front	10	1	96	96	48	80	48	fs_pack-wolf_idle_front_00_0c98ca5387	fs_pack-wolf_idle_front_01_950fcdce42	fs_pack-wolf_idle_front_02_405ac9d842	fs_pack-wolf_idle_front_03_3bd0adad34	fs_pack-wolf_idle_front_04_6dce0b537a	fs_pack-wolf_idle_front_05_cd7257b8f6	fs_pack-wolf_idle_front_06_11bd8df310	fs_pack-wolf_idle_front_07_58748fe2fe
+pack-wolf	idle	left	10	1	96	96	48	80	48	fs_pack-wolf_idle_left_00_73796f5c9a	fs_pack-wolf_idle_left_01_6f524219f6	fs_pack-wolf_idle_left_02_5f5a6a7de1	fs_pack-wolf_idle_left_03_2bdaf62548	fs_pack-wolf_idle_left_04_82c5aaf2cb	fs_pack-wolf_idle_left_05_1634857611	fs_pack-wolf_idle_left_06_973aa215d0	fs_pack-wolf_idle_left_07_c16cd7a94d
+pack-wolf	idle	right	10	1	96	96	48	80	48	fs_pack-wolf_idle_right_00_a0a2634ed7	fs_pack-wolf_idle_right_01_4e10856021	fs_pack-wolf_idle_right_02_7273f448a4	fs_pack-wolf_idle_right_03_fc85aa44c6	fs_pack-wolf_idle_right_04_3455063277	fs_pack-wolf_idle_right_05_6edaf69d3d	fs_pack-wolf_idle_right_06_b250bbe7c6	fs_pack-wolf_idle_right_07_8205321de9
+pack-wolf	walk	back	10	1	96	96	48	80	48	fs_pack-wolf_walk_back_00_92a77bfb80	fs_pack-wolf_walk_back_01_8ee05ddd61	fs_pack-wolf_walk_back_02_0de1805be8	fs_pack-wolf_walk_back_03_7925894678	fs_pack-wolf_walk_back_04_b070821c50	fs_pack-wolf_walk_back_05_662e96ee8a	fs_pack-wolf_walk_back_06_5d1f24aa9c	fs_pack-wolf_walk_back_07_391578b535
+pack-wolf	walk	front	10	1	96	96	48	80	48	fs_pack-wolf_walk_front_00_9dd551a1e2	fs_pack-wolf_walk_front_01_00e6993a49	fs_pack-wolf_walk_front_02_d9226b0223	fs_pack-wolf_walk_front_03_cf2975bc4a	fs_pack-wolf_walk_front_04_1e2277e0cb	fs_pack-wolf_walk_front_05_c4fec4621f	fs_pack-wolf_walk_front_06_0ddf5555e6	fs_pack-wolf_walk_front_07_84b2986a2d
+pack-wolf	walk	left	10	1	96	96	48	80	48	fs_pack-wolf_walk_left_00_7cf4579343	fs_pack-wolf_walk_left_01_a19c9be429	fs_pack-wolf_walk_left_02_51c08b0d83	fs_pack-wolf_walk_left_03_255b3e9aea	fs_pack-wolf_walk_left_04_661c1687ea	fs_pack-wolf_walk_left_05_ad7c6b1113	fs_pack-wolf_walk_left_06_560d417adf	fs_pack-wolf_walk_left_07_a7f7f5b990
+pack-wolf	walk	right	10	1	96	96	48	80	48	fs_pack-wolf_walk_right_00_e5295e69ea	fs_pack-wolf_walk_right_01_f6e85c9cbd	fs_pack-wolf_walk_right_02_7cdd1c1a9f	fs_pack-wolf_walk_right_03_a5603ddf3e	fs_pack-wolf_walk_right_04_45faa74e5c	fs_pack-wolf_walk_right_05_796930a301	fs_pack-wolf_walk_right_06_9ce68c8de2	fs_pack-wolf_walk_right_07_cf7158fc7b
+palisade-breached	idle	front	1	0	256	256	128	200	48	fs_palisade-breached_idle_front_00_85e7d2a660
+palisade-intact	idle	front	1	0	256	256	128	200	48	fs_palisade-intact_idle_front_00_0800990b65
+scout	idle	back	1	1	96	96	48	80	48	fs_scout_idle_back_00_c3ccd51701
+scout	idle	front	1	1	96	96	48	80	48	fs_scout_idle_front_00_56cb259e5b
+scout	idle	left	1	1	96	96	48	80	48	fs_scout_idle_left_00_6bdea82347
+scout	idle	right	1	1	96	96	48	80	48	fs_scout_idle_right_00_cdf41e5893
+scribe	idle	back	1	1	96	96	48	80	48	fs_scribe_idle_back_00_a1ae317c52
+scribe	idle	front	1	1	96	96	48	80	48	fs_scribe_idle_front_00_d1b9cacb02
+scribe	idle	left	1	1	96	96	48	80	48	fs_scribe_idle_left_00_af3f31bd05
+scribe	idle	right	1	1	96	96	48	80	48	fs_scribe_idle_right_00_a49d30dc97
+square-well	idle	front	1	0	256	256	128	200	48	fs_square-well_idle_front_00_5cd15ac1aa
+starter_flax_tunic_female	icon	front	1	0	48	96	24	48	48	fs_starter_flax_tunic_female_icon_front_00_43ed70518a
+starter_flax_tunic_male	icon	front	1	0	48	96	24	48	48	fs_starter_flax_tunic_male_icon_front_00_b9b4a7922e
+starter_woven_footwear	icon	front	1	0	48	48	24	24	48	fs_starter_woven_footwear_icon_front_00_2020e706b6
+tree	idle	front	1	0	256	256	128	232	48	fs_tree_idle_front_00_6e11f4a007
+well-alpha	idle	back	10	1	128	96	64	64	48	fs_well-alpha_idle_back_00_01171ba46c	fs_well-alpha_idle_back_01_9bcfda0b1a	fs_well-alpha_idle_back_02_a790b7d500	fs_well-alpha_idle_back_03_92229e66fd	fs_well-alpha_idle_back_04_100cd5f29b	fs_well-alpha_idle_back_05_de1a7ce8fb	fs_well-alpha_idle_back_06_1e49c56d2b	fs_well-alpha_idle_back_07_6de6e2f39e
+well-alpha	idle	front	10	1	128	96	64	64	48	fs_well-alpha_idle_front_00_d7a2c3448a	fs_well-alpha_idle_front_01_11771c10ae	fs_well-alpha_idle_front_02_5426d697f3	fs_well-alpha_idle_front_03_17de419fa9	fs_well-alpha_idle_front_04_6e4e4b34ff	fs_well-alpha_idle_front_05_ffeb46e5f3	fs_well-alpha_idle_front_06_297264e7b1	fs_well-alpha_idle_front_07_481977ef60
+well-alpha	idle	left	10	1	128	96	64	64	48	fs_well-alpha_idle_left_00_f9693a0c2c	fs_well-alpha_idle_left_01_a83619dcaa	fs_well-alpha_idle_left_02_07247fc823	fs_well-alpha_idle_left_03_51d1045541	fs_well-alpha_idle_left_04_318fbb273c	fs_well-alpha_idle_left_05_f57b687f34	fs_well-alpha_idle_left_06_bfc055a3b7	fs_well-alpha_idle_left_07_e70c7621f0
+well-alpha	idle	right	10	1	128	96	64	64	48	fs_well-alpha_idle_right_00_e201a1a023	fs_well-alpha_idle_right_01_1165f72e81	fs_well-alpha_idle_right_02_296f22d8fa	fs_well-alpha_idle_right_03_71e0e8209f	fs_well-alpha_idle_right_04_fe03121481	fs_well-alpha_idle_right_05_f994649428	fs_well-alpha_idle_right_06_badc143e7d	fs_well-alpha_idle_right_07_22298e5c0b
+well-alpha	walk	back	10	1	128	96	64	64	48	fs_well-alpha_walk_back_00_c577e54a90	fs_well-alpha_walk_back_01_ee030060cb	fs_well-alpha_walk_back_02_8f54933335	fs_well-alpha_walk_back_03_f454a9f467	fs_well-alpha_walk_back_04_e9e7eee8c9	fs_well-alpha_walk_back_05_e39f462384	fs_well-alpha_walk_back_06_f27d8a46b9	fs_well-alpha_walk_back_07_697a0ac171
+well-alpha	walk	front	10	1	128	96	64	64	48	fs_well-alpha_walk_front_00_36ea8f81c4	fs_well-alpha_walk_front_01_8b4a1bb762	fs_well-alpha_walk_front_02_f673a2f9e3	fs_well-alpha_walk_front_03_68e9573464	fs_well-alpha_walk_front_04_5fe75ebc98	fs_well-alpha_walk_front_05_651536c2e0	fs_well-alpha_walk_front_06_24e364616b	fs_well-alpha_walk_front_07_f43e573b9a
+well-alpha	walk	left	10	1	128	96	64	64	48	fs_well-alpha_walk_left_00_19c9e90bfa	fs_well-alpha_walk_left_01_8ae5fbfb91	fs_well-alpha_walk_left_02_5bc1f2d396	fs_well-alpha_walk_left_03_7ed3279b58	fs_well-alpha_walk_left_04_44dacd1656	fs_well-alpha_walk_left_05_4216ca14ae	fs_well-alpha_walk_left_06_67d107758a	fs_well-alpha_walk_left_07_5be1be7948
+well-alpha	walk	right	10	1	128	96	64	64	48	fs_well-alpha_walk_right_00_8915460168	fs_well-alpha_walk_right_01_a7bac274b9	fs_well-alpha_walk_right_02_d145a4d4af	fs_well-alpha_walk_right_03_f4a9f730cc	fs_well-alpha_walk_right_04_fa44af5816	fs_well-alpha_walk_right_05_59222e0622	fs_well-alpha_walk_right_06_3ff8eab7f0	fs_well-alpha_walk_right_07_a82ea9805b
+wooden_club	icon	front	1	0	48	96	24	48	48	fs_wooden_club_icon_front_00_1866983440
+woodland-shrub	idle	front	1	0	256	256	128	200	48	fs_woodland-shrub_idle_front_00_94029f2da3
+worn-earth-patch	idle	front	1	0	256	256	128	200	48	fs_worn-earth-patch_idle_front_00_5a493d44f1

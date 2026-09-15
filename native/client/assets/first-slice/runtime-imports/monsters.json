@@ -1,0 +1,423 @@
+{
+  "source_manifest": "../monsters-v2/accepted/manifest.json",
+  "accepted": true,
+  "review": "Root and world-art lane reviewed pack-wolf and well-alpha cardinal idle/walk. Combat incomplete; gameplay cohort remains inactive.",
+  "clips": [
+    {
+      "action": "idle",
+      "direction": "front",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "identity": "pack-wolf",
+      "frames": [
+        "../monsters-v2/accepted/frames/pack-wolf-idle-front-00.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-front-01.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-front-02.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-front-03.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-front-04.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-front-05.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-front-06.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-front-07.png"
+      ]
+    },
+    {
+      "action": "idle",
+      "direction": "right",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "identity": "pack-wolf",
+      "frames": [
+        "../monsters-v2/accepted/frames/pack-wolf-idle-right-00.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-right-01.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-right-02.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-right-03.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-right-04.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-right-05.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-right-06.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-right-07.png"
+      ]
+    },
+    {
+      "action": "idle",
+      "direction": "back",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "identity": "pack-wolf",
+      "frames": [
+        "../monsters-v2/accepted/frames/pack-wolf-idle-back-00.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-back-01.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-back-02.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-back-03.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-back-04.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-back-05.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-back-06.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-back-07.png"
+      ]
+    },
+    {
+      "action": "idle",
+      "direction": "left",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "identity": "pack-wolf",
+      "frames": [
+        "../monsters-v2/accepted/frames/pack-wolf-idle-left-00.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-left-01.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-left-02.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-left-03.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-left-04.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-left-05.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-left-06.png",
+        "../monsters-v2/accepted/frames/pack-wolf-idle-left-07.png"
+      ]
+    },
+    {
+      "action": "walk",
+      "direction": "front",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "identity": "pack-wolf",
+      "frames": [
+        "../monsters-v2/accepted/frames/pack-wolf-walk-front-00.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-front-01.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-front-02.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-front-03.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-front-04.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-front-05.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-front-06.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-front-07.png"
+      ]
+    },
+    {
+      "action": "walk",
+      "direction": "right",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "identity": "pack-wolf",
+      "frames": [
+        "../monsters-v2/accepted/frames/pack-wolf-walk-right-00.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-right-01.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-right-02.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-right-03.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-right-04.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-right-05.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-right-06.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-right-07.png"
+      ]
+    },
+    {
+      "action": "walk",
+      "direction": "back",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "identity": "pack-wolf",
+      "frames": [
+        "../monsters-v2/accepted/frames/pack-wolf-walk-back-00.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-back-01.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-back-02.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-back-03.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-back-04.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-back-05.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-back-06.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-back-07.png"
+      ]
+    },
+    {
+      "action": "walk",
+      "direction": "left",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "identity": "pack-wolf",
+      "frames": [
+        "../monsters-v2/accepted/frames/pack-wolf-walk-left-00.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-left-01.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-left-02.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-left-03.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-left-04.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-left-05.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-left-06.png",
+        "../monsters-v2/accepted/frames/pack-wolf-walk-left-07.png"
+      ]
+    },
+    {
+      "action": "idle",
+      "direction": "front",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "identity": "well-alpha",
+      "frames": [
+        "../monsters-v2/accepted/frames/well-alpha-idle-front-00.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-front-01.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-front-02.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-front-03.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-front-04.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-front-05.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-front-06.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-front-07.png"
+      ]
+    },
+    {
+      "action": "idle",
+      "direction": "right",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "identity": "well-alpha",
+      "frames": [
+        "../monsters-v2/accepted/frames/well-alpha-idle-right-00.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-right-01.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-right-02.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-right-03.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-right-04.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-right-05.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-right-06.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-right-07.png"
+      ]
+    },
+    {
+      "action": "idle",
+      "direction": "back",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "identity": "well-alpha",
+      "frames": [
+        "../monsters-v2/accepted/frames/well-alpha-idle-back-00.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-back-01.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-back-02.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-back-03.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-back-04.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-back-05.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-back-06.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-back-07.png"
+      ]
+    },
+    {
+      "action": "idle",
+      "direction": "left",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "identity": "well-alpha",
+      "frames": [
+        "../monsters-v2/accepted/frames/well-alpha-idle-left-00.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-left-01.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-left-02.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-left-03.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-left-04.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-left-05.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-left-06.png",
+        "../monsters-v2/accepted/frames/well-alpha-idle-left-07.png"
+      ]
+    },
+    {
+      "action": "walk",
+      "direction": "front",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "identity": "well-alpha",
+      "frames": [
+        "../monsters-v2/accepted/frames/well-alpha-walk-front-00.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-front-01.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-front-02.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-front-03.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-front-04.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-front-05.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-front-06.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-front-07.png"
+      ]
+    },
+    {
+      "action": "walk",
+      "direction": "right",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "identity": "well-alpha",
+      "frames": [
+        "../monsters-v2/accepted/frames/well-alpha-walk-right-00.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-right-01.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-right-02.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-right-03.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-right-04.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-right-05.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-right-06.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-right-07.png"
+      ]
+    },
+    {
+      "action": "walk",
+      "direction": "back",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "identity": "well-alpha",
+      "frames": [
+        "../monsters-v2/accepted/frames/well-alpha-walk-back-00.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-back-01.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-back-02.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-back-03.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-back-04.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-back-05.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-back-06.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-back-07.png"
+      ]
+    },
+    {
+      "action": "walk",
+      "direction": "left",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "identity": "well-alpha",
+      "frames": [
+        "../monsters-v2/accepted/frames/well-alpha-walk-left-00.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-left-01.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-left-02.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-left-03.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-left-04.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-left-05.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-left-06.png",
+        "../monsters-v2/accepted/frames/well-alpha-walk-left-07.png"
+      ]
+    }
+  ]
+}

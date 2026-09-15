@@ -471,6 +471,478 @@
         }
       ],
       "blender_source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\blender-wolves\\pack-wolf-walking.blend"
+    },
+    "well-alpha-idle-front": {
+      "actor": "well-alpha",
+      "action": "idle",
+      "direction": "front",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/well-alpha-idle-front-00.png",
+          "sha256": "34afbd0493f206066acc56e50a48da78050eab427e1dcd6720d62c37c6b8e63a",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/well-alpha-idle-front-01.png",
+          "sha256": "873a941a13ff789c541649514d9743e987810460fe53d8259393c318fab65194",
+          "blender_frame": 5
+        },
+        {
+          "src": "references/well-alpha-idle-front-02.png",
+          "sha256": "d8db582e6a113ffddafeb83015f65966981b470a012e25bf4836a54a1763ee3a",
+          "blender_frame": 10
+        },
+        {
+          "src": "references/well-alpha-idle-front-03.png",
+          "sha256": "78ff01c09587945d150005a7d10b46398a6a390817f797deaec927ec827e65ac",
+          "blender_frame": 15
+        },
+        {
+          "src": "references/well-alpha-idle-front-04.png",
+          "sha256": "5e6557892982532663cf1f78e1a0b885a1996455f11b974a2360fa4f1618476c",
+          "blender_frame": 20
+        },
+        {
+          "src": "references/well-alpha-idle-front-05.png",
+          "sha256": "8bca2858f3eed39a4f8ea1f06256ea66f654bd40bd87b41c8c6104177baf7173",
+          "blender_frame": 25
+        },
+        {
+          "src": "references/well-alpha-idle-front-06.png",
+          "sha256": "89b2cb58fbde745c5be67bbc3a8f60ead856c7609dd550961fa31257b84d6d64",
+          "blender_frame": 30
+        },
+        {
+          "src": "references/well-alpha-idle-front-07.png",
+          "sha256": "1f2bc818bffcc1b6a145d94dca79bc0efd67ed2add5831738b99a319366fee34",
+          "blender_frame": 35
+        }
+      ],
+      "blender_source": "blender/well-alpha-idle-canvas128.blend"
+    },
+    "well-alpha-idle-right": {
+      "actor": "well-alpha",
+      "action": "idle",
+      "direction": "right",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/well-alpha-idle-right-00.png",
+          "sha256": "ad9ba9570b385cd4eef322ca8ff23d150320d97616f16574fee13e6659098778",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/well-alpha-idle-right-01.png",
+          "sha256": "737748d464f29dd0cf7b2202090d256382e46280ba5825b29fa86b9d92eb4286",
+          "blender_frame": 5
+        },
+        {
+          "src": "references/well-alpha-idle-right-02.png",
+          "sha256": "19780699f77a73bbf72eb16617bb595b1190d4ec9b63febbf1688ff38d8c59f9",
+          "blender_frame": 10
+        },
+        {
+          "src": "references/well-alpha-idle-right-03.png",
+          "sha256": "d7d587c8f4d94b5d81406619274334e21f24ed78f73c01afd6760aabef38fef3",
+          "blender_frame": 15
+        },
+        {
+          "src": "references/well-alpha-idle-right-04.png",
+          "sha256": "1b94e51d8b1388bd481f92da8091a83757493020098e5276f3e9ad067217e340",
+          "blender_frame": 20
+        },
+        {
+          "src": "references/well-alpha-idle-right-05.png",
+          "sha256": "ecb3cb7a6fc08e770deef2a898a148b4aabb7615f5d6a94ab948cae050b190c4",
+          "blender_frame": 25
+        },
+        {
+          "src": "references/well-alpha-idle-right-06.png",
+          "sha256": "254b1ffbbbce6f863f80dfdf5666608b9a56be7f616e7c4af9328eba8c65ed79",
+          "blender_frame": 30
+        },
+        {
+          "src": "references/well-alpha-idle-right-07.png",
+          "sha256": "ef5d91248c53509c0898520af9b2ceacee3d1b3c98fa7c49cf56f51c951e8c8a",
+          "blender_frame": 35
+        }
+      ],
+      "blender_source": "blender/well-alpha-idle-canvas128.blend"
+    },
+    "well-alpha-idle-back": {
+      "actor": "well-alpha",
+      "action": "idle",
+      "direction": "back",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/well-alpha-idle-back-00.png",
+          "sha256": "beeb5e21de5f3b98c86431053dcee04e02330eccca2c9c09df9ff6b973ac7fa9",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/well-alpha-idle-back-01.png",
+          "sha256": "e1a6b4fa888c4eb83b7752513c88517abc26656122036f694f0cebd76a8c8f32",
+          "blender_frame": 5
+        },
+        {
+          "src": "references/well-alpha-idle-back-02.png",
+          "sha256": "50adffecf231e1097c1990069d6789dfc84931f2e80f93bb3a07bde3b7dface4",
+          "blender_frame": 10
+        },
+        {
+          "src": "references/well-alpha-idle-back-03.png",
+          "sha256": "1935d2ec81980ebf4e01f90e64f6294ed87594b42189a7845ca8911f4fe2c21b",
+          "blender_frame": 15
+        },
+        {
+          "src": "references/well-alpha-idle-back-04.png",
+          "sha256": "c23bb3ec3927969a1142594b768430dd69eb0e2846a7e6beccfbbeb7a00013c9",
+          "blender_frame": 20
+        },
+        {
+          "src": "references/well-alpha-idle-back-05.png",
+          "sha256": "654dd307908056ffccc3435175fe8b85e7edb5aa5fea782e8aa7a687f5c2b7d9",
+          "blender_frame": 25
+        },
+        {
+          "src": "references/well-alpha-idle-back-06.png",
+          "sha256": "da12b213a9cd74b1b4374337c1f10479aac13509f8e84d2abfed83cc39bf75e7",
+          "blender_frame": 30
+        },
+        {
+          "src": "references/well-alpha-idle-back-07.png",
+          "sha256": "a366a5ae984aa1c99807f28934229fd5d60b4ce3c2af922ca55f5b2e327bf869",
+          "blender_frame": 35
+        }
+      ],
+      "blender_source": "blender/well-alpha-idle-canvas128.blend"
+    },
+    "well-alpha-idle-left": {
+      "actor": "well-alpha",
+      "action": "idle",
+      "direction": "left",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/well-alpha-idle-left-00.png",
+          "sha256": "993976124657580e6f51a38f8717578ac30ff6040dc3dc8b49baccc1c3cdb6cb",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/well-alpha-idle-left-01.png",
+          "sha256": "d0e3b8261563aa5c29e8f269f250a79ec2d15a64804e4b0025f2570ad32c3c2a",
+          "blender_frame": 5
+        },
+        {
+          "src": "references/well-alpha-idle-left-02.png",
+          "sha256": "9d1a83a3b89effa10d9865a36863e7a15bace1f996d4cd1a648195f5d208cb86",
+          "blender_frame": 10
+        },
+        {
+          "src": "references/well-alpha-idle-left-03.png",
+          "sha256": "ab420aee8f3fc61ed1075e21c3ae587912c3280de561c910f532ab2b18132257",
+          "blender_frame": 15
+        },
+        {
+          "src": "references/well-alpha-idle-left-04.png",
+          "sha256": "e33b78f1a6e736480dcee9412581b2e4a712d41271f80a9661f260ee3890172f",
+          "blender_frame": 20
+        },
+        {
+          "src": "references/well-alpha-idle-left-05.png",
+          "sha256": "d1cdfb17613ec7cd6ed0d313842f94ec92318e8a939d5c44ad66cf0cdf9025cc",
+          "blender_frame": 25
+        },
+        {
+          "src": "references/well-alpha-idle-left-06.png",
+          "sha256": "457c235281b9f88741516673aa1eb4ff714c283e8bc59d930bf89e67b9be52c1",
+          "blender_frame": 30
+        },
+        {
+          "src": "references/well-alpha-idle-left-07.png",
+          "sha256": "b0cb7f7030c4768d2b76a56f6dd8a4ba5811b5b4e847e464d143d1ff74a12018",
+          "blender_frame": 35
+        }
+      ],
+      "blender_source": "blender/well-alpha-idle-canvas128.blend"
+    },
+    "well-alpha-walk-front": {
+      "actor": "well-alpha",
+      "action": "walk",
+      "direction": "front",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/well-alpha-walk-front-00.png",
+          "sha256": "8782336bb2f8e311f3e8f68b768ade284a3b11726fd6f9810c622e481e4f2b6f",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/well-alpha-walk-front-01.png",
+          "sha256": "5aaaf49a21c92edf08dd679b2e314bb52deec7d433ca3520caf9ca8de79360fa",
+          "blender_frame": 5
+        },
+        {
+          "src": "references/well-alpha-walk-front-02.png",
+          "sha256": "a36888ef984c55eb137871ef54985f7711bba01cbf63ce31aa9099f63ffd2ad3",
+          "blender_frame": 10
+        },
+        {
+          "src": "references/well-alpha-walk-front-03.png",
+          "sha256": "c7ddc6c9892887b7fe200fa48f870a42470c25fd9081e016f22de0381363ae57",
+          "blender_frame": 15
+        },
+        {
+          "src": "references/well-alpha-walk-front-04.png",
+          "sha256": "66f6a37f5b174d62a02539bd30713639e7e15aceab68a724afc151244991ccee",
+          "blender_frame": 20
+        },
+        {
+          "src": "references/well-alpha-walk-front-05.png",
+          "sha256": "1e666a4dd9d49dd873ef45d8348e12558865362937dd3f9f1195535bc7d21e7e",
+          "blender_frame": 25
+        },
+        {
+          "src": "references/well-alpha-walk-front-06.png",
+          "sha256": "9a31b491dd5b5bba3f4cfae4c41067ec0c14c80b3d678c097f542d46d0e87fc8",
+          "blender_frame": 30
+        },
+        {
+          "src": "references/well-alpha-walk-front-07.png",
+          "sha256": "bcd35bb064e19f895cdea598e86a410840437dd67a6f7f89e53e0f3c2be00e00",
+          "blender_frame": 35
+        }
+      ],
+      "blender_source": "blender/well-alpha-walk-canvas128.blend"
+    },
+    "well-alpha-walk-right": {
+      "actor": "well-alpha",
+      "action": "walk",
+      "direction": "right",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/well-alpha-walk-right-00.png",
+          "sha256": "01a0387bdefc25f772479ca4073fbb1c89557aed8ec1069085aeeecce0c7579f",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/well-alpha-walk-right-01.png",
+          "sha256": "3ee5b8c8ae1025884aab892db708b04419cbd3713df7c9f4632343124bc0ab53",
+          "blender_frame": 5
+        },
+        {
+          "src": "references/well-alpha-walk-right-02.png",
+          "sha256": "ba8e961dca1a9446993bfdaee4a007ec4a08a7f3e67e52f7db081368e5a9a699",
+          "blender_frame": 10
+        },
+        {
+          "src": "references/well-alpha-walk-right-03.png",
+          "sha256": "cf58dfd0ef4a1b2425ceed7a303a4be9fac5a657acbc981c817b77eee3052fb9",
+          "blender_frame": 15
+        },
+        {
+          "src": "references/well-alpha-walk-right-04.png",
+          "sha256": "5d294e8f417f757cf04dba200f15d7f43783ce9ee8ba311a46a784b187fc798c",
+          "blender_frame": 20
+        },
+        {
+          "src": "references/well-alpha-walk-right-05.png",
+          "sha256": "5bb4ac8fc943ef366262ab4facca102f43da36426dbe9fbbfc4b0005450faf8b",
+          "blender_frame": 25
+        },
+        {
+          "src": "references/well-alpha-walk-right-06.png",
+          "sha256": "381ca8ead12d3884c00e2d8a596a434fcea3464f2b6cf7b074dc346d1a0e615d",
+          "blender_frame": 30
+        },
+        {
+          "src": "references/well-alpha-walk-right-07.png",
+          "sha256": "076de88b4c9e3355780b45aa6ebc171e84f953dd3df29a4b838b585c4e9b2094",
+          "blender_frame": 35
+        }
+      ],
+      "blender_source": "blender/well-alpha-walk-canvas128.blend"
+    },
+    "well-alpha-walk-back": {
+      "actor": "well-alpha",
+      "action": "walk",
+      "direction": "back",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/well-alpha-walk-back-00.png",
+          "sha256": "dfdc8b9d2763d4b21ac9b5a76f97e90352b93a80c024f3fd6c8378e2417b30f7",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/well-alpha-walk-back-01.png",
+          "sha256": "a87b77fa38cf8632441806e6c6bb357adddab2a6065ba1ec35087de3d28f22f3",
+          "blender_frame": 5
+        },
+        {
+          "src": "references/well-alpha-walk-back-02.png",
+          "sha256": "4ebada3d568b2420a8f44f12aebb20f5c81c8aa9d1e60b09f28d293289687933",
+          "blender_frame": 10
+        },
+        {
+          "src": "references/well-alpha-walk-back-03.png",
+          "sha256": "cfd10f42197c7a807615152a7e03ff77825780e1f9930ae8ce0f91a3fc08730e",
+          "blender_frame": 15
+        },
+        {
+          "src": "references/well-alpha-walk-back-04.png",
+          "sha256": "3faf81a5d92aa2ed8fba28bcf0d872efb36d1682db368d4841e97404a2eb5c67",
+          "blender_frame": 20
+        },
+        {
+          "src": "references/well-alpha-walk-back-05.png",
+          "sha256": "bd30812069571d8bd0178c3c53e383ad1ce4073428abb55e8964d5ae21934b67",
+          "blender_frame": 25
+        },
+        {
+          "src": "references/well-alpha-walk-back-06.png",
+          "sha256": "78b5de0c7f8d5eb64999cc3285cffc0e0c47e35b4273658705b137ed3bf71f75",
+          "blender_frame": 30
+        },
+        {
+          "src": "references/well-alpha-walk-back-07.png",
+          "sha256": "6d0f810ee75eb01c5dc115722eda7f53c38145a888c84859a843de9e0eb41abb",
+          "blender_frame": 35
+        }
+      ],
+      "blender_source": "blender/well-alpha-walk-canvas128.blend"
+    },
+    "well-alpha-walk-left": {
+      "actor": "well-alpha",
+      "action": "walk",
+      "direction": "left",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "references/well-alpha-walk-left-00.png",
+          "sha256": "6cd618ea39482890ff1d6c41f3622b35ebcebbde1c50c258f318a1cef3a0534b",
+          "blender_frame": 0
+        },
+        {
+          "src": "references/well-alpha-walk-left-01.png",
+          "sha256": "ae29fcd015b6e78c6deb6ab5ad161bee1c16975ea966c8104e1145a9446dba58",
+          "blender_frame": 5
+        },
+        {
+          "src": "references/well-alpha-walk-left-02.png",
+          "sha256": "23704db4346f5a8467ba72c87c46f80675ef917d5c452a0cd8bef3b8f0518bed",
+          "blender_frame": 10
+        },
+        {
+          "src": "references/well-alpha-walk-left-03.png",
+          "sha256": "76fb1f45ca02be7f0abdab23256a8805ef08b98560f34ed5e6932ccfe183118e",
+          "blender_frame": 15
+        },
+        {
+          "src": "references/well-alpha-walk-left-04.png",
+          "sha256": "896767a034770d958936f74af24aa1478d319a6ba35d47e4e424c3beaba0f4ff",
+          "blender_frame": 20
+        },
+        {
+          "src": "references/well-alpha-walk-left-05.png",
+          "sha256": "10ab8e8f27d25cee65775d5e315c72bef4da794505f07c5776b3b2b4890224bb",
+          "blender_frame": 25
+        },
+        {
+          "src": "references/well-alpha-walk-left-06.png",
+          "sha256": "49b485f64625643f71ecd5f965a5f9aa59332aec754a59fe314befecc44d8259",
+          "blender_frame": 30
+        },
+        {
+          "src": "references/well-alpha-walk-left-07.png",
+          "sha256": "2f7f9a3ddc36f2b20663209552598fb404a1fbf4384119a5e4399382057f35b7",
+          "blender_frame": 35
+        }
+      ],
+      "blender_source": "blender/well-alpha-walk-canvas128.blend"
     }
   }
 }

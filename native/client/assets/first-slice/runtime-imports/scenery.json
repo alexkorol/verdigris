@@ -1,0 +1,159 @@
+{
+  "review": "Root visually reviewed all eight scenery sprites including repaired shrub",
+  "accepted": true,
+  "source_manifest": "../world-scenery/accepted/manifest.json",
+  "clips": [
+    {
+      "identity": "hut",
+      "direction": "front",
+      "frame": [
+        256,
+        256
+      ],
+      "pixels_per_metre": 48,
+      "loop": false,
+      "anchor": [
+        128,
+        192
+      ],
+      "fps": 1,
+      "frames": [
+        "../world-scenery/accepted/sprites/hut.png"
+      ],
+      "action": "idle"
+    },
+    {
+      "identity": "square-well",
+      "direction": "front",
+      "frame": [
+        256,
+        256
+      ],
+      "pixels_per_metre": 48,
+      "loop": false,
+      "anchor": [
+        128,
+        200
+      ],
+      "fps": 1,
+      "frames": [
+        "../world-scenery/accepted/sprites/square-well.png"
+      ],
+      "action": "idle"
+    },
+    {
+      "identity": "palisade-intact",
+      "direction": "front",
+      "frame": [
+        256,
+        256
+      ],
+      "pixels_per_metre": 48,
+      "loop": false,
+      "anchor": [
+        128,
+        200
+      ],
+      "fps": 1,
+      "frames": [
+        "../world-scenery/accepted/sprites/palisade-intact.png"
+      ],
+      "action": "idle"
+    },
+    {
+      "identity": "palisade-breached",
+      "direction": "front",
+      "frame": [
+        256,
+        256
+      ],
+      "pixels_per_metre": 48,
+      "loop": false,
+      "anchor": [
+        128,
+        200
+      ],
+      "fps": 1,
+      "frames": [
+        "../world-scenery/accepted/sprites/palisade-breached.png"
+      ],
+      "action": "idle"
+    },
+    {
+      "identity": "fieldstone-cluster",
+      "direction": "front",
+      "frame": [
+        256,
+        256
+      ],
+      "pixels_per_metre": 48,
+      "loop": false,
+      "anchor": [
+        128,
+        200
+      ],
+      "fps": 1,
+      "frames": [
+        "../world-scenery/accepted/sprites/fieldstone-cluster.png"
+      ],
+      "action": "idle"
+    },
+    {
+      "identity": "tree",
+      "direction": "front",
+      "frame": [
+        256,
+        256
+      ],
+      "pixels_per_metre": 48,
+      "loop": false,
+      "anchor": [
+        128,
+        232
+      ],
+      "fps": 1,
+      "frames": [
+        "../world-scenery/accepted/sprites/tree.png"
+      ],
+      "action": "idle"
+    },
+    {
+      "identity": "worn-earth-patch",
+      "direction": "front",
+      "frame": [
+        256,
+        256
+      ],
+      "pixels_per_metre": 48,
+      "loop": false,
+      "anchor": [
+        128,
+        200
+      ],
+      "fps": 1,
+      "frames": [
+        "../world-scenery/accepted/sprites/worn-earth-patch.png"
+      ],
+      "action": "idle"
+    },
+    {
+      "identity": "woodland-shrub",
+      "direction": "front",
+      "frame": [
+        256,
+        256
+      ],
+      "pixels_per_metre": 48,
+      "loop": false,
+      "anchor": [
+        128,
+        200
+      ],
+      "fps": 1,
+      "frames": [
+        "../world-scenery/accepted/sprites/woodland-shrub.png"
+      ],
+      "action": "idle"
+    }
+  ]
+}

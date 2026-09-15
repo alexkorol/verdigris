@@ -6,5 +6,13 @@
   "pack-wolf-walk-front",
   "pack-wolf-walk-right",
   "pack-wolf-walk-back",
-  "pack-wolf-walk-left"
+  "pack-wolf-walk-left",
+  "well-alpha-idle-front",
+  "well-alpha-idle-right",
+  "well-alpha-idle-back",
+  "well-alpha-idle-left",
+  "well-alpha-walk-front",
+  "well-alpha-walk-right",
+  "well-alpha-walk-back",
+  "well-alpha-walk-left"
 ]

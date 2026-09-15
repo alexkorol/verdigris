@@ -7,8 +7,9 @@ OUT=ROOT/'accepted'
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def package(approved):
     refs=json.loads((ROOT/'reference-manifest.json').read_text())['clips']
+    variable_layouts=json.loads((ROOT/'transfer-manifest-v4.json').read_text())['clips'] if (ROOT/'transfer-manifest-v4.json').exists() else {}
     manifest={'schema':1,'pixels_per_metre':48,'alpha':'binary native RGBA; original native alpha threshold128, neverRGBkey','clips':{},'source':'Blender authored poses, built-in imagegen paint, Pixel Respecter4xgrid reconstruction','visual_acceptance':'Agent native-scale andintegerzoom inspection; owner acceptance notclaimed'}
-    for folder in ('frames','references','originals','reports','blender'):(OUT/folder).mkdir(parents=True,exist_ok=True)
+    for folder in ('frames','references','originals','reports','blender','guides'):(OUT/folder).mkdir(parents=True,exist_ok=True)
     for key in approved:
         report=json.loads((ROOT/'review'/f'{key}.json').read_text());source=ROOT/'source'/f'{key}.png'
         assert sha(source)==report['source_sha256']
@@ -36,10 +37,17 @@ def package(approved):
         record['blender']='blender/'+target.name
         record['blender_sha256']=sha(target)
         record['blender_action']='Idle' if record['action']=='idle' else 'Walking' if record['action']=='walk' else refs[clip].get('authored_action')
+        guide=variable_layouts.get(clip,{}).get('guide')
+        if guide:
+            guide=ROOT/guide;target=OUT/'guides'/guide.name;shutil.copy2(guide,target)
+            record['reference_guide']='guides/'+target.name
+            record['reference_guide_sha256']=sha(target)
     (OUT/'manifest.json').write_text(json.dumps(manifest,indent=2))
     native_refs={key:{**refs[key],'frames':[{'src':f['reference'],'sha256':f['reference_sha256'],'blender_frame':refs[key]['frames'][f['phase']]['blender_frame']} for f in record['frames']]} for key,record in manifest['clips'].items()}
     (OUT/'reference-manifest.json').write_text(json.dumps({'clips':native_refs},indent=2))
     (OUT/'transfer-manifest.json').write_text(json.dumps({'clips':native_refs},indent=2))
+    variable_refs={key:{**native_refs[key],'layout':variable_layouts[key]['layout']} for key in native_refs if key in variable_layouts}
+    if variable_refs:(OUT/'transfer-manifest-v4.json').write_text(json.dumps({'clips':variable_refs},indent=2))
     (OUT/'approved-sheets.json').write_text(json.dumps(approved,indent=2))
     if (ROOT/'imagegen-prompts.json').exists():shutil.copy2(ROOT/'imagegen-prompts.json',OUT/'imagegen-prompts.json')
     print('Published',len(manifest['clips']),'clips',sum(len(c['frames']) for c in manifest['clips'].values()),'frames')

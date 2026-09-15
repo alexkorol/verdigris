@@ -110,7 +110,9 @@
       ],
       "blender": "blender/pack-wolf-walking.blend",
       "blender_sha256": "3aba8648e44f945f9fd1ec2098e0af02fcc5e8b6eed74e1be2c52c6441cc7fb1",
-      "blender_action": "Idle"
+      "blender_action": "Idle",
+      "reference_guide": "guides/pack-wolf-idle-front.png",
+      "reference_guide_sha256": "93d430bd1f6a34a7eb5788119afc641ceaeb84ef31b5831b21f6449afdc6b764"
     },
     "pack-wolf-idle-right": {
       "actor": "pack-wolf",
@@ -219,7 +221,9 @@
       ],
       "blender": "blender/pack-wolf-walking.blend",
       "blender_sha256": "3aba8648e44f945f9fd1ec2098e0af02fcc5e8b6eed74e1be2c52c6441cc7fb1",
-      "blender_action": "Idle"
+      "blender_action": "Idle",
+      "reference_guide": "guides/pack-wolf-idle-right.png",
+      "reference_guide_sha256": "27028a87ff232083301e43cfd9fc1c72952207b2ed81b403f0c008a3f5a7026a"
     },
     "pack-wolf-idle-back": {
       "actor": "pack-wolf",
@@ -328,7 +332,9 @@
       ],
       "blender": "blender/pack-wolf-walking.blend",
       "blender_sha256": "3aba8648e44f945f9fd1ec2098e0af02fcc5e8b6eed74e1be2c52c6441cc7fb1",
-      "blender_action": "Idle"
+      "blender_action": "Idle",
+      "reference_guide": "guides/pack-wolf-idle-back.png",
+      "reference_guide_sha256": "09192e2c68fd59c4af2ab28d9df3e3699960e92ea7775566cdff7d2e692dd226"
     },
     "pack-wolf-idle-left": {
       "actor": "pack-wolf",
@@ -437,7 +443,9 @@
       ],
       "blender": "blender/pack-wolf-walking.blend",
       "blender_sha256": "3aba8648e44f945f9fd1ec2098e0af02fcc5e8b6eed74e1be2c52c6441cc7fb1",
-      "blender_action": "Idle"
+      "blender_action": "Idle",
+      "reference_guide": "guides/pack-wolf-idle-left.png",
+      "reference_guide_sha256": "1616838f61f723c627db01de3facbcbb40955503a4ec36308756b368c331495c"
     },
     "pack-wolf-walk-front": {
       "actor": "pack-wolf",
@@ -546,7 +554,9 @@
       ],
       "blender": "blender/pack-wolf-walking.blend",
       "blender_sha256": "3aba8648e44f945f9fd1ec2098e0af02fcc5e8b6eed74e1be2c52c6441cc7fb1",
-      "blender_action": "Walking"
+      "blender_action": "Walking",
+      "reference_guide": "guides/pack-wolf-walk-front.png",
+      "reference_guide_sha256": "1314218ad72f25023bde86f9dffb5f2cc41aaec3c6728548d702d21ceaba2583"
     },
     "pack-wolf-walk-right": {
       "actor": "pack-wolf",
@@ -655,7 +665,9 @@
       ],
       "blender": "blender/pack-wolf-walking.blend",
       "blender_sha256": "3aba8648e44f945f9fd1ec2098e0af02fcc5e8b6eed74e1be2c52c6441cc7fb1",
-      "blender_action": "Walking"
+      "blender_action": "Walking",
+      "reference_guide": "guides/pack-wolf-walk-right.png",
+      "reference_guide_sha256": "f943a832e271f8d35556bf73ddbf042ef3b1b072aec43c38fe939caf42d5a4de"
     },
     "pack-wolf-walk-back": {
       "actor": "pack-wolf",
@@ -764,7 +776,9 @@
       ],
       "blender": "blender/pack-wolf-walking.blend",
       "blender_sha256": "3aba8648e44f945f9fd1ec2098e0af02fcc5e8b6eed74e1be2c52c6441cc7fb1",
-      "blender_action": "Walking"
+      "blender_action": "Walking",
+      "reference_guide": "guides/pack-wolf-walk-back.png",
+      "reference_guide_sha256": "675db3c31cf67b83471adc5127b68e9aba25bdb73dc3e59a88e88dbd4b160857"
     },
     "pack-wolf-walk-left": {
       "actor": "pack-wolf",
@@ -873,7 +887,897 @@
       ],
       "blender": "blender/pack-wolf-walking.blend",
       "blender_sha256": "3aba8648e44f945f9fd1ec2098e0af02fcc5e8b6eed74e1be2c52c6441cc7fb1",
-      "blender_action": "Walking"
+      "blender_action": "Walking",
+      "reference_guide": "guides/pack-wolf-walk-left.png",
+      "reference_guide_sha256": "2285b1735b1b4fbaa663a1d96f23daba9cb03b50e71e633b8c63eddcf2b6a18e"
+    },
+    "well-alpha-idle-front": {
+      "actor": "well-alpha",
+      "action": "idle",
+      "direction": "front",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/well-alpha-idle-front-00.png",
+          "sha256": "d7a2c3448a49661b02f020c2f16622939d804d1f836556c7e65ad2b3e6a54109",
+          "reference": "references/well-alpha-idle-front-00.png",
+          "reference_sha256": "34afbd0493f206066acc56e50a48da78050eab427e1dcd6720d62c37c6b8e63a",
+          "phase": 0,
+          "source": "originals/well-alpha-idle-front.png",
+          "source_sha256": "ffb697fe3890b22413ba5b075168e3c617e742a73df589978087b9bce267899d",
+          "silhouette_iou": 0.8387445887445888,
+          "report": "reports/well-alpha-idle-front.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-front-01.png",
+          "sha256": "11771c10ae577b8b1eda4aacce15aace95fb54a4a63fb20336a0ecb104b6e1cf",
+          "reference": "references/well-alpha-idle-front-01.png",
+          "reference_sha256": "873a941a13ff789c541649514d9743e987810460fe53d8259393c318fab65194",
+          "phase": 1,
+          "source": "originals/well-alpha-idle-front.png",
+          "source_sha256": "ffb697fe3890b22413ba5b075168e3c617e742a73df589978087b9bce267899d",
+          "silhouette_iou": 0.8401727861771058,
+          "report": "reports/well-alpha-idle-front.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-front-02.png",
+          "sha256": "5426d697f38e6ae7074080e7c82bb861861726492ec6cbc21b1c3674bca2d06c",
+          "reference": "references/well-alpha-idle-front-02.png",
+          "reference_sha256": "d8db582e6a113ffddafeb83015f65966981b470a012e25bf4836a54a1763ee3a",
+          "phase": 2,
+          "source": "originals/well-alpha-idle-front.png",
+          "source_sha256": "ffb697fe3890b22413ba5b075168e3c617e742a73df589978087b9bce267899d",
+          "silhouette_iou": 0.8406889128094726,
+          "report": "reports/well-alpha-idle-front.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-front-03.png",
+          "sha256": "17de419fa93ba2115276b6256855e17163c240219176ea0dc85d71fddee7bd53",
+          "reference": "references/well-alpha-idle-front-03.png",
+          "reference_sha256": "78ff01c09587945d150005a7d10b46398a6a390817f797deaec927ec827e65ac",
+          "phase": 3,
+          "source": "originals/well-alpha-idle-front.png",
+          "source_sha256": "ffb697fe3890b22413ba5b075168e3c617e742a73df589978087b9bce267899d",
+          "silhouette_iou": 0.8408602150537634,
+          "report": "reports/well-alpha-idle-front.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-front-04.png",
+          "sha256": "6e4e4b34ffe1e0d31c10361bc9da5c39e94122c1ed5538afcca591178ae49e75",
+          "reference": "references/well-alpha-idle-front-04.png",
+          "reference_sha256": "5e6557892982532663cf1f78e1a0b885a1996455f11b974a2360fa4f1618476c",
+          "phase": 4,
+          "source": "originals/well-alpha-idle-front.png",
+          "source_sha256": "ffb697fe3890b22413ba5b075168e3c617e742a73df589978087b9bce267899d",
+          "silhouette_iou": 0.8388829215896885,
+          "report": "reports/well-alpha-idle-front.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-front-05.png",
+          "sha256": "ffeb46e5f33cd26493c6c84bdb5a06103b2ba5ae435022a738ba3c7487663a0f",
+          "reference": "references/well-alpha-idle-front-05.png",
+          "reference_sha256": "8bca2858f3eed39a4f8ea1f06256ea66f654bd40bd87b41c8c6104177baf7173",
+          "phase": 5,
+          "source": "originals/well-alpha-idle-front.png",
+          "source_sha256": "ffb697fe3890b22413ba5b075168e3c617e742a73df589978087b9bce267899d",
+          "silhouette_iou": 0.8390557939914163,
+          "report": "reports/well-alpha-idle-front.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-front-06.png",
+          "sha256": "297264e7b177cf8d1c8271e6ef2a3d2d4d43cc73cf54b7776afe2c948db18370",
+          "reference": "references/well-alpha-idle-front-06.png",
+          "reference_sha256": "89b2cb58fbde745c5be67bbc3a8f60ead856c7609dd550961fa31257b84d6d64",
+          "phase": 6,
+          "source": "originals/well-alpha-idle-front.png",
+          "source_sha256": "ffb697fe3890b22413ba5b075168e3c617e742a73df589978087b9bce267899d",
+          "silhouette_iou": 0.8406889128094726,
+          "report": "reports/well-alpha-idle-front.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-front-07.png",
+          "sha256": "481977ef6062fa44a70154cd2b93d4cfd86d1f457ed14294cdf2da6b6eb8b750",
+          "reference": "references/well-alpha-idle-front-07.png",
+          "reference_sha256": "1f2bc818bffcc1b6a145d94dca79bc0efd67ed2add5831738b99a319366fee34",
+          "phase": 7,
+          "source": "originals/well-alpha-idle-front.png",
+          "source_sha256": "ffb697fe3890b22413ba5b075168e3c617e742a73df589978087b9bce267899d",
+          "silhouette_iou": 0.8392664509169363,
+          "report": "reports/well-alpha-idle-front.json"
+        }
+      ],
+      "blender": "blender/well-alpha-idle-canvas128.blend",
+      "blender_sha256": "b23e698a3ba948fa5b4047da1995680d78f8491362a9781e913f8c70f3fe46df",
+      "blender_action": "Idle",
+      "reference_guide": "guides/well-alpha-idle-front.png",
+      "reference_guide_sha256": "d504e1046098a6bf41de9328329afa3d29472dff5defe74be5fcd17912db7422"
+    },
+    "well-alpha-idle-right": {
+      "actor": "well-alpha",
+      "action": "idle",
+      "direction": "right",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/well-alpha-idle-right-00.png",
+          "sha256": "e201a1a0231155fec26c02819eb2a9724c593409c335009ec64b674626c01d79",
+          "reference": "references/well-alpha-idle-right-00.png",
+          "reference_sha256": "ad9ba9570b385cd4eef322ca8ff23d150320d97616f16574fee13e6659098778",
+          "phase": 0,
+          "source": "originals/well-alpha-idle-right.png",
+          "source_sha256": "e5d9adb7e6967fe6c8187b78c3b904e065c4ca52e1ee10d8d9abdb3fad625682",
+          "silhouette_iou": 0.8403361344537815,
+          "report": "reports/well-alpha-idle-right.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-right-01.png",
+          "sha256": "1165f72e816e276d4a10bd1ce2b5c4ddda14429bfed494f849f75c0391c3ca08",
+          "reference": "references/well-alpha-idle-right-01.png",
+          "reference_sha256": "737748d464f29dd0cf7b2202090d256382e46280ba5825b29fa86b9d92eb4286",
+          "phase": 1,
+          "source": "originals/well-alpha-idle-right.png",
+          "source_sha256": "e5d9adb7e6967fe6c8187b78c3b904e065c4ca52e1ee10d8d9abdb3fad625682",
+          "silhouette_iou": 0.8387605042016807,
+          "report": "reports/well-alpha-idle-right.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-right-02.png",
+          "sha256": "296f22d8fae733b4eb2794d17cb44a136df738f079408ebe83f231e25e01b086",
+          "reference": "references/well-alpha-idle-right-02.png",
+          "reference_sha256": "19780699f77a73bbf72eb16617bb595b1190d4ec9b63febbf1688ff38d8c59f9",
+          "phase": 2,
+          "source": "originals/well-alpha-idle-right.png",
+          "source_sha256": "e5d9adb7e6967fe6c8187b78c3b904e065c4ca52e1ee10d8d9abdb3fad625682",
+          "silhouette_iou": 0.837099316868103,
+          "report": "reports/well-alpha-idle-right.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-right-03.png",
+          "sha256": "71e0e8209f8b3421f0814c88ad4ec1176012987a9388709045c07396d8aa057a",
+          "reference": "references/well-alpha-idle-right-03.png",
+          "reference_sha256": "d7d587c8f4d94b5d81406619274334e21f24ed78f73c01afd6760aabef38fef3",
+          "phase": 3,
+          "source": "originals/well-alpha-idle-right.png",
+          "source_sha256": "e5d9adb7e6967fe6c8187b78c3b904e065c4ca52e1ee10d8d9abdb3fad625682",
+          "silhouette_iou": 0.8371970495258166,
+          "report": "reports/well-alpha-idle-right.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-right-04.png",
+          "sha256": "fe0312148109a86489beceba60041767b00f28ed7198c595595afa01ecf57869",
+          "reference": "references/well-alpha-idle-right-04.png",
+          "reference_sha256": "1b94e51d8b1388bd481f92da8091a83757493020098e5276f3e9ad067217e340",
+          "phase": 4,
+          "source": "originals/well-alpha-idle-right.png",
+          "source_sha256": "e5d9adb7e6967fe6c8187b78c3b904e065c4ca52e1ee10d8d9abdb3fad625682",
+          "silhouette_iou": 0.8270637408568443,
+          "report": "reports/well-alpha-idle-right.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-right-05.png",
+          "sha256": "f994649428f7d3ba077ac21ceb09e6dd607a9cc61d1f72884fb80d3e563c3277",
+          "reference": "references/well-alpha-idle-right-05.png",
+          "reference_sha256": "ecb3cb7a6fc08e770deef2a898a148b4aabb7615f5d6a94ab948cae050b190c4",
+          "phase": 5,
+          "source": "originals/well-alpha-idle-right.png",
+          "source_sha256": "e5d9adb7e6967fe6c8187b78c3b904e065c4ca52e1ee10d8d9abdb3fad625682",
+          "silhouette_iou": 0.8257930317212688,
+          "report": "reports/well-alpha-idle-right.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-right-06.png",
+          "sha256": "badc143e7dd75918dcdb5c97bbf945b1efed222717289114c9b20f0e08574b38",
+          "reference": "references/well-alpha-idle-right-06.png",
+          "reference_sha256": "254b1ffbbbce6f863f80dfdf5666608b9a56be7f616e7c4af9328eba8c65ed79",
+          "phase": 6,
+          "source": "originals/well-alpha-idle-right.png",
+          "source_sha256": "e5d9adb7e6967fe6c8187b78c3b904e065c4ca52e1ee10d8d9abdb3fad625682",
+          "silhouette_iou": 0.8322007318348145,
+          "report": "reports/well-alpha-idle-right.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-right-07.png",
+          "sha256": "22298e5c0b0abca0b2bf0a30f501751d35d5bab18350e683abe2b1c816d0881a",
+          "reference": "references/well-alpha-idle-right-07.png",
+          "reference_sha256": "ef5d91248c53509c0898520af9b2ceacee3d1b3c98fa7c49cf56f51c951e8c8a",
+          "phase": 7,
+          "source": "originals/well-alpha-idle-right.png",
+          "source_sha256": "e5d9adb7e6967fe6c8187b78c3b904e065c4ca52e1ee10d8d9abdb3fad625682",
+          "silhouette_iou": 0.8387605042016807,
+          "report": "reports/well-alpha-idle-right.json"
+        }
+      ],
+      "blender": "blender/well-alpha-idle-canvas128.blend",
+      "blender_sha256": "b23e698a3ba948fa5b4047da1995680d78f8491362a9781e913f8c70f3fe46df",
+      "blender_action": "Idle",
+      "reference_guide": "guides/well-alpha-idle-right.png",
+      "reference_guide_sha256": "78ba00e96841e35944a37f58c363f80f575b242eb52500f78a1bf66c95dc04e4"
+    },
+    "well-alpha-idle-back": {
+      "actor": "well-alpha",
+      "action": "idle",
+      "direction": "back",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/well-alpha-idle-back-00.png",
+          "sha256": "01171ba46c2c757f2415372cc105236902d4c801572f16b8f00754d77c9788e8",
+          "reference": "references/well-alpha-idle-back-00.png",
+          "reference_sha256": "beeb5e21de5f3b98c86431053dcee04e02330eccca2c9c09df9ff6b973ac7fa9",
+          "phase": 0,
+          "source": "originals/well-alpha-idle-back.png",
+          "source_sha256": "a44b2e274402e952ffa1c9ba46ab32d9447c2b7ba6d69a99fd8278a0e1f35e9c",
+          "silhouette_iou": 0.8548963545389564,
+          "report": "reports/well-alpha-idle-back.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-back-01.png",
+          "sha256": "9bcfda0b1a54ffde983292449b7037746afd6f4f462857de49ec3f9199dfb5e8",
+          "reference": "references/well-alpha-idle-back-01.png",
+          "reference_sha256": "e1a6b4fa888c4eb83b7752513c88517abc26656122036f694f0cebd76a8c8f32",
+          "phase": 1,
+          "source": "originals/well-alpha-idle-back.png",
+          "source_sha256": "a44b2e274402e952ffa1c9ba46ab32d9447c2b7ba6d69a99fd8278a0e1f35e9c",
+          "silhouette_iou": 0.8578607322325915,
+          "report": "reports/well-alpha-idle-back.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-back-02.png",
+          "sha256": "a790b7d500b5abb69d7ee786e5ee5b2219d658beec247d6d00ca8a9a649219ce",
+          "reference": "references/well-alpha-idle-back-02.png",
+          "reference_sha256": "50adffecf231e1097c1990069d6789dfc84931f2e80f93bb3a07bde3b7dface4",
+          "phase": 2,
+          "source": "originals/well-alpha-idle-back.png",
+          "source_sha256": "a44b2e274402e952ffa1c9ba46ab32d9447c2b7ba6d69a99fd8278a0e1f35e9c",
+          "silhouette_iou": 0.8491779842744818,
+          "report": "reports/well-alpha-idle-back.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-back-03.png",
+          "sha256": "92229e66fd4765901411ffd29cc8668d04095d38e93ab0734db8aaf971ebfc48",
+          "reference": "references/well-alpha-idle-back-03.png",
+          "reference_sha256": "1935d2ec81980ebf4e01f90e64f6294ed87594b42189a7845ca8911f4fe2c21b",
+          "phase": 3,
+          "source": "originals/well-alpha-idle-back.png",
+          "source_sha256": "a44b2e274402e952ffa1c9ba46ab32d9447c2b7ba6d69a99fd8278a0e1f35e9c",
+          "silhouette_iou": 0.8492462311557789,
+          "report": "reports/well-alpha-idle-back.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-back-04.png",
+          "sha256": "100cd5f29bca7234475e281f42c80100c1325d79decede5e7c35b39fdc321417",
+          "reference": "references/well-alpha-idle-back-04.png",
+          "reference_sha256": "c23bb3ec3927969a1142594b768430dd69eb0e2846a7e6beccfbbeb7a00013c9",
+          "phase": 4,
+          "source": "originals/well-alpha-idle-back.png",
+          "source_sha256": "a44b2e274402e952ffa1c9ba46ab32d9447c2b7ba6d69a99fd8278a0e1f35e9c",
+          "silhouette_iou": 0.8503597122302158,
+          "report": "reports/well-alpha-idle-back.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-back-05.png",
+          "sha256": "de1a7ce8fb6c2fffcf209bde40e19b974996be0004dc37a74582e77578835ecb",
+          "reference": "references/well-alpha-idle-back-05.png",
+          "reference_sha256": "654dd307908056ffccc3435175fe8b85e7edb5aa5fea782e8aa7a687f5c2b7d9",
+          "phase": 5,
+          "source": "originals/well-alpha-idle-back.png",
+          "source_sha256": "a44b2e274402e952ffa1c9ba46ab32d9447c2b7ba6d69a99fd8278a0e1f35e9c",
+          "silhouette_iou": 0.8489620615604867,
+          "report": "reports/well-alpha-idle-back.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-back-06.png",
+          "sha256": "1e49c56d2b0662af15ca36768ca43311489d1477cec153b7f66c6c453ce61548",
+          "reference": "references/well-alpha-idle-back-06.png",
+          "reference_sha256": "da12b213a9cd74b1b4374337c1f10479aac13509f8e84d2abfed83cc39bf75e7",
+          "phase": 6,
+          "source": "originals/well-alpha-idle-back.png",
+          "source_sha256": "a44b2e274402e952ffa1c9ba46ab32d9447c2b7ba6d69a99fd8278a0e1f35e9c",
+          "silhouette_iou": 0.8524355300859598,
+          "report": "reports/well-alpha-idle-back.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-back-07.png",
+          "sha256": "6de6e2f39eb2c023499253cbfe66c3e1f7f5e8e9415d56eb16aec10bf50b53c5",
+          "reference": "references/well-alpha-idle-back-07.png",
+          "reference_sha256": "a366a5ae984aa1c99807f28934229fd5d60b4ce3c2af922ca55f5b2e327bf869",
+          "phase": 7,
+          "source": "originals/well-alpha-idle-back.png",
+          "source_sha256": "a44b2e274402e952ffa1c9ba46ab32d9447c2b7ba6d69a99fd8278a0e1f35e9c",
+          "silhouette_iou": 0.8590941768511862,
+          "report": "reports/well-alpha-idle-back.json"
+        }
+      ],
+      "blender": "blender/well-alpha-idle-canvas128.blend",
+      "blender_sha256": "b23e698a3ba948fa5b4047da1995680d78f8491362a9781e913f8c70f3fe46df",
+      "blender_action": "Idle",
+      "reference_guide": "guides/well-alpha-idle-back.png",
+      "reference_guide_sha256": "779dfca9b794dc0c5f9b1b1a4fde6f7126bf552b11e5e23040e5ee56cb285ff7"
+    },
+    "well-alpha-idle-left": {
+      "actor": "well-alpha",
+      "action": "idle",
+      "direction": "left",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/well-alpha-idle-left-00.png",
+          "sha256": "f9693a0c2ca4787d33865aca56473ffd4fa706465495902077f54e9ce4a9cd8d",
+          "reference": "references/well-alpha-idle-left-00.png",
+          "reference_sha256": "993976124657580e6f51a38f8717578ac30ff6040dc3dc8b49baccc1c3cdb6cb",
+          "phase": 0,
+          "source": "originals/well-alpha-idle-left.png",
+          "source_sha256": "1f50670a73ffd6fded2214c33fb9fa401923dcf50ebcccb59d339b7a50284d75",
+          "silhouette_iou": 0.8576017130620985,
+          "report": "reports/well-alpha-idle-left.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-left-01.png",
+          "sha256": "a83619dcaa2cccf1a8dfaae0922190e4ce3e1cc9c9f2d000d325d4fa4d0c6502",
+          "reference": "references/well-alpha-idle-left-01.png",
+          "reference_sha256": "d0e3b8261563aa5c29e8f269f250a79ec2d15a64804e4b0025f2570ad32c3c2a",
+          "phase": 1,
+          "source": "originals/well-alpha-idle-left.png",
+          "source_sha256": "1f50670a73ffd6fded2214c33fb9fa401923dcf50ebcccb59d339b7a50284d75",
+          "silhouette_iou": 0.8436842105263158,
+          "report": "reports/well-alpha-idle-left.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-left-02.png",
+          "sha256": "07247fc823722fac679cfbe3b2d0856de767e227bdbfd20a62631b4db025f172",
+          "reference": "references/well-alpha-idle-left-02.png",
+          "reference_sha256": "9d1a83a3b89effa10d9865a36863e7a15bace1f996d4cd1a648195f5d208cb86",
+          "phase": 2,
+          "source": "originals/well-alpha-idle-left.png",
+          "source_sha256": "1f50670a73ffd6fded2214c33fb9fa401923dcf50ebcccb59d339b7a50284d75",
+          "silhouette_iou": 0.837467018469657,
+          "report": "reports/well-alpha-idle-left.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-left-03.png",
+          "sha256": "51d104554187b9cda01a773e44fddd43c778e50299adb3c0f822fef71ba5a4c3",
+          "reference": "references/well-alpha-idle-left-03.png",
+          "reference_sha256": "ab420aee8f3fc61ed1075e21c3ae587912c3280de561c910f532ab2b18132257",
+          "phase": 3,
+          "source": "originals/well-alpha-idle-left.png",
+          "source_sha256": "1f50670a73ffd6fded2214c33fb9fa401923dcf50ebcccb59d339b7a50284d75",
+          "silhouette_iou": 0.826792255363684,
+          "report": "reports/well-alpha-idle-left.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-left-04.png",
+          "sha256": "318fbb273c9c69b7c629cd27e46c2b25b5efaf30b381ace961cdeecc4c5231e2",
+          "reference": "references/well-alpha-idle-left-04.png",
+          "reference_sha256": "e33b78f1a6e736480dcee9412581b2e4a712d41271f80a9661f260ee3890172f",
+          "phase": 4,
+          "source": "originals/well-alpha-idle-left.png",
+          "source_sha256": "1f50670a73ffd6fded2214c33fb9fa401923dcf50ebcccb59d339b7a50284d75",
+          "silhouette_iou": 0.8443017656500803,
+          "report": "reports/well-alpha-idle-left.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-left-05.png",
+          "sha256": "f57b687f34008fddfa33ee2ecd58da44a7ab719e739d0a7eaf4376b742c1ffce",
+          "reference": "references/well-alpha-idle-left-05.png",
+          "reference_sha256": "d1cdfb17613ec7cd6ed0d313842f94ec92318e8a939d5c44ad66cf0cdf9025cc",
+          "phase": 5,
+          "source": "originals/well-alpha-idle-left.png",
+          "source_sha256": "1f50670a73ffd6fded2214c33fb9fa401923dcf50ebcccb59d339b7a50284d75",
+          "silhouette_iou": 0.8304370721432333,
+          "report": "reports/well-alpha-idle-left.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-left-06.png",
+          "sha256": "bfc055a3b7b7fbcfb6b8bdbc35485b319459f16614621ff8224a50f6a634826a",
+          "reference": "references/well-alpha-idle-left-06.png",
+          "reference_sha256": "457c235281b9f88741516673aa1eb4ff714c283e8bc59d930bf89e67b9be52c1",
+          "phase": 6,
+          "source": "originals/well-alpha-idle-left.png",
+          "source_sha256": "1f50670a73ffd6fded2214c33fb9fa401923dcf50ebcccb59d339b7a50284d75",
+          "silhouette_iou": 0.8346498156924698,
+          "report": "reports/well-alpha-idle-left.json"
+        },
+        {
+          "file": "frames/well-alpha-idle-left-07.png",
+          "sha256": "e70c7621f06892af73765e08ef7d7556663c93250f13c921dc7a6ac3d52812a0",
+          "reference": "references/well-alpha-idle-left-07.png",
+          "reference_sha256": "b0cb7f7030c4768d2b76a56f6dd8a4ba5811b5b4e847e464d143d1ff74a12018",
+          "phase": 7,
+          "source": "originals/well-alpha-idle-left.png",
+          "source_sha256": "1f50670a73ffd6fded2214c33fb9fa401923dcf50ebcccb59d339b7a50284d75",
+          "silhouette_iou": 0.8397066526977475,
+          "report": "reports/well-alpha-idle-left.json"
+        }
+      ],
+      "blender": "blender/well-alpha-idle-canvas128.blend",
+      "blender_sha256": "b23e698a3ba948fa5b4047da1995680d78f8491362a9781e913f8c70f3fe46df",
+      "blender_action": "Idle",
+      "reference_guide": "guides/well-alpha-idle-left.png",
+      "reference_guide_sha256": "1c5e1c268499a471abcda4e401e28d8c954463afc7d0d2bbbf4ccebea6a2cfea"
+    },
+    "well-alpha-walk-front": {
+      "actor": "well-alpha",
+      "action": "walk",
+      "direction": "front",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/well-alpha-walk-front-00.png",
+          "sha256": "36ea8f81c4d8d7e4fd11295747d635a87d1ef28e6876b867882a6e963b210733",
+          "reference": "references/well-alpha-walk-front-00.png",
+          "reference_sha256": "8782336bb2f8e311f3e8f68b768ade284a3b11726fd6f9810c622e481e4f2b6f",
+          "phase": 0,
+          "source": "originals/well-alpha-walk-front.png",
+          "source_sha256": "c1437afbd594f3c404f1f3b7d4f4c5cd47bce7e3e4417072655b1de8edef4d59",
+          "silhouette_iou": 0.821689259645464,
+          "report": "reports/well-alpha-walk-front.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-front-01.png",
+          "sha256": "8b4a1bb762e2f062a9c7eba76926ece48359320d2eb927948e15d9581aca7ba3",
+          "reference": "references/well-alpha-walk-front-01.png",
+          "reference_sha256": "5aaaf49a21c92edf08dd679b2e314bb52deec7d433ca3520caf9ca8de79360fa",
+          "phase": 1,
+          "source": "originals/well-alpha-walk-front.png",
+          "source_sha256": "c1437afbd594f3c404f1f3b7d4f4c5cd47bce7e3e4417072655b1de8edef4d59",
+          "silhouette_iou": 0.8189563365282215,
+          "report": "reports/well-alpha-walk-front.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-front-02.png",
+          "sha256": "f673a2f9e31ee2eb33747d94606077ece9d9f2c882b11558bc638418aacc5436",
+          "reference": "references/well-alpha-walk-front-02.png",
+          "reference_sha256": "a36888ef984c55eb137871ef54985f7711bba01cbf63ce31aa9099f63ffd2ad3",
+          "phase": 2,
+          "source": "originals/well-alpha-walk-front.png",
+          "source_sha256": "c1437afbd594f3c404f1f3b7d4f4c5cd47bce7e3e4417072655b1de8edef4d59",
+          "silhouette_iou": 0.7995666305525461,
+          "report": "reports/well-alpha-walk-front.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-front-03.png",
+          "sha256": "68e95734646494e3b7e047615f081501ba88eec6dff1f49cf23749cdc54aa22a",
+          "reference": "references/well-alpha-walk-front-03.png",
+          "reference_sha256": "c7ddc6c9892887b7fe200fa48f870a42470c25fd9081e016f22de0381363ae57",
+          "phase": 3,
+          "source": "originals/well-alpha-walk-front.png",
+          "source_sha256": "c1437afbd594f3c404f1f3b7d4f4c5cd47bce7e3e4417072655b1de8edef4d59",
+          "silhouette_iou": 0.7972831765935214,
+          "report": "reports/well-alpha-walk-front.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-front-04.png",
+          "sha256": "5fe75ebc98623fa42e666f7f6744df1102fc6421603fa0d92a9aed854e3d029b",
+          "reference": "references/well-alpha-walk-front-04.png",
+          "reference_sha256": "66f6a37f5b174d62a02539bd30713639e7e15aceab68a724afc151244991ccee",
+          "phase": 4,
+          "source": "originals/well-alpha-walk-front.png",
+          "source_sha256": "c1437afbd594f3c404f1f3b7d4f4c5cd47bce7e3e4417072655b1de8edef4d59",
+          "silhouette_iou": 0.8151609553478713,
+          "report": "reports/well-alpha-walk-front.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-front-05.png",
+          "sha256": "651536c2e0278c7dc437f07f942f987622f89271d8b8c6d3ef1680987ab234bc",
+          "reference": "references/well-alpha-walk-front-05.png",
+          "reference_sha256": "1e666a4dd9d49dd873ef45d8348e12558865362937dd3f9f1195535bc7d21e7e",
+          "phase": 5,
+          "source": "originals/well-alpha-walk-front.png",
+          "source_sha256": "c1437afbd594f3c404f1f3b7d4f4c5cd47bce7e3e4417072655b1de8edef4d59",
+          "silhouette_iou": 0.8220793140407289,
+          "report": "reports/well-alpha-walk-front.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-front-06.png",
+          "sha256": "24e364616b90d6eddc00b27e4bde8e96120e91ec16e0a9782dbb52fedcd68508",
+          "reference": "references/well-alpha-walk-front-06.png",
+          "reference_sha256": "9a31b491dd5b5bba3f4cfae4c41067ec0c14c80b3d678c097f542d46d0e87fc8",
+          "phase": 6,
+          "source": "originals/well-alpha-walk-front.png",
+          "source_sha256": "c1437afbd594f3c404f1f3b7d4f4c5cd47bce7e3e4417072655b1de8edef4d59",
+          "silhouette_iou": 0.8165938864628821,
+          "report": "reports/well-alpha-walk-front.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-front-07.png",
+          "sha256": "f43e573b9af1c4de5e9139cff31096e725c4e597329a57dc992f677da8a69a67",
+          "reference": "references/well-alpha-walk-front-07.png",
+          "reference_sha256": "bcd35bb064e19f895cdea598e86a410840437dd67a6f7f89e53e0f3c2be00e00",
+          "phase": 7,
+          "source": "originals/well-alpha-walk-front.png",
+          "source_sha256": "c1437afbd594f3c404f1f3b7d4f4c5cd47bce7e3e4417072655b1de8edef4d59",
+          "silhouette_iou": 0.8171122994652407,
+          "report": "reports/well-alpha-walk-front.json"
+        }
+      ],
+      "blender": "blender/well-alpha-walk-canvas128.blend",
+      "blender_sha256": "a42930a32585d3a3ef94260b040ba56f9848fd44886378926b534aa7123fbf2e",
+      "blender_action": "Walking",
+      "reference_guide": "guides/well-alpha-walk-front.png",
+      "reference_guide_sha256": "cba6fd3added6f9752a64784b7b82ba421840d7183ee3d199532b3f76fac608d"
+    },
+    "well-alpha-walk-right": {
+      "actor": "well-alpha",
+      "action": "walk",
+      "direction": "right",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/well-alpha-walk-right-00.png",
+          "sha256": "8915460168499763f18d4be066f225e8fbee9d8a94f3a432eac01eddb89b6197",
+          "reference": "references/well-alpha-walk-right-00.png",
+          "reference_sha256": "01a0387bdefc25f772479ca4073fbb1c89557aed8ec1069085aeeecce0c7579f",
+          "phase": 0,
+          "source": "originals/well-alpha-walk-right.png",
+          "source_sha256": "a485cbdd933af553fc87279293a21c62af265e07142be43468b0d13cfd36039c",
+          "silhouette_iou": 0.8241025641025641,
+          "report": "reports/well-alpha-walk-right.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-right-01.png",
+          "sha256": "a7bac274b9dac9847311e05a5a41cdbea5eb6ca245d7217dbf97648f0142681a",
+          "reference": "references/well-alpha-walk-right-01.png",
+          "reference_sha256": "3ee5b8c8ae1025884aab892db708b04419cbd3713df7c9f4632343124bc0ab53",
+          "phase": 1,
+          "source": "originals/well-alpha-walk-right.png",
+          "source_sha256": "a485cbdd933af553fc87279293a21c62af265e07142be43468b0d13cfd36039c",
+          "silhouette_iou": 0.8099502487562189,
+          "report": "reports/well-alpha-walk-right.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-right-02.png",
+          "sha256": "d145a4d4afd38e467571af83d4e4a2f4373925ed567db6d7b209c50a5a71b90e",
+          "reference": "references/well-alpha-walk-right-02.png",
+          "reference_sha256": "ba8e961dca1a9446993bfdaee4a007ec4a08a7f3e67e52f7db081368e5a9a699",
+          "phase": 2,
+          "source": "originals/well-alpha-walk-right.png",
+          "source_sha256": "a485cbdd933af553fc87279293a21c62af265e07142be43468b0d13cfd36039c",
+          "silhouette_iou": 0.8112270243417784,
+          "report": "reports/well-alpha-walk-right.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-right-03.png",
+          "sha256": "f4a9f730ccde0490ebe54f0982345d429733d57ffdb45499cbe2b2d353ae561c",
+          "reference": "references/well-alpha-walk-right-03.png",
+          "reference_sha256": "cf58dfd0ef4a1b2425ceed7a303a4be9fac5a657acbc981c817b77eee3052fb9",
+          "phase": 3,
+          "source": "originals/well-alpha-walk-right.png",
+          "source_sha256": "a485cbdd933af553fc87279293a21c62af265e07142be43468b0d13cfd36039c",
+          "silhouette_iou": 0.8161434977578476,
+          "report": "reports/well-alpha-walk-right.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-right-04.png",
+          "sha256": "fa44af5816219d7bde474cca2ce4163420a649ca11473663a0af1423d49a296c",
+          "reference": "references/well-alpha-walk-right-04.png",
+          "reference_sha256": "5d294e8f417f757cf04dba200f15d7f43783ce9ee8ba311a46a784b187fc798c",
+          "phase": 4,
+          "source": "originals/well-alpha-walk-right.png",
+          "source_sha256": "a485cbdd933af553fc87279293a21c62af265e07142be43468b0d13cfd36039c",
+          "silhouette_iou": 0.8241206030150754,
+          "report": "reports/well-alpha-walk-right.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-right-05.png",
+          "sha256": "59222e0622e0801f7821a1c735609362bdf2b54fd3403b66ea8529cde6b122c2",
+          "reference": "references/well-alpha-walk-right-05.png",
+          "reference_sha256": "5bb4ac8fc943ef366262ab4facca102f43da36426dbe9fbbfc4b0005450faf8b",
+          "phase": 5,
+          "source": "originals/well-alpha-walk-right.png",
+          "source_sha256": "a485cbdd933af553fc87279293a21c62af265e07142be43468b0d13cfd36039c",
+          "silhouette_iou": 0.8180451127819549,
+          "report": "reports/well-alpha-walk-right.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-right-06.png",
+          "sha256": "3ff8eab7f0cc5cdcc09dedbb2b9cd8e6d8bc72fd804e93b822a167ec8e05afb0",
+          "reference": "references/well-alpha-walk-right-06.png",
+          "reference_sha256": "381ca8ead12d3884c00e2d8a596a434fcea3464f2b6cf7b074dc346d1a0e615d",
+          "phase": 6,
+          "source": "originals/well-alpha-walk-right.png",
+          "source_sha256": "a485cbdd933af553fc87279293a21c62af265e07142be43468b0d13cfd36039c",
+          "silhouette_iou": 0.8230309072781655,
+          "report": "reports/well-alpha-walk-right.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-right-07.png",
+          "sha256": "a82ea9805b508f11a1fe9ffba23cb5c052a49348136310b91f6986caac59b888",
+          "reference": "references/well-alpha-walk-right-07.png",
+          "reference_sha256": "076de88b4c9e3355780b45aa6ebc171e84f953dd3df29a4b838b585c4e9b2094",
+          "phase": 7,
+          "source": "originals/well-alpha-walk-right.png",
+          "source_sha256": "a485cbdd933af553fc87279293a21c62af265e07142be43468b0d13cfd36039c",
+          "silhouette_iou": 0.8185929648241206,
+          "report": "reports/well-alpha-walk-right.json"
+        }
+      ],
+      "blender": "blender/well-alpha-walk-canvas128.blend",
+      "blender_sha256": "a42930a32585d3a3ef94260b040ba56f9848fd44886378926b534aa7123fbf2e",
+      "blender_action": "Walking",
+      "reference_guide": "guides/well-alpha-walk-right.png",
+      "reference_guide_sha256": "65773b35be7dba328e92c44719f771968633bc79898c741612a1b5d0acccdf94"
+    },
+    "well-alpha-walk-back": {
+      "actor": "well-alpha",
+      "action": "walk",
+      "direction": "back",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/well-alpha-walk-back-00.png",
+          "sha256": "c577e54a909ed93e25a0189fecae418e1a9ed9b0774a39547e78f2bbf47dbed6",
+          "reference": "references/well-alpha-walk-back-00.png",
+          "reference_sha256": "dfdc8b9d2763d4b21ac9b5a76f97e90352b93a80c024f3fd6c8378e2417b30f7",
+          "phase": 0,
+          "source": "originals/well-alpha-walk-back.png",
+          "source_sha256": "b323a0a608510399f67921e205520169141e05c651b8804251108bfd275d93e4",
+          "silhouette_iou": 0.8428781204111601,
+          "report": "reports/well-alpha-walk-back.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-back-01.png",
+          "sha256": "ee030060cba8bf3bc6fe526b92dfdadb1e54b43e7bbad3176eeb0fcf3f3492e0",
+          "reference": "references/well-alpha-walk-back-01.png",
+          "reference_sha256": "a87b77fa38cf8632441806e6c6bb357adddab2a6065ba1ec35087de3d28f22f3",
+          "phase": 1,
+          "source": "originals/well-alpha-walk-back.png",
+          "source_sha256": "b323a0a608510399f67921e205520169141e05c651b8804251108bfd275d93e4",
+          "silhouette_iou": 0.8430947216196674,
+          "report": "reports/well-alpha-walk-back.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-back-02.png",
+          "sha256": "8f5493333534280acf07e392d4cb90c28711cb8490dd02483d4e2cd3ef497776",
+          "reference": "references/well-alpha-walk-back-02.png",
+          "reference_sha256": "4ebada3d568b2420a8f44f12aebb20f5c81c8aa9d1e60b09f28d293289687933",
+          "phase": 2,
+          "source": "originals/well-alpha-walk-back.png",
+          "source_sha256": "b323a0a608510399f67921e205520169141e05c651b8804251108bfd275d93e4",
+          "silhouette_iou": 0.8511861969805895,
+          "report": "reports/well-alpha-walk-back.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-back-03.png",
+          "sha256": "f454a9f467db1fe3b069a8b0226b16523a62f04da5f8f9e9100ba211f7c7240c",
+          "reference": "references/well-alpha-walk-back-03.png",
+          "reference_sha256": "cfd10f42197c7a807615152a7e03ff77825780e1f9930ae8ce0f91a3fc08730e",
+          "phase": 3,
+          "source": "originals/well-alpha-walk-back.png",
+          "source_sha256": "b323a0a608510399f67921e205520169141e05c651b8804251108bfd275d93e4",
+          "silhouette_iou": 0.8354885057471264,
+          "report": "reports/well-alpha-walk-back.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-back-04.png",
+          "sha256": "e9e7eee8c9b57401b9d7a7ef12b595cedd30c997a8bc167381a7677580f19a02",
+          "reference": "references/well-alpha-walk-back-04.png",
+          "reference_sha256": "3faf81a5d92aa2ed8fba28bcf0d872efb36d1682db368d4841e97404a2eb5c67",
+          "phase": 4,
+          "source": "originals/well-alpha-walk-back.png",
+          "source_sha256": "b323a0a608510399f67921e205520169141e05c651b8804251108bfd275d93e4",
+          "silhouette_iou": 0.8369883040935673,
+          "report": "reports/well-alpha-walk-back.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-back-05.png",
+          "sha256": "e39f4623841c9e569d589d9a3f8222201a41c83c593210d2a63c34e44f11a1ad",
+          "reference": "references/well-alpha-walk-back-05.png",
+          "reference_sha256": "bd30812069571d8bd0178c3c53e383ad1ce4073428abb55e8964d5ae21934b67",
+          "phase": 5,
+          "source": "originals/well-alpha-walk-back.png",
+          "source_sha256": "b323a0a608510399f67921e205520169141e05c651b8804251108bfd275d93e4",
+          "silhouette_iou": 0.8474820143884892,
+          "report": "reports/well-alpha-walk-back.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-back-06.png",
+          "sha256": "f27d8a46b9b2a69dbaeb7eba3230f058d4be7d220345a32cd95409ef456c754d",
+          "reference": "references/well-alpha-walk-back-06.png",
+          "reference_sha256": "78b5de0c7f8d5eb64999cc3285cffc0e0c47e35b4273658705b137ed3bf71f75",
+          "phase": 6,
+          "source": "originals/well-alpha-walk-back.png",
+          "source_sha256": "b323a0a608510399f67921e205520169141e05c651b8804251108bfd275d93e4",
+          "silhouette_iou": 0.8551971326164874,
+          "report": "reports/well-alpha-walk-back.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-back-07.png",
+          "sha256": "697a0ac171887c996dc91f140587cf8dadb7e2c29f6c45e6564ccea414ab19bc",
+          "reference": "references/well-alpha-walk-back-07.png",
+          "reference_sha256": "6d0f810ee75eb01c5dc115722eda7f53c38145a888c84859a843de9e0eb41abb",
+          "phase": 7,
+          "source": "originals/well-alpha-walk-back.png",
+          "source_sha256": "b323a0a608510399f67921e205520169141e05c651b8804251108bfd275d93e4",
+          "silhouette_iou": 0.8409255242227043,
+          "report": "reports/well-alpha-walk-back.json"
+        }
+      ],
+      "blender": "blender/well-alpha-walk-canvas128.blend",
+      "blender_sha256": "a42930a32585d3a3ef94260b040ba56f9848fd44886378926b534aa7123fbf2e",
+      "blender_action": "Walking",
+      "reference_guide": "guides/well-alpha-walk-back.png",
+      "reference_guide_sha256": "ebface1091cf57f5f4c374dcc92a4c00ac27b3d039d5f78dea6dd9e6b4e53034"
+    },
+    "well-alpha-walk-left": {
+      "actor": "well-alpha",
+      "action": "walk",
+      "direction": "left",
+      "fps": 10,
+      "loop": true,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/well-alpha-walk-left-00.png",
+          "sha256": "19c9e90bfa31201ccf0abed523b97c51e68590e4f274172f26a64b1443a26e48",
+          "reference": "references/well-alpha-walk-left-00.png",
+          "reference_sha256": "6cd618ea39482890ff1d6c41f3622b35ebcebbde1c50c258f318a1cef3a0534b",
+          "phase": 0,
+          "source": "originals/well-alpha-walk-left.png",
+          "source_sha256": "9d144db5d15b640f5a0dd74b576c7b87d1c574f369f5d5b691c5b796e117a2fa",
+          "silhouette_iou": 0.8034682080924855,
+          "report": "reports/well-alpha-walk-left.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-left-01.png",
+          "sha256": "8ae5fbfb91ce4a92be44fff308c785e0fe3a7a53e9e43adec5128ace23b4af5b",
+          "reference": "references/well-alpha-walk-left-01.png",
+          "reference_sha256": "ae29fcd015b6e78c6deb6ab5ad161bee1c16975ea966c8104e1145a9446dba58",
+          "phase": 1,
+          "source": "originals/well-alpha-walk-left.png",
+          "source_sha256": "9d144db5d15b640f5a0dd74b576c7b87d1c574f369f5d5b691c5b796e117a2fa",
+          "silhouette_iou": 0.7856115107913669,
+          "report": "reports/well-alpha-walk-left.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-left-02.png",
+          "sha256": "5bc1f2d3960dc4f1f9eab45807c3a3304b49788b217b45d56c651c381e85c681",
+          "reference": "references/well-alpha-walk-left-02.png",
+          "reference_sha256": "23704db4346f5a8467ba72c87c46f80675ef917d5c452a0cd8bef3b8f0518bed",
+          "phase": 2,
+          "source": "originals/well-alpha-walk-left.png",
+          "source_sha256": "9d144db5d15b640f5a0dd74b576c7b87d1c574f369f5d5b691c5b796e117a2fa",
+          "silhouette_iou": 0.7926245210727969,
+          "report": "reports/well-alpha-walk-left.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-left-03.png",
+          "sha256": "7ed3279b58cabd956a65eb7aab88083620fa1507350d7cb717458e292abb3a5c",
+          "reference": "references/well-alpha-walk-left-03.png",
+          "reference_sha256": "76fb1f45ca02be7f0abdab23256a8805ef08b98560f34ed5e6932ccfe183118e",
+          "phase": 3,
+          "source": "originals/well-alpha-walk-left.png",
+          "source_sha256": "9d144db5d15b640f5a0dd74b576c7b87d1c574f369f5d5b691c5b796e117a2fa",
+          "silhouette_iou": 0.7680148768014877,
+          "report": "reports/well-alpha-walk-left.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-left-04.png",
+          "sha256": "44dacd1656659d247b6719583f19f172fbc1274d3d0a24be4754c5ff4397e0f2",
+          "reference": "references/well-alpha-walk-left-04.png",
+          "reference_sha256": "896767a034770d958936f74af24aa1478d319a6ba35d47e4e424c3beaba0f4ff",
+          "phase": 4,
+          "source": "originals/well-alpha-walk-left.png",
+          "source_sha256": "9d144db5d15b640f5a0dd74b576c7b87d1c574f369f5d5b691c5b796e117a2fa",
+          "silhouette_iou": 0.7834549878345499,
+          "report": "reports/well-alpha-walk-left.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-left-05.png",
+          "sha256": "4216ca14ae3946e0601efe65b5233921a8914ad748b878f9296ec4ade32e94ca",
+          "reference": "references/well-alpha-walk-left-05.png",
+          "reference_sha256": "10ab8e8f27d25cee65775d5e315c72bef4da794505f07c5776b3b2b4890224bb",
+          "phase": 5,
+          "source": "originals/well-alpha-walk-left.png",
+          "source_sha256": "9d144db5d15b640f5a0dd74b576c7b87d1c574f369f5d5b691c5b796e117a2fa",
+          "silhouette_iou": 0.7773567029843677,
+          "report": "reports/well-alpha-walk-left.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-left-06.png",
+          "sha256": "67d107758af5216c04ee9f6a2c8c29937400cc6cb6d46a3ab598e5e592696aa2",
+          "reference": "references/well-alpha-walk-left-06.png",
+          "reference_sha256": "49b485f64625643f71ecd5f965a5f9aa59332aec754a59fe314befecc44d8259",
+          "phase": 6,
+          "source": "originals/well-alpha-walk-left.png",
+          "source_sha256": "9d144db5d15b640f5a0dd74b576c7b87d1c574f369f5d5b691c5b796e117a2fa",
+          "silhouette_iou": 0.7873865265169613,
+          "report": "reports/well-alpha-walk-left.json"
+        },
+        {
+          "file": "frames/well-alpha-walk-left-07.png",
+          "sha256": "5be1be7948d488dc980fc4683840fbf32deb588f171b65e7de065281d236574f",
+          "reference": "references/well-alpha-walk-left-07.png",
+          "reference_sha256": "2f7f9a3ddc36f2b20663209552598fb404a1fbf4384119a5e4399382057f35b7",
+          "phase": 7,
+          "source": "originals/well-alpha-walk-left.png",
+          "source_sha256": "9d144db5d15b640f5a0dd74b576c7b87d1c574f369f5d5b691c5b796e117a2fa",
+          "silhouette_iou": 0.7696603071195905,
+          "report": "reports/well-alpha-walk-left.json"
+        }
+      ],
+      "blender": "blender/well-alpha-walk-canvas128.blend",
+      "blender_sha256": "a42930a32585d3a3ef94260b040ba56f9848fd44886378926b534aa7123fbf2e",
+      "blender_action": "Walking",
+      "reference_guide": "guides/well-alpha-walk-left.png",
+      "reference_guide_sha256": "347515d01234795fb458170f3fc36596d29cc2ac55deb3e418b35dd148cda85e"
     }
   },
   "source": "Blender authored poses, built-in imagegen paint, Pixel Respecter4xgrid reconstruction",
