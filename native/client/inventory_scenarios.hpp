@@ -589,7 +589,7 @@ int scenario_inventory_equipment() {
   std::printf("    drag-frame: %.3f ms average, %.3f ms peak; 40 measured 3440x1440 frames, 1440 pointer events\n",drag_total/std::max(1,measured),drag_peak);
   std::printf("    drag-frame sections: floor %.3f world %.3f hud %.3f ms\n",drag_floor/measured,drag_world/measured,drag_hud/measured);
   std::printf("    drag GPU: total %.3f wait %.3f copy %.3f composite %.3f ms\n",gpu_total/measured,gpu_wait/measured,gpu_copy/measured,gpu_composite/measured);
-  scenario_check(drag_total/std::max(1,measured)<40.0,"drag-frame: sustained inventory dragging stays under unchanged 40ms frame budget");
+  scenario_gpu_budget_check(drag_total/std::max(1,measured)<40.0,"drag-frame: sustained inventory dragging stays under unchanged 40ms frame budget");
   scenario_check(identity_snapshot()==performance_items && state.combat_requests==attacks_before_drawers,"drag-frame: pointer bursts neither mutate inventory nor attack");
   scenario_check(reference_present(state,3440,1440,dir+"/inventory-sustained-drag.png"),"drag-frame: actual final dragged-item frame captured");
   SendMessage(window,WM_KEYDOWN,VK_ESCAPE,0);SendMessage(window,WM_KEYUP,VK_ESCAPE,0);

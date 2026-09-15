@@ -157,7 +157,7 @@ int scenario_gameplay_particles() {
   for(int n=0;n<20;++n)scenario_present_size(state,3440,1440);
   const auto ms=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-begin).count()/20;
   std::printf("particles-play: 3440x1440 %zu particles average %.3f ms (bound 40)\n",state.particles.particles.size(),ms);
-  scenario_check(ms<40,"particles-play: populated particle frame meets unchanged production budget");
+  scenario_gpu_budget_check(ms<40,"particles-play: populated particle frame meets unchanged production budget");
   for(int n=0;n<40;++n)state.particles.tick([&](const Attachment& a){return particle_view::resolve(state,a);});
   scenario_check(state.particles.particles.empty()&&state.particles.emitters.empty(),"particles-play: burst particles and emitters retire completely");
   state.particles.play("war_cry",{state.world.player.id,Anchor::Feet});state.world.route_id+="-return";tick_particles(state);

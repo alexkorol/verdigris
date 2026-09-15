@@ -23,6 +23,7 @@ concurrency:
 
 jobs:
   journey:
+    name: Native functionality (software renderer)
     runs-on: windows-latest
     timeout-minutes: 14
     steps:
@@ -34,12 +35,15 @@ jobs:
         with:
           arch: x64
 
-      - name: Native owner-path gates
+      - name: Native functional gates
         # configure/build, denylist, core/networking/session tests (session
         # tests bind their own loopback server), camera2d, local scenarios.
         # Density bench is opt-in and omitted. Transcripts go to
         # native/build/ci-logs/ and upload on failure.
-        run: powershell -NoProfile -File native/tools/ci-native.ps1
+        # The hosted runner uses Microsoft Basic Render Driver. All functional
+        # assertions run; four GPU timings are explicitly deferred. Release
+        # packages must separately pass --scenario all on physical hardware.
+        run: powershell -NoProfile -File native/tools/ci-native.ps1 -SoftwareRenderer
 
       - name: Upload native CI transcripts
         if: failure()

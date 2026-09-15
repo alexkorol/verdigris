@@ -1559,11 +1559,11 @@ bool build_tinted_mask(const SpriteBitmap& mask, const RECT& region,
 
 // Loads the web client's shared UI art (fonts are registered in ui_skin).
 void load_web_ui_assets(BillboardAssets& assets) {
-  const char* roots[] = {"src/assets", "../../src/assets",
-                         "../../../src/assets"};
-  for (const char* root : roots) {
-    if (!directory_exists(root)) continue;
-    const std::string base(root);
+  const std::vector<std::string> roots = {
+      executable_directory() + "/../../src/assets", "src/assets",
+      "../../src/assets", "../../../src/assets"};
+  for (const auto& base : roots) {
+    if (!directory_exists(base)) continue;
     load_sprite(assets, base + "/inventory/frame_ornate.png",
                 assets.ornate_frame);
     if (load_sprite(assets, base + "/orbs/wizard/art.png", assets.orb_art) &&
@@ -11936,6 +11936,8 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
 // untouched; scenarios present into an offscreen memory DC.
 
 int scenario_failures = 0;
+bool scenario_software_renderer_ci = false;
+int scenario_deferred_gpu_timings = 0;
 
 std::string art_wave_capture_dir();
 bool reference_present(ClientState& state, int width, int height,
@@ -11948,6 +11950,21 @@ void scenario_check(bool ok, const char* label) {
     std::printf("    FAIL: %s\n", label);
     ++scenario_failures;
   }
+}
+
+void scenario_gpu_budget_check(bool ok, const char* label) {
+  const auto& gpu = fable_world::renderer().gpu;
+  // Hosted Windows exposes Microsoft's software rasterizer as a D3D device.
+  // Functional CI still renders every frame and checks every gameplay/pixel
+  // assertion. Only physical-GPU timing certification is deferred. The normal
+  // --scenario path, including packaged release verification, never opts in.
+  if (scenario_software_renderer_ci && gpu.stats().vendor_id == 0x1414 &&
+      gpu.adapter_name() == "Microsoft Basic Render Driver") {
+    ++scenario_deferred_gpu_timings;
+    std::printf("    DEFERRED physical-GPU timing: %s (software renderer)\n", label);
+    return;
+  }
+  scenario_check(ok, label);
 }
 
 void scenario_present_size(ClientState& state, int width, int height, bool device_bitmap = false) {
@@ -21056,7 +21073,7 @@ int scenario_fable_world() {
     const double ms=1000.0*(end.QuadPart-start.QuadPart)/frequency.QuadPart/20;
     std::printf("    fable-world: %s | 3440x1440 | 20 native frames %.3fms average | %u draws\n",
         fable_world::renderer().gpu.adapter_name().c_str(),ms,fable_world::renderer().gpu.stats().draw_calls);
-    scenario_check(ms<40,"fable-world: full native frame including HUD stays below40ms");
+    scenario_gpu_budget_check(ms<40,"fable-world: full native frame including HUD stays below40ms");
     scenario_check(save_hbitmap_png(state.billboards,surface.bitmap,dir+"\\fable-fullscreen.png"),"fable-world: fullscreen pixels captured");
     // Two contacts in one update must be one hold, not alternating keys that
     // restart the55ms timer on every presentation frame.
@@ -21101,7 +21118,7 @@ int scenario_fable_world() {
     scenario_check(state.camera.perspective && renderer.bake_stats.failed==0 &&
         renderer.bake_stats.peak_bytes<=2*fable_world::kTerrainJobBytes,
         "fable-world: streamed renderer stays on hardware with bounded terrain memory");
-    scenario_check(moving_ms/moving_frames<40,
+    scenario_gpu_budget_check(moving_ms/moving_frames<40,
         "fable-world: fullscreen travel including terrain adoption stays below40ms");
     scenario_check(save_hbitmap_png(state.billboards,surface.bitmap,dir+"\\fable-streamed.png"),
         "fable-world: adopted terrain pixels captured");
@@ -21345,6 +21362,11 @@ int run_scenarios(const std::string& which) {
     std::printf("   %s (%d failures)\n", scenario_failures == 0 ? "PASS" : "FAIL",
                 scenario_failures);
   }
+  if (scenario_software_renderer_ci)
+    std::printf("Functional CI: %d failures; %d GPU timing checks deferred. "
+                "This run does not certify hardware performance; release packages "
+                "must pass --scenario all on physical hardware.\n",
+                total_failures, scenario_deferred_gpu_timings);
   return total_failures;
 }
 
@@ -22199,6 +22221,10 @@ int main(int argc, char** argv) {
   }
   for (int i = 1; i < argc; ++i) {
     if (std::strcmp(argv[i], "--headless") == 0) return run_headless_demo();
+    if (std::strcmp(argv[i], "--software-renderer-ci") == 0 && i + 1 < argc) {
+      scenario_software_renderer_ci = true;
+      return run_scenarios(argv[i + 1]);
+    }
     if (std::strcmp(argv[i], "--scenario") == 0 && i + 1 < argc)
       return run_scenarios(argv[i + 1]);
     if (std::strcmp(argv[i], "--reference-scene") == 0 && i + 1 < argc)

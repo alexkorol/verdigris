@@ -22,6 +22,14 @@ and asserts that input and painted dimensions agree. The nested-directory
 capture/frame-budget regression passed. Hosted CI must be checked again after
 these repairs; do not describe its earlier failed run as passing.
 
+Follow-up hosted run resolved capture and input failures. Its remaining GPU
+timings used Microsoft Basic Render Driver (software, 103 ms readback wait),
+and the legacy orb loader missed its relative asset directory. The loader now
+resolves from the executable. Hosted CI explicitly runs all functionality but
+defers four physical-GPU timing checks only on that Microsoft adapter. Normal
+`--scenario all` and packaged release verification retain every timing gate.
+The c8cff89ac release package passed that full, non-deferred mode locally.
+
 Publication is still pending at this record. Verify PR merge, tag identity,
 and public release assets before reporting shipment. The release tag must
 identify the exact packaged source above, even if later integration-only fixes

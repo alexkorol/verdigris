@@ -3,6 +3,22 @@
 The native C++20 game uses the Fable perspective renderer and directional
 animated Scions. The historical browser reference remains in src/ and server/.
 
+## CI and release acceptance
+
+Hosted Windows CI runs all native tests and all scenario functionality with
+`native/tools/ci-native.ps1 -SoftwareRenderer`. Its Microsoft Basic Render
+Driver is a software rasterizer, so four GPU timing assertions are explicitly
+reported as **DEFERRED**, not passed. Rendering, pixel checks, input, gameplay,
+persistence and the other timing assertions still execute. The exemption
+requires both the explicit CI mode and the Microsoft software adapter; it
+does not apply to a physical GPU.
+
+Release acceptance remains `verdigris_client.exe --scenario all` from the
+actual package on physical hardware, including every unchanged 40 ms budget.
+`native/tools/verify-player-package.ps1` invokes that full mode and also checks
+source/resource identity, launcher lifecycle and settings persistence.
+A green hosted functional job alone does not certify a release or its speed.
+
 ## Player typography
 
 All player text uses **Verdigris Sans**, a bundled CC0 derivative of m5x7.
