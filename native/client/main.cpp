@@ -21924,7 +21924,8 @@ int run_reference_scenes(const std::string& which) {
 }  // namespace
 
 int run_remote_native_client(const char* host, unsigned short port, const char* guest_id,
-                             bool chronicles_mode, const std::string& verify_launch = {}) {
+                             bool chronicles_mode, const std::string& verify_launch = {},
+                             const std::string& online_endpoint = {}) {
   // The normal product path must never turn missing authored animation into
   // a silently accepted idle or geometric fallback.
   for (const char* sex : {"male", "female"})
@@ -21946,7 +21947,9 @@ int run_remote_native_client(const char* host, unsigned short port, const char* 
   state->chronicles_mode = chronicles_mode;
   if (chronicles_mode) state->frontend = Frontend::Title;
   state->screen = chronicles_mode ? Screen::Chronicles : Screen::Expedition;
-  state->session = std::make_unique<verdigris::client::RemoteProtocolSession>(
+  if (!online_endpoint.empty())
+    state->session = verdigris::client::RemoteProtocolSession::online(online_endpoint);
+  else state->session = std::make_unique<verdigris::client::RemoteProtocolSession>(
       host ? host : "127.0.0.1", port, guest_id ? guest_id : "cursor-guest",
       !chronicles_mode);
   std::string error;
@@ -22074,6 +22077,12 @@ int main(int argc, char** argv) {
       return run_scenarios(argv[i + 1]);
     if (std::strcmp(argv[i], "--reference-scene") == 0 && i + 1 < argc)
       return run_reference_scenes(argv[i + 1]);
+    if (std::strcmp(argv[i], "--online") == 0) {
+      if (i+1>=argc || argv[i+1][0]=='-' || argv[i+1][0]=='\0') {
+        std::fprintf(stderr,"--online requires a configured service endpoint.\n");return 2;
+      }
+      return run_remote_native_client(nullptr,0,nullptr,true,{},argv[i+1]);
+    }
     if (std::strcmp(argv[i], "--remote") == 0) {
       const char* host = "127.0.0.1";
       unsigned short port = 6580;
