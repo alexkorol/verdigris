@@ -158,6 +158,65 @@ int main(int argc, char** argv) {
             check(restored.load_account(a.account_id) == "stable-a" && restored.load_account(b.account_id) == "stable-b", "restore retains consistent backup point");
             check(!restored.has_outcome("outcome:after-backup") && restored.has_outcome("outcome:first"), "restore correct deduplication point");
         }
+        Admission original, other, recovered_admission;
+        const auto recovery_directory = root / "recovery";
+        std::string recovery_code;
+        {
+            Store recovery_store(recovery_directory.string(), {100}); check(recovery_store.open(&error), "recovery store open");
+            original = enroll(recovery_store, 100); other = enroll(recovery_store, 100);
+            check(recovery_store.commit_accounts({{original.account_id, "saved-house-a"}, {other.account_id, "private-house-b"}}, "outcome:before-recovery"), "save before credential expiration");
+            check(recovery_store.issue_recovery("../../other", 200, 100).empty(), "recovery malformed identity rejected");
+            check(recovery_store.issue_recovery("acct_" + std::string(64, '0'), 200, 100).empty(), "recovery unknown foreign account rejected");
+            check(recovery_store.issue_recovery(original.account_id, 200, 0).empty(), "recovery invalid lifetime rejected");
+            check(!recovery_store.authenticate(original.token, 200), "original credential expired");
+            const auto expired_recovery = recovery_store.issue_recovery(original.account_id, 100, 100);
+            check(!recovery_store.enroll(expired_recovery, 200), "recovery expires at exact boundary");
+            recovery_code = recovery_store.issue_recovery(original.account_id, 200, 100);
+            check(!recovery_code.empty() && !recovery_store.authenticate(recovery_code, 200), "recovery is not direct authentication");
+            // Leave code outstanding for restart redemption.
+        }
+        {
+            Store recovery_store(recovery_directory.string(), {100}); check(recovery_store.open(&error), "recovery restart");
+            const auto result = recovery_store.enroll(recovery_code, 201);
+            check(result.has_value() && result->account_id == original.account_id, "expired account recovery preserves identity");
+            recovered_admission = *result;
+            check(result->token != original.token && result->expires_at_ms == 301, "recovery rotates credential lifetime");
+            check(recovery_store.load_account(result->account_id) == "saved-house-a", "recovery preserves saved House snapshot");
+            check(recovery_store.load_account(other.account_id) == "private-house-b", "recovery preserves unrelated account");
+            check(recovery_store.has_outcome("outcome:before-recovery"), "recovery preserves outcomes");
+            check(!recovery_store.enroll(recovery_code, 201), "recovery replay rejected");
+            check(!recovery_store.authenticate(original.token, 150), "old credential revoked even before former expiry");
+            check(recovery_store.authenticate(result->token, 201).has_value(), "recovered token authenticates");
+            const auto rotate = recovery_store.issue_recovery(original.account_id, 201, 100);
+            const auto stale = recovery_store.issue_recovery(original.account_id, 201, 100);
+            recovery_store.test_interrupt_after_writes(1, false);
+            check(!recovery_store.enroll(rotate, 202), "recovery partial failure rejected");
+            check(recovery_store.authenticate(result->token, 202).has_value(), "failed recovery restores prior credential");
+            const auto rotated = recovery_store.enroll(rotate, 202);
+            check(rotated.has_value() && rotated->account_id == original.account_id, "failed recovery code remains usable");
+            recovered_admission = *rotated;
+            check(!recovery_store.authenticate(result->token, 202), "successful recovery revokes previous valid credential");
+            check(!recovery_store.enroll(stale, 202), "successful recovery invalidates other outstanding recovery codes");
+            assert_secrets_absent(recovery_directory, {recovery_code, rotate, stale, original.token, recovered_admission.token});
+        }
+        // An existing version-one store gains the recovery table without resetting accounts.
+        {
+            sqlite3* migration{}; check(sqlite3_open16((recovery_directory / "service.sqlite").c_str(), &migration) == SQLITE_OK, "migration fixture open");
+            check(sqlite3_exec(migration, "DROP TABLE recovery; PRAGMA user_version=1", nullptr, nullptr, nullptr) == SQLITE_OK, "version-one fixture");
+            sqlite3_stmt* count{}; sqlite3_prepare_v2(migration, "SELECT count(*) FROM accounts", -1, &count, nullptr);
+            check(sqlite3_step(count) == SQLITE_ROW && sqlite3_column_int(count, 0) == 2, "recovery never creates additional accounts");
+            sqlite3_finalize(count); sqlite3_close(migration);
+            Store migrated(recovery_directory.string()); check(migrated.open(&error), "version-one migration succeeds");
+            check(migrated.load_account(original.account_id) == "saved-house-a", "migration preserves House snapshot");
+            check(migrated.authenticate(recovered_admission.token, 203).has_value(), "migration preserves recovered credential");
+            const auto concurrent_recovery = migrated.issue_recovery(original.account_id, 203, 100);
+            check(!concurrent_recovery.empty(), "migrated account supports recovery");
+            std::atomic<int> winners{0}; std::vector<std::thread> threads;
+            for (int i = 0; i < 16; ++i) threads.emplace_back([&] { if (migrated.enroll(concurrent_recovery, 204)) ++winners; });
+            for (auto& thread : threads) thread.join();
+            check(winners == 1, "concurrent recovery accepts exactly one redemption");
+            check(migrated.load_account(original.account_id) == "saved-house-a", "concurrent recovery preserves House");
+        }
         // Refuse future schema without lowering its version or accepting writes.
         const auto future = root / "future"; fs::create_directory(future); sqlite3* db{};
         check(sqlite3_open16((future / "service.sqlite").c_str(), &db) == SQLITE_OK, "future fixture open");

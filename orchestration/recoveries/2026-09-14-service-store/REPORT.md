@@ -15,14 +15,21 @@ handle owns `service.lock` until destruction, including during schema checks.
 UNC/network/removable data roots are rejected; use a fixed local service disk.
 
 - `open(error)` validates SQLite integrity, refuses future schemas, and requires
-  WAL + synchronous FULL. Schema version 1 contains accounts, hashed enrollment
-  codes, hashed credentials, and globally unique outcome IDs.
+  WAL + synchronous FULL. Schema version 2 contains accounts, hashed enrollment
+  and account recovery codes, hashed credentials, and globally unique outcome
+  IDs. Version-one stores migrate transactionally without resetting accounts.
 - `issue_enrollment(now, ttl_ms, error)` returns a one-use 256-bit random code.
   `enroll(code, now, error)` atomically consumes the code and creates independent
   random `acct_` identity plus `ses_` reconnect token. Only SHA256 hashes of
   codes/tokens reach storage. Expiry is exclusive (`now < expires`).
 - `authenticate(token, now, error)` returns the same account/token/expiry;
   `revoke(token,error)` durably revokes the credential, idempotently.
+- `issue_recovery(account_id,now,ttl,error)` is operator-only after out-of-band
+  account ownership verification. It issues a hashed-at-rest one-use `rec_` code
+  for an existing account. `enroll` redeems it, preserves the account ID and all
+  snapshots/outcomes, atomically revokes all previous credentials, issues a new
+  token, and invalidates every outstanding recovery code for that account.
+  Failed recovery rolls back credential revocations and leaves its code usable.
 - `load_account(id,error)` returns an opaque server-owned snapshot. Missing
   account is null with no error; malformed identity or storage error sets error.
 - `commit_accounts(map, outcome_id,error)` updates existing accounts and records
@@ -72,7 +79,7 @@ cl /nologo /std:c++20 /EHsc /W4 /WX /DVERDIGRIS_SERVICE_STORE_TESTING /Inative/i
 native/build/service_store_tests.exe
 ```
 
-Both exit 0; **95 assertions passed**. Tests cover wrong credential kinds,
+Both exit 0; **145 assertions passed**. Tests cover wrong credential kinds,
 arbitrary guest identities, time overflow, exact enrollment/session expiry,
 revocation and restart, one-use enrollment rollback/replay, private distinct
 snapshots, unknown account failure, duplicate outcomes, limits, 16 concurrent
@@ -86,6 +93,11 @@ open/recover the WAL; both original account snapshots and absence of the failed
 outcome are checked. Live backup then further live changes then restore proves
 backup-point snapshots, credentials, and outcome deduplication survive. Missing,
 unmarked, and existing-destination restore cases fail safely. Future schema fails.
+Recovery checks include expired token -> same saved House/account, unchanged
+foreign account, no new accounts, original valid/expired token revocation, replay,
+expired recovery, unknown identity, transaction failure, restart redemption,
+outstanding-code invalidation, 16-thread one-winner redemption, and version-one
+schema migration preserving recovered credentials and House state.
 
 Production build (without test macro), `/W4 /WX`: exit 0. `dumpbin /symbols`
 contains neither `test_interrupt_after_writes` nor `TerminateProcess`.
@@ -108,11 +120,11 @@ Generate outcome IDs on the server with restart-safe uniqueness. If an operation
 is retried, reuse its outcome ID and check deduplication before mutating live state.
 
 Session TTL is configurable (`StoreConfig::session_ttl_ms`), default fixed 30
-days from enrollment; there is no token refresh or operator account recovery
-API in the assigned interface. Expired/revoked credentials fail closed; deleting
-the client token is not a way to reclaim an account. Parent must expose the
-lifetime clearly or request an account-preserving recovery extension before
-claiming indefinite account access. Client secret storage, TLS, rate limiting,
+days from enrollment/recovery; there is no sliding token refresh. Expired/revoked
+credentials fail closed. Operators can verify account ownership out-of-band and
+issue a one-use recovery code through `issue_recovery`; redeem through the normal
+enrollment UI. Never expose recovery-code issuance to unauthenticated clients.
+Client secret storage, TLS, rate limiting,
 operator code delivery without logging, and active socket fencing are parent scope.
 
 Protect live and backup directories with service-identity/admin ACLs: snapshot
