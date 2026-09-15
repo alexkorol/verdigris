@@ -117,6 +117,8 @@ void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& s
   world = WorldView{};
   world.house_name = sim.house().name;
   world.scion_name = sim.scion().name;
+  world.peers.clear();
+  world.party = {};
   world.tick = sim.tick();
   world.route_id = sim.instance().route_id;
   // TASK-0153: the core's authoritative expedition phase (SlayWardens ->
@@ -219,6 +221,28 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
                                                 ? model.player.display_name
                                                 : model.player.uuid);
   world.route_id = model.scene.id;
+  world.party = model.party;
+  world.peers.clear();
+  for (const auto& source : model.peers) {
+    if (world.peers.size() >= 128) break;
+    if (source.uuid.empty() || source.uuid == model.player.uuid ||
+        (!source.scene_id.empty() && source.scene_id != model.scene.id) ||
+        !std::isfinite(source.x) || !std::isfinite(source.y)) continue;
+    if (std::any_of(world.peers.begin(), world.peers.end(), [&](const auto& p) { return p.id == source.uuid; })) continue;
+    WorldActor peer;
+    peer.id = source.uuid; peer.name = source.display_name;
+    peer.appearance = verdigris::player_appearance_id(source.appearance);
+    peer.held_item = source.held_item;
+    peer.position = {static_cast<int>(std::lround(protocol_to_world(source.x))),
+                     static_cast<int>(std::lround(protocol_to_world(source.y)))};
+    peer.has_display_position = source.has_display_position && std::isfinite(source.display_x) && std::isfinite(source.display_y);
+    peer.display_position = peer.has_display_position ? verdigris::Vec2{
+        static_cast<int>(std::lround(protocol_to_world(source.display_x))),
+        static_cast<int>(std::lround(protocol_to_world(source.display_y)))} : peer.position;
+    peer.facing = facing_vector(source.facing); peer.life = source.life;
+    peer.life_max = source.life_max; peer.alive = source.alive; peer.level = source.level;
+    world.peers.push_back(std::move(peer));
+  }
   world.player.id = model.player.uuid;
   world.player.appearance = verdigris::player_appearance_id(model.player.appearance);
   world.player.position = {static_cast<int>(std::lround(protocol_to_world(model.player.x))),
@@ -361,6 +385,7 @@ verdigris::Vec2 event_anchor(const WorldView& world, const PresentationFx& fx,
                            const PresentationEvent& event, bool prefer_player) {
   if (event.has_actor_pose) return {event.actor_x, event.actor_y};
   if (prefer_player) return world.player.position;
+  for (const auto& peer : world.peers) if (peer.id == event.actor_id) return peer.position;
   if (const auto* monster = find_monster(world, event.actor_id)) return monster->position;
   if (fx.last_death_pos.x != 0 || fx.last_death_pos.y != 0) return fx.last_death_pos;
   verdigris::Vec2 at = world.player.position;
@@ -438,6 +463,7 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       fx.telegraphs.erase(event.actor_id);
       const WorldActor* actor = event.actor_id == world.player.id ? &world.player
           : find_monster(world, event.actor_id);
+      if (!actor) for (const auto& peer : world.peers) if (peer.id == event.actor_id) { actor = &peer; break; }
       if (!actor) break;
       double dx = actor->facing.x;
       double dy = actor->facing.y;
@@ -447,7 +473,7 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       } else if (committed) {
         dx = committed_facing.x;
         dy = committed_facing.y;
-      } else if (actor != &world.player &&
+      } else if (find_monster(world, event.actor_id) &&
           (actor->position.x != world.player.position.x ||
            actor->position.y != world.player.position.y)) {
         dx = static_cast<double>(world.player.position.x) - actor->position.x;

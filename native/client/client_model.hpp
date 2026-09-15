@@ -29,6 +29,7 @@ struct ClientPlayer {
   double display_x = 0.0;
   double display_y = 0.0;
   std::string appearance = "male";
+  std::string held_item; // Public equipped item type, never a private inventory.
   int defense = 0;
   int gear_attack = 0;
   bool combat_stats_present = false;
@@ -230,8 +231,20 @@ const ClientHouseEntry* find_chronicle_house(const ClientChronicle& chronicle,
 const ClientScionEntry* find_chronicle_scion(const ClientChronicle& chronicle,
                                              const std::string& scion_id);
 
+struct ClientPartyMember {
+  std::string uuid, name;
+  bool ready = false;
+};
+
+struct ClientParty {
+  std::string id, leader_id, state, invite_id, invited_by, error;
+  std::vector<ClientPartyMember> members;
+};
+
 struct ClientModel {
   ClientPlayer player;
+  std::vector<ClientPlayer> peers;
+  ClientParty party;
   std::vector<ClientItemSlot> inventory;
   std::vector<ClientWornItem> worn;
   std::vector<ClientGroundItem> ground;

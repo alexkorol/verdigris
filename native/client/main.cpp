@@ -713,6 +713,8 @@ struct ClientState {
     double moving = 0.0;
   };
   std::unordered_map<std::string, ActorMotion> motions;
+  bool party_open = false;
+  int party_page = 0;
   double breathe_phase = 0.0;
   // Persistent double buffer: allocating a full-screen DIB every WM_PAINT
   // was a hidden ~19 MB alloc/free per frame at 3440x1440.
@@ -9298,6 +9300,8 @@ int raster_strike_frames(const char* family, const std::string& direction) {
   return 0;
 }
 
+#include "coop_ui.hpp"
+
 void advance_actor_motion(ClientState& state, double dt_ms) {
   state.breathe_phase = std::fmod(state.breathe_phase + dt_ms / 2400.0, 1.0);
   const auto advance = [&](const std::string& id, const verdigris::Vec2& pos) {
@@ -9328,6 +9332,11 @@ void advance_actor_motion(ClientState& state, double dt_ms) {
     motion.has_last = true;
   };
   advance("player", state.world.player.displayed_position());
+  for (const auto& peer : state.world.peers) advance("peer:"+peer.id, peer.displayed_position());
+  std::erase_if(state.motions, [&](const auto& entry) {
+    if (!entry.first.starts_with("peer:")) return false;
+    return std::none_of(state.world.peers.begin(),state.world.peers.end(),[&](const auto& p){return entry.first=="peer:"+p.id;});
+  });
   for (const auto& monster : state.world.monsters)
     advance(monster.id, monster.displayed_position());
   if (state.motions.size() > 256) state.motions.clear();
@@ -10738,6 +10747,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds,
   paint_gear_overlay(state, dc, bounds, rl);
   paint_tree_pane(state, dc, bounds, rl);
   paint_trade_pane(state, dc, bounds, rl);
+  paint_party_ui(state, dc, bounds, rl);
   state.render_list = std::move(rl);
   QueryPerformanceCounter(&section_t3);
   state.paint_ms_hud = section_ms(section_t2, section_t3);
@@ -10937,7 +10947,7 @@ void fixed_game_tick(ClientState& state, const RECT& bounds) {
         if (state.aim_direction_initialized)
           submit_aim(state, state.last_aim_direction.x,
                      state.last_aim_direction.y);
-      }
+      } else if (is_remote(state)) submit_move(state, 0, 0);
     }
   } else if (state.simulation) {
     if (moving && !movement_hits_scenery(state, dx, dy)) {
@@ -11145,7 +11155,7 @@ verdigris::client::ui::PaneFocusView client_pane_focus(const ClientState& state)
 }
 
 bool gameplay_intent_passes(const ClientState& state, input_focus::Intent intent) {
-  if (state.frontend != Frontend::None || state.screen == Screen::Chronicles) return false;
+  if (state.frontend != Frontend::None || state.screen == Screen::Chronicles || state.party_open) return false;
   return verdigris::client::ui::passes_gameplay(client_pane_focus(state), intent);
 }
 
@@ -11167,6 +11177,7 @@ void release_held_gameplay_attack(ClientState& state) {
 }
 
 void handle_escape_key(ClientState& state) {
+  if (state.party_open) { state.party_open=false; return; }
   if (state.pack_drag_live) { cancel_pack_drag(state); if(GetCapture()) ReleaseCapture(); return; }
   if (handle_frontend_key(state, VK_ESCAPE)) return;
   if(state.gear_overlay && state.inventory_aux>=0){state.inventory_aux=-1;state.gear_keyboard_focus=false;return;}
@@ -11268,6 +11279,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         cancel_pack_drag(*state);
         state->w = state->a = state->s = state->d = false;
         state->move_tap_pending = false;
+        if (is_remote(*state) && state->session) submit_move(*state,0,0);
         state->primary_down = false;
         // Releases delivered to another window must not leave a phantom hold.
         state->held_gameplay_attacks.clear();
@@ -11571,6 +11583,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
           }
           if(hit)break;
         }
+        if (handle_party_click(*state, window, state->mouse)) break;
         if (state->screen == Screen::Chronicles) {
           const auto previous_edit=state->chronicle_edit;
           const auto previous_cursor=state->chronicle_cursor;
@@ -21088,6 +21101,7 @@ int scenario_frontend_flow() {
 #include "inventory_scenarios.hpp"
 #include "typography_scenarios.hpp"
 #include "vfx/particle_scenarios.hpp"
+#include "coop_scenarios.hpp"
 
 int run_scenarios(const std::string& which) {
   struct Entry {
@@ -21095,6 +21109,7 @@ int run_scenarios(const std::string& which) {
     int (*fn)();
   };
   const Entry entries[] = {
+      {"coop-presentation", scenario_coop_presentation},
       {"menu-particles", scenario_menu_particles},
       {"gameplay-particles", scenario_gameplay_particles},
       {"typography", scenario_typography},
