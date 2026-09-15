@@ -7,6 +7,10 @@
 #include <stdexcept>
 namespace verdigris::networking {
 struct WebSocketServerTestAccess {
+  static void expire_invitations(WebSocketServer& server) {
+    std::lock_guard lock(server.authority_mutex_);
+    for(auto& entry:server.invitations_)entry.second.expires=0;
+  }
   static std::vector<std::weak_ptr<ProtocolSession>> sessions(WebSocketServer& server) {
     std::lock_guard lock(server.authority_mutex_);
     std::vector<std::weak_ptr<ProtocolSession>> result;
@@ -57,8 +61,17 @@ int main(){
     party(*b,"party:invite:accept",a->model().party.id);pump(*a,*b);
     check(b->model().party.id.empty()&&!b->model().party.error.empty(),"uninvited acceptance rejected");
     party(*a,"party:invite",b->model().player.uuid);until(*a,*b,[&]{return !b->model().party.invite_id.empty();},"intended peer receives invitation");
+    const auto invitation=b->model().party.invite_id;
+    party(*a,"party:invite:accept",invitation);pump(*a,*b);
+    check(a->model().party.members.size()==1&&b->model().party.id.empty(),"wrong recipient cannot consume another account invitation");
+    WebSocketServerTestAccess::expire_invitations(server);
+    party(*b,"party:invite:accept",invitation);pump(*a,*b);
+    check(b->model().party.id.empty(),"expired stored invitation cannot admit a member");
+    party(*a,"party:invite",b->model().player.uuid);pump(*a,*b);
     party(*b,"party:invite:accept",b->model().party.invite_id);
     until(*a,*b,[&]{return a->model().party.members.size()==2 && b->model().party.members.size()==2;},"stored invitation admits two members");
+    party(*b,"party:invite:accept",invitation);pump(*a,*b);
+    check(a->model().party.members.size()==2&&b->model().party.members.size()==2,"duplicate acceptance cannot duplicate party membership");
     party(*b,"party:startInstance");pump(*a,*b);check(b->model().party.state=="lobby","nonleader start rejected");
     party(*a,"party:startInstance");pump(*a,*b);check(a->model().party.state=="lobby","unready start rejected");
     party(*a,"party:ready",{},1);party(*b,"party:ready",{},1);pump(*a,*b);
