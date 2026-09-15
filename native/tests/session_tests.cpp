@@ -2900,7 +2900,11 @@ void remote_player_motion_and_ground_events() {
       {"targetType", "monster"}, {"amount", 10}, {"died", true}, {"skillId", "melee"}}}, "death");
   add(Envelope{"party:scene:transition", JV::Object{{"scene", JV::Object{{"id", "town"}, {"type", "town"}}},
       {"playerState", JV::Object{{"uuid", "player-motion"}, {"sceneId", "town"}, {"x", 38}, {"y", 115}}}}}, "retired");
-  add(move("player-motion", 2, 7, 10, 50), "late-move"); add(ground, "late-ground");
+  add(move("player-motion", 999, 7, 10, 50), "late-move"); add(ground, "late-ground");
+  Envelope joined_move{"player:movement", JV::Object{{"uuid", "player-motion"}, {"sceneId", "town"}, {"x", 38.2}, {"y", 115}, {"facing", "up"}}};
+  joined_move.meta=JV::Object{{"sequence",1},{"duration",50},{"fromX",38},{"fromY",115}};
+  add(joined_move,"new-scene-sequence-one");
+  add(Envelope{"combat:hit",JV::Object{{"attackerId","player-motion"},{"targetId","foe-new-room"},{"targetType","monster"},{"amount",13},{"died",false},{"skillId","melee"}}},"new-scene-own-hit");
   std::string error;
   check(server.start(&error), "player-motion: scripted real socket starts");
   if (!server.port()) return;
@@ -2964,6 +2968,13 @@ void remote_player_motion_and_ground_events() {
   deliver("retired"); deliver("late-move"); deliver("late-ground");
   check(session.model().player.x == 38 && !session.model().player.has_display_position && session.model().ground.empty(),
         "player-motion: retirement clears display and rejects stale movement/ground");
+  session.submit(ClientCommand::aim(1,0));
+  deliver("new-scene-sequence-one");
+  check(session.model().player.x==38.2&&session.model().player.y==115&&session.model().player.scene_id=="town"&&session.model().player.has_display_position,
+        "player-motion: explicit scene admission accepts restarted sequence one");
+  check(session.model().player.facing=="right","player-motion: new-room pose retains held native aim");
+  deliver("new-scene-own-hit");
+  check(session.model().last_outgoing_hit==13,"player-motion: own hit attribution remains live after sequence restart");
   session.shutdown(); server.stop();
 }
 

@@ -1042,7 +1042,9 @@ void RemoteProtocolSession::apply_player_movement(const Envelope& envelope) {
   if (!x || !x->number() || !y || !y->number() ||
       !std::isfinite(*x->number()) || !std::isfinite(*y->number())) return;
   const auto* scene = json_string(envelope.data.get("sceneId"));
-  const bool changed_scene = scene && *scene != model_.player.scene_id;
+  // Movement is a delta within the explicitly admitted room, never an
+  // admission itself. A late previous-room packet may have a higher counter.
+  if (!scene || *scene != model_.player.scene_id) return;
   const auto* meta = envelope.meta ? &*envelope.meta : nullptr;
   const double sequence = meta ? json_number(meta->get("sequence"), -1.0) : -1.0;
   const double duration = meta ? json_number(meta->get("duration"), 0.0) : 0.0;
@@ -1050,7 +1052,6 @@ void RemoteProtocolSession::apply_player_movement(const Envelope& envelope) {
       sequence <= 9007199254740991.0 && std::floor(sequence) == sequence &&
       std::isfinite(duration) && duration >= 0.0;
   if (has_player_sequence_ && (!valid || sequence <= last_player_sequence_)) return;
-  if (changed_scene) clear_player_display();
   const double from_x = model_.player.x, from_y = model_.player.y;
   apply_player_fields(model_.player, envelope.data);
   if (aim_held_) model_.player.facing = last_facing_;
@@ -1067,13 +1068,13 @@ void RemoteProtocolSession::apply_player_movement(const Envelope& envelope) {
   player_movement_.from_y = valid_from ? wire_from_y : from_y;
   player_movement_.to_x = model_.player.x; player_movement_.to_y = model_.player.y;
   player_movement_.duration_ms = static_cast<int>(std::clamp(duration, 0.0, tile_movement::kSampleMs));
-  if (changed_scene || json_bool(meta->get("blocked")) || !scene ||
+  if (json_bool(meta->get("blocked")) ||
       std::hypot(model_.player.x - from_x, model_.player.y - from_y) > 4.0)
     player_movement_.duration_ms = 0;
   player_movement_.received_at = std::chrono::steady_clock::now();
   has_player_movement_ = true;
   const auto* action = json_string(meta->get("action"));
-  if (action && *action == "dash" && !changed_scene && valid_from &&
+  if (action && *action == "dash" && valid_from &&
       !json_bool(meta->get("blocked")) && meta->get("fromX") && meta->get("fromY") &&
       std::hypot(model_.player.x - wire_from_x, model_.player.y - wire_from_y) > 1e-6) {
     PresentationEvent event{PresentationEventType::PlayerDashed, model_.player.uuid, "", "dash", 0};
@@ -1552,11 +1553,15 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
   }
   if (envelope.event == "world:scene:transition" ||
       envelope.event == "party:scene:transition") {
+    const auto previous_scene = model_.player.scene_id;
     if (const auto* scene = envelope.data.get("scene")) apply_scene_fields(model_.scene, *scene);
     if (const auto* player_state = envelope.data.get("playerState")) {
       apply_player_fields(model_.player, *player_state);
     }
     if (!model_.scene.id.empty()) model_.player.scene_id = model_.scene.id;
+    // Joining a shared instance creates a new movement sequence for this
+    // actor. Retain ordering within a room, but retire the old room's mark.
+    if (model_.player.scene_id != previous_scene) has_player_sequence_ = false;
     clear_monster_display();
     clear_player_display();
     model_.monsters.clear();
