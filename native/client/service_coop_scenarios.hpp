@@ -24,6 +24,19 @@ inline bool extraction_safe_samples(double x,double y,int dx,int dy,int stairs_x
     if(int(std::lround(x+dx*.2*sample))==stairs_x&&int(std::lround(y+dy*.2*sample))==stairs_y)return false;
   return true;
 }
+inline bool route_tile_safe(const verdigris::client::ClientScene& scene,int x,int y,bool allow_extraction) {
+  if(scene.type!="instance")return true;
+  return (!scene.has_stairs_down||outside_extraction_margin(x,y,int(std::lround(scene.stairs_down_x)),int(std::lround(scene.stairs_down_y))))&&
+      (allow_extraction||!scene.has_stairs_up||outside_extraction_margin(x,y,int(std::lround(scene.stairs_up_x)),int(std::lround(scene.stairs_up_y))));
+}
+inline bool route_samples_safe(const verdigris::client::ClientScene& scene,double x,double y,int dx,int dy,bool allow_extraction=false) {
+  if(scene.type!="instance")return true;
+  return (!scene.has_stairs_down||extraction_safe_samples(x,y,dx,dy,int(std::lround(scene.stairs_down_x)),int(std::lround(scene.stairs_down_y))))&&
+      (allow_extraction||!scene.has_stairs_up||extraction_safe_samples(x,y,dx,dy,int(std::lround(scene.stairs_up_x)),int(std::lround(scene.stairs_up_y))));
+}
+inline bool allowed_approach_transition(const std::string& from,const std::string& to,bool allow_extraction) {
+  return allow_extraction&&from=="instance"&&to=="town";
+}
 struct Run {
   ClientState state;HWND window=nullptr;raster_art::detail::Surface surface;
   std::filesystem::path root,output;std::string role,other,actor_id,other_id,house_id,scion_id,town_id,instance_id;
@@ -73,7 +86,7 @@ struct Run {
     require(reference_present(state,width,height,(output/(name+".png")).string()),"capture "+name);
     const auto& m=model();Json::Array peers;
     for(const auto& p:m.peers)peers.push_back(Json::Object{{"id",p.uuid},{"scene",p.scene_id},{"appearance",p.appearance},{"x",p.x},{"y",p.y},{"hp",p.life}});
-    write(output/(name+".json"),Json(Json::Object{{"build",VERDIGRIS_BUILD_ID},{"pid",int(GetCurrentProcessId())},{"role",role},{"actor",m.player.uuid},{"house",m.chronicle.active_house_id},{"scion",m.chronicle.active_scion_id},{"scene",m.scene.id},{"appearance",m.player.appearance},{"x",m.player.x},{"y",m.player.y},{"hp",m.player.life},{"peers",peers},{"party",m.party.id},{"party_state",m.party.state},{"has_stairs_up",m.scene.has_stairs_up},{"stairs_up_x",m.scene.stairs_up_x},{"stairs_up_y",m.scene.stairs_up_y},{"living_enemies",int(std::count_if(m.monsters.begin(),m.monsters.end(),[](const auto& monster){return monster.alive;}))},{"player_render_ops",int(render::count(state.render_list,render::Op::Player))}}).stringify());
+    write(output/(name+".json"),Json(Json::Object{{"build",VERDIGRIS_BUILD_ID},{"pid",int(GetCurrentProcessId())},{"role",role},{"actor",m.player.uuid},{"house",m.chronicle.active_house_id},{"scion",m.chronicle.active_scion_id},{"scene",m.scene.id},{"appearance",m.player.appearance},{"x",m.player.x},{"y",m.player.y},{"hp",m.player.life},{"peers",peers},{"party",m.party.id},{"party_state",m.party.state},{"has_stairs_up",m.scene.has_stairs_up},{"stairs_up_x",m.scene.stairs_up_x},{"stairs_up_y",m.scene.stairs_up_y},{"has_stairs_down",m.scene.has_stairs_down},{"stairs_down_x",m.scene.stairs_down_x},{"stairs_down_y",m.scene.stairs_down_y},{"living_enemies",int(std::count_if(m.monsters.begin(),m.monsters.end(),[](const auto& monster){return monster.alive;}))},{"player_render_ops",int(render::count(state.render_list,render::Op::Player))}}).stringify());
   }
   bool chronicle(const std::string& verb,const std::string& arg="") {
     paint_scene(state,surface.dc,RECT{0,0,1280,800});
@@ -104,8 +117,7 @@ struct Run {
         // A stale snapshot plus one held intent can run beyond a waypoint.
         // Exclude the neighboring tiles too. A spawn in this margin remains
         // a valid BFS source, but can only step out of it, never farther in.
-        if(!allow_extraction&&m.scene.type=="instance"&&m.scene.has_stairs_up&&
-            !outside_extraction_margin(nx,ny,int(std::lround(m.scene.stairs_up_x)),int(std::lround(m.scene.stairs_up_y))))continue;
+        if(!route_tile_safe(m.scene,nx,ny,allow_extraction))continue;
         const int next=ny*w+nx;
         if(parent[next]>=0)continue;parent[next]=at;queue.push_back(next);
       }
@@ -119,14 +131,23 @@ struct Run {
     std::sort(rows.begin(),rows.end());std::string signature;for(const auto& row:rows)signature+=row+"\n";return signature;
   }
   bool approach(double x,double y,double reach=0.65,int timeout_ms=30000,bool allow_extraction=false) {
-    const auto deadline=std::chrono::steady_clock::now()+std::chrono::milliseconds(timeout_ms);const auto origin_scene=model().scene.id;
+    const auto deadline=std::chrono::steady_clock::now()+std::chrono::milliseconds(timeout_ms);const auto origin=model().scene;
+    const auto finish=[&](bool reached,const char* reason) {
+      movement(0,0);const auto& m=model();const bool changed=m.scene.id!=origin.id;
+      const bool allowed=changed&&allowed_approach_transition(origin.type,m.scene.type,allow_extraction);
+      std::ofstream trace(output/"approach-navigation.jsonl",std::ios::app);
+      trace<<Json(Json::Object{{"reason",reason},{"target_x",x},{"target_y",y},{"allow_extraction",allow_extraction},{"from_scene",origin.id},{"to_scene",m.scene.id},{"to_scene_type",m.scene.type},{"x",m.player.x},{"y",m.player.y},{"has_stairs_up",origin.has_stairs_up},{"stairs_up_x",origin.stairs_up_x},{"stairs_up_y",origin.stairs_up_y},{"has_stairs_down",origin.has_stairs_down},{"stairs_down_x",origin.stairs_down_x},{"stairs_down_y",origin.stairs_down_y},{"scene_changed",changed},{"allowed_transition",allowed},{"reached",reached}}).stringify()<<'\n';trace.close();
+      if(changed)require(allowed,"approach changes scene only for intentional return to town");
+      return changed?allowed:reached;
+    };
     while(std::chrono::steady_clock::now()<deadline&&model().player.alive) {
-      if(model().scene.id!=origin_scene){movement(0,0);return allow_extraction;}
-      if(std::hypot(x-model().player.x,y-model().player.y)<=reach){movement(0,0);settle(200);return true;}
-      const auto [dx,dy]=step_toward(x,y,allow_extraction);if(!dx&&!dy){movement(0,0);return std::hypot(x-model().player.x,y-model().player.y)<=1.0;}
+      if(model().scene.id!=origin.id)return finish(false,"transition");
+      if(std::hypot(x-model().player.x,y-model().player.y)<=reach){movement(0,0);settle(200);return finish(true,"within-reach");}
+      const auto [dx,dy]=step_toward(x,y,allow_extraction);if(!dx&&!dy)return finish(std::hypot(x-model().player.x,y-model().player.y)<=1.0,"no-route-step");
+      if(!route_samples_safe(model().scene,model().player.x,model().player.y,dx,dy,allow_extraction))return finish(false,"unsafe-held-samples");
       movement(dx,dy);settle(100);
     }
-    movement(0,0);return false;
+    return finish(false,"timeout-or-death");
   }
   void accept_charge_and_frame_town() {
     const verdigris::client::ClientNpc* guide=nullptr;
@@ -166,7 +187,7 @@ struct Run {
     if(nearest>1.25){const auto [dx,dy]=step_toward(tx,ty);route_x=dx;route_y=dy;
       // Validate every authority sample through the maximum 150 ms held
       // intent lifetime, using the continuous position rather than its tile.
-      const bool safe=!stairs.has_stairs_up||extraction_safe_samples(before.x,before.y,dx,dy,int(std::lround(stairs.stairs_up_x)),int(std::lround(stairs.stairs_up_y)));
+      const bool safe=route_samples_safe(stairs,before.x,before.y,dx,dy);
       if(!safe){route_x=0;route_y=0;}movement(route_x,route_y);
     }
     else {
@@ -180,7 +201,7 @@ struct Run {
     const bool near_entry=stairs.has_stairs_up&&std::hypot(before.x-stairs.stairs_up_x,before.y-stairs.stairs_up_y)<4;
     settle(near_entry?250:100);
     {std::ofstream trace(output/"combat-navigation.jsonl",std::ios::app);
-      trace<<Json(Json::Object{{"phase",prefix},{"frame",frame},{"from_x",before.x},{"from_y",before.y},{"target",target_id},{"target_x",tx},{"target_y",ty},{"distance",nearest},{"dx",route_x},{"dy",route_y},{"stairs_x",stairs.stairs_up_x},{"stairs_y",stairs.stairs_up_y},{"to_x",model().player.x},{"to_y",model().player.y},{"scene",model().scene.id},{"own_hit",own_hit}}).stringify()<<'\n';}
+      trace<<Json(Json::Object{{"phase",prefix},{"frame",frame},{"from_x",before.x},{"from_y",before.y},{"target",target_id},{"target_x",tx},{"target_y",ty},{"distance",nearest},{"dx",route_x},{"dy",route_y},{"stairs_x",stairs.stairs_up_x},{"stairs_y",stairs.stairs_up_y},{"has_stairs_down",stairs.has_stairs_down},{"stairs_down_x",stairs.stairs_down_x},{"stairs_down_y",stairs.stairs_down_y},{"from_scene",stairs.id},{"to_x",model().player.x},{"to_y",model().player.y},{"scene",model().scene.id},{"own_hit",own_hit}}).stringify()<<'\n';}
     if((route_x||route_y)&&std::hypot(model().player.x-before.x,model().player.y-before.y)<.05)++stagnant_movement_steps;
     else stagnant_movement_steps=0;
     if(stagnant_movement_steps>=5)require(false,"five ordinary movement attempts must advance this client's authoritative pose");
@@ -203,6 +224,7 @@ struct Run {
       const auto drop=role=="A"?model().ground.front():model().ground.back();
       if(approach(drop.x,drop.y,1.0,15000)) {key('X',true);key('X',false);settle(1000);}
     }
+    require(model().scene.id==instance_id,"owned-loot approach preserves the cleared first-floor instance");
     capture("owned-loot");barrier("loot-observed");
     const auto exit=model().scene;require(exit.has_stairs_up,"authoritative extraction position exists");
     require(approach(exit.stairs_up_x,exit.stairs_up_y,1.0,45000,true)||model().scene.type!="instance","ordinary return movement reaches extraction");
@@ -243,6 +265,14 @@ struct Run {
     require(!outside_extraction_margin(6,20,5,20)&&outside_extraction_margin(7,20,5,20)&&
         !extraction_safe_samples(6,20,-1,0,5,20)&&extraction_safe_samples(6,20,1,0,5,20)&&
         extraction_safe_samples(7,20,0,-1,5,20),"navigation regression: recorded entrance geometry and delayed release retain stopping space");
+    verdigris::client::ClientScene stairs_regression;stairs_regression.type="instance";
+    stairs_regression.has_stairs_up=true;stairs_regression.stairs_up_x=5;stairs_regression.stairs_up_y=20;
+    stairs_regression.has_stairs_down=true;stairs_regression.stairs_down_x=34;stairs_regression.stairs_down_y=20;
+    require(!route_tile_safe(stairs_regression,33,20,false)&&!route_tile_safe(stairs_regression,33,20,true)&&
+        route_tile_safe(stairs_regression,32,20,true)&&!route_samples_safe(stairs_regression,33,20,1,0,true)&&
+        route_tile_safe(stairs_regression,5,20,true)&&!route_tile_safe(stairs_regression,5,20,false)&&
+        !allowed_approach_transition("instance","instance",true)&&!allowed_approach_transition("instance","town",false)&&
+        allowed_approach_transition("instance","town",true),"navigation regression: recorded descent always excluded and only intentional upstairs return may change scene");
     state.camera.perspective=true;state.lineage_art=true;state.chronicles_mode=true;state.frontend=Frontend::Title;state.screen=Screen::Chronicles;
     state.pad.inject=true;state.pad.connected=false;load_billboards(state.billboards);warm_combat_glyphs();
     require(surface.create(1280,800),"native paint surface allocated");

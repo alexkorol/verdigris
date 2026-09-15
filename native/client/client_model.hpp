@@ -160,6 +160,9 @@ struct ClientScene {
   double stairs_up_x = 0.0;
   double stairs_up_y = 0.0;
   bool has_stairs_up = false;
+  double stairs_down_x = 0.0;
+  double stairs_down_y = 0.0;
+  bool has_stairs_down = false;
 };
 
 // TASK-0156: authoritative passive-tree progression, mirrored verbatim from
