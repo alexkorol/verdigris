@@ -1,24 +1,38 @@
 #pragma once
 
+struct GatewayLayout {
+  double fit; int aw,ah,ox,oy,cx,width,top,stride,button_h;
+  RECT row(int index)const {const int y=top+index*stride;return {cx-width/2,y,cx+width/2,y+button_h};}
+};
+GatewayLayout gateway_layout(int w,int h) {
+  const double fit=h/941.0;const int aw=int(1672*fit),ah=int(941*fit);
+  const int ox=std::max(0,(w-aw)/2),oy=(h-ah)/2;
+  return {fit,aw,ah,ox,oy,ox+int(440*fit),std::max(300,int(510*fit)),
+      oy+int(300*fit),std::max(68,int(119*fit)),int(113*fit)};
+}
+void paint_gateway_backdrop(ClientState& state,HDC dc,const RECT& bounds,const GatewayLayout& g) {
+  FillRect(dc,&bounds,cached_brush(RGB(7,10,11)));
+  const auto& art=state.billboards.menu_gateway;
+  if(art.ready()){SetStretchBltMode(dc,HALFTONE);StretchBlt(dc,g.ox,g.oy,g.aw,g.ah,art.dc,0,0,art.width,art.height,SRCCOPY);}
+}
+void paint_gateway_control(ClientState& state,HDC dc,const RECT& button,const std::string& label,bool focus,bool enabled=true) {
+  const auto& art=state.billboards.menu_control;
+  if(art.ready())skin::relic_control(dc,art.dc,art.width,art.height,button,focus&&enabled,GetTickCount64()/1000.0);
+  else skin::panel(dc,button,skin::kGold,250);
+  const int saved=SaveDC(dc);SetBkMode(dc,TRANSPARENT);SelectObject(dc,skin::font_heading());
+  SIZE extent{};skin::text_extent(dc,label.c_str(),int(label.size()),&extent);
+  const int x=(button.left+button.right-extent.cx)/2,y=(button.top+button.bottom-extent.cy)/2;
+  SetTextColor(dc,RGB(19,7,3));skin::text_out(dc,x+1,y+2,label.c_str(),int(label.size()));
+  SetTextColor(dc,!enabled?RGB(145,122,82):focus?RGB(255,225,134):RGB(212,176,108));
+  skin::text_out(dc,x,y,label.c_str(),int(label.size()));RestoreDC(dc,saved);
+}
+
 // Physical artwork and responsive composition; the existing controller owns
 // activation, settings persistence, navigation, Continue and House/Scion flow.
 void paint_frontend(ClientState& state,HDC dc,const RECT& bounds,render::List& rl) {
-  FillRect(dc,&bounds,cached_brush(RGB(7,10,11)));
-  const auto& art=state.billboards.menu_gateway;
-  const auto& control=state.billboards.menu_control;
-  const double fit=bounds.bottom/941.0;
-  const int aw=static_cast<int>(1672*fit),ah=static_cast<int>(941*fit);
-  const int ox=std::max(0,(int(bounds.right)-aw)/2),oy=(bounds.bottom-ah)/2;
-  if(art.ready()) {
-    SetStretchBltMode(dc,HALFTONE);
-    StretchBlt(dc,ox,oy,aw,ah,art.dc,0,0,art.width,art.height,SRCCOPY);
-  }
+  const auto g=gateway_layout(bounds.right,bounds.bottom);paint_gateway_backdrop(state,dc,bounds,g);
+  const auto [fit,aw,ah,ox,oy,cx,width,top,stride,button_h]=g;
   skin::set_ui_scale(hud_scale(bounds.bottom));
-  const int cx=ox+static_cast<int>(440*fit);
-  const int width=std::max(300,static_cast<int>(510*fit));
-  const int top=oy+static_cast<int>(300*fit);
-  const int stride=std::max(68,static_cast<int>(119*fit));
-  const int button_h=static_cast<int>(113*fit);
   const char* heading=state.frontend==Frontend::Title?"VERDIGRIS":
       state.frontend==Frontend::Settings?"Settings":
       state.frontend==Frontend::ConfirmQuit?"Leave Verdigris?":"At rest";
@@ -33,19 +47,12 @@ void paint_frontend(ClientState& state,HDC dc,const RECT& bounds,render::List& r
   const auto rows=frontend_rows(state);
   state.menu_hits.clear();state.menu_selected=std::min(state.menu_selected,rows.size()-1);
   SelectObject(dc,skin::font_heading());
-  const double phase=GetTickCount64()/1000.0;
   for(std::size_t i=0;i<rows.size();++i) {
     const int y=top+static_cast<int>(i)*stride;
     RECT button{cx-width/2,y,cx+width/2,y+button_h};
     const bool focus=i==state.menu_selected || PtInRect(&button,state.mouse);
-    if(control.ready())skin::relic_control(dc,control.dc,control.width,control.height,button,focus,phase);
-    else skin::panel(dc,button,skin::kGold,250);
     std::string label=rows[i];
-    SIZE extent{};skin::text_extent(dc,label.c_str(),static_cast<int>(label.size()),&extent);
-    const int tx=cx-extent.cx/2,ty=y+(button_h-extent.cy)/2;
-    SetTextColor(dc,RGB(19,7,3));skin::text_out(dc,tx+1,ty+2,label.c_str(),static_cast<int>(label.size()));
-    SetTextColor(dc,focus?RGB(255,225,134):RGB(212,176,108));
-    skin::text_out(dc,tx,ty,label.c_str(),static_cast<int>(label.size()));
+    paint_gateway_control(state,dc,button,label,focus);
     if(state.frontend==Frontend::Settings && (i==1 || i==2)) {
       for(int step: {-1,1}) {
         const int edge=static_cast<int>(width*.12),size=std::max(24,static_cast<int>(button_h*.46));
@@ -70,4 +77,3 @@ void paint_frontend(ClientState& state,HDC dc,const RECT& bounds,render::List& r
   }
   RestoreDC(dc,saved);
 }
-

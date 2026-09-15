@@ -2,18 +2,29 @@
 // Admission owns input before any House or Scion is admitted. Secrets never
 // enter labels, telemetry, command-line arguments or presentation effects.
 bool service_account_open(const ClientState& state) {
-  return state.session && state.session->model().service_mode && !state.session->model().authenticated;
+  return state.session && state.session->model().service_mode && !state.session->model().authenticated &&
+      state.frontend!=Frontend::Settings && state.frontend!=Frontend::ConfirmQuit;
+}
+void prepare_service_account(ClientState& state) {
+  if(service_account_open(state)&&(state.frontend==Frontend::None||state.frontend==Frontend::Pause)) {
+    state.account_entry_open=false;
+    SecureZeroMemory(state.account_credential.data(),state.account_credential.size());state.account_credential.clear();
+    state.account_cursor.focus(state.account_credential);open_frontend(state,Frontend::Title);
+  }
 }
 struct ServiceAccountLayout { RECT panel{}, field{}, enroll{}, login{}, quit{}; };
 ServiceAccountLayout service_account_layout(int w,int h) {
-  const int s=hud_scale(h),ww=std::min(w-32*s,480*s),hh=std::min(h-32*s,430*s);
-  const int x=(w-ww)/2,y=(h-hh)/2;
-  return {{x,y,x+ww,y+hh},{x+24*s,y+122*s,x+ww-24*s,y+164*s},
-    {x+24*s,y+184*s,x+ww-24*s,y+224*s},{x+24*s,y+236*s,x+ww-24*s,y+276*s},
-    {x+24*s,y+288*s,x+ww-24*s,y+328*s}};
+  const auto g=gateway_layout(w,h);const auto outer=g.row(0);const int inset=int(g.width*.12);
+  RECT field{outer.left+inset,outer.top+int(g.button_h*.2),outer.right-inset,outer.bottom-int(g.button_h*.2)};
+  return {outer,field,g.row(1),g.row(2),g.row(3)};
+}
+void service_account_back(ClientState& state) {
+  SecureZeroMemory(state.account_credential.data(),state.account_credential.size());state.account_credential.clear();
+  state.account_cursor.focus(state.account_credential);state.account_entry_open=false;
+  open_frontend(state,Frontend::Title);
 }
 void service_account_submit(ClientState& state,bool enroll) {
-  if(!state.session || state.account_credential.empty())return;
+  if(!state.account_entry_open || !state.session || state.account_credential.empty())return;
   const auto status=state.session->connection_state();
   if(status!=verdigris::client::ConnectionState::Connected && status!=verdigris::client::ConnectionState::Ready)return;
   verdigris::client::ClientCommand command;command.type=verdigris::client::ClientCommand::Type::Authenticate;
@@ -24,6 +35,7 @@ void service_account_submit(ClientState& state,bool enroll) {
   state.account_cursor.focus(state.account_credential);
 }
 void service_account_character(ClientState& state,WPARAM c) {
+  if(!state.account_entry_open)return;
   auto& value=state.account_credential;auto& edit=state.account_cursor;
   edit.clamp(value);
   if(c==8) {if(!edit.erase_selection(value)&&edit.caret){value.erase(--edit.caret,1);edit.anchor=edit.caret;}}
@@ -33,9 +45,11 @@ void service_account_character(ClientState& state,WPARAM c) {
 }
 bool service_account_key(ClientState& state,WPARAM key) {
   if(!service_account_open(state))return false;
+  prepare_service_account(state);
+  if(!state.account_entry_open)return handle_frontend_key(state,key);
   const bool control=(GetKeyState(VK_CONTROL)&0x8000)!=0,shift=(GetKeyState(VK_SHIFT)&0x8000)!=0;
   if(key==VK_RETURN){service_account_submit(state,!shift);return true;}
-  if(key==VK_ESCAPE){state.quit_requested=true;return true;}
+  if(key==VK_ESCAPE){service_account_back(state);return true;}
   if(control && key=='V') {
     if(OpenClipboard(nullptr)) {
       if(auto handle=GetClipboardData(CF_UNICODETEXT))if(const auto* text=static_cast<const wchar_t*>(GlobalLock(handle))) {
@@ -52,7 +66,12 @@ bool service_account_key(ClientState& state,WPARAM key) {
 }
 bool service_account_click(ClientState& state,HWND window,POINT point) {
   if(!service_account_open(state))return false;
+  prepare_service_account(state);
   state.held_gameplay_attacks.clear();state.primary_down=false;
+  if(!state.account_entry_open) {
+    for(const auto& hit:state.menu_hits)if(PtInRect(&hit.rect,point)){state.menu_selected=hit.index;activate_frontend_row(state,hit.direction);break;}
+    return true;
+  }
   RECT rect{};GetClientRect(window,&rect);const auto layout=service_account_layout(rect.right,rect.bottom);
   if(PtInRect(&layout.field,point)) {
     HDC dc=GetDC(window);const std::string masked(state.account_credential.size(),'*');
@@ -60,37 +79,34 @@ bool service_account_click(ClientState& state,HWND window,POINT point) {
   }
   if(PtInRect(&layout.enroll,point))service_account_submit(state,true);
   if(PtInRect(&layout.login,point))service_account_submit(state,false);
-  if(PtInRect(&layout.quit,point)){state.quit_requested=true;PostQuitMessage(0);}
+  if(PtInRect(&layout.quit,point))service_account_back(state);
   return true;
 }
 void paint_service_account(ClientState& state,HDC dc,const RECT& bounds,render::List& trace) {
-  FillRect(dc,&bounds,cached_brush(RGB(7,10,11)));
-  const auto& art=state.billboards.menu_gateway;
-  if(art.ready()) {
-    const double fit=double(bounds.bottom)/art.height;const int ww=int(art.width*fit);
-    SetStretchBltMode(dc,HALFTONE);StretchBlt(dc,(bounds.right-ww)/2,0,ww,bounds.bottom,art.dc,0,0,art.width,art.height,SRCCOPY);
-  }
-  const auto layout=service_account_layout(bounds.right,bounds.bottom);const int s=hud_scale(bounds.bottom);
-  skin::panel(dc,layout.panel,skin::kGold,250,7.0f);const auto old=SelectObject(dc,skin::font_heading());
-  RECT heading{layout.panel.left+24*s,layout.panel.top+18*s,layout.panel.right-24*s,layout.panel.top+58*s};
-  inventory_text(dc,heading,"Verdigris Online",skin::kGold,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
-  SelectObject(dc,skin::font_small());
-  RECT label{heading.left,heading.bottom+12*s,heading.right,layout.field.top-8*s};
-  inventory_text(dc,label,"Enrollment code or account token",skin::kInk,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
-  skin::inventory_surface(dc,layout.field,1);
+  prepare_service_account(state);
+  if(!state.account_entry_open){paint_frontend(state,dc,bounds,trace);return;}
+  const auto g=gateway_layout(bounds.right,bounds.bottom);paint_gateway_backdrop(state,dc,bounds,g);
+  skin::set_ui_scale(hud_scale(bounds.bottom));
+  const auto layout=service_account_layout(bounds.right,bounds.bottom);const int saved=SaveDC(dc);SetBkMode(dc,TRANSPARENT);
+  SelectObject(dc,g.fit<.8?skin::font_heading():skin::font_title());
+  RECT heading{g.cx-g.width/2,g.oy+int(231*g.fit),g.cx+g.width/2,g.top};
+  inventory_text(dc,heading,"Enter online",RGB(239,199,116),DT_CENTER|DT_SINGLELINE);
+  paint_gateway_control(state,dc,layout.panel,"",true);
   const std::string masked(state.account_credential.size(),'*');
-  skin::paint_entry(dc,layout.field,masked,"Enter or paste credential",state.account_cursor,true);
+  skin::paint_entry(dc,layout.field,masked,"Code or token",state.account_cursor,true);
   const auto status=state.session->connection_state();
   const bool enabled=!state.account_credential.empty() && (status==verdigris::client::ConnectionState::Connected || status==verdigris::client::ConnectionState::Ready);
-  inventory_button(dc,layout.enroll,"Enroll with code",PtInRect(&layout.enroll,state.mouse),enabled);
-  inventory_button(dc,layout.login,"Sign in with token",PtInRect(&layout.login,state.mouse),enabled);
-  inventory_button(dc,layout.quit,"Quit",PtInRect(&layout.quit,state.mouse));
-  RECT error{heading.left,layout.quit.bottom+16*s,heading.right,layout.panel.bottom-12*s};
+  paint_gateway_control(state,dc,layout.enroll,"Enroll",PtInRect(&layout.enroll,state.mouse),enabled);
+  paint_gateway_control(state,dc,layout.login,"Sign in",PtInRect(&layout.login,state.mouse),enabled);
+  paint_gateway_control(state,dc,layout.quit,"Back",PtInRect(&layout.quit,state.mouse));
+  SelectObject(dc,skin::font_small());
+  RECT error{heading.left,layout.quit.bottom+int(12*g.fit),heading.right,g.oy+int(868*g.fit)};
   const auto& account_error=state.session->model().account_error;
   const std::string message=!account_error.empty()?account_error:
       status==verdigris::client::ConnectionState::Connected?"Connected to service":
       status==verdigris::client::ConnectionState::Ready?"Connected to service":
       !state.session->last_error().empty()?state.session->last_error():verdigris::client::connection_state_label(status);
   inventory_text(dc,error,message,skin::kGold,DT_CENTER|DT_WORDBREAK|DT_END_ELLIPSIS);
-  SelectObject(dc,old);trace.push_back({render::Op::Hud,0,0,0,0,"service:account-admission"});
+  RestoreDC(dc,saved);trace.push_back({render::Op::Hud,0,0,0,0,"service:account-admission"});
+  trace.push_back({render::Op::Hud,0,0,0,0,"frontend:illustrated-gateway"});
 }
