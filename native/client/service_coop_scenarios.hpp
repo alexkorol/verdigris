@@ -129,6 +129,22 @@ struct Run {
     require(approach(gx+(role=="A"?0:1),gy+1,0.65),"ordinary movement frames separate Scions in arrival court");
     barrier("charge-and-court");settle(1000);capture("town-peers-clear");
   }
+  void equip_available_weapon() {
+    std::string weapon;
+    for(const auto& item:model().inventory)if(item.id=="bronze-dagger"||item.id=="bronze-sword"){weapon=item.uuid;break;}
+    if(weapon.empty())return; // No kit is created or assumed by this scenario.
+    movement(0,0);key('I',true);key('I',false);settle();
+    require(state.gear_overlay,"native Equipment keyboard control opens backpack");
+    bool selected=false;
+    for(std::size_t i=0;i<=state.world.carried.size();++i) {
+      if(state.selected_item_id==weapon){selected=true;break;}
+      key(VK_TAB,true);key(VK_TAB,false);
+    }
+    require(selected,"native inventory focus selects the owned weapon");
+    key(VK_RETURN,true);key(VK_RETURN,false);
+    require(wait([&]{return std::any_of(model().worn.begin(),model().worn.end(),[&](const auto& worn){return worn.item.uuid==weapon;});}),"native Equip action receives owned weapon acknowledgement");
+    capture("owned-weapon-equipped");key('I',true);key('I',false);settle();
+  }
   bool combat_step(int frame,const std::string& prefix) {
     if(model().scene.id!=instance_id)require(false,"combat remains in the shared instance until intentional extraction");
     const verdigris::client::ClientMonster* target=nullptr;double nearest=1e9;
@@ -224,7 +240,7 @@ struct Run {
     require(!actor_id.empty()&&!other_id.empty()&&actor_id!=other_id&&house_id!=field(ally,"house")&&scion_id!=field(ally,"scion"),"distinct actors, Houses and Scions across processes");
     require(wait([&]{return peer()!=nullptr&&peer()->scene_id==model().scene.id;}),"same-room peer arrives from authoritative service");
     require(peer()->appearance!=(model().player.appearance),"both real accounts retain distinct authored appearances");
-    move_phase("A");move_phase("B");accept_charge_and_frame_town();capture("town-peers");require(render::count(state.render_list,render::Op::Player)>=2,"native GPU paints both live service actors");
+    move_phase("A");move_phase("B");accept_charge_and_frame_town();equip_available_weapon();capture("town-peers");require(render::count(state.render_list,render::Op::Player)>=2,"native GPU paints both live service actors");
     if(role=="A") {
       require(party("party:create"),"native Create party control");require(wait([&]{return !model().party.id.empty();}),"party creation acknowledged");
       require(party("party:invite",other_id),"native Invite targets visible intended actor");
