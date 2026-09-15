@@ -323,9 +323,15 @@ void server_messages_surface_as_toasts() {
   PresentationEvent message{PresentationEventType::Message, "", "",
                             "No road holds past a living Warden.", 0};
   verdigris::client::apply_presentation_event(fx, world, message, 1);
-  check(fx.hint == "No road holds past a living Warden.",
-        "message: server text becomes the HUD toast");
-  check(fx.hint_ticks > 80, "message: toast outlives a key-echo hint");
+  check(fx.hint == "Defeat the first Warden, then return to Aldwyn.",
+        "message: Aldwyn narrative becomes a concise gameplay objective");
+  check(fx.hint_ticks == 80, "message: gameplay toast expires after four seconds");
+  world.route_id+="-next-scene";
+  verdigris::client::sync_presentation_scene(fx,world);
+  check(fx.hint.empty()&&fx.hint_ticks==0,"message: scene transition retires prior NPC feedback");
+  message.text="Your House reward is ready.";
+  verdigris::client::apply_presentation_event(fx,world,message,2);
+  check(fx.hint==message.text,"message: new-scene reward feedback remains visible");
   PresentationEvent empty{PresentationEventType::Message, "", "", "", 0};
   PresentationFx untouched;
   verdigris::client::apply_presentation_event(untouched, world, empty, 1);
