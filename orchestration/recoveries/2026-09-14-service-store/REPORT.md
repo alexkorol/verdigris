@@ -139,3 +139,34 @@ on the filesystem/storage device honoring flush requests.
 
 No deployment, package promotion, separate-computer play, or owner acceptance is
 claimed by this storage lane.
+
+## Focused integration authority regression (subsequent parent assignment)
+
+Added only `native/tests/service_authority_tests.cpp` under explicit parent
+assignment; no parent checkout edits. This direct `ProtocolSession` gate requires
+the parent's service integration API and is intentionally not wired into this
+worker branch's historical build. It is a **failing regression baseline**, not
+passing service acceptance. Parent owns production corrections and integration.
+
+Captured parent `native/src/networking.cpp` SHA256:
+`D2B99826A96BFE74EDBB90BF1E2CE635A7831F2D808B14326AC174B4B97FDC6E`.
+Copied source/object outputs only into this worktree's ignored
+`native/build/authority-audit`; parent files remained read-only.
+MSVC compilation succeeded. Running `service_authority_tests.exe` returned
+**exit 1: 10 checks, 10 failures**, reproducing:
+
+- client `mortal:false` can remove an admitted oath;
+- selecting a persisted crypt Scion revives it;
+- zero/negative client shop prices purchase below the authoritative price;
+- arbitrary shop item `coins` mints currency;
+- shop purchases work from an expedition, away from the town service;
+- bank deposit quantity -1 mints carried currency; zero creates invalid bank data;
+- founding/entering another House leaks the first bank and loses its treasury checkpoint.
+
+Set-up uses ordinary found/create/set-out commands. The crypt test arranges a
+server-owned persisted death snapshot to model restart; the private-bank test
+can arrange a server-owned bank snapshot once corrected proximity checks reject
+its initial ordinary deposit. Neither sends a development or client-save command.
+Build the test against the parent's current `core`, `seasonal`, `networking`, and
+`service_store` objects and headers, then run it as a new service authority gate.
+Fixes must make these assertions pass before the integrated candidate is promoted.
