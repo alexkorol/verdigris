@@ -129,6 +129,10 @@ No unresolved gameplay policy was introduced by this transport-only subtask.
 
 ## Follow-up: service operations and launcher
 
+Implementation commit: `5866a9c556a4fb4632d196e1264bf83a65ec163c`, normal-pushed
+to the same origin branch; `git ls-remote` matched that exact commit. Worktree
+was clean after the push. This subsequent edit only records that evidence.
+
 Parent coordinator explicitly assigned additional disjoint paths after the
 transport milestone: `native/src/server_main.cpp`, `native/tools/player-launcher.cs`,
 additive `native/tools/package-native.ps1` edits, and new service operation/package
