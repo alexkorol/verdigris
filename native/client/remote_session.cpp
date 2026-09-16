@@ -353,6 +353,23 @@ bool sane_passive_tree_integer(const JsonValue* value) {
   return raw <= static_cast<double>(kPassiveTreeTransportBound);
 }
 
+// TASK-0108 remote stage (D-129): transport bounds for world:projectile
+// payload values. Like the passive-tree bound above these are TRANSPORT
+// BOUNDS, not product rules: they exist only so a hostile or corrupting
+// frame cannot smuggle absurd coordinates or windups into the presentation
+// path. Any well-typed integral tile and any plausible windup is mirrored
+// verbatim.
+constexpr double kProjectileTileTransportBound = 65536.0;
+constexpr double kProjectileTravelTransportBoundMs = 60000.0;
+
+bool sane_projectile_tile(const JsonValue* value) {
+  if (!value || !value->number()) return false;
+  const double raw = *value->number();
+  if (!std::isfinite(raw)) return false;
+  if (std::floor(raw) != raw) return false;  // tiles are integral
+  return std::fabs(raw) <= kProjectileTileTransportBound;
+}
+
 void apply_passive_tree(const JsonValue& tree, ClientModel& model,
                         std::vector<PresentationEvent>& events) {
   const char* reason = nullptr;
@@ -1522,6 +1539,66 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     if (const auto* channel = json_string(envelope.data.get("damageChannel"));
         channel)
       warning.damage_channel = *channel;
+    pending_events_.push_back(std::move(warning));
+    return;
+  }
+  if (envelope.event == "world:projectile") {
+    // TASK-0108 remote stage (D-129 wire contract): ranged windups cross the
+    // wire as world:projectile with exactly the JS stack's payload keys
+    // (server/core/entities/monster/combat-controller.js:215-222): fromX/fromY
+    // shooter tile, toX/toY target tile, travelMs windup, kind
+    // 'monster'|'support'. Parsed fail-closed like the other hardened
+    // payloads: any malformed or missing key surfaces one deterministic
+    // ProtocolError diagnostic and mutates no model state. This arm never
+    // runs the monster:telegraph path (slam-only) and never fabricates an
+    // attacker — the payload carries no monster identity.
+    const char* reason = nullptr;
+    if (!envelope.data.object()) {
+      reason = "envelope must be an object";
+    } else if (!sane_projectile_tile(envelope.data.get("fromX")) ||
+               !sane_projectile_tile(envelope.data.get("fromY")) ||
+               !sane_projectile_tile(envelope.data.get("toX")) ||
+               !sane_projectile_tile(envelope.data.get("toY"))) {
+      reason = "fromX/fromY/toX/toY must be integral tiles";
+    } else if (const auto* travel = envelope.data.get("travelMs");
+               !travel || !travel->number() ||
+               !std::isfinite(*travel->number()) || *travel->number() < 1.0 ||
+               *travel->number() > kProjectileTravelTransportBoundMs) {
+      reason = "travelMs must be a positive number within the transport bound";
+    } else if (!json_string(envelope.data.get("kind")) ||
+               json_string(envelope.data.get("kind"))->empty()) {
+      reason = "kind must be a nonempty string";
+    }
+    if (reason) {
+      pending_events_.push_back(
+          {PresentationEventType::ProtocolError, "", "",
+           std::string("world:projectile rejected: ") + reason, 0});
+      return;
+    }
+    // Readable warning beat: ride the existing Telegraph presentation path
+    // (a circle on the target tile for the windup duration) instead of
+    // inventing projectile art or new render ops. The shape is pinned
+    // explicitly so the presentation action mapper cannot misread the
+    // skill-less payload as a thrust/line. The telegraph is keyed by a
+    // synthetic id derived from the shooter tile: it never collides with a
+    // real monster id (so ActorDied/TelegraphCancelled erases cannot touch
+    // it) and concurrent volleys from different origins do not clobber each
+    // other.
+    const double from_x = *envelope.data.get("fromX")->number();
+    const double from_y = *envelope.data.get("fromY")->number();
+    PresentationEvent warning;
+    warning.type = PresentationEventType::Telegraph;
+    warning.actor_id = "projectile:" + std::to_string(static_cast<int>(from_x)) +
+                       "," + std::to_string(static_cast<int>(from_y));
+    warning.text = *json_string(envelope.data.get("kind")) + " projectile";
+    warning.action_id = "projectile";
+    warning.value =
+        static_cast<int>(*envelope.data.get("travelMs")->number());
+    warning.has_position = true;
+    warning.x = *envelope.data.get("toX")->number();
+    warning.y = *envelope.data.get("toY")->number();
+    warning.radius = 1;
+    warning.telegraph_shape = "circle";
     pending_events_.push_back(std::move(warning));
     return;
   }
