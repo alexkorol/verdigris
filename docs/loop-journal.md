@@ -959,3 +959,5 @@ UTC | Scenario | Score | First combat (s) | First drop (s) | TTK L1 (s) | TTK L5
 2026-08-14T03:47:53.215Z | session-arc | 100 | 0.6 | 5.15 | 1.25 | 0.62 | 6 | 1 | 4
 
 2026-08-14T03:51:48.146Z | session-arc | 100 | 0.57 | 5.21 | 1.87 | 0.93 | 6 | 1 | 4
+
+2026-08-18T02:53:52.683Z | session-arc | 80 | 0.99 | 5.69 | 0.13 | 0.26 | 6 | 1 | 4
