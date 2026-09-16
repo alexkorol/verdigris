@@ -1,0 +1,5 @@
+Edit Image 1, the accepted opposite-contact walking pose. Keep its exact hip, knee, ankle and foot positions, leg overlap, weight placement, cell position, camera and scale. Replace the character's appearance with the skeletal wight in Image 2. Image 1 is the STRICT geometry guide, not the style reference; Image 2 is appearance only, not its standing pose.
+
+Render Image 1's forward leg as a bare skeletal femur and shin, with the hip-to-knee connection visible through the existing torn brown cloth. Preserve the guide's opposite leg trailing behind. Keep the wight's adult bare skull, ribs, thin bony limbs and feet, curled empty hands and brown burial cloth. No hero flesh, hair, boots, armor or equipment. Natural bone-and-brown palette, sharp simple pixel clusters, about61 logical body pixels.
+
+Return exactly one lower-left-facing walking frame. Retain all extremities and the guide's ground contact, with actual transparent RGBA including finger and limb gaps; no painted checker, labels or scenery.

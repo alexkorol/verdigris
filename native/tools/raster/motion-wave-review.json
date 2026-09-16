@@ -1,0 +1,26 @@
+{
+  "version":1,
+  "runtime_changes":{
+    "added_assets":["hero_strike0_se","hero_strike1_se","hero_strike2_se","hero_strike3_se","hero_strike4_se","hero_strike5_se"],
+    "added_provenance":"hero-strike-se.provenance.json",
+    "existing_sprite_pngs":"unchanged",
+    "catalog_asset_count":81,
+    "accepted_walk_directions":{"se":4},
+    "accepted_strike_directions":{"se":6}
+  },
+  "strike_se":{
+    "acceptance":"asset_cycle_inspected_pending_live_motion",
+    "selection":"v1 indices0,1,2,3,5; v2 index4 corrects the striking-arm swap",
+    "scale":"sourcecell7,80x96 canvas, authored row pivots, no per-frame resizing",
+    "palette":"one shared32-color palette from actual Pixel Respecter palettes.reduce_colors",
+    "review_preview_ms":90,
+    "remaining_checks":["equipment sockets","production contact timing","idle entry and exit"]
+  },
+  "candidate_walks":{
+    "sw":{"status":"rejected","sources":["actors_hero-walk-sw-sheet-v1.png","actors_hero-walk-sw-sheet-v2.png"],"reason":"Both sheets retain the same low leading boot; no opposite contact."},
+    "ne":{"status":"incomplete_candidate_only","sheet":"actors_hero-walk-ne-sheet-v2.png","reason":"Opposite contact4 improves, but6 repeats2's support and7 returns to wide contact early;5 has limited down movement.","preview":"walk-ne-candidates/shared/hero-walk-ne-preview.gif","single_candidates":["actors_hero-walk6-ne-v1.png","actors_hero-walk7-ne-v1.png"],"single_reason":"6 gives right support/left raised boot, while7 switches to left support too early. Mixed sheet/single head and torso scale requires review."},
+    "nw":{"status":"incomplete_candidate_only","rejected_sheets":["actors_hero-walk-nw-sheet-v1.png","actors_hero-walk-nw-sheet-v1.retry.png"],"reason":"Sheets repeat leading contact; contact pair is distinct but does not constitute a cycle.","contact_preview":"walk-nw-candidates/contacts/preview-3x.png","contact_caveats":["authored sole extents differ by about5native pixels; fixed origin retained","bronze reads at far forearm rather than the accepted idle's shoulder"]}
+  },
+  "validation":{"actual_engine_importer_tests":7,"catalog":"81 actual PNG hashes/dimensions/alpha/palette limits verified","source_images_modified":false,"main_or_headers_modified":false},
+  "next_step":"Keep incomplete walks outside runtime while ordered motion references and user workflow research guide further source work."
+}

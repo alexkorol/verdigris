@@ -1,0 +1,7 @@
+Use case: identity-preserve
+Reference1 is the accepted hero IDENTITY and VIEW anchor: preserve its actual upper-right/NORTHEAST BACK view, clothes, warm palette, scale and adult pixel-art proportions.
+Reference2 shows the required WALKING LIMB PHASE only, from another camera angle. Do not copy its front-facing camera.
+
+Create one northeast walk PASSING frame: the hero's physical RIGHT leg, below his bronze shoulder side, is the straight weight-bearing leg with its LOW planted boot on SCREEN-RIGHT. His physical LEFT knee, below the sash side, bends and passes forward under the hips; its boot is HIGH and near SCREEN-LEFT/center, clearly off the ground. Both toes point upper-right. The screen-left boot must not be the low supporting boot. Empty hands counter-swing naturally.
+
+Keep the head and tunic facing away upper-right, bronze guard on physical right shoulder, sash on physical left hip, full dark trousers and wraps. One complete64-pixel-style figure, crisp clusters, same scale, generous empty margin, actual transparent alpha.

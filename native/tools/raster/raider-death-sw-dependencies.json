@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "scope": "Raider SW4 death candidate only; no runtime/catalog/code changes.",
+  "hash_policy": "Text uses CRLF-to-LF canonical bytes only; PNG uses raw bytes. Exact generation raw hashes remain historical observations.",
+  "active_inputs": [
+    {
+      "path": "native/client/assets/raster/source/raider-death-sw-v1.png",
+      "role": "sole generated source for all four selected poses",
+      "sha256": "19bf42e643df4b7a3f56fd8420abdb27cca902a9f2b9a3f17aca8ea381285c9b",
+      "hash_policy": "raw_binary"
+    }
+  ],
+  "active_recipes": [
+    {
+      "path": "native/tools/raster/raider-death-sw-candidate.json",
+      "role": "complete candidate recipe including exact neutral-only alpha windows",
+      "sha256": "0276646ee2fe8af9cef2dda496db65ad85b476aced07ca8b11767e1a8f658191",
+      "hash_policy": "canonical_lf_crlf_to_lf_only"
+    },
+    {
+      "path": "native/tools/raster/import_assets.py",
+      "role": "actual Pixel Respecter adapter",
+      "sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+      "hash_policy": "canonical_lf_crlf_to_lf_only"
+    }
+  ],
+  "historical_provenance": [
+    {
+      "path": "native/client/assets/raster/prompts/raider-death-sw-v1.txt",
+      "role": "exact submitted prompt",
+      "sha256": "341869943ccb275fadd23f64005f86b5b168d0c95eb5af7108c6de25544ce26d",
+      "hash_policy": "canonical_lf_crlf_to_lf_only"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/raider-death-sw-v1.provenance.json",
+      "role": "generation reference roles and observed outcome",
+      "sha256": "d3472e9b2b0af256c8e15c4c754af9c0be1e159f802e2d57d3e05e5db6f30ce5",
+      "hash_policy": "canonical_lf_crlf_to_lf_only"
+    },
+    {
+      "path": "native/client/assets/raster/runtime/raider_sw.png",
+      "role": "accepted sole identity reference",
+      "sha256": "13e515e678d001de0e764729048986d1d459c9df2de9c2b52d2d1c8538b3daf4",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/tools/raster/raider-death-sw-candidates/v1/raider-death-sw-candidate.provenance.json",
+      "role": "actual reconstruction provenance including external engine fingerprints",
+      "sha256": "dd73c46569f36b6b383d77452b9c2cbb79d4022ab6cc3ca77f5d385a547afa50",
+      "hash_policy": "canonical_lf_crlf_to_lf_only"
+    }
+  ],
+  "review_evidence": [
+    {
+      "path": "native/tools/raster/raider-death-sw-candidates/v1/acceptance-review.json",
+      "role": "native/alpha candidate review",
+      "sha256": "64988f8084fe1c8931886a14b2d74bccc02aca7fd349979b64b49b4af9310d7a",
+      "hash_policy": "canonical_lf_crlf_to_lf_only"
+    },
+    {
+      "path": "native/tools/raster/raider-death-sw-candidates/v1/native-review.json",
+      "role": "native/alpha candidate review",
+      "sha256": "24dd99a731f2345627d1a45cb14ace690be1ce780fab8980823732629aa509a1",
+      "hash_policy": "canonical_lf_crlf_to_lf_only"
+    },
+    {
+      "path": "native/tools/raster/raider-death-sw-candidates/v1/alpha-audit.json",
+      "role": "native/alpha candidate review",
+      "sha256": "2f7a23e1b5bf099f4e7b0cf646e9530a92dfcc6a1721f0162a7cf8c0920c25ad",
+      "hash_policy": "canonical_lf_crlf_to_lf_only"
+    },
+    {
+      "path": "native/tools/raster/raider-death-sw-candidates/v1/source-gap-inspection.png",
+      "role": "native/alpha candidate review",
+      "sha256": "9491224eb3f45ab28bf8b3aa25cbfdb49b996b58741ba03da5b8450447973e13",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/tools/raster/raider-death-sw-candidates/v1/contact-3x.png",
+      "role": "native/alpha candidate review",
+      "sha256": "292ad69cffa69acd72a1cb04e3eefcdbd6ea8fa9e1710ca4ebec135f4225023a",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/tools/raster/raider-death-sw-candidates/v1/idle-death-1x.png",
+      "role": "native/alpha candidate review",
+      "sha256": "4c85f001040024b61bf716c445768a2e3bd56ba8828750ab4425340f1921d51f",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/tools/raster/raider-death-sw-candidates/v1/idle-death-3x.png",
+      "role": "native/alpha candidate review",
+      "sha256": "b976998f20fcc1201761ae940d185068dc9c0035e3338b7e1668645098a3bd76",
+      "hash_policy": "raw_binary"
+    },
+    {
+      "path": "native/tools/raster/raider-death-sw-candidates/v1/idle-death-preview.gif",
+      "role": "native/alpha candidate review",
+      "sha256": "1d7f7447076705b0edb58b5e7585017d233775c56465a7f0f4d30c62dd83ddf0",
+      "hash_policy": "raw_binary"
+    }
+  ],
+  "external_project": {
+    "path": "Z:/Code/Python/pixel-perfecter",
+    "vendored": false,
+    "source_fingerprints_in": "native/tools/raster/raider-death-sw-candidates/v1/raider-death-sw-candidate.provenance.json"
+  },
+  "reproduction": "Run existing import_assets.py with raider-death-sw-candidate.json. No rejected intermediate file or Python repainting is required."
+}

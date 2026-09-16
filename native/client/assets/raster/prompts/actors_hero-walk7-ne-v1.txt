@@ -1,0 +1,6 @@
+Use case: identity-preserve
+Reference1 is the accepted hero identity and upper-right BACK-view anchor. Reference2 is the preceding walking pose. Preserve the hero's clothes, warm palette, adult proportions, camera, full trousers, physical right bronze shoulder and physical left sash.
+
+Create the next Northeast walk frame, the UP phase after reference2. Change one movement: swing the raised SCREEN-LEFT leg forward. Its knee now advances toward UPPER-RIGHT across the hip line, with the boot lifted and tucked below that knee near the right side of the body. The SCREEN-RIGHT supporting leg straightens onto its toes; heel lifts slightly. The torso rises only a little. This is a narrow raised-knee silhouette, not a wide planted contact. Both toes point upper-right. Empty hands counter-swing.
+
+Maintain actual back-facing upper-right view and the same pixel-art construction and scale. One full isolated frame with actual transparent alpha and generous margin.

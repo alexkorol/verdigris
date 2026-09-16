@@ -1,0 +1,59 @@
+{
+  "generation_tool": "built-in image_gen",
+  "selected_model": "Not exposed by tool",
+  "generated_original": "C:/Users/Alex/.codex/generated_images/01a0896d-2712-78b1-8ee3-5e362a202349/exec-8382b90d-18b2-4c6b-989b-9a3515efbb2a.png",
+  "source": {
+    "path": "native/client/assets/raster/source/raider-walk-se-v3.png",
+    "sha256": "ca56ad851a57787533f5b2f8903c14cd3f5374d430a1d3b45cc029daa4ff9b3d"
+  },
+  "prompt": {
+    "path": "native/client/assets/raster/prompts/raider-walk-se-v3.txt",
+    "sha256": "c520e9309662df35837aad1fa5cf55cdea8ebcf2c4abaa5faecea54082fb773d"
+  },
+  "submitted_prompt": "Edit Image 1, our eight-frame raider sheet. Correct the walking legs using Image 2: each numbered pose in Image 2 supplies ONLY the corresponding hip, knee and boot positions for that cell. Follow its exact ordered progression from wide stance, through narrow passing, to the opposite leg crossing forward, then back to wide stance. In particular, bottom-left must show the opposite leg crossing in front of the body compared with top-left. Retain Image 1's upper body, lower-right facing, axe carry, body size and cell registration.\n\nImage 3 is our original character and equipment identity: bone mask, topknot, charcoal-blue shoulder cloth, ochre sash, leather boots and the broad bronze axe in his anatomical right hand on screen-left. Dress the corrected legs in his same clothing. Image 2 supplies motion only; do not copy its character, armor, proportions, shading, labels or background. Keep our grounded adult pixel art and small supporting weight shift. Return the same four-column by two-row sheet with crisp clusters, generous margins, and actual alpha transparency, without grid lines or text.\n",
+  "references": [
+    {
+      "path": "native/client/assets/raster/source/raider-walk-se-v2.png",
+      "sha256": "93d3df086fb3d82550f689d529dcfa930cb637805c2f02c4f825822fdb7a1967",
+      "role": "EDIT TARGET: preserve raider upper body, axe hand, facing and cell placement; change legs.",
+      "inspected_before_call": true
+    },
+    {
+      "path": "C:/Users/Alex/Documents/ChatGPT/diablo-reference-cache/motion-study-20260909/body-corrected-cof/se-ordered-4x2-3x.png",
+      "sha256": "8aa6390175aeb6f5d9586de8a44222f7e183fd30cff32452b83f04577bfedc4e",
+      "role": "MOTION ONLY: corresponding eight ordered hip/knee/boot positions; do not copy costume, rendering, labels or background.",
+      "inspected_before_call": true,
+      "external_reference_not_copied_into_repository": true
+    },
+    {
+      "path": "native/client/assets/raster/runtime/raider_se.png",
+      "sha256": "bd0db16b309b39705764b05fff310401e61d932caae010117f0efcc2acf421d0",
+      "role": "ORIGINAL IDENTITY: adult lower-right raider, anatomy/clothing/pixelstyle/camera and anatomical-right axe hand.",
+      "inspected_before_call": true
+    }
+  ],
+  "recipe": {
+    "url": "https://www.reddit.com/r/aigamedev/comments/1wbmvnm/gpt_image_25_nailed_a_16_frame_combat_sprite_sheet/",
+    "original_inspected": "Opened original page and read creator prompt/source-sheet-GIF explanation during this task.",
+    "published_prompt": "Make a simplified 128px pixel art combat motion sprite sheet of this character, transparent background if you can, arrange it 4x4.",
+    "adaptation": "Single reference character and motion sheet preserved; action changed to8 lower-right walking phases in4x2; native identity/equipment and explicit opposite contacts added.",
+    "evidence_limits": "Creator reports GPT Image2.5 via Atlas Cloud with a commercial provider link; variant and independence unspecified. It is a combat study, not a demonstrated raider gait. Our external ordered-pose correction is a local experiment, not a published D2 recipe."
+  },
+  "correction": "Final focused lower-body repair using existing validated external SE ordered motion reference.",
+  "observed_source": {
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "actual_alpha": false,
+    "background": "Opaque painted checker; transparency request failed.",
+    "facing": "Lower-right retained in all8 cells.",
+    "handedness": "Axe remains in anatomical-right/screen-left hand; opposite hand empty.",
+    "phase_failure": "Anatomical-left leg from screen-right hip leads every contact; anatomical-right/axe-side leg remains trailing/occluded. No accepted opposite contact.",
+    "identity_drift": "Broader adult body, simplified coarse costume masses and shorter/thicker axe compared with original SE idle.",
+    "status": "rejected_as_full_walk"
+  },
+  "candidate_only": true,
+  "runtime_promoted": false
+}

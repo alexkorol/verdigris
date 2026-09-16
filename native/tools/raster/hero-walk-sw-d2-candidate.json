@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "output_dir": "d2-walk-candidates/sw",
+  "shared_palette_max_colors": 32,
+  "defaults": {
+    "cell_size": 5,
+    "alpha_mode": "crisp",
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "candidate_only_pending_phase_identity_review"
+  },
+  "known_limitations": [
+    "SW uses one measured450px row-origin stride; source crop boundary510 avoids neighboring feet. All poses retain sharedscale and original offsets within each row.",
+    "Border-connected background removal only; any enclosed pockets remain review defects and must be inspected before promotion."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/actors_hero-walk-sw-d2poses-v2.png",
+      "border_background": {
+        "color": [
+          210,
+          210,
+          210
+        ],
+        "tolerance": 95
+      },
+      "assets": [
+        {
+          "name": "hero_walk0_sw",
+          "source_box": [
+            0,
+            0,
+            394,
+            510
+          ],
+          "anchor_source": [
+            197,
+            500
+          ]
+        },
+        {
+          "name": "hero_walk1_sw",
+          "source_box": [
+            394,
+            0,
+            788,
+            510
+          ],
+          "anchor_source": [
+            197,
+            500
+          ]
+        },
+        {
+          "name": "hero_walk2_sw",
+          "source_box": [
+            788,
+            0,
+            1181,
+            510
+          ],
+          "anchor_source": [
+            197,
+            500
+          ]
+        },
+        {
+          "name": "hero_walk3_sw",
+          "source_box": [
+            1181,
+            0,
+            1575,
+            510
+          ],
+          "anchor_source": [
+            197,
+            500
+          ]
+        },
+        {
+          "name": "hero_walk4_sw",
+          "source_box": [
+            0,
+            510,
+            394,
+            999
+          ],
+          "anchor_source": [
+            197,
+            440
+          ]
+        },
+        {
+          "name": "hero_walk5_sw",
+          "source_box": [
+            394,
+            510,
+            788,
+            999
+          ],
+          "anchor_source": [
+            197,
+            440
+          ]
+        },
+        {
+          "name": "hero_walk6_sw",
+          "source_box": [
+            788,
+            510,
+            1181,
+            999
+          ],
+          "anchor_source": [
+            197,
+            440
+          ]
+        },
+        {
+          "name": "hero_walk7_sw",
+          "source_box": [
+            1181,
+            510,
+            1575,
+            999
+          ],
+          "anchor_source": [
+            197,
+            440
+          ]
+        }
+      ]
+    }
+  ]
+}

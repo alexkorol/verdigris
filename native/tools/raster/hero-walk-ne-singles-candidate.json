@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "output_dir": "walk-ne-candidates/singles",
+  "shared_palette_max_colors": 32,
+  "defaults": {
+    "cell_size": 11,
+    "alpha_mode": "crisp",
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "anchor_source": [
+      572,
+      1122
+    ],
+    "acceptance": "candidate_only_incomplete_cycle"
+  },
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/actors_hero-walk6-ne-v1.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_walk6_ne",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/actors_hero-walk7-ne-v1.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_walk7_ne",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  ]
+}

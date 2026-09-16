@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "output_dir": "../../../.ci-artifacts/hero-strike-identity/v4",
+  "defaults": {
+    "cell_size": 10,
+    "alpha_mode": "crisp",
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "unaccepted_identity_repair_candidate",
+    "max_colors": 32
+  },
+  "known_limitations": [
+    "Generated isolated ready0 source body610px; cell10 gives61-62 nativepx. Compare raw grid result and one whole-sprite normalization to63px (same idle bodyheight), retaining source aspect and foot origin. The normalization is for this isolated identity diagnostic, not individual rescaling of an animation cycle."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/actors_hero-strike-se-identity-v4-ready0.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero-strike-identity-v4-ready0-grid10",
+          "cell": [
+            0,
+            0
+          ],
+          "anchor_source": [
+            595,
+            1090
+          ]
+        },
+        {
+          "name": "hero-strike-identity-v4-ready0-height63",
+          "cell": [
+            0,
+            0
+          ],
+          "anchor_source": [
+            595,
+            1090
+          ],
+          "preserve_scale": false,
+          "fit": [
+            80,
+            63
+          ],
+          "allow_upscale": true
+        }
+      ]
+    }
+  ]
+}

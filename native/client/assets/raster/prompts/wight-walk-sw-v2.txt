@@ -1,0 +1,7 @@
+Produce one corrected walking frame of the wight.
+
+Image 1 is the STRICT lower-body pose and foot-contact guide for the opposite contact. Image 2 is the wight frame to edit. Image 3 is the original wight identity reference. Preserve Image 2's skull, torso, arms, torn brown cloth, camera, apparent scale and crisp pixel style; use only Image 1's leg geometry, never its hero appearance or boots.
+
+Change the leading leg to the opposite one: the anatomical LEFT femur begins at the screen-right side of the pelvis and leads forward toward lower-left, with its knee and skeletal foot supporting the body. Show a continuous visible bone connection from that screen-right hip through the forward knee. The anatomical RIGHT leg begins at the screen-left hip and trails behind toward upper-right. Let the existing torn cloth part naturally enough to make those two hip-to-knee connections readable. Do not repeat the old long screen-left shin emerging directly from the screen-left hip.
+
+Keep the same adult bare skull/ribs/bony hands and feet, natural bone-and-brown colors and lower-left facing. No new gear, flesh, green or chibi changes. Return exactly one full-body frame with actual transparent alpha, including the gaps around the pale skeletal fingers and limbs. No painted checker, labels, ground or effects.

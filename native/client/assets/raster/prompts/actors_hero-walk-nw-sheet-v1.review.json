@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 1,
+  "generatedOn": "2026-09-09",
+  "generationMode": "built-in image_gen",
+  "modelSelection": "No model/variant selector exposed; do not assert specific variant.",
+  "status": "Two isolated opposite-contact diagnostics reconstructed through Pixel Respecter and inspected at native80x96 and3x. Eight-frame NW walk remains incomplete. Further generation held at coordinator request for ordered movement references.",
+  "attempts": [
+    {
+      "id": "sheet-v1",
+      "source": "native/client/assets/raster/source/actors_hero-walk-nw-sheet-v1.png",
+      "prompt": "native/client/assets/raster/prompts/actors_hero-walk-nw-sheet-v1.txt",
+      "original": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-55247efa-7a28-452c-bcc3-432f1eb8011f.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "sha256": "b8329b812e93c52677daece202ddc9d1f3ebf81a1612791429b74f8485fee6df",
+      "refs": [
+        {
+          "path": "native/client/assets/raster/runtime/hero_nw.png",
+          "role": "Accepted character identity, upper-left back-facing view, camera, palette, and pixel style.",
+          "inspectedWith": "view_image"
+        }
+      ],
+      "status": "rejected",
+      "observations": [
+        "All eight cells repeat the same leading-leg/contact silhouette with only small upper-body variations.",
+        "Actual alpha failed: painted gray/white background.",
+        "Not a complete walk cycle; do not import as eight usable walk frames."
+      ],
+      "nominalLayout": {
+        "columns": 4,
+        "rows": 2,
+        "order": "row-major",
+        "cell": [
+          384,
+          512
+        ]
+      }
+    },
+    {
+      "id": "sheet-v1-retry",
+      "source": "native/client/assets/raster/source/actors_hero-walk-nw-sheet-v1.retry.png",
+      "prompt": "native/client/assets/raster/prompts/actors_hero-walk-nw-sheet-v1.retry.txt",
+      "original": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-87a6fbdd-05e6-4ca0-96bc-5774ec363599.png",
+      "size": [
+        1402,
+        1122
+      ],
+      "mode": "RGB",
+      "sha256": "cd5214edc881106781770b5717ecb30d1fb89be18afe77d1d39eb232ada9dbd8",
+      "refs": [
+        {
+          "path": "native/client/assets/raster/runtime/hero_nw.png",
+          "role": "Accepted character identity, upper-left back-facing view, camera, palette, and pixel style.",
+          "inspectedWith": "view_image"
+        }
+      ],
+      "status": "rejected as full cycle",
+      "observations": [
+        "Passing/lift silhouettes become distinguishable, but opposite contact frames1and5 still use the same leg arrangement.",
+        "Second row largely repeats the first half-cycle, with some body-height/torso drift.",
+        "Actual alpha failed: painted background."
+      ]
+    },
+    {
+      "id": "isolated-frame0",
+      "source": "native/client/assets/raster/source/actors_hero-walk-nw-sheet-v1.frame0.png",
+      "prompt": "native/client/assets/raster/prompts/actors_hero-walk-nw-sheet-v1.frame0.txt",
+      "original": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-0694f20e-6677-4a87-b9f9-39d85ce15a0e.png",
+      "size": [
+        1145,
+        1374
+      ],
+      "mode": "RGBA",
+      "alphaZeroPixels": 1437767,
+      "sha256": "9fde5306906dee27429939114312798b3760f09591a354e619c81726ca95c57c",
+      "refs": [
+        {
+          "path": "native/client/assets/raster/runtime/hero_nw.png",
+          "role": "Accepted character identity, upper-left back-facing view, camera, palette, and pixel style.",
+          "inspectedWith": "view_image"
+        },
+        {
+          "path": "native/client/assets/raster/runtime/hero_walk0_se.png",
+          "role": "Accepted anatomical left-contact pose only; not identity or camera.",
+          "inspectedWith": "view_image"
+        }
+      ],
+      "status": "useful contact candidate; runtime review pending",
+      "observations": [
+        "Left support / right trailing silhouette, back and left-facing profile visible.",
+        "Bronze remains on physical right, but accent shifted from shoulder toward forearm relative to original identity anchor.",
+        "Right trailing boot extends lower on the image than planted left boot; do not independently align each frame by its lowest nontransparent pixel."
+      ],
+      "bodyBoundsApprox": [
+        409,
+        450,
+        742,
+        1205
+      ],
+      "observedPixelPitchApprox": 12
+    },
+    {
+      "id": "isolated-frame4-first",
+      "source": "native/client/assets/raster/source/actors_hero-walk-nw-sheet-v1.frame4-rejected.png",
+      "prompt": "native/client/assets/raster/prompts/actors_hero-walk-nw-sheet-v1.frame4.txt",
+      "original": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-d929e7aa-de14-4101-a8d1-8229addf1bd6.png",
+      "size": [
+        1145,
+        1374
+      ],
+      "mode": "RGB",
+      "sha256": "1ee7e1ac86cbc3315e179b9b28448b8d202a1172b723cb01c1ea549a1bc5b066",
+      "refs": [
+        {
+          "path": "native/client/assets/raster/runtime/hero_nw.png",
+          "role": "Accepted character identity, upper-left back-facing view, camera, palette, and pixel style.",
+          "inspectedWith": "view_image"
+        },
+        {
+          "path": "native/client/assets/raster/runtime/hero_walk2_se.png",
+          "role": "Accepted opposite anatomical right-contact pose only; not identity or camera.",
+          "inspectedWith": "view_image"
+        }
+      ],
+      "status": "rejected",
+      "observations": [
+        "Despite opposite SE phase reference, repeats frame0 leg configuration.",
+        "Bronze forearm accent flips to screen-left, violating physical-right invariant.",
+        "Actual alpha failed: painted background."
+      ]
+    },
+    {
+      "id": "isolated-frame4-correction",
+      "source": "native/client/assets/raster/source/actors_hero-walk-nw-sheet-v1.frame4.retry.png",
+      "prompt": "native/client/assets/raster/prompts/actors_hero-walk-nw-sheet-v1.frame4.retry.txt",
+      "original": "C:/Users/Alex/.codex/generated_images/01a0896d-63f4-7432-b1cd-d54c4e9b5ee0/exec-1529dc0d-42ec-40ea-b6a5-12ff42847691.png",
+      "size": [
+        1145,
+        1374
+      ],
+      "mode": "RGB",
+      "sha256": "0d73298764097b65753d800364d9581937b179bfd22938995877c1f9ee11a59e",
+      "refs": [
+        {
+          "path": "native/client/assets/raster/runtime/hero_nw.png",
+          "role": "Accepted character identity, upper-left back-facing view, camera, palette, and pixel style.",
+          "inspectedWith": "view_image"
+        },
+        {
+          "path": "native/client/assets/raster/source/actors_hero-walk-nw-sheet-v1.frame0.png",
+          "role": "Edit target; preserve upper body/canvas, change legs to opposite contact.",
+          "inspectedWith": "view_image"
+        },
+        {
+          "path": "native/client/assets/raster/runtime/hero_walk2_se.png",
+          "role": "Accepted opposite anatomical right-contact pose only; not identity or camera.",
+          "inspectedWith": "view_image"
+        }
+      ],
+      "status": "useful opposite contact candidate; runtime review pending",
+      "observations": [
+        "Distinct opposite support: screen-right leg planted and screen-left boot raised/trailing outward. Upper body stays close to frame0.",
+        "Bronze remains screen-right and sash screen-left; same forearm-versus-shoulder caveat as frame0.",
+        "Actual alpha failed: dark gray painted pattern requires established background cleanup.",
+        "Same canvas/head placement as frame0; preserve shared cycle scale/body anchor rather than fitting each leg extent separately."
+      ],
+      "observedPixelPitchApprox": 12
+    }
+  ],
+  "nextCheck": "Pixel Respecter diagnostic contact pair and ordered original movement pose references. Complete other phases only after meaningful alternation and preserved identity/view are verified.",
+  "diagnosticRuntimeReview": {
+    "preview": "native/tools/raster/walk-nw-candidates/contacts/preview-3x.png",
+    "frames": [
+      "native/tools/raster/walk-nw-candidates/contacts/hero_walk0_nw.png",
+      "native/tools/raster/walk-nw-candidates/contacts/hero_walk4_nw.png"
+    ],
+    "canvas": [
+      80,
+      96
+    ],
+    "sharedCellSize": 12,
+    "sharedSourceOrigin": [
+      572,
+      1212
+    ],
+    "sharedPaletteColors": 32,
+    "inspectedWith": "view_image",
+    "observations": [
+      "Opposite leg support remains distinguishable in native and3x output.",
+      "Frame4's lowest sole extent ends about5nativepixels above frame0. Head/pelvis remain nearly fixed; independent baseline fitting would introduce upper-body jitter.",
+      "Both retained candidates keep bronze screen-right, but forearm emphasis differs from accepted idle shoulder pauldron.",
+      "These are diagnostic motion candidates, not accepted replacement identity anchors or a complete playable cycle."
+    ],
+    "acceptance": "not accepted for runtime enablement; await ordered movement references and wardrobe/continuity review"
+  }
+}

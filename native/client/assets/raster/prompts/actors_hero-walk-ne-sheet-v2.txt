@@ -1,0 +1,13 @@
+Use case: precise-object-edit
+Image1 is the accepted hero IDENTITY anchor. Image2 is the eight-frame NE walk sheet EDIT TARGET. Keep the character, warm colors, adult proportions, brown tunic, full dark trousers, right bronze shoulder, left hip sash, empty hands and pixel-art style consistent with image1.
+
+Fix ONLY the BOTTOM ROW walking phases in image2. Keep the top row poses and all eight cell positions, head/torso size, camera and upper-right back-facing direction unchanged. Do not mirror the body or swap equipment sides.
+
+The existing bottom-left pose repeats the top-left pose: its LEFTMOST boot is LOW and its RIGHTMOST boot is HIGH. Reverse that visible leg arrangement in the bottom row:
+Bottom column1: the long straight supporting leg and LOW planted boot are on SCREEN-RIGHT; the bent advancing leg and HIGH raised boot are on SCREEN-LEFT. Clearly opposite the top-left contact silhouette.
+Bottom column2: same SCREEN-RIGHT leg supports and bends slightly; the SCREEN-LEFT boot rises and approaches the center.
+Bottom column3: SCREEN-RIGHT leg stays planted; the SCREEN-LEFT knee and raised boot pass across it near the center. It must be visibly the other leg passing from top-column3.
+Bottom column4: SCREEN-LEFT knee advances toward upper-right while SCREEN-RIGHT heel lifts, preparing the return to the top-left pose.
+Both boots' toes continue pointing upper-right, matching the character. Swing the empty hands opposite these corrected legs.
+
+Retain four columns and two rows, identical scale and fixed row baselines. Clear all background to actual transparent alpha.

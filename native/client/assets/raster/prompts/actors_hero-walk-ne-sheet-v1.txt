@@ -1,0 +1,16 @@
+Make a simplified64px pixel-art WALKING motion sprite sheet of this character, actual transparent background, arrange it4columns by2rows.
+
+Use the supplied original pixel sprite as the identity anchor. One character, one direction, one in-place walk cycle. Every frame faces UPPER-RIGHT / NORTHEAST, showing the actual back of the head and tunic. Preserve adult proportions, brown tunic, full dark trousers and lower-leg wraps, ordinary bronze guard on the character's physical RIGHT shoulder, sash on the physical LEFT hip, empty hands, camera elevation and warm natural palette. Keep deliberate square pixel clusters and24–32 flat colors.
+
+Eight chronological frames, read left-to-right across row1 then row2:
+1 left-foot forward contact, right foot trails;
+2 weight settles onto left foot;
+3 right foot passes underneath the hips while left supports;
+4 right knee advances, body rises slightly;
+5 right-foot forward contact, left foot trails—the OPPOSITE leg arrangement to frame1;
+6 weight settles onto right foot;
+7 left foot passes underneath hips while right supports;
+8 left knee advances, returning naturally to frame1.
+Arms swing opposite the legs. Show visibly different opposing contact silhouettes in frames1and5 and narrow passing silhouettes in frames3and7.
+
+Keep identical character scale and alignment with a fixed ground baseline in each row; hips stay in place with a small natural walking bob. Separate complete silhouettes with generous empty margins. All eight faces stay turned away upper-right. No labels or scenery.

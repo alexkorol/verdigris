@@ -1,0 +1,52 @@
+{
+  "generation_tool": "built-in image_gen",
+  "selected_model": "Not exposed by tool",
+  "generated_original": "C:/Users/Alex/.codex/generated_images/01a0896d-2712-78b1-8ee3-5e362a202349/exec-87eb77f8-175b-4460-81a6-8d42ddb5fadf.png",
+  "source": {
+    "path": "native/client/assets/raster/source/raider-walk-se-v2.png",
+    "sha256": "93d3df086fb3d82550f689d529dcfa930cb637805c2f02c4f825822fdb7a1967"
+  },
+  "prompt": {
+    "path": "native/client/assets/raster/prompts/raider-walk-se-v2.txt",
+    "sha256": "cc6c3e439eb07ebf5b4490f3845684b7355e0ceea56e38780c3008a67ffc976b"
+  },
+  "submitted_prompt": "Edit Image 1, the eight-frame walking sheet. Repair ONLY the legs and supporting weight: all current frames repeat the same forward boot, so they do not walk. Image 2 is the original identity, adult proportions, lower-right camera, clothing and axe-hand reference.\n\nKeep the same upper bodies, axe in the anatomical-right/screen-left hand, grid, scale and cell positions. In the TOP ROW, bring the leg that starts under the SCREEN-LEFT hip forward across the body toward LOWER-RIGHT: first cell has this leg extended in front, its boot is the forward/lower-right boot, while the other leg extends behind toward upper-left. In cells2 and3 this planted leg takes the weight and the other bent knee passes it; cell4 prepares the other leg's contact. In the BOTTOM ROW reverse the legs: the leg starting under the SCREEN-RIGHT hip plants forward while the screen-left hip's leg trails, then bends and passes forward into the top-left pose. The two contact silhouettes must visibly have opposite legs crossing in front, rather than identical legs with altered shading.\n\nEight ordered phases of one in-place walk, four columns by two rows. Retain the bone mask, dark topknot, charcoal-blue shoulder cloth, ochre sash, leather boots and broad bronze axe. Keep all heads and toes facing lower-right, constant body size and ground plane, with very small weight bob. Return crisp low-resolution pixel clusters with actual transparent alpha and no painted transparency checker.\n",
+  "references": [
+    {
+      "path": "native/client/assets/raster/source/raider-walk-se-v1.png",
+      "sha256": "d395ec12c68d7af84f568f660cd5c02eeea82d34983477ef1d4093951af43d3b",
+      "role": "EDIT TARGET: preserve raider upper body, axe hand, facing and cell placement; change legs.",
+      "inspected_before_call": true
+    },
+    {
+      "path": "native/client/assets/raster/runtime/raider_se.png",
+      "sha256": "bd0db16b309b39705764b05fff310401e61d932caae010117f0efcc2acf421d0",
+      "role": "ORIGINAL IDENTITY: adult lower-right raider, anatomy/clothing/pixelstyle/camera and anatomical-right axe hand.",
+      "inspected_before_call": true
+    }
+  ],
+  "recipe": {
+    "url": "https://www.reddit.com/r/aigamedev/comments/1wbmvnm/gpt_image_25_nailed_a_16_frame_combat_sprite_sheet/",
+    "original_inspected": "Opened original page and read creator prompt/source-sheet-GIF explanation during this task.",
+    "published_prompt": "Make a simplified 128px pixel art combat motion sprite sheet of this character, transparent background if you can, arrange it 4x4.",
+    "adaptation": "Single reference character and motion sheet preserved; action changed to8 lower-right walking phases in4x2; native identity/equipment and explicit opposite contacts added.",
+    "evidence_limits": "Creator reports GPT Image2.5 via Atlas Cloud with a commercial provider link; variant and independence unspecified. It is a combat study, not a demonstrated raider gait. Our external ordered-pose correction is a local experiment, not a published D2 recipe."
+  },
+  "correction": "Focused lower-body alternation repair after same-leg repetition.",
+  "observed_source": {
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "actual_alpha": false,
+    "background": "Opaque painted checker; transparency request failed.",
+    "facing": "Lower-right retained in all8 cells.",
+    "handedness": "Axe remains in anatomical-right/screen-left hand; opposite hand empty.",
+    "phase_failure": "Anatomical-left leg from screen-right hip leads every contact; anatomical-right/axe-side leg remains trailing/occluded. No accepted opposite contact.",
+    "identity_drift": "Broader adult body, simplified coarse costume masses and shorter/thicker axe compared with original SE idle.",
+    "status": "rejected_as_full_walk"
+  },
+  "candidate_only": true,
+  "runtime_promoted": false
+}

@@ -1,0 +1,124 @@
+{
+  "version": 1,
+  "output_dir": "../../../.ci-artifacts/hero-strike-identity/v3",
+  "shared_palette_max_colors": 32,
+  "defaults": {
+    "cell_size": 7,
+    "alpha_mode": "crisp",
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "unaccepted_identity_repair_candidate"
+  },
+  "known_limitations": [
+    "Same cell7 and source origins as current strike sequence. RGB checker cleanup is reviewed separately. Candidate only, no runtime overwrite."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/actors_hero-strike-se-identity-v3.png",
+      "grid": [
+        1,
+        1
+      ],
+      "border_background": {
+        "color": [
+          220,
+          220,
+          220
+        ],
+        "tolerance": 80,
+        "interior_windows": [
+          [
+            614,
+            315,
+            645,
+            359
+          ]
+        ]
+      },
+      "assets": [
+        {
+          "name": "hero-strike-identity-v3-0",
+          "source_box": [
+            0,
+            0,
+            400,
+            687
+          ],
+          "anchor_source": [
+            200,
+            630
+          ]
+        },
+        {
+          "name": "hero-strike-identity-v3-1",
+          "source_box": [
+            400,
+            0,
+            775,
+            687
+          ],
+          "anchor_source": [
+            190,
+            630
+          ]
+        },
+        {
+          "name": "hero-strike-identity-v3-2",
+          "source_box": [
+            775,
+            0,
+            1145,
+            687
+          ],
+          "anchor_source": [
+            185,
+            630
+          ]
+        },
+        {
+          "name": "hero-strike-identity-v3-3",
+          "source_box": [
+            0,
+            687,
+            440,
+            1374
+          ],
+          "anchor_source": [
+            200,
+            543
+          ]
+        },
+        {
+          "name": "hero-strike-identity-v3-4",
+          "source_box": [
+            440,
+            687,
+            780,
+            1374
+          ],
+          "anchor_source": [
+            150,
+            543
+          ]
+        },
+        {
+          "name": "hero-strike-identity-v3-5",
+          "source_box": [
+            780,
+            687,
+            1145,
+            1374
+          ],
+          "anchor_source": [
+            180,
+            543
+          ]
+        }
+      ]
+    }
+  ]
+}

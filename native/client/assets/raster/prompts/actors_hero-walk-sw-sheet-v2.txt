@@ -1,0 +1,18 @@
+Use case: precise-object-edit
+Reference 1 is the accepted hero identity. Reference 2 is the 4-column x2-row sheet to correct. Keep its exact hero, clothing, empty hands, lower-left facing, scale, palette, head/torso alignment and 8-cell arrangement.
+
+Fix only the walking motion. The current sheet wrongly plants the same screen-left boot in every frame. The two halves must use OPPOSITE supporting legs:
+TOP ROW, frames0–3: the SCREEN-RIGHT leg supports the body while the screen-left leg swings through.
+BOTTOM ROW, frames4–7: the SCREEN-LEFT leg supports the body while the screen-right leg swings through.
+Do not mirror the whole character or swap the bronze guard and sash. Both boot toes still point LEFT.
+
+Make these eight chronological phases clearly readable:
+0 rightmost boot LOW and planted forward, leftmost boot HIGH and trailing back.
+1 weight sinks slightly onto the rightmost leg, its knee flexes, trailing leftmost boot begins lifting forward.
+2 rightmost leg straight under pelvis, raised leftmost knee and boot PASS CLOSE beside it, a narrow silhouette.
+3 rightmost heel lifts in push-off; leftmost leg reaches FORWARD ready to land.
+4 leftmost boot LOW and planted forward, rightmost boot HIGH and trailing back — the opposite contact from frame0.
+5 weight sinks slightly onto the leftmost leg, its knee flexes, trailing rightmost boot begins lifting forward.
+6 leftmost leg straight under pelvis, raised rightmost knee and boot PASS CLOSE beside it, opposite of frame2.
+7 leftmost heel lifts in push-off; rightmost leg reaches FORWARD ready to land in frame0.
+Arms swing gently opposite the stepping legs. Keep motion in-place, full silhouettes inside their cells and one consistent ground plane. Preserve the exact mature adult anatomy and pixel-art design. Actual transparent alpha background.

@@ -1,0 +1,5 @@
+Edit Image 1, the preceding wind-up pose. Image 2 is the accepted original character and pixel-style anchor; preserve its adult build, clothing, natural palette and upper-right/back camera.
+
+Advance only to one committed LEFT-hand contact pose. The unarmored arm attached to the screen-left shoulder straightens diagonally upward and forward toward the upper-right: its elbow stays just left of the head, and its wrapped forearm reaches above the head to the extended fist. Make that shoulder-to-elbow-to-fist connection readable. The OTHER arm, under the bronze guard on screen-right, remains bent close to the ribs in exactly its guarding role. Both hands remain empty.
+
+Let the torso lean slightly into the blow and keep the feet grounded. Preserve the original camera, body scale and pixel clusters; keep the blue sash on the anatomical left hip as in Image 2. Return ONE complete isolated pixel-art figure with generous arm clearance on a genuinely transparent background, no checkerboard, text or grid.

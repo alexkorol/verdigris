@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "output_dir": "walk-nw-candidates/contacts",
+  "shared_palette_max_colors": 32,
+  "defaults": {
+    "cell_size": 12,
+    "alpha_mode": "crisp",
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "anchor_source": [
+      572,
+      1212
+    ],
+    "acceptance": "candidate_only_incomplete_cycle"
+  },
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/actors_hero-walk-nw-sheet-v1.frame0.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_walk0_nw",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/actors_hero-walk-nw-sheet-v1.frame4.retry.png",
+      "grid": [
+        1,
+        1
+      ],
+      "assets": [
+        {
+          "name": "hero_walk4_nw",
+          "cell": [
+            0,
+            0
+          ]
+        }
+      ],
+      "border_background": {
+        "color": [
+          173,
+          173,
+          173
+        ],
+        "tolerance": 95
+      }
+    }
+  ]
+}

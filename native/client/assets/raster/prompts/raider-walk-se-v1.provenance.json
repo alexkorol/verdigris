@@ -1,0 +1,46 @@
+{
+  "generation_tool": "built-in image_gen",
+  "selected_model": "Not exposed by tool",
+  "generated_original": "C:/Users/Alex/.codex/generated_images/01a0896d-2712-78b1-8ee3-5e362a202349/exec-ac73c699-5ed1-4942-b2e4-b81a3012f47c.png",
+  "source": {
+    "path": "native/client/assets/raster/source/raider-walk-se-v1.png",
+    "sha256": "d395ec12c68d7af84f568f660cd5c02eeea82d34983477ef1d4093951af43d3b"
+  },
+  "prompt": {
+    "path": "native/client/assets/raster/prompts/raider-walk-se-v1.txt",
+    "sha256": "5876739872cb4d597159f8aae2ffd08443025de008991ac6098571abf257b57b"
+  },
+  "submitted_prompt": "Make a simplified pixel art walking motion sprite sheet of the character in Image 1, actual transparent background, arrange eight chronological frames in 4 columns by 2 rows.\n\nImage 1 is the sole identity, equipment, pixel style and camera reference. Keep his grounded adult proportions, bone mask, dark hair/topknot, charcoal-blue cloth around the neck and shoulders, ochre sash, leather wraps and boots, and the same broad bronze axe in his anatomical RIGHT hand (the near hand on screen-left). The opposite hand stays empty. Every frame faces LOWER-RIGHT, showing the same front-right three-quarter view. Preserve the reference's roughly 56-pixel crown-to-sole body construction and deliberate crisp square clusters, using at most 32 natural colors.\n\nOne complete in-place walk: frame0 right foot forward contact/left foot back; frame1 weight down onto right foot; frame2 right leg supporting while left foot passes it; frame3 left knee advances; frame4 left foot forward contact/right foot back; frame5 weight down onto left foot; frame6 left leg supporting while right foot passes it; frame7 right knee advances back into frame0. Show actual alternating legs and planted weight with small torso bob and a restrained natural axe carry. Keep the same camera, body size, central ground origin and feet plane in every equal cell. Leave empty margin around every full figure and axe. No labels or grid lines.\n",
+  "references": [
+    {
+      "path": "native/client/assets/raster/runtime/raider_se.png",
+      "sha256": "bd0db16b309b39705764b05fff310401e61d932caae010117f0efcc2acf421d0",
+      "role": "ORIGINAL IDENTITY: adult lower-right raider, anatomy/clothing/pixelstyle/camera and anatomical-right axe hand.",
+      "inspected_before_call": true
+    }
+  ],
+  "recipe": {
+    "url": "https://www.reddit.com/r/aigamedev/comments/1wbmvnm/gpt_image_25_nailed_a_16_frame_combat_sprite_sheet/",
+    "original_inspected": "Opened original page and read creator prompt/source-sheet-GIF explanation during this task.",
+    "published_prompt": "Make a simplified 128px pixel art combat motion sprite sheet of this character, transparent background if you can, arrange it 4x4.",
+    "adaptation": "Single reference character and motion sheet preserved; action changed to8 lower-right walking phases in4x2; native identity/equipment and explicit opposite contacts added.",
+    "evidence_limits": "Creator reports GPT Image2.5 via Atlas Cloud with a commercial provider link; variant and independence unspecified. It is a combat study, not a demonstrated raider gait. Our external ordered-pose correction is a local experiment, not a published D2 recipe."
+  },
+  "correction": "Initial study.",
+  "observed_source": {
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "actual_alpha": false,
+    "background": "Opaque painted checker; transparency request failed.",
+    "facing": "Lower-right retained in all8 cells.",
+    "handedness": "Axe remains in anatomical-right/screen-left hand; opposite hand empty.",
+    "phase_failure": "Anatomical-left leg from screen-right hip leads every contact; anatomical-right/axe-side leg remains trailing/occluded. No accepted opposite contact.",
+    "identity_drift": "Broader adult body, simplified coarse costume masses and shorter/thicker axe compared with original SE idle.",
+    "status": "rejected_as_full_walk"
+  },
+  "candidate_only": true,
+  "runtime_promoted": false
+}

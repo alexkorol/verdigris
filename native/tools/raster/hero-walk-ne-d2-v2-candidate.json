@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "output_dir": "d2-walk-candidates/ne-v2",
+  "shared_palette_max_colors": 32,
+  "defaults": {
+    "cell_size": 5,
+    "alpha_mode": "crisp",
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "candidate_only_pending_phase_identity_review"
+  },
+  "known_limitations": [
+    "One measured460px source row-origin stride preserves common head/torso level; equal physical scale uses sourcecell5. Original pose offsets remain within each row.",
+    "Candidate phase/pivot and enclosed-background artifacts require review before promotion."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/actors_hero-walk-ne-d2poses-v2.png",
+      "border_background": {
+        "color": [
+          180,
+          180,
+          180
+        ],
+        "tolerance": 100
+      },
+      "assets": [
+        {
+          "name": "hero_walk0_ne",
+          "source_box": [
+            0,
+            0,
+            394,
+            510
+          ],
+          "anchor_source": [
+            197,
+            515
+          ]
+        },
+        {
+          "name": "hero_walk1_ne",
+          "source_box": [
+            394,
+            0,
+            788,
+            510
+          ],
+          "anchor_source": [
+            197,
+            515
+          ]
+        },
+        {
+          "name": "hero_walk2_ne",
+          "source_box": [
+            788,
+            0,
+            1181,
+            510
+          ],
+          "anchor_source": [
+            196,
+            515
+          ]
+        },
+        {
+          "name": "hero_walk3_ne",
+          "source_box": [
+            1181,
+            0,
+            1575,
+            510
+          ],
+          "anchor_source": [
+            197,
+            515
+          ]
+        },
+        {
+          "name": "hero_walk4_ne",
+          "source_box": [
+            0,
+            510,
+            394,
+            999
+          ],
+          "anchor_source": [
+            197,
+            465
+          ]
+        },
+        {
+          "name": "hero_walk5_ne",
+          "source_box": [
+            394,
+            510,
+            788,
+            999
+          ],
+          "anchor_source": [
+            197,
+            465
+          ]
+        },
+        {
+          "name": "hero_walk6_ne",
+          "source_box": [
+            788,
+            510,
+            1181,
+            999
+          ],
+          "anchor_source": [
+            196,
+            465
+          ]
+        },
+        {
+          "name": "hero_walk7_ne",
+          "source_box": [
+            1181,
+            510,
+            1575,
+            999
+          ],
+          "anchor_source": [
+            197,
+            465
+          ]
+        }
+      ]
+    }
+  ]
+}

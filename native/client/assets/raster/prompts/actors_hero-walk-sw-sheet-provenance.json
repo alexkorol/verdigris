@@ -1,0 +1,66 @@
+{
+  "generator": "built-in image_gen",
+  "model_selection": "Tool has no model/variant parameter; no specific version selected.",
+  "scope": "Eight chronological southwest walk frames for one accepted adult hero; first try4x2 sheet, one targeted motion correction, individual reference-led fallback if needed.",
+  "identity_reference": "native/client/assets/raster/runtime/hero_sw.png",
+  "identity_reference_inspected": true,
+  "requested_layout": {
+    "columns": 4,
+    "rows": 2,
+    "order": "row-major chronological0..7"
+  },
+  "status": "Sheet attempts rejected for motion; additional generation temporarily held by parent while a decoded ordered motion reference is prepared. No individual fallback generation has been submitted.",
+  "attempts": [
+    {
+      "source": "actors_hero-walk-sw-sheet-v1.png",
+      "prompt": "actors_hero-walk-sw-sheet-v1.txt",
+      "references": [
+        {
+          "path": "native/client/assets/raster/runtime/hero_sw.png",
+          "role": "Accepted hero identity, costume, physical equipment sides, camera, pixel construction"
+        }
+      ],
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "fully_transparent_pixels": 1214398,
+      "observed_pixel_pitch_approx": 6,
+      "alpha128_body_height": 370,
+      "top_row_crown_y": 44,
+      "top_row_sole_y": 414,
+      "bottom_row_crown_y": 479,
+      "bottom_row_sole_y": 849,
+      "authored_row_origin_delta": 435,
+      "observed": "All8 keep low screen-left boot/support, screen-right boot makes small rear-foot changes. No reliable opposite contact or alternating passing phase. Body, costume, direction and anatomical equipment sides remain consistent.",
+      "audit": "Viewed by asset worker and independently inspected by pixel_pipeline; both reject as full walk cycle.",
+      "acceptance": "rejected"
+    },
+    {
+      "source": "actors_hero-walk-sw-sheet-v2.png",
+      "prompt": "actors_hero-walk-sw-sheet-v2.txt",
+      "references": [
+        {
+          "path": "native/client/assets/raster/runtime/hero_sw.png",
+          "role": "Accepted identity anchor"
+        },
+        {
+          "path": "native/client/assets/raster/source/actors_hero-walk-sw-sheet-v1.png",
+          "role": "Edit target; fix gait while preserving actor, grid, body scale and alignment"
+        }
+      ],
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGB",
+      "raw_background": "Baked light checkerboard",
+      "observed": "Knee flex and passing-like variation increase, especially top-row frame2, but ALL8 retain the same low screen-left boot. The intended top/bottom support swap still fails. Sharper source color does not establish usable motion.",
+      "acceptance": "rejected"
+    }
+  ],
+  "usable_properties": "Consistent one-actor identity, adult trousers/tunic/wraps, physical shoulder-guard/sash sides, lower-left torso and full silhouettes. V1 has real alpha. These are useful reference candidates only.",
+  "not_proven": "Alternating support, full chronological walk loop, actual game motion. No runtime walk imported from these candidates.",
+  "integration_boundary": "Only actors* sources/prompts changed by this worker. PixelRespecter conversion/import/runtime and renderer code owned by other workers."
+}

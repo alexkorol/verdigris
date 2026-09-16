@@ -1,0 +1,9 @@
+Make a simplified 64px pixel-art WALK motion sprite sheet of this character, transparent background if you can, arrange it 4 columns by 2 rows.
+
+Reference image 1 is the accepted character identity. Preserve this exact grounded adult hero, russet-brown tunic, full dark trousers, pale wrist wraps, brown boots, indigo sash and warm bronze shoulder guard on their same physical sides. Empty hands.
+
+All eight frames face SCREEN LOWER-LEFT in the same three-quarter front view and form one chronological in-place walking cycle, read left-to-right across the top row then left-to-right across the bottom row:
+0 left-foot contact; 1 weight settles onto that foot; 2 right foot passes the planted left foot; 3 right leg reaches forward; 4 right-foot contact; 5 weight settles onto that foot; 6 left foot passes the planted right foot; 7 left leg reaches forward toward frame 0.
+The two halves visibly alternate the supporting leg. Arms swing gently opposite the legs.
+
+Keep the character's camera, palette, pixel grid and adult anatomical scale fixed. Same crown-to-sole scale, consistent ground baseline inside each equal cell, generous transparent margins, no camera travel. Crisp deliberate pixel clusters like the reference, no labels, scenery or effects. Return exactly eight poses on actual transparent alpha.

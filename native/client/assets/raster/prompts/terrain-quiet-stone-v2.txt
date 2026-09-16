@@ -1,0 +1,7 @@
+Edit Image 1 to repair only the broken stone joints across its central horizontal and vertical crossing.
+
+Image 1 is the exact geometry edit target: the floor has been wrapped by half its width and height so its bad outer-edge joins now meet at the center. Within narrow bands around those two center lines, reconnect the worn limestone slab boundaries and carry each calm stone surface continuously across the crossing. Remove accidental cut-off joints and abrupt tone steps; do not draw a straight cross or a new border. Preserve the existing slab geometry, colors and pixel clusters outside those center bands, especially every outer edge.
+
+Image 2 is ONLY the original v1 material, quiet texture and palette reference. Keep those same muted warm-gray tones and broad flat masses; do not restore its original placement. No added grain, small stones, cracks, debris, depth, green or lighting changes.
+
+Return one opaque square floor in Image 1's offset arrangement, with the same logical64×64 square pixel construction and scale. Do not unshift it; tools will restore the original phase and check the repeated joins.

@@ -1,0 +1,10 @@
+Using Image 1 as the character identity, pixel-style and upper-right/back camera reference, create a six-frame pixel-art melee strike sheet. Image 2 is ONLY a reference for the ready-to-strike-to-recovery action beats and common body scale; do not copy its front-facing camera or redesign the character from it.
+
+CHARACTER
+Preserve Image 1's exact grounded adult body, dark brown hair, brown tunic, full dark trousers, pale wrist wraps, boots, bronze guard on the anatomical RIGHT shoulder and blue sash on the anatomical LEFT hip. Warm natural material colors and crisp low-resolution pixel clusters, with a crown-to-sole body designed for64 logical pixels. Empty hands throughout.
+
+ACTION
+One coherent physical LEFT-hand strike, seen from behind and facing diagonally toward the upper-right in all six frames. The same unarmored-side anatomical left arm performs the entire attack; the bronze-guarded right arm guards for balance. Six chronological poses:0 ready stance;1 clear wind-up with left fist drawn back and torso loading;2 committing with weight shifting forward and left elbow extending;3 contact with left fist fully extended toward upper-right;4 follow-through beyond the contact with torso momentum;5 recovery back toward the ready stance. Show actual joint, torso and weight changes, not translation or rotation of a frozen figure. Keep the fist and shoulder connected correctly even where the arm overlaps the torso. No weapon or magic effects.
+
+SHEET
+Exactly3 columns ×2 rows, one full character per cell, ordered left-to-right then top-to-bottom. Fixed camera, consistent body scale, stable ground baseline and registration, matching lighting and palette across frames. Allow generous empty margin for the fully extended arm. Every silhouette remains wholly inside its cell. Output an RGBA PNG with genuinely transparent alpha outside the characters, no checkerboard, scenery, labels, numbers, text or grid lines.

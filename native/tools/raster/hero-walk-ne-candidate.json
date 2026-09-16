@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "output_dir": "walk-ne-candidates/per-frame",
+  "defaults": {
+    "cell_size": 6,
+    "alpha_mode": "crisp",
+    "max_colors": 32,
+    "canvas": [
+      80,
+      96
+    ],
+    "trim": true,
+    "preserve_scale": true,
+    "require_transparency": true,
+    "anchor_source": [
+      192,
+      468
+    ],
+    "acceptance": "rejected_incomplete_phase_cycle_candidate_only"
+  },
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/actors_hero-walk-ne-sheet-v2.png",
+      "grid": [
+        4,
+        2
+      ],
+      "border_background": {
+        "color": [
+          232,
+          232,
+          232
+        ],
+        "tolerance": 85,
+        "interior_windows": [
+          [
+            1267,
+            192,
+            1287,
+            250
+          ],
+          [
+            516,
+            196,
+            538,
+            256
+          ],
+          [
+            888,
+            205,
+            907,
+            264
+          ],
+          [
+            627,
+            252,
+            633,
+            269
+          ],
+          [
+            884,
+            709,
+            911,
+            780
+          ]
+        ]
+      },
+      "assets": [
+        {
+          "name": "hero_walk0_ne",
+          "cell": [
+            0,
+            0
+          ]
+        },
+        {
+          "name": "hero_walk1_ne",
+          "cell": [
+            1,
+            0
+          ]
+        },
+        {
+          "name": "hero_walk2_ne",
+          "cell": [
+            2,
+            0
+          ]
+        },
+        {
+          "name": "hero_walk3_ne",
+          "cell": [
+            3,
+            0
+          ]
+        },
+        {
+          "name": "hero_walk4_ne",
+          "cell": [
+            0,
+            1
+          ]
+        },
+        {
+          "name": "hero_walk5_ne",
+          "cell": [
+            1,
+            1
+          ]
+        },
+        {
+          "name": "hero_walk6_ne",
+          "cell": [
+            2,
+            1
+          ]
+        },
+        {
+          "name": "hero_walk7_ne",
+          "cell": [
+            3,
+            1
+          ]
+        }
+      ]
+    }
+  ]
+}

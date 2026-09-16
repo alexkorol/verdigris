@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "generationTool": "built-in image_gen",
+  "model": "Not exposed by tool",
+  "status": "Incomplete cycle: targeted sheet revision plus isolated phase candidates. No final runtime motion acceptance.",
+  "workflow": "Read current AGENTS/PROMPTING/RESEARCH. Adapted Practical_Low29 short reference-to-motion-sheet prompt to one eight-frame NE walk. Targeted visible-foot correction retained original NE identity anchor; isolated fallback used accepted SE walk phase as a separately labelled pose reference.",
+  "reference": "native/client/assets/raster/runtime/hero_ne.png",
+  "requestedRuntimeNames": [
+    "hero_walk0_ne",
+    "hero_walk1_ne",
+    "hero_walk2_ne",
+    "hero_walk3_ne",
+    "hero_walk4_ne",
+    "hero_walk5_ne",
+    "hero_walk6_ne",
+    "hero_walk7_ne"
+  ],
+  "sheetCandidates": [
+    {
+      "version": 1,
+      "source": "native/client/assets/raster/source/actors_hero-walk-ne-sheet-v1.png",
+      "prompt": "native/client/assets/raster/prompts/actors_hero-walk-ne-sheet-v1.txt",
+      "generatedOriginal": "C:/Users/Alex/.codex/generated_images/01a0896f-29de-7452-bb4b-6fb64351c1eb/exec-28dce457-c11a-453f-8d4b-eb4cb39960fc.png",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "layout": {
+        "columns": 4,
+        "rows": 2,
+        "order": "row-major",
+        "cellWidth": 384,
+        "cellHeight": 512
+      },
+      "alpha": "RGB; fully opaque drawn background. Enclosed gaps require extraction.",
+      "review": "All eight face back NE; right bronze guard, left sash and full dark trousers retained. Frame4 repeats frame0 contact leg arrangement; frame6 repeats frame2 passing; second half lacks reliable opposite contact. Rejected as a full walk cycle."
+    },
+    {
+      "version": 2,
+      "source": "native/client/assets/raster/source/actors_hero-walk-ne-sheet-v2.png",
+      "prompt": "native/client/assets/raster/prompts/actors_hero-walk-ne-sheet-v2.txt",
+      "references": [
+        "native/client/assets/raster/runtime/hero_ne.png",
+        "native/client/assets/raster/source/actors_hero-walk-ne-sheet-v1.png"
+      ],
+      "generatedOriginal": "C:/Users/Alex/.codex/generated_images/01a0896f-29de-7452-bb4b-6fb64351c1eb/exec-8ff17c6c-7b05-487e-b52c-5e41589d1305.png",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "layout": {
+        "columns": 4,
+        "rows": 2,
+        "order": "row-major",
+        "cellWidth": 384,
+        "cellHeight": 512
+      },
+      "alpha": "RGB; fully opaque drawn background.",
+      "review": "Frame4 now credible opposite contact: straight low screen-right support and bent raised screen-left boot. Frame5 close to4 with limited down compression. Frame6 still repeats frame2 foreground boot. Frame7 returns to wide contact prematurely. Full cycle remains unaccepted.",
+      "mainMissingPhases": [
+        6,
+        7
+      ],
+      "phaseNeedingReview": [
+        5
+      ]
+    }
+  ],
+  "isolatedCandidates": [
+    {
+      "phase": 6,
+      "source": "native/client/assets/raster/source/actors_hero-walk6-ne-v1.png",
+      "prompt": "native/client/assets/raster/prompts/actors_hero-walk6-ne-v1.txt",
+      "references": [
+        {
+          "path": "native/client/assets/raster/runtime/hero_ne.png",
+          "role": "identity, NE back-view, camera and materials"
+        },
+        {
+          "path": "native/client/assets/raster/runtime/hero_walk3_se.png",
+          "role": "limb-phase only; front camera must not carry over"
+        }
+      ],
+      "generatedOriginal": "C:/Users/Alex/.codex/generated_images/01a0896f-29de-7452-bb4b-6fb64351c1eb/exec-0eb48b3d-a9dd-4fb0-93dd-0628422abfec.png",
+      "dimensions": [
+        1145,
+        1374
+      ],
+      "alpha": "RGBA, corner alpha0",
+      "review": "Clear long right leg planted screen-right, left boot raised screen-left; distinct from sheet frame2. Correct NE back view and equipment sides. Candidate sent to pipeline; shared-scale sequence review pending."
+    },
+    {
+      "phase": 7,
+      "source": "native/client/assets/raster/source/actors_hero-walk7-ne-v1.png",
+      "prompt": "native/client/assets/raster/prompts/actors_hero-walk7-ne-v1.txt",
+      "references": [
+        {
+          "path": "native/client/assets/raster/runtime/hero_ne.png",
+          "role": "original identity and NE view"
+        },
+        {
+          "path": "native/client/assets/raster/source/actors_hero-walk6-ne-v1.png",
+          "role": "preceding passing pose"
+        }
+      ],
+      "generatedOriginal": "C:/Users/Alex/.codex/generated_images/01a0896f-29de-7452-bb4b-6fb64351c1eb/exec-4aace1db-a3e6-4a85-bd76-fc086babafb2.png",
+      "dimensions": [
+        1145,
+        1374
+      ],
+      "alpha": "RGBA, corner alpha0",
+      "review": "Narrow raised-knee shape but apparent support-leg swap to screen-left compared with phase6. Rejected for intended next phase until ordered motion-reference validation."
+    }
+  ],
+  "handednessReview": "Both sheets and singles keep bronze on screen-right/anatomical right. Screen-left fist is anatomical left in these rear NE views. No obvious equipment-side flip found.",
+  "convertedCandidateReview": {
+    "nativeStrip": "native/tools/raster/walk-ne-candidates/shared/hero-walk-ne-strip-1x.png",
+    "integerContactSheet": "native/tools/raster/walk-ne-candidates/shared/hero-walk-ne-contact-4x.png",
+    "animationCandidate": "native/tools/raster/walk-ne-candidates/shared/hero-walk-ne-preview.gif",
+    "viewed": "Native1x strip and4x contact sheet viewed; animated playback not claimed.",
+    "pipeline": "Actual PixelRespecter whole-sheet cell6 joint reduction,32colors for entire cycle, fixed localorigin[192,468],80x96 outputs, all8 v2row-major; candidate only outside runtime.",
+    "findings": "Contact4 genuinely opposes0. Frame6 repeats2 foreground support boot. Frame7 is premature wide contact. Frame5 draws raised boot closer under hips but has little vertical down compression. Whole-cycle direction, pixel read and equipment sides remain coherent. Full cycle rejected pending missing phase corrections."
+  },
+  "pause": "Further generation paused by coordinator while motion_references exports ordered local walk pose references. Continue read-only phase/conversion inspection.",
+  "ownership": "Only actors_hero-walk-ne-sheet and isolated NE source/prompt artifacts. No runtime, importer, header, main or commits."
+}

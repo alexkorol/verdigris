@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-10",
+  "use_case": "identity-preserve",
+  "tool": "built-in image_gen.imagegen",
+  "model_selection": "No image model or variant selector was exposed or claimed.",
+  "prompt": {
+    "path": "native/client/assets/raster/prompts/wight-walk-sw-v2.txt",
+    "sha256": "a92b195ef5f27c1e077da626146c42ca155262421e3abf1021f41ed4c6f93372",
+    "role": "Exact submitted prompt, unchanged."
+  },
+  "references": [
+    {
+      "index": 1,
+      "path": "native/client/assets/raster/runtime/hero_walk4_sw.png",
+      "sha256": "4d5d8f023e4b300cadc543b7f343b303311a371e37b3b6f1f36db3c0a8b49fa3",
+      "role": "Strict opposite-contact lower-body geometry guide.",
+      "viewed_before_generation": true
+    },
+    {
+      "index": 2,
+      "path": "native/tools/raster/wight-walk-sw-candidates/wight-frame4-reference.png",
+      "sha256": "d2718361b8ee88ebe0bb409837ee5eedcef98fe71984960ba963fba48380447c",
+      "role": "Exact rawv1 frame4 crop to preserve upper body, clothes and scale.",
+      "viewed_before_generation": true
+    },
+    {
+      "index": 3,
+      "path": "native/client/assets/raster/runtime/wight_sw.png",
+      "sha256": "b2a71f83a721a4a6e9414706f4148b432f5a50acbcbd5d73b15a9980b8b8697d",
+      "role": "Original wight identity reference.",
+      "viewed_before_generation": true
+    }
+  ],
+  "original_output": "C:/Users/Alex/.codex/generated_images/01a0896f-29de-7452-bb4b-6fb64351c1eb/exec-98179c70-1c72-4f53-97b8-7e2a8cb361d3.png",
+  "saved_source": {
+    "path": "native/client/assets/raster/source/wight-walk-sw-v2.png",
+    "sha256": "4e63377403b0b2c3e7dab042695972fc83c5ddb64bff88c83e2d5307f70c206b",
+    "role": "Unmodified built-in output copied into the project."
+  },
+  "source_dimensions": [
+    1163,
+    1353
+  ],
+  "source_mode": "RGB",
+  "source_actual_alpha": false,
+  "published_workflow": [
+    {
+      "url": "https://x.com/pureso_studio/status/2097520619193868590",
+      "access": "Original creator post and photo2 opened in browser; short Japanese walking prompt read in the original result image.",
+      "creator_claim": "Creator reports improved walking, clothing identity and several motions from a free Images2.5 chat. This is a firsthand report, not a benchmark or a wight test.",
+      "adaptation": "Retain the short reference-character walking-sheet structure; reduce sixteen4x4 poses to eight4x2, use accepted wight identity and existing hero gait guide, target the native actor scale."
+    },
+    {
+      "url": "https://x.com/higgsfield/status/2097514684811554911",
+      "access": "Original post and its full geometry-guide prompt read in browser.",
+      "scope": "Published example is an orange helix studio turntable with strict reference geometry, pose, composition and unchanged camera/scale. It does not establish skeletal or human gait accuracy.",
+      "adaptation": "Give accepted hero motion the geometry/order role and accepted wight idle the appearance-only role. This is our explicit adaptation, not a published wight recipe."
+    },
+    {
+      "url": "https://x.com/Mayz1169/status/2097535082248671625",
+      "access": "Previously read original idle prompt; current raster RESEARCH/PROMPTING reread before the task.",
+      "adaptation": "Retain fixed alignment and baseline across cells. Published idle alignment is not proof that the generated walk has a perfect shared pivot."
+    }
+  ],
+  "observations": {
+    "result": "Rejected isolated clarity repair; not spliced into selected cycle.",
+    "limits": "Retained the preceding wight pose closely and did not make the opposite hip-to-knee connection unambiguous. The additional prior-frame edit target may have over-anchored the pose; that is an inference."
+  },
+  "conversion": null,
+  "acceptance": "Not selected; preserved experiment."
+}

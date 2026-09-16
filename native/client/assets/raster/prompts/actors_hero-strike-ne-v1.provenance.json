@@ -1,0 +1,55 @@
+{
+  "task": "Six-pose NE physical left-hand strike source study",
+  "date": "2026-09-09",
+  "tool": "image_gen.imagegen (built-in)",
+  "model_selection": "No model selector was exposed; no specific model/variant claimed.",
+  "starting_recipe": {
+    "url": "https://x.com/Mayz1169/status/2097540160611287452",
+    "excerpt": "Ready stance → Anticipation → Attack → Impact peak → Effects dissipate → Recovery.",
+    "adaptation": "Six explicitly named ready/windup/commit/contact/follow-through/recovery poses of our adult, one NE camera, physical left-hand strike with empty hands; file assembly and alpha checks left to asset tools."
+  },
+  "references": [
+    {
+      "index": 1,
+      "path": "native/client/assets/raster/runtime/hero_ne.png",
+      "sha256": "aafeeed5b41a4ee6cad27d6331b0dec4e121ba711c86380ca2a83228a322c0c5",
+      "role": "Accepted character identity, pixel style and upper-right/back camera",
+      "viewed_before_generation": true
+    },
+    {
+      "index": 2,
+      "path": "native/client/assets/raster/source/actors_hero-strike-se-identity-v3.png",
+      "sha256": "4b61b9a28a80358587227a80eb60834172d52022ba06f9da325671a424966581",
+      "role": "Action beats and common body scale ONLY; not direction or character redesign",
+      "viewed_before_generation": true
+    }
+  ],
+  "prompt": "native/client/assets/raster/prompts/actors_hero-strike-ne-v1.txt",
+  "source": "native/client/assets/raster/source/actors_hero-strike-ne-v1.png",
+  "generated_original": "C:/Users/Alex/.codex/generated_images/01a0896d-2712-78b1-8ee3-5e362a202349/exec-9e04f459-9ceb-4409-8ebf-e5d6db8464e0.png",
+  "sha256": "baf0bc5b58e0d55f8468b47c1ceee9818b399e1c8853df3e50de052065662ccf",
+  "dimensions": [
+    1536,
+    1024
+  ],
+  "mode": "RGB",
+  "alpha": "Absent; checkerboard is painted into source pixels.",
+  "layout": "3columns ×2rows; equal512×512cells; chronological0..5row-major",
+  "review": {
+    "camera": "All six show upper-right/back direction; no SE-facing contamination observed.",
+    "identity": "Brown tunic, dark trousers, boots, blue sash and brown hair remain recognizable. Bronze shoulder guard visible on right arm except disappearing in follow-through frame4.",
+    "motion": "Actual changes in arm extension, feet and torso are visible; six silhouettes are distinct.",
+    "phases": [
+      "0 ready, both arms bent.",
+      "1 wind-up: unguarded anatomicalleft arm moves outward/back while guardedright stays bent.",
+      "2 commit: guarded anatomicalRIGHT arm extends upper-right; requested left-hand continuity breaks.",
+      "3 contact: guarded anatomicalRIGHT arm fully extended; wrong striking hand.",
+      "4 follow-through: extended screen-right arm remains but bronze guard disappears; equipment identity breaks.",
+      "5 recovery: guardedright arm bends again, nearready."
+    ],
+    "acceptance": "REJECTED: left-to-right striking-hand switch and disappearing bronze guard; additionally no truealpha.",
+    "inspection": "Built-in generated image and saved local PNG both viewed. PIL inspected mode/dimensions and SHA256. No pixel edits performed.",
+    "next": "Parent requested no further generation until review. Identity-only NE reference is the proposed next scope, not a performed correction."
+  },
+  "runtime": "Not converted, not imported, not enabled. Rejected raw source notification sent to pixel_pipeline."
+}

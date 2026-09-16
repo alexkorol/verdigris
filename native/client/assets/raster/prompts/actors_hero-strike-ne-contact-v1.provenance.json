@@ -1,0 +1,50 @@
+{
+  "task": "Focused NE contact repair from isolated windup",
+  "date": "2026-09-10",
+  "tool": "image_gen.imagegen (built-in)",
+  "model_selection": "No exposed model selector; specific image model not claimed.",
+  "workflow": {
+    "sources": [
+      "https://x.com/elle_elle_e/status/2097439673308389840",
+      "https://www.flixly.ai/blog/stop-motion-chatgpt-images-2-5"
+    ],
+    "adaptation": "Noel separate-frame fallback and Flixly previous-frame edit target first, original identity additional. One isolated left-hand contact pose, not a new sheet.",
+    "exact_prompt": "native/client/assets/raster/prompts/actors_hero-strike-ne-contact-v1.txt",
+    "preparation": "Existing import_assets.py invoked against actual Pixel Respecter, candidate-only outputs under owned NE source paths. No new processing method. Windup crop [512,0,1024,512], sourcecell6, crispalpha, max32colors, canvas80x96, sourcepivot[256,478], connected border background RGB220 tolerance80. Native and4x inspected.",
+    "preparation_manifest": "native/client/assets/raster/prompts/actors_hero-strike-ne-windup-import.json"
+  },
+  "references": [
+    {
+      "index": 1,
+      "path": "native/client/assets/raster/source/actors_hero-strike-ne-windup-reference.png",
+      "sha256": "d71839b46283860654c01560aa95bfc2c81dfb4a9a55ed8be6544e2e148b0999",
+      "role": "Preceding windup pose edit target; valid leftarm windup/rightguard only, broaderbody and sashside drift remain known",
+      "viewed": true
+    },
+    {
+      "index": 2,
+      "path": "native/client/assets/raster/runtime/hero_ne.png",
+      "sha256": "aafeeed5b41a4ee6cad27d6331b0dec4e121ba711c86380ca2a83228a322c0c5",
+      "role": "Accepted original identity, costume and pixelstyle additional reference",
+      "viewed": true
+    }
+  ],
+  "output": {
+    "path": "native/client/assets/raster/source/actors_hero-strike-ne-contact-v1.png",
+    "generated_original": "C:/Users/Alex/.codex/generated_images/01a0896d-2712-78b1-8ee3-5e362a202349/exec-6d7325e3-6201-43d8-a666-6557f32f94fc.png",
+    "sha256": "37a6c2c902bc353889ccacb503d53e3452714fea845afd10d7cfa8a8c1738e50",
+    "width": 1145,
+    "height": 1374,
+    "mode": "RGB",
+    "alpha": "Absent; painted checkerboard"
+  },
+  "review": {
+    "camera": "Upper-right/back remains consistent.",
+    "right_guard": "Bronze rightshoulder and bent rightarm now retained; improvement versus original contact.",
+    "left_strike": "Raised unguarded arm emerges beside screen-right neck/guard. Leftshoulder-to-elbow-to-fist route is not readable; separate flesh/sleeve stub remains on screenleft. Elbow is right ofhead despite requested left placement. Potential extra-arm reading; no accepted left-hand continuity.",
+    "identity": "Warmnaturalclothing retained but blue sash remains screen-right contrary to accepted NE idle screenleft; windupbodybulk carried through.",
+    "status": "REJECTED FOR ACCEPTANCE: arm connectivity ambiguous and sashside drift unresolved. Source retained, no runtime import.",
+    "next_precise_phase": "From isolatedwindup, first establish halfway leftelbow raise immediately on screenleft ofhead while rightguard staysbent; review the connectedarm before advancing to contact. This is a proposed repair, not generated."
+  },
+  "runtime": "No runtime/code edits. Only NE source/prompt/preparation artifacts written."
+}

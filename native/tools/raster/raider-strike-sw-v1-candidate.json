@@ -1,0 +1,115 @@
+{
+  "version": 1,
+  "output_dir": "raider-strike-sw-candidates/v1",
+  "report_name": "raider-strike-sw-v1.provenance.json",
+  "shared_palette_max_colors": 32,
+  "defaults": {
+    "cell_size": 6,
+    "alpha_mode": "crisp",
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "candidate_pending_source_native_phase_review"
+  },
+  "known_limitations": [
+    "Source checker pattern requires verified alpha cleanup.",
+    "One shared source pivot280,480 with column500 and row490 stride; preliminary measurement against repeated ground foot placement. No per-pose fitting or centering.",
+    "Anticipation frame1 clothing appears olive relative to charcoal identity; inspect native and use one targeted correction if it persists."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "border_background": {
+        "color": [
+          210,
+          210,
+          210
+        ],
+        "tolerance": 95
+      },
+      "assets": [
+        {
+          "name": "raider_strike0_sw",
+          "source_box": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "anchor_source": [
+            280,
+            480
+          ]
+        },
+        {
+          "name": "raider_strike1_sw",
+          "source_box": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "anchor_source": [
+            268,
+            480
+          ]
+        },
+        {
+          "name": "raider_strike2_sw",
+          "source_box": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "anchor_source": [
+            256,
+            480
+          ]
+        },
+        {
+          "name": "raider_strike3_sw",
+          "source_box": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "anchor_source": [
+            280,
+            458
+          ]
+        },
+        {
+          "name": "raider_strike4_sw",
+          "source_box": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "anchor_source": [
+            268,
+            458
+          ]
+        },
+        {
+          "name": "raider_strike5_sw",
+          "source_box": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "anchor_source": [
+            256,
+            458
+          ]
+        }
+      ]
+    }
+  ]
+}
