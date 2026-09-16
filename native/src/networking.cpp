@@ -2518,7 +2518,35 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     return;
   }
   if (envelope.event=="chronicles:scion:set-out") {
-    active_scion_id_=as_string(payload?payload->get("scionId"):nullptr);
+    const std::string incoming_scion=as_string(payload?payload->get("scionId"):nullptr);
+    // JS parity (services/chronicles.js beginScionSession): every Chronicles
+    // set-out is a MORTAL run - lifecycle.mode 'hard', alive, no pending
+    // respawn - and the admitted scion logs in healthy. Without this the
+    // scion can never reach the crypt, so die -> successor -> relic ->
+    // reconnect continuity is unreachable through normal envelopes.
+    const bool succession=!active_scion_id_.empty() && active_scion_id_!=incoming_scion;
+    if (succession) {
+      // fresh-scion-profile.js: character-scoped progression belongs to the
+      // Scion. A successor starts from the fresh-scion contract - never with
+      // the fallen scion's live pack (D-106/constitution) - while House-level
+      // state (treasury, store, bank, cleared roads) persists.
+      wear_.clear(); inventory_.clear();
+      first_goal_stage_="available"; first_goal_started_ms_=0; first_goal_completed_ms_=0;
+      active_quest_=0; quest_objective_=0; quests_completed_.clear(); quest_points_=0; tree_quest_points_=0;
+    }
+    active_scion_id_=incoming_scion;
+    mortal_oath_=true;
+    lifecycle_mode_="hard";
+    lifecycle_="alive";
+    lifecycle_deaths_=0;
+    respawn_at_ms_=0;
+    respawn_protection_until_ms_=0;
+    prepare_final_death_=false;
+    if (auto* actor=simulation_->actor(simulation_->scion().actor_id)) {
+      actor->alive=true;
+      actor->stats.life=actor->stats.life_max;  // fresh Player logs in healthy
+      world_->heal_player(actor->stats.life,actor->stats.life_max);
+    }
     pending_chronicles_=false;
     // crossroads: the scion spawns beside their House wagon pitch, and the
     // first set-out of the day claims the road purse into the ledger.
