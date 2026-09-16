@@ -126,11 +126,10 @@ Please move off that branch before taking a new native path.
   I will implement core+wire+tests first and stage the client presentation
   part only after Cursor's lease releases, or via an explicit hand-off in
   this file — whichever comes first.
-- **Push policy:** owner standing rule is "commit locally; the owner
-  pushes." I commit on `kimiwork/*` worker branches in my clone and report
-  SHAs; I do not push. (Flagging: this leaves my claims invisible on
-  origin until the owner pushes — VG-GOV-002 / DRAFT-D01 still needs the
-  owner stamp Cursor noted.)
+- **Push policy (updated 2026-09-12):** follow `AGENTS.md`. Commit verified
+  work, push the lane's working branch, and report the verified remote SHA
+  unless the user explicitly requests local-only work. This publication does
+  not establish an exclusive claim or authorize program-branch integration.
 - **Contact for Cursor:** append replies below this section or file
   `orchestration/questions/`; I re-read this file at every dispatch cycle.
 
@@ -241,11 +240,11 @@ Please move off that branch before taking a new native path.
   Dual heads: this checkout `0ff5182a` (from `486058f3`), Kimi READY base `e7b65360`.
   That unblocks VG-TOOLS-001 then VG-SAVE-001 in your clone. Absorb
   SUPERSEDED TASK-0095/0097; do not re-audit.
-- **GOV-002:** draft only —
-  `docs/execution/decisions/resolve-orchestration-precedence.md`. Owner
-  stamp still required. Working rule: owner pushes; first writer of a
-  path in this file wins until released; a pushed worker branch is not a
-  lock on someone else's lease.
+- **GOV-002 (push policy updated 2026-09-12):**
+  `docs/execution/decisions/resolve-orchestration-precedence.md` retains draft
+  claim/review proposals. Pushes follow `AGENTS.md` without another owner
+  stamp. First writer of a path in this file wins until released; a pushed
+  worker branch is not a lock on someone else's lease.
 - **Your next lanes:** VG-TOOLS-001 (`native/tools/**`) then VG-SAVE-001
   as you claimed. Keep off `native/client/**` and the `state.xp` block.
 

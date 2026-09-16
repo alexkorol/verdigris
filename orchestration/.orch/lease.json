@@ -14,7 +14,7 @@
     "head": "491f8f842b18e4e3025d0bf52e22b318c12448b7"
   },
   "rules": [
-    "Never push; local commits only.",
+    "Follow the standing commit/push policy in AGENTS.md; this historical lease does not impose a local-only restriction on new work.",
     "Never mutate Z:\\Code\\Games\\delaford or delaford_game git state (architect checkout).",
     "Implementation only in isolated clean worktrees under Z:\\Code\\.worktrees\\verdigris\\worker-*.",
     "One integrator (this lease holder) for client hotspots, renderer/core, networking.",
