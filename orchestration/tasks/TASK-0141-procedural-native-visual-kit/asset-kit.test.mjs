@@ -176,3 +176,160 @@ test('kit artifacts carry no forbidden port or external references', () => {
     }
   }
 });
+
+// ── TASK-0147 procedural visual polish wave ─────────────────────────────
+// The polish pass must stay a placeholder kit: stable roles and consumer
+// contract, richer readable geometry, bounded shapes, restrained palette.
+// These tests pin the wave's contract without freezing artistic coordinates.
+
+const TASK_0141_BASELINE = {
+  // Measured from generator version task0141-gen-1 at base 060c1151:
+  // per-symbol total shape count and authored vertex count.
+  player: { shapes: 19, points: 55 },
+  raider: { shapes: 13, points: 45 },
+  elite: { shapes: 19, points: 55 },
+  tree: { shapes: 12, points: 34 },
+  ruin: { shapes: 12, points: 36 },
+  dwelling: { shapes: 14, points: 47 },
+  shrine: { shapes: 11, points: 37 },
+  'grass-court': { shapes: 31, points: 20 },
+  'mossy-stone': { shapes: 19, points: 28 },
+};
+
+function parsedHeaderKit() {
+  const header = headerFromDisk();
+  const symbolRows = [...header.matchAll(
+    /\{"([^"]+)", "([^"]+)", "([^"]+)", ([\d.-]+)f, ([\d.-]+)f, (\d+), (\d+)\}/g,
+  )];
+  const shapeRows = [...header.matchAll(
+    /\{ShapeKind::(\w+), (\d+), (\d+), (-?\d+), (-?\d+), (-?[\d.]+)f, (-?[\d.]+)f, (-?[\d.]+)f, (-?[\d.]+)f, (-?[\d.]+)f\}/g,
+  )];
+  const pointsBlock = header.slice(
+    header.indexOf('inline constexpr float kPoints[]'),
+    header.indexOf('inline constexpr Shape kShapes[]'),
+  );
+  const flatPoints = [...pointsBlock.matchAll(/(-?[\d.]+)f/g)].map((match) => Number(match[1]));
+  return { header, symbolRows, shapeRows, flatPoints };
+}
+
+function symbolGeometry(symbolRow, shapeRows, flatPoints) {
+  const begin = Number(symbolRow[6]);
+  const end = Number(symbolRow[7]);
+  let shapes = 0;
+  let points = 0;
+  let maxY = -Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let minX = Infinity;
+  for (let i = begin; i < end; i += 1) {
+    const row = shapeRows[i];
+    assert.ok(row, `shape row ${i} parsed`);
+    shapes += 1;
+    const kind = row[1];
+    const vertexBegin = Number(row[2]);
+    const vertexEnd = Number(row[3]);
+    const centerX = Number(row[7]);
+    const centerY = Number(row[8]);
+    const radiusX = Number(row[9]);
+    const radiusY = kind === 'Ellipse' ? Number(row[10]) : radiusX;
+    if (kind === 'Polygon' || kind === 'Polyline') {
+      for (let p = vertexBegin; p < vertexEnd; p += 1) {
+        const x = flatPoints[p * 2];
+        const y = flatPoints[p * 2 + 1];
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y);
+      }
+      if (vertexEnd > vertexBegin) points += vertexEnd - vertexBegin;
+    } else {
+      minX = Math.min(minX, centerX - radiusX);
+      maxX = Math.max(maxX, centerX + radiusX);
+      minY = Math.min(minY, centerY - radiusY);
+      maxY = Math.max(maxY, centerY + radiusY);
+    }
+  }
+  return { shapes, points, minX, maxX, minY, maxY };
+}
+
+test('polish pass materially increases geometry over the TASK-0141 baseline', () => {
+  const { symbolRows, shapeRows, flatPoints } = parsedHeaderKit();
+  let totalShapes = 0;
+  let totalPoints = 0;
+  let baselineShapes = 0;
+  let baselinePoints = 0;
+  for (const row of symbolRows) {
+    const key = row[1] === 'terrain' ? row[2] : row[1];
+    const baseline = TASK_0141_BASELINE[key];
+    assert.ok(baseline, `baseline known for ${key}`);
+    const geometry = symbolGeometry(row, shapeRows, flatPoints);
+    assert.ok(
+      geometry.shapes > baseline.shapes,
+      `${key}: shapes ${geometry.shapes} must exceed baseline ${baseline.shapes}`,
+    );
+    assert.ok(
+      geometry.points > baseline.points,
+      `${key}: vertices ${geometry.points} must exceed baseline ${baseline.points}`,
+    );
+    totalShapes += geometry.shapes;
+    totalPoints += geometry.points;
+    baselineShapes += baseline.shapes;
+    baselinePoints += baseline.points;
+  }
+  assert.equal(baselineShapes, 150);
+  assert.equal(baselinePoints, 357);
+  assert.ok(totalShapes >= 280, `kit shape count ${totalShapes} well above 150`);
+  assert.ok(totalPoints >= 700, `kit vertex count ${totalPoints} at least double 357`);
+});
+
+test('every authored coordinate stays inside the shared viewBox bounds', () => {
+  const { symbolRows, shapeRows, flatPoints } = parsedHeaderKit();
+  for (const row of symbolRows) {
+    const key = row[1] === 'terrain' ? row[2] : row[1];
+    const geometry = symbolGeometry(row, shapeRows, flatPoints);
+    assert.ok(geometry.minX >= 0 && geometry.maxX <= 64, `${key}: x within [0, 64]`);
+    assert.ok(geometry.minY >= 0 && geometry.maxY <= 64, `${key}: y within [0, 64]`);
+  }
+});
+
+test('figures and scenery keep the consumer ground-line contract', () => {
+  const { symbolRows, shapeRows, flatPoints } = parsedHeaderKit();
+  for (const row of symbolRows) {
+    if (row[1] === 'terrain') continue;
+    const geometry = symbolGeometry(row, shapeRows, flatPoints);
+    assert.ok(
+      geometry.maxY >= 58 && geometry.maxY <= 62,
+      `${row[1]} grounds near the shared baseline (maxY ${geometry.maxY})`,
+    );
+  }
+});
+
+test('every figure and scenery motif keeps its translucent contact shadow', () => {
+  const { manifest } = buildKit();
+  for (const entry of manifest.roles) {
+    if (entry.role === 'terrain') continue;
+    const svg = readFileSync(path.join(REPO_ROOT, entry.motifs[0].source), 'utf8');
+    const firstShape = svg.split('\n')[1];
+    assert.match(firstShape, /<ellipse /, `${entry.role} opens with the shadow ellipse`);
+    assert.match(firstShape, /fill="#000000[0-9a-f]{2}"/, `${entry.role} shadow is translucent black`);
+  }
+});
+
+test('generated header emits only standards-conforming float literals', () => {
+  const { header } = parsedHeaderKit();
+  // A conforming literal always carries a decimal point before the f suffix
+  // (bare digit-suffixed tokens reserve "f" as a literal-operator suffix).
+  assert.ok(!/(^|[^.\d])\d+f/.test(header), 'no bare digit-suffixed float literals (MSVC C4455)');
+});
+
+test('per-motif palettes stay restrained while keeping shading room', () => {
+  const { manifest } = buildKit();
+  for (const entry of manifest.roles) {
+    for (const motif of entry.motifs) {
+      assert.ok(
+        motif.palette.length >= 5 && motif.palette.length <= 30,
+        `${motif.symbol} palette size ${motif.palette.length} within [5, 30]`,
+      );
+    }
+  }
+});

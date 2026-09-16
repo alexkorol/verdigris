@@ -1,33 +1,65 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
   <polygon points="0,0 64,0 64,64 0,64" fill="#46653f"/>
-  <circle cx="55" cy="49" r="2.17" fill="#57794d"/>
-  <circle cx="9" cy="26" r="2.32" fill="#3d5938"/>
-  <circle cx="44" cy="39" r="1.06" fill="#3d5938"/>
-  <circle cx="9" cy="21" r="2.49" fill="#57794d"/>
-  <circle cx="25" cy="47" r="2.38" fill="#4f7047"/>
-  <circle cx="53" cy="7" r="1.46" fill="#3d5938"/>
-  <circle cx="47" cy="41" r="1.35" fill="#3d5938"/>
-  <circle cx="8" cy="55" r="2.33" fill="#57794d"/>
-  <circle cx="50" cy="18" r="2.36" fill="#4f7047"/>
-  <circle cx="25" cy="48" r="2.02" fill="#4f7047"/>
-  <circle cx="23" cy="9" r="2.18" fill="#4f7047"/>
-  <circle cx="34" cy="58" r="1.73" fill="#4f7047"/>
-  <circle cx="8" cy="35" r="1.74" fill="#4f7047"/>
-  <circle cx="13" cy="33" r="2.53" fill="#4f7047"/>
-  <circle cx="55" cy="26" r="1.21" fill="#57794d"/>
-  <circle cx="36" cy="22" r="2.22" fill="#3d5938"/>
-  <circle cx="27" cy="42" r="2.39" fill="#4f7047"/>
-  <circle cx="40" cy="53" r="1.97" fill="#57794d"/>
-  <circle cx="15" cy="10" r="1.69" fill="#57794d"/>
-  <circle cx="13" cy="35" r="2.23" fill="#4f7047"/>
-  <circle cx="45" cy="16" r="2.22" fill="#4f7047"/>
-  <circle cx="12" cy="26" r="2.39" fill="#4f7047"/>
-  <circle cx="49" cy="32" r="2.19" fill="#3d5938"/>
-  <circle cx="44" cy="44" r="2.09" fill="#57794d"/>
-  <circle cx="14" cy="10" r="1.26" fill="#4f7047"/>
-  <circle cx="48" cy="19" r="1.32" fill="#57794d"/>
-  <polygon points="29.73,51.32 34.55,51.7 35.05,54.91 29.23,55.72" fill="#6b7060"/>
-  <polygon points="51.58,15.4 55.22,15.51 55.72,19.88 51.08,20.08" fill="#5c6154"/>
-  <polygon points="27.36,15.55 32.24,16.18 32.74,19.64 26.86,19.79" fill="#6b7060"/>
-  <polygon points="49.55,44.83 52.88,44.85 53.38,48.95 49.05,49.61" fill="#5c6154"/>
+  <polygon points="9,10.5 27,7.5 29,20 12,24.5" fill="#4d7044"/>
+  <polygon points="36.5,30.5 56,26 57,41.5 41,47" fill="#3f5c39"/>
+  <polygon points="9.5,40.5 25.5,38.5 29,51 12,54.5" fill="#4a6c42"/>
+  <polygon points="42.5,6.5 58,8.5 55,23 45,20.5" fill="#52754a"/>
+  <polygon points="28.5,47.5 45.5,50.5 43.5,60.5 29,58.5" fill="#3d5936"/>
+  <polygon points="24,64 40,64 52,40 44,38" fill="#5d6b4f"/>
+  <polygon points="28,64 36,64 47,41 43,40" fill="#6b7562"/>
+  <circle cx="35" cy="55" r="1.24" fill="#78806e"/>
+  <circle cx="41" cy="52" r="1.07" fill="#596058"/>
+  <circle cx="33" cy="59" r="1.08" fill="#78806e"/>
+  <circle cx="34" cy="58" r="1.37" fill="#596058"/>
+  <circle cx="44" cy="48" r="0.88" fill="#78806e"/>
+  <polygon points="37,21 37.9,18.8 38.8,21" fill="#6fae67"/>
+  <polygon points="29,44 29.9,41.8 30.8,44" fill="#5f8a52"/>
+  <polygon points="26,41 26.9,38.8 27.8,41" fill="#547d49"/>
+  <polygon points="12,50 12.9,47.8 13.8,50" fill="#6fae67"/>
+  <polygon points="40,51 40.9,48.8 41.8,51" fill="#5f8a52"/>
+  <polygon points="14,10 14.9,7.8 15.8,10" fill="#6fae67"/>
+  <polygon points="52,28 52.9,25.8 53.8,28" fill="#5f8a52"/>
+  <polygon points="12,34 12.9,31.8 13.8,34" fill="#547d49"/>
+  <polygon points="13,45 13.9,42.8 14.8,45" fill="#6fae67"/>
+  <polygon points="45,16 45.9,13.8 46.8,16" fill="#5f8a52"/>
+  <polygon points="7,44 7.9,41.8 8.8,44" fill="#547d49"/>
+  <polygon points="11,25 11.9,22.8 12.8,25" fill="#6fae67"/>
+  <polygon points="25,49 25.9,46.8 26.8,49" fill="#5f8a52"/>
+  <polygon points="49,31 49.9,28.8 50.8,31" fill="#547d49"/>
+  <polygon points="39,43 39.9,40.8 40.8,43" fill="#6fae67"/>
+  <polygon points="45,42 45.9,39.8 46.8,42" fill="#5f8a52"/>
+  <polygon points="46,40 46.9,37.8 47.8,40" fill="#547d49"/>
+  <polygon points="13,10 13.9,7.8 14.8,10" fill="#6fae67"/>
+  <polygon points="18,14 18.9,11.8 19.8,14" fill="#5f8a52"/>
+  <polygon points="49,18 49.9,15.8 50.8,18" fill="#547d49"/>
+  <polygon points="54,16 54.9,13.8 55.8,16" fill="#6fae67"/>
+  <polygon points="30,55 30.9,52.8 31.8,55" fill="#5f8a52"/>
+  <polygon points="44,33 44.9,30.8 45.8,33" fill="#547d49"/>
+  <circle cx="26" cy="47" r="0.7" fill="#6fae67"/>
+  <circle cx="56" cy="14" r="0.7" fill="#6fae67"/>
+  <circle cx="20" cy="55" r="0.7" fill="#6fae67"/>
+  <circle cx="12" cy="18" r="0.7" fill="#6fae67"/>
+  <circle cx="28" cy="14" r="0.7" fill="#6fae67"/>
+  <circle cx="44" cy="46" r="0.7" fill="#6fae67"/>
+  <polygon points="36.5,16.64 41.58,16.78 42.08,20.53 36,21.35" fill="#6b7060"/>
+  <polygon points="36.5,16.64 41.58,16.66 40.98,17.54 36.9,17.54" fill="#7d8272"/>
+  <polygon points="36,20.87 42.08,20.53 41.18,21.23 36.3,21.33" fill="#4c5146"/>
+  <polygon points="38.71,47.35 41.9,48.16 42.4,50.3 38.21,51.24" fill="#5c6154"/>
+  <polygon points="38.71,47.35 41.9,47.62 41.3,48.25 39.11,48.25" fill="#7d8272"/>
+  <polygon points="38.21,50.53 42.4,50.3 41.5,51 38.51,51.1" fill="#4c5146"/>
+  <polygon points="36.9,33.37 41.1,33.49 41.6,35.9 36.4,36.24" fill="#6b7060"/>
+  <polygon points="36.9,33.37 41.1,33.42 40.5,34.27 37.3,34.27" fill="#7d8272"/>
+  <polygon points="36.4,36.04 41.6,35.9 40.7,36.6 36.7,36.7" fill="#4c5146"/>
+  <polygon points="23.7,24.52 27.36,24.93 27.86,28.53 23.2,28.75" fill="#5c6154"/>
+  <polygon points="23.7,24.52 27.36,24.72 26.76,25.42 24.1,25.42" fill="#7d8272"/>
+  <polygon points="23.2,28.75 27.86,28.53 26.96,29.23 23.5,29.33" fill="#4c5146"/>
+  <polygon points="51.61,14.86 55.39,15.07 55.89,18.39 51.11,18.83" fill="#6b7060"/>
+  <polygon points="51.61,14.86 55.39,14.93 54.79,15.76 52.01,15.76" fill="#7d8272"/>
+  <polygon points="51.11,18.7 55.89,18.39 54.99,19.09 51.41,19.19" fill="#4c5146"/>
+  <circle cx="32" cy="13" r="1" fill="#e8e4c8"/>
+  <circle cx="32" cy="13" r="0.45" fill="#d9a441"/>
+  <circle cx="43" cy="32" r="1" fill="#e8e4c8"/>
+  <circle cx="43" cy="32" r="0.45" fill="#d9a441"/>
+  <circle cx="26" cy="19" r="1" fill="#e8e4c8"/>
+  <circle cx="26" cy="19" r="0.45" fill="#d9a441"/>
 </svg>

@@ -1,21 +1,49 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
   <polygon points="0,0 64,0 64,64 0,64" fill="#33504a"/>
+  <polygon points="0,0 14,0 0,14" fill="#2e4741"/>
+  <polygon points="50,0 64,0 64,14" fill="#2e4741"/>
+  <polygon points="0,50 0,64 14,64" fill="#2e4741"/>
+  <polygon points="64,50 64,64 50,64" fill="#2e4741"/>
   <polygon points="6.5,5.5 26.5,5 28.5,23 7,24" fill="#48695f"/>
+  <polyline points="7,24 6.5,5.5 26.5,5" fill="none" stroke="#54786d" stroke-width="1.2" stroke-linejoin="round"/>
+  <polyline points="26.5,5 28.5,23 7,24" fill="none" stroke="#3a564e" stroke-width="1.1" stroke-linejoin="round"/>
   <polygon points="32,7 57,6 57.5,20.5 34.5,22" fill="#48695f"/>
+  <polyline points="34.5,22 32,7 57,6" fill="none" stroke="#54786d" stroke-width="1.2" stroke-linejoin="round"/>
+  <polyline points="57,6 57.5,20.5 34.5,22" fill="none" stroke="#3a564e" stroke-width="1.1" stroke-linejoin="round"/>
   <polygon points="5,30.5 25,29 26.5,44.5 6,45.5" fill="#48695f"/>
+  <polyline points="6,45.5 5,30.5 25,29" fill="none" stroke="#54786d" stroke-width="1.2" stroke-linejoin="round"/>
+  <polyline points="25,29 26.5,44.5 6,45.5" fill="none" stroke="#3a564e" stroke-width="1.1" stroke-linejoin="round"/>
   <polygon points="31,29.5 55,27 58.5,42 32.5,45" fill="#48695f"/>
+  <polyline points="32.5,45 31,29.5 55,27" fill="none" stroke="#54786d" stroke-width="1.2" stroke-linejoin="round"/>
+  <polyline points="55,27 58.5,42 32.5,45" fill="none" stroke="#3a564e" stroke-width="1.1" stroke-linejoin="round"/>
   <polygon points="11.5,50 33.5,49 37,59 11,60.5" fill="#48695f"/>
+  <polyline points="11,60.5 11.5,50 33.5,49" fill="none" stroke="#54786d" stroke-width="1.2" stroke-linejoin="round"/>
+  <polyline points="33.5,49 37,59 11,60.5" fill="none" stroke="#3a564e" stroke-width="1.1" stroke-linejoin="round"/>
   <polygon points="41,50 58,49 58.5,59.5 40.5,62" fill="#48695f"/>
-  <circle cx="47" cy="8" r="1.08" fill="#596058"/>
-  <circle cx="39" cy="30" r="1.32" fill="#5d8a5a"/>
-  <circle cx="47" cy="50" r="0.82" fill="#5d8a5a"/>
-  <circle cx="42" cy="8" r="0.94" fill="#5d8a5a"/>
-  <circle cx="36" cy="12" r="0.96" fill="#596058"/>
-  <circle cx="48" cy="21" r="1.07" fill="#5d8a5a"/>
-  <circle cx="52" cy="37" r="0.96" fill="#596058"/>
-  <circle cx="52" cy="32" r="1.64" fill="#596058"/>
-  <circle cx="53" cy="6" r="1.24" fill="#5d8a5a"/>
-  <circle cx="25" cy="50" r="1" fill="#5d8a5a"/>
-  <circle cx="38" cy="29" r="1.29" fill="#596058"/>
-  <circle cx="35" cy="34" r="1.7" fill="#596058"/>
+  <polyline points="40.5,62 41,50 58,49" fill="none" stroke="#54786d" stroke-width="1.2" stroke-linejoin="round"/>
+  <polyline points="58,49 58.5,59.5 40.5,62" fill="none" stroke="#3a564e" stroke-width="1.1" stroke-linejoin="round"/>
+  <polyline points="40.5,11.5 44.5,10 46.5,13" fill="none" stroke="#2e463f" stroke-width="0.9" stroke-linejoin="round"/>
+  <polyline points="23.5,25 27.5,24 28,25.5" fill="none" stroke="#2e463f" stroke-width="0.9" stroke-linejoin="round"/>
+  <circle cx="42" cy="8" r="1.32" fill="#6fa06a"/>
+  <circle cx="12" cy="36" r="0.92" fill="#5d8a5a"/>
+  <circle cx="42" cy="13" r="1.6" fill="#7ab06f"/>
+  <circle cx="21" cy="10" r="1.03" fill="#6fa06a"/>
+  <circle cx="52" cy="37" r="1.6" fill="#5d8a5a"/>
+  <circle cx="13" cy="52" r="1.3" fill="#7ab06f"/>
+  <circle cx="45" cy="42" r="1.71" fill="#6fa06a"/>
+  <circle cx="6" cy="29" r="1.16" fill="#5d8a5a"/>
+  <circle cx="25" cy="50" r="0.96" fill="#7ab06f"/>
+  <circle cx="15" cy="38" r="1.25" fill="#6fa06a"/>
+  <circle cx="44" cy="27" r="1.35" fill="#5d8a5a"/>
+  <circle cx="34" cy="39" r="1.55" fill="#7ab06f"/>
+  <circle cx="23" cy="16" r="0.98" fill="#596058"/>
+  <circle cx="15" cy="7" r="0.76" fill="#6a7268"/>
+  <circle cx="7" cy="22" r="0.68" fill="#596058"/>
+  <circle cx="41" cy="45" r="0.7" fill="#6a7268"/>
+  <circle cx="17" cy="15" r="0.69" fill="#596058"/>
+  <circle cx="11" cy="57" r="0.68" fill="#6a7268"/>
+  <circle cx="40" cy="49" r="0.86" fill="#596058"/>
+  <circle cx="30" cy="41" r="0.71" fill="#6a7268"/>
+  <polyline points="40,52 46,49.6" fill="none" stroke="#5a4030" stroke-width="1.1" stroke-linejoin="round"/>
+  <polyline points="43,50.8 44.4,52.4" fill="none" stroke="#5a4030" stroke-width="0.9" stroke-linejoin="round"/>
 </svg>

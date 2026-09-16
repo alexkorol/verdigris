@@ -3,7 +3,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-export const GENERATOR_VERSION = 'task0141-gen-1';
+export const GENERATOR_VERSION = 'task0147-gen-1';
 
 const VIEW_WIDTH = 64;
 const VIEW_HEIGHT = 64;
@@ -60,24 +60,52 @@ function buildPlayer(rng) {
   void rng;
   return [
     shadow(32, 13),
-    polygon([[22, 26], [42, 26], [44, 52], [36, 49], [32, 53], [28, 49], [20, 52]], '#24427c'),
+    // Layered cape behind the figure for depth.
+    polygon([[20, 26], [44, 26], [47, 50], [38, 47], [32, 52], [26, 47], [17, 50]], '#1d355f'),
+    // Torso with a shaded right half.
+    polygon([[22, 27], [42, 27], [44, 51], [37, 48], [32, 53], [27, 48], [20, 51]], '#24427c'),
+    polygon([[32, 27], [42, 27], [44, 51], [37, 48], [32, 53]], '#1b3159'),
+    // Legs with lit leading edges.
     polygon([[26, 42], [31, 42], [30, 55], [25, 55]], '#37475e'),
     polygon([[33, 42], [38, 42], [39, 55], [34, 55]], '#37475e'),
-    polygon([[24, 53], [30, 53], [30, 58], [24, 58]], '#231a10'),
-    polygon([[34, 53], [40, 53], [40, 58], [34, 58]], '#231a10'),
-    polygon([[23, 28], [41, 28], [39, 44], [25, 44]], '#93a7bd'),
-    polygon([[25, 42], [39, 42], [39, 45], [25, 45]], '#5b3a1e'),
-    circle(22, 29, 4.5, '#aabdd2'),
-    circle(42, 29, 4.5, '#aabdd2'),
-    polygon([[40, 30], [46, 27], [47, 30], [41, 33]], '#93a7bd'),
-    polygon([[45, 26], [49, 31], [46, 33], [42, 29]], '#5b3a1e'),
-    polygon([[47, 28], [57, 17], [60, 19], [49, 31]], '#dfe8ef'),
-    circle(44.5, 32, 1.6, '#d9a441'),
+    polygon([[26, 42], [28, 42], [27.4, 55], [25, 55]], '#46597a'),
+    polygon([[33, 42], [35, 42], [34.4, 55], [33, 55]], '#46597a'),
+    // Boots and leather cuffs.
+    polygon([[23, 53], [30, 53], [30, 58], [23, 58]], '#231a10'),
+    polygon([[34, 53], [41, 53], [41, 58], [34, 58]], '#231a10'),
+    polygon([[24.2, 52], [30.2, 52], [30, 54], [24, 54]], '#5b3a1e'),
+    polygon([[33.8, 52], [39.8, 52], [40, 54], [34, 54]], '#5b3a1e'),
+    // Belt with a gold buckle.
+    polygon([[25, 41], [39, 41], [39, 45], [25, 45]], '#5b3a1e'),
+    circle(32, 43, 1.7, '#d9a441'),
+    // Cuirass: steel plate, lit panel, verdigris tabard stripe and emblem.
+    polygon([[24, 29], [40, 29], [38.5, 40], [25.5, 40]], '#93a7bd'),
+    polygon([[24, 29], [31, 29], [30, 40], [25.5, 40]], '#b7c9da'),
+    polygon([[30, 29], [34, 29], [33.6, 40], [30.4, 40]], '#2c5f57'),
+    polygon([[32, 32.5], [33.6, 35], [32, 37.5], [30.4, 35]], '#59d6c9'),
+    polygon([[24, 29], [40, 29], [39.6, 31.2], [24.4, 31.2]], '#aabdd2'),
+    // Pauldrons with rivet sparks.
+    circle(22, 29, 4.5, '#93a7bd'),
+    circle(42, 29, 4.5, '#93a7bd'),
+    circle(20.8, 27.8, 1, '#dfe8ef'),
+    circle(43.2, 27.8, 1, '#dfe8ef'),
+    // Sword arm, gauntlet, blade with fuller line, guard and pommel.
+    polygon([[40.5, 30], [46, 27], [47.4, 30], [42, 33.4]], '#93a7bd'),
+    polygon([[43.6, 29.6], [48.4, 31.6], [46.8, 34.8], [42, 32.6]], '#5b3a1e'),
+    polygon([[46.5, 31], [56.5, 18.5], [59.5, 20.5], [49.5, 33]], '#dfe8ef'),
+    polyline([[48.4, 30.4], [56, 20.6]], '#9fb4c6', 1.1),
+    polygon([[43.8, 28.2], [49.8, 30.4], [48.8, 33.2], [42.8, 31]], '#8a6a2c'),
+    circle(43.2, 33.4, 1.6, '#d9a441'),
+    // Helm with visor, nose guard, sheen and jaw guard.
     circle(32, 19, 7, '#7f93a9'),
-    polygon([[26, 18], [38, 18], [38, 23], [26, 23]], '#101720'),
-    polygon([[31, 14], [33, 14], [33, 23], [31, 23]], '#67798d'),
-    polygon([[29, 12], [34, 12], [37, 6], [31, 8]], '#3f6fd8'),
-    circle(34.5, 6.5, 1.8, '#3f6fd8'),
+    polygon([[26, 18], [38, 18], [38, 22], [26, 22]], '#101720'),
+    polygon([[31, 14.5], [33, 14.5], [33, 23], [31, 23]], '#67798d'),
+    polygon([[26.6, 15.6], [30, 13.4], [30.6, 15.4], [27.6, 17.4]], '#aabdd2'),
+    polygon([[27, 22], [37, 22], [36, 24.6], [28, 24.6]], '#5f7186'),
+    // Flowing verdigris plume with its gilded base ring.
+    polygon([[29.4, 12.4], [33, 11.2], [35.4, 5.6], [39.6, 3.4], [37, 9.6], [33.6, 13.2]], '#3e8f83'),
+    polygon([[30.6, 12.2], [33, 11.4], [34.8, 7.6], [37, 6.2], [34.8, 10.8]], '#59d6c9'),
+    circle(31.4, 12.8, 1.8, '#d9a441'),
   ];
 }
 
@@ -85,18 +113,50 @@ function buildRaider(rng) {
   void rng;
   return [
     shadow(33, 13),
-    polygon([[20, 30], [44, 28], [47, 50], [42, 47], [38, 52], [33, 48], [28, 53], [23, 48], [18, 51]], '#6e2a22'),
-    polygon([[24, 30], [42, 26], [44, 38], [26, 42]], '#8a4a2f'),
-    polygon([[38, 32], [50, 34], [50, 38], [38, 40]], '#7c3e28'),
-    polygon([[44, 34], [50, 35], [50, 38], [44, 37]], '#3a2a1a'),
-    polygon([[48, 26], [62, 30], [61, 35], [52, 36], [50, 33], [48, 34]], '#b7bcc2'),
-    polygon([[26, 20], [38, 17], [40, 25], [28, 27]], '#3c2f26'),
-    polygon([[25, 20], [18, 12], [27, 18]], '#d9c9a3'),
-    polygon([[39, 17], [46, 9], [42, 21]], '#d9c9a3'),
-    circle(31, 22, 1.4, '#ffcf5e'),
-    circle(36, 21, 1.4, '#ffcf5e'),
-    polygon([[24, 48], [30, 48], [30, 55], [24, 55]], '#33241b'),
-    polygon([[36, 47], [42, 47], [42, 54], [36, 54]], '#33241b'),
+    // Lashing tail behind the stance.
+    polyline([[44, 44], [50, 47], [53, 53]], '#5c231b', 2),
+    // Hunched back silhouette then lit body mass with shaded right half.
+    polygon([[19, 30], [44, 26], [48, 48], [40, 46], [34, 52], [27, 47], [21, 52], [16, 48]], '#4a1f18'),
+    polygon([[20, 30], [44, 28], [46, 48], [41, 46], [35, 51], [28, 47], [23, 51], [18, 49]], '#6e2a22'),
+    polygon([[31, 29], [44, 28], [46, 48], [41, 46], [35, 51]], '#5c231b'),
+    // Chest wrap with strap lines.
+    polygon([[24, 30], [42, 27], [44, 38], [26, 41]], '#8a4a2f'),
+    polyline([[25, 33], [43, 30.4]], '#6b3520', 1.2),
+    polyline([[25.4, 37.4], [43.4, 34.6]], '#6b3520', 1.2),
+    // Bone trophy necklace across the wrap.
+    circle(28, 34.4, 1, '#d9c9a3'),
+    circle(32.4, 33.8, 1, '#d9c9a3'),
+    circle(36.8, 33.2, 1, '#d9c9a3'),
+    // Jagged fur collar around the shoulders.
+    polygon([[22.6, 29.4], [26, 25.6], [29.6, 29], [33.6, 25], [37.6, 28.6], [41, 26], [42.6, 30], [23, 31.6]], '#3c2f26'),
+    // Loincloth with a bone talisman button.
+    polygon([[24, 44], [34, 44], [33, 52], [23, 52]], '#5c2d1c'),
+    polygon([[24, 44], [29, 44], [28.6, 52], [23, 52]], '#6b3a24'),
+    circle(28.6, 48, 1.3, '#d9c9a3'),
+    // Digitigrade legs, shaded far leg, heavy feet on the ground line.
+    polygon([[23, 47], [29.6, 47], [28.6, 54.6], [22.6, 54.6]], '#33241b'),
+    polygon([[35, 46], [41.6, 45], [42.6, 52], [36, 52.6]], '#2a1c14'),
+    polygon([[21.6, 54], [27.4, 54], [27.8, 58], [20.6, 58]], '#241710'),
+    polygon([[36, 51.4], [42.4, 51], [43.6, 58], [37.2, 57.4]], '#1f130c'),
+    // Off-hand forearm with a dark bracer.
+    polygon([[18, 32], [23, 31], [23.6, 36], [18.6, 37]], '#7c3e28'),
+    polygon([[16.6, 36], [21.6, 35.4], [22, 39.6], [17, 40]], '#3a2a1a'),
+    // Weapon arm, wrapped fist, wood haft and a broad steel axe head.
+    polygon([[38, 31], [47, 31.6], [47, 36.6], [38, 36.4]], '#7c3e28'),
+    polygon([[44, 33], [50.6, 33.4], [50.4, 37.8], [43.8, 37.4]], '#3a2a1a'),
+    polyline([[48.6, 35.2], [59.4, 31.6]], '#6b4a26', 2.2),
+    polygon([[47.4, 23.4], [61.4, 27.4], [60.4, 34.4], [51.6, 33.6], [48.8, 30.4], [46.6, 31.4]], '#b7bcc2'),
+    polygon([[48.6, 24.6], [60.2, 28], [59.8, 30.2], [49.2, 27]], '#d7dde2'),
+    polyline([[49.4, 32.4], [59, 29.4]], '#8f979e', 1),
+    // Hyena profile head: muzzle, teeth flash, ears and brow over amber eyes.
+    polygon([[25, 21.4], [31, 17.4], [38, 16], [42.4, 19.4], [41.4, 24], [35, 27.4], [27, 26.4]], '#7a4a30'),
+    polygon([[38, 19.4], [44.4, 21], [42, 25], [38.4, 23.8]], '#8f5a3a'),
+    polygon([[41, 21.6], [44, 22], [43.6, 23.4], [40.8, 23]], '#e8e0d0'),
+    polygon([[27.4, 16.4], [30.4, 13.4], [31.6, 17]], '#4a2c1c'),
+    polygon([[31.8, 15.6], [34.4, 13], [35.4, 16.8]], '#4a2c1c'),
+    polyline([[31.6, 19.4], [35, 18.8], [38.6, 19.2]], '#3c2216', 1.2),
+    circle(33.4, 21.4, 1.5, '#ffcf5e'),
+    circle(37.6, 20.8, 1.5, '#ffcf5e'),
   ];
 }
 
@@ -104,48 +164,109 @@ function buildElite(rng) {
   void rng;
   return [
     shadow(32, 16),
-    polygon([[18, 24], [46, 24], [50, 54], [40, 50], [32, 55], [24, 50], [14, 54]], '#4a1016'),
+    // Sweeping cape with a shaded trailing half.
+    polygon([[16, 22], [48, 22], [52, 54], [41, 50], [32, 56], [23, 50], [12, 54]], '#4a1016'),
+    polygon([[32, 22], [48, 22], [52, 54], [41, 50], [32, 56]], '#3a0c11'),
+    // Greaves with lit leading edges.
     polygon([[25, 44], [31, 44], [30, 56], [24, 56]], '#3c1218'),
     polygon([[33, 44], [39, 44], [40, 56], [34, 56]], '#3c1218'),
+    polygon([[25, 44], [27.6, 44], [27, 56], [24, 56]], '#4d1822'),
+    polygon([[33, 44], [35.6, 44], [34.6, 56], [34, 56]], '#4d1822'),
+    // Sabatons with gilded trim on the ground line.
     polygon([[23, 54], [30, 54], [30, 58], [23, 58]], '#1c0a0d'),
     polygon([[34, 54], [41, 54], [41, 58], [34, 58]], '#1c0a0d'),
-    polygon([[21, 24], [43, 24], [41, 46], [23, 46]], '#7a2230'),
-    polygon([[30, 24], [34, 24], [34, 46], [30, 46]], '#d9a441'),
-    circle(20, 26, 5, '#8c2a3a'),
-    circle(44, 26, 5, '#8c2a3a'),
-    polygon([[16, 23], [20, 12], [24, 23]], '#d9a441'),
-    polygon([[40, 23], [44, 12], [48, 23]], '#d9a441'),
+    polygon([[23, 54], [30, 54], [30, 55.2], [23, 55.2]], '#d9a441'),
+    polygon([[34, 54], [41, 54], [41, 55.2], [34, 55.2]], '#d9a441'),
+    // Cuirass: lit left plate, gilt center ridge, modeled pecs and belt line.
+    polygon([[21, 25], [43, 25], [41, 46], [23, 46]], '#7a2230'),
+    polygon([[21, 25], [32, 25], [31, 46], [23, 46]], '#8c2a3a'),
+    polygon([[31, 25], [33, 25], [33, 46], [31, 46]], '#d9a441'),
+    polygon([[23.4, 27], [31, 27], [30.6, 33], [24, 33]], '#9c3343'),
+    polygon([[33, 27], [40.6, 27], [40, 33], [33.4, 33]], '#6b1a26'),
+    polyline([[24.6, 36], [39.4, 36]], '#5d1420', 1.1),
+    circle(27, 38.4, 1.1, '#d9a441'),
+    circle(37, 38.4, 1.1, '#d9a441'),
+    // Gilded-rim pauldrons with molten rivets.
+    circle(20, 26, 5.4, '#d9a441'),
+    circle(44, 26, 5.4, '#d9a441'),
+    circle(20, 26, 4.5, '#8c2a3a'),
+    circle(44, 26, 4.5, '#8c2a3a'),
+    circle(18.8, 24.8, 1.2, '#ffb84d'),
+    circle(45.2, 24.8, 1.2, '#ffb84d'),
+    // Horned helm: crown band over a dark face recess.
     polygon([[25, 10], [39, 10], [41, 21], [23, 21]], '#5d1620'),
-    polygon([[24, 12], [12, 4], [26, 18]], '#d9a441'),
-    polygon([[40, 12], [52, 4], [38, 18]], '#d9a441'),
-    circle(29, 16, 1.6, '#ff5d3a'),
-    circle(35, 16, 1.6, '#ff5d3a'),
-    polygon([[44, 32], [57, 24], [59, 27], [46, 35]], '#3a2a1a'),
-    polygon([[54, 16], [63, 21], [60, 28], [51, 24]], '#9aa1a8'),
+    polygon([[26.4, 13], [37.6, 13], [37, 20], [27, 20]], '#200a0e'),
+    polygon([[25, 10], [39, 10], [40, 13], [24, 13]], '#7a2230'),
+    // Curved horns with inner shading.
+    polygon([[24.6, 12], [12, 4], [25.6, 18]], '#d9a441'),
+    polygon([[23.4, 12.6], [15.4, 7.2], [24, 15.8]], '#b3862f'),
+    polygon([[39.4, 12], [52, 4], [38.4, 18]], '#d9a441'),
+    polygon([[40.6, 12.6], [48.6, 7.2], [40, 15.8]], '#b3862f'),
+    // Burning eyes with soft halos.
+    circle(29, 16.4, 2.6, '#ff5d3a30'),
+    circle(35, 16.4, 2.6, '#ff5d3a30'),
+    circle(29, 16.4, 1.5, '#ff5d3a'),
+    circle(35, 16.4, 1.5, '#ff5d3a'),
+    // Greatsword: lit edge, dark fuller, gilt guard, wrapped grip, ember pommel.
+    polygon([[44, 33], [58, 22], [61, 25], [47, 36]], '#9aa1a8'),
+    polygon([[46, 32.2], [57.6, 23], [59, 24.4], [47.4, 33.6]], '#cfd6dc'),
+    polyline([[46.6, 33.8], [57.4, 25.2]], '#5f666d', 1),
+    polygon([[42, 30], [47.4, 34.6], [45.4, 37], [40, 32.4]], '#d9a441'),
+    polygon([[38.6, 33.8], [42.4, 37], [40.4, 39], [36.6, 35.8]], '#3a2a1a'),
+    circle(37.4, 37.4, 1.5, '#d9a441'),
+    circle(37.4, 37.4, 0.8, '#ff5d3a'),
+    // Belt trophy skulls.
+    circle(24.6, 40.2, 1.2, '#d9c9a3'),
+    circle(39, 40.2, 1.2, '#d9c9a3'),
   ];
 }
 
 function buildTree(rng) {
   const shapes = [
-    polygon([[29, 44], [35, 44], [37, 58], [27, 58]], '#5a4030'),
-    polygon([[24, 55], [29, 53], [30, 58], [24, 58]], '#4a3526'),
-    polygon([[35, 53], [40, 55], [40, 58], [34, 58]], '#4a3526'),
+    shadow(32, 15),
+    // Tapered trunk with bark ridges and flared roots.
+    polygon([[29, 42], [35, 42], [38, 58], [26, 58]], '#5a4030'),
+    polyline([[31, 44], [30.4, 57]], '#4a3526', 1.2),
+    polyline([[33.4, 44], [34, 57]], '#4a3526', 1.2),
+    polygon([[24, 55], [29, 52.6], [30, 58], [24, 58]], '#4a3526'),
+    polygon([[34, 52.6], [40, 55], [40, 58], [34, 58]], '#4a3526'),
+    polygon([[29.6, 55], [34.4, 55], [33.6, 58], [30.4, 58]], '#4a3526'),
+    // Three stacked canopy layers, darkest to lightest.
     polygon([
-      [32, 6], [46, 27], [41, 25], [50, 40], [42, 37], [52, 50],
-      [12, 50], [22, 37], [14, 40], [23, 25], [18, 27],
+      [32, 6], [46, 26], [41, 24.6], [50, 39], [42.6, 36.6], [52, 50],
+      [12, 50], [21.4, 36.6], [14, 39], [23, 24.6], [18, 26],
+    ], '#245830'),
+    polygon([
+      [32, 11], [42.6, 27.6], [38.6, 26.6], [44.6, 37.6], [38.6, 35.6], [45.4, 46],
+      [18.6, 46], [25.4, 35.6], [19.4, 37.6], [25.4, 26.6], [21.4, 27.6],
     ], '#2f6b3a'),
     polygon([
-      [32, 12], [42, 28], [38, 27], [44, 38], [38, 36], [45, 46],
-      [19, 46], [26, 36], [20, 38], [26, 27], [22, 28],
+      [32, 16], [39.4, 30], [36.4, 29], [41, 38], [36, 36.4], [40.4, 44],
+      [23.6, 44], [28, 36.4], [23, 38], [27.6, 29], [24.6, 30],
     ], '#3d8a49'),
+    // Verdigris lichen strands hanging from the lower boughs.
+    polyline([[26, 44], [25.4, 47.6]], '#4e9e8f', 1),
+    polyline([[38, 43], [38.8, 46.6]], '#4e9e8f', 1),
   ];
-  for (let i = 0; i < 7; i += 1) {
+  for (let i = 0; i < 9; i += 1) {
     const angle = rng() * Math.PI * 2;
     const radius = 4 + rng() * 10;
     const x = 32 + Math.cos(angle) * radius * 1.4;
     const y = 30 + Math.sin(angle) * radius * 0.7;
     if (y < 14 || y > 47 || x < 15 || x > 49) continue;
     shapes.push(circle(Math.round(x * 2) / 2, Math.round(y * 2) / 2, 1 + rng() * 1.4, '#57a75f'));
+  }
+  for (let i = 0; i < 4; i += 1) {
+    const x = 19 + rng() * 14;
+    const y = 17 + rng() * 12;
+    if (y < 15 || y > 31 || x < 18 || x > 34) continue;
+    shapes.push(circle(Math.round(x * 2) / 2, Math.round(y * 2) / 2, 0.8 + rng() * 0.8, '#79c46f'));
+  }
+  for (let i = 0; i < 3; i += 1) {
+    const x = 34 + rng() * 11;
+    const y = 20 + rng() * 13;
+    if (y < 19 || y > 34 || x < 33 || x > 46) continue;
+    shapes.push(circle(Math.round(x * 2) / 2, Math.round(y * 2) / 2, 0.9 + rng() * 0.4, '#bff3ec40'));
   }
   return shapes;
 }
@@ -154,17 +275,48 @@ function buildRuin(rng) {
   void rng;
   return [
     shadow(32, 20),
-    polygon([[13, 30], [16.5, 24], [19, 28], [22, 22], [23, 58], [13, 58]], '#8d8f94'),
-    polygon([[13, 30], [16.5, 24], [19, 28], [22, 22], [23, 26], [19, 31], [16, 29]], '#a3a5aa'),
-    polygon([[41, 38], [44.5, 33], [47, 37], [50, 32], [51, 58], [41, 58]], '#76787d'),
-    polygon([[24, 44], [44, 38], [46, 44], [26, 50]], '#84868b'),
-    polyline([[24, 44], [44, 38], [46, 44], [26, 50], [24, 44]], '#5f6165', 1.5),
-    circle(28, 55, 2.4, '#6f7176'),
-    polygon([[34, 52], [39, 51], [40, 56], [35, 57]], '#7a7c81'),
-    circle(46, 54, 1.8, '#66686d'),
-    circle(17, 52, 1.5, '#557d4a'),
-    circle(43, 41, 1.3, '#557d4a'),
-    polygon([[20, 40], [23, 39], [24, 44], [21, 45]], '#7f8186'),
+    // Tall broken wall with jagged top and a lit left strip.
+    polygon([[10, 26], [15, 23], [18, 26.6], [21, 22.6], [24, 25], [25, 58], [11, 58]], '#84868b'),
+    polygon([[10, 26], [12.6, 24.8], [13.4, 58], [10, 58]], '#9a9ca1'),
+    // Masonry course joints and a weathering crack.
+    polyline([[11.6, 34], [24.4, 33.4]], '#6f7176', 1),
+    polyline([[11.4, 42], [24.6, 41.4]], '#6f7176', 1),
+    polyline([[11.2, 50], [24.8, 49.4]], '#6f7176', 1),
+    polyline([[20.6, 30], [19, 38], [20.8, 45]], '#5f6165', 1),
+    // Shorter stub wall with a shaded fracture face.
+    polygon([[41, 37], [45.4, 33.6], [47.6, 36.6], [51, 32.6], [52, 58], [41, 58]], '#76787d'),
+    polygon([[48.6, 33.4], [51, 32.6], [52, 58], [48.8, 58]], '#66686d'),
+    // Fallen lintel bridging the walls, top-lit with a fractured end.
+    polygon([[21.6, 45.6], [43.6, 37.6], [46.6, 44.6], [24.6, 52.6]], '#8d8f94'),
+    polygon([[21.6, 45.6], [43.6, 37.6], [44.6, 40], [22.6, 48]], '#a3a5aa'),
+    polyline([[21.6, 45.6], [43.6, 37.6], [46.6, 44.6], [24.6, 52.6], [21.6, 45.6]], '#5f6165', 1.4),
+    polygon([[43.6, 37.6], [46.6, 44.6], [44, 45.6], [41.8, 39.4]], '#6f7176'),
+    // Standing column drum with cap and flutes.
+    polygon([[14.6, 44], [21.4, 44], [22.4, 56], [13.6, 56]], '#9a9ca1'),
+    ellipse(18.4, 44, 3.9, 1.5, '#aeb1b6'),
+    polyline([[16.4, 46], [16, 55]], '#7f8186', 0.9),
+    polyline([[18.6, 46], [18.4, 55]], '#7f8186', 0.9),
+    polyline([[20.6, 46], [20.8, 55]], '#7f8186', 0.9),
+    // Rubble chunks and pebbles.
+    polygon([[27, 53.6], [31, 52.4], [32.4, 56], [28, 57.4]], '#7a7c81'),
+    polygon([[35, 50.6], [38.6, 49.8], [39.6, 53.4], [35.8, 54.2]], '#6f7176'),
+    polygon([[44, 52.6], [47.6, 52], [48.4, 55.4], [44.6, 56]], '#66686d'),
+    circle(25.4, 56.4, 1.1, '#5f6165'),
+    circle(33.4, 57, 0.9, '#66686d'),
+    circle(40.4, 56.8, 1, '#5f6165'),
+    circle(47, 57.2, 0.8, '#66686d'),
+    // Moss colonizing the stone and grass tufts in the cracks.
+    circle(13.4, 56.2, 1.8, '#557d4a'),
+    circle(15.4, 57.4, 1.4, '#6b9a5a'),
+    circle(22, 24.4, 1.5, '#557d4a'),
+    circle(45.6, 34.4, 1.3, '#557d4a'),
+    circle(46.6, 36, 1, '#6b9a5a'),
+    circle(19.6, 44.2, 1.2, '#557d4a'),
+    polygon([[30.4, 58], [31.4, 54.6], [32.4, 58]], '#5d8a5a'),
+    polygon([[42.4, 58], [43.4, 55.4], [44.4, 58]], '#5d8a5a'),
+    // Weathered verdigris rune plaque set into the old wall.
+    polygon([[16.4, 33.4], [20.4, 33.4], [20.4, 37.4], [16.4, 37.4]], '#3e8f83'),
+    polygon([[17.6, 34.6], [19.2, 34.6], [19.2, 36.2], [17.6, 36.2]], '#2c5f57'),
   ];
 }
 
@@ -172,19 +324,57 @@ function buildDwelling(rng) {
   void rng;
   return [
     shadow(32, 19),
-    polygon([[16, 33], [48, 33], [48, 58], [16, 58]], '#a3805a'),
-    polygon([[16, 33], [19, 33], [19, 58], [16, 58]], '#4a3623'),
-    polygon([[45, 33], [48, 33], [48, 58], [45, 58]], '#4a3623'),
-    polygon([[16, 33], [48, 33], [48, 36], [16, 36]], '#4a3623'),
-    polygon([[11, 33], [32, 11], [53, 33]], '#b98f3e'),
-    polygon([[9, 32], [55, 32], [55, 36], [9, 36]], '#8a6a2c'),
-    polygon([[32, 11], [35, 14.5], [32, 14.5], [29, 14.5]], '#caa04a'),
-    polygon([[28, 43], [36, 43], [36, 58], [28, 58]], '#3c2a18'),
-    circle(34.5, 51, 0.9, '#b98f3e'),
-    polygon([[20, 39], [26, 39], [26, 45], [20, 45]], '#4a3623'),
-    polygon([[21, 40], [25, 40], [25, 44], [21, 44]], '#ffd98a'),
-    polygon([[38, 39], [44, 39], [44, 45], [38, 45]], '#4a3623'),
-    polygon([[39, 40], [43, 40], [43, 44], [39, 44]], '#ffd98a'),
+    // Stone footing with masonry joints.
+    polygon([[15, 52], [49, 52], [49, 58], [15, 58]], '#84868b'),
+    polyline([[15, 54.8], [49, 54.8]], '#6f7176', 1),
+    polyline([[24, 53.2], [24, 58]], '#6f7176', 1),
+    polyline([[33, 53.2], [33, 58]], '#6f7176', 1),
+    polyline([[42, 53.2], [42, 58]], '#6f7176', 1),
+    // Daub walls with a shaded right side.
+    polygon([[16, 34], [48, 34], [48, 53], [16, 53]], '#cbb089'),
+    polygon([[40, 34], [48, 34], [48, 53], [40, 53]], '#b89e77'),
+    // Timber frame: posts, beams, rail and diagonal braces.
+    polygon([[16, 34], [19, 34], [19, 53], [16, 53]], '#4a3623'),
+    polygon([[45, 34], [48, 34], [48, 53], [45, 53]], '#4a3623'),
+    polygon([[16, 34], [48, 34], [48, 37], [16, 37]], '#4a3623'),
+    polygon([[16, 43], [48, 43], [48, 45.4], [16, 45.4]], '#4a3623'),
+    polygon([[19.4, 37.4], [22, 37.4], [19.4, 42.6], [19, 42]], '#4a3623'),
+    polygon([[44.6, 37.4], [42, 37.4], [44.6, 42.6], [45, 42]], '#4a3623'),
+    // Thatched roof: dark under-eave, lit face, texture rows and rolled ridge.
+    polygon([[12, 34], [52, 34], [32, 12]], '#8a6a2c'),
+    polygon([[14, 33.4], [50, 33.4], [32, 13]], '#b98f3e'),
+    polyline([[18.6, 29.4], [45.4, 29.4]], '#8a6a2c', 1),
+    polyline([[23.4, 24], [40.6, 24]], '#8a6a2c', 1),
+    polyline([[27.6, 19], [36.4, 19]], '#8a6a2c', 1),
+    polygon([[27.4, 15], [36.6, 15], [33.4, 11.4], [30.6, 11.4]], '#caa04a'),
+    // Stone chimney with a cap and a wisp of smoke.
+    polygon([[41, 25.4], [45.4, 23.6], [45.4, 15.4], [41.4, 17.2]], '#76787d'),
+    polygon([[40.8, 16.4], [45.8, 14.4], [45.8, 12.6], [40.8, 14.6]], '#8d8f94'),
+    circle(44.6, 11.4, 1.6, '#d9c9a340'),
+    circle(46, 8.8, 1.2, '#d9c9a330'),
+    // Plank door with iron hinges and a round handle.
+    polygon([[28, 42.6], [36, 42.6], [36, 58], [28, 58]], '#3c2a18'),
+    polyline([[30.6, 43.6], [30.6, 57]], '#2a1d0f', 0.9),
+    polyline([[33.4, 43.6], [33.4, 57]], '#2a1d0f', 0.9),
+    polyline([[28, 46], [30.2, 46]], '#6f7176', 1.1),
+    polyline([[28, 50], [30.2, 50]], '#6f7176', 1.1),
+    circle(34.6, 51, 0.9, '#d9a441'),
+    // Cross-mullioned windows glowing warm.
+    polygon([[20, 38.4], [26.6, 38.4], [26.6, 45], [20, 45]], '#4a3623'),
+    polygon([[21, 39.4], [25.6, 39.4], [25.6, 44], [21, 44]], '#ffd98a'),
+    polyline([[23.3, 39.4], [23.3, 44]], '#4a3623', 0.8),
+    polyline([[21, 41.7], [25.6, 41.7]], '#4a3623', 0.8),
+    polygon([[37.4, 38.4], [44, 38.4], [44, 45], [37.4, 45]], '#4a3623'),
+    polygon([[38.4, 39.4], [43, 39.4], [43, 44], [38.4, 44]], '#ffd98a'),
+    polyline([[40.7, 39.4], [40.7, 44]], '#4a3623', 0.8),
+    polyline([[38.4, 41.7], [43, 41.7]], '#4a3623', 0.8),
+    // Window planter with foliage and blossoms.
+    polygon([[19.4, 47.8], [25, 47.8], [25, 49.4], [19.4, 49.4]], '#5a4030'),
+    circle(20.4, 47, 0.8, '#6fae67'),
+    circle(22.2, 47.2, 0.8, '#6fae67'),
+    circle(24, 47, 0.8, '#6fae67'),
+    circle(21.3, 46.2, 0.7, '#c96a6a'),
+    circle(23.1, 46.4, 0.7, '#e8e4c8'),
   ];
 }
 
@@ -192,16 +382,55 @@ function buildShrine(rng) {
   void rng;
   return [
     shadow(32, 18),
-    polygon([[14, 54], [50, 54], [52, 58], [12, 58]], '#9aa1a8'),
-    polygon([[18, 50], [46, 50], [48, 54], [16, 54]], '#a8aeb6'),
-    polygon([[22, 28], [26, 28], [26, 50], [22, 50]], '#b9bec6'),
-    polygon([[38, 28], [42, 28], [42, 50], [38, 50]], '#b9bec6'),
-    polygon([[18, 22], [46, 22], [46, 28], [18, 28]], '#c6cbd2'),
-    polygon([[16, 22], [32, 14], [48, 22]], '#d2d7de'),
+    // Three stepped slabs with beveled top light on the upper courses.
+    polygon([[12, 54], [52, 54], [54, 58], [10, 58]], '#8f959d'),
+    polygon([[16, 50], [48, 50], [50, 54], [14, 54]], '#9aa1a8'),
+    polygon([[16, 50], [48, 50], [48.8, 51.4], [15.2, 51.4]], '#a8aeb6'),
+    polygon([[20, 46.4], [44, 46.4], [46, 50], [18, 50]], '#a5abb2'),
+    polygon([[20, 46.4], [44, 46.4], [45, 47.8], [19, 47.8]], '#b9bec6'),
+    // Soft aura behind the centerpiece, over the dark backdrop only.
     circle(32, 38, 7.5, '#59d6c926'),
-    polygon([[28, 44], [36, 44], [38, 50], [26, 50]], '#6f7680'),
-    polygon([[30, 44], [34, 44], [35, 37], [32, 31], [29, 37]], '#59d6c9'),
-    polygon([[31, 44], [33, 44], [33.5, 39], [32, 35.5], [30.5, 39]], '#bff3ec'),
+    // Fluted pillars with shaded strips and cap stones.
+    polygon([[22, 28], [26.4, 28], [26.4, 46.4], [22, 46.4]], '#b9bec6'),
+    polygon([[24.8, 28], [26.4, 28], [26.4, 46.4], [24.8, 46.4]], '#9ba1a9'),
+    polyline([[23.2, 29.4], [23.2, 43.6]], '#9ba1a9', 0.8),
+    polygon([[21.2, 26.6], [27.2, 26.6], [27.2, 28.4], [21.2, 28.4]], '#c6cbd2'),
+    polygon([[21.2, 44.6], [27.2, 44.6], [27.2, 46.4], [21.2, 46.4]], '#c6cbd2'),
+    polygon([[37.6, 28], [42, 28], [42, 46.4], [37.6, 46.4]], '#b9bec6'),
+    polygon([[37.6, 28], [39.2, 28], [39.2, 46.4], [37.6, 46.4]], '#9ba1a9'),
+    polyline([[40.8, 29.4], [40.8, 43.6]], '#9ba1a9', 0.8),
+    polygon([[36.8, 26.6], [42.8, 26.6], [42.8, 28.4], [36.8, 28.4]], '#c6cbd2'),
+    polygon([[36.8, 44.6], [42.8, 44.6], [42.8, 46.4], [36.8, 46.4]], '#c6cbd2'),
+    // Entablature with dentil blocks under the pediment.
+    polygon([[18, 22.4], [46, 22.4], [46, 26.6], [18, 26.6]], '#c6cbd2'),
+    polygon([[20.6, 25], [22.2, 25], [22.2, 26.6], [20.6, 26.6]], '#9ba1a9'),
+    polygon([[26.2, 25], [27.8, 25], [27.8, 26.6], [26.2, 26.6]], '#9ba1a9'),
+    polygon([[31.8, 25], [33.4, 25], [33.4, 26.6], [31.8, 26.6]], '#9ba1a9'),
+    polygon([[37.4, 25], [39, 25], [39, 26.6], [37.4, 26.6]], '#9ba1a9'),
+    // Pediment with recessed tympanum and a verdigris sun medallion.
+    polygon([[16, 22.4], [32, 13.6], [48, 22.4]], '#d2d7de'),
+    polygon([[20.6, 21.4], [32, 15.4], [43.4, 21.4]], '#aeb4bc'),
+    circle(32, 19.6, 2.4, '#4e9e8f'),
+    circle(32, 19.6, 1.6, '#59d6c9'),
+    circle(32, 19.6, 0.7, '#bff3ec'),
+    // Brazier pedestal, bowl and rim.
+    polygon([[30, 44], [34, 44], [34.8, 46.4], [29.2, 46.4]], '#6f7680'),
+    polygon([[27.4, 42.4], [36.6, 42.4], [34.6, 46], [29.4, 46]], '#7a8188'),
+    ellipse(32, 42.4, 4.6, 1.1, '#8f959d'),
+    // Layered teal flame with pale core and drifting sparks.
+    polygon([[29.4, 42], [31, 37.4], [30, 35.4], [32, 31.4], [33.6, 34.6], [34.8, 36.4], [34.6, 42]], '#59d6c9'),
+    polygon([[30.8, 42], [31.8, 38.6], [32.6, 40], [33.2, 42]], '#bff3ec'),
+    circle(34.4, 33.4, 0.8, '#bff3ecb0'),
+    circle(29.8, 35.8, 0.7, '#bff3ec90'),
+    // Votive candles flanking the brazier.
+    polygon([[24.4, 43.4], [25.6, 43.4], [25.6, 46.4], [24.4, 46.4]], '#c6cbd2'),
+    circle(25, 42.6, 0.7, '#ffd98a'),
+    polygon([[38.4, 43.4], [39.6, 43.4], [39.6, 46.4], [38.4, 46.4]], '#c6cbd2'),
+    circle(39, 42.6, 0.7, '#ffd98a'),
+    // Inscription dashes on the ground step.
+    polyline([[22, 56.4], [26, 56.4]], '#6f7680', 0.9),
+    polyline([[30, 56.4], [36, 56.4]], '#6f7680', 0.9),
+    polyline([[40, 56.4], [44, 56.4]], '#6f7680', 0.9),
   ];
 }
 
@@ -209,22 +438,68 @@ function buildTerrainA(rng) {
   const shapes = [
     polygon([[0, 0], [VIEW_WIDTH, 0], [VIEW_WIDTH, VIEW_HEIGHT], [0, VIEW_HEIGHT]], '#46653f'),
   ];
-  for (let i = 0; i < 26; i += 1) {
-    const x = 6 + rng() * 52;
-    const y = 6 + rng() * 52;
-    const roll = rng();
-    const fill = roll < 0.4 ? '#4f7047' : roll < 0.75 ? '#3d5938' : '#57794d';
-    shapes.push(circle(Math.round(x), Math.round(y), 1 + rng() * 1.6, fill));
+  // Broad low-contrast mottling so the court does not read flat.
+  const patches = [
+    [[8, 10], [26, 7], [30, 20], [12, 24]],
+    [[36, 30], [56, 27], [58, 42], [40, 46]],
+    [[10, 40], [26, 38], [28, 52], [12, 55]],
+    [[42, 6], [58, 9], [56, 22], [44, 20]],
+    [[28, 48], [46, 50], [44, 60], [30, 58]],
+  ];
+  const patchFills = ['#4d7044', '#3f5c39', '#4a6c42', '#52754a', '#3d5936'];
+  for (let i = 0; i < patches.length; i += 1) {
+    const jittered = patches[i].map(([x, y]) => [
+      Math.round((x + (rng() - 0.5) * 2) * 2) / 2,
+      Math.round((y + (rng() - 0.5) * 2) * 2) / 2,
+    ]);
+    shapes.push(polygon(jittered, patchFills[i]));
   }
-  for (let i = 0; i < 4; i += 1) {
-    const x = 10 + rng() * 42;
+  // Worn diagonal path with a lit inner swath and scattered grit.
+  shapes.push(polygon([[24, VIEW_HEIGHT], [40, VIEW_HEIGHT], [52, 40], [44, 38]], '#5d6b4f'));
+  shapes.push(polygon([[28, VIEW_HEIGHT], [36, VIEW_HEIGHT], [47, 41], [43, 40]], '#6b7562'));
+  for (let i = 0; i < 5; i += 1) {
+    const t = 0.15 + rng() * 0.7;
+    const x = Math.round(30 + t * 18 + (rng() - 0.5) * 3);
+    const y = Math.round(VIEW_HEIGHT - t * 22 + (rng() - 0.5) * 3);
+    shapes.push(circle(x, y, 0.8 + rng() * 0.6, i % 2 === 0 ? '#78806e' : '#596058'));
+  }
+  // Grass blade clusters in three greens.
+  for (let i = 0; i < 24; i += 1) {
+    const x = 5 + rng() * 54;
+    const y = 6 + rng() * 50;
+    if (x < 5 || x > 57 || y < 6 || y > 56) continue;
+    const fill = i % 3 === 0 ? '#6fae67' : i % 3 === 1 ? '#5f8a52' : '#547d49';
+    shapes.push(polygon(
+      [[Math.round(x), Math.round(y)], [Math.round(x) + 0.9, Math.round(y) - 2.2], [Math.round(x) + 1.8, Math.round(y)]],
+      fill,
+    ));
+  }
+  // Clover dots.
+  for (let i = 0; i < 6; i += 1) {
+    const x = 7 + rng() * 50;
+    const y = 8 + rng() * 48;
+    shapes.push(circle(Math.round(x), Math.round(y), 0.7, '#6fae67'));
+  }
+  // Two-tone stones: body, top light, under-shadow.
+  for (let i = 0; i < 5; i += 1) {
+    const x = 9 + rng() * 44;
     const y = 10 + rng() * 42;
-    const w = 3 + rng() * 2.5;
-    const h = 2.5 + rng() * 2;
+    const w = 3 + rng() * 2.2;
+    const h = 2.4 + rng() * 1.8;
+    const body = i % 2 === 0 ? '#6b7060' : '#5c6154';
     shapes.push(polygon(
       [[x, y], [x + w, y + rng()], [x + w + 0.5, y + h], [x - 0.5, y + h + rng()]],
-      i % 2 === 0 ? '#6b7060' : '#5c6154',
+      body,
     ));
+    shapes.push(polygon([[x, y], [x + w, y + rng() * 0.6], [x + w - 0.6, y + 0.9], [x + 0.4, y + 0.9]], '#7d8272'));
+    shapes.push(polygon([[x - 0.5, y + h + rng() * 0.5], [x + w + 0.5, y + h], [x + w - 0.4, y + h + 0.7], [x - 0.2, y + h + 0.8]], '#4c5146'));
+  }
+  // A few meadow flowers.
+  for (let i = 0; i < 3; i += 1) {
+    const x = 10 + rng() * 42;
+    const y = 12 + rng() * 40;
+    shapes.push(circle(Math.round(x), Math.round(y), 1, '#e8e4c8'));
+    shapes.push(circle(Math.round(x), Math.round(y), 0.45, '#d9a441'));
   }
   return shapes;
 }
@@ -232,6 +507,11 @@ function buildTerrainA(rng) {
 function buildTerrainB(rng) {
   const shapes = [
     polygon([[0, 0], [VIEW_WIDTH, 0], [VIEW_WIDTH, VIEW_HEIGHT], [0, VIEW_HEIGHT]], '#33504a'),
+    // Corner vignettes settle the tile into the ground plane.
+    polygon([[0, 0], [14, 0], [0, 14]], '#2e4741'),
+    polygon([[50, 0], [VIEW_WIDTH, 0], [VIEW_WIDTH, 14]], '#2e4741'),
+    polygon([[0, 50], [0, VIEW_HEIGHT], [14, VIEW_HEIGHT]], '#2e4741'),
+    polygon([[VIEW_WIDTH, 50], [VIEW_WIDTH, VIEW_HEIGHT], [50, VIEW_HEIGHT]], '#2e4741'),
   ];
   const slabs = [
     [[6, 6], [26, 5], [28, 22], [8, 24]],
@@ -247,13 +527,47 @@ function buildTerrainB(rng) {
       Math.round((y + (rng() - 0.5) * 2) * 2) / 2,
     ]);
     shapes.push(polygon(jitter, '#48695f'));
+    // Top-left edge catches light; bottom-right edge falls to shade.
+    shapes.push(polyline(
+      [jitter[3], jitter[0], jitter[1]],
+      '#54786d',
+      1.2,
+    ));
+    shapes.push(polyline(
+      [jitter[1], jitter[2], jitter[3]],
+      '#3a564e',
+      1.1,
+    ));
   }
+  // Settlement cracks across two flagstones.
+  for (let i = 0; i < 2; i += 1) {
+    const x = 12 + rng() * 36;
+    const y = 10 + rng() * 34;
+    shapes.push(polyline(
+      [
+        [Math.round(x * 2) / 2, Math.round(y * 2) / 2],
+        [Math.round((x + 2.4 + rng() * 2) * 2) / 2, Math.round((y - 1.6 + rng()) * 2) / 2],
+        [Math.round((x + 4.6 + rng() * 2.4) * 2) / 2, Math.round((y + 0.8 + rng()) * 2) / 2],
+      ],
+      '#2e463f',
+      0.9,
+    ));
+  }
+  // Moss clumps colonizing the joints in three greens.
   for (let i = 0; i < 12; i += 1) {
     const x = 6 + rng() * 52;
     const y = 6 + rng() * 52;
-    const fill = rng() < 0.6 ? '#5d8a5a' : '#596058';
-    shapes.push(circle(Math.round(x), Math.round(y), 0.8 + rng() * 1.2, fill));
+    const fill = i % 3 === 0 ? '#6fa06a' : i % 3 === 1 ? '#5d8a5a' : '#7ab06f';
+    shapes.push(circle(Math.round(x), Math.round(y), 0.8 + rng() * 1, fill));
   }
+  // Grit and a fallen twig for scale.
+  for (let i = 0; i < 8; i += 1) {
+    const x = 6 + rng() * 52;
+    const y = 6 + rng() * 52;
+    shapes.push(circle(Math.round(x), Math.round(y), 0.6 + rng() * 0.4, i % 2 === 0 ? '#596058' : '#6a7268'));
+  }
+  shapes.push(polyline([[40, 52], [46, 49.6]], '#5a4030', 1.1));
+  shapes.push(polyline([[43, 50.8], [44.4, 52.4]], '#5a4030', 0.9));
   return shapes;
 }
 
@@ -345,7 +659,10 @@ function headerText(variants) {
   for (const variant of variants) {
     const shapeBegin = flatShapes.length;
     for (const shape of variant.shapes) {
-      const pointBegin = flatPoints.length;
+      // Point spans are counted in vertices (pairs), matching the GDI
+      // consumer which indexes kPoints[(point_begin + p) * 2] for each
+      // vertex of the (point_end - point_begin)-vertex span.
+      const pointBegin = flatPoints.length / 2;
       let kind;
       let extra = { cx: 0, cy: 0, rx: 0, ry: 0 };
       if (shape.kind === 'polygon') kind = 'Polygon';
@@ -365,7 +682,7 @@ function headerText(variants) {
       flatShapes.push({
         kind,
         pointBegin,
-        pointEnd: flatPoints.length,
+        pointEnd: flatPoints.length / 2,
         fill: colorIndex(shape.fill),
         stroke: colorIndex(shape.stroke),
         sw: shape.sw || 0,
