@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -24,26 +25,59 @@ void defeat_enemy(Simulation& sim) {
   // Approach until the D-114 contact band, then keep the primary rhythm. The
   // helper deliberately follows the same shared range table as the client so
   // changing arena scale cannot leave extraction tests stranded out of reach.
-  for (int i = 0; i < 256; ++i) {
-    const Actor* player = sim.actor(sim.scion().actor_id);
+  // TASK-0146: the default first expedition stages a Warden pack, so the
+  // helper drives the whole encounter — it waits out the deterministic answer
+  // beat between ranks, chases each arriving warden by the shared movement
+  // derivation, and stops only when the authoritative objective reports an
+  // empty floor. Player life is restored per step like every other setup
+  // helper here so a multi-rank fight stays deterministic without inventing
+  // healing content.
+  for (int i = 0; i < 4096; ++i) {
+    if (sim.instance().active &&
+        sim.instance().phase == ExpeditionPhase::ExtractCarriedValue) {
+      break;
+    }
+    Actor* player = sim.actor(sim.scion().actor_id);
+    check(player && player->alive, "the Scion survives the staged Warden pack");
+    player->stats.life = player->stats.life_max;
     const Actor* enemy = nullptr;
+    int best_distance = std::numeric_limits<int>::max();
     for (const auto& actor : sim.actors()) {
-      if (actor.kind == ActorKind::Monster) {
+      if (actor.kind != ActorKind::Monster || !actor.alive) continue;
+      const int distance = manhattan_distance(player->position, actor.position);
+      if (distance < best_distance) {
         enemy = &actor;
-        break;
+        best_distance = distance;
       }
     }
-    if (!player || !enemy || !enemy->alive) break;
-    const int distance = manhattan_distance(player->position, enemy->position);
-    if (distance > world_scale::kMeleeRange)
-      sim.dispatch(Command::move(1, 0));
-    else
+    if (!enemy) {
+      sim.dispatch(Command::action_use(ActionType::Wait));
+      continue;
+    }
+    // Cardinal axis-priority pursuit: every step changes exactly one
+    // coordinate by exactly one movement step, so the Scion stays on the
+    // same world grid the extraction helper walks back on. The staged pack
+    // lanes (0 and kExtractionRange) are whole multiples of that step.
+    int dx = 0;
+    int dy = 0;
+    if (enemy->position.y != player->position.y) {
+      dy = enemy->position.y > player->position.y ? 1 : -1;
+    } else if (enemy->position.x != player->position.x) {
+      dx = enemy->position.x > player->position.x ? 1 : -1;
+    }
+    if (best_distance > world_scale::kMeleeRange && (dx != 0 || dy != 0)) {
+      sim.dispatch(Command::move(dx, dy));
+    } else {
       sim.dispatch(Command::action_use(ActionType::Melee));
+    }
   }
   bool dead = true;
   for (const auto& actor : sim.actors())
     if (actor.kind == ActorKind::Monster && actor.alive) dead = false;
-  check(dead, "melee defeats the instance enemy");
+  check(dead, "melee defeats every warden of the staged pack");
+  check(!sim.instance().active ||
+            sim.instance().phase == ExpeditionPhase::ExtractCarriedValue,
+        "clearing the staged pack advances the objective");
 }
 
 void pick_all_rewards(Simulation& sim) {
@@ -1138,6 +1172,194 @@ void test_expedition_phase_makes_the_first_expedition_loop_explicit() {
         "extraction remains available without a phase gate");
 }
 
+void test_first_expedition_spawns_a_deterministic_warden_pack() {
+  // TASK-0146 focused coverage: the default expedition stages one small
+  // Warden pack whose composition, positions, and identity derive entirely
+  // from the existing D-114 table and shared stats vocabulary.
+  Simulation first(0x0146ULL);
+  Simulation second(0x0146ULL);
+  auto living_monsters = [](Simulation& sim) {
+    std::vector<const Actor*> living;
+    for (const auto& actor : sim.actors()) {
+      if (actor.kind == ActorKind::Monster && actor.alive) living.push_back(&actor);
+    }
+    return living;
+  };
+  first.dispatch(Command::enter("route:tin:1:0"));
+  second.dispatch(Command::enter("route:tin:1:0"));
+  const auto first_vanguard = living_monsters(first);
+  const auto second_vanguard = living_monsters(second);
+  check(first_vanguard.size() == 1 && second_vanguard.size() == 1,
+        "the first expedition opens with exactly one warden vanguard");
+  check(first_vanguard.front()->position.x == world_scale::kEnemySpawnDistance &&
+            first_vanguard.front()->position.y == 0,
+        "the vanguard holds the unchanged D-114 contact lane");
+  check(!first_vanguard.front()->elite, "the vanguard reads as a normal warden");
+  check(first_vanguard.front()->id == second_vanguard.front()->id &&
+            first_vanguard.front()->stats == second_vanguard.front()->stats,
+        "spawn determinism: identical seeds produce an identical vanguard");
+
+  // Falling the vanguard arms the staged answer; waiting out one war-cry beat
+  // plus the resolution tick brings the rest of the pack.
+  auto answer_rank = [&](Simulation& sim) {
+    Actor* player = sim.actor(sim.scion().actor_id);
+    Actor* vanguard = nullptr;
+    for (const auto& actor : sim.actors()) {
+      if (actor.kind == ActorKind::Monster && actor.alive) {
+        vanguard = sim.actor(actor.id);
+        break;
+      }
+    }
+    check(player && vanguard, "answer-rank setup has both actors");
+    player->position = {world_scale::kEnemySpawnDistance -
+                            (world_scale::kMeleeRange - 1),
+                        0};
+    player->cooldown_ticks = 0;
+    vanguard->stats.life = 1;
+    sim.dispatch(Command::action_use(ActionType::Melee));
+    check(!vanguard->alive, "the vanguard falls to ordinary melee");
+    check(sim.instance().phase == ExpeditionPhase::SlayWardens &&
+              count_events(sim, EventType::ExpeditionPhaseChanged) == 0,
+          "the armed answer keeps the slay objective without a transition");
+    for (int i = 0;
+         i < presentation_constants::kWarCryDurationTicks + 2; ++i) {
+      sim.dispatch(Command::action_use(ActionType::Wait));
+    }
+    std::vector<std::string> ids;
+    std::vector<Vec2> positions;
+    bool saw_elite = false;
+    int normals = 0;
+    for (const auto& actor : sim.actors()) {
+      if (actor.kind != ActorKind::Monster || !actor.alive) continue;
+      ids.push_back(actor.id);
+      positions.push_back(actor.position);
+      if (actor.elite) {
+        saw_elite = true;
+      } else {
+        ++normals;
+      }
+    }
+    std::sort(ids.begin(), ids.end());
+    return std::pair<std::vector<std::string>, std::vector<Vec2>>{ids, positions};
+  };
+  const auto first_answer = answer_rank(first);
+  const auto second_answer = answer_rank(second);
+  check(first_answer.first == second_answer.first,
+        "pack arrival identity is deterministic under replay");
+  bool positions_identical =
+      first_answer.second.size() == second_answer.second.size();
+  for (std::size_t index = 0;
+       positions_identical && index < first_answer.second.size(); ++index) {
+    const Vec2& a = first_answer.second[index];
+    const Vec2& b = second_answer.second[index];
+    if (a.x != b.x || a.y != b.y) positions_identical = false;
+  }
+  check(positions_identical, "pack arrival positions are deterministic under replay");
+  check(first_answer.first.size() == 2, "the answer rank arrives as two wardens");
+  bool saw_flanker_lane = false;
+  bool saw_elite_anchor = false;
+  for (const auto& position : first_answer.second) {
+    if (position.x == world_scale::kEnemySpawnDistance &&
+        position.y == world_scale::kExtractionRange) {
+      saw_flanker_lane = true;
+    }
+    if (position.x == world_scale::kArenaHalfExtent && position.y == 0)
+      saw_elite_anchor = true;
+  }
+  check(saw_flanker_lane,
+        "the flanking warden takes the extraction-range lane beside the axis");
+  check(saw_elite_anchor, "the pack elite anchors the arena half-extent");
+}
+
+void test_warden_pack_clear_advances_the_objective_exactly_once() {
+  // TASK-0146 focused coverage: clearing the staged encounter flips the
+  // authoritative objective exactly once and keeps the loot/extract loop.
+  auto clear_expedition = [](Simulation& sim) {
+    sim.dispatch(Command::enter("route:tin:1:0"));
+    defeat_enemy(sim);
+    pick_all_rewards(sim);
+    extract_from_start(sim);
+  };
+  Simulation first(0x1461ULL);
+  Simulation second(0x1461ULL);
+  clear_expedition(first);
+  clear_expedition(second);
+  check(count_events(first, EventType::ExpeditionPhaseChanged) == 1,
+        "clearing the whole staged pack advances the objective exactly once");
+  const Event* transition =
+      last_event(first, EventType::ExpeditionPhaseChanged);
+  check(transition && transition->text == "extract-carried-value" &&
+            transition->value == static_cast<int>(ExpeditionPhase::ExtractCarriedValue),
+        "the single transition names extraction");
+  check(first.house().route_cleared("route:tin:1:0") &&
+            first.house().cleared_routes.size() == 1,
+        "the route clears once after the full pack falls");
+  check(first.house().route_unlocked("route:tin:2:0"),
+        "clearing the staged pack unlocks the child route");
+  check(first.house().campaign_complete,
+        "clearing the staged pack completes campaign progression");
+  check(!first.instance().active, "extraction closes the cleared expedition");
+  check(first.house().stored_items.size() == 1 &&
+            first.house().stored_trophies.size() == 1,
+        "the loot loop still extracts durable value after the pack fight");
+  check(relevant(first) == relevant(second),
+        "the full staged encounter replays identically");
+}
+
+void test_scion_death_dismisses_the_staged_pack_answer() {
+  // TASK-0146 focused coverage: death/recovery interaction — a Scion lost
+  // between ranks dismisses the armed answer with the instance, and a
+  // successor's fresh expedition rebuilds the pack from its vanguard.
+  auto lose_to_the_pack = [](Simulation& sim) {
+    sim.dispatch(Command::enter("route:tin:1:0"));
+    Actor* player = sim.actor(sim.scion().actor_id);
+    Actor* vanguard = nullptr;
+    for (const auto& actor : sim.actors()) {
+      if (actor.kind == ActorKind::Monster && actor.alive) {
+        vanguard = sim.actor(actor.id);
+        break;
+      }
+    }
+    check(player && vanguard, "dismissal setup has both actors");
+    player->position = {world_scale::kEnemySpawnDistance -
+                            (world_scale::kMeleeRange - 1),
+                        0};
+    player->cooldown_ticks = 0;
+    vanguard->stats.life = 1;
+    sim.dispatch(Command::action_use(ActionType::Melee));
+    check(std::none_of(sim.actors().begin(), sim.actors().end(),
+                       [](const Actor& candidate) {
+                         return candidate.kind == ActorKind::Monster &&
+                                candidate.alive;
+                       }),
+          "the floor is briefly empty before the armed answer arrives");
+    sim.dispatch(Command::interact("hazard:death"));
+    check(!sim.scion().alive, "the Scion dies between pack ranks");
+    sim.create_successor("Pack Recovery Successor");
+    for (int i = 0;
+         i < presentation_constants::kWarCryDurationTicks + 4; ++i) {
+      sim.dispatch(Command::action_use(ActionType::Wait));
+    }
+    check(sim.actors().size() == 1,
+          "the dismissed answer never materializes for the successor");
+    check(!sim.instance().active,
+          "death retires the expedition together with its staged answer");
+  };
+  Simulation first(0x1462ULL);
+  Simulation second(0x1462ULL);
+  lose_to_the_pack(first);
+  lose_to_the_pack(second);
+  check(relevant(first) == relevant(second),
+        "dismissal and recovery replay identically");
+  first.dispatch(Command::enter("route:tin:1:0"));
+  int living = 0;
+  for (const auto& actor : first.actors()) {
+    if (actor.kind == ActorKind::Monster && actor.alive) ++living;
+  }
+  check(living == 1 && first.instance().phase == ExpeditionPhase::SlayWardens,
+        "a fresh expedition rebuilds the pack from its vanguard");
+}
+
 void test_extraction() {
   Simulation sim(11);
   sim.dispatch(Command::enter("route:tin:1:0"));
@@ -1356,8 +1578,21 @@ void test_elite_kill_and_recorded_event() {
   defeat_enemy(sim);
   sim.dispatch(Command::enter("route:tin:2:0"));
   defeat_enemy(sim);
-  const LegendEntry* elite = find_legend(sim, "elite_kill");
-  check(elite && elite->route_id == "route:tin:2:0", "elite kill records the route");
+  // Both expeditions now contain elites, so select each route's record
+  // explicitly and require both to be present.
+  const LegendEntry* first_route_elite = nullptr;
+  const LegendEntry* second_route_elite = nullptr;
+  for (const auto& legend : sim.legends()) {
+    if (legend.kind != "elite_kill") continue;
+    if (legend.route_id == "route:tin:1:0" && !first_route_elite)
+      first_route_elite = &legend;
+    if (legend.route_id == "route:tin:2:0" && !second_route_elite)
+      second_route_elite = &legend;
+  }
+  check(second_route_elite != nullptr, "elite kill records the route");
+  check(first_route_elite != nullptr,
+        "the first expedition's pack elite records its own route");
+  const LegendEntry* elite = second_route_elite;
   check(!elite->killer_id.empty() && elite->subject.rfind("actor-", 0) == 0,
         "elite legend references stable actor ids");
   bool saw_recorded_event = false;
@@ -1825,6 +2060,9 @@ int main() {
   test_death_retires_floor_without_double_registering_relics();
   test_pack_clear_waits_for_the_last_monster();
   test_expedition_phase_makes_the_first_expedition_loop_explicit();
+  test_first_expedition_spawns_a_deterministic_warden_pack();
+  test_warden_pack_clear_advances_the_objective_exactly_once();
+  test_scion_death_dismisses_the_staged_pack_answer();
   test_extraction();
   test_death_and_successor();
   test_d106_all_carried_value_is_recoverable();

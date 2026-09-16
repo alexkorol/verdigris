@@ -592,15 +592,50 @@ void Simulation::retire_instance() {
   resurfaced_trophy_ids_.clear();
   instance_.ground_item_ids.clear();
   instance_.ground_trophy_ids.clear();
+  pending_pack_arrivals_.clear();
   instance_.active = false;
 }
 
 void Simulation::spawn_enemy() {
-  const int level = instance_.route_id == "route:tin:2:0" ? 2 : 1;
+  const bool second_route = instance_.route_id == "route:tin:2:0";
+  const int level = second_route ? 2 : 1;
   actors_.erase(std::remove_if(actors_.begin(), actors_.end(),
                                [](const Actor& value) { return value.kind == ActorKind::Monster; }),
                 actors_.end());
-  spawn_monster({kEnemySpawnX, 0}, level, instance_.route_id == "route:tin:2:0");
+  pending_pack_arrivals_.clear();
+  if (instance_.route_id == "route:tin:1:0") {
+    // TASK-0146: the default first expedition is one deterministic Warden
+    // pack, not a single-target wiring demo. The vanguard holds the unchanged
+    // D-114 contact lane; the pack's answer rank (a flanking warden one
+    // extraction-interaction off the axis and the elite anchoring the arena
+    // half-extent) is queued here and arrives only after the vanguard falls,
+    // armed by the existing war-cry beat constant. No new balance numbers are
+    // introduced: every position derives from the D-114 world-scale table.
+    spawn_monster({kEnemySpawnX, 0}, level, false);
+    enqueue_pack_answer();
+    return;
+  }
+  spawn_monster({kEnemySpawnX, 0}, level, second_route);
+}
+
+void Simulation::enqueue_pack_answer() {
+  pending_pack_arrivals_.push_back({{kEnemySpawnX, kExtractionRange}, 1, false, 0});
+  pending_pack_arrivals_.push_back(
+      {Vec2{world_scale::kArenaHalfExtent, 0}, 1, true, 0});
+}
+
+void Simulation::resolve_due_pack_arrivals() {
+  if (pending_pack_arrivals_.empty() || !instance_.active) return;
+  std::vector<PackArrival> remaining;
+  remaining.reserve(pending_pack_arrivals_.size());
+  for (const auto& arrival : pending_pack_arrivals_) {
+    if (arrival.due_tick != 0 && arrival.due_tick <= tick_) {
+      spawn_monster(arrival.position, arrival.level, arrival.elite);
+      continue;
+    }
+    remaining.push_back(arrival);
+  }
+  pending_pack_arrivals_ = std::move(remaining);
 }
 
 void Simulation::enemy_turn() {
@@ -691,6 +726,7 @@ void Simulation::advance_tick() {
       }
     }
   }
+  resolve_due_pack_arrivals();
   enemy_turn();
 }
 
@@ -787,11 +823,21 @@ void Simulation::handle_death(Actor& actor_value, const std::string& killer_id) 
                     instance_.route_id);
     }
     if (instance_.active) {
+      // The first-expedition pack answers the fall of its vanguard: arm every
+      // still-unarmed rank with one war-cry beat of warning before it arrives.
+      for (auto& arrival : pending_pack_arrivals_) {
+        if (arrival.due_tick == 0) arrival.due_tick = tick_ + kWarCryDurationTicks;
+      }
       drop_reward();
-      const bool living_monster_remains = std::any_of(
-          actors_.begin(), actors_.end(), [](const Actor& candidate) {
-            return candidate.kind == ActorKind::Monster && candidate.alive;
-          });
+      // Queued pack ranks keep the encounter alive exactly like living
+      // wardens do, so the objective and route clear only advance once every
+      // staged rank has arrived and fallen.
+      const bool living_monster_remains =
+          std::any_of(
+              actors_.begin(), actors_.end(), [](const Actor& candidate) {
+                return candidate.kind == ActorKind::Monster && candidate.alive;
+              }) ||
+          !pending_pack_arrivals_.empty();
       if (!living_monster_remains) clear_route_and_unlock_children();
       // The expedition objective flips to extraction only once the floor is
       // empty of living wardens; a later spawn_monster() seam call restores
@@ -892,6 +938,7 @@ void Simulation::create_successor(const std::string& name) {
   Actor player{scion_.actor_id, ActorKind::Player, player_stats(), {0, 0}, true, 0, std::nullopt};
   actors_.clear();
   actors_.push_back(player);
+  pending_pack_arrivals_.clear();
   emit(EventType::ScionCreated, player.id, {}, {}, scion_.name);
   record_legend("scion_created", scion_.id, scion_.name);
 }

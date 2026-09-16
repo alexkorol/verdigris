@@ -362,6 +362,16 @@ class Simulation {
     std::uint64_t serial = 0;
   };
 
+  // One staged Warden-pack arrival for the first expedition. due_tick == 0
+  // means the rank is still unarmed; the fall of the first warden arms every
+  // queued rank with the same named answer beat.
+  struct PackArrival {
+    Vec2 position;
+    int level = 1;
+    bool elite = false;
+    std::uint64_t due_tick = 0;
+  };
+
   void emit(EventType type, const std::string& actor_id = {}, const std::string& item_id = {},
             const std::string& trophy_id = {}, const std::string& text = {}, int value = 0);
   void resolve_move(int dx, int dy);
@@ -378,6 +388,11 @@ class Simulation {
   void advance_tick();
   void enemy_turn();
   void spawn_enemy();
+  // First-expedition Warden pack: the vanguard holds the D-114 contact lane;
+  // the rest of the pack answers after the named beat and counts as living
+  // wardens for the objective until it has arrived and fallen.
+  void enqueue_pack_answer();
+  void resolve_due_pack_arrivals();
   void record_equipped_item_use(Actor& attacker);
   void drop_reward();
   void clear_route_and_unlock_children();
@@ -396,6 +411,10 @@ class Simulation {
   InstanceState instance_;
   std::vector<Item> ground_items_;
   std::vector<Trophy> ground_trophies_;
+  // Staged first-expedition pack ranks that have not arrived yet. The queue
+  // belongs to the active instance: entry builds it, retirement (extraction,
+  // death, route change) dismisses it.
+  std::vector<PackArrival> pending_pack_arrivals_;
   // A surfaced recovery candidate remains recoverable across an instance
   // retirement. It is reattached to the next active instance, while ordinary
   // floor drops are discarded.
