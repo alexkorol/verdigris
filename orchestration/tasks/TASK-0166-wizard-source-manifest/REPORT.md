@@ -3,12 +3,16 @@
 ## Executive summary
 
 Delivered `native/client/assets/wizard/source_manifest.json`: a hash-verified,
-dimension-annotated provenance manifest covering 352 raster artifacts across
-the 8 WIZARD families required by the Owner Demo (framekit, orbs, rpg_inventory,
-splash, plus 4 code/reference modules), pinned to WIZARD commit
-`66a5d9ff6810e886c1bd08cbeaaf83cabf92aae9`. Delivered
-`native/tools/verify_wizard_source_manifest.py`, a deterministic verifier with a
-failing negative control. All acceptance commands pass. Status: REVIEW_REQUESTED.
+dimension-annotated provenance manifest covering 351 distinct raster artifacts
+across the 8 WIZARD families required by the Owner Demo (framekit, orbs,
+rpg_inventory, splash, plus 4 code/reference modules). The commit pin
+`66a5d9ff6810e886c1bd08cbeaaf83cabf92aae9` is scoped honestly: 300 entries are
+tracked at that commit (per-entry `"tracked": true`, machine-verified); 51
+entries are loose working-tree files pinned by sha256/bytes only. Delivered
+`native/tools/verify_wizard_source_manifest.py`, a deterministic verifier with
+three failing negative controls. All acceptance commands pass.
+Status: REVIEW_REQUESTED (r2 — see "r2 revision" section for the REVIEW
+corrections applied).
 
 ## References inspected
 
