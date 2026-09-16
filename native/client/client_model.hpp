@@ -51,6 +51,49 @@ struct ClientGroundItem {
   std::string name;
   double x = 0.0;
   double y = 0.0;
+  // TASK-0145: set when the server tagged this ground item with
+  // chroniclesRelic{relicId, scionId, scionName} (heirloom circulation).
+  bool relic = false;
+  std::string relic_scion_name;
+};
+
+// TASK-0145: one Scion row as the accepted chronicle payloads carry it —
+// living roster entry or crypt record. Plain data only; no JSON types.
+struct ClientChronicleScion {
+  std::string id;
+  std::string name;
+  int level = 1;
+  bool mortal = false;
+  bool in_crypt = false;
+  // Crypt-only heirloom state: "", "lost", "queued", or "recovered".
+  std::string relic_status;
+};
+
+struct ClientChronicleHouse {
+  std::string id;
+  std::string name;
+  std::vector<ClientChronicleScion> scions;
+  std::vector<ClientChronicleScion> crypt;
+};
+
+// TASK-0145: presentation-facing snapshot of the accepted Gate-B envelopes
+// (chronicles:state, player:chronicles:ready/update, chronicles:scion-fallen).
+// The session is the only writer; renderers and HUD read it and nothing else.
+struct ClientChronicles {
+  bool exists = false;  // chroniclesExists / revision > 0
+  int revision = 0;
+  std::string account_id;    // chroniclesAccountId
+  std::string account_name;  // accountName
+  std::vector<ClientChronicleHouse> houses;
+  std::string active_house_id;   // chronicle.activeHouseId
+  std::string active_scion_id;   // session-authoritative when exposed
+  std::string active_house_name; // derived from houses for display
+  std::string active_scion_name; // tracked from create/select admissions
+  // Fatal-fall report (chronicles:scion-fallen only — never inferred).
+  bool fallen_report = false;
+  std::string fallen_scion_name;
+  int fallen_level = 0;
+  int relic_count = 0;
 };
 
 struct ClientScene {
