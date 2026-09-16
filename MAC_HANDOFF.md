@@ -2,7 +2,7 @@
 
 Captured on 2026-09-16 from the Windows development repositories and worktrees.
 
-**IN PROGRESS: archive uploads are still pending. See [upload status](handoff/upload-status.json). The published master assets/docs are already available; some archive worktree commands below will fail until their branches finish uploading.**
+**COMPLETE: all archive refs and sampled downloads verified.**
 
 The new Unity project is unnamed. The owner retired the old game name because
 it encouraged unwanted artistic assumptions. This checkout is a historical
