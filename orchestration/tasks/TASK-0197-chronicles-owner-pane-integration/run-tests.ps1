@@ -22,9 +22,9 @@ if (-not $vcvars) {
 }
 if (-not (Test-Path $vcvars)) { throw "MSVC not found" }
 
-$testSource = Join-Path $taskDir "chronicles_owner_pane_tests.cpp"
-$testObject = Join-Path $buildDir "chronicles_owner_pane_tests.obj"
-$testExe = Join-Path $buildDir "chronicles_owner_pane_tests.exe"
+$testSource = Join-Path $taskDir "chronicles_owner_pane_layout_tests.cpp"
+$testObject = Join-Path $buildDir "chronicles_owner_pane_layout_tests.obj"
+$testExe = Join-Path $buildDir "chronicles_owner_pane_layout_tests.exe"
 
 $compile = 'call "' + $vcvars + '" && cl /nologo /std:c++20 /EHsc /W4 /I"' + $clientInclude + '" /c "' + $testSource + '" /Fo"' + $testObject + '"'
 & cmd.exe /d /s /c $compile
@@ -36,4 +36,4 @@ if ($LASTEXITCODE -ne 0) { throw "link failed" }
 
 & $testExe
 if ($LASTEXITCODE -ne 0) { throw "tests failed" }
-Write-Host "TASK-0197 chronicles pane model slice: PASS"
+Write-Host "TASK-0197 chronicles_owner_pane_layout planner: PASS"

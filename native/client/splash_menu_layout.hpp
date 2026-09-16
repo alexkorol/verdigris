@@ -163,8 +163,7 @@ struct LayoutPlan {
   return out;
 }
 
-[[nodiscard]] constexpr PixelRect title_panel_rect(const Viewport& vp,
-                                                   const PixelRect& title_safe) {
+[[nodiscard]] constexpr PixelRect title_panel_rect(const PixelRect& title_safe) {
   if (!title_safe.valid()) return {};
   const std::uint16_t pad = 12;
   const std::int32_t inner_w =
@@ -220,7 +219,7 @@ struct LayoutPlan {
 
   switch (root) {
     case menu_scene::Root::Title:
-      plan.title_panel = plan_chrome(title_panel_rect(vp, plan.title_safe));
+      plan.title_panel = plan_chrome(title_panel_rect(plan.title_safe));
       plan.pause_panel.valid = false;
       plan.valid = plan.title_panel.valid && plan.title_safe.valid();
       return plan;

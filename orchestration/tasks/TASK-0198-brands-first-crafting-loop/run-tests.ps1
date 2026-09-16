@@ -22,9 +22,9 @@ if (-not $vcvars) {
 }
 if (-not (Test-Path $vcvars)) { throw "MSVC not found" }
 
-$testSource = Join-Path $taskDir "brand_crafting_tests.cpp"
-$testObject = Join-Path $buildDir "brand_crafting_tests.obj"
-$testExe = Join-Path $buildDir "brand_crafting_tests.exe"
+$testSource = Join-Path $taskDir "brand_crafting_layout_tests.cpp"
+$testObject = Join-Path $buildDir "brand_crafting_layout_tests.obj"
+$testExe = Join-Path $buildDir "brand_crafting_layout_tests.exe"
 
 $compile = 'call "' + $vcvars + '" && cl /nologo /std:c++20 /EHsc /W4 /I"' + $clientInclude + '" /c "' + $testSource + '" /Fo"' + $testObject + '"'
 & cmd.exe /d /s /c $compile
@@ -36,4 +36,4 @@ if ($LASTEXITCODE -ne 0) { throw "link failed" }
 
 & $testExe
 if ($LASTEXITCODE -ne 0) { throw "tests failed" }
-Write-Host "TASK-0198 brand crafting model slice: PASS"
+Write-Host "TASK-0198 brand_crafting_layout planner: PASS"

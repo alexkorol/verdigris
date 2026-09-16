@@ -41,7 +41,7 @@ Worktree tip: `npm run playtest` 32/32 exit 0 (port 6510). Evidence: `orchestrat
 
 ## Model lane status
 
-**Stocked** plus TASK-0183–0194 integrator prep headers (0192, 0194). `main.cpp` integration blocked on ox-alpha-pc lease and dependency ACCEPTED wave.
+**Stocked** plus TASK-0183–0201 integrator prep headers. `main.cpp` integration blocked on ox-alpha-pc lease and dependency ACCEPTED wave.
 
 ## Blocked integrator lanes
 
