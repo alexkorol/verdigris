@@ -40,10 +40,11 @@ class Diagnostics:
 
 
 class ContentValidator:
-    def __init__(self, root):
+    def __init__(self, root, seed_paths=None):
         self.root = Path(root)
         self.diags = Diagnostics()
         self.quiet = False
+        self.seed_paths = [Path(p) for p in seed_paths] if seed_paths else []
         self.enums = {}
         self.entities = {}
         self.composites = {}
@@ -56,8 +57,10 @@ class ContentValidator:
         self.kind_for_file = {}
         self.zone_ids = set()
         self.ids_by_entity = {}
+        self.global_ids = {}
         self.zone_locations = {}
         self.item_counts = {}
+        self.schema_version = None
         self.schema_ok = False
 
     def schema_diagnostic(self, path, code, message):
@@ -150,6 +153,7 @@ class ContentValidator:
             self.schema_diagnostic("$", "E_BAD_TYPE", "schema must be a JSON object")
             return False
         version = doc.get("schema_version")
+        self.schema_version = version if isinstance(version, int) and not isinstance(version, bool) else None
         if version != SUPPORTED_SCHEMA_VERSION:
             self.schema_diagnostic(
                 "$.schema_version",
@@ -403,8 +407,8 @@ class ContentValidator:
                 file_name,
                 "$.schema_version",
                 "E_SCHEMA_VERSION",
-                "unsupported seed schema version {}; this validator supports {}".format(
-                    value_repr(version), SUPPORTED_SCHEMA_VERSION
+                "seed schema version {} does not link to supported schema version {} (schema.json declares {})".format(
+                    value_repr(version), SUPPORTED_SCHEMA_VERSION, value_repr(self.schema_version)
                 ),
             )
             fatal = True
@@ -471,6 +475,8 @@ class ContentValidator:
                     continue
                 kept += 1
                 members.add(item_id)
+                if item_id not in self.global_ids:
+                    self.global_ids[item_id] = kind
                 owner[item_id] = (file_name, "items[{}]".format(index))
             self.item_counts[kind] = kept
             self.ids_by_entity[kind] = members
@@ -501,6 +507,26 @@ class ContentValidator:
                 else:
                     seen_global[item_id] = (file_name, "items[{}]".format(index))
 
+    def reference_miss(self, file_name, path, field_name, target_entity, value):
+        owner_kind = self.global_ids.get(value)
+        if owner_kind is not None:
+            self.diags.error(
+                file_name,
+                path,
+                "E_INCOMPATIBLE_REF",
+                "'{}' references id '{}' which is defined as '{}' but '{}' requires '{}'".format(
+                    field_name, value, owner_kind, field_name, target_entity
+                ),
+            )
+        else:
+            code = "E_UNKNOWN_ZONE_REF" if target_entity == "zone" else "E_UNKNOWN_REFERENCE"
+            self.diags.error(
+                file_name,
+                path,
+                code,
+                "'{}' references unknown '{}' id '{}'".format(field_name, target_entity, value),
+            )
+
     def check_zone_exit_refs(self, docs):
         zones = docs.get("zone")
         if zones is None:
@@ -515,11 +541,12 @@ class ContentValidator:
                     continue
                 target = edge.get("to")
                 if isinstance(target, str) and target not in self.zone_ids:
-                    self.diags.error(
+                    self.reference_miss(
                         file_name,
                         "items[{}].exits[{}].to".format(index, edge_index),
-                        "E_UNKNOWN_ZONE_REF",
-                        "exit leads to unknown zone id '{}'".format(target),
+                        "to",
+                        "zone",
+                        target,
                     )
 
     def check_duplicate_exits(self, docs):
@@ -557,23 +584,22 @@ class ContentValidator:
                     continue
                 target_entity = spec.split(":", 1)[1]
                 targets = self.ids_by_entity.get(target_entity, set())
-                code = "E_UNKNOWN_ZONE_REF" if target_entity == "zone" else "E_UNKNOWN_REFERENCE"
                 for index, item in enumerate(docs[entity_name]):
                     if not isinstance(item, dict):
                         continue
                     target = item.get(field_name)
                     if isinstance(target, str) and target not in targets:
-                        self.diags.error(
+                        self.reference_miss(
                             file_name,
                             "items[{}].{}".format(index, field_name),
-                            code,
-                            "'{}' references unknown '{}' id '{}'".format(field_name, target_entity, target),
+                            field_name,
+                            target_entity,
+                            target,
                         )
 
-    def check_reachability(self, docs):
-        zones = docs.get("zone")
-        if zones is None or not self.zone_ids:
-            return
+    def reachable_zone_ids(self, zones):
+        if not self.zone_ids:
+            return None, set()
         adjacency = {zone_id: set() for zone_id in self.zone_ids}
         for zone in zones:
             source = zone.get("id") if isinstance(zone, dict) else None
@@ -593,6 +619,15 @@ class ContentValidator:
                 if neighbor not in reached:
                     reached.add(neighbor)
                     frontier.append(neighbor)
+        return root, reached
+
+    def check_reachability(self, docs):
+        zones = docs.get("zone")
+        if zones is None:
+            return
+        root, reached = self.reachable_zone_ids(zones)
+        if root is None:
+            return
         file_name = self.file_for_kind["zone"]
         for zone_id in sorted(self.zone_ids - reached):
             _, zone_path = self.zone_locations.get(zone_id, (file_name, zone_id))
@@ -603,13 +638,69 @@ class ContentValidator:
                 "zone '{}' is not reachable from graph root '{}'".format(zone_id, root),
             )
 
+    def check_unreachable_encounters(self, docs):
+        encounters = docs.get("encounter")
+        zones = docs.get("zone")
+        if encounters is None or zones is None:
+            return
+        root, reached = self.reachable_zone_ids(zones)
+        if root is None:
+            return
+        unreachable = self.zone_ids - reached
+        if not unreachable:
+            return
+        file_name = self.file_for_kind["encounter"]
+        for index, encounter in enumerate(encounters):
+            if not isinstance(encounter, dict):
+                continue
+            anchor = encounter.get("zone")
+            if isinstance(anchor, str) and anchor in unreachable:
+                self.diags.error(
+                    file_name,
+                    "items[{}]".format(index),
+                    "E_UNREACHABLE_ENCOUNTER",
+                    "encounter '{}' is anchored to zone '{}' which is not reachable from graph root '{}'".format(
+                        encounter.get("id", value_repr(anchor)), anchor, root
+                    ),
+                )
+
+    def resolve_seed_paths(self):
+        explicit = {}
+        for provided in self.seed_paths:
+            match = None
+            for kind in sorted(self.file_for_kind.keys()):
+                rel_path = Path(self.file_for_kind[kind])
+                if provided.as_posix().endswith(rel_path.as_posix()):
+                    match = kind
+                    break
+            if match is None:
+                self.diags.error(
+                    str(provided),
+                    "$",
+                    "E_FILE_KIND",
+                    "seed file '{}' does not match any seed_files entry in schema.json".format(provided),
+                )
+                continue
+            if match in explicit:
+                self.diags.error(
+                    str(provided),
+                    "$",
+                    "E_FILE_KIND",
+                    "duplicate seed file for kind '{}'".format(match),
+                )
+                continue
+            explicit[match] = provided
+        return explicit
+
     def run(self):
         if not self.load_schema():
             return self.finish()
+        explicit = self.resolve_seed_paths()
         docs = {}
         for rel_path in sorted(self.kind_for_file.keys()):
             kind = self.kind_for_file[rel_path]
-            raw = self.load_json(self.root / rel_path, rel_path)
+            path = explicit.get(kind, self.root / rel_path)
+            raw = self.load_json(path, rel_path)
             if raw is None:
                 continue
             items = self.check_envelope(raw, rel_path, kind)
@@ -622,6 +713,7 @@ class ContentValidator:
         self.check_duplicate_exits(docs)
         self.check_reference_fields(docs)
         self.check_reachability(docs)
+        self.check_unreachable_encounters(docs)
         return self.finish()
 
     def finish(self):
@@ -655,9 +747,14 @@ def main(argv):
         default=str(Path(__file__).resolve().parent),
         help="content root directory containing schema.json and seeds/",
     )
+    parser.add_argument(
+        "seed_files",
+        nargs="*",
+        help="optional explicit seed file paths; matched against schema.json seed_files entries",
+    )
     parser.add_argument("--quiet", action="store_true", help="suppress individual diagnostics; print only the final summary line")
     args = parser.parse_args(argv)
-    validator = ContentValidator(args.root)
+    validator = ContentValidator(args.root, seed_paths=args.seed_files)
     validator.quiet = args.quiet
     return validator.run()
 

@@ -36,12 +36,16 @@ def make_temp_root():
     return temp_root
 
 
-def write_seed(temp_root, kind, payload):
-    target = temp_root / SEED_FILE_NAMES[kind]
+def write_payload(temp_root, kind, payload):
     if isinstance(payload, str):
-        target.write_text(payload, encoding="utf-8")
+        text = payload
+    else:
+        text = json.dumps(payload, indent=2, sort_keys=True) + "\n"
+    if kind == "schema":
+        (temp_root / "schema.json").write_text(text, encoding="utf-8")
         return
-    target.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    target = temp_root / SEED_FILE_NAMES[kind]
+    target.write_text(text, encoding="utf-8")
 
 
 def build_cases(seeds):
@@ -55,27 +59,38 @@ def build_cases(seeds):
         edge = copy.deepcopy(doc["items"][0]["exits"][0])
         doc["items"][0]["exits"].append(edge)
 
+    def strand_encounter_zone(doc):
+        doc["items"][3]["exits"][0]["to"] = "example-hall-two"
+
+    def isolate_unreachable_zone_without_encounter(doc):
+        doc["items"][1]["exits"][0]["to"] = "example-field-one"
+
     cases = [
-        ("unknown_visual_role", "zones", lambda d: d["items"][0]["visual_roles"].__setitem__("floor", "terrain.lava"), ["E_UNKNOWN_ROLE"]),
-        ("unknown_visual_slot", "zones", lambda d: d["items"][0]["visual_roles"].__setitem__("turrets", "terrain.floor"), ["E_UNKNOWN_SLOT"]),
-        ("duplicate_zone_id", "zones", lambda d: d["items"][1].__setitem__("id", d["items"][0]["id"]), ["E_DUPLICATE_ID"]),
-        ("duplicate_encounter_id", "encounters", lambda d: d["items"][1].__setitem__("id", d["items"][0]["id"]), ["E_DUPLICATE_ID"]),
-        ("cross_collection_id_collision", "zones", lambda d: d["items"][0].__setitem__("id", "example-encounter-one"), ["E_DUPLICATE_ID"]),
-        ("exit_to_unknown_zone", "zones", lambda d: d["items"][0]["exits"][0].__setitem__("to", "example-nowhere"), ["E_UNKNOWN_ZONE_REF"]),
-        ("encounter_references_unknown_zone", "encounters", lambda d: d["items"][0].__setitem__("zone", "example-nowhere"), ["E_UNKNOWN_ZONE_REF"]),
-        ("unknown_zone_template", "zones", lambda d: d["items"][0].__setitem__("template_id", "volcano"), ["E_UNKNOWN_TEMPLATE"]),
-        ("unknown_zone_layout", "zones", lambda d: d["items"][0].__setitem__("layout", "labyrinth"), ["E_UNKNOWN_LAYOUT"]),
-        ("unknown_exit_kind", "zones", lambda d: d["items"][0]["exits"][0].__setitem__("kind", "teleport"), ["E_UNKNOWN_EXIT_KIND"]),
-        ("unknown_encounter_family", "encounters", lambda d: d["items"][0].__setitem__("family", "horde"), ["E_UNKNOWN_FAMILY"]),
-        ("bad_seed_schema_version", "zones", lambda d: d.__setitem__("schema_version", 2), ["E_SCHEMA_VERSION"]),
-        ("wrong_envelope_kind", "zones", lambda d: d.__setitem__("kind", "encounter"), ["E_FILE_KIND"]),
-        ("missing_required_field", "zones", lambda d: (d["items"][0].pop("display_name"), None)[1], ["E_MISSING_FIELD"]),
-        ("unknown_item_field", "zones", lambda d: d["items"][0].__setitem__("flavor", "sour"), ["E_UNKNOWN_FIELD"]),
-        ("malformed_identifier", "zones", lambda d: d["items"][0].__setitem__("id", "Bad_Id"), ["E_ID_FORMAT"]),
-        ("empty_display_name", "zones", lambda d: d["items"][0].__setitem__("display_name", ""), ["E_NAME_LENGTH"]),
-        ("duplicate_exit_edge", "zones", append_duplicate_exit, ["E_DUPLICATE_EXIT"]),
-        ("unknown_envelope_field", "zones", lambda d: d.__setitem__("extra", True), ["E_UNKNOWN_FIELD"]),
-        ("malformed_json", "zones", "{ this is not json", ["E_JSON_PARSE"]),
+        ("unknown_visual_role", "zones", lambda d: d["items"][0]["visual_roles"].__setitem__("floor", "terrain.lava"), ["E_UNKNOWN_ROLE"], 1),
+        ("unknown_visual_slot", "zones", lambda d: d["items"][0]["visual_roles"].__setitem__("turrets", "terrain.floor"), ["E_UNKNOWN_SLOT"], 1),
+        ("duplicate_zone_id", "zones", lambda d: d["items"][1].__setitem__("id", d["items"][0]["id"]), ["E_DUPLICATE_ID"], 1),
+        ("duplicate_encounter_id", "encounters", lambda d: d["items"][1].__setitem__("id", d["items"][0]["id"]), ["E_DUPLICATE_ID"], 1),
+        ("cross_collection_id_collision", "zones", lambda d: d["items"][0].__setitem__("id", "example-encounter-one"), ["E_DUPLICATE_ID"], 1),
+        ("exit_to_unknown_zone", "zones", lambda d: d["items"][0]["exits"][0].__setitem__("to", "example-nowhere"), ["E_UNKNOWN_ZONE_REF"], 1),
+        ("encounter_references_unknown_zone", "encounters", lambda d: d["items"][0].__setitem__("zone", "example-nowhere"), ["E_UNKNOWN_ZONE_REF"], 1),
+        ("incompatible_reference_type", "encounters", lambda d: d["items"][0].__setitem__("zone", "example-encounter-two"), ["E_INCOMPATIBLE_REF"], 1),
+        ("exit_to_wrong_entity_type", "zones", lambda d: d["items"][0]["exits"][0].__setitem__("to", "example-encounter-one"), ["E_INCOMPATIBLE_REF"], 1),
+        ("unreachable_encounter", "zones", strand_encounter_zone, ["E_UNREACHABLE_ENCOUNTER", "W_UNREACHABLE_ZONE"], 1),
+        ("unreachable_zone_warning_only", "zones", isolate_unreachable_zone_without_encounter, ["W_UNREACHABLE_ZONE"], 0),
+        ("bad_schema_file_version", "schema", {"schema_version": 2}, ["E_SCHEMA_VERSION"], 1),
+        ("unknown_zone_template", "zones", lambda d: d["items"][0].__setitem__("template_id", "volcano"), ["E_UNKNOWN_TEMPLATE"], 1),
+        ("unknown_zone_layout", "zones", lambda d: d["items"][0].__setitem__("layout", "labyrinth"), ["E_UNKNOWN_LAYOUT"], 1),
+        ("unknown_exit_kind", "zones", lambda d: d["items"][0]["exits"][0].__setitem__("kind", "teleport"), ["E_UNKNOWN_EXIT_KIND"], 1),
+        ("unknown_encounter_family", "encounters", lambda d: d["items"][0].__setitem__("family", "horde"), ["E_UNKNOWN_FAMILY"], 1),
+        ("bad_seed_schema_version", "zones", lambda d: d.__setitem__("schema_version", 2), ["E_SCHEMA_VERSION"], 1),
+        ("wrong_envelope_kind", "zones", lambda d: d.__setitem__("kind", "encounter"), ["E_FILE_KIND"], 1),
+        ("missing_required_field", "zones", lambda d: (d["items"][0].pop("display_name"), None)[1], ["E_MISSING_FIELD"], 1),
+        ("unknown_item_field", "zones", lambda d: d["items"][0].__setitem__("flavor", "sour"), ["E_UNKNOWN_FIELD"], 1),
+        ("malformed_identifier", "zones", lambda d: d["items"][0].__setitem__("id", "Bad_Id"), ["E_ID_FORMAT"], 1),
+        ("empty_display_name", "zones", lambda d: d["items"][0].__setitem__("display_name", ""), ["E_NAME_LENGTH"], 1),
+        ("duplicate_exit_edge", "zones", append_duplicate_exit, ["E_DUPLICATE_EXIT"], 1),
+        ("unknown_envelope_field", "zones", lambda d: d.__setitem__("extra", True), ["E_UNKNOWN_FIELD"], 1),
+        ("malformed_json", "zones", "{ this is not json", ["E_JSON_PARSE"], 1),
     ]
     return cases
 
@@ -104,24 +119,28 @@ def main():
     else:
         print("PASS determinism_double_run")
 
-    for name, kind, mutate, expected_codes in build_cases(seeds):
+    for name, kind, mutate, expected_codes, expected_rc in build_cases(seeds):
         checks += 1
         temp_root = make_temp_root()
         try:
             if isinstance(mutate, str):
                 payload = mutate
+            elif isinstance(mutate, dict):
+                payload = copy.deepcopy(mutate)
             else:
                 doc = copy.deepcopy(seeds[kind])
                 outcome = mutate(doc)
                 payload = outcome if isinstance(outcome, dict) else doc
             for other_kind in sorted(SEED_FILE_NAMES.keys()):
-                if other_kind != kind:
-                    write_seed(temp_root, other_kind, copy.deepcopy(seeds[other_kind]))
-            write_seed(temp_root, kind, payload)
+                write_payload(temp_root, other_kind, copy.deepcopy(seeds[other_kind]))
+            if kind == "schema":
+                write_payload(temp_root, "schema", payload)
+            else:
+                write_payload(temp_root, kind, payload)
             rc, out, err = run_validator(temp_root)
             problems = []
-            if rc != 1:
-                problems.append("expected exit 1, got {}".format(rc))
+            if rc != expected_rc:
+                problems.append("expected exit {}, got {}".format(expected_rc, rc))
             for code in expected_codes:
                 if code not in out:
                     problems.append("missing expected diagnostic {}".format(code))
@@ -138,7 +157,7 @@ def main():
     checks += 1
     temp_root = make_temp_root()
     try:
-        write_seed(temp_root, "zones", copy.deepcopy(seeds["zones"]))
+        write_payload(temp_root, "zones", copy.deepcopy(seeds["zones"]))
         rc, out, err = run_validator(temp_root)
         if rc != 1 or "E_FILE_MISSING" not in out:
             failures.append("missing_seed_file: expected exit 1 with E_FILE_MISSING, got {}: {}{}".format(rc, out, err))
