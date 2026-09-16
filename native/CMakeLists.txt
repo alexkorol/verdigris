@@ -20,6 +20,17 @@ if (WIN32)
   target_link_libraries(verdigris_networking PRIVATE ws2_32)
 endif()
 
+# TASK-0157: backend-neutral procedural audio scheduler foundation. Pure
+# scheduling data with an injectable recording sink: no device API, asset,
+# third-party dependency, simulation, or wire surface. The presentation
+# translation header is read-only over the existing client seam.
+add_library(verdigris_audio
+  audio/audio_cues.cpp
+  audio/audio_mixer.cpp
+  audio/cue_library.cpp
+)
+target_include_directories(verdigris_audio PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/audio)
+
 add_executable(verdigris_core_tests tests/core_tests.cpp)
 target_link_libraries(verdigris_core_tests PRIVATE verdigris_core)
 
@@ -52,6 +63,9 @@ target_link_libraries(verdigris_session_tests PRIVATE verdigris_client_session)
 # TASK-0122 Phase A: dedicated presentation-events contract tests.
 add_executable(verdigris_presentation_events_tests tests/presentation_events_tests.cpp)
 target_link_libraries(verdigris_presentation_events_tests PRIVATE verdigris_client_session)
+
+add_executable(verdigris_audio_mixer_tests tests/audio_mixer_tests.cpp)
+target_link_libraries(verdigris_audio_mixer_tests PRIVATE verdigris_audio)
 
 add_executable(verdigris_client client/main.cpp client/remote_play.cpp)
 target_include_directories(verdigris_client PRIVATE client)
