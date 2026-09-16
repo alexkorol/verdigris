@@ -1,0 +1,80 @@
+[
+  {
+    "label": "human",
+    "path": "/sessions/awesome-confident-cray/mnt/delaford/sprite_gen_queue/to_send/human.png",
+    "note": "1x1 grid, 32px tile",
+    "status": "pending"
+  },
+  {
+    "label": "npcs",
+    "path": "/sessions/awesome-confident-cray/mnt/delaford/sprite_gen_queue/to_send/npcs.png",
+    "note": "8x1 grid, 32px tiles",
+    "status": "pending"
+  },
+  {
+    "label": "monsters",
+    "path": "/sessions/awesome-confident-cray/mnt/delaford/sprite_gen_queue/to_send/monsters.png",
+    "note": "18x1 grid, 32px tiles",
+    "status": "pending"
+  },
+  {
+    "label": "edible",
+    "path": "/sessions/awesome-confident-cray/mnt/delaford/sprite_gen_queue/to_send/edible.png",
+    "note": "7x1 grid, 32px tiles",
+    "status": "pending"
+  },
+  {
+    "label": "general",
+    "path": "/sessions/awesome-confident-cray/mnt/delaford/sprite_gen_queue/to_send/general.png",
+    "note": "15x15 grid, 32px tiles",
+    "status": "pending"
+  },
+  {
+    "label": "armor",
+    "path": "/sessions/awesome-confident-cray/mnt/delaford/sprite_gen_queue/to_send/armor.png",
+    "note": "30x25 grid, 32px tiles",
+    "status": "pending"
+  },
+  {
+    "label": "jewelry",
+    "path": "/sessions/awesome-confident-cray/mnt/delaford/sprite_gen_queue/to_send/jewelry.png",
+    "note": "15x10 grid, 32px tiles",
+    "status": "pending"
+  },
+  {
+    "label": "weapons",
+    "path": "/sessions/awesome-confident-cray/mnt/delaford/sprite_gen_queue/to_send/weapons.png",
+    "note": "30x25 grid, 32px tiles",
+    "status": "pending"
+  },
+  {
+    "label": "tileset",
+    "path": "/sessions/awesome-confident-cray/mnt/delaford/sprite_gen_queue/to_send/tileset.png",
+    "note": "24x25 grid, 32px tiles",
+    "status": "pending"
+  },
+  {
+    "label": "objects_part1",
+    "path": "/sessions/awesome-confident-cray/mnt/delaford/sprite_gen_queue/to_send/objects_part1.png",
+    "note": "9x33 grid, 32px tiles",
+    "status": "pending"
+  },
+  {
+    "label": "objects_part2",
+    "path": "/sessions/awesome-confident-cray/mnt/delaford/sprite_gen_queue/to_send/objects_part2.png",
+    "note": "9x33 grid, 32px tiles",
+    "status": "pending"
+  },
+  {
+    "label": "terrain_part1",
+    "path": "/sessions/awesome-confident-cray/mnt/delaford/sprite_gen_queue/to_send/terrain_part1.png",
+    "note": "9x28 grid, 32px tiles",
+    "status": "pending"
+  },
+  {
+    "label": "terrain_part2",
+    "path": "/sessions/awesome-confident-cray/mnt/delaford/sprite_gen_queue/to_send/terrain_part2.png",
+    "note": "9x28 grid, 32px tiles",
+    "status": "pending"
+  }
+]

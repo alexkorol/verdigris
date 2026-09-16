@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "delaford-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "delaford_game", "run", "dev"],
+      "port": 5173
+    }
+  ]
+}

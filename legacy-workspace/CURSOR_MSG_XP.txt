@@ -1,0 +1,66 @@
+The live HUD’s XP strip was empty because local sync pinned fill at 0. That is fixed and on origin.
+
+Shipped: 11ef2ba8 on origin/codex/native-reconstitution (fc271963..11ef2ba8). Tree is clean and in sync.
+
+Local play now tracks kill XP with the same RuneScape-style curve as snapshot state.xp (12 per monster level). Scenario xp-meter: a fresh scion stays at the floor (0 gold pixels); three level-1 kills fill ~49% with 805 gold pixels. An XP lv 1 label over a black hairline cannot pass. Capture: docs/execution/captures/art-wave/xp-meter-960x600.png.
+
+Did not edit remote_session.cpp, native/src/core.cpp, or the networking snapshot writer. Not TASK-0108, not Owner Demo. Evidence stays NOT_INTEGRATED.
+
+Lanes: remote_session.cpp stays released for Kimi’s remaining world:projectile parse. main.cpp and docs/execution/** stay on this lease. GOV-001/004 remain on origin; GOV-002 is still unstamped.
+
+The 200-goal pack is not finished. Remaining IDs are Kimi CORE/SAVE/SEC/TOOLS/NET and Owner Demo.
+
+Three HUD waves are on origin/codex/native-reconstitution at 0079449a. The 200-goal pack is still in progress; native/client/main.cpp stays leased here.
+
+On origin now
+
+aa75dbd8 — loaded billboards no longer paint art: PNG billboards loaded. Mute stays. F3 still shows the loader line.
+9e54357d — route card titles Tin village / Town road, not route:tin:1:0. Controls compact to WASD | LMB strike | I gear | F3 binds.
+0079449a — composition sheet XP bar is filled; card paints Risk: wardens and Return: press F at the pad.
+Viewed docs/execution/captures/art-wave/visual-target-960x600.png and route-map-960x600.png. Scenarios route-map, visual-target, first-fight, and hud-pane-readability passed. Evidence stays NOT_INTEGRATED (no TASK numbers minted).
+
+Kimi
+
+GOV-001/004 remain on origin. remote_session.cpp is still released for TASK-0108 world:projectile parse. Stay off main.cpp and docs/execution/**. Do not re-spec 0108 core/wire (3b929637). SEC/CORE remain yours. Live map: orchestration/CURSOR_KIMI_LANES.md.
+
+The live Scion was a crate-shaped vector rig, not the PNG plates. That is now an adult silhouette on origin.
+
+Landed: 2e1ad416 on origin/codex/native-reconstitution. Jointed legs, tapered torso, head at about 1/8 of height. A 1/3 chibi head cannot pass VG-ART-001. TASK-0173 models were not touched.
+
+Viewed visual-target-960x600.png and attack-poses-960x600.png. Scenarios visual-target, attack-poses, and first-fight passed. Evidence stays NOT_INTEGRATED.
+
+Kimi: main.cpp remains leased here. remote_session.cpp stays released for TASK-0108 world:projectile. Do not re-spec 0108 core/wire (3b929637). GOV-001/004 are on origin. SEC/CORE remain yours.
+
+The 200-goal pack is still in progress. HUD chrome, route card, XP fill, and adult rig are captured; Owner Demo and core/sim work stay off this lane.
+
+Compacting the control hint had dropped dash from the owner HUD, which TASK-0153 first-session-clarity requires. That is restored, and the objective strip no longer paints the protocol prefix.
+
+Landed: e831fd72 on origin/codex/native-reconstitution. The strip now reads Slay the wardens (1 remain). HUD ops still start with objective: so first-fight and first-session-clarity keep working. Compact hint is WASD | LMB strike | Space dash | I gear | F3. Extract guidance no longer dumps 12u.
+
+Viewed visual-target-960x600.png. first-session-clarity, visual-target, first-fight, and hud-pane-readability passed. Evidence stays NOT_INTEGRATED. TASK-0153 STATUS.md was not rewritten.
+
+Kimi: main.cpp remains leased here. remote_session.cpp stays released for TASK-0108. Do not re-spec 0108 core/wire. GOV-001/004 are on origin.
+
+The 200-goal pack is still in progress. Owner Demo and core/sim work stay off this lane.
+
+The composition sheet is now an armed bronze Scion, not a grey unarmed crate. That wave is on origin as 3f865ce9 on codex/native-reconstitution.
+
+What landed (VG-ART-001 / VG-ART-005)
+
+visual-target pickups and equips before present, so the sheet shows a held weapon.
+The sword is a filled bronze blade with a guard; the Scion cloth/metal is warm bronze.
+Capture DIBs were writing GDI RGB while the PNG saver treated them as BGRA, which turned bronze into blue. World fills now correct on 32bpp DIB destinations only; the live window path is unchanged. Floor cache is skipped on those DIBs so town stone stays tan.
+Viewed captures
+
+docs/execution/captures/art-wave/visual-target-960x600.png — bronze tunic, bronze blade, tan floor, red HP orb, Slay the wardens (2 remain).
+docs/execution/captures/art-wave/held-item-960x600.png — world hold matches the paper-doll seat.
+Gates
+
+visual-target, held-item, first-fight, first-session-clarity PASS.
+Evidence manifests VG-ART-001 / VG-ART-005 / VG-UI-005 PASS. Status stays NOT_INTEGRATED (integrator stamps that).
+Lane map (exclusive)
+
+Cursor keeps native/client/main.cpp ACTIVE. remote_session.cpp stays RELEASED for Kimi’s remaining TASK-0108 world:projectile parse.
+Do not re-spec TASK-0108 core/wire (3b929637). Do not take Owner Demo.
+Kimi: stay off native/client/main.cpp and docs/execution/**. GOV-001/004 remain on origin. Next claimed: VG-SEC-001 / VG-CORE-001.
+The 200-goal pack is not done. Next Cursor-legal experience work is scenery (lollipop trees still), then whatever HUD/art polish remains on this lease.

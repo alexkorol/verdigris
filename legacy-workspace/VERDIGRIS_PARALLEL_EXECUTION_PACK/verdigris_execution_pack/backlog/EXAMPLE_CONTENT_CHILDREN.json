@@ -1,0 +1,282 @@
+{
+  "schema_version": 1,
+  "lot_id": "LOT-REFERENCE-EXPANSION",
+  "status": "DRAFT_PROJECTION_NOT_DISPATCH_AUTHORITY",
+  "required_backbone_gates": [
+    "VG-QA-006",
+    "VG-TOOLS-005",
+    "VG-GOV-007"
+  ],
+  "tasks": [
+    {
+      "id": "LOT-REFERENCE-EXPANSION-ROOM-01-SPEC",
+      "lot_id": "LOT-REFERENCE-EXPANSION",
+      "unit_id": "ROOM-01",
+      "state": "DRAFT",
+      "title": "Approve one content specification: one optional recovery chamber",
+      "depends_on": [],
+      "acceptance": "Purpose, constraints, source/provenance and gameplay role approved.",
+      "base_sha": null,
+      "owned_paths": [],
+      "acceptance_commands": [],
+      "note": "Planning child only. Split further when this unit contains multiple independent assets or behavior changes. N/A requires explicit review; never fake completion."
+    },
+    {
+      "id": "LOT-REFERENCE-EXPANSION-ROOM-01-DATA",
+      "lot_id": "LOT-REFERENCE-EXPANSION",
+      "unit_id": "ROOM-01",
+      "state": "DRAFT",
+      "title": "Implement one definition and behavior fixture: one optional recovery chamber",
+      "depends_on": [
+        "LOT-REFERENCE-EXPANSION-ROOM-01-SPEC"
+      ],
+      "acceptance": "Runtime definition validates and its named positive/negative behavior tests pass.",
+      "base_sha": null,
+      "owned_paths": [],
+      "acceptance_commands": [],
+      "note": "Planning child only. Split further when this unit contains multiple independent assets or behavior changes. N/A requires explicit review; never fake completion."
+    },
+    {
+      "id": "LOT-REFERENCE-EXPANSION-ROOM-01-ART",
+      "lot_id": "LOT-REFERENCE-EXPANSION",
+      "unit_id": "ROOM-01",
+      "state": "DRAFT",
+      "title": "Deliver one visual asset unit: one optional recovery chamber",
+      "depends_on": [
+        "LOT-REFERENCE-EXPANSION-ROOM-01-SPEC"
+      ],
+      "acceptance": "Source/cooked asset, scale, pivots, material/animation contract and provenance accepted.",
+      "base_sha": null,
+      "owned_paths": [],
+      "acceptance_commands": [],
+      "note": "Planning child only. Split further when this unit contains multiple independent assets or behavior changes. N/A requires explicit review; never fake completion."
+    },
+    {
+      "id": "LOT-REFERENCE-EXPANSION-ROOM-01-AUDIO",
+      "lot_id": "LOT-REFERENCE-EXPANSION",
+      "unit_id": "ROOM-01",
+      "state": "DRAFT",
+      "title": "Deliver one sound binding unit: one optional recovery chamber",
+      "depends_on": [
+        "LOT-REFERENCE-EXPANSION-ROOM-01-SPEC"
+      ],
+      "acceptance": "Required sounds or explicit approved N/A, playback binding and provenance accepted.",
+      "base_sha": null,
+      "owned_paths": [],
+      "acceptance_commands": [],
+      "note": "Planning child only. Split further when this unit contains multiple independent assets or behavior changes. N/A requires explicit review; never fake completion."
+    },
+    {
+      "id": "LOT-REFERENCE-EXPANSION-ROOM-01-INTEGRATE",
+      "lot_id": "LOT-REFERENCE-EXPANSION",
+      "unit_id": "ROOM-01",
+      "state": "DRAFT",
+      "title": "Bind the content unit into ordinary native play: one optional recovery chamber",
+      "depends_on": [
+        "LOT-REFERENCE-EXPANSION-ROOM-01-DATA",
+        "LOT-REFERENCE-EXPANSION-ROOM-01-ART",
+        "LOT-REFERENCE-EXPANSION-ROOM-01-AUDIO"
+      ],
+      "acceptance": "Real client/session can encounter, use or traverse this unit without dev grants.",
+      "base_sha": null,
+      "owned_paths": [],
+      "acceptance_commands": [],
+      "note": "Planning child only. Split further when this unit contains multiple independent assets or behavior changes. N/A requires explicit review; never fake completion."
+    },
+    {
+      "id": "LOT-REFERENCE-EXPANSION-ROOM-01-REVIEW",
+      "lot_id": "LOT-REFERENCE-EXPANSION",
+      "unit_id": "ROOM-01",
+      "state": "DRAFT",
+      "title": "Accept the content unit at game scale: one optional recovery chamber",
+      "depends_on": [
+        "LOT-REFERENCE-EXPANSION-ROOM-01-INTEGRATE"
+      ],
+      "acceptance": "Independent counterplay, presentation and performance review on the integrated build passes.",
+      "base_sha": null,
+      "owned_paths": [],
+      "acceptance_commands": [],
+      "note": "Planning child only. Split further when this unit contains multiple independent assets or behavior changes. N/A requires explicit review; never fake completion."
+    },
+    {
+      "id": "LOT-REFERENCE-EXPANSION-RELIC-01-SPEC",
+      "lot_id": "LOT-REFERENCE-EXPANSION",
+      "unit_id": "RELIC-01",
+      "state": "DRAFT",
+      "title": "Approve one content specification: one approved reach-changing relic",
+      "depends_on": [],
+      "acceptance": "Purpose, constraints, source/provenance and gameplay role approved.",
+      "base_sha": null,
+      "owned_paths": [],
+      "acceptance_commands": [],
+      "note": "Planning child only. Split further when this unit contains multiple independent assets or behavior changes. N/A requires explicit review; never fake completion."
+    },
+    {
+      "id": "LOT-REFERENCE-EXPANSION-RELIC-01-DATA",
+      "lot_id": "LOT-REFERENCE-EXPANSION",
+      "unit_id": "RELIC-01",
+      "state": "DRAFT",
+      "title": "Implement one definition and behavior fixture: one approved reach-changing relic",
+      "depends_on": [
+        "LOT-REFERENCE-EXPANSION-RELIC-01-SPEC"
+      ],
+      "acceptance": "Runtime definition validates and its named positive/negative behavior tests pass.",
+      "base_sha": null,
+      "owned_paths": [],
+      "acceptance_commands": [],
+      "note": "Planning child only. Split further when this unit contains multiple independent assets or behavior changes. N/A requires explicit review; never fake completion."
+    },
+    {
+      "id": "LOT-REFERENCE-EXPANSION-RELIC-01-ART",
+      "lot_id": "LOT-REFERENCE-EXPANSION",
+      "unit_id": "RELIC-01",
+      "state": "DRAFT",
+      "title": "Deliver one visual asset unit: one approved reach-changing relic",
+      "depends_on": [
+        "LOT-REFERENCE-EXPANSION-RELIC-01-SPEC"
+      ],
+      "acceptance": "Source/cooked asset, scale, pivots, material/animation contract and provenance accepted.",
+      "base_sha": null,
+      "owned_paths": [],
+      "acceptance_commands": [],
+      "note": "Planning child only. Split further when this unit contains multiple independent assets or behavior changes. N/A requires explicit review; never fake completion."
+    },
+    {
+      "id": "LOT-REFERENCE-EXPANSION-RELIC-01-AUDIO",
+      "lot_id": "LOT-REFERENCE-EXPANSION",
+      "unit_id": "RELIC-01",
+      "state": "DRAFT",
+      "title": "Deliver one sound binding unit: one approved reach-changing relic",
+      "depends_on": [
+        "LOT-REFERENCE-EXPANSION-RELIC-01-SPEC"
+      ],
+      "acceptance": "Required sounds or explicit approved N/A, playback binding and provenance accepted.",
+      "base_sha": null,
+      "owned_paths": [],
+      "acceptance_commands": [],
+      "note": "Planning child only. Split further when this unit contains multiple independent assets or behavior changes. N/A requires explicit review; never fake completion."
+    },
+    {
+      "id": "LOT-REFERENCE-EXPANSION-RELIC-01-INTEGRATE",
+      "lot_id": "LOT-REFERENCE-EXPANSION",
+      "unit_id": "RELIC-01",
+      "state": "DRAFT",
+      "title": "Bind the content unit into ordinary native play: one approved reach-changing relic",
+      "depends_on": [
+        "LOT-REFERENCE-EXPANSION-RELIC-01-DATA",
+        "LOT-REFERENCE-EXPANSION-RELIC-01-ART",
+        "LOT-REFERENCE-EXPANSION-RELIC-01-AUDIO"
+      ],
+      "acceptance": "Real client/session can encounter, use or traverse this unit without dev grants.",
+      "base_sha": null,
+      "owned_paths": [],
+      "acceptance_commands": [],
+      "note": "Planning child only. Split further when this unit contains multiple independent assets or behavior changes. N/A requires explicit review; never fake completion."
+    },
+    {
+      "id": "LOT-REFERENCE-EXPANSION-RELIC-01-REVIEW",
+      "lot_id": "LOT-REFERENCE-EXPANSION",
+      "unit_id": "RELIC-01",
+      "state": "DRAFT",
+      "title": "Accept the content unit at game scale: one approved reach-changing relic",
+      "depends_on": [
+        "LOT-REFERENCE-EXPANSION-RELIC-01-INTEGRATE"
+      ],
+      "acceptance": "Independent counterplay, presentation and performance review on the integrated build passes.",
+      "base_sha": null,
+      "owned_paths": [],
+      "acceptance_commands": [],
+      "note": "Planning child only. Split further when this unit contains multiple independent assets or behavior changes. N/A requires explicit review; never fake completion."
+    },
+    {
+      "id": "LOT-REFERENCE-EXPANSION-ENEMY-01-SPEC",
+      "lot_id": "LOT-REFERENCE-EXPANSION",
+      "unit_id": "ENEMY-01",
+      "state": "DRAFT",
+      "title": "Approve one content specification: one approved support enemy variant",
+      "depends_on": [],
+      "acceptance": "Purpose, constraints, source/provenance and gameplay role approved.",
+      "base_sha": null,
+      "owned_paths": [],
+      "acceptance_commands": [],
+      "note": "Planning child only. Split further when this unit contains multiple independent assets or behavior changes. N/A requires explicit review; never fake completion."
+    },
+    {
+      "id": "LOT-REFERENCE-EXPANSION-ENEMY-01-DATA",
+      "lot_id": "LOT-REFERENCE-EXPANSION",
+      "unit_id": "ENEMY-01",
+      "state": "DRAFT",
+      "title": "Implement one definition and behavior fixture: one approved support enemy variant",
+      "depends_on": [
+        "LOT-REFERENCE-EXPANSION-ENEMY-01-SPEC"
+      ],
+      "acceptance": "Runtime definition validates and its named positive/negative behavior tests pass.",
+      "base_sha": null,
+      "owned_paths": [],
+      "acceptance_commands": [],
+      "note": "Planning child only. Split further when this unit contains multiple independent assets or behavior changes. N/A requires explicit review; never fake completion."
+    },
+    {
+      "id": "LOT-REFERENCE-EXPANSION-ENEMY-01-ART",
+      "lot_id": "LOT-REFERENCE-EXPANSION",
+      "unit_id": "ENEMY-01",
+      "state": "DRAFT",
+      "title": "Deliver one visual asset unit: one approved support enemy variant",
+      "depends_on": [
+        "LOT-REFERENCE-EXPANSION-ENEMY-01-SPEC"
+      ],
+      "acceptance": "Source/cooked asset, scale, pivots, material/animation contract and provenance accepted.",
+      "base_sha": null,
+      "owned_paths": [],
+      "acceptance_commands": [],
+      "note": "Planning child only. Split further when this unit contains multiple independent assets or behavior changes. N/A requires explicit review; never fake completion."
+    },
+    {
+      "id": "LOT-REFERENCE-EXPANSION-ENEMY-01-AUDIO",
+      "lot_id": "LOT-REFERENCE-EXPANSION",
+      "unit_id": "ENEMY-01",
+      "state": "DRAFT",
+      "title": "Deliver one sound binding unit: one approved support enemy variant",
+      "depends_on": [
+        "LOT-REFERENCE-EXPANSION-ENEMY-01-SPEC"
+      ],
+      "acceptance": "Required sounds or explicit approved N/A, playback binding and provenance accepted.",
+      "base_sha": null,
+      "owned_paths": [],
+      "acceptance_commands": [],
+      "note": "Planning child only. Split further when this unit contains multiple independent assets or behavior changes. N/A requires explicit review; never fake completion."
+    },
+    {
+      "id": "LOT-REFERENCE-EXPANSION-ENEMY-01-INTEGRATE",
+      "lot_id": "LOT-REFERENCE-EXPANSION",
+      "unit_id": "ENEMY-01",
+      "state": "DRAFT",
+      "title": "Bind the content unit into ordinary native play: one approved support enemy variant",
+      "depends_on": [
+        "LOT-REFERENCE-EXPANSION-ENEMY-01-DATA",
+        "LOT-REFERENCE-EXPANSION-ENEMY-01-ART",
+        "LOT-REFERENCE-EXPANSION-ENEMY-01-AUDIO"
+      ],
+      "acceptance": "Real client/session can encounter, use or traverse this unit without dev grants.",
+      "base_sha": null,
+      "owned_paths": [],
+      "acceptance_commands": [],
+      "note": "Planning child only. Split further when this unit contains multiple independent assets or behavior changes. N/A requires explicit review; never fake completion."
+    },
+    {
+      "id": "LOT-REFERENCE-EXPANSION-ENEMY-01-REVIEW",
+      "lot_id": "LOT-REFERENCE-EXPANSION",
+      "unit_id": "ENEMY-01",
+      "state": "DRAFT",
+      "title": "Accept the content unit at game scale: one approved support enemy variant",
+      "depends_on": [
+        "LOT-REFERENCE-EXPANSION-ENEMY-01-INTEGRATE"
+      ],
+      "acceptance": "Independent counterplay, presentation and performance review on the integrated build passes.",
+      "base_sha": null,
+      "owned_paths": [],
+      "acceptance_commands": [],
+      "note": "Planning child only. Split further when this unit contains multiple independent assets or behavior changes. N/A requires explicit review; never fake completion."
+    }
+  ]
+}
