@@ -2,6 +2,8 @@
 
 Captured on 2026-09-16 from the Windows development repositories and worktrees.
 
+**IN PROGRESS: archive uploads are still pending. See [upload status](handoff/upload-status.json). The published master assets/docs are already available; some archive worktree commands below will fail until their branches finish uploading.**
+
 The new Unity project is unnamed. The owner retired the old game name because
 it encouraged unwanted artistic assumptions. This checkout is a historical
 reference library: its names, instructions, art experiments, and design docs
@@ -86,8 +88,10 @@ were outside the real game Git repository, including `sprite_gen_queue/` and
   snapshot. `committed-` preserves an existing local commit, not a new release.
 - Every newly captured file was checked against its Git blob and recorded with
   SHA-256. Deletions were checked against each resulting snapshot tree.
-- Exact remote refs were checked with `git ls-remote`; the shipping task also
-  verifies representative files fetched from GitHub.
+- Remote upload progress and verification are recorded in
+  `handoff/upload-status.json`. Do not assume an archive branch is available
+  until that status records it as uploaded. Completion requires exact remote
+  ref checks and six representative file downloads with matching hashes.
 - Source worktrees, staged changes, existing branches, and local saves were
   left in place. Default branches were not merged or force-pushed.
 - Build output, dependency caches, Python bytecode, local test state, temporary
