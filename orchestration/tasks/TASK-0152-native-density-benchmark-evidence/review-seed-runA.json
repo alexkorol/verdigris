@@ -7,11 +7,11 @@
     "action": "Melee",
     "n": 1000,
     "ticks": 1000,
-    "seed": 3507895937,
-    "run": 1
+    "seed": 987654321,
+    "run": 7
   },
   "provenance": {
-    "generated_at_utc": "2026-08-22T20:48:08Z",
+    "generated_at_utc": "2026-08-22T20:49:48Z",
     "tool_version": "2.0.0",
     "git_ref": "86f72c1cb04f21062eae16e299f3e05e8e88a70d",
     "compiler": "msvc-192930157",
@@ -30,19 +30,19 @@
     "reproducible": true,
     "counts_match": true,
     "checksum_match": true,
-    "state_checksum": "fnv1a64:219414b66584fb41",
-    "state_checksum_repeat": "fnv1a64:219414b66584fb41",
+    "state_checksum": "fnv1a64:0c8a4ff99a19f197",
+    "state_checksum_repeat": "fnv1a64:0c8a4ff99a19f197",
     "counts": {"monsters_start": 1000, "monsters_end": 1000, "spawned_via_seam": 999, "events": 19, "final_tick": 1001},
     "counts_repeat": {"monsters_start": 1000, "monsters_end": 1000, "spawned_via_seam": 999, "events": 19, "final_tick": 1001}
   },
   "timings": {
     "tick_budget_ms": 50.000000000,
-    "elapsed_s": 0.747890700,
-    "ticks_per_sec": 1337.093775869,
+    "elapsed_s": 0.747982800,
+    "ticks_per_sec": 1336.929137943,
     "samples": 1000,
     "percentile_method": "nearest-rank",
-    "update_ms": {"p50": 0.005200000, "p90": 0.005300000, "p99": 0.008600000, "max": 0.056500000, "mean": 0.005390300},
-    "frame_ms": {"p50": 0.745700000, "p90": 0.750800000, "p99": 0.789500000, "max": 1.236500000, "mean": 0.747715700}
+    "update_ms": {"p50": 0.005200000, "p90": 0.005400000, "p99": 0.007000000, "max": 0.055700000, "mean": 0.005379700},
+    "frame_ms": {"p50": 0.745900000, "p90": 0.753300000, "p99": 0.792600000, "max": 0.862900000, "mean": 0.747796200}
   },
   "thresholds": {
     "contract": "verdigris-density-threshold/1",
@@ -51,10 +51,10 @@
       {"id": "monsters_spawned", "value": 1000.000000000, "op": "min", "bound": 1000.000000000, "pass": true},
       {"id": "samples_complete", "value": 1000.000000000, "op": "min", "bound": 1000.000000000, "pass": true},
       {"id": "reproducible", "value": 1.000000000, "op": "min", "bound": 1.000000000, "pass": true},
-      {"id": "frame_p99_within_budget", "value": 0.789500000, "op": "max", "bound": 50.000000000, "pass": true},
-      {"id": "frame_mean_within_budget", "value": 0.747715700, "op": "max", "bound": 50.000000000, "pass": true},
-      {"id": "update_p99_within_budget", "value": 0.008600000, "op": "max", "bound": 50.000000000, "pass": true},
-      {"id": "ticks_per_sec_floor", "value": 1337.093775869, "op": "min", "bound": 20.000000000, "pass": true}
+      {"id": "frame_p99_within_budget", "value": 0.792600000, "op": "max", "bound": 50.000000000, "pass": true},
+      {"id": "frame_mean_within_budget", "value": 0.747796200, "op": "max", "bound": 50.000000000, "pass": true},
+      {"id": "update_p99_within_budget", "value": 0.007000000, "op": "max", "bound": 50.000000000, "pass": true},
+      {"id": "ticks_per_sec_floor", "value": 1336.929137943, "op": "min", "bound": 20.000000000, "pass": true}
     ]
   }
 }
