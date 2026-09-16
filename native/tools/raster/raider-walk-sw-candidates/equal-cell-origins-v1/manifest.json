@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "output_dir": "raider-walk-sw-candidates",
+  "report_name": "raider-walk-sw-candidate.provenance.json",
+  "shared_palette_max_colors": 32,
+  "defaults": {
+    "cell_size": 6,
+    "alpha_mode": "crisp",
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "candidate_only_pending_complete_cycle_and_idle_review"
+  },
+  "known_limitations": [
+    "Generated source has opaque checker background; border-connected cleanup only. Enclosed background pockets require visual inspection.",
+    "Common source cell pitch6 chosen against the existing raider idle57px visible height; no per-frame fitting.",
+    "One source row-origin stride435px aligns equivalent head/torso placement: first-row pivot480, second-row pivot915 globally. Second-row crop begins520, so local pivot395. Individual frame foot/bob offsets are retained.",
+    "Source F0/F1 andF4/F5 are close adjacent phases; gameplay playback is not yet accepted."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/raider-walk-sw-d2poses-v1.png",
+      "border_background": {
+        "color": [
+          210,
+          210,
+          210
+        ],
+        "tolerance": 95,
+        "interior_windows": [
+          [992, 428, 1002, 437]
+        ]
+      },
+      "assets": [
+        {
+          "name": "raider_walk0_sw",
+          "source_box": [
+            0,
+            0,
+            394,
+            520
+          ],
+          "anchor_source": [
+            197,
+            480
+          ]
+        },
+        {
+          "name": "raider_walk1_sw",
+          "source_box": [
+            394,
+            0,
+            788,
+            520
+          ],
+          "anchor_source": [
+            197,
+            480
+          ]
+        },
+        {
+          "name": "raider_walk2_sw",
+          "source_box": [
+            788,
+            0,
+            1181,
+            520
+          ],
+          "anchor_source": [
+            197,
+            480
+          ]
+        },
+        {
+          "name": "raider_walk3_sw",
+          "source_box": [
+            1181,
+            0,
+            1575,
+            520
+          ],
+          "anchor_source": [
+            197,
+            480
+          ]
+        },
+        {
+          "name": "raider_walk4_sw",
+          "source_box": [
+            0,
+            520,
+            394,
+            999
+          ],
+          "anchor_source": [
+            197,
+            395
+          ]
+        },
+        {
+          "name": "raider_walk5_sw",
+          "source_box": [
+            394,
+            520,
+            788,
+            999
+          ],
+          "anchor_source": [
+            197,
+            395
+          ]
+        },
+        {
+          "name": "raider_walk6_sw",
+          "source_box": [
+            788,
+            520,
+            1181,
+            999
+          ],
+          "anchor_source": [
+            197,
+            395
+          ]
+        },
+        {
+          "name": "raider_walk7_sw",
+          "source_box": [
+            1181,
+            520,
+            1575,
+            999
+          ],
+          "anchor_source": [
+            197,
+            395
+          ]
+        }
+      ]
+    }
+  ]
+}

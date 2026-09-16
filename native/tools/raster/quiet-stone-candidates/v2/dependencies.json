@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "state": "held_candidate_failed_seam_repair_no_production_promotion",
+  "working_directory": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study",
+  "reconstruct_steps": [
+    "native/tools/raster/import_assets.py native/tools/raster/quiet-stone-candidates/v2/import.json",
+    "native/tools/raster/quiet-stone-candidates/restore_phase.py",
+    "native/tools/raster/quiet-stone-candidates/review.py v2"
+  ],
+  "python": "Z:/Code/Python/pixel-perfecter/.venv/Scripts/python.exe",
+  "direct_inputs": [
+    {
+      "path": "native/client/assets/raster/source/terrain-quiet-stone-v2.png",
+      "sha256": "94e66e0118e3f3776a9a92bec0c34aef2ab1b004f7d399017de2e9327a6f5a61",
+      "role": "Exact reconstruction/reference/phase input"
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/import.json",
+      "sha256": "0bc83d2b95b324e6413d28d03fe1d9d353602c6c64ffe8a77d92c88c7a49bda8",
+      "role": "Exact reconstruction/reference/phase input"
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v1/terrain_quiet_stone.png",
+      "sha256": "5d869d24b6714586b9f14598b99f33384005db385a369a2b0ab78ee2bcc5db56",
+      "role": "Exact reconstruction/reference/phase input"
+    },
+    {
+      "path": "native/tools/raster/import_assets.py",
+      "sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+      "role": "Exact reconstruction/reference/phase input"
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/restore_phase.py",
+      "sha256": "137193fcb82b5e8531b7179136c07a2913a133ce922e384a98008324f860d035",
+      "role": "Exact reconstruction/reference/phase input"
+    }
+  ],
+  "references": [
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/offset-reference-16x.png",
+      "sha256": "1dad1a603bb5ed6788a707e789a26071c283456d78c2f00c8532cec4353afa09",
+      "role": "Image1 geometry edit target: exact v1 native32px toroidal offset, enlarged16x."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/v1-material-reference-16x.png",
+      "sha256": "3ad8b7f73804718a45d07593f06251a19ed71c538281756246b8d28ed751c235",
+      "role": "Image2 material/palette/quiet-mass reference only: original v1 native image enlarged16x."
+    }
+  ],
+  "upstream_v1_provenance": {
+    "path": "native/tools/raster/quiet-stone-candidates/dependencies.json",
+    "sha256": "a74768e993440584da98e8e4221851c25fa606b69825019eb63a0673d205115d",
+    "role": "Unchanged first attempt generation/reference/reconstruction chain."
+  },
+  "new_files": [
+    {
+      "path": "native/client/assets/raster/source/terrain-quiet-stone-v2.png",
+      "sha256": "94e66e0118e3f3776a9a92bec0c34aef2ab1b004f7d399017de2e9327a6f5a61",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/client/assets/raster/prompts/terrain-quiet-stone-v2.txt",
+      "sha256": "a00982983d466ca1e9a44ccab3ac6a4dcd4debb11de18e816997d7750a99db81",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/client/assets/raster/prompts/terrain-quiet-stone-v2.provenance.json",
+      "sha256": "6f8765115f3198e5eacb5ba98a9cf9ee0611abeff351e879a7365073b84ffeef",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/offset-reference-native.png",
+      "sha256": "25db4698c0ff42416c0574a5cdf2359262a78cb955458bfb736102736feb1ac5",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/offset-reference-16x.png",
+      "sha256": "1dad1a603bb5ed6788a707e789a26071c283456d78c2f00c8532cec4353afa09",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/v1-material-reference-16x.png",
+      "sha256": "3ad8b7f73804718a45d07593f06251a19ed71c538281756246b8d28ed751c235",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/offset-reference.provenance.json",
+      "sha256": "2041b45d8c9562ce69603e503646cc6d889910f2f6931cf54a4be15c66796550",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/import.json",
+      "sha256": "0bc83d2b95b324e6413d28d03fe1d9d353602c6c64ffe8a77d92c88c7a49bda8",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/import.provenance.json",
+      "sha256": "b22c3aac90f8f8c15cd11953a7e105266f396da2f43dbdde9016ea0695704843",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/phase.provenance.json",
+      "sha256": "bf5bd0aeb130bf5ff7cf3458030102504c12a5d9f1b9af7aef3f843c90f428e8",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/terrain_quiet_stone_offset.png",
+      "sha256": "f41cbc57612b95091a4facd4462cf7822327b4e906932487b5b08ef0044a92a6",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/terrain_quiet_stone.png",
+      "sha256": "975b41f4f68df3f47f3e8d1662c1f1c0660ccba62195d5274f1f717382842bab",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/source-restored-phase.png",
+      "sha256": "779fed8e16a14154b1013215a91d8f8a89b4973379af11b6f6b1bb966ad17f77",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/metrics.json",
+      "sha256": "4044ea99926ab417fa82aaf4169fd0ea9a8fe845ffb71afbbdc3a9aad3dff07a",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/native-1x.png",
+      "sha256": "975b41f4f68df3f47f3e8d1662c1f1c0660ccba62195d5274f1f717382842bab",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/native-3x.png",
+      "sha256": "ce17dc2bfcdb23caa0ed2f5a9c064a275cc3a506745a0d9160e6e4063474ca20",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/repeat-3x3-1x.png",
+      "sha256": "cbc4b5db5f6ea1e417bb76a703e07383ae7ab2784a7052329927ef7d16987f8f",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/repeat-3x3-3x.png",
+      "sha256": "efc57ebc033e9e1f72cd576ae4711e914ce12f7178beb21a68e8b0808aa55f7f",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/actors-comparison-1x.png",
+      "sha256": "b68fdfebfea772309b1e6113db7be20480669b9d6d9014ba0c02d3d5a7b12b85",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/actors-comparison-2x.png",
+      "sha256": "8c45358bbf0baf5d219583f1c252c182b946d22093a85cb8841de91a0462d29b",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/v1-v2-repeat-1x.png",
+      "sha256": "b7c7a165e0b1b0475134e42383e55206b22b6deaeed98c9366808b6d21482e20",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/v1-v2-repeat-3x.png",
+      "sha256": "ab080842dd25505237533796b252bbcafec0f36551eafd4d7386607b5509ed95",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v2/README.md",
+      "sha256": "3fa8a6d18c4703837f02b1df745726a36fab2c61bdfa1d2214dc7dd445a954ac",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/prepare_offset.py",
+      "sha256": "d5dd039504578141aa0959ae767caf2e7629e33f34ee17376bb48cb27ece84d7",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/restore_phase.py",
+      "sha256": "137193fcb82b5e8531b7179136c07a2913a133ce922e384a98008324f860d035",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/review.py",
+      "sha256": "a8317956831850a1a593890a55b5e32cd138d2cb08bcbc5827f6074ad12631ca",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/record_v2.py",
+      "sha256": "13b482bdf2999996224d02da3ed10b2fc37942093c87e2dfdb068d98b04c2842",
+      "role": "Preserved second attempt source/reference/pixel/review artifact."
+    }
+  ],
+  "quiet_earth_unchanged_sha256": "059b101504c96b84a3541f5021dfd1811a7bb1ddb81ebd40fd03be9dbad2af70",
+  "candidate_sha256": "975b41f4f68df3f47f3e8d1662c1f1c0660ccba62195d5274f1f717382842bab",
+  "limits": "Both image calls consumed. No runtime/catalog/code/build/staging changes. No procedural seam blending or repainting."
+}

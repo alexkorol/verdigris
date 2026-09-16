@@ -1,0 +1,130 @@
+{
+  "verdict": "REJECT: incomplete SE gait; retain as bounded experiment evidence only",
+  "generation_count": {
+    "initial": 1,
+    "focused_corrections": 2,
+    "stopped_at_authorized_limit": true
+  },
+  "geometry": {
+    "canvas": [
+      80,
+      96
+    ],
+    "pivot": [
+      40,
+      96
+    ],
+    "source_pitch": 6,
+    "source_cell": [
+      384,
+      490
+    ],
+    "source_column_stride": 384,
+    "source_row_stride": 490,
+    "source_origin_within_cell": [
+      192,
+      462
+    ],
+    "order": "Row-major0..7, unchanged",
+    "per_pose_fit_or_resize": false,
+    "body_height_px": [
+      60,
+      61
+    ],
+    "idle_body_height_px": 56
+  },
+  "palette_alpha": {
+    "fixed_palette": {
+      "path": "native/client/assets/raster/runtime/raider_se.png",
+      "sha256": "bd0db16b309b39705764b05fff310401e61d932caae010117f0efcc2acf421d0"
+    },
+    "maximum_colors": 32,
+    "output_alpha": [
+      0,
+      255
+    ],
+    "partial_alpha_pixels": 0,
+    "cleanup": "Actual Pixel Respecter border fill229/75 plus8 individually identified enclosed underarm windows, exact rectangles/counts in importer provenance; no global gray deletion."
+  },
+  "phase_review": [
+    "F0: anatomical-left/screen-right leg extends forward; anatomical-right/axe-side leg bent behind. Possible isolated left-contact study, not approved identity.",
+    "F1: leading anatomical-left shin becomes more upright; right leg remains occluded behind. Possible compression study only.",
+    "F2: near-duplicate F1 stance; no clear opposite knee passing the planted leg.",
+    "F3: left boot extends forward again, returning to same contact side.",
+    "F4: left boot remains forward despite requested opposite contact. No valid half-cycle reversal.",
+    "F5: left leg remains the low upright support, right leg remains behind. Repeats F1 rather than opposite support.",
+    "F6: left boot extends forward; right boot stays behind; sole is one native row above shared baseline.",
+    "F7: repeats the same forward left-leg silhouette, then loops to same-side F0."
+  ],
+  "potential_future_reference_only": {
+    "source": {
+      "path": "native/client/assets/raster/source/raider-walk-se-v3.png",
+      "sha256": "ca56ad851a57787533f5b2f8903c14cd3f5374d430a1d3b45cc029daa4ff9b3d"
+    },
+    "cell0_box": [
+      0,
+      0,
+      384,
+      490
+    ],
+    "cell1_box": [
+      384,
+      0,
+      768,
+      490
+    ],
+    "use": "F0 left-contact and F1 left-support compression can describe a single transition. They are not accepted identity anchors; original SE idle must remain the appearance reference. Missing right-contact/right-support is the exact future repair target."
+  },
+  "playback_evidence": {
+    "assembled_count": 8,
+    "duration_ms": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "cycle_duration_ms": 800,
+    "native_and_3x_ordered_transition_viewed": true,
+    "smooth_browser_or_in_game_playback_observed": false,
+    "limitation": "The strip visibly establishes same-leg repetition; GIF assembly and timing checks do not establish smooth game motion."
+  },
+  "outputs": [
+    {
+      "path": "native/tools/raster/raider-walk-se-candidates/v3/raider_walk0_se.png",
+      "sha256": "043368b03b75b2a8ec126fc7a8975c8d1f4861379c4f6241e45628b2161da86a"
+    },
+    {
+      "path": "native/tools/raster/raider-walk-se-candidates/v3/raider_walk1_se.png",
+      "sha256": "26f2a16bdb27e056a69a4d1be531e0a5f560e5bc8c557de10d4a1e4a74c35d50"
+    },
+    {
+      "path": "native/tools/raster/raider-walk-se-candidates/v3/raider_walk2_se.png",
+      "sha256": "7d0bb347103b567894bb51543827cd7593008eda4e5c3aa498f5342da12b2e58"
+    },
+    {
+      "path": "native/tools/raster/raider-walk-se-candidates/v3/raider_walk3_se.png",
+      "sha256": "9f47243363bd719859ba7acc3278e81f87df95dd59f44fde8b246a27d7fd4c67"
+    },
+    {
+      "path": "native/tools/raster/raider-walk-se-candidates/v3/raider_walk4_se.png",
+      "sha256": "52d7580ae5290d3ed9b0d6a6236ba7a7ac6aba733fa76bf467f6f09739f9b6a7"
+    },
+    {
+      "path": "native/tools/raster/raider-walk-se-candidates/v3/raider_walk5_se.png",
+      "sha256": "703a1a12b84c712b4d04f6f2f7d74cc8b76926bda35d66a657ac9b014ec0dfe9"
+    },
+    {
+      "path": "native/tools/raster/raider-walk-se-candidates/v3/raider_walk6_se.png",
+      "sha256": "5731f977ffc22a595b699fcdd7d2132f5ddd8fe6eefd54cf1ad519ae992264a4"
+    },
+    {
+      "path": "native/tools/raster/raider-walk-se-candidates/v3/raider_walk7_se.png",
+      "sha256": "c7d69a9aa39a056eb04c61be48967e6174c2588577fcf368d87ad051d20b43c0"
+    }
+  ],
+  "runtime_promoted": false
+}

@@ -1,0 +1,9 @@
+{
+  "status": "superseded_by_axe_v3",
+  "reviewedOn": "2026-09-10",
+  "fixed": ["Axe visible in all eight phases", "Same anatomical-right grip and free opposite hand", "Charcoal trouser fabric and torn knees restored", "Existing leg progression retained"],
+  "rejection": "The source and reconstructed blade became a small square hatchet, roughly half the idle blade height. Independent source/native review agreed. The next edit preserves body, hands and shafts and corrects only the eight axe heads.",
+  "independentReviewer": "motion_references",
+  "successor": "../axe-v3",
+  "runtimeChanged": false
+}

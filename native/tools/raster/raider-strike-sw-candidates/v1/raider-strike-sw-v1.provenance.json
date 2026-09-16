@@ -1,0 +1,639 @@
+{
+  "version": 1,
+  "manifest_sha256": "d7f442a5926be054b07e61bcc5707c2c723ce0ad66789169b06bb16bf1f07df2",
+  "importer_sha256": "d59ef9d71a73740f15c8ef5ce5fad588273e2fb4856684985203b7501dfee7c2",
+  "engine": {
+    "project": "Pixel Respecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "root": "Z:/Code/Python/pixel-perfecter",
+    "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+    "git_dirty": true,
+    "source_sha256": {
+      "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+      "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+      "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+      "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+      "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+      "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+      "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+      "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+      "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+      "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+      "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+      "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+      "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+    },
+    "dependencies": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    }
+  },
+  "known_limitations": [
+    "Source checker pattern requires verified alpha cleanup.",
+    "One shared source pivot280,480 with column500 and row490 stride; preliminary measurement against repeated ground foot placement. No per-pose fitting or centering.",
+    "Anticipation frame1 clothing appears olive relative to charcoal identity; inspect native and use one targeted correction if it persists."
+  ],
+  "sources": [
+    {
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "sha256": "fb668850b3b283e2539a00a5328a51ce2290c786f371f8a5d522eab7139455cc",
+      "size": [
+        1536,
+        1024
+      ],
+      "background_removal": {
+        "api": "pixel_perfecter.colors.make_border_connected_transparent",
+        "color": [
+          210,
+          210,
+          210
+        ],
+        "tolerance": 95,
+        "interior_windows": [],
+        "transparent_pixels_after": 1299614
+      }
+    }
+  ],
+  "assets": [
+    {
+      "name": "raider_strike0_sw",
+      "file": "raider_strike0_sw.png",
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "acceptance": "candidate_pending_source_native_phase_review",
+      "source_box": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 30,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        22,
+        21,
+        68,
+        79
+      ],
+      "before_resize": [
+        46,
+        58
+      ],
+      "placed_size": [
+        46,
+        58
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        15,
+        37,
+        61,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        280,
+        480
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "223427d71aa6734fcc3fdaa28061e62fbf62f0e9abcfb5a198386cd7f784a6af"
+    },
+    {
+      "name": "raider_strike1_sw",
+      "file": "raider_strike1_sw.png",
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "acceptance": "candidate_pending_source_native_phase_review",
+      "source_box": [
+        512,
+        0,
+        1024,
+        512
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 30,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        8,
+        21,
+        65,
+        79
+      ],
+      "before_resize": [
+        57,
+        58
+      ],
+      "placed_size": [
+        57,
+        58
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        3,
+        37,
+        60,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        268,
+        480
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "2ab9226dde7540d7142ba8452314906390e66dd9604a708c85bc9214f5ec9dd0"
+    },
+    {
+      "name": "raider_strike2_sw",
+      "file": "raider_strike2_sw.png",
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "acceptance": "candidate_pending_source_native_phase_review",
+      "source_box": [
+        1024,
+        0,
+        1536,
+        512
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 29,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        19,
+        5,
+        62,
+        79
+      ],
+      "before_resize": [
+        43,
+        74
+      ],
+      "placed_size": [
+        43,
+        74
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        16,
+        21,
+        59,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        256,
+        480
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "ca2ab5a66b1dd2509de3124a437419254b8ea3f258f00c7361a1eefb00155ac5"
+    },
+    {
+      "name": "raider_strike3_sw",
+      "file": "raider_strike3_sw.png",
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "acceptance": "candidate_pending_source_native_phase_review",
+      "source_box": [
+        0,
+        512,
+        512,
+        1024
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 31,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        13,
+        20,
+        73,
+        74
+      ],
+      "before_resize": [
+        60,
+        54
+      ],
+      "placed_size": [
+        60,
+        54
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        6,
+        40,
+        66,
+        94
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        280,
+        458
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "bcf3cf037e4ac98ec88b66ec3720aafdcb4b3ae6b212c55859fb970b643384ac"
+    },
+    {
+      "name": "raider_strike4_sw",
+      "file": "raider_strike4_sw.png",
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "acceptance": "candidate_pending_source_native_phase_review",
+      "source_box": [
+        512,
+        512,
+        1024,
+        1024
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 30,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        11,
+        20,
+        73,
+        75
+      ],
+      "before_resize": [
+        62,
+        55
+      ],
+      "placed_size": [
+        62,
+        55
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        6,
+        40,
+        68,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        268,
+        458
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "7070909fc51d60d9f13e113612b277b3acf72016cf91665048bfbde4c84be8a6"
+    },
+    {
+      "name": "raider_strike5_sw",
+      "file": "raider_strike5_sw.png",
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "acceptance": "candidate_pending_source_native_phase_review",
+      "source_box": [
+        1024,
+        512,
+        1536,
+        1024
+      ],
+      "cell_size": 6,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 30,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        85,
+        85
+      ],
+      "trim_box": [
+        16,
+        19,
+        65,
+        76
+      ],
+      "before_resize": [
+        49,
+        57
+      ],
+      "placed_size": [
+        49,
+        57
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        13,
+        39,
+        62,
+        96
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        256,
+        458
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "fa98a77303741a091fb18bcc2791a93e1b03bdfd90aced9ec364beeeec0b90e8"
+    }
+  ],
+  "shared_palette": {
+    "api": "pixel_perfecter.palettes.reduce_colors",
+    "max_colors": 32,
+    "visible_colors_before": 875,
+    "visible_colors_after": 32,
+    "palette_rgb": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        24,
+        27,
+        39
+      ],
+      [
+        55,
+        58,
+        70
+      ],
+      [
+        69,
+        21,
+        9
+      ],
+      [
+        76,
+        90,
+        104
+      ],
+      [
+        79,
+        82,
+        38
+      ],
+      [
+        100,
+        43,
+        31
+      ],
+      [
+        118,
+        107,
+        80
+      ],
+      [
+        118,
+        120,
+        128
+      ],
+      [
+        122,
+        68,
+        61
+      ],
+      [
+        129,
+        82,
+        9
+      ],
+      [
+        143,
+        36,
+        9
+      ],
+      [
+        150,
+        146,
+        83
+      ],
+      [
+        165,
+        97,
+        81
+      ],
+      [
+        165,
+        109,
+        39
+      ],
+      [
+        171,
+        159,
+        122
+      ],
+      [
+        181,
+        69,
+        29
+      ],
+      [
+        204,
+        91,
+        0
+      ],
+      [
+        211,
+        153,
+        90
+      ],
+      [
+        215,
+        219,
+        223
+      ],
+      [
+        221,
+        105,
+        53
+      ],
+      [
+        222,
+        148,
+        38
+      ],
+      [
+        239,
+        190,
+        133
+      ],
+      [
+        249,
+        225,
+        185
+      ],
+      [
+        251,
+        194,
+        49
+      ],
+      [
+        252,
+        129,
+        1
+      ],
+      [
+        252,
+        139,
+        66
+      ],
+      [
+        254,
+        179,
+        89
+      ],
+      [
+        255,
+        167,
+        17
+      ],
+      [
+        255,
+        239,
+        107
+      ],
+      [
+        255,
+        254,
+        214
+      ],
+      [
+        255,
+        255,
+        255
+      ]
+    ],
+    "dithering": "none",
+    "scope": "all reconstructed frames in this manifest"
+  }
+}

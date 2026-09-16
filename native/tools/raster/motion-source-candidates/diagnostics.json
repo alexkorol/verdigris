@@ -1,0 +1,32 @@
+[
+  {
+    "name": "nw4",
+    "background": {
+      "api": "pixel_perfecter.colors.make_border_connected_transparent",
+      "color": [
+        173,
+        173,
+        173
+      ],
+      "tolerance": 95,
+      "interior_windows": [],
+      "transparent_pixels_after": 1449721
+    },
+    "candidates": []
+  },
+  {
+    "name": "strike4",
+    "background": {
+      "api": "pixel_perfecter.colors.make_border_connected_transparent",
+      "color": [
+        173,
+        173,
+        173
+      ],
+      "tolerance": 95,
+      "interior_windows": [],
+      "transparent_pixels_after": 1253690
+    },
+    "candidates": []
+  }
+]

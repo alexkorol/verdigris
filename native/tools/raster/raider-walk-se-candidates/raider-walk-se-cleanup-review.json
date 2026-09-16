@@ -1,0 +1,242 @@
+{
+  "api": "pixel_perfecter.colors.make_border_connected_transparent",
+  "probes": [
+    {
+      "label": "mask_forehead",
+      "source_xy": [
+        229,
+        150
+      ],
+      "before": [
+        253,
+        229,
+        167,
+        255
+      ],
+      "after": [
+        253,
+        229,
+        167,
+        255
+      ]
+    },
+    {
+      "label": "mask_jaw",
+      "source_xy": [
+        231,
+        182
+      ],
+      "before": [
+        253,
+        230,
+        171,
+        255
+      ],
+      "after": [
+        253,
+        230,
+        171,
+        255
+      ]
+    },
+    {
+      "label": "left_fist",
+      "source_xy": [
+        114,
+        299
+      ],
+      "before": [
+        4,
+        4,
+        3,
+        255
+      ],
+      "after": [
+        4,
+        4,
+        3,
+        255
+      ]
+    },
+    {
+      "label": "free_fist",
+      "source_xy": [
+        290,
+        300
+      ],
+      "before": [
+        111,
+        58,
+        32,
+        255
+      ],
+      "after": [
+        111,
+        58,
+        32,
+        255
+      ]
+    },
+    {
+      "label": "axe_blade",
+      "source_xy": [
+        117,
+        364
+      ],
+      "before": [
+        72,
+        45,
+        34,
+        255
+      ],
+      "after": [
+        72,
+        45,
+        34,
+        255
+      ]
+    },
+    {
+      "label": "sash",
+      "source_xy": [
+        224,
+        294
+      ],
+      "before": [
+        198,
+        106,
+        10,
+        255
+      ],
+      "after": [
+        198,
+        106,
+        10,
+        255
+      ]
+    },
+    {
+      "label": "forward_boot",
+      "source_xy": [
+        246,
+        442
+      ],
+      "before": [
+        47,
+        34,
+        32,
+        255
+      ],
+      "after": [
+        47,
+        34,
+        32,
+        255
+      ]
+    },
+    {
+      "label": "underarm_gap",
+      "source_xy": [
+        140,
+        280
+      ],
+      "before": [
+        219,
+        220,
+        222,
+        255
+      ],
+      "after": [
+        219,
+        220,
+        222,
+        0
+      ]
+    }
+  ],
+  "cleanup": {
+    "api": "pixel_perfecter.colors.make_border_connected_transparent",
+    "color": [
+      229,
+      229,
+      229
+    ],
+    "tolerance": 75,
+    "interior_windows": [
+      {
+        "source_box": [
+          128,
+          248,
+          155,
+          305
+        ],
+        "new_transparent_pixels": 775
+      },
+      {
+        "source_box": [
+          512,
+          247,
+          541,
+          310
+        ],
+        "new_transparent_pixels": 840
+      },
+      {
+        "source_box": [
+          895,
+          247,
+          924,
+          310
+        ],
+        "new_transparent_pixels": 908
+      },
+      {
+        "source_box": [
+          1270,
+          245,
+          1301,
+          310
+        ],
+        "new_transparent_pixels": 966
+      },
+      {
+        "source_box": [
+          125,
+          741,
+          157,
+          815
+        ],
+        "new_transparent_pixels": 1114
+      },
+      {
+        "source_box": [
+          520,
+          740,
+          551,
+          804
+        ],
+        "new_transparent_pixels": 891
+      },
+      {
+        "source_box": [
+          901,
+          744,
+          929,
+          805
+        ],
+        "new_transparent_pixels": 741
+      },
+      {
+        "source_box": [
+          1271,
+          737,
+          1307,
+          800
+        ],
+        "new_transparent_pixels": 1075
+      }
+    ],
+    "transparent_pixels_after": 1209627
+  },
+  "inspection": "All8 pale underarm pockets inspected as baked checker; window boundaries intersect only reviewed pocket colors. Face, fists, axe, sash and boot samples retained."
+}

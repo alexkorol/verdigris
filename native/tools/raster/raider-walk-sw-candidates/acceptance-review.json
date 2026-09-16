@@ -1,0 +1,29 @@
+{
+  "status": "candidate_only_rejected_for_runtime_transition",
+  "revision": 2,
+  "reviewedOn": "2026-09-10",
+  "reviewedArtifacts": [
+    "Generated source at full size",
+    "Complete eight-frame strip with accepted idle at native 80x96 size",
+    "Enlarged strip on dark and light backgrounds",
+    "Local browser animation viewer at 1x and 4x, with playing loop and idle transition enabled",
+    "Paused browser frames 7 and 0 at the same pivot after the shared column-pitch correction"
+  ],
+  "playbackClaimLimit": "Browser animation rendered and phase snapshots were inspected; no continuous video recording or production-game capture was reviewed. This candidate review is not gameplay acceptance.",
+  "phaseVerdict": "The earlier missing F2-to-F3-to-F4 opening failure does not recur. F3 opens into wide F4/F5; F6 narrows and F7 closes. F0/F1 and F4/F5 are close adjacent poses. No phase was reordered or duplicated to fill the eight-frame count. Exact anatomical support continuity is not independently certified.",
+  "registrationCorrection": {
+    "cause": "Canvas-quarter origins used about394px columns, while actual character placement uses about406px spacing in both rows.",
+    "fix": "One source column stride406 and row stride435 with first pivot197,480; unchanged cell6 reconstruction and common32-color palette.",
+    "headBandMeanXBefore": [36.73, 38.87, 40.88, 42.59, 36.81, 38.75, 40.69, 44.24],
+    "headBandMeanXAfter": [36.73, 36.87, 36.88, 36.59, 36.81, 36.75, 36.69, 38.24],
+    "measurement": "Mean x of visible alpha pixels in native rows39 through51, a head-area proxy, not a per-frame alignment target.",
+    "loopVerdict": "The systematic approximately8px endpoint drift is removed. F7 retains about1.5px mean head offset versus F0, visible as a small loop change; no per-frame centering was applied.",
+    "preservedPriorResult": "equal-cell-origins-v1"
+  },
+  "idleTransitionVerdict": "Rejected. Accepted idle visibly carries an axe in its screen-left hand; all walk frames are empty-handed because the prompt mistakenly requested empty hands. Walking pants also shift to a warmer brown. Body/head height remains close to idle, with no per-frame resizing.",
+  "alphaVerdict": "Clean binary alpha after actual pipeline cleanup. The inspected F2 enclosed checker pocket is removed. No neutral checker pixels remain below native row68; dark and light contact sheets show no obvious halo or background gap residue.",
+  "metricsFile": "cycle-review.json",
+  "pipelineProvenance": "raider-walk-sw-candidate.provenance.json",
+  "nextIterationConstraint": "Preserve ordered pose sheet as the edit target and explicitly use the original raider as weapon-bearing appearance reference. Repair weapon continuity before runtime promotion; do not silently remove the idle axe. No additional generation is authorized in this milestone.",
+  "runtimeChanged": false
+}

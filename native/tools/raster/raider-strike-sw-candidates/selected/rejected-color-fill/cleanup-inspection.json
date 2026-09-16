@@ -1,0 +1,280 @@
+{
+  "../../client/assets/raster/source/raider-strike-sw-v1.png": {
+    "windows": [
+      [
+        283,
+        126,
+        287,
+        129
+      ],
+      [
+        280,
+        129,
+        282,
+        132
+      ],
+      [
+        295,
+        174,
+        303,
+        182
+      ],
+      [
+        262,
+        641,
+        265,
+        643
+      ],
+      [
+        279,
+        676,
+        285,
+        683
+      ],
+      [
+        770,
+        634,
+        776,
+        639
+      ],
+      [
+        791,
+        680,
+        794,
+        683
+      ],
+      [
+        1297,
+        672,
+        1300,
+        675
+      ],
+      [
+        1300,
+        675,
+        1308,
+        683
+      ],
+      [
+        1288,
+        695,
+        1289,
+        703
+      ],
+      [
+        1223,
+        764,
+        1229,
+        771
+      ],
+      [
+        1234,
+        764,
+        1235,
+        766
+      ],
+      [
+        1223,
+        770,
+        1256,
+        822
+      ],
+      [
+        1213,
+        776,
+        1222,
+        782
+      ],
+      [
+        1364,
+        770,
+        1370,
+        775
+      ],
+      [
+        1341,
+        771,
+        1368,
+        815
+      ],
+      [
+        1341,
+        784,
+        1344,
+        787
+      ],
+      [
+        1369,
+        811,
+        1370,
+        819
+      ],
+      [
+        1364,
+        815,
+        1365,
+        818
+      ]
+    ],
+    "inspected_scopes": [
+      {
+        "phase": 0,
+        "scope": [
+          260,
+          120,
+          324,
+          156
+        ],
+        "retained_background_pixels": 16
+      },
+      {
+        "phase": 0,
+        "scope": [
+          292,
+          156,
+          323,
+          206
+        ],
+        "retained_background_pixels": 31
+      },
+      {
+        "phase": 2,
+        "scope": [
+          1245,
+          126,
+          1319,
+          158
+        ],
+        "retained_background_pixels": 0
+      },
+      {
+        "phase": 2,
+        "scope": [
+          1283,
+          158,
+          1318,
+          206
+        ],
+        "retained_background_pixels": 0
+      },
+      {
+        "phase": 3,
+        "scope": [
+          247,
+          633,
+          309,
+          666
+        ],
+        "retained_background_pixels": 6
+      },
+      {
+        "phase": 3,
+        "scope": [
+          279,
+          666,
+          311,
+          709
+        ],
+        "retained_background_pixels": 23
+      },
+      {
+        "phase": 4,
+        "scope": [
+          754,
+          631,
+          818,
+          664
+        ],
+        "retained_background_pixels": 16
+      },
+      {
+        "phase": 4,
+        "scope": [
+          791,
+          664,
+          819,
+          708
+        ],
+        "retained_background_pixels": 9
+      },
+      {
+        "phase": 5,
+        "scope": [
+          1234,
+          625,
+          1318,
+          659
+        ],
+        "retained_background_pixels": 0
+      },
+      {
+        "phase": 5,
+        "scope": [
+          1287,
+          659,
+          1320,
+          708
+        ],
+        "retained_background_pixels": 49
+      },
+      {
+        "phase": 5,
+        "scope": [
+          1208,
+          764,
+          1256,
+          828
+        ],
+        "retained_background_pixels": 420
+      },
+      {
+        "phase": 5,
+        "scope": [
+          1340,
+          770,
+          1370,
+          820
+        ],
+        "retained_background_pixels": 441
+      }
+    ]
+  },
+  "../../client/assets/raster/source/raider-strike-sw-v2.png": {
+    "windows": [
+      [
+        760,
+        132,
+        768,
+        137
+      ],
+      [
+        776,
+        178,
+        783,
+        186
+      ]
+    ],
+    "inspected_scopes": [
+      {
+        "phase": 1,
+        "scope": [
+          738,
+          126,
+          806,
+          161
+        ],
+        "retained_background_pixels": 27
+      },
+      {
+        "phase": 1,
+        "scope": [
+          773,
+          161,
+          808,
+          205
+        ],
+        "retained_background_pixels": 44
+      }
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "version":1,
+  "output_dir":".",
+  "report_name":"import.provenance.json",
+  "palette_reference":{"source":"../v1/terrain_quiet_stone.png","max_colors":24},
+  "defaults":{"cell_size":0,"canvas":[64,64],"fill":true,"trim":false,"align":"top_left","alpha_mode":"preserve","acceptance":"candidate_offset_phase_native_repeat_review_pending"},
+  "sheets":[{
+    "source":"../../../../client/assets/raster/source/terrain-quiet-stone-v2.png",
+    "grid":[1,1],
+    "assets":[{"name":"terrain_quiet_stone_offset","cell":[0,0]}]
+  }]
+}

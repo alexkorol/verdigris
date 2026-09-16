@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "output_dir": ".",
+  "report_name": "import.provenance.json",
+  "shared_palette_max_colors": 32,
+  "defaults": {
+    "cell_size": 7,
+    "alpha_mode": "crisp",
+    "alpha_floor": 128,
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "candidate_motion_review_pending"
+  },
+  "sheets": [
+    {
+      "source": "../../../../client/assets/raster/source/raider-walk-ne-v1.png",
+      "assets": [
+        {
+          "name": "raider_walk0_ne",
+          "source_box": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "anchor_source": [
+            315,
+            497
+          ]
+        },
+        {
+          "name": "raider_walk1_ne",
+          "source_box": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "anchor_source": [
+            258,
+            497
+          ]
+        },
+        {
+          "name": "raider_walk2_ne",
+          "source_box": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "anchor_source": [
+            201,
+            497
+          ]
+        },
+        {
+          "name": "raider_walk3_ne",
+          "source_box": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "anchor_source": [
+            315,
+            475
+          ]
+        },
+        {
+          "name": "raider_walk4_ne",
+          "source_box": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "anchor_source": [
+            258,
+            475
+          ]
+        },
+        {
+          "name": "raider_walk5_ne",
+          "source_box": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "anchor_source": [
+            201,
+            475
+          ]
+        }
+      ]
+    }
+  ]
+}

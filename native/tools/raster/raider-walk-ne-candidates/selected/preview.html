@@ -1,0 +1,4 @@
+<!doctype html><meta charset="utf-8"><title>Raider NE walk candidate</title>
+<style>body{background:#201f1d;color:#eee;font:16px system-ui}canvas{image-rendering:pixelated;border:1px solid #605c52;margin:16px}</style>
+<h1>Raider NE walk candidate</h1><p id="status"></p><canvas id="native" width="80" height="96"></canvas><canvas id="large" width="240" height="288"></canvas>
+<script>const paths=Array.from({length:6},(_,i)=>'raider_walk'+i+'_ne.png'),imgs=paths.map(p=>{let a=new Image();a.src=p;return a});let start=performance.now();function tick(t){let f=Math.floor(Math.max(0,t-start)/100)%6;for(let id of ['native','large']){let c=document.getElementById(id),x=c.getContext('2d');x.imageSmoothingEnabled=false;x.fillStyle='#201f1d';x.fillRect(0,0,c.width,c.height);if(imgs[f].complete)x.drawImage(imgs[f],0,0,c.width,c.height)}document.getElementById('status').textContent='Phase '+f+' / 6 — 100ms per phase';requestAnimationFrame(tick)}requestAnimationFrame(tick)</script>

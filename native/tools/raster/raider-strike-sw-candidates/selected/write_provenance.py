@@ -1,0 +1,30 @@
+from pathlib import Path
+import hashlib,json
+
+BASE=Path(__file__).resolve().parent
+ROOT=BASE.parents[4]
+def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
+def write(path,data):path.write_text(json.dumps(data,indent=2)+'\n')
+idle=ROOT/'native/client/assets/raster/runtime/raider_sw.png'
+manifest=ROOT/'native/tools/raster/raider-strike-sw-candidate.json'
+candidate_report=BASE/'raider-strike-sw-candidate.provenance.json'
+for version,original in [(1,'exec-ad1e38be-aa8c-4d22-bdf5-759266eb671b.png'),(2,'exec-db4a77a1-4cb0-4371-b9f3-703ae25dcb61.png')]:
+    stem=f'raider-strike-sw-v{version}'
+    source=ROOT/f'native/client/assets/raster/source/{stem}.png'
+    prompt=ROOT/f'native/client/assets/raster/prompts/{stem}.txt'
+    references=[]
+    if version==2:
+        previous=ROOT/'native/client/assets/raster/source/raider-strike-sw-v1.png'
+        references.append({'order':1,'path':previous.relative_to(ROOT).as_posix(),'sha256':sha(previous),'role':'EDIT TARGET: top-middle anticipation clothing color only; preserve pose and six-cell layout.','inspectedBeforeCall':True})
+    references.append({'order':len(references)+1,'path':idle.relative_to(ROOT).as_posix(),'sha256':sha(idle),'role':'Original raider identity, natural palette, adult body, bone mask, charcoal clothes, ochre sash and baked anatomical-right bronze axe. V2 uses it as color/identity reference only.','inspectedBeforeCall':True})
+    data={'schemaVersion':1,'generationTool':'built-in image_gen','selectedModel':'Not exposed by tool','modelIdentityReturned':False,
+        'source':source.relative_to(ROOT).as_posix(),'sourceSha256':sha(source),'prompt':prompt.relative_to(ROOT).as_posix(),'promptSha256':sha(prompt),'submittedPrompt':prompt.read_text().rstrip('\n'),
+        'generatedOriginal':'C:/Users/Alex/.codex/generated_images/01a0896f-29de-7452-bb4b-6fb64351c1eb/'+original,'references':references,
+        'recipe':{'primarySource':'https://x.com/Mayz1169/status/2097540160611287452','originalRead':'The complete published Kiki combat prompt was read in the browser during this task after web text returned403.','sourceSummary':'Reference identity and equipment, a planned preparation/attack/contact/recovery sequence, actual body mechanics, stable registration, full weapon clearance and variable frame holds.','projectRecipe':'native/client/assets/raster/prompts/actors_hero-strike-sw-v2.txt','adaptation':'Six adult raider SW axe poses in3x2 instead of16 chibi frames. Preserve bone mask, charcoal clothes, ochre sash and the baked RIGHT-hand axe. Omit effects; deterministic tools own slicing, alpha cleanup and preview assembly. V2 is a focused clothing-color repair of the one olive-tinted anticipation pose.','claimBoundary':'This is a local adaptation and observed result. The cited creator did not demonstrate this raider, six-pose attack or our production timing. No image-model variant is asserted.'},
+        'observedOutput':{'dimensions':[1536,1024],'mode':'RGB','alpha':'Requested actual transparency failed; both sources contain an opaque checker pattern.','view':'Six SW lower-left-facing poses; actual same right-hand axe grip is visible throughout.','selection':'V1 poses0,2,3,4,5 plus V2 pose1. Other V2 cells were not substituted because their shading changed outside the requested repair.','v1Failure':'Anticipation1 acquired olive clothing; corrected and original source preserved.','v2Result':'Anticipation cloth restored to charcoal while retaining its outward-lift pose and attached axe.','phaseReview':'Ready low axe; outward preparatory lift; raised overhead windup; low extended contact; low follow-through with changed balance/free hand; recovery toward ready. Anticipation is an outward lift rather than the requested rear draw.','appearanceLimit':'The generated standing body is approximately58native pixels versus57 in idle, with small outline/material/axe-contour differences.'},
+        'conversion':{'engine':'Actual Pixel Respecter workspace.reconstruct plus shared palettes.reduce_colors via existing import_assets.py','manifest':manifest.relative_to(ROOT).as_posix(),'manifestSha256':sha(manifest),'report':candidate_report.relative_to(ROOT).as_posix(),'reportSha256':sha(candidate_report),'canvas':[80,96],'anchorPx':[40,96],'cellSize':6,'sharedColors':32,'sourceOrigin':[280,480],'columnStride':500,'rowStride':490,'normalization':'One shared scale and origin pattern, with pose offsets retained; no per-pose fitting or centering.','alpha':'Border-connected fill followed by exact rectangles of visually inspected neutral pixels in hair loops and recovery-arm gaps. alpha-audit.json records zero chromatic pixels removed by final local cleanup.','rejectedCleanup':'selected/rejected-color-fill preserves the prior broader color fill. Final neutral-only windows retain80 source pixels excluded from that earlier cleanup, including pale skin.'},
+        'acceptance':'Root viewed native idle-cycle strip and chronological4x contact; accepted for integration. Runtime pixels are byte-identical to selected candidate. Actual production event timing and game gates remain root-owned and pending.',
+        'activeManifest':'native/tools/raster/raider-strike-sw.json','activeReport':'native/client/assets/raster/runtime/raider-strike-sw.provenance.json',
+        'ownership':'Only raider strike sources/prompts, candidate tools/evidence, authorized active manifest and six runtime PNGs/report. No import_all, catalog, ORDER, main, equipment or unrelated art changes; no raw D2 references copied.'}
+    write(prompt.with_suffix('.provenance.json'),data)
+print('Wrote both exact source/prompt/reference provenance records.')

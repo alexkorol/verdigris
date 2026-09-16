@@ -1,0 +1,23 @@
+{
+  "input": "../v1/terrain_quiet_stone.png",
+  "input_sha256": "5d869d24b6714586b9f14598b99f33384005db385a369a2b0ab78ee2bcc5db56",
+  "native_offset_xy": [
+    32,
+    32
+  ],
+  "native_canvas": [
+    64,
+    64
+  ],
+  "reference_enlargement": 16,
+  "reference_canvas": [
+    1024,
+    1024
+  ],
+  "method": "Exact periodic integer roll followed by nearest-neighbor enlargement; no color creation, blending or repainting.",
+  "images": {
+    "offset-reference-native.png": "25db4698c0ff42416c0574a5cdf2359262a78cb955458bfb736102736feb1ac5",
+    "offset-reference-16x.png": "1dad1a603bb5ed6788a707e789a26071c283456d78c2f00c8532cec4353afa09",
+    "v1-material-reference-16x.png": "3ad8b7f73804718a45d07593f06251a19ed71c538281756246b8d28ed751c235"
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "canvas": [
+    80,
+    96
+  ],
+  "cell_size": 6,
+  "shared_colors": 32,
+  "idle_bbox": [
+    17,
+    39,
+    62,
+    96
+  ],
+  "idle_sha256": "13e515e678d001de0e764729048986d1d459c9df2de9c2b52d2d1c8538b3daf4",
+  "unique_frames": 8,
+  "frames": [
+    {
+      "name": "raider_walk0_sw",
+      "bounds": [
+        29,
+        40,
+        49,
+        95
+      ],
+      "changed_pixels_to_next": 600,
+      "partial_alpha": 0,
+      "bright_neutral_pixels_below_y68": []
+    },
+    {
+      "name": "raider_walk1_sw",
+      "bounds": [
+        29,
+        39,
+        50,
+        95
+      ],
+      "changed_pixels_to_next": 644,
+      "partial_alpha": 0,
+      "bright_neutral_pixels_below_y68": []
+    },
+    {
+      "name": "raider_walk2_sw",
+      "bounds": [
+        29,
+        39,
+        50,
+        93
+      ],
+      "changed_pixels_to_next": 903,
+      "partial_alpha": 0,
+      "bright_neutral_pixels_below_y68": []
+    },
+    {
+      "name": "raider_walk3_sw",
+      "bounds": [
+        25,
+        39,
+        52,
+        93
+      ],
+      "changed_pixels_to_next": 825,
+      "partial_alpha": 0,
+      "bright_neutral_pixels_below_y68": []
+    },
+    {
+      "name": "raider_walk4_sw",
+      "bounds": [
+        22,
+        40,
+        52,
+        93
+      ],
+      "changed_pixels_to_next": 610,
+      "partial_alpha": 0,
+      "bright_neutral_pixels_below_y68": []
+    },
+    {
+      "name": "raider_walk5_sw",
+      "bounds": [
+        23,
+        40,
+        52,
+        92
+      ],
+      "changed_pixels_to_next": 785,
+      "partial_alpha": 0,
+      "bright_neutral_pixels_below_y68": []
+    },
+    {
+      "name": "raider_walk6_sw",
+      "bounds": [
+        28,
+        40,
+        50,
+        93
+      ],
+      "changed_pixels_to_next": 780,
+      "partial_alpha": 0,
+      "bright_neutral_pixels_below_y68": []
+    },
+    {
+      "name": "raider_walk7_sw",
+      "bounds": [
+        31,
+        40,
+        50,
+        95
+      ],
+      "changed_pixels_to_next": 638,
+      "partial_alpha": 0,
+      "bright_neutral_pixels_below_y68": []
+    }
+  ],
+  "timing_ms": 80,
+  "geometry": "Common source grid and row origin; no independent frame resampling or alignment"
+}

@@ -1,0 +1,116 @@
+{
+  "canvas": [
+    80,
+    96
+  ],
+  "pivot": [
+    40,
+    96
+  ],
+  "cell_size": 6,
+  "source_origin": [
+    210,
+    486
+  ],
+  "column_stride": 405,
+  "row_stride": 450,
+  "reference_idle_bounds": [
+    15,
+    35,
+    65,
+    96
+  ],
+  "palette_reference": "runtime/wight_sw.png",
+  "frame_ms": 100,
+  "frames": [
+    {
+      "name": "wight_walk0_sw",
+      "bounds": [
+        26,
+        32,
+        56,
+        95
+      ],
+      "sha256": "77ebba577cc7b9b1aadb66476179803f26d42ab08e7335e64751dc56fb1aa783",
+      "partial_alpha_pixels": 0
+    },
+    {
+      "name": "wight_walk1_sw",
+      "bounds": [
+        27,
+        32,
+        57,
+        94
+      ],
+      "sha256": "ec80ea9d5acaa73679d4f0feabdfc344d95324deb610e1109bcf6488f31c2cd5",
+      "partial_alpha_pixels": 0
+    },
+    {
+      "name": "wight_walk2_sw",
+      "bounds": [
+        29,
+        32,
+        55,
+        94
+      ],
+      "sha256": "e30a9ee8184c7b7570e94733007278a7918e9abce5593e1a9dff957b87237b26",
+      "partial_alpha_pixels": 0
+    },
+    {
+      "name": "wight_walk3_sw",
+      "bounds": [
+        21,
+        32,
+        60,
+        94
+      ],
+      "sha256": "bdbb93c7b0bc43f0ab69d236128210a3af40398c0cd73bbf1e9900fdc1a7f8a7",
+      "partial_alpha_pixels": 0
+    },
+    {
+      "name": "wight_walk4_sw",
+      "bounds": [
+        22,
+        34,
+        58,
+        93
+      ],
+      "sha256": "36c009a881fe60a547a6477966eb3e536b576f935d33c5e3f22d5c048f629189",
+      "partial_alpha_pixels": 0
+    },
+    {
+      "name": "wight_walk5_sw",
+      "bounds": [
+        25,
+        34,
+        62,
+        94
+      ],
+      "sha256": "01a04aa4fbb49205b0d75ecc85934885108d1f6cd4c2976546ded8355aa946c7",
+      "partial_alpha_pixels": 0
+    },
+    {
+      "name": "wight_walk6_sw",
+      "bounds": [
+        29,
+        33,
+        53,
+        94
+      ],
+      "sha256": "bbe4cc31aac1905a463395dedfd4e81d9aa57dceafcd6dcd6b3f21780d8751a0",
+      "partial_alpha_pixels": 0
+    },
+    {
+      "name": "wight_walk7_sw",
+      "bounds": [
+        24,
+        34,
+        53,
+        95
+      ],
+      "sha256": "6bae0d300ab9ac0276da6f3c3d7482055b80b313ed448a836405438fc37834dc",
+      "partial_alpha_pixels": 0
+    }
+  ],
+  "shared_colors": 32
+}

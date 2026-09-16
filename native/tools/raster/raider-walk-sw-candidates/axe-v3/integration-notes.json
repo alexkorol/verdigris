@@ -1,0 +1,21 @@
+{
+  "character": "raider",
+  "direction": "sw",
+  "action": "walk",
+  "frames": ["raider_walk0_sw","raider_walk1_sw","raider_walk2_sw","raider_walk3_sw","raider_walk4_sw","raider_walk5_sw","raider_walk6_sw","raider_walk7_sw"],
+  "frameFiles": "Same names with .png in this candidate folder",
+  "canvas": [80,96],
+  "anchorPx": [40,96],
+  "loop": true,
+  "previewFrameDurationMs": 80,
+  "previewLoopDurationMs": 640,
+  "timingStatus": "Candidate preview cadence; integration owner should connect it to the actual monster movement cadence and review in game.",
+  "idleReference": "native/client/assets/raster/runtime/raider_sw.png",
+  "idleSha256": "13e515e678d001de0e764729048986d1d459c9df2de9c2b52d2d1c8538b3daf4",
+  "rendering": "Ordinary whole monster sprite; axe is embedded in every frame. No hero equipment overlay or hand attachment metadata is needed.",
+  "weaponHand": "Anatomical right, shown on screen-left in this SW view",
+  "otherDirections": "This candidate supplies SW only. It does not authorize mirroring or relabeling into other directions.",
+  "scale": "Use the existing80x96 actor render geometry and shared[40,96] pivot; no per-frame fitting.",
+  "sourceManifest": "native/tools/raster/raider-walk-sw-axe-v3-candidate.json",
+  "acceptance": "Candidate passes this lane's source/native checks for integration testing; runtime promotion and game acceptance belong to the integration owner."
+}

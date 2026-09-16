@@ -1,0 +1,107 @@
+{
+  "source_mode": "RGB",
+  "source_dimensions": [
+    1619,
+    971
+  ],
+  "source_true_transparent_pixels": 0,
+  "source_partial_alpha_pixels": 0,
+  "failure": "Source requested real alpha but returned an opaque painted checker.",
+  "cleanup": {
+    "api": "pixel_perfecter.colors.make_border_connected_transparent",
+    "color": [
+      210,
+      210,
+      210
+    ],
+    "tolerance": 95,
+    "interior_windows": [],
+    "transparent_pixels_after": 1275710
+  },
+  "removed_chromatic_pixels": 408,
+  "removed_chromatic_components_at_least3px": [
+    {
+      "box": [
+        1368,
+        156,
+        1374,
+        159
+      ],
+      "pixels": 13
+    },
+    {
+      "box": [
+        710,
+        267,
+        714,
+        270
+      ],
+      "pixels": 7
+    },
+    {
+      "box": [
+        682,
+        282,
+        704,
+        323
+      ],
+      "pixels": 335
+    },
+    {
+      "box": [
+        141,
+        294,
+        142,
+        299
+      ],
+      "pixels": 5
+    },
+    {
+      "box": [
+        979,
+        324,
+        980,
+        328
+      ],
+      "pixels": 4
+    },
+    {
+      "box": [
+        964,
+        613,
+        965,
+        617
+      ],
+      "pixels": 4
+    },
+    {
+      "box": [
+        553,
+        687,
+        557,
+        691
+      ],
+      "pixels": 13
+    },
+    {
+      "box": [
+        1484,
+        825,
+        1487,
+        828
+      ],
+      "pixels": 6
+    },
+    {
+      "box": [
+        1401,
+        847,
+        1403,
+        852
+      ],
+      "pixels": 6
+    }
+  ],
+  "foreground_review": "Compare source and cleaned bones/fingers/cloth before acceptance; chromatic matte-edge pixels are not automatically proof of anatomy loss.",
+  "local_gap_windows": 0
+}

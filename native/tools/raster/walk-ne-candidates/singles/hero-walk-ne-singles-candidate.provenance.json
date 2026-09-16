@@ -1,0 +1,360 @@
+{
+  "version": 1,
+  "manifest_sha256": "54fe4403a0efa5f9fda94199fb53445cbee6f31f16a5ab0c8546e517aa5bfc8a",
+  "importer_sha256": "d59ef9d71a73740f15c8ef5ce5fad588273e2fb4856684985203b7501dfee7c2",
+  "engine": {
+    "project": "Pixel Respecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "root": "Z:/Code/Python/pixel-perfecter",
+    "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+    "git_dirty": true,
+    "source_sha256": {
+      "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+      "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+      "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+      "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+      "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+      "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+      "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+      "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+      "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+      "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+      "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+      "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+      "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+    },
+    "dependencies": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    }
+  },
+  "known_limitations": [],
+  "sources": [
+    {
+      "source": "../../client/assets/raster/source/actors_hero-walk6-ne-v1.png",
+      "sha256": "0d3912d6e4abab456ef34171279bee374a9d562e8ceb3a98677c821cb7d7e044",
+      "size": [
+        1145,
+        1374
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/actors_hero-walk7-ne-v1.png",
+      "sha256": "b2f437006d648345ba7aec512c330ff83522bba4a8e21a52c669334b0285a0a6",
+      "size": [
+        1145,
+        1374
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "name": "hero_walk6_ne",
+      "file": "hero_walk6_ne.png",
+      "source": "../../client/assets/raster/source/actors_hero-walk6-ne-v1.png",
+      "acceptance": "candidate_only_incomplete_cycle",
+      "source_box": [
+        0,
+        0,
+        1145,
+        1374
+      ],
+      "cell_size": 11,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 31,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        104,
+        124
+      ],
+      "trim_box": [
+        40,
+        38,
+        69,
+        100
+      ],
+      "before_resize": [
+        29,
+        62
+      ],
+      "placed_size": [
+        29,
+        62
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        28,
+        32,
+        57,
+        94
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        572,
+        1122
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "1d5cb911f870a9031874082d4feb6c3fed91d502794bb09e88280cb122800c52"
+    },
+    {
+      "name": "hero_walk7_ne",
+      "file": "hero_walk7_ne.png",
+      "source": "../../client/assets/raster/source/actors_hero-walk7-ne-v1.png",
+      "acceptance": "candidate_only_incomplete_cycle",
+      "source_box": [
+        0,
+        0,
+        1145,
+        1374
+      ],
+      "cell_size": 11,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 30,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        104,
+        124
+      ],
+      "trim_box": [
+        40,
+        38,
+        70,
+        101
+      ],
+      "before_resize": [
+        30,
+        63
+      ],
+      "placed_size": [
+        30,
+        63
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "content_bounds": [
+        28,
+        32,
+        58,
+        95
+      ],
+      "anchor_px": [
+        40,
+        96
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        572,
+        1122
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "6de3ab0a7802f062939db68fd0bc770724c800c20c4a80f9a55f1e48b9de0e75"
+    }
+  ],
+  "shared_palette": {
+    "api": "pixel_perfecter.palettes.reduce_colors",
+    "max_colors": 32,
+    "visible_colors_before": 207,
+    "visible_colors_after": 32,
+    "palette_rgb": [
+      [
+        10,
+        0,
+        0
+      ],
+      [
+        23,
+        28,
+        46
+      ],
+      [
+        38,
+        47,
+        67
+      ],
+      [
+        39,
+        8,
+        17
+      ],
+      [
+        54,
+        31,
+        37
+      ],
+      [
+        63,
+        69,
+        94
+      ],
+      [
+        74,
+        56,
+        48
+      ],
+      [
+        79,
+        8,
+        8
+      ],
+      [
+        92,
+        48,
+        25
+      ],
+      [
+        101,
+        67,
+        54
+      ],
+      [
+        106,
+        22,
+        20
+      ],
+      [
+        132,
+        37,
+        21
+      ],
+      [
+        137,
+        82,
+        36
+      ],
+      [
+        137,
+        107,
+        76
+      ],
+      [
+        157,
+        53,
+        20
+      ],
+      [
+        160,
+        129,
+        105
+      ],
+      [
+        171,
+        98,
+        32
+      ],
+      [
+        174,
+        104,
+        67
+      ],
+      [
+        177,
+        66,
+        37
+      ],
+      [
+        182,
+        154,
+        111
+      ],
+      [
+        207,
+        114,
+        44
+      ],
+      [
+        207,
+        126,
+        86
+      ],
+      [
+        213,
+        181,
+        133
+      ],
+      [
+        223,
+        154,
+        64
+      ],
+      [
+        234,
+        153,
+        93
+      ],
+      [
+        243,
+        221,
+        182
+      ],
+      [
+        244,
+        170,
+        117
+      ],
+      [
+        246,
+        206,
+        152
+      ],
+      [
+        248,
+        185,
+        92
+      ],
+      [
+        250,
+        248,
+        234
+      ],
+      [
+        251,
+        200,
+        122
+      ],
+      [
+        251,
+        243,
+        203
+      ]
+    ],
+    "dithering": "none",
+    "scope": "all reconstructed frames in this manifest"
+  }
+}

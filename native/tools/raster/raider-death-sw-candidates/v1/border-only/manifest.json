@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "output_dir": "raider-death-sw-candidates/v1",
+  "report_name": "raider-death-sw-candidate.provenance.json",
+  "shared_palette_max_colors": 32,
+  "defaults": {
+    "cell_size": 8,
+    "alpha_mode": "crisp",
+    "canvas": [128,112],
+    "padding": 16,
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "candidate_pending_source_native_motion_review"
+  },
+  "known_limitations": [
+    "Generated source is RGB with painted checker; actual alpha request failed.",
+    "One shared cell8 scale; measured layout origins [400,608] with column704 and row416. Low poses retain source offsets rather than being independently fitted.",
+    "Candidate world pivot [64,96]; accepted idle [40,96] translates by [24,0] without rescaling.",
+    "Four collapse beats adapted from the published Kiki planned combat workflow, not a claimed published death-animation result."
+  ],
+  "sheets": [{
+    "source": "../../client/assets/raster/source/raider-death-sw-v1.png",
+    "border_background": {"color": [210,210,210], "tolerance": 95},
+    "assets": [
+      {"name": "raider_death0_sw", "source_box": [0,0,704,704], "anchor_source": [400,608]},
+      {"name": "raider_death1_sw", "source_box": [704,0,1437,704], "anchor_source": [400,608]},
+      {"name": "raider_death2_sw", "source_box": [0,704,704,1094], "anchor_source": [400,320]},
+      {"name": "raider_death3_sw", "source_box": [704,704,1437,1094], "anchor_source": [400,320]}
+    ]
+  }]
+}

@@ -1,0 +1,80 @@
+{
+  "state": "Rejected alternatives/cleanup evidence; never runtime inputs.",
+  "files": [
+    {
+      "path": "native/client/assets/raster/source/wight-walk-sw-v2.png",
+      "sha256": "4e63377403b0b2c3e7dab042695972fc83c5ddb64bff88c83e2d5307f70c206b",
+      "role": "Preserved failed pose/alpha experiment"
+    },
+    {
+      "path": "native/client/assets/raster/source/wight-walk-sw-v3.png",
+      "sha256": "f8f80bb0a1fefa86afb6a7619a56100b79f42c4b04b50a2af0b209c17827ddab",
+      "role": "Preserved failed pose/alpha experiment"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/wight-walk-sw-v2.txt",
+      "sha256": "a92b195ef5f27c1e077da626146c42ca155262421e3abf1021f41ed4c6f93372",
+      "role": "Preserved failed pose/alpha experiment"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/wight-walk-sw-v2.provenance.json",
+      "sha256": "73d02007ca1db8e126545d0d364b676e92d67799a34848efeca2a98eb5d30720",
+      "role": "Preserved failed pose/alpha experiment"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/wight-walk-sw-v3.txt",
+      "sha256": "37fa3321a6dc100130ba865109627171aaf5d355abd841ae89284bb0f863470c",
+      "role": "Preserved failed pose/alpha experiment"
+    },
+    {
+      "path": "native/client/assets/raster/prompts/wight-walk-sw-v3.provenance.json",
+      "sha256": "cc085fb9560cfee09b9a6f87f5deb972fcba1381abf6f17a8aa1521cd16c4b37",
+      "role": "Preserved failed pose/alpha experiment"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/wight-frame4-reference.png",
+      "sha256": "d2718361b8ee88ebe0bb409837ee5eedcef98fe71984960ba963fba48380447c",
+      "role": "Preserved failed pose/alpha experiment"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/contact-ownership-comparison-4x.png",
+      "sha256": "d393d398d64a5ad60897e3bab8012cc39e4bb90005d9930bf1213221a67ac4ca",
+      "role": "Preserved failed pose/alpha experiment"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/v1/import.json",
+      "sha256": "de2d750d8a3601576774789935c2acb02dfc040d4f5992a159acc108150d2456",
+      "role": "Preserved failed pose/alpha experiment"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/v1/import.provenance.json",
+      "sha256": "71bff473a8da05fac4fba45e53d6f472e7dce68995050a1bd138afcf05030a10",
+      "role": "Preserved failed pose/alpha experiment"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/v1/alpha-audit.json",
+      "sha256": "94647a7f2ccac2966b6140798a563ec2bd5f77b2d597c019e7198b54d29510cd",
+      "role": "Preserved failed pose/alpha experiment"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/v1/alpha-source-comparison.png",
+      "sha256": "e293f45ef06bf2f3cc287759c1b4a57e3a7f847ca416255678b61da404479173",
+      "role": "Preserved failed pose/alpha experiment"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/v3/import.json",
+      "sha256": "39b3c2d1b42d181d021bdb37221396792cac23985799995f6776424d1a9cf8e1",
+      "role": "Preserved failed pose/alpha experiment"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/v3/import.provenance.json",
+      "sha256": "7ebb1375c4b730bbb3e0ba4c333a145bdc77a4387440492fb1d5156cc496ed9d",
+      "role": "Preserved failed pose/alpha experiment"
+    },
+    {
+      "path": "native/tools/raster/wight-walk-sw-candidates/v3/wight_walk4_sw.png",
+      "sha256": "3d154ff6a94e4bfc9e65a04fe0036c04b82a616a1b8fa63faedca1682d97b5cf",
+      "role": "Preserved failed pose/alpha experiment"
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "runtime_unchanged": true,
+  "baseline": "original props.json and gate.json settings",
+  "exact_source_nn_scale": {
+    "tree": 1,
+    "hut": 1,
+    "storehut": 1,
+    "column": 1,
+    "gate": 1
+  },
+  "resampling_after_reconstruction": "none",
+  "comparisons": [
+    {
+      "name": "tree",
+      "display_height": 550,
+      "native_visible_heights": {
+        "current": 67,
+        "detail3": 127,
+        "detail2": 190
+      },
+      "detail_ratio": {
+        "detail3": 1.896,
+        "detail2": 2.836
+      }
+    },
+    {
+      "name": "hut",
+      "display_height": 550,
+      "native_visible_heights": {
+        "current": 61,
+        "detail3": 101,
+        "detail2": 151
+      },
+      "detail_ratio": {
+        "detail3": 1.656,
+        "detail2": 2.475
+      }
+    },
+    {
+      "name": "storehut",
+      "display_height": 550,
+      "native_visible_heights": {
+        "current": 55,
+        "detail3": 92,
+        "detail2": 137
+      },
+      "detail_ratio": {
+        "detail3": 1.673,
+        "detail2": 2.491
+      }
+    },
+    {
+      "name": "column",
+      "display_height": 400,
+      "native_visible_heights": {
+        "current": 59,
+        "detail3": 99,
+        "detail2": 149
+      },
+      "detail_ratio": {
+        "detail3": 1.678,
+        "detail2": 2.525
+      }
+    },
+    {
+      "name": "gate",
+      "display_height": 550,
+      "native_visible_heights": {
+        "current": 83,
+        "detail3": 151,
+        "detail2": 151
+      },
+      "detail_ratio": {
+        "detail3": 1.819,
+        "detail2": 1.819
+      }
+    }
+  ]
+}

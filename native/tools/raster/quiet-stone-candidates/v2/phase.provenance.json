@@ -1,0 +1,27 @@
+{
+  "method": "Exact periodic integer wrap after actual Pixel Respecter reconstruction; no blending, mirroring, repainting or changed RGB values.",
+  "input": "terrain_quiet_stone_offset.png",
+  "input_sha256": "f41cbc57612b95091a4facd4462cf7822327b4e906932487b5b08ef0044a92a6",
+  "native_offset_xy": [
+    -32,
+    -32
+  ],
+  "output": "terrain_quiet_stone.png",
+  "output_sha256": "975b41f4f68df3f47f3e8d1662c1f1c0660ccba62195d5274f1f717382842bab",
+  "source_phase_preview": {
+    "path": "source-restored-phase.png",
+    "input_source_sha256": "94e66e0118e3f3776a9a92bec0c34aef2ab1b004f7d399017de2e9327a6f5a61",
+    "offset_xy": [
+      -627,
+      -627
+    ],
+    "purpose": "Source-view diagnostic only; final native pixels come from importer then native32px wrap."
+  },
+  "outside_requested_center_band_comparison": {
+    "band": "8 logical pixels wide around each center axis; diagnostic interpretation of narrow bands.",
+    "pixels": 3136,
+    "exact_rgb_preserved_pixels": 412,
+    "rgb_mae": 4.149978741496598,
+    "limitation": "Generation plus reconstruction/normalization differences, not an isolated source-model metric."
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "background": {
+    "api": "pixel_perfecter.colors.make_border_connected_transparent",
+    "color": [
+      232,
+      232,
+      232
+    ],
+    "tolerance": 85,
+    "interior_windows": [],
+    "transparent_pixels_after": 1216775
+  },
+  "candidates": [
+    {
+      "box": [
+        1267,
+        192,
+        1287,
+        250
+      ],
+      "area": 574
+    },
+    {
+      "box": [
+        516,
+        196,
+        538,
+        256
+      ],
+      "area": 598
+    },
+    {
+      "box": [
+        888,
+        205,
+        907,
+        264
+      ],
+      "area": 547
+    },
+    {
+      "box": [
+        627,
+        252,
+        633,
+        269
+      ],
+      "area": 79
+    },
+    {
+      "box": [
+        884,
+        709,
+        911,
+        780
+      ],
+      "area": 620
+    }
+  ]
+}

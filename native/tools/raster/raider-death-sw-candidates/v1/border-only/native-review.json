@@ -1,0 +1,191 @@
+{
+  "canvas": [
+    128,
+    112
+  ],
+  "pivot": [
+    64,
+    96
+  ],
+  "idle_translation": [
+    24,
+    0
+  ],
+  "idle_body_height": 57,
+  "shared_cell": 8,
+  "preview_durations_ms": [
+    400,
+    100,
+    130,
+    110,
+    1000
+  ],
+  "source_alpha": "RGB opaque checker; cleanup required",
+  "production_accepted": false,
+  "frames": [
+    {
+      "phase": "recoil",
+      "bounds": [
+        34,
+        35,
+        86,
+        96
+      ],
+      "sha256": "4411bc45016a331a379c757ca32c81ef2bfb1a9b681ac7ce205051faeb98e375",
+      "partial_alpha": 0,
+      "bright_neutral_positions": [
+        [
+          77,
+          37
+        ],
+        [
+          78,
+          37
+        ],
+        [
+          79,
+          37
+        ],
+        [
+          85,
+          61
+        ],
+        [
+          56,
+          79
+        ],
+        [
+          73,
+          79
+        ]
+      ]
+    },
+    {
+      "phase": "buckle",
+      "bounds": [
+        27,
+        50,
+        73,
+        97
+      ],
+      "sha256": "137789f87a7c760401a2d53412df6092a077f8c347b66668a25ba683fe9ff3e8",
+      "partial_alpha": 0,
+      "bright_neutral_positions": [
+        [
+          58,
+          59
+        ],
+        [
+          66,
+          78
+        ],
+        [
+          67,
+          78
+        ],
+        [
+          66,
+          79
+        ],
+        [
+          67,
+          79
+        ],
+        [
+          66,
+          80
+        ],
+        [
+          67,
+          80
+        ]
+      ]
+    },
+    {
+      "phase": "fall",
+      "bounds": [
+        20,
+        64,
+        92,
+        97
+      ],
+      "sha256": "34ed7f103a4c1b8972fe2134b1746eea6d098d369836cd9af1705d55b630e197",
+      "partial_alpha": 0,
+      "bright_neutral_positions": [
+        [
+          44,
+          67
+        ],
+        [
+          44,
+          68
+        ],
+        [
+          51,
+          69
+        ]
+      ]
+    },
+    {
+      "phase": "settled",
+      "bounds": [
+        17,
+        72,
+        100,
+        97
+      ],
+      "sha256": "b8862fba9c15d958b95f54e7e4525a5d16d96a7851138370ec01160f2115c7bd",
+      "partial_alpha": 0,
+      "bright_neutral_positions": [
+        [
+          47,
+          76
+        ],
+        [
+          83,
+          78
+        ],
+        [
+          84,
+          78
+        ],
+        [
+          85,
+          78
+        ],
+        [
+          42,
+          79
+        ],
+        [
+          48,
+          79
+        ],
+        [
+          82,
+          79
+        ],
+        [
+          83,
+          79
+        ],
+        [
+          84,
+          79
+        ],
+        [
+          47,
+          80
+        ],
+        [
+          82,
+          80
+        ],
+        [
+          83,
+          80
+        ]
+      ]
+    }
+  ]
+}

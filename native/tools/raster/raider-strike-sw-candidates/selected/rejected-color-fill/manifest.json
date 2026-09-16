@@ -1,0 +1,388 @@
+{
+  "version": 1,
+  "output_dir": "raider-strike-sw-candidates/selected",
+  "report_name": "raider-strike-sw-candidate.provenance.json",
+  "shared_palette_max_colors": 32,
+  "defaults": {
+    "cell_size": 6,
+    "alpha_mode": "crisp",
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "candidate_pending_source_native_phase_review"
+  },
+  "known_limitations": [
+    "Selected original v1 poses0,2,3,4,5 and corrected v2 anticipation1. Source1 olive clothing rejected; five original body poses preserved.",
+    "Source checker patterns require verified alpha cleanup.",
+    "Shared source pivot280,480,column500,row490,cell6; no independent fitting or centering.",
+    "Candidate preview timing is separate from actual monster hit events; production animation has not been reviewed."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "border_background": {
+        "color": [
+          210,
+          210,
+          210
+        ],
+        "tolerance": 95,
+        "interior_windows": [
+          [
+            283,
+            126,
+            287,
+            129
+          ],
+          [
+            280,
+            129,
+            282,
+            132
+          ],
+          [
+            295,
+            174,
+            303,
+            182
+          ],
+          [
+            262,
+            641,
+            265,
+            643
+          ],
+          [
+            279,
+            676,
+            285,
+            683
+          ],
+          [
+            770,
+            634,
+            776,
+            639
+          ],
+          [
+            791,
+            680,
+            794,
+            683
+          ],
+          [
+            1297,
+            672,
+            1300,
+            675
+          ],
+          [
+            1300,
+            675,
+            1308,
+            683
+          ],
+          [
+            1288,
+            695,
+            1289,
+            703
+          ],
+          [
+            1223,
+            764,
+            1229,
+            771
+          ],
+          [
+            1234,
+            764,
+            1235,
+            766
+          ],
+          [
+            1223,
+            770,
+            1256,
+            822
+          ],
+          [
+            1213,
+            776,
+            1222,
+            782
+          ],
+          [
+            1364,
+            770,
+            1370,
+            775
+          ],
+          [
+            1341,
+            771,
+            1368,
+            815
+          ],
+          [
+            1341,
+            784,
+            1344,
+            787
+          ],
+          [
+            1369,
+            811,
+            1370,
+            819
+          ],
+          [
+            1364,
+            815,
+            1365,
+            818
+          ]
+        ]
+      },
+      "assets": [
+        {
+          "name": "raider_strike0_sw",
+          "source_box": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "anchor_source": [
+            280,
+            480
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/raider-strike-sw-v2.png",
+      "border_background": {
+        "color": [
+          210,
+          210,
+          210
+        ],
+        "tolerance": 95,
+        "interior_windows": [
+          [
+            760,
+            132,
+            768,
+            137
+          ],
+          [
+            776,
+            178,
+            783,
+            186
+          ]
+        ]
+      },
+      "assets": [
+        {
+          "name": "raider_strike1_sw",
+          "source_box": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "anchor_source": [
+            268,
+            480
+          ]
+        }
+      ]
+    },
+    {
+      "source": "../../client/assets/raster/source/raider-strike-sw-v1.png",
+      "border_background": {
+        "color": [
+          210,
+          210,
+          210
+        ],
+        "tolerance": 95,
+        "interior_windows": [
+          [
+            283,
+            126,
+            287,
+            129
+          ],
+          [
+            280,
+            129,
+            282,
+            132
+          ],
+          [
+            295,
+            174,
+            303,
+            182
+          ],
+          [
+            262,
+            641,
+            265,
+            643
+          ],
+          [
+            279,
+            676,
+            285,
+            683
+          ],
+          [
+            770,
+            634,
+            776,
+            639
+          ],
+          [
+            791,
+            680,
+            794,
+            683
+          ],
+          [
+            1297,
+            672,
+            1300,
+            675
+          ],
+          [
+            1300,
+            675,
+            1308,
+            683
+          ],
+          [
+            1288,
+            695,
+            1289,
+            703
+          ],
+          [
+            1223,
+            764,
+            1229,
+            771
+          ],
+          [
+            1234,
+            764,
+            1235,
+            766
+          ],
+          [
+            1223,
+            770,
+            1256,
+            822
+          ],
+          [
+            1213,
+            776,
+            1222,
+            782
+          ],
+          [
+            1364,
+            770,
+            1370,
+            775
+          ],
+          [
+            1341,
+            771,
+            1368,
+            815
+          ],
+          [
+            1341,
+            784,
+            1344,
+            787
+          ],
+          [
+            1369,
+            811,
+            1370,
+            819
+          ],
+          [
+            1364,
+            815,
+            1365,
+            818
+          ]
+        ]
+      },
+      "assets": [
+        {
+          "name": "raider_strike2_sw",
+          "source_box": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "anchor_source": [
+            256,
+            480
+          ]
+        },
+        {
+          "name": "raider_strike3_sw",
+          "source_box": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "anchor_source": [
+            280,
+            458
+          ]
+        },
+        {
+          "name": "raider_strike4_sw",
+          "source_box": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "anchor_source": [
+            268,
+            458
+          ]
+        },
+        {
+          "name": "raider_strike5_sw",
+          "source_box": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "anchor_source": [
+            256,
+            458
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+native/client/assets/raster/source/wight-walk-sw-v2.png
+native/client/assets/raster/source/wight-walk-sw-v3.png
+native/client/assets/raster/prompts/wight-walk-sw-v2.txt
+native/client/assets/raster/prompts/wight-walk-sw-v2.provenance.json
+native/client/assets/raster/prompts/wight-walk-sw-v3.txt
+native/client/assets/raster/prompts/wight-walk-sw-v3.provenance.json
+native/tools/raster/wight-walk-sw-candidates/wight-frame4-reference.png
+native/tools/raster/wight-walk-sw-candidates/contact-ownership-comparison-4x.png
+native/tools/raster/wight-walk-sw-candidates/v1/import.json
+native/tools/raster/wight-walk-sw-candidates/v1/import.provenance.json
+native/tools/raster/wight-walk-sw-candidates/v1/alpha-audit.json
+native/tools/raster/wight-walk-sw-candidates/v1/alpha-source-comparison.png
+native/tools/raster/wight-walk-sw-candidates/v3/import.json
+native/tools/raster/wight-walk-sw-candidates/v3/import.provenance.json
+native/tools/raster/wight-walk-sw-candidates/v3/wight_walk4_sw.png
+native/tools/raster/wight-walk-sw-candidates/selected/experiment-dependencies.json

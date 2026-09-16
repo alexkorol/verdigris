@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "state": "root_reviewed_held_candidate_repeat_and_seam_failures_no_production_edits",
+  "working_directory": "C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study",
+  "reconstruct_command": "& 'Z:/Code/Python/pixel-perfecter/.venv/Scripts/python.exe' 'native/tools/raster/import_assets.py' 'native/tools/raster/quiet-stone-candidates/v1/import.json'",
+  "direct_inputs": [
+    {
+      "path": "native/client/assets/raster/source/terrain-quiet-stone-v1.png",
+      "sha256": "f6141a97b2cb8e0685d99fea8a8fae24c94bd0cc539e6e06723ee0837e771903",
+      "role": "Required reconstruction input"
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v1/import.json",
+      "sha256": "78c130658c830592c39e76a5ae0387f4b434a056512f3423755d292ac9b37f70",
+      "role": "Required reconstruction input"
+    },
+    {
+      "path": "native/tools/raster/import_assets.py",
+      "sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+      "role": "Required reconstruction input"
+    }
+  ],
+  "source_reference_inputs": [
+    {
+      "path": "native/client/assets/raster/runtime/terrain_quiet_earth.png",
+      "sha256": "059b101504c96b84a3541f5021dfd1811a7bb1ddb81ebd40fd03be9dbad2af70",
+      "role": "Image1: quiet detail density, broad value masses, restrained contrast only."
+    },
+    {
+      "path": "native/client/assets/raster/runtime/gate.png",
+      "sha256": "701eabbd5156205e808243195c0ad5543cf7608a3588807721f3d532d10e8e4a",
+      "role": "Image2: limestone upright color/material only; no gate geometry, wood or perspective."
+    }
+  ],
+  "context_inputs": [
+    {
+      "path": "native/client/assets/raster/runtime/terrain_stone.png",
+      "sha256": "7cd4b45eefa6b6acfed7f718f16ca108daee933102e2ecb3f2a4067021b25342",
+      "role": "Viewed noisy-floor comparison only; not submitted."
+    },
+    {
+      "path": "native/client/assets/raster/reviews/2026-09-10-monster-motion/remote-wight-arrived.png",
+      "sha256": "3bf189e6d1c2d1f6bb9c6f76de6ebcc74356cc6a7e9a91b33366b6f7175883b2",
+      "role": "Viewed production scene/context only; not submitted."
+    }
+  ],
+  "review_actor_inputs": [
+    {
+      "path": "native/client/assets/raster/runtime/hero_sw.png",
+      "sha256": "815aa38865fa79bdf9e9ee3bcf335a8cd3b8833d02ddeb50c237bb8703e064dd",
+      "role": "Unchanged native-size review actor; not a generation reference."
+    },
+    {
+      "path": "native/client/assets/raster/runtime/wight_sw.png",
+      "sha256": "b2a71f83a721a4a6e9414706f4148b432f5a50acbcbd5d73b15a9980b8b8697d",
+      "role": "Unchanged native-size review actor; not a generation reference."
+    }
+  ],
+  "new_candidate_files": [
+    {
+      "path": "native/client/assets/raster/source/terrain-quiet-stone-v1.png",
+      "sha256": "f6141a97b2cb8e0685d99fea8a8fae24c94bd0cc539e6e06723ee0837e771903",
+      "role": "New source/provenance/candidate/review artifact; no staging performed."
+    },
+    {
+      "path": "native/client/assets/raster/prompts/terrain-quiet-stone-v1.txt",
+      "sha256": "75a1215428c5fda6b28aa76700ee4834d8912d93f8265c3d25fa88243c02a7ab",
+      "role": "New source/provenance/candidate/review artifact; no staging performed."
+    },
+    {
+      "path": "native/client/assets/raster/prompts/terrain-quiet-stone-v1.provenance.json",
+      "sha256": "19fa567432281bce6a986ea64f0ea0239b0ef055828467c555662563944fa5b0",
+      "role": "New source/provenance/candidate/review artifact; no staging performed."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v1/import.json",
+      "sha256": "78c130658c830592c39e76a5ae0387f4b434a056512f3423755d292ac9b37f70",
+      "role": "New source/provenance/candidate/review artifact; no staging performed."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v1/import.provenance.json",
+      "sha256": "df408028aab73b1524e4d025f7ac9c969075c5de32212f2170bd92307a3f195d",
+      "role": "New source/provenance/candidate/review artifact; no staging performed."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v1/terrain_quiet_stone.png",
+      "sha256": "5d869d24b6714586b9f14598b99f33384005db385a369a2b0ab78ee2bcc5db56",
+      "role": "New source/provenance/candidate/review artifact; no staging performed."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v1/metrics.json",
+      "sha256": "cad1b192ae7c7de7e409387e121b3fb4316499e5e7460e493eda7a12d833fba1",
+      "role": "New source/provenance/candidate/review artifact; no staging performed."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v1/native-1x.png",
+      "sha256": "5d869d24b6714586b9f14598b99f33384005db385a369a2b0ab78ee2bcc5db56",
+      "role": "New source/provenance/candidate/review artifact; no staging performed."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v1/native-3x.png",
+      "sha256": "6508a988aedaf453c64f611d8076a8a0e70a9d755cbceb49badceda7d0e7c7b1",
+      "role": "New source/provenance/candidate/review artifact; no staging performed."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v1/repeat-3x3-1x.png",
+      "sha256": "b85415d216a1ecca0dc4fa8491a9ce51a11f7bf96bbd7f5f778d19d4093669ac",
+      "role": "New source/provenance/candidate/review artifact; no staging performed."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v1/repeat-3x3-3x.png",
+      "sha256": "c8c67ceafac08fdf3d8e9a87b4230cc3bfbde3fda23e7cd888d3702c069161f0",
+      "role": "New source/provenance/candidate/review artifact; no staging performed."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v1/actors-comparison-1x.png",
+      "sha256": "f1d54283de8a546d78bec60b0e63de3cd2616c6a2a7ef7d3ba7fe916ce4e9185",
+      "role": "New source/provenance/candidate/review artifact; no staging performed."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/v1/actors-comparison-2x.png",
+      "sha256": "3b6e782f56519f58d3d6b9bfe56758e46bd81529aa9d6484224cc44f6be3779c",
+      "role": "New source/provenance/candidate/review artifact; no staging performed."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/review.py",
+      "sha256": "a8317956831850a1a593890a55b5e32cd138d2cb08bcbc5827f6074ad12631ca",
+      "role": "New source/provenance/candidate/review artifact; no staging performed."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/record_package.py",
+      "sha256": "071f43cd20b1be2a410e5cfe7692c7b314e169a67f8adebe70c2682b99e68c2c",
+      "role": "New source/provenance/candidate/review artifact; no staging performed."
+    },
+    {
+      "path": "native/tools/raster/quiet-stone-candidates/README.md",
+      "sha256": "7b13b60c8f25ca2d29116b2c554421013a8ce233612a7348169146eded88203c",
+      "role": "New source/provenance/candidate/review artifact; no staging performed."
+    }
+  ],
+  "external_engine": "Exact source hashes/version/package hashes in v1/import.provenance.json. Existing external project called without mutation.",
+  "quiet_earth_unchanged_sha256": "059b101504c96b84a3541f5021dfd1811a7bb1ddb81ebd40fd03be9dbad2af70",
+  "native_result": {
+    "canvas": [
+      64,
+      64
+    ],
+    "visible_colors": 23,
+    "alpha": [
+      255,
+      255
+    ],
+    "sha256": "5d869d24b6714586b9f14598b99f33384005db385a369a2b0ab78ee2bcc5db56"
+  },
+  "root_review": "Root viewed native actor composition and3x3 repeat: quieter, but square repeat and inconsistent seam joints are obvious; candidate only, no second call.",
+  "next_step": "Hold this preserved candidate. Root owns any later direction or production decision."
+}

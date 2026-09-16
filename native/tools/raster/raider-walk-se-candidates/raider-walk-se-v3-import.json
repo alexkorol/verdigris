@@ -1,0 +1,196 @@
+{
+  "version": 1,
+  "output_dir": "v3",
+  "report_name": "raider-walk-se-v3.provenance.json",
+  "palette_reference": {
+    "source": "../../../client/assets/raster/runtime/raider_se.png",
+    "max_colors": 32
+  },
+  "defaults": {
+    "cell_size": 6,
+    "alpha_mode": "crisp",
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "rejected_walk_same_anatomical_left_lead"
+  },
+  "known_limitations": [
+    "Rejected as a complete walk: all eight poses repeat anatomical-left/screen-right leading leg; anatomical-right/screen-left leg repeatedly trails.",
+    "Common pitch6 preserves authored pixels but yields60\u00e2\u20ac\u201c61px crown-to-sole compared with56px accepted idle; no per-frame fitting or rescaling.",
+    "Body broadens and axe becomes a shorter thicker hatchet compared with accepted idle. Palette snapping cannot repair anatomy, equipment silhouette or material assignment.",
+    "Source is RGB with painted checker. Actual Pixel Respecter border cleanup plus8 visually identified enclosed underarm windows is for native rejection inspection, not a successful transparent generation.",
+    "No runtime/catalog/code promotion; no game playback acceptance."
+  ],
+  "sheets": [
+    {
+      "source": "../../../client/assets/raster/source/raider-walk-se-v3.png",
+      "border_background": {
+        "color": [
+          229,
+          229,
+          229
+        ],
+        "tolerance": 75,
+        "interior_windows": [
+          [
+            128,
+            248,
+            155,
+            305
+          ],
+          [
+            512,
+            247,
+            541,
+            310
+          ],
+          [
+            895,
+            247,
+            924,
+            310
+          ],
+          [
+            1270,
+            245,
+            1301,
+            310
+          ],
+          [
+            125,
+            741,
+            157,
+            815
+          ],
+          [
+            520,
+            740,
+            551,
+            804
+          ],
+          [
+            901,
+            744,
+            929,
+            805
+          ],
+          [
+            1271,
+            737,
+            1307,
+            800
+          ]
+        ]
+      },
+      "assets": [
+        {
+          "name": "raider_walk0_se",
+          "source_box": [
+            0,
+            0,
+            384,
+            490
+          ],
+          "anchor_source": [
+            192,
+            462
+          ]
+        },
+        {
+          "name": "raider_walk1_se",
+          "source_box": [
+            384,
+            0,
+            768,
+            490
+          ],
+          "anchor_source": [
+            192,
+            462
+          ]
+        },
+        {
+          "name": "raider_walk2_se",
+          "source_box": [
+            768,
+            0,
+            1152,
+            490
+          ],
+          "anchor_source": [
+            192,
+            462
+          ]
+        },
+        {
+          "name": "raider_walk3_se",
+          "source_box": [
+            1152,
+            0,
+            1536,
+            490
+          ],
+          "anchor_source": [
+            192,
+            462
+          ]
+        },
+        {
+          "name": "raider_walk4_se",
+          "source_box": [
+            0,
+            490,
+            384,
+            980
+          ],
+          "anchor_source": [
+            192,
+            462
+          ]
+        },
+        {
+          "name": "raider_walk5_se",
+          "source_box": [
+            384,
+            490,
+            768,
+            980
+          ],
+          "anchor_source": [
+            192,
+            462
+          ]
+        },
+        {
+          "name": "raider_walk6_se",
+          "source_box": [
+            768,
+            490,
+            1152,
+            980
+          ],
+          "anchor_source": [
+            192,
+            462
+          ]
+        },
+        {
+          "name": "raider_walk7_se",
+          "source_box": [
+            1152,
+            490,
+            1536,
+            980
+          ],
+          "anchor_source": [
+            192,
+            462
+          ]
+        }
+      ]
+    }
+  ]
+}

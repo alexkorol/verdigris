@@ -1,0 +1,118 @@
+{
+  "generation": {
+    "tool": "built-in image_gen",
+    "api_key_required": false,
+    "selectable_model": false,
+    "new_sources": [
+      {
+        "path": "native/client/assets/raster/source/raider-walk-se-v1.png",
+        "sha256": "d395ec12c68d7af84f568f660cd5c02eeea82d34983477ef1d4093951af43d3b"
+      },
+      {
+        "path": "native/client/assets/raster/source/raider-walk-se-v2.png",
+        "sha256": "93d3df086fb3d82550f689d529dcfa930cb637805c2f02c4f825822fdb7a1967"
+      },
+      {
+        "path": "native/client/assets/raster/source/raider-walk-se-v3.png",
+        "sha256": "ca56ad851a57787533f5b2f8903c14cd3f5374d430a1d3b45cc029daa4ff9b3d"
+      }
+    ],
+    "exact_prompts": [
+      {
+        "path": "native/client/assets/raster/prompts/raider-walk-se-v1.txt",
+        "sha256": "5876739872cb4d597159f8aae2ffd08443025de008991ac6098571abf257b57b"
+      },
+      {
+        "path": "native/client/assets/raster/prompts/raider-walk-se-v2.txt",
+        "sha256": "cc6c3e439eb07ebf5b4490f3845684b7355e0ceea56e38780c3008a67ffc976b"
+      },
+      {
+        "path": "native/client/assets/raster/prompts/raider-walk-se-v3.txt",
+        "sha256": "c520e9309662df35837aad1fa5cf55cdea8ebcf2c4abaa5faecea54082fb773d"
+      }
+    ],
+    "identity": {
+      "path": "native/client/assets/raster/runtime/raider_se.png",
+      "sha256": "bd0db16b309b39705764b05fff310401e61d932caae010117f0efcc2acf421d0"
+    },
+    "external_motion_reference": {
+      "path": "C:/Users/Alex/Documents/ChatGPT/diablo-reference-cache/motion-study-20260909/body-corrected-cof/se-ordered-4x2-3x.png",
+      "sha256": "8aa6390175aeb6f5d9586de8a44222f7e183fd30cff32452b83f04577bfedc4e",
+      "required_for_generation_reproduction_only": true,
+      "not_required_for_conversion": true
+    },
+    "inspected_prior_art_only": [
+      {
+        "path": "native/client/assets/raster/runtime/raider_walk4_sw.png",
+        "sha256": "1af64963d91301dd91f30c3b2880c329c04a67f817221f493be5bc1c3d4c72ad"
+      },
+      {
+        "path": "native/client/assets/raster/source/raider-walk-sw-axe-v3.png",
+        "sha256": "bde72da59c4ba79380728d99d9002ac5d4e7585351cc9ace4aaa988af468c72d"
+      }
+    ]
+  },
+  "conversion_minimal": {
+    "manifest": {
+      "path": "native/tools/raster/raider-walk-se-candidates/raider-walk-se-v3-import.json",
+      "sha256": "215b9c42b9255caefce284a214b178d8457ea69cc89a163da71491ee35c0ea6b"
+    },
+    "source": {
+      "path": "native/client/assets/raster/source/raider-walk-se-v3.png",
+      "sha256": "ca56ad851a57787533f5b2f8903c14cd3f5374d430a1d3b45cc029daa4ff9b3d"
+    },
+    "palette_reference": {
+      "path": "native/client/assets/raster/runtime/raider_se.png",
+      "sha256": "bd0db16b309b39705764b05fff310401e61d932caae010117f0efcc2acf421d0"
+    },
+    "importer": {
+      "path": "native/tools/raster/import_assets.py",
+      "sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017"
+    },
+    "python_executable": "Z:/Code/Python/pixel-perfecter/.venv/Scripts/python.exe",
+    "engine": {
+      "project": "Pixel Respecter",
+      "api": "pixel_perfecter.workspace.reconstruct",
+      "root": "Z:/Code/Python/pixel-perfecter",
+      "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+      "git_dirty": true,
+      "source_sha256": {
+        "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+        "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+        "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+        "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+        "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+        "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+        "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+        "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+        "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+        "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+        "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+        "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+        "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+      },
+      "dependencies": {
+        "python": "3.12.6",
+        "numpy": "2.2.2",
+        "Pillow": "10.4.0",
+        "opencv": "4.11.0"
+      }
+    },
+    "report": {
+      "path": "native/tools/raster/raider-walk-se-candidates/v3/raider-walk-se-v3.provenance.json",
+      "sha256": "b49f0850629f989e56289e91c9bb97bfa218555f341ee2726f15de169880a919"
+    },
+    "command": "Z:/Code/Python/pixel-perfecter/.venv/Scripts/python.exe native/tools/raster/import_assets.py native/tools/raster/raider-walk-se-candidates/raider-walk-se-v3-import.json",
+    "no_installs_or_runtime_edits": true
+  },
+  "review_only": {
+    "script": {
+      "path": "native/tools/raster/raider-walk-se-candidates/review_raider_walk_se.py",
+      "sha256": "02e4ce5e4d43a39420d5a0c6aa2c1b7daef1e71528983c05f21ef80f68e39595"
+    },
+    "dependencies": [
+      "Pillow",
+      "Python standard library"
+    ]
+  }
+}

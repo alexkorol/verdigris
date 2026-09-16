@@ -1,0 +1,7 @@
+{
+  "status": "rejected_cleanup_only",
+  "reason": "Color-distance selection inside broad inspected gap scopes also included pale chromatic skin. This conversion is retained for review and must not be imported.",
+  "repair": "The final candidate uses exact neutral-only source pixel rectangles, with RGB channel spread at most20. This retains80 source pixels excluded by the earlier fill. Source art itself was not regenerated for this cleanup repair.",
+  "acceptedSuccessor": "Parent selected folder",
+  "evidence": "../alpha-audit.json"
+}

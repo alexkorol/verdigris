@@ -1,0 +1,6 @@
+{
+  "version":1,"output_dir":".","report_name":"import.provenance.json",
+  "palette_reference":{"source":"../../../../client/assets/raster/runtime/wight_sw.png","max_colors":32},
+  "defaults":{"cell_size":13,"alpha_mode":"crisp","canvas":[80,96],"preserve_scale":true,"require_transparency":true,"acceptance":"single_opposite_contact_candidate_pending_review"},
+  "sheets":[{"source":"../../../../client/assets/raster/source/wight-walk-sw-v3.png","border_background":{"color":[210,210,210],"tolerance":95},"assets":[{"name":"wight_walk4_sw","source_box":[0,0,1145,1374],"anchor_source":[598,1287]}]}]
+}

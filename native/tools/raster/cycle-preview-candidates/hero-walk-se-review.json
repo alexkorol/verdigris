@@ -1,0 +1,109 @@
+{
+  "direction": "se",
+  "frame_count": 4,
+  "duration_ms": 140,
+  "canvas": [
+    80,
+    96
+  ],
+  "unique_frame_hashes": 4,
+  "visible_cycle_colors": 128,
+  "shared_palette": null,
+  "geometry": "Complete native canvases at a fixed pivot. No per-frame fitting or realignment.",
+  "acceptance": "pending_visual_cycle_review_and_live_game_motion",
+  "hand_sockets": "Measured separately by the equipment review lane on these runtime pixels.",
+  "frames": [
+    {
+      "name": "hero_walk0_se",
+      "visible_bounds": [
+        26,
+        33,
+        53,
+        96
+      ],
+      "alpha_opaque_pixels": 863,
+      "changed_pixels_to_next": 923,
+      "sha256": "cac714cf1f0c5e00aac781930c309b58fe752c4fdf77dad268513c106ebf3541",
+      "source_box": [
+        0,
+        0,
+        1145,
+        1374
+      ],
+      "cell_size": 14,
+      "anchor_px": [
+        40,
+        96
+      ]
+    },
+    {
+      "name": "hero_walk1_se",
+      "visible_bounds": [
+        26,
+        34,
+        53,
+        93
+      ],
+      "alpha_opaque_pixels": 826,
+      "changed_pixels_to_next": 1090,
+      "sha256": "5ebe4b3b765e2f80ae219e52ddff0f6bd0ae00d70f52b02c5676b5ee619cbb61",
+      "source_box": [
+        0,
+        0,
+        1145,
+        1374
+      ],
+      "cell_size": 14,
+      "anchor_px": [
+        40,
+        96
+      ]
+    },
+    {
+      "name": "hero_walk2_se",
+      "visible_bounds": [
+        25,
+        34,
+        53,
+        95
+      ],
+      "alpha_opaque_pixels": 976,
+      "changed_pixels_to_next": 1122,
+      "sha256": "608aedb034d9ffaa1ae7b784456d4c0c61f67d9469a41921bb9f07c7ab3394b7",
+      "source_box": [
+        0,
+        0,
+        1145,
+        1374
+      ],
+      "cell_size": 14,
+      "anchor_px": [
+        40,
+        96
+      ]
+    },
+    {
+      "name": "hero_walk3_se",
+      "visible_bounds": [
+        27,
+        31,
+        52,
+        91
+      ],
+      "alpha_opaque_pixels": 840,
+      "changed_pixels_to_next": 1018,
+      "sha256": "008280726e2af3a42f230895c96a98108b133a566c8b693b0b2e49bb970b0e55",
+      "source_box": [
+        0,
+        0,
+        1145,
+        1374
+      ],
+      "cell_size": 14,
+      "anchor_px": [
+        40,
+        96
+      ]
+    }
+  ]
+}

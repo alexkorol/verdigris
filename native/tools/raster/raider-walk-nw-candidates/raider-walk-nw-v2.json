@@ -1,0 +1,135 @@
+{
+  "version": 1,
+  "output_dir": "v2",
+  "shared_palette_max_colors": 32,
+  "defaults": {
+    "cell_size": 6,
+    "alpha_mode": "crisp",
+    "canvas": [
+      80,
+      96
+    ],
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "candidate_only_pending_source_native_playback_review"
+  },
+  "sheets": [
+    {
+      "source": "../../../client/assets/raster/source/raider-walk-nw-d2poses-v2.png",
+      "border_background": {
+        "color": [
+          170,
+          170,
+          170
+        ],
+        "tolerance": 125
+      },
+      "assets": [
+        {
+          "name": "raider_walk0_nw",
+          "source_box": [
+            0,
+            0,
+            394,
+            500
+          ],
+          "anchor_source": [
+            190,
+            480
+          ]
+        },
+        {
+          "name": "raider_walk1_nw",
+          "source_box": [
+            394,
+            0,
+            788,
+            500
+          ],
+          "anchor_source": [
+            202,
+            480
+          ]
+        },
+        {
+          "name": "raider_walk2_nw",
+          "source_box": [
+            788,
+            0,
+            1181,
+            500
+          ],
+          "anchor_source": [
+            214,
+            480
+          ]
+        },
+        {
+          "name": "raider_walk3_nw",
+          "source_box": [
+            1181,
+            0,
+            1575,
+            500
+          ],
+          "anchor_source": [
+            227,
+            480
+          ]
+        },
+        {
+          "name": "raider_walk4_nw",
+          "source_box": [
+            0,
+            500,
+            394,
+            999
+          ],
+          "anchor_source": [
+            190,
+            455
+          ]
+        },
+        {
+          "name": "raider_walk5_nw",
+          "source_box": [
+            394,
+            500,
+            788,
+            999
+          ],
+          "anchor_source": [
+            202,
+            455
+          ]
+        },
+        {
+          "name": "raider_walk6_nw",
+          "source_box": [
+            788,
+            500,
+            1181,
+            999
+          ],
+          "anchor_source": [
+            214,
+            455
+          ]
+        },
+        {
+          "name": "raider_walk7_nw",
+          "source_box": [
+            1181,
+            500,
+            1575,
+            999
+          ],
+          "anchor_source": [
+            227,
+            455
+          ]
+        }
+      ]
+    }
+  ]
+}

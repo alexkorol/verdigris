@@ -1,0 +1,17 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Wight SW walk native review</title>
+<style>body{margin:24px;background:#201f1d;color:#e6e1d7;font:16px system-ui}canvas,img{image-rendering:pixelated}canvas{margin-right:36px;background:#201f1d}button{margin:8px}label{margin-right:24px}#strip{display:block;margin-top:24px}p{max-width:850px}</style>
+<h1>Wight SW — idle / walk / idle</h1><p>Original eight v1 poses. 100 ms per walk frame; 320 ms idle holds. Shared80×96 canvas and pivot40,96. No independent frame fitting. Narrow torso and partly obscured hip ownership remain review caveats.</p>
+<div><button id="pause">Pause</button><button id="next">Next frame</button><label><input id="light" type="checkbox">Light background</label><span id="state">Loading</span></div>
+<div><canvas id="native" width="80" height="96"></canvas><canvas id="large" width="240" height="288"></canvas></div>
+<img id="strip" width="800" height="116" src="idle-cycle-idle-1x.png" alt="Native idle and all eight walk poses">
+<script>
+const ids=['idle-reference',...Array.from({length:8},(_,i)=>`wight_walk${i}_sw`),'idle-reference'];
+const frames=ids.map(id=>{const im=new Image();im.src=id+'.png';return im});
+const canvases=[document.querySelector('#native'),document.querySelector('#large')];
+let index=0,playing=true,start=0;const durations=[320,...Array(8).fill(100),320],total=durations.reduce((a,b)=>a+b,0);
+function draw(){for(const c of canvases){const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.fillStyle=document.querySelector('#light').checked?'#b4a58d':'#201f1d';ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(frames[index],0,0,c.width,c.height)}document.querySelector('#state').textContent=`${index===0||index===9?'Idle':'Walk '+(index-1)} | 1× and3×`}
+function tick(t){if(playing){let phase=Math.max(0,t-start)%total;index=0;while(phase>=durations[index]&&index<9){phase-=durations[index];index++}}draw();requestAnimationFrame(tick)}
+document.querySelector('#pause').onclick=()=>{playing=!playing;document.querySelector('#pause').textContent=playing?'Pause':'Play';if(playing)start=performance.now()-durations.slice(0,index).reduce((a,b)=>a+b,0)};
+document.querySelector('#next').onclick=()=>{playing=false;document.querySelector('#pause').textContent='Play';index=(index+1)%frames.length;draw()};
+Promise.all(frames.map(im=>im.decode())).then(()=>{start=performance.now();requestAnimationFrame(tick)});
+</script></html>

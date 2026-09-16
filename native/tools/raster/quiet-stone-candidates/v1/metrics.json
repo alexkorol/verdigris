@@ -1,0 +1,118 @@
+{
+  "note": "Mechanical native pixel/repetition/actor composition only, not a production-game capture. All texels shown1:1: existing32px stone repeats6x6 across192px; quiet64px textures repeat3x3. This tests native detail density, not world-coordinate sampling. No input pixels repainted.",
+  "actor_pivots": [
+    [
+      60,
+      152
+    ],
+    [
+      144,
+      126
+    ]
+  ],
+  "actor_scale": 1,
+  "patches": [
+    {
+      "name": "Existing stone",
+      "path": "native/client/assets/raster/runtime/terrain_stone.png",
+      "sha256": "7cd4b45eefa6b6acfed7f718f16ca108daee933102e2ecb3f2a4067021b25342",
+      "size": [
+        32,
+        32
+      ],
+      "alpha_range": [
+        255,
+        255
+      ],
+      "visible_colors": 25,
+      "luminance_mean": 120.1043470703125,
+      "luminance_std": 28.995214228603796,
+      "adjacent_luminance_difference_mean": 21.904828729838712,
+      "adjacent_luminance_difference_p95": 74.4304,
+      "opposite_edges": {
+        "left_right": {
+          "exact_equal_pixels": 8,
+          "total_pixels": 32,
+          "rgb_mae": 13.364583333333334,
+          "rgb_difference_p95": 62.25,
+          "rgb_max_difference": 75.0
+        },
+        "top_bottom": {
+          "exact_equal_pixels": 5,
+          "total_pixels": 32,
+          "rgb_mae": 27.21875,
+          "rgb_difference_p95": 68.0,
+          "rgb_max_difference": 81.0
+        }
+      }
+    },
+    {
+      "name": "Quiet earth",
+      "path": "native/client/assets/raster/runtime/terrain_quiet_earth.png",
+      "sha256": "059b101504c96b84a3541f5021dfd1811a7bb1ddb81ebd40fd03be9dbad2af70",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_range": [
+        255,
+        255
+      ],
+      "visible_colors": 24,
+      "luminance_mean": 101.51613496093752,
+      "luminance_std": 3.1629882483140896,
+      "adjacent_luminance_difference_mean": 1.6238787202380944,
+      "adjacent_luminance_difference_p95": 7.426400000000001,
+      "opposite_edges": {
+        "left_right": {
+          "exact_equal_pixels": 12,
+          "total_pixels": 64,
+          "rgb_mae": 3.46875,
+          "rgb_difference_p95": 8.0,
+          "rgb_max_difference": 14.0
+        },
+        "top_bottom": {
+          "exact_equal_pixels": 48,
+          "total_pixels": 64,
+          "rgb_mae": 0.8072916666666666,
+          "rgb_difference_p95": 4.0,
+          "rgb_max_difference": 10.0
+        }
+      }
+    },
+    {
+      "name": "Quiet stone candidate",
+      "path": "native/tools/raster/quiet-stone-candidates/v1/terrain_quiet_stone.png",
+      "sha256": "5d869d24b6714586b9f14598b99f33384005db385a369a2b0ab78ee2bcc5db56",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_range": [
+        255,
+        255
+      ],
+      "visible_colors": 23,
+      "luminance_mean": 158.27042109374997,
+      "luminance_std": 12.760086065076083,
+      "adjacent_luminance_difference_mean": 5.177300818452381,
+      "adjacent_luminance_difference_p95": 30.85559999999998,
+      "opposite_edges": {
+        "left_right": {
+          "exact_equal_pixels": 8,
+          "total_pixels": 64,
+          "rgb_mae": 12.25,
+          "rgb_difference_p95": 36.349999999999966,
+          "rgb_max_difference": 63.0
+        },
+        "top_bottom": {
+          "exact_equal_pixels": 0,
+          "total_pixels": 64,
+          "rgb_mae": 17.255208333333332,
+          "rgb_difference_p95": 50.0,
+          "rgb_max_difference": 70.0
+        }
+      }
+    }
+  ]
+}
