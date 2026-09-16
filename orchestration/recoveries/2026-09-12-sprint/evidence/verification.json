@@ -1,0 +1,15 @@
+{
+  "sourceCommit": "443fb250314f7be3f3fef3aff86c2ded5cbe3eac",
+  "sourceTree": "55e7ff7ed57742daff5e7e9e2752b950dc0f4fd0",
+  "package": "C:/Users/Alex/Documents/ChatGPT/Verdigris-Recovered-20260912",
+  "nativeScenarios": 74,
+  "packageFileHashes": 933,
+  "mandatoryResources": 200,
+  "artCandidatesIntegrated": false,
+  "negativeControls": [
+    "Empty inventory rejected",
+    "Missing wight animation inventory rejected",
+    "SkipBuild rejected before creating package"
+  ],
+  "uiAcceptance": "pending visible settings/relaunch verification"
+}
