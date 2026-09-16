@@ -1,0 +1,370 @@
+{
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2\\blender\\male-sprint-exterior.blend",
+  "source_sha256": "72b1857e457bcdf6db16e6402c5f64c887095ef5b16cb809a270ef7a78f7da56",
+  "equipment": "branch-club",
+  "hand": "right",
+  "frame_size": [
+    96,
+    96
+  ],
+  "pixels_per_metre": 48,
+  "frames": [
+    {
+      "src": "references/male-club-sprint-front-00.png",
+      "direction": "front",
+      "phase": 0,
+      "source_frame": 72,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "3748c5ef0754c00eba6bedba615148952be7da167285764e3c2384849f1d37f2"
+    },
+    {
+      "src": "references/male-club-sprint-front-01.png",
+      "direction": "front",
+      "phase": 1,
+      "source_frame": 76,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "b7de19202515b1937a14d916c143edba93433fc48c4b6f31749a4786f8a571c3"
+    },
+    {
+      "src": "references/male-club-sprint-front-02.png",
+      "direction": "front",
+      "phase": 2,
+      "source_frame": 80,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "7969953889b1551648032a60fe92cc65e66a7f26f92d6896d64e15768a7ddb62"
+    },
+    {
+      "src": "references/male-club-sprint-front-03.png",
+      "direction": "front",
+      "phase": 3,
+      "source_frame": 84,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "4d5ae230f7addeeeed8a9c037a94413638a188b07734e069984378d06a41b96a"
+    },
+    {
+      "src": "references/male-club-sprint-front-04.png",
+      "direction": "front",
+      "phase": 4,
+      "source_frame": 88,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "76a728616d32640fd511f752737576be05762e6367caaec07247b7bc3c40539e"
+    },
+    {
+      "src": "references/male-club-sprint-front-05.png",
+      "direction": "front",
+      "phase": 5,
+      "source_frame": 92,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "2ede776ce8e297b419143251c212e7d3283aeb7f05a0e813472575847f9b549c"
+    },
+    {
+      "src": "references/male-club-sprint-front-06.png",
+      "direction": "front",
+      "phase": 6,
+      "source_frame": 96,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "e1605ab46ade03c75f83bba515c759f278421284bd0cc7a4c978c6a57cd1f80e"
+    },
+    {
+      "src": "references/male-club-sprint-front-07.png",
+      "direction": "front",
+      "phase": 7,
+      "source_frame": 100,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "b354fd41a45a415377b5eba5fe5d91d5518b37778a42b27c8ded1e424e76e6df"
+    },
+    {
+      "src": "references/male-club-sprint-right-00.png",
+      "direction": "right",
+      "phase": 0,
+      "source_frame": 72,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "492508c9b360cc333741e3187e9d2a779f1bd23df01a33d8e550b7359e42b08b"
+    },
+    {
+      "src": "references/male-club-sprint-right-01.png",
+      "direction": "right",
+      "phase": 1,
+      "source_frame": 76,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "d9f99dffcc6f01a92a328fda6ee34b4739b4ed2a18f039af24efb04d9a5f7dce"
+    },
+    {
+      "src": "references/male-club-sprint-right-02.png",
+      "direction": "right",
+      "phase": 2,
+      "source_frame": 80,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "3f5b015f20cd4e18e5348b6adea46aae6b19551fdd58a614f1eb63bfc71df9b8"
+    },
+    {
+      "src": "references/male-club-sprint-right-03.png",
+      "direction": "right",
+      "phase": 3,
+      "source_frame": 84,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "d1623702c64a2bc8b988f3e98dbce8727d4c6b2026e59bf08871740aff0381a0"
+    },
+    {
+      "src": "references/male-club-sprint-right-04.png",
+      "direction": "right",
+      "phase": 4,
+      "source_frame": 88,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "39aace16b877f32f98daa450d6b1b7ad865611cd7e4f8b69ce3f8612dfd5759e"
+    },
+    {
+      "src": "references/male-club-sprint-right-05.png",
+      "direction": "right",
+      "phase": 5,
+      "source_frame": 92,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "931aaca6c564b859b02a3343a654a00ca75d4dbddb76233886e382004eab4fe8"
+    },
+    {
+      "src": "references/male-club-sprint-right-06.png",
+      "direction": "right",
+      "phase": 6,
+      "source_frame": 96,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "ae5d5b03507da71175804b52fc115346def5110841d2a57b9c2de25a7e99906b"
+    },
+    {
+      "src": "references/male-club-sprint-right-07.png",
+      "direction": "right",
+      "phase": 7,
+      "source_frame": 100,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "b96f589127c77945663b53a6bd737274119eee00781170e1d60eee653f4c333d"
+    },
+    {
+      "src": "references/male-club-sprint-back-00.png",
+      "direction": "back",
+      "phase": 0,
+      "source_frame": 72,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "14708ff33284a04ec3bd6fb74fda2e176e6ac4cfc75d9aaa8ca6c3053b18d360"
+    },
+    {
+      "src": "references/male-club-sprint-back-01.png",
+      "direction": "back",
+      "phase": 1,
+      "source_frame": 76,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "31aef0762abf76101c53c6c4b7280834a43f5132645db39f2dc1f80d0c2bef9c"
+    },
+    {
+      "src": "references/male-club-sprint-back-02.png",
+      "direction": "back",
+      "phase": 2,
+      "source_frame": 80,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "26673628c53151be723c53b19bef5a74f2cf66f423bcda958eb85734b96e2dbf"
+    },
+    {
+      "src": "references/male-club-sprint-back-03.png",
+      "direction": "back",
+      "phase": 3,
+      "source_frame": 84,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "d003dc075d1f97d9e94efce05652ba775bf13d44c4793af475130d6dddc37378"
+    },
+    {
+      "src": "references/male-club-sprint-back-04.png",
+      "direction": "back",
+      "phase": 4,
+      "source_frame": 88,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "59a6eafb753c85c213775a09858423910ccba2280ffc18f08a307b0c2f6cbbda"
+    },
+    {
+      "src": "references/male-club-sprint-back-05.png",
+      "direction": "back",
+      "phase": 5,
+      "source_frame": 92,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "371dcde56800783da03bbf75a129d90ac1ac34d6697f4ae5aa00397a00262429"
+    },
+    {
+      "src": "references/male-club-sprint-back-06.png",
+      "direction": "back",
+      "phase": 6,
+      "source_frame": 96,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "8b852b61f2e070069f42506794e0ed2aa38e0250c686795972bd70e1b1d8ddc5"
+    },
+    {
+      "src": "references/male-club-sprint-back-07.png",
+      "direction": "back",
+      "phase": 7,
+      "source_frame": 100,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "9081beb1a9f44a5ad063609f08ab4425dca9f1cb9fa3cd6df7c5edb7a7e1d281"
+    },
+    {
+      "src": "references/male-club-sprint-left-00.png",
+      "direction": "left",
+      "phase": 0,
+      "source_frame": 72,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "25c021aff258490f6485bbd7b0568ff274e1b618b44eefdc5b34ba4a4acc0e66"
+    },
+    {
+      "src": "references/male-club-sprint-left-01.png",
+      "direction": "left",
+      "phase": 1,
+      "source_frame": 76,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "a3540c8ff5a765c18f3ef053b2cd98e9e4182552ef6fe87e1dc5b1a709cd535f"
+    },
+    {
+      "src": "references/male-club-sprint-left-02.png",
+      "direction": "left",
+      "phase": 2,
+      "source_frame": 80,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "7de68c46698f8b3e6fe61dec7b1478aa15b5ae79e70b4ffa8b0f7edbab9df058"
+    },
+    {
+      "src": "references/male-club-sprint-left-03.png",
+      "direction": "left",
+      "phase": 3,
+      "source_frame": 84,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "897067ded586f55294554163fdc6a67913c0ba991bd6a41e4ae683cc66631bbe"
+    },
+    {
+      "src": "references/male-club-sprint-left-04.png",
+      "direction": "left",
+      "phase": 4,
+      "source_frame": 88,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "51ac5e080b97652e29f54476054e62133a4ddb6c8d8949e05d0b097d1aafdcf3"
+    },
+    {
+      "src": "references/male-club-sprint-left-05.png",
+      "direction": "left",
+      "phase": 5,
+      "source_frame": 92,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "1f1e6adaa0570be22795fb2e56d985633e477b888691e5b0d8b484093ab6250c"
+    },
+    {
+      "src": "references/male-club-sprint-left-06.png",
+      "direction": "left",
+      "phase": 6,
+      "source_frame": 96,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "428fd99738761931f36518948bfacf9d698867258bf4739b572c32794d361ad2"
+    },
+    {
+      "src": "references/male-club-sprint-left-07.png",
+      "direction": "left",
+      "phase": 7,
+      "source_frame": 100,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "42f42450ccc6e8f63366a4f49250a08c2a7d87c19177101f5b5e71cd8d9dc65e"
+    }
+  ],
+  "status": "motion-reference-reviewed; not painted final game art",
+  "anchor": [
+    48,
+    80
+  ]
+}

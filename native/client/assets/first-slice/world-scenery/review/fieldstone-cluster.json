@@ -1,0 +1,271 @@
+{
+  "id": "fieldstone-cluster",
+  "source_sha256": "89bdf4307e7feae33c01db22dacfd7092b3c3a64bd360c3b350686b4b9e2263f",
+  "reference_sha256": "1ba678833d6e44354dfa78346927e8ee7eb4d95a50086ee6401caccddbc7a31e",
+  "returned_size": [
+    1254,
+    1254
+  ],
+  "pixel_grid": {
+    "size": 5,
+    "source": "fine",
+    "offset": [
+      2,
+      2
+    ],
+    "score": 0.0,
+    "variance": 0.0,
+    "gated_out": false
+  },
+  "all_grid_candidates": [
+    {
+      "size": 178,
+      "source": "fold",
+      "offset": [
+        108,
+        149
+      ],
+      "score": 0.13591167970349408,
+      "variance": 184.8895263671875,
+      "gated_out": false
+    },
+    {
+      "size": 171,
+      "source": "fold",
+      "offset": [
+        106,
+        154
+      ],
+      "score": 0.061005949747594886,
+      "variance": 44.870269775390625,
+      "gated_out": false
+    },
+    {
+      "size": 179,
+      "source": "fold",
+      "offset": [
+        82,
+        122
+      ],
+      "score": 0.058239873444535524,
+      "variance": 41.00478744506836,
+      "gated_out": false
+    },
+    {
+      "size": 172,
+      "source": "fold",
+      "offset": [
+        89,
+        142
+      ],
+      "score": 0.03308866937405239,
+      "variance": 13.322230339050293,
+      "gated_out": false
+    },
+    {
+      "size": 187,
+      "source": "fold",
+      "offset": [
+        57,
+        82
+      ],
+      "score": 0.030534945817352544,
+      "variance": 11.19665813446045,
+      "gated_out": false
+    },
+    {
+      "size": 3,
+      "source": "fine",
+      "offset": [
+        1,
+        2
+      ],
+      "score": 0.0,
+      "variance": 0.0,
+      "gated_out": false
+    },
+    {
+      "size": 4,
+      "source": "fine",
+      "offset": [
+        3,
+        0
+      ],
+      "score": 0.0,
+      "variance": 0.0,
+      "gated_out": false
+    },
+    {
+      "size": 5,
+      "source": "fine",
+      "offset": [
+        2,
+        2
+      ],
+      "score": 0.0,
+      "variance": 0.0,
+      "gated_out": false
+    },
+    {
+      "size": 6,
+      "source": "fine",
+      "offset": [
+        1,
+        4
+      ],
+      "score": 0.0,
+      "variance": 0.0,
+      "gated_out": false
+    },
+    {
+      "size": 7,
+      "source": "fine",
+      "offset": [
+        5,
+        1
+      ],
+      "score": 0.0,
+      "variance": 0.0,
+      "gated_out": false
+    },
+    {
+      "size": 8,
+      "source": "autocorr",
+      "offset": [
+        2,
+        3
+      ],
+      "score": 0.0,
+      "variance": 0.0,
+      "gated_out": false
+    },
+    {
+      "size": 15,
+      "source": "autocorr",
+      "offset": [
+        4,
+        10
+      ],
+      "score": 0.0,
+      "variance": 0.0,
+      "gated_out": false
+    },
+    {
+      "size": 22,
+      "source": "autocorr",
+      "offset": [
+        13,
+        2
+      ],
+      "score": 0.0,
+      "variance": -0.3072916567325592,
+      "gated_out": false
+    },
+    {
+      "size": 23,
+      "source": "autocorr",
+      "offset": [
+        16,
+        3
+      ],
+      "score": 0.0,
+      "variance": -0.3385416567325592,
+      "gated_out": false
+    },
+    {
+      "size": 30,
+      "source": "autocorr",
+      "offset": [
+        4,
+        10
+      ],
+      "score": 0.0,
+      "variance": -0.4739583432674408,
+      "gated_out": false
+    },
+    {
+      "size": 37,
+      "source": "autocorr",
+      "offset": [
+        13,
+        1
+      ],
+      "score": 0.0,
+      "variance": -0.5390625,
+      "gated_out": false
+    },
+    {
+      "size": 45,
+      "source": "autocorr",
+      "offset": [
+        42,
+        2
+      ],
+      "score": 0.0,
+      "variance": -0.5807291865348816,
+      "gated_out": false
+    },
+    {
+      "size": 52,
+      "source": "autocorr",
+      "offset": [
+        47,
+        4
+      ],
+      "score": 0.0,
+      "variance": -0.5989583134651184,
+      "gated_out": false
+    },
+    {
+      "size": 156,
+      "source": "fold",
+      "offset": [
+        2,
+        56
+      ],
+      "score": 0.0,
+      "variance": -0.65625,
+      "gated_out": false
+    },
+    {
+      "size": 164,
+      "source": "fold",
+      "offset": [
+        119,
+        16
+      ],
+      "score": 0.0,
+      "variance": -0.65625,
+      "gated_out": false
+    },
+    {
+      "size": 170,
+      "source": "fold",
+      "offset": [
+        147,
+        17
+      ],
+      "score": 0.0,
+      "variance": -0.6588541865348816,
+      "gated_out": false
+    }
+  ],
+  "translation": [
+    3,
+    4
+  ],
+  "silhouette_iou": 0.8889856334349151,
+  "canvas": [
+    256,
+    256
+  ],
+  "bbox": [
+    88,
+    168,
+    170,
+    213
+  ],
+  "rescaling": false,
+  "alpha_policy": "Original alpha threshold128; no color key",
+  "visual_acceptance": false
+}

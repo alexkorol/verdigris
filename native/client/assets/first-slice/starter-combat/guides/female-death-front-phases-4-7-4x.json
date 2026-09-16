@@ -1,0 +1,65 @@
+{
+  "sheetSize": [
+    1024,
+    1024
+  ],
+  "scale": 4,
+  "cells": [
+    {
+      "row": 0,
+      "column": 0,
+      "phase": 4,
+      "reference": "references/female-death-front-04.png",
+      "nativeSize": [
+        128,
+        128
+      ],
+      "nativeAnchor": [
+        64,
+        96
+      ]
+    },
+    {
+      "row": 0,
+      "column": 1,
+      "phase": 5,
+      "reference": "references/female-death-front-05.png",
+      "nativeSize": [
+        128,
+        128
+      ],
+      "nativeAnchor": [
+        64,
+        96
+      ]
+    },
+    {
+      "row": 1,
+      "column": 0,
+      "phase": 6,
+      "reference": "references/female-death-front-06.png",
+      "nativeSize": [
+        128,
+        128
+      ],
+      "nativeAnchor": [
+        64,
+        96
+      ]
+    },
+    {
+      "row": 1,
+      "column": 1,
+      "phase": 7,
+      "reference": "references/female-death-front-07.png",
+      "nativeSize": [
+        128,
+        128
+      ],
+      "nativeAnchor": [
+        64,
+        96
+      ]
+    }
+  ]
+}

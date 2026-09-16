@@ -1,0 +1,194 @@
+{
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\blender\\male-idle.blend",
+  "source_sha256": "2d4792bee554f50838d1cabef667caf18ab01a8c042ccf3a3e52f9c333e68e55",
+  "equipment": "branch-club",
+  "hand": "right",
+  "frame_size": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "pixels_per_metre": 48,
+  "frames": [
+    {
+      "src": "references/male-club-idle-front-00.png",
+      "direction": "front",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "c33ff3eceae1ab69bc401f7d938fae21445eabfcfa0ebb5c10b05a6646a01cd7"
+    },
+    {
+      "src": "references/male-club-idle-front-01.png",
+      "direction": "front",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "5347dec0eaaaa025d592f126ffdc5cfdc3b42c1f05585b3446f0eb74eb107382"
+    },
+    {
+      "src": "references/male-club-idle-front-02.png",
+      "direction": "front",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "ed79b1a47dcc27939052ad11caf7a14865bc30a6776488ffdaad3b4851575b25"
+    },
+    {
+      "src": "references/male-club-idle-front-03.png",
+      "direction": "front",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "cb4b1b240136ce110413f597b1eb8a507621995108e87855e46891bd12dfffad"
+    },
+    {
+      "src": "references/male-club-idle-right-00.png",
+      "direction": "right",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "09f418c7de2ea6641bc702f9530bab6261c21c0fcce53bfa7d3c1a2e7d6f971c"
+    },
+    {
+      "src": "references/male-club-idle-right-01.png",
+      "direction": "right",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "c89d5e1a6fa41ef538464a6395b78a510637c0ca97fe9223aefdb164517ef2d6"
+    },
+    {
+      "src": "references/male-club-idle-right-02.png",
+      "direction": "right",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "fbcee27fbc022134239a17e95012048490ad80e99d5606cd98f1606bdddfdf8d"
+    },
+    {
+      "src": "references/male-club-idle-right-03.png",
+      "direction": "right",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "585f3d4485d922de210105551bbc2058bac8c22e0b0e31cdc6877d6fa36d1f43"
+    },
+    {
+      "src": "references/male-club-idle-back-00.png",
+      "direction": "back",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "9e960fd182f3a3f997e3984850dd1ee31cf9ff1899be47c77748cb2a85c20105"
+    },
+    {
+      "src": "references/male-club-idle-back-01.png",
+      "direction": "back",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "04d1011d8edd668d64ab2fc83611c83ac8d6888f4c3c01b9d1571bd810062434"
+    },
+    {
+      "src": "references/male-club-idle-back-02.png",
+      "direction": "back",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "e7efb2479517db9f62bd9dadcf21bf2e2130d94ae2ffc9f01147b267c60a7fe9"
+    },
+    {
+      "src": "references/male-club-idle-back-03.png",
+      "direction": "back",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "901aa75a9f3abd70bae71e310f00a649bc0baa9c4297286777b396909f0ffee4"
+    },
+    {
+      "src": "references/male-club-idle-left-00.png",
+      "direction": "left",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "593c572aa9599aeae0c938837a504eb9be2747c32982e593bd376ed2d5c2589e"
+    },
+    {
+      "src": "references/male-club-idle-left-01.png",
+      "direction": "left",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "c60a793c5f3a5d71cc54e8331d35556961ed214178d7138d8f52b5825dc07d40"
+    },
+    {
+      "src": "references/male-club-idle-left-02.png",
+      "direction": "left",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "2235efd3513de8f0612248e6e3cd364f2dafdb7643a0e2fa68aa3362f27c34f7"
+    },
+    {
+      "src": "references/male-club-idle-left-03.png",
+      "direction": "left",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "a83fbe4d0dc7bc593986c958eff0af8f907efb53cb3351ebec91d0afa38d2508"
+    }
+  ],
+  "status": "motion-reference-reviewed; not painted final game art"
+}

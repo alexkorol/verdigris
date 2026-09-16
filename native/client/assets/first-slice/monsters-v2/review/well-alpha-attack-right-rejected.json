@@ -1,0 +1,31 @@
+{
+  "clip": "well-alpha-attack-right",
+  "source_sha256": "2ac9ab275281638668784d21594eefb729984b1bd6867c90908d22e0e73f0cbc",
+  "selected_grid": {
+    "size": 4,
+    "source": "autocorr",
+    "offset": [
+      2,
+      2
+    ],
+    "score": 0.8570730222115336,
+    "variance": 97.74835968017578,
+    "gated_out": false
+  },
+  "frame": [
+    128,
+    96
+  ],
+  "anchor": [
+    64,
+    64
+  ],
+  "whole_cycle_translation": [
+    -1,
+    3
+  ],
+  "registered_mean_iou": 0.6235404186144171,
+  "alpha_policy": "Native alpha threshold128, noRGBkey",
+  "visual_acceptance": false,
+  "frames": []
+}

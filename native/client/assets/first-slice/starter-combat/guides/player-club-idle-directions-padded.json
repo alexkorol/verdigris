@@ -1,0 +1,241 @@
+{
+  "sheetSize": [
+    1536,
+    1024
+  ],
+  "scale": 4,
+  "cells": [
+    {
+      "row": 0,
+      "column": 0,
+      "sex": "male",
+      "action": "idle",
+      "equipment": "branch-club",
+      "direction": "front",
+      "reference": "references/male-club-idle-front-00.png",
+      "nativeSize": [
+        96,
+        96
+      ],
+      "nativeAnchor": [
+        48,
+        80
+      ],
+      "slot": [
+        0,
+        0,
+        384,
+        512
+      ],
+      "spriteRect": [
+        0,
+        64,
+        384,
+        384
+      ]
+    },
+    {
+      "row": 0,
+      "column": 1,
+      "sex": "male",
+      "action": "idle",
+      "equipment": "branch-club",
+      "direction": "right",
+      "reference": "references/male-club-idle-right-00.png",
+      "nativeSize": [
+        96,
+        96
+      ],
+      "nativeAnchor": [
+        48,
+        80
+      ],
+      "slot": [
+        384,
+        0,
+        384,
+        512
+      ],
+      "spriteRect": [
+        384,
+        64,
+        384,
+        384
+      ]
+    },
+    {
+      "row": 0,
+      "column": 2,
+      "sex": "male",
+      "action": "idle",
+      "equipment": "branch-club",
+      "direction": "back",
+      "reference": "references/male-club-idle-back-00.png",
+      "nativeSize": [
+        96,
+        96
+      ],
+      "nativeAnchor": [
+        48,
+        80
+      ],
+      "slot": [
+        768,
+        0,
+        384,
+        512
+      ],
+      "spriteRect": [
+        768,
+        64,
+        384,
+        384
+      ]
+    },
+    {
+      "row": 0,
+      "column": 3,
+      "sex": "male",
+      "action": "idle",
+      "equipment": "branch-club",
+      "direction": "left",
+      "reference": "references/male-club-idle-left-00.png",
+      "nativeSize": [
+        96,
+        96
+      ],
+      "nativeAnchor": [
+        48,
+        80
+      ],
+      "slot": [
+        1152,
+        0,
+        384,
+        512
+      ],
+      "spriteRect": [
+        1152,
+        64,
+        384,
+        384
+      ]
+    },
+    {
+      "row": 1,
+      "column": 0,
+      "sex": "female",
+      "action": "idle",
+      "equipment": "branch-club",
+      "direction": "front",
+      "reference": "references/female-club-idle-front-00.png",
+      "nativeSize": [
+        96,
+        96
+      ],
+      "nativeAnchor": [
+        48,
+        80
+      ],
+      "slot": [
+        0,
+        512,
+        384,
+        512
+      ],
+      "spriteRect": [
+        0,
+        576,
+        384,
+        384
+      ]
+    },
+    {
+      "row": 1,
+      "column": 1,
+      "sex": "female",
+      "action": "idle",
+      "equipment": "branch-club",
+      "direction": "right",
+      "reference": "references/female-club-idle-right-00.png",
+      "nativeSize": [
+        96,
+        96
+      ],
+      "nativeAnchor": [
+        48,
+        80
+      ],
+      "slot": [
+        384,
+        512,
+        384,
+        512
+      ],
+      "spriteRect": [
+        384,
+        576,
+        384,
+        384
+      ]
+    },
+    {
+      "row": 1,
+      "column": 2,
+      "sex": "female",
+      "action": "idle",
+      "equipment": "branch-club",
+      "direction": "back",
+      "reference": "references/female-club-idle-back-00.png",
+      "nativeSize": [
+        96,
+        96
+      ],
+      "nativeAnchor": [
+        48,
+        80
+      ],
+      "slot": [
+        768,
+        512,
+        384,
+        512
+      ],
+      "spriteRect": [
+        768,
+        576,
+        384,
+        384
+      ]
+    },
+    {
+      "row": 1,
+      "column": 3,
+      "sex": "female",
+      "action": "idle",
+      "equipment": "branch-club",
+      "direction": "left",
+      "reference": "references/female-club-idle-left-00.png",
+      "nativeSize": [
+        96,
+        96
+      ],
+      "nativeAnchor": [
+        48,
+        80
+      ],
+      "slot": [
+        1152,
+        512,
+        384,
+        512
+      ],
+      "spriteRect": [
+        1152,
+        576,
+        384,
+        384
+      ]
+    }
+  ]
+}

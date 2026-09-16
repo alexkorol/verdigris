@@ -1,0 +1,233 @@
+{
+  "sheetSize": [
+    1536,
+    1024
+  ],
+  "scale": 4,
+  "cells": [
+    {
+      "column": 0,
+      "row": 0,
+      "sex": "male",
+      "action": "idle",
+      "direction": "front",
+      "reference": "references/male-idle-front-00.png",
+      "nativeSize": [
+        96,
+        96
+      ],
+      "nativeAnchor": [
+        48,
+        80
+      ],
+      "sheetSlot": [
+        0,
+        0,
+        384,
+        512
+      ],
+      "spriteRect": [
+        0,
+        64,
+        384,
+        384
+      ]
+    },
+    {
+      "column": 1,
+      "row": 0,
+      "sex": "male",
+      "action": "idle",
+      "direction": "right",
+      "reference": "references/male-idle-right-00.png",
+      "nativeSize": [
+        96,
+        96
+      ],
+      "nativeAnchor": [
+        48,
+        80
+      ],
+      "sheetSlot": [
+        384,
+        0,
+        384,
+        512
+      ],
+      "spriteRect": [
+        384,
+        64,
+        384,
+        384
+      ]
+    },
+    {
+      "column": 2,
+      "row": 0,
+      "sex": "male",
+      "action": "idle",
+      "direction": "back",
+      "reference": "references/male-idle-back-00.png",
+      "nativeSize": [
+        96,
+        96
+      ],
+      "nativeAnchor": [
+        48,
+        80
+      ],
+      "sheetSlot": [
+        768,
+        0,
+        384,
+        512
+      ],
+      "spriteRect": [
+        768,
+        64,
+        384,
+        384
+      ]
+    },
+    {
+      "column": 3,
+      "row": 0,
+      "sex": "male",
+      "action": "idle",
+      "direction": "left",
+      "reference": "references/male-idle-left-00.png",
+      "nativeSize": [
+        96,
+        96
+      ],
+      "nativeAnchor": [
+        48,
+        80
+      ],
+      "sheetSlot": [
+        1152,
+        0,
+        384,
+        512
+      ],
+      "spriteRect": [
+        1152,
+        64,
+        384,
+        384
+      ]
+    },
+    {
+      "column": 0,
+      "row": 1,
+      "sex": "female",
+      "action": "idle",
+      "direction": "front",
+      "reference": "references/female-idle-front-00.png",
+      "nativeSize": [
+        96,
+        96
+      ],
+      "nativeAnchor": [
+        48,
+        80
+      ],
+      "sheetSlot": [
+        0,
+        512,
+        384,
+        512
+      ],
+      "spriteRect": [
+        0,
+        576,
+        384,
+        384
+      ]
+    },
+    {
+      "column": 1,
+      "row": 1,
+      "sex": "female",
+      "action": "idle",
+      "direction": "right",
+      "reference": "references/female-idle-right-00.png",
+      "nativeSize": [
+        96,
+        96
+      ],
+      "nativeAnchor": [
+        48,
+        80
+      ],
+      "sheetSlot": [
+        384,
+        512,
+        384,
+        512
+      ],
+      "spriteRect": [
+        384,
+        576,
+        384,
+        384
+      ]
+    },
+    {
+      "column": 2,
+      "row": 1,
+      "sex": "female",
+      "action": "idle",
+      "direction": "back",
+      "reference": "references/female-idle-back-00.png",
+      "nativeSize": [
+        96,
+        96
+      ],
+      "nativeAnchor": [
+        48,
+        80
+      ],
+      "sheetSlot": [
+        768,
+        512,
+        384,
+        512
+      ],
+      "spriteRect": [
+        768,
+        576,
+        384,
+        384
+      ]
+    },
+    {
+      "column": 3,
+      "row": 1,
+      "sex": "female",
+      "action": "idle",
+      "direction": "left",
+      "reference": "references/female-idle-left-00.png",
+      "nativeSize": [
+        96,
+        96
+      ],
+      "nativeAnchor": [
+        48,
+        80
+      ],
+      "sheetSlot": [
+        1152,
+        512,
+        384,
+        512
+      ],
+      "spriteRect": [
+        1152,
+        576,
+        384,
+        384
+      ]
+    }
+  ]
+}

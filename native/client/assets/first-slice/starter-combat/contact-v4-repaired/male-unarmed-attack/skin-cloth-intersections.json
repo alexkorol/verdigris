@@ -1,0 +1,101 @@
+{
+  "method": "BVH overlap of newly visible body faces against baked tunic at each actual animation sample. Boundary overlaps require visual inspection; not an automatic poke-through verdict.",
+  "frames": [
+    {
+      "phase": 0,
+      "restored_faces": 162,
+      "intersecting_face_pairs": 0,
+      "restored_faces_intersecting": 0
+    },
+    {
+      "phase": 1,
+      "restored_faces": 162,
+      "intersecting_face_pairs": 0,
+      "restored_faces_intersecting": 0
+    },
+    {
+      "phase": 2,
+      "restored_faces": 162,
+      "intersecting_face_pairs": 0,
+      "restored_faces_intersecting": 0
+    },
+    {
+      "phase": 3,
+      "restored_faces": 162,
+      "intersecting_face_pairs": 0,
+      "restored_faces_intersecting": 0
+    },
+    {
+      "phase": 4,
+      "restored_faces": 162,
+      "intersecting_face_pairs": 0,
+      "restored_faces_intersecting": 0
+    },
+    {
+      "phase": 5,
+      "restored_faces": 162,
+      "intersecting_face_pairs": 0,
+      "restored_faces_intersecting": 0
+    },
+    {
+      "phase": 6,
+      "restored_faces": 162,
+      "intersecting_face_pairs": 0,
+      "restored_faces_intersecting": 0
+    },
+    {
+      "phase": 7,
+      "restored_faces": 162,
+      "intersecting_face_pairs": 0,
+      "restored_faces_intersecting": 0
+    },
+    {
+      "phase": 8,
+      "restored_faces": 162,
+      "intersecting_face_pairs": 0,
+      "restored_faces_intersecting": 0
+    },
+    {
+      "phase": 9,
+      "restored_faces": 162,
+      "intersecting_face_pairs": 0,
+      "restored_faces_intersecting": 0
+    },
+    {
+      "phase": 10,
+      "restored_faces": 162,
+      "intersecting_face_pairs": 0,
+      "restored_faces_intersecting": 0
+    },
+    {
+      "phase": 11,
+      "restored_faces": 162,
+      "intersecting_face_pairs": 0,
+      "restored_faces_intersecting": 0
+    },
+    {
+      "phase": 12,
+      "restored_faces": 162,
+      "intersecting_face_pairs": 0,
+      "restored_faces_intersecting": 0
+    },
+    {
+      "phase": 13,
+      "restored_faces": 162,
+      "intersecting_face_pairs": 0,
+      "restored_faces_intersecting": 0
+    },
+    {
+      "phase": 14,
+      "restored_faces": 162,
+      "intersecting_face_pairs": 0,
+      "restored_faces_intersecting": 0
+    },
+    {
+      "phase": 15,
+      "restored_faces": 162,
+      "intersecting_face_pairs": 0,
+      "restored_faces_intersecting": 0
+    }
+  ]
+}

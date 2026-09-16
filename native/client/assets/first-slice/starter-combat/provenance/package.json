@@ -1,0 +1,198 @@
+{
+  "package": "VERDIGRIS starter combat source references",
+  "status": "source corrections verified; final projected game appearance owned by parent integration lanes",
+  "original_reference_count": 576,
+  "transition_v2_reference_count": 128,
+  "preferred_repaired_reference_count": 384,
+  "preferred_sources": [
+    {
+      "scene": "contact-v4-repaired/male-attack/club-attack-transition.blend",
+      "sha256": "e917c0d8b1f5c36d20dbcf3b3aa4745ee8b0530de220a5ad802a9ce7dfca61a3",
+      "manifest": "contact-v4-repaired/male-attack/manifest.json",
+      "provenance_and_checks": [
+        "contact-v4-repaired/male-attack/repair.json",
+        "contact-v4-repaired/male-attack/skin-cloth-intersections.json"
+      ]
+    },
+    {
+      "scene": "contact-v4-repaired/female-attack/club-attack-transition.blend",
+      "sha256": "edb6f156ef38751b1b6df40c547d84ca4617814e97ff9e95297b9a349e91092f",
+      "manifest": "contact-v4-repaired/female-attack/manifest.json",
+      "provenance_and_checks": [
+        "contact-v4-repaired/female-attack/repair.json",
+        "contact-v4-repaired/female-attack/skin-cloth-intersections.json"
+      ]
+    },
+    {
+      "scene": "contact-v5-fist/male-unarmed-attack/unarmed-attack-transition.blend",
+      "sha256": "6a26dbf4f05ddf2274b3e9607778e12e3ce17338eab130558a3d90df7e7d8e81",
+      "manifest": "contact-v5-fist/male-unarmed-attack/manifest.json",
+      "provenance_and_checks": [
+        "contact-v5-fist/male-unarmed-attack/repair.json",
+        "contact-v5-fist/male-unarmed-attack/fist.json"
+      ]
+    },
+    {
+      "scene": "contact-v5-fist/female-unarmed-attack/unarmed-attack-transition.blend",
+      "sha256": "8f687b233ff90148ddfc12af870845f6687df6b8a67298a7b397c6f256600ec4",
+      "manifest": "contact-v5-fist/female-unarmed-attack/manifest.json",
+      "provenance_and_checks": [
+        "contact-v5-fist/female-unarmed-attack/repair.json",
+        "contact-v5-fist/female-unarmed-attack/fist.json"
+      ]
+    },
+    {
+      "scene": "transition-v3-skin/male-hit/club-hit.blend",
+      "sha256": "944b097475ab110375a3c5c26ddf47dd746953c9c505c6da65b429df2117e095",
+      "manifest": "transition-v3-skin/male-hit/manifest.json",
+      "provenance_and_checks": [
+        "transition-v3-skin/male-hit/repair.json",
+        "transition-v3-skin/male-hit/skin-cloth-intersections.json"
+      ]
+    },
+    {
+      "scene": "transition-v3-skin/female-hit/club-hit.blend",
+      "sha256": "c06fa91e5d257d40e9ff6e6711aff0d6a9756494fcf3c55bef732ed5ea834538",
+      "manifest": "transition-v3-skin/female-hit/manifest.json",
+      "provenance_and_checks": [
+        "transition-v3-skin/female-hit/repair.json",
+        "transition-v3-skin/female-hit/skin-cloth-intersections.json"
+      ]
+    },
+    {
+      "scene": "transition-v3-skin/male-death/club-death.blend",
+      "sha256": "9d9811fb3ef99ed4ffe0b46ae1b3c5f8fedc167a2992ced0e4434fa8bcf7a045",
+      "manifest": "transition-v3-skin/male-death/manifest.json",
+      "provenance_and_checks": [
+        "transition-v3-skin/male-death/repair.json",
+        "transition-v3-skin/male-death/skin-cloth-intersections.json"
+      ]
+    },
+    {
+      "scene": "contact-v4-repaired/female-death/club-death.blend",
+      "sha256": "5754ade54c901c8b485c567749d6043db8105f8fe07899779f59a86b28e34cf7",
+      "manifest": "contact-v4-repaired/female-death/manifest.json",
+      "provenance_and_checks": [
+        "contact-v4-repaired/female-death/repair.json",
+        "contact-v4-repaired/female-death/grounding.json",
+        "contact-v4-repaired/female-death/skin-cloth-intersections.json"
+      ]
+    }
+  ],
+  "scripts": [
+    {
+      "path": "native/tools/render_starter_combat.py",
+      "role": "CC0 combat clips on existing anatomical dressed rigs, fixed 48 px/m.",
+      "classification": "reproducible rendering or meaningful QA",
+      "sha256": "bfa08357c920244c0b8b63603d1d1690fc6e4c4105af25bc7996c38e0a2abf99",
+      "python_syntax": "passed"
+    },
+    {
+      "path": "native/tools/render_starter_combat_contact.py",
+      "role": "Lossless reference packing and nearest-neighbor QA contacts (no art repaint).",
+      "classification": "reproducible rendering or meaningful QA",
+      "sha256": "92883c466bbea225956294e395a170380a30b0e11091b59c9956e9da3a11c6e9",
+      "python_syntax": "passed"
+    },
+    {
+      "path": "native/tools/render_starter_combat_contact_qa.py",
+      "role": "Package normalized-phase attacks; preview FPS is not gameplay timing.",
+      "classification": "reproducible rendering or meaningful QA",
+      "sha256": "b333ec6c16c8ad4b84541e243089b2b0847ea4a59c74c3be3320eed0d496aa9a",
+      "python_syntax": "passed"
+    },
+    {
+      "path": "native/tools/render_starter_combat_equipped.py",
+      "role": "Equip reviewed source locomotion/idle without changing its skeleton or cloth.",
+      "classification": "reproducible rendering or meaningful QA",
+      "sha256": "4459b6a473382775ab0d7f9d24e0fe7c46dff46a35911d178ae9209388eae44c",
+      "python_syntax": "passed"
+    },
+    {
+      "path": "native/tools/render_starter_combat_fist.py",
+      "role": "Close the empty striking hand using small palm-plane finger corrections.",
+      "classification": "reproducible rendering or meaningful QA",
+      "sha256": "c02098565261031267bd2473bbf02a19cdec802b22a0f6007e93df58574924d9",
+      "python_syntax": "passed"
+    },
+    {
+      "path": "native/tools/render_starter_combat_grounding.py",
+      "role": "Correct active female corpse floor penetration with bound cloth in 3D.",
+      "classification": "reproducible rendering or meaningful QA",
+      "sha256": "11ebdfbe21ccc1be775706d93d7f582bc8d4af0203b3402abd62f98000b6cb13",
+      "python_syntax": "passed"
+    },
+    {
+      "path": "native/tools/render_starter_combat_library.py",
+      "role": "Extract only used CC0 motion clips from the public Quaternius library.",
+      "classification": "reproducible rendering or meaningful QA",
+      "sha256": "ccd62cb5345e66442491d161b7e05d8092a26ea7343cfe63d618108af023fdcf",
+      "python_syntax": "passed"
+    },
+    {
+      "path": "native/tools/render_starter_combat_retarget_qa.py",
+      "role": "Compare Quaternius and target foot heights independently of floor shifts.",
+      "classification": "reproducible rendering or meaningful QA",
+      "sha256": "7d7ca754d29aa9408d8d4a53f51434c41fa1f0baa0604abff1079a3121b75a97",
+      "python_syntax": "passed"
+    },
+    {
+      "path": "native/tools/render_starter_combat_skin_contacts.py",
+      "role": "Package repaired native refs and high-resolution torso review sheets.",
+      "classification": "reproducible rendering or meaningful QA",
+      "sha256": "1d801ddb9d11bb149522064460f0435e469f73847a596c185f343964ccf558ae",
+      "python_syntax": "passed"
+    },
+    {
+      "path": "native/tools/render_starter_combat_skin_qa.py",
+      "role": "Measure new underarm face/cloth intersections over the repaired clip.",
+      "classification": "reproducible rendering or meaningful QA",
+      "sha256": "570f14eb9321bbb99f6945a805ec5fe52c8695edc81242581db38480f1fbc27a",
+      "python_syntax": "passed"
+    },
+    {
+      "path": "native/tools/render_starter_combat_skin_repair.py",
+      "role": "Restore existing underarm topology omitted by the clothing visibility mask.",
+      "classification": "reproducible rendering or meaningful QA",
+      "sha256": "fdd4e802f6a2c80c8542f40916f43a07e6da5aa9fe7e46ec8e4493edf04e85fe",
+      "python_syntax": "passed"
+    },
+    {
+      "path": "native/tools/render_starter_combat_timing.py",
+      "role": "Read actual fist/club forward reach from Blender source samples.",
+      "classification": "reproducible rendering or meaningful QA",
+      "sha256": "471413d6c3831f68fb68b1c59d06bd186466c9089992122fc1e25ab06905390f",
+      "python_syntax": "passed"
+    },
+    {
+      "path": "native/tools/render_starter_combat_transition.py",
+      "role": "Versioned skeletal entry/recovery around existing club attack; no 2D shifts.",
+      "classification": "reproducible rendering or meaningful QA",
+      "sha256": "8f83161dfb8e81c6a65c23dbc7531ec4d75d4a815c42727b8348c27af9ad77ad",
+      "python_syntax": "passed"
+    },
+    {
+      "path": "native/tools/render_starter_combat_transition_qa.py",
+      "role": "Package and inspect versioned transition refs without altering sprite pixels.",
+      "classification": "reproducible rendering or meaningful QA",
+      "sha256": "a38ac23b973fb1b335db3f05a5cccbb4f186bab3ab36f71d9d095fa26c8b51c8",
+      "python_syntax": "passed"
+    }
+  ],
+  "debug_helper_relocations": [],
+  "debug_helper_note": "No one-off inspection/debug Python helpers remain in native/tools. Preserve local diagnostic images as QA evidence.",
+  "ownership_note": "Parent-owned recovery tool and shared Git index untouched.",
+  "motion_license": "mocap/QUATERNIUS-LICENSE.txt",
+  "motion_provenance": "mocap/source.json",
+  "blender_version": "5.2.1 LTS",
+  "pixel_contract": "48 pixels per world metre; 96-square anchor48,80 or128-square anchor64,96",
+  "additional_checks": [
+    "provenance/source-contact-reach.json",
+    "provenance/aligned-contact-reach.json",
+    "provenance/fist-contact-reach.json",
+    "provenance/retarget-grounding-audit.json",
+    "provenance/reaction-endpoint-audit.json"
+  ],
+  "contact_timing": "16 frames controlled by normalized game effect phase; contact index8 at phase0.5. Preview FPS does not set gameplay duration.",
+  "correction_note": "Rear foot in initial combat stance is grounded and projects higher due to depth; earlier raised-foot wording corrected. Female corpse floor penetration repaired in versioned v4 scene."
+}

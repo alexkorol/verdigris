@@ -1,0 +1,46 @@
+[
+  {
+    "file": "frames/well-alpha-idle-front-00.png",
+    "sha256": "d7a2c3448a49661b02f020c2f16622939d804d1f836556c7e65ad2b3e6a54109",
+    "reference": "references/well-alpha-idle-front-00.png",
+    "reference_sha256": "34afbd0493f206066acc56e50a48da78050eab427e1dcd6720d62c37c6b8e63a",
+    "phase": 0,
+    "source": "originals/well-alpha-idle-front.png",
+    "source_sha256": "ffb697fe3890b22413ba5b075168e3c617e742a73df589978087b9bce267899d",
+    "silhouette_iou": 0.8387445887445888,
+    "report": "reports/well-alpha-idle-front.json"
+  },
+  {
+    "file": "frames/well-alpha-idle-right-00.png",
+    "sha256": "e201a1a0231155fec26c02819eb2a9724c593409c335009ec64b674626c01d79",
+    "reference": "references/well-alpha-idle-right-00.png",
+    "reference_sha256": "ad9ba9570b385cd4eef322ca8ff23d150320d97616f16574fee13e6659098778",
+    "phase": 0,
+    "source": "originals/well-alpha-idle-right.png",
+    "source_sha256": "e5d9adb7e6967fe6c8187b78c3b904e065c4ca52e1ee10d8d9abdb3fad625682",
+    "silhouette_iou": 0.8403361344537815,
+    "report": "reports/well-alpha-idle-right.json"
+  },
+  {
+    "file": "frames/well-alpha-idle-back-00.png",
+    "sha256": "01171ba46c2c757f2415372cc105236902d4c801572f16b8f00754d77c9788e8",
+    "reference": "references/well-alpha-idle-back-00.png",
+    "reference_sha256": "beeb5e21de5f3b98c86431053dcee04e02330eccca2c9c09df9ff6b973ac7fa9",
+    "phase": 0,
+    "source": "originals/well-alpha-idle-back.png",
+    "source_sha256": "a44b2e274402e952ffa1c9ba46ab32d9447c2b7ba6d69a99fd8278a0e1f35e9c",
+    "silhouette_iou": 0.8548963545389564,
+    "report": "reports/well-alpha-idle-back.json"
+  },
+  {
+    "file": "frames/well-alpha-idle-left-00.png",
+    "sha256": "f9693a0c2ca4787d33865aca56473ffd4fa706465495902077f54e9ce4a9cd8d",
+    "reference": "references/well-alpha-idle-left-00.png",
+    "reference_sha256": "993976124657580e6f51a38f8717578ac30ff6040dc3dc8b49baccc1c3cdb6cb",
+    "phase": 0,
+    "source": "originals/well-alpha-idle-left.png",
+    "source_sha256": "1f50670a73ffd6fded2214c33fb9fa401923dcf50ebcccb59d339b7a50284d75",
+    "silhouette_iou": 0.8576017130620985,
+    "report": "reports/well-alpha-idle-left.json"
+  }
+]

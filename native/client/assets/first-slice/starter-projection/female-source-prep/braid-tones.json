@@ -1,0 +1,46 @@
+{
+  "source": "native\\client\\assets\\first-slice\\starter-v2\\candidates\\female-walk-front-00.png",
+  "sha256": "2195e0acc6237f3cd89ad7156444f9caa537c0f7d686ccea73364c7523ffb882",
+  "crop": [
+    42,
+    20,
+    47,
+    38
+  ],
+  "sample_count": 84,
+  "source_rgb": [
+    [
+      68.0,
+      34.0,
+      22.0
+    ],
+    [
+      80.0,
+      47.0,
+      20.0
+    ],
+    [
+      90.0,
+      59.0,
+      31.0
+    ]
+  ],
+  "linear_rgb": [
+    [
+      0.05780543019106723,
+      0.01599629336550963,
+      0.008023192985384994
+    ],
+    [
+      0.08021982031446832,
+      0.028426039504420793,
+      0.006995410187265387
+    ],
+    [
+      0.10224173308810132,
+      0.043735029256973465,
+      0.013702083047289686
+    ]
+  ],
+  "method": "Three actual dark-braid pixels selected by luminance rank from accepted front reference; no hue recoloring or braid geometry change"
+}

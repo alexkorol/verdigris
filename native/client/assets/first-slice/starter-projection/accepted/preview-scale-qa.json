@@ -1,0 +1,13 @@
+{
+  "integer_scale": 3,
+  "source_canvas_sizes": [
+    192,
+    256
+  ],
+  "gif_sizes": [
+    576,
+    768
+  ],
+  "unchanged_native_artifacts": 858,
+  "native_hashes_unchanged": true
+}

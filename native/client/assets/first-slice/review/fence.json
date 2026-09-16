@@ -1,0 +1,292 @@
+{
+  "asset": "fence",
+  "raw_sha256": "da482192d4a2b3b54cf4794c0b03b1362a4f490ca4535d2ef8995ffc1f15060c",
+  "source_reference": {
+    "id": "fence",
+    "size": [
+      192,
+      96
+    ],
+    "anchor": [
+      128,
+      96
+    ],
+    "pixels_per_metre": 48,
+    "source_objects": "parity_fence",
+    "pivot": [
+      -0.3,
+      4.25,
+      0
+    ],
+    "camera_depth": 12.75,
+    "canvas": [
+      256,
+      128
+    ],
+    "scale": 4,
+    "bbox": [
+      49,
+      54,
+      207,
+      99
+    ]
+  },
+  "returned_size": [
+    1774,
+    887
+  ],
+  "grid_candidates": [
+    {
+      "size": 17,
+      "source": "autocorr",
+      "offset": [
+        16,
+        11
+      ],
+      "score": 1.233266675543523,
+      "variance": 338.64794921875,
+      "gated_out": false
+    },
+    {
+      "size": 47,
+      "source": "autocorr",
+      "offset": [
+        37,
+        30
+      ],
+      "score": 1.156289287415901,
+      "variance": 1009.968505859375,
+      "gated_out": true
+    },
+    {
+      "size": 21,
+      "source": "autocorr",
+      "offset": [
+        6,
+        12
+      ],
+      "score": 1.128105617051302,
+      "variance": 518.2274169921875,
+      "gated_out": false
+    },
+    {
+      "size": 68,
+      "source": "autocorr",
+      "offset": [
+        65,
+        45
+      ],
+      "score": 1.085854218435354,
+      "variance": 1283.018310546875,
+      "gated_out": true
+    },
+    {
+      "size": 13,
+      "source": "autocorr",
+      "offset": [
+        9,
+        11
+      ],
+      "score": 1.03613523796166,
+      "variance": 325.8048400878906,
+      "gated_out": false
+    },
+    {
+      "size": 7,
+      "source": "fine",
+      "offset": [
+        5,
+        0
+      ],
+      "score": 0.9508528532196432,
+      "variance": 180.4749298095703,
+      "gated_out": false
+    },
+    {
+      "size": 8,
+      "source": "autocorr",
+      "offset": [
+        1,
+        7
+      ],
+      "score": 0.950540151908199,
+      "variance": 209.84165954589844,
+      "gated_out": false
+    },
+    {
+      "size": 5,
+      "source": "fine",
+      "offset": [
+        3,
+        1
+      ],
+      "score": 0.9456365144564212,
+      "variance": 118.8215103149414,
+      "gated_out": false
+    },
+    {
+      "size": 6,
+      "source": "fine",
+      "offset": [
+        3,
+        3
+      ],
+      "score": 0.9246345027999943,
+      "variance": 153.67837524414062,
+      "gated_out": false
+    },
+    {
+      "size": 3,
+      "source": "fine",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.9084733890306046,
+      "variance": 61.57163619995117,
+      "gated_out": false
+    },
+    {
+      "size": 4,
+      "source": "autocorr",
+      "offset": [
+        1,
+        2
+      ],
+      "score": 0.9077408334840654,
+      "variance": 96.95413970947266,
+      "gated_out": false
+    },
+    {
+      "size": 114,
+      "source": "fold",
+      "offset": [
+        92,
+        112
+      ],
+      "score": 0.517126113489342,
+      "variance": 2157.7568359375,
+      "gated_out": true
+    },
+    {
+      "size": 115,
+      "source": "autocorr",
+      "offset": [
+        83,
+        60
+      ],
+      "score": 0.5025317925038137,
+      "variance": 2102.114501953125,
+      "gated_out": true
+    },
+    {
+      "size": 191,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.4191948181314275,
+      "variance": 2000.3341064453125,
+      "gated_out": true
+    },
+    {
+      "size": 161,
+      "source": "fold",
+      "offset": [
+        34,
+        84
+      ],
+      "score": 0.4188193723809277,
+      "variance": 1937.5364990234375,
+      "gated_out": true
+    },
+    {
+      "size": 189,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.4120241862773944,
+      "variance": 2028.3323974609375,
+      "gated_out": true
+    },
+    {
+      "size": 187,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.3771431284458913,
+      "variance": 2132.538330078125,
+      "gated_out": true
+    },
+    {
+      "size": 186,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.3594326559949911,
+      "variance": 2179.944091796875,
+      "gated_out": true
+    },
+    {
+      "size": 185,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.3419884039208452,
+      "variance": 2222.18896484375,
+      "gated_out": true
+    },
+    {
+      "size": 183,
+      "source": "fold",
+      "offset": [
+        22,
+        155
+      ],
+      "score": 0.31206962518605585,
+      "variance": 2450.093017578125,
+      "gated_out": true
+    }
+  ],
+  "selected_grid": {
+    "size": 7,
+    "source": "fine",
+    "offset": [
+      5,
+      0
+    ],
+    "score": 0.9508528532196432,
+    "variance": 180.4749298095703,
+    "gated_out": false
+  },
+  "registration_translation": [
+    0,
+    4
+  ],
+  "frame": [
+    256,
+    128
+  ],
+  "anchor": [
+    128,
+    96
+  ],
+  "pixel_resizing": false,
+  "alpha_policy": "Native alpha threshold128; no color key",
+  "visual_acceptance": false,
+  "bbox": [
+    43,
+    52,
+    213,
+    99
+  ]
+}

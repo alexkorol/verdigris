@@ -1,0 +1,370 @@
+{
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\blender\\female-death.blend",
+  "source_sha256": "73b0e1459f2da8a98e2182ccb6ea7a1fadcfad0343e7e723c487c8002a5b1a7e",
+  "equipment": "unarmed",
+  "hand": null,
+  "frame_size": [
+    128,
+    128
+  ],
+  "anchor": [
+    64,
+    96
+  ],
+  "pixels_per_metre": 48,
+  "frames": [
+    {
+      "src": "references/female-unarmed-death-front-00.png",
+      "direction": "front",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "047de67b4d51c780d3c709e39bebdf0d4b3d685395ca4048ce14c1b1f8933dbd"
+    },
+    {
+      "src": "references/female-unarmed-death-front-01.png",
+      "direction": "front",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "552f9e60bf2fbae03d55b547a6224e333c3869b803382526249136ec390966b3"
+    },
+    {
+      "src": "references/female-unarmed-death-front-02.png",
+      "direction": "front",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "5a9c4c6f4bc28ca99bb095cf963dcc5869d1965aa872a41a1f4a2b34d965e40e"
+    },
+    {
+      "src": "references/female-unarmed-death-front-03.png",
+      "direction": "front",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "62295ed80763a78c33ae4ba1aa1e8039e7d8803dd8ab7139ec20dd560ff2c4ac"
+    },
+    {
+      "src": "references/female-unarmed-death-front-04.png",
+      "direction": "front",
+      "phase": 4,
+      "source_frame": 17,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "b7eacb56ee04ec12114809780af3ea035c23883cc1c14db33aa1f63ac95ebfb5"
+    },
+    {
+      "src": "references/female-unarmed-death-front-05.png",
+      "direction": "front",
+      "phase": 5,
+      "source_frame": 21,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "98ab6ddf38501e85f714433bc85e7b46deda74370865ff97ea6ba997a0308bc3"
+    },
+    {
+      "src": "references/female-unarmed-death-front-06.png",
+      "direction": "front",
+      "phase": 6,
+      "source_frame": 25,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "4e640767424b48113abdac9eee40efc8f8460cc91ebf687d1c602e5e38f01f6f"
+    },
+    {
+      "src": "references/female-unarmed-death-front-07.png",
+      "direction": "front",
+      "phase": 7,
+      "source_frame": 29,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "f1cf8e7be8e0c858ba647397e183c44c3de86e37a4a3a00bf5e173acf032f8ba"
+    },
+    {
+      "src": "references/female-unarmed-death-right-00.png",
+      "direction": "right",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "cdd51912adbf6016a71bef3a7bf4646551b83b65ddadf5a0c3b8e93684aac056"
+    },
+    {
+      "src": "references/female-unarmed-death-right-01.png",
+      "direction": "right",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "5542b8b174e4c5881412e3e6d0bfd7dbe15d8083ebb1cc515e207bea1d54b9be"
+    },
+    {
+      "src": "references/female-unarmed-death-right-02.png",
+      "direction": "right",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "89465fded2d78e23c9c38bd59c5d1c7537197dd5caf970a36198fabe72e4a4aa"
+    },
+    {
+      "src": "references/female-unarmed-death-right-03.png",
+      "direction": "right",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "73d49584a87bd0fe4321e203fb6d1162622be11f5eb3bdc0c51b23bed67c5d2c"
+    },
+    {
+      "src": "references/female-unarmed-death-right-04.png",
+      "direction": "right",
+      "phase": 4,
+      "source_frame": 17,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "f40ed97ef4513d23fdff12c6c1e6cd4f4c4d24fdff4220d2abd61bf38375f10d"
+    },
+    {
+      "src": "references/female-unarmed-death-right-05.png",
+      "direction": "right",
+      "phase": 5,
+      "source_frame": 21,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "89ef42c25d4138101af712005cea007562a058798d25352c867cf3bad3a70516"
+    },
+    {
+      "src": "references/female-unarmed-death-right-06.png",
+      "direction": "right",
+      "phase": 6,
+      "source_frame": 25,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "270662c01a9bc54842fb864bd2e5fbaf6f2ee8c03ce34d531239b57a5e6273e1"
+    },
+    {
+      "src": "references/female-unarmed-death-right-07.png",
+      "direction": "right",
+      "phase": 7,
+      "source_frame": 29,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "7a19085b9cd22b8b4154c79a739cfd42141a00ba1d4400e0ab00b383f14c75c8"
+    },
+    {
+      "src": "references/female-unarmed-death-back-00.png",
+      "direction": "back",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "ebdb506a5addfb7a4b0717210ec8ecfbd0a002606e674b2d0920d08465d87750"
+    },
+    {
+      "src": "references/female-unarmed-death-back-01.png",
+      "direction": "back",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "176169215139745f48020a8edacd7f1f63e8d03a8c19b7ef336c97255f439a98"
+    },
+    {
+      "src": "references/female-unarmed-death-back-02.png",
+      "direction": "back",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "1763192eb67b77c43066aa37299491fa9f7c6f5ac9f3a13dfc32f65d0893135e"
+    },
+    {
+      "src": "references/female-unarmed-death-back-03.png",
+      "direction": "back",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "d4fc55494353b1e249e37dd9443768192dd9af76a69d1cf93b63b20b69543612"
+    },
+    {
+      "src": "references/female-unarmed-death-back-04.png",
+      "direction": "back",
+      "phase": 4,
+      "source_frame": 17,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "7bd826896574fd5a061f606b55672e8ca162103f569310a9fa9b434aed61a403"
+    },
+    {
+      "src": "references/female-unarmed-death-back-05.png",
+      "direction": "back",
+      "phase": 5,
+      "source_frame": 21,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "43765b891bdd22022abf1e55d411adceafaca866188044e924068fc71c0a78e0"
+    },
+    {
+      "src": "references/female-unarmed-death-back-06.png",
+      "direction": "back",
+      "phase": 6,
+      "source_frame": 25,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "ccbd0ee1f604a77f5798499ad0ee6c9088782da334685a2e6df131d0b0b2cf71"
+    },
+    {
+      "src": "references/female-unarmed-death-back-07.png",
+      "direction": "back",
+      "phase": 7,
+      "source_frame": 29,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "d12c5676d81fe5b9acb60609c92fce65e132a5dc959cfb4f126da237498d618c"
+    },
+    {
+      "src": "references/female-unarmed-death-left-00.png",
+      "direction": "left",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "a38adf8aa4b36f91ede3507df03ab8928fed4e7e9bcb356521d1547d4fb095f2"
+    },
+    {
+      "src": "references/female-unarmed-death-left-01.png",
+      "direction": "left",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "274d22b90a1001041116ed4de123d9545910674be5bc1b03681474b8ff069c74"
+    },
+    {
+      "src": "references/female-unarmed-death-left-02.png",
+      "direction": "left",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "b5534b89ed347351f445e5f72c1809cc2cd61582022b4ccf5681c084a21aa8a8"
+    },
+    {
+      "src": "references/female-unarmed-death-left-03.png",
+      "direction": "left",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "c582f6e3f60de9532e8ec5f96f5caac6549e13a1cb3775f7ba831e7ee45a20cf"
+    },
+    {
+      "src": "references/female-unarmed-death-left-04.png",
+      "direction": "left",
+      "phase": 4,
+      "source_frame": 17,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "e3e352ace1cfb23d1bb7c74fb57455701f1951086fbda66a8c095ff0b6e52c59"
+    },
+    {
+      "src": "references/female-unarmed-death-left-05.png",
+      "direction": "left",
+      "phase": 5,
+      "source_frame": 21,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "75245bbf748d046692c535d3f14c37adddfdfb85d05db70d35fc4c071bfc1716"
+    },
+    {
+      "src": "references/female-unarmed-death-left-06.png",
+      "direction": "left",
+      "phase": 6,
+      "source_frame": 25,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "f102c99af7fbdce7fc09d84024bf8532546b743b4c1ec997b537415120e62e4a"
+    },
+    {
+      "src": "references/female-unarmed-death-left-07.png",
+      "direction": "left",
+      "phase": 7,
+      "source_frame": 29,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "4cb46fb2e78957803ff6b1a942dc50c6def7e1028c7244d2f504771ca5197792"
+    }
+  ],
+  "status": "motion-reference-reviewed; not painted final game art"
+}

@@ -1,0 +1,316 @@
+{
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2\\blender\\male-walk-exterior.blend",
+  "source_sha256": "a0c181a36a4ed0aa41007328c0b214cb7d45813268141616bdd2d0d41b6749b3",
+  "motion": "Quaternius Universal Animation Library / Sword_Attack",
+  "source_frames": [
+    0,
+    5,
+    9,
+    12,
+    15,
+    19,
+    25,
+    36
+  ],
+  "frame_size": [
+    128,
+    128
+  ],
+  "anchor": [
+    64,
+    96
+  ],
+  "pixels_per_metre": 48,
+  "equipment": "branch-club",
+  "frames": [
+    {
+      "src": "references/male-attack-front-00.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 0,
+      "sha256": "d065c6132f3f5e8920c21d6ab72faf55baca73b2d774ea6ce9ba134c9764d299"
+    },
+    {
+      "src": "references/male-attack-front-01.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 5,
+      "sha256": "1d5e2be6b9d034f749c31096f7887c3d85c1e62aa7bf05ce8946b6b943b321df"
+    },
+    {
+      "src": "references/male-attack-front-02.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 9,
+      "sha256": "4e34a8a1f94114d4bde5ebd08e4902664681db3428383c026d892b64cbd0ccff"
+    },
+    {
+      "src": "references/male-attack-front-03.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 12,
+      "sha256": "06e269d8beb8ffdd4fceaef40ee7c208f1e72f36f4bdbd0815be620beb2a0b25"
+    },
+    {
+      "src": "references/male-attack-front-04.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 15,
+      "sha256": "e3202ff2cafe150c7ddb3331c665f8e856654f8dc555e5661007e50e3bed1ec5"
+    },
+    {
+      "src": "references/male-attack-front-05.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 19,
+      "sha256": "bc7bdd22aa0d279b86b3700654607754f8c92319e681291b282788fdae10e773"
+    },
+    {
+      "src": "references/male-attack-front-06.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 25,
+      "sha256": "b87e0c1940aa815a9864f4f23f137b9481992c34a0b1867baf5402d3c2378be8"
+    },
+    {
+      "src": "references/male-attack-front-07.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 36,
+      "sha256": "e17a830972538935df17341dcbe1cd7fa82b995dc08bba5efd4756ec98c40140"
+    },
+    {
+      "src": "references/male-attack-right-00.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 0,
+      "sha256": "88f059ccbe7be483cd57e9b385e349756b7aa9ceb07fa00ce0a1b87ca443252b"
+    },
+    {
+      "src": "references/male-attack-right-01.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 5,
+      "sha256": "f38e91feda2ab73865e8fd60a562ff2d593fa6912ecd11110fa8ece96c11ef20"
+    },
+    {
+      "src": "references/male-attack-right-02.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 9,
+      "sha256": "8c7a33f79b0137edeabe63364ee53bca9e1dea100feb8aa57106b05380b4054d"
+    },
+    {
+      "src": "references/male-attack-right-03.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 12,
+      "sha256": "277d7be54d3db9f27bec469efc1c3735c7bac89f1095116e2aaf101f9858511c"
+    },
+    {
+      "src": "references/male-attack-right-04.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 15,
+      "sha256": "053c6ab5184c0282a317bd1ac7c7aef90435d3d48b59ee5ecfa1636a49735b88"
+    },
+    {
+      "src": "references/male-attack-right-05.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 19,
+      "sha256": "db9f6e1e22690b1dbb4ddce45f4ef65f7aea84e1ffd0cf5385b9ab0aefb3cbde"
+    },
+    {
+      "src": "references/male-attack-right-06.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 25,
+      "sha256": "27ee71ddd9464290889f6ebfcbb1a3005100f7cdbb2a1d5d4e08ab99bb02e1ea"
+    },
+    {
+      "src": "references/male-attack-right-07.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 36,
+      "sha256": "be4f9ecacd24c194cd6ce1292f33cef5f5ba294ae462672b6a782ca6f317c6d3"
+    },
+    {
+      "src": "references/male-attack-back-00.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 0,
+      "sha256": "28ed8da6d61145af7b9f57dd2eb63ed7c72c1e053d115223d5aa1f3e5fa59e46"
+    },
+    {
+      "src": "references/male-attack-back-01.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 5,
+      "sha256": "6f2965b8bb4d149163876d37dcbc74ff7ccb4c3838ea9211bc536f00e5d1f84f"
+    },
+    {
+      "src": "references/male-attack-back-02.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 9,
+      "sha256": "be11539bf87b3a4211753eabb2af447ce31bdd176c8f5fd2e202188de95a6b29"
+    },
+    {
+      "src": "references/male-attack-back-03.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 12,
+      "sha256": "f12fc88261ab7b72663703ba6a22ed49549e2e3c062885bdb415185f56e7a0e3"
+    },
+    {
+      "src": "references/male-attack-back-04.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 15,
+      "sha256": "fba4402a913825228e2d798d583aa940d77183f6d93f491f99f1f6fb7fd21777"
+    },
+    {
+      "src": "references/male-attack-back-05.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 19,
+      "sha256": "ff161f17dd05342cd378be050a4f7bc42efa5404597232e00266a9ca372ca016"
+    },
+    {
+      "src": "references/male-attack-back-06.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 25,
+      "sha256": "25aa7522bf5733a0a1ba47e34c6e2ff9f931aee9316b666a516bd3348a35baef"
+    },
+    {
+      "src": "references/male-attack-back-07.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 36,
+      "sha256": "c2d591da25198e1daf6942f01d77c29c7150d2a3704be7b4cb1cb290888905d7"
+    },
+    {
+      "src": "references/male-attack-left-00.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 0,
+      "sha256": "486c4e6b708724f45a2b5d01d5de11e4c57a839da54a2449a0a2a181445966f5"
+    },
+    {
+      "src": "references/male-attack-left-01.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 5,
+      "sha256": "b14e7dec4600c75a1183557a8cc89d58638535b5f88dcd79aac494525823288d"
+    },
+    {
+      "src": "references/male-attack-left-02.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 9,
+      "sha256": "6cbea131a03fd6f78d94fe9bd24cbd1e6bf92cc9f1a7542201aaa182b399d0b3"
+    },
+    {
+      "src": "references/male-attack-left-03.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 12,
+      "sha256": "18204feee582d43f51a2471af37a1466710c6de402be6c009d9f312b583dbdfa"
+    },
+    {
+      "src": "references/male-attack-left-04.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 15,
+      "sha256": "283efb820ae329e397887f66daab6c1adeffc9b0f6edb08abd8a3c98dc9f4146"
+    },
+    {
+      "src": "references/male-attack-left-05.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 19,
+      "sha256": "ed6fe1198fdab8752adc50debf317091fd99f714f0e0edebdd57d88c18cdc7bb"
+    },
+    {
+      "src": "references/male-attack-left-06.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 25,
+      "sha256": "ae3bd53b84d8062af4921b4a4f6d2e4f2b9eea2699daf08cbae799fd22199c2c"
+    },
+    {
+      "src": "references/male-attack-left-07.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 36,
+      "sha256": "22b34fd9e66052cdd0b5d74661275861b622672348d78c6ef0269e28fba8f6ca"
+    }
+  ],
+  "status": "motion-reference-reviewed; not painted final game art"
+}

@@ -1,0 +1,113 @@
+{
+  "assets": [
+    {
+      "id": "square-well",
+      "frame": [
+        256,
+        256
+      ],
+      "anchor": [
+        128,
+        200
+      ],
+      "pixels_per_metre": 48,
+      "footprint_metres": [
+        1.9,
+        1.5
+      ],
+      "projection": "orthographic",
+      "camera_elevation_degrees": 34.2157
+    },
+    {
+      "id": "palisade-intact",
+      "frame": [
+        256,
+        256
+      ],
+      "anchor": [
+        128,
+        200
+      ],
+      "pixels_per_metre": 48,
+      "footprint_metres": [
+        2.8,
+        0.35
+      ],
+      "projection": "orthographic",
+      "camera_elevation_degrees": 34.2157
+    },
+    {
+      "id": "palisade-breached",
+      "frame": [
+        256,
+        256
+      ],
+      "anchor": [
+        128,
+        200
+      ],
+      "pixels_per_metre": 48,
+      "footprint_metres": [
+        2.8,
+        0.35
+      ],
+      "projection": "orthographic",
+      "camera_elevation_degrees": 34.2157
+    },
+    {
+      "id": "fieldstone-cluster",
+      "frame": [
+        256,
+        256
+      ],
+      "anchor": [
+        128,
+        200
+      ],
+      "pixels_per_metre": 48,
+      "footprint_metres": [
+        1.6,
+        1.0
+      ],
+      "projection": "orthographic",
+      "camera_elevation_degrees": 34.2157
+    },
+    {
+      "id": "woodland-shrub",
+      "frame": [
+        256,
+        256
+      ],
+      "anchor": [
+        128,
+        200
+      ],
+      "pixels_per_metre": 48,
+      "footprint_metres": [
+        1.5,
+        1.5
+      ],
+      "projection": "orthographic",
+      "camera_elevation_degrees": 34.2157
+    },
+    {
+      "id": "worn-earth-patch",
+      "frame": [
+        256,
+        256
+      ],
+      "anchor": [
+        128,
+        200
+      ],
+      "pixels_per_metre": 48,
+      "footprint_metres": [
+        2.4,
+        2.4
+      ],
+      "projection": "orthographic",
+      "camera_elevation_degrees": 34.2157
+    }
+  ],
+  "ground_unit_pixels": 48
+}

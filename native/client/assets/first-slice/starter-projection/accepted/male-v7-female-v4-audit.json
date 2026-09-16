@@ -1,0 +1,136 @@
+{
+  "male": {
+    "cohort": "male-v7",
+    "frames": 416,
+    "clips": 48,
+    "filter_type": "BOX",
+    "body_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+    "braid_profile_sha256": null,
+    "endpoint_checks": [
+      {
+        "action": "club-attack",
+        "direction": "front",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.996206373292868,
+        "idle_rgb_mae_visible": 1.7572988068037574
+      },
+      {
+        "action": "club-attack",
+        "direction": "right",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9908443540183113,
+        "idle_rgb_mae_visible": 1.8388090349075976
+      },
+      {
+        "action": "club-attack",
+        "direction": "back",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.996059889676911,
+        "idle_rgb_mae_visible": 1.5965189873417722
+      },
+      {
+        "action": "club-attack",
+        "direction": "left",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9930278884462151,
+        "idle_rgb_mae_visible": 1.8100969575392845
+      },
+      {
+        "action": "unarmed-attack",
+        "direction": "front",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9961597542242704,
+        "idle_rgb_mae_visible": 1.7358005654073503
+      },
+      {
+        "action": "unarmed-attack",
+        "direction": "right",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9915611814345991,
+        "idle_rgb_mae_visible": 1.8702127659574468
+      },
+      {
+        "action": "unarmed-attack",
+        "direction": "back",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9959481361426256,
+        "idle_rgb_mae_visible": 1.586384594521291
+      },
+      {
+        "action": "unarmed-attack",
+        "direction": "left",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9927685950413223,
+        "idle_rgb_mae_visible": 1.78806798473812
+      }
+    ],
+    "manifest_sha256": "5c2e17eef749b38d3cef4166d396f1698df516fa0ddeee04dbc9a3e27fa2e3e0"
+  },
+  "female": {
+    "cohort": "female-v4",
+    "frames": 416,
+    "clips": 48,
+    "filter_type": "BOX",
+    "body_atlas_sha256": "866edf15d3f4a7c6bb59feb99be9a22883a98f2d45ee90f51d5b474ce1404af6",
+    "braid_profile_sha256": "cd5fc30fcd4447424005f7b93521e2a53b44fa66c098499c8ec5705db0d17ffa",
+    "endpoint_checks": [
+      {
+        "action": "club-attack",
+        "direction": "front",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9926289926289926,
+        "idle_rgb_mae_visible": 2.1254125412541254
+      },
+      {
+        "action": "club-attack",
+        "direction": "right",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9876404494382023,
+        "idle_rgb_mae_visible": 2.496397421312097
+      },
+      {
+        "action": "club-attack",
+        "direction": "back",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9879518072289156,
+        "idle_rgb_mae_visible": 1.5060975609756098
+      },
+      {
+        "action": "club-attack",
+        "direction": "left",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.978448275862069,
+        "idle_rgb_mae_visible": 1.9658590308370043
+      },
+      {
+        "action": "unarmed-attack",
+        "direction": "front",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9933110367892977,
+        "idle_rgb_mae_visible": 2.0869809203142538
+      },
+      {
+        "action": "unarmed-attack",
+        "direction": "right",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9870892018779343,
+        "idle_rgb_mae_visible": 2.5834324217201745
+      },
+      {
+        "action": "unarmed-attack",
+        "direction": "back",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9875,
+        "idle_rgb_mae_visible": 1.479807112718505
+      },
+      {
+        "action": "unarmed-attack",
+        "direction": "left",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9751693002257337,
+        "idle_rgb_mae_visible": 1.9290123456790123
+      }
+    ],
+    "manifest_sha256": "70915c2d8d2e8b48189b9267f1535aeaf67d14da7125f6d1b1e2660d7e75a078"
+  }
+}

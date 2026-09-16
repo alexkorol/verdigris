@@ -1,0 +1,14 @@
+{
+  "references": [
+    {
+      "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\single-guides\\pack-wolf-death-front-01.png",
+      "sha256": "d00db99e3fe02eb1fce9c9f986fd3e6e030657a338d53f91f76b8c8592b0ba32"
+    },
+    {
+      "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\pack-style-work\\style-exemplars\\pack-wolf-idle-front-4x.png",
+      "sha256": "b57154a814c9645c6a03c8a06c48de03c6f58fee564608e618f3b8762f6c9b0c"
+    }
+  ],
+  "prompt": "prompt.txt",
+  "prompt_sha256": "df930595c2dcf7b7ab9303ea4eec954b202a3421ae15b76f76c5bf508bca72ff"
+}

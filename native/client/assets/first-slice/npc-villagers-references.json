@@ -1,0 +1,44 @@
+{
+  "clips": {
+    "villagers": {
+      "frames": [
+        {
+          "src": "blender-cast/field-hand-front.png",
+          "sha256": "4a6544b007b1657822dcd72da1d57a6bc63e8219c02d13febbf8586cb257deba"
+        },
+        {
+          "src": "blender-cast/field-hand-right.png",
+          "sha256": "dac37f107204669016091f58fb779fba0fa63de573089a5cb481527ca8406789"
+        },
+        {
+          "src": "blender-cast/field-hand-back.png",
+          "sha256": "7f60feb536004851ffce4135cf22002e3d2559eebc4e3ce5f8ee0b1a23026689"
+        },
+        {
+          "src": "blender-cast/field-hand-left.png",
+          "sha256": "0ff3af497204e005342e16e9fda2b071c57db2f9b75e938fb1e5014a7c4f55a0"
+        },
+        {
+          "src": "blender-cast/scribe-front.png",
+          "sha256": "21ed9d1d9310581be697f394cc57d4472c08ee8461446ff1a740584960f829f7"
+        },
+        {
+          "src": "blender-cast/scribe-right.png",
+          "sha256": "46e0fc3d112e1756430b7fdaa8cf079705605dac215f8965cb39bf0d4b7e8b35"
+        },
+        {
+          "src": "blender-cast/scribe-back.png",
+          "sha256": "e4abda8895938a7e2882fe888819ebb7372d336d6e71636bb3010c69c750cdf3"
+        },
+        {
+          "src": "blender-cast/scribe-left.png",
+          "sha256": "53ea473636a910a04c5a42c81f426e58551a1307083d3bfffb5ad447d6f48728"
+        }
+      ],
+      "anchor": [
+        48,
+        80
+      ]
+    }
+  }
+}

@@ -1,0 +1,370 @@
+{
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\blender\\male-hit.blend",
+  "source_sha256": "3408bfd62c2869804e3f4930fdcb7b0858b085c1cdca1e04a65b957b4c312517",
+  "equipment": "unarmed",
+  "hand": null,
+  "frame_size": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "pixels_per_metre": 48,
+  "frames": [
+    {
+      "src": "references/male-unarmed-hit-front-00.png",
+      "direction": "front",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "ff6b3ed992065c1e51acf3f67ea4a716dd5e2b21f02a54179bfbe3633d1ae494"
+    },
+    {
+      "src": "references/male-unarmed-hit-front-01.png",
+      "direction": "front",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "bd8f83ba82b888761c3a1ca8a97ec34f657a82c8c80041fd2e784a6210283257"
+    },
+    {
+      "src": "references/male-unarmed-hit-front-02.png",
+      "direction": "front",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "3e22545dcfa8265b8c735dc5dbd3b6750d822a2e299720b71d6f9734ff7b7ab4"
+    },
+    {
+      "src": "references/male-unarmed-hit-front-03.png",
+      "direction": "front",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "bd0fce1e0f4d251ed1fda30aff5edbb5f6d0a4ae654e89e1b6be8d51e801306e"
+    },
+    {
+      "src": "references/male-unarmed-hit-front-04.png",
+      "direction": "front",
+      "phase": 4,
+      "source_frame": 17,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "13f11dfac96417a33358980c4fff49f91b127f3604226985034ae3c1ae376a33"
+    },
+    {
+      "src": "references/male-unarmed-hit-front-05.png",
+      "direction": "front",
+      "phase": 5,
+      "source_frame": 21,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "ba6a31904702903340e991f855417301771c0969166b8bd9089e06be1269b790"
+    },
+    {
+      "src": "references/male-unarmed-hit-front-06.png",
+      "direction": "front",
+      "phase": 6,
+      "source_frame": 25,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "d8e8b641bceae3c510303cb3f4b5fadd7c3d136d059f0d8998e8aea30b30a2dd"
+    },
+    {
+      "src": "references/male-unarmed-hit-front-07.png",
+      "direction": "front",
+      "phase": 7,
+      "source_frame": 29,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "6e4a0979b3c97f3d19b5226c80be29dccffe47c9e5cb82d685997af80d52b284"
+    },
+    {
+      "src": "references/male-unarmed-hit-right-00.png",
+      "direction": "right",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "fae83373dd3b8e7efcfb3ef7b5d4f898c1e3ae0eddb4d2640b3d3ce32edce221"
+    },
+    {
+      "src": "references/male-unarmed-hit-right-01.png",
+      "direction": "right",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "b3fa6d60c0cd57e78f84fd6cf589b9a808512f103403c43dc2258070cf89c21d"
+    },
+    {
+      "src": "references/male-unarmed-hit-right-02.png",
+      "direction": "right",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "9a9019b1b7b4b5629f2008a4c6d8f50e571c03430300e9330876d0c4d5606f42"
+    },
+    {
+      "src": "references/male-unarmed-hit-right-03.png",
+      "direction": "right",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "863492a6cf928bb650706b0a0d2d6d7fe7528526d0a5f8ad8ff18f63daad4542"
+    },
+    {
+      "src": "references/male-unarmed-hit-right-04.png",
+      "direction": "right",
+      "phase": 4,
+      "source_frame": 17,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "93c78a340ed8fdd1ded35867daf3116a501cfd645cc685a153ee86ab10cbc7fd"
+    },
+    {
+      "src": "references/male-unarmed-hit-right-05.png",
+      "direction": "right",
+      "phase": 5,
+      "source_frame": 21,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "c6e5d8ba6d552f5ee712e77ffd95334f231dda42f1a8047a7fb7961b4ae10963"
+    },
+    {
+      "src": "references/male-unarmed-hit-right-06.png",
+      "direction": "right",
+      "phase": 6,
+      "source_frame": 25,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "69d12205f4a76e51310640d03a1c53e103851ded70dc954b321ed224da7e4ae7"
+    },
+    {
+      "src": "references/male-unarmed-hit-right-07.png",
+      "direction": "right",
+      "phase": 7,
+      "source_frame": 29,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "f43f927be437e1aff7ac0ad4859adb3cbe7ad153549ac048eb374ee95c3cf071"
+    },
+    {
+      "src": "references/male-unarmed-hit-back-00.png",
+      "direction": "back",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "23ea6edb13930d63d6259ebeb76d3cdc793e95723b0557ae5d223cde672b379a"
+    },
+    {
+      "src": "references/male-unarmed-hit-back-01.png",
+      "direction": "back",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "c8ef26a82642104fe117c5e7bf87149f0039bda0e7fef904134cb4e4265f63df"
+    },
+    {
+      "src": "references/male-unarmed-hit-back-02.png",
+      "direction": "back",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "94dfc46e40bd2cedf7d9d5dddac015a1f5c82c6cce805a424e4997ae7e32df3e"
+    },
+    {
+      "src": "references/male-unarmed-hit-back-03.png",
+      "direction": "back",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "e0fb9ca240874109ca94545276c401e8b4db4a5b89e536b2542ab7aa20a44850"
+    },
+    {
+      "src": "references/male-unarmed-hit-back-04.png",
+      "direction": "back",
+      "phase": 4,
+      "source_frame": 17,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "bea6035cb15e6cb2b0870aa61ff6a8f91ea8fb7c53d9ec7c77b9cacfb11639f7"
+    },
+    {
+      "src": "references/male-unarmed-hit-back-05.png",
+      "direction": "back",
+      "phase": 5,
+      "source_frame": 21,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "818afd684a573071de2f805c0bd0fc228f37449c327bfddd6aa56d69766beac7"
+    },
+    {
+      "src": "references/male-unarmed-hit-back-06.png",
+      "direction": "back",
+      "phase": 6,
+      "source_frame": 25,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "8927ada67d0cd74e0bfc6cb06d4bf31288096ac5150967b9d3768f7fb85e20f2"
+    },
+    {
+      "src": "references/male-unarmed-hit-back-07.png",
+      "direction": "back",
+      "phase": 7,
+      "source_frame": 29,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "9f124a06a14142cc62c782533f317ea8e9a048fd334c7a702f27b44f7dddb1d7"
+    },
+    {
+      "src": "references/male-unarmed-hit-left-00.png",
+      "direction": "left",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "836bff43faa6e48ee92432b19a9946d588df35d07b03a922a58f66ae1c311fc9"
+    },
+    {
+      "src": "references/male-unarmed-hit-left-01.png",
+      "direction": "left",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "992245ca7fe9f960149a3b5db3aed4ca3ebe1d4f3be376fbb43ac37d30397c36"
+    },
+    {
+      "src": "references/male-unarmed-hit-left-02.png",
+      "direction": "left",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "e9d95e55eb5944156c20bc9775f0699364c690a784787f093e6d885a4752e66e"
+    },
+    {
+      "src": "references/male-unarmed-hit-left-03.png",
+      "direction": "left",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "50d26d546b571a06c541ce3a41c3121a508edd7c38294e315bdc26118ec66f86"
+    },
+    {
+      "src": "references/male-unarmed-hit-left-04.png",
+      "direction": "left",
+      "phase": 4,
+      "source_frame": 17,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "b68a833146be7417f9893925a72389ab22b6870aeb70864fcce8fb8c816adc81"
+    },
+    {
+      "src": "references/male-unarmed-hit-left-05.png",
+      "direction": "left",
+      "phase": 5,
+      "source_frame": 21,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "071be0f7eef30f769234126ce50f049031fada96672df4db7d48b52f261519f4"
+    },
+    {
+      "src": "references/male-unarmed-hit-left-06.png",
+      "direction": "left",
+      "phase": 6,
+      "source_frame": 25,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "0e2ce000c53ca9fac3cc8ed402afdce2863f5e263de83402c8810f004b03814c"
+    },
+    {
+      "src": "references/male-unarmed-hit-left-07.png",
+      "direction": "left",
+      "phase": 7,
+      "source_frame": 29,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "2d78780133d98ffcd2df9ab5fc8a79926c4b7c57a1a78d3715e0e16fd1c0897f"
+    }
+  ],
+  "status": "motion-reference-reviewed; not painted final game art"
+}

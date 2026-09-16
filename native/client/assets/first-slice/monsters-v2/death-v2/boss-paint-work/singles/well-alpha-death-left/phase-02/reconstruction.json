@@ -1,0 +1,29 @@
+{
+  "accepted": false,
+  "source_sha256": "6eefff091ddb01aeb18298b78337b6f53ae214a7ff15226d4fe1a3b961606b1d",
+  "reference_sha256": "c78adb82240a9a57c4f3d3c2b8a9a134f7486176036473627817a53dfad21833",
+  "source_dimensions": [
+    1536,
+    1024
+  ],
+  "alpha_zero_fraction": 0.9406013488769531,
+  "detected_preferred_grid": 8,
+  "selected_authored_grid": {
+    "size": 8,
+    "source": "autocorr",
+    "offset": [
+      0,
+      0
+    ],
+    "score": 0.992453575985537,
+    "variance": 51.95458221435547,
+    "gated_out": false
+  },
+  "fixed_placement_iou": 0.8899653979238754,
+  "best_registration_iou": 0.930035335689046,
+  "diagnostic_only_translation": [
+    0,
+    -1
+  ],
+  "rule": "Best-registration score is diagnostic only; no individual animation-frame recentering is authorized."
+}

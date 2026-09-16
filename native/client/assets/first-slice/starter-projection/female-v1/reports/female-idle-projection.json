@@ -1,0 +1,333 @@
+{
+  "status": "candidate-needs-review",
+  "sex": "female",
+  "source_sha256": "866edf15d3f4a7c6bb59feb99be9a22883a98f2d45ee90f51d5b474ce1404af6",
+  "views": [
+    {
+      "direction": "front",
+      "geometry_file": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2-female-refine\\blender\\female-walk-exterior.blend",
+      "geometry_sha256": "a668944a456fa2ba79de9617b4562501a690b060c5461ab12424e2cb6fee4cd4",
+      "frame": 72
+    },
+    {
+      "direction": "right",
+      "geometry_file": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2-female-refine\\blender\\female-walk-exterior.blend",
+      "geometry_sha256": "a668944a456fa2ba79de9617b4562501a690b060c5461ab12424e2cb6fee4cd4",
+      "frame": 72
+    },
+    {
+      "direction": "back",
+      "geometry_file": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2-female-refine\\blender\\female-walk-exterior.blend",
+      "geometry_sha256": "a668944a456fa2ba79de9617b4562501a690b060c5461ab12424e2cb6fee4cd4",
+      "frame": 72
+    },
+    {
+      "direction": "left",
+      "geometry_file": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2-female-refine\\blender\\female-walk-exterior.blend",
+      "geometry_sha256": "a668944a456fa2ba79de9617b4562501a690b060c5461ab12424e2cb6fee4cd4",
+      "frame": 72
+    }
+  ],
+  "method": "Exact source-pose multi-view texture projection. Front/back accepted walk72 paint; sides registered idle1 paint. Original geometry, depth visibility, normal weights and UV transfer by unchanged vertex index.",
+  "camera_matrices": [
+    [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.5735760927200317,
+        -0.8191521763801575,
+        -10.035422325134277
+      ],
+      [
+        0.0,
+        0.8191521763801575,
+        0.5735760927200317,
+        7.896876811981201
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    [
+      [
+        -4.371138828673793e-08,
+        0.573576033115387,
+        -0.8191522359848022,
+        -10.035422325134277
+      ],
+      [
+        -1.0,
+        5.5519571162676584e-09,
+        5.724925600247843e-08,
+        4.3866225496458355e-07
+      ],
+      [
+        3.738470510938896e-08,
+        0.8191522359848022,
+        0.573576033115387,
+        7.896876811981201
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    [
+      [
+        -1.0,
+        -8.660758510359301e-08,
+        1.236885367461582e-07,
+        8.773245099291671e-07
+      ],
+      [
+        1.5099580252808664e-07,
+        -0.5735760927200317,
+        0.8191521763801575,
+        10.035422325134277
+      ],
+      [
+        -1.0415998033704021e-15,
+        0.8191521763801575,
+        0.5735760927200317,
+        7.896876811981201
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    [
+      [
+        -4.371138828673793e-08,
+        -0.573576033115387,
+        0.8191522359848022,
+        10.035422325134277
+      ],
+      [
+        1.0,
+        -5.569557259832436e-08,
+        1.436331054094353e-08,
+        -7.576533107567229e-07
+      ],
+      [
+        3.738470510938896e-08,
+        0.8191522359848022,
+        0.573576033115387,
+        7.896876811981201
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ]
+  ],
+  "objects": {
+    "player-female_hair_scalp": {
+      "vertices": 559,
+      "uncovered_vertices": 105
+    },
+    "female_walk_baked_cloth_samples": {
+      "vertices": 2576,
+      "uncovered_vertices": 163
+    },
+    "player-female_waist_cord_cloth_bound": {
+      "vertices": 832,
+      "uncovered_vertices": 670
+    },
+    "player-female_belt_ends_cloth_bound": {
+      "vertices": 168,
+      "uncovered_vertices": 84
+    },
+    "female_ropebelt_turn_0": {
+      "vertices": 832,
+      "uncovered_vertices": 674
+    },
+    "female_ropebelt_turn_1": {
+      "vertices": 832,
+      "uncovered_vertices": 545
+    },
+    "female_sandal_sole_-1": {
+      "vertices": 48,
+      "uncovered_vertices": 25
+    },
+    "female_sandal_strap_-1_0": {
+      "vertices": 22,
+      "uncovered_vertices": 22
+    },
+    "female_sandal_strap_-1_1": {
+      "vertices": 22,
+      "uncovered_vertices": 20
+    },
+    "female_sandal_sole_1": {
+      "vertices": 48,
+      "uncovered_vertices": 22
+    },
+    "female_sandal_strap_1_0": {
+      "vertices": 22,
+      "uncovered_vertices": 22
+    },
+    "female_sandal_strap_1_1": {
+      "vertices": 22,
+      "uncovered_vertices": 18
+    },
+    "MH_female_Body": {
+      "vertices": 19158,
+      "uncovered_vertices": 9266
+    }
+  },
+  "target_sha256": "3a60c2bddef8de8d17b048a16762e74753e5e2aefac35fb84d949d737dd54117",
+  "gait": "idle",
+  "source_frames": [
+    1,
+    5,
+    9,
+    13
+  ],
+  "paint_sampled_fallback_linear_rgb": {
+    "player-female_hair_scalp": [
+      0.17626358568668365,
+      0.06847818195819855,
+      0.03560132533311844
+    ],
+    "female_walk_baked_cloth_samples": [
+      0.33245158195495605,
+      0.2158605307340622,
+      0.13843165338039398
+    ],
+    "player-female_waist_cord_cloth_bound": [
+      0.19980835914611816,
+      0.11697069555521011,
+      0.05951124057173729
+    ],
+    "player-female_belt_ends_cloth_bound": [
+      0.13286836445331573,
+      0.07818742841482162,
+      0.043735042214393616
+    ],
+    "female_ropebelt_turn_0": [
+      0.16826945543289185,
+      0.08437621593475342,
+      0.03433981165289879
+    ],
+    "female_ropebelt_turn_1": [
+      0.29613831639289856,
+      0.18447503447532654,
+      0.12477186322212219
+    ],
+    "female_sandal_sole_-1": [
+      0.25616294145584106,
+      0.11569897830486298,
+      0.05696336552500725
+    ],
+    "female_sandal_sole_1": [
+      0.2788943350315094,
+      0.14126332104206085,
+      0.05286065489053726
+    ],
+    "female_sandal_strap_1_1": [
+      0.17626358568668365,
+      0.08865560591220856,
+      0.038204375654459
+    ],
+    "MH_female_Body": [
+      0.304987370967865,
+      0.14702729880809784,
+      0.08228271454572678
+    ]
+  },
+  "braid_materials": {
+    "female_natural_long_braid_0": [
+      0.05780543019106723,
+      0.01599629336550963,
+      0.008023192985384994
+    ],
+    "female_natural_long_braid_1": [
+      0.08021982031446832,
+      0.028426039504420793,
+      0.006995410187265387
+    ],
+    "female_natural_long_braid_2": [
+      0.10224173308810132,
+      0.043735029256973465,
+      0.013702083047289686
+    ]
+  },
+  "braid_tone_source": {
+    "source": "native\\client\\assets\\first-slice\\starter-v2\\candidates\\female-walk-front-00.png",
+    "sha256": "2195e0acc6237f3cd89ad7156444f9caa537c0f7d686ccea73364c7523ffb882",
+    "crop": [
+      42,
+      20,
+      47,
+      38
+    ],
+    "sample_count": 84,
+    "source_rgb": [
+      [
+        68.0,
+        34.0,
+        22.0
+      ],
+      [
+        80.0,
+        47.0,
+        20.0
+      ],
+      [
+        90.0,
+        59.0,
+        31.0
+      ]
+    ],
+    "linear_rgb": [
+      [
+        0.05780543019106723,
+        0.01599629336550963,
+        0.008023192985384994
+      ],
+      [
+        0.08021982031446832,
+        0.028426039504420793,
+        0.006995410187265387
+      ],
+      [
+        0.10224173308810132,
+        0.043735029256973465,
+        0.013702083047289686
+      ]
+    ],
+    "method": "Three actual dark-braid pixels selected by luminance rank from accepted front reference; no hue recoloring or braid geometry change"
+  },
+  "geometry_before": "2c286a0fa83454e9bf89646f223db9901c8226139ecdc7a77f04b5efa96d3330",
+  "geometry_after": "2c286a0fa83454e9bf89646f223db9901c8226139ecdc7a77f04b5efa96d3330",
+  "camera": {
+    "type": "PERSP",
+    "lens": 204.0,
+    "shift_x": 0.0,
+    "shift_y": -0.022999698296189308,
+    "sensor_width": 36.0,
+    "frame": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      80
+    ],
+    "pixels_per_metre": 48
+  }
+}

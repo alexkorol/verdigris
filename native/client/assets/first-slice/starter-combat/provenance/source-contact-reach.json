@@ -1,0 +1,358 @@
+[
+  {
+    "sex": "male",
+    "action": "attack",
+    "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\blender\\male-attack.blend",
+    "forward_axis": "negative world Y",
+    "samples": [
+      {
+        "phase": 0,
+        "frame": 1,
+        "farthest_forward_world": [
+          -0.7467405796051025,
+          -0.04384130239486694,
+          0.862794041633606
+        ],
+        "forward_reach_m": 0.04384130239486694
+      },
+      {
+        "phase": 1,
+        "frame": 5,
+        "farthest_forward_world": [
+          -0.7375034093856812,
+          0.11062395572662354,
+          1.550849199295044
+        ],
+        "forward_reach_m": -0.11062395572662354
+      },
+      {
+        "phase": 2,
+        "frame": 9,
+        "farthest_forward_world": [
+          -0.6714316606521606,
+          -0.044138550758361816,
+          1.4138715267181396
+        ],
+        "forward_reach_m": 0.044138550758361816
+      },
+      {
+        "phase": 3,
+        "frame": 13,
+        "farthest_forward_world": [
+          0.701353907585144,
+          -0.33190205693244934,
+          0.5465278625488281
+        ],
+        "forward_reach_m": 0.33190205693244934
+      },
+      {
+        "phase": 4,
+        "frame": 17,
+        "farthest_forward_world": [
+          0.7345837354660034,
+          -0.3210737109184265,
+          0.6009348630905151
+        ],
+        "forward_reach_m": 0.3210737109184265
+      },
+      {
+        "phase": 5,
+        "frame": 21,
+        "farthest_forward_world": [
+          0.5572906732559204,
+          -0.6935688853263855,
+          0.7084172964096069
+        ],
+        "forward_reach_m": 0.6935688853263855
+      },
+      {
+        "phase": 6,
+        "frame": 25,
+        "farthest_forward_world": [
+          -0.24613696336746216,
+          -0.6551874876022339,
+          1.3054070472717285
+        ],
+        "forward_reach_m": 0.6551874876022339
+      },
+      {
+        "phase": 7,
+        "frame": 29,
+        "farthest_forward_world": [
+          -0.7470217347145081,
+          -0.04111015796661377,
+          0.8626334071159363
+        ],
+        "forward_reach_m": 0.04111015796661377
+      }
+    ],
+    "peak_phase": 5
+  },
+  {
+    "sex": "male",
+    "action": "unarmed-attack",
+    "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\blender\\male-unarmed-attack.blend",
+    "forward_axis": "negative world Y",
+    "samples": [
+      {
+        "phase": 0,
+        "frame": 1,
+        "farthest_forward_world": [
+          -0.20583531260490417,
+          -0.3015417754650116,
+          1.3951293230056763
+        ],
+        "forward_reach_m": 0.3015417754650116
+      },
+      {
+        "phase": 1,
+        "frame": 5,
+        "farthest_forward_world": [
+          -0.20584286749362946,
+          -0.2773718535900116,
+          1.414852499961853
+        ],
+        "forward_reach_m": 0.2773718535900116
+      },
+      {
+        "phase": 2,
+        "frame": 9,
+        "farthest_forward_world": [
+          -0.14090770483016968,
+          -0.6686856746673584,
+          1.3964835405349731
+        ],
+        "forward_reach_m": 0.6686856746673584
+      },
+      {
+        "phase": 3,
+        "frame": 13,
+        "farthest_forward_world": [
+          -0.12878036499023438,
+          -0.6733566522598267,
+          1.360520839691162
+        ],
+        "forward_reach_m": 0.6733566522598267
+      },
+      {
+        "phase": 4,
+        "frame": 17,
+        "farthest_forward_world": [
+          -0.14149631559848785,
+          -0.666843831539154,
+          1.3194329738616943
+        ],
+        "forward_reach_m": 0.666843831539154
+      },
+      {
+        "phase": 5,
+        "frame": 21,
+        "farthest_forward_world": [
+          -0.12408824265003204,
+          -0.6146009564399719,
+          1.2357741594314575
+        ],
+        "forward_reach_m": 0.6146009564399719
+      },
+      {
+        "phase": 6,
+        "frame": 25,
+        "farthest_forward_world": [
+          -0.18258246779441833,
+          -0.46895310282707214,
+          1.2739005088806152
+        ],
+        "forward_reach_m": 0.46895310282707214
+      },
+      {
+        "phase": 7,
+        "frame": 29,
+        "farthest_forward_world": [
+          -0.20583531260490417,
+          -0.3015417754650116,
+          1.3951293230056763
+        ],
+        "forward_reach_m": 0.3015417754650116
+      }
+    ],
+    "peak_phase": 3
+  },
+  {
+    "sex": "female",
+    "action": "attack",
+    "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\blender\\female-attack.blend",
+    "forward_axis": "negative world Y",
+    "samples": [
+      {
+        "phase": 0,
+        "frame": 1,
+        "farthest_forward_world": [
+          -0.686493992805481,
+          -0.0795651227235794,
+          0.8790746927261353
+        ],
+        "forward_reach_m": 0.0795651227235794
+      },
+      {
+        "phase": 1,
+        "frame": 5,
+        "farthest_forward_world": [
+          -0.6609542965888977,
+          0.047849684953689575,
+          1.508292555809021
+        ],
+        "forward_reach_m": -0.047849684953689575
+      },
+      {
+        "phase": 2,
+        "frame": 9,
+        "farthest_forward_world": [
+          -0.577698290348053,
+          -0.07925216853618622,
+          1.33939790725708
+        ],
+        "forward_reach_m": 0.07925216853618622
+      },
+      {
+        "phase": 3,
+        "frame": 13,
+        "farthest_forward_world": [
+          0.7334830164909363,
+          -0.36325153708457947,
+          0.5102988481521606
+        ],
+        "forward_reach_m": 0.36325153708457947
+      },
+      {
+        "phase": 4,
+        "frame": 17,
+        "farthest_forward_world": [
+          0.7648261785507202,
+          -0.35264119505882263,
+          0.5631003379821777
+        ],
+        "forward_reach_m": 0.35264119505882263
+      },
+      {
+        "phase": 5,
+        "frame": 21,
+        "farthest_forward_world": [
+          0.5805242657661438,
+          -0.7140362858772278,
+          0.6737310886383057
+        ],
+        "forward_reach_m": 0.7140362858772278
+      },
+      {
+        "phase": 6,
+        "frame": 25,
+        "farthest_forward_world": [
+          -0.18295778334140778,
+          -0.6245954036712646,
+          1.3145242929458618
+        ],
+        "forward_reach_m": 0.6245954036712646
+      },
+      {
+        "phase": 7,
+        "frame": 29,
+        "farthest_forward_world": [
+          -0.6869324445724487,
+          -0.07687412202358246,
+          0.8789279460906982
+        ],
+        "forward_reach_m": 0.07687412202358246
+      }
+    ],
+    "peak_phase": 5
+  },
+  {
+    "sex": "female",
+    "action": "unarmed-attack",
+    "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\blender\\female-unarmed-attack.blend",
+    "forward_axis": "negative world Y",
+    "samples": [
+      {
+        "phase": 0,
+        "frame": 1,
+        "farthest_forward_world": [
+          -0.1704620122909546,
+          -0.26784083247184753,
+          1.326225996017456
+        ],
+        "forward_reach_m": 0.26784083247184753
+      },
+      {
+        "phase": 1,
+        "frame": 5,
+        "farthest_forward_world": [
+          -0.1704685091972351,
+          -0.24719588458538055,
+          1.3430715799331665
+        ],
+        "forward_reach_m": 0.24719588458538055
+      },
+      {
+        "phase": 2,
+        "frame": 9,
+        "farthest_forward_world": [
+          -0.09194736182689667,
+          -0.6183279752731323,
+          1.350969672203064
+        ],
+        "forward_reach_m": 0.6183279752731323
+      },
+      {
+        "phase": 3,
+        "frame": 13,
+        "farthest_forward_world": [
+          -0.08041692525148392,
+          -0.6226348876953125,
+          1.3270615339279175
+        ],
+        "forward_reach_m": 0.6226348876953125
+      },
+      {
+        "phase": 4,
+        "frame": 17,
+        "farthest_forward_world": [
+          -0.09348329156637192,
+          -0.6176120638847351,
+          1.3179662227630615
+        ],
+        "forward_reach_m": 0.6176120638847351
+      },
+      {
+        "phase": 5,
+        "frame": 21,
+        "farthest_forward_world": [
+          -0.09037616848945618,
+          -0.5695125460624695,
+          1.21091628074646
+        ],
+        "forward_reach_m": 0.5695125460624695
+      },
+      {
+        "phase": 6,
+        "frame": 25,
+        "farthest_forward_world": [
+          -0.15386153757572174,
+          -0.42451757192611694,
+          1.2306292057037354
+        ],
+        "forward_reach_m": 0.42451757192611694
+      },
+      {
+        "phase": 7,
+        "frame": 29,
+        "farthest_forward_world": [
+          -0.1704620122909546,
+          -0.26784083247184753,
+          1.326225996017456
+        ],
+        "forward_reach_m": 0.26784083247184753
+      }
+    ],
+    "peak_phase": 3
+  }
+]

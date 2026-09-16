@@ -1,0 +1,492 @@
+{
+  "status": "source-correction-verified; final appearance and in-game acceptance owned by projection/integration",
+  "clips": [
+    {
+      "sex": "female",
+      "action": "club-hit",
+      "direction": "front",
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "duration_ms": 400,
+      "frames": [
+        {
+          "path": "transition-v3-skin/female-hit/references/front-00.png",
+          "sha256": "bddb621155d9c51a466a3c1f1beae01a661f8383f44eac47cb67931daa574a5e",
+          "phase": 0,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/front-01.png",
+          "sha256": "038f25220e817adf94c143939cd63cbe302f57ce8f3118b21a56063b6db7cc28",
+          "phase": 1,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/front-02.png",
+          "sha256": "a5fa24db801724caa0f787ca49e525bae1e487a06f28eb28dbe35c9936e0f3ca",
+          "phase": 2,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/front-03.png",
+          "sha256": "cf1e20b52df9cf6c1e86a17a5827ce0c5e377d50842cd5b2ec506940e6464ff5",
+          "phase": 3,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/front-04.png",
+          "sha256": "b1051dc4f7c946ebb44b56443761621fc41d16732eaad32f575cf819802c183b",
+          "phase": 4,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/front-05.png",
+          "sha256": "b8a3c2d8bb8b4a3e18b2a032e10b4239b62d9d8ca94ae91a9d24bde6e73b9047",
+          "phase": 5,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/front-06.png",
+          "sha256": "5451e301c26f8b4b0e5b38eae92124f051f2277e1834426b06dab5957011a0db",
+          "phase": 6,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/front-07.png",
+          "sha256": "3679265f65bc26ab22278cde6729049b8a155e0de94bfafbc46b77f65e41f26a",
+          "phase": 7,
+          "duration_ms": 50
+        }
+      ]
+    },
+    {
+      "sex": "female",
+      "action": "club-hit",
+      "direction": "right",
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "duration_ms": 400,
+      "frames": [
+        {
+          "path": "transition-v3-skin/female-hit/references/right-00.png",
+          "sha256": "1198e0e6064386a68366a38145c6ad2734833530df8fde9d1632496cda4b042a",
+          "phase": 0,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/right-01.png",
+          "sha256": "44020971cbff946684861a350a867f7cb3d42ee49e7150d70e891fa0499cee58",
+          "phase": 1,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/right-02.png",
+          "sha256": "aa656a6bc2cfdffdd0da0d050c9d018dad2c141f897719ef3816b5152ecd06a6",
+          "phase": 2,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/right-03.png",
+          "sha256": "f930f1425545348cb7f93e9d908e0a8bee196af971f788045a7a731c490170ce",
+          "phase": 3,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/right-04.png",
+          "sha256": "ea50d7b949a8cb6cdfd0eefce1408f620753e19a26432de23a307606b83c33c4",
+          "phase": 4,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/right-05.png",
+          "sha256": "c106d8d09bfc730eca994ffd198db14361283cc4792ff26963c5fcba3e3326f5",
+          "phase": 5,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/right-06.png",
+          "sha256": "03e6f81365893023d63072c804ac52f3b85bca45856d4dd69b4abc3a88e02b14",
+          "phase": 6,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/right-07.png",
+          "sha256": "3d2a6c558c31bb1bc7925c1c8b4d22a163932a0911e24baed60fa33c9a881d60",
+          "phase": 7,
+          "duration_ms": 50
+        }
+      ]
+    },
+    {
+      "sex": "female",
+      "action": "club-hit",
+      "direction": "back",
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "duration_ms": 400,
+      "frames": [
+        {
+          "path": "transition-v3-skin/female-hit/references/back-00.png",
+          "sha256": "5fe9144f0fddc98b45a1acda4d5437297d15b426ac6fc1ab1a43ca8966026904",
+          "phase": 0,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/back-01.png",
+          "sha256": "682547704e74445bf784d3c939ee1e7d08d0a0f1dc9c25f35e8ead7c5277dbd2",
+          "phase": 1,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/back-02.png",
+          "sha256": "c677ec7c64127c679924e2322658bc809a8cb8bfa39dc7da0fa769660fc896c5",
+          "phase": 2,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/back-03.png",
+          "sha256": "c810ba787b0b607da3aba2acb82bbf0ece5c47289da4b59eff1933df4ade9072",
+          "phase": 3,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/back-04.png",
+          "sha256": "0ef395684a793ee70f988827aadad35291c401815f23979a3ce052158f9ef1ca",
+          "phase": 4,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/back-05.png",
+          "sha256": "823157ea8be5d5b09b0c0ab0076e6385221de9f5472eda41ad25a66258b69e7c",
+          "phase": 5,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/back-06.png",
+          "sha256": "393139cd2c00e9aab04e5245af38713e1a2e237b3ba92459092470e86b2628c7",
+          "phase": 6,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/back-07.png",
+          "sha256": "8a24e0e5c740e003ca175e4f05c8eef0115654824a8e4af93cff8cc407dbc09a",
+          "phase": 7,
+          "duration_ms": 50
+        }
+      ]
+    },
+    {
+      "sex": "female",
+      "action": "club-hit",
+      "direction": "left",
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "duration_ms": 400,
+      "frames": [
+        {
+          "path": "transition-v3-skin/female-hit/references/left-00.png",
+          "sha256": "18e4de8ff82eaea102a110140e94df67d261ca92a3761c708d927c73ba7ef815",
+          "phase": 0,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/left-01.png",
+          "sha256": "d298297ba060974d5aeda4159ba1485cf590f1c2db233a6ea0c39ebbc6bb1fb7",
+          "phase": 1,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/left-02.png",
+          "sha256": "b3aaece59df332a999e41bc8f083409afeeb6675996476478470d5e390140596",
+          "phase": 2,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/left-03.png",
+          "sha256": "989496b25bf0990c092814f064bd2416f7512323e2efe22d47c5d626ae3d4482",
+          "phase": 3,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/left-04.png",
+          "sha256": "c432c9f41601fd8e44c5b94e1b6538d0ccc2e1496300fdd94921ab6576373f3f",
+          "phase": 4,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/left-05.png",
+          "sha256": "9a9ac5a2c415dc53523f4f6f3250bf7837fd5e802430681b605c15fac3266927",
+          "phase": 5,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/left-06.png",
+          "sha256": "22ff9944ba3340438a4deecaff9c5b064e29bc8c6755a15aaaa617084d85451a",
+          "phase": 6,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-hit/references/left-07.png",
+          "sha256": "e4dbf8618c87187833c9c87d9357b9160f3beaf635f215729b7e68c521ea1a93",
+          "phase": 7,
+          "duration_ms": 50
+        }
+      ]
+    }
+  ],
+  "changes_from_transition_v2": [
+    {
+      "direction": "front",
+      "phase": 0,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "front",
+      "phase": 1,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "front",
+      "phase": 2,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "front",
+      "phase": 3,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 3
+    },
+    {
+      "direction": "front",
+      "phase": 4,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 2
+    },
+    {
+      "direction": "front",
+      "phase": 5,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 2
+    },
+    {
+      "direction": "front",
+      "phase": 6,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 2
+    },
+    {
+      "direction": "front",
+      "phase": 7,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 2
+    },
+    {
+      "direction": "right",
+      "phase": 0,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 3
+    },
+    {
+      "direction": "right",
+      "phase": 1,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 3
+    },
+    {
+      "direction": "right",
+      "phase": 2,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 3
+    },
+    {
+      "direction": "right",
+      "phase": 3,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 3
+    },
+    {
+      "direction": "right",
+      "phase": 4,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 3
+    },
+    {
+      "direction": "right",
+      "phase": 5,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 3
+    },
+    {
+      "direction": "right",
+      "phase": 6,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 5
+    },
+    {
+      "direction": "right",
+      "phase": 7,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 7
+    },
+    {
+      "direction": "back",
+      "phase": 0,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 1,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "back",
+      "phase": 2,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 3,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 4,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 5,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 6,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 7,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "left",
+      "phase": 0,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 2
+    },
+    {
+      "direction": "left",
+      "phase": 1,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "left",
+      "phase": 2,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "left",
+      "phase": 3,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "left",
+      "phase": 4,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 3
+    },
+    {
+      "direction": "left",
+      "phase": 5,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 4
+    },
+    {
+      "direction": "left",
+      "phase": 6,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 3
+    },
+    {
+      "direction": "left",
+      "phase": 7,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 3
+    }
+  ],
+  "visual_review": "Four cardinal directions at native scale and high-resolution torso views; no new visible skin protrusions. Dark underarm deformation shadow distinguished from missing skin using emission diagnostic."
+}

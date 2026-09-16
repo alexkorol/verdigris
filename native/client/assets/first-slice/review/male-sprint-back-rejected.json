@@ -1,0 +1,243 @@
+{
+  "clip": "male-sprint-back",
+  "source_sha256": "3ee886f8c9cd61b963547d373d7f007838b9e3aa4e34394a6e15efa9cc0d3301",
+  "frame_size": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "base_cell": 48,
+  "alpha_policy": "Returned alpha threshold 128; no RGB key",
+  "grid_candidates": [
+    {
+      "size": 34,
+      "source": "autocorr",
+      "offset": [
+        25,
+        10
+      ],
+      "score": 1.2948489757194006,
+      "variance": 899.9458618164062,
+      "gated_out": true
+    },
+    {
+      "size": 19,
+      "source": "autocorr",
+      "offset": [
+        9,
+        7
+      ],
+      "score": 1.2660701665315197,
+      "variance": 579.7341918945312,
+      "gated_out": false
+    },
+    {
+      "size": 23,
+      "source": "autocorr",
+      "offset": [
+        18,
+        13
+      ],
+      "score": 1.2348389546622998,
+      "variance": 720.71533203125,
+      "gated_out": true
+    },
+    {
+      "size": 15,
+      "source": "autocorr",
+      "offset": [
+        1,
+        6
+      ],
+      "score": 1.1896677254213162,
+      "variance": 490.0926513671875,
+      "gated_out": false
+    },
+    {
+      "size": 11,
+      "source": "autocorr",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 1.1287149491395014,
+      "variance": 389.224853515625,
+      "gated_out": false
+    },
+    {
+      "size": 8,
+      "source": "autocorr",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 1.1225493690863353,
+      "variance": 280.2065734863281,
+      "gated_out": false
+    },
+    {
+      "size": 7,
+      "source": "autocorr",
+      "offset": [
+        2,
+        6
+      ],
+      "score": 1.0796965929541251,
+      "variance": 259.0790100097656,
+      "gated_out": false
+    },
+    {
+      "size": 4,
+      "source": "autocorr",
+      "offset": [
+        1,
+        0
+      ],
+      "score": 1.0632060910550045,
+      "variance": 132.60260009765625,
+      "gated_out": false
+    },
+    {
+      "size": 6,
+      "source": "fine",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 1.0420350715721742,
+      "variance": 222.70567321777344,
+      "gated_out": false
+    },
+    {
+      "size": 5,
+      "source": "fine",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 1.0086097039293402,
+      "variance": 190.6082763671875,
+      "gated_out": false
+    },
+    {
+      "size": 3,
+      "source": "fine",
+      "offset": [
+        1,
+        2
+      ],
+      "score": 0.9566711113717781,
+      "variance": 105.2231216430664,
+      "gated_out": false
+    },
+    {
+      "size": 148,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.614766392204241,
+      "variance": 2421.301025390625,
+      "gated_out": true
+    },
+    {
+      "size": 138,
+      "source": "fold",
+      "offset": [
+        89,
+        88
+      ],
+      "score": 0.5948087660448419,
+      "variance": 2428.759765625,
+      "gated_out": true
+    },
+    {
+      "size": 190,
+      "source": "fold",
+      "offset": [
+        155,
+        152
+      ],
+      "score": 0.3882679371888251,
+      "variance": 2803.322265625,
+      "gated_out": true
+    },
+    {
+      "size": 187,
+      "source": "fold",
+      "offset": [
+        44,
+        85
+      ],
+      "score": 0.3705912501732769,
+      "variance": 3021.1826171875,
+      "gated_out": true
+    },
+    {
+      "size": 192,
+      "source": "fold",
+      "offset": [
+        155,
+        146
+      ],
+      "score": 0.36288345593854987,
+      "variance": 2913.265380859375,
+      "gated_out": true
+    },
+    {
+      "size": 191,
+      "source": "fold",
+      "offset": [
+        36,
+        149
+      ],
+      "score": 0.34511903817689576,
+      "variance": 2978.197998046875,
+      "gated_out": true
+    },
+    {
+      "size": 188,
+      "source": "fold",
+      "offset": [
+        33,
+        78
+      ],
+      "score": 0.3164565684747559,
+      "variance": 3142.473876953125,
+      "gated_out": true
+    },
+    {
+      "size": 186,
+      "source": "fold",
+      "offset": [
+        40,
+        149
+      ],
+      "score": 0.3099118625322171,
+      "variance": 3158.428466796875,
+      "gated_out": true
+    }
+  ],
+  "visual_acceptance": false,
+  "frames": [],
+  "selected_grid": {
+    "size": 4,
+    "source": "autocorr",
+    "offset": [
+      1,
+      0
+    ],
+    "score": 1.0632060910550045,
+    "variance": 132.60260009765625,
+    "gated_out": false
+  },
+  "whole_cycle_translation": [
+    0,
+    -2
+  ],
+  "registered_mean_iou": 0.6925981532298345
+}

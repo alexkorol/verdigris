@@ -1,0 +1,160 @@
+{
+  "clip": "pack-wolf-idle-front",
+  "source_sha256": "7b51a563c78de3f91e57f58362b67feb4d9fe9b48f4d6cc0807a33a6ec4fbe0e",
+  "selected_grid": {
+    "size": 4,
+    "source": "fine",
+    "offset": [
+      1,
+      0
+    ],
+    "score": 0.5085679585575896,
+    "variance": 40.527225494384766,
+    "gated_out": false
+  },
+  "frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "whole_cycle_translation": [
+    0,
+    1
+  ],
+  "registered_mean_iou": 0.784517425024352,
+  "alpha_policy": "Native alpha threshold128, noRGBkey",
+  "visual_acceptance": false,
+  "frames": [
+    {
+      "file": "pack-wolf-idle-front-00.png",
+      "reference": {
+        "src": "references/pack-wolf-idle-front-00.png",
+        "sha256": "a44dc9cc984447eb8d3cd76e523e77adef0621b23c9e084f7d8bad6d07e47fb2",
+        "blender_frame": 0
+      },
+      "bbox": [
+        40,
+        54,
+        56,
+        91
+      ],
+      "silhouette_iou": 0.7765486725663717,
+      "sha256": "0c98ca5387b3c8c382480286b93a3d6656a7fcc14e7c1daa500c5265f0aa7a51"
+    },
+    {
+      "file": "pack-wolf-idle-front-01.png",
+      "reference": {
+        "src": "references/pack-wolf-idle-front-01.png",
+        "sha256": "f54b97d1dcd379876871ae1b3d12d1c966a311ab049cbfdff4b1c2e203214878",
+        "blender_frame": 5
+      },
+      "bbox": [
+        40,
+        54,
+        56,
+        91
+      ],
+      "silhouette_iou": 0.7900677200902935,
+      "sha256": "950fcdce424e5cf6288968a6e6785fa318f18ee60e9758c382ca9cd696436d08"
+    },
+    {
+      "file": "pack-wolf-idle-front-02.png",
+      "reference": {
+        "src": "references/pack-wolf-idle-front-02.png",
+        "sha256": "296718497000aaf218e053c7854bbe87bb4bacb23fb141e717f5d677069fb553",
+        "blender_frame": 10
+      },
+      "bbox": [
+        40,
+        54,
+        56,
+        91
+      ],
+      "silhouette_iou": 0.7910112359550562,
+      "sha256": "405ac9d842c527e2d44745622add92930d4bbefc5278aa2ec793c3dca415f6fd"
+    },
+    {
+      "file": "pack-wolf-idle-front-03.png",
+      "reference": {
+        "src": "references/pack-wolf-idle-front-03.png",
+        "sha256": "18ba8d192e98c872c2ccb6f8c4df65a6ca9d5564fe8cd32f12e23eb87ed9604c",
+        "blender_frame": 15
+      },
+      "bbox": [
+        40,
+        54,
+        56,
+        91
+      ],
+      "silhouette_iou": 0.7923250564334086,
+      "sha256": "3bd0adad34adeaff9d56c011062ccf55e0641e1a427ea56c24d137beae3fcd35"
+    },
+    {
+      "file": "pack-wolf-idle-front-04.png",
+      "reference": {
+        "src": "references/pack-wolf-idle-front-04.png",
+        "sha256": "825c38f00cef05a1aa75b1d99005c8ee59cea68fb807964c9f8a70473ee8bca2",
+        "blender_frame": 20
+      },
+      "bbox": [
+        40,
+        54,
+        56,
+        91
+      ],
+      "silhouette_iou": 0.7726269315673289,
+      "sha256": "6dce0b537a75fa816ffb6eaa5fe8aada070eb226a3f964c00d5a5fdd4115a43a"
+    },
+    {
+      "file": "pack-wolf-idle-front-05.png",
+      "reference": {
+        "src": "references/pack-wolf-idle-front-05.png",
+        "sha256": "2174a71ff5416969e12c5d8f09d5048b0c019bf8872d8023e2f6fb17802dc95a",
+        "blender_frame": 25
+      },
+      "bbox": [
+        40,
+        54,
+        56,
+        91
+      ],
+      "silhouette_iou": 0.7777777777777778,
+      "sha256": "cd7257b8f6cc0861682058642e2724c8ee5a3eee4bc9583015a058387730fb03"
+    },
+    {
+      "file": "pack-wolf-idle-front-06.png",
+      "reference": {
+        "src": "references/pack-wolf-idle-front-06.png",
+        "sha256": "cdcd4ad50316e45b6cf3ecb07fefbde447fe76511c0b1f2fac5af15c65f8db1d",
+        "blender_frame": 30
+      },
+      "bbox": [
+        40,
+        54,
+        56,
+        91
+      ],
+      "silhouette_iou": 0.7857142857142857,
+      "sha256": "11bd8df3107ef6b2da4a7e6ca26b411f0bea45953099ebf1866f68963b1a3ed3"
+    },
+    {
+      "file": "pack-wolf-idle-front-07.png",
+      "reference": {
+        "src": "references/pack-wolf-idle-front-07.png",
+        "sha256": "a604ab3394c58862dd4137027c5c877acc8e7144b298f0db2b528d9ad2d5e0c1",
+        "blender_frame": 35
+      },
+      "bbox": [
+        40,
+        54,
+        56,
+        91
+      ],
+      "silhouette_iou": 0.7900677200902935,
+      "sha256": "58748fe2fec030fd675014065399b3de3283d9762a68d4796366767bd6872671"
+    }
+  ]
+}

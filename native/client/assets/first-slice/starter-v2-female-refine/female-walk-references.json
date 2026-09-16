@@ -1,0 +1,166 @@
+{
+  "clips": {
+    "female-walk-front": {
+      "anchor": [
+        48,
+        80
+      ],
+      "frames": [
+        {
+          "src": "references/female-walk-front-00.png",
+          "sha256": "4253e6e806879e80f2b54302ae3cb255afd07a9f96cb18a31d3ee97fb06e22c5"
+        },
+        {
+          "src": "references/female-walk-front-01.png",
+          "sha256": "9809452eedefe79a90d13b293e115203d6d9b1fef9502517627cdcc1598630fa"
+        },
+        {
+          "src": "references/female-walk-front-02.png",
+          "sha256": "190c5fb4eab45f2b73c92017c66abade929abf2c256b066c80e23bd33490571c"
+        },
+        {
+          "src": "references/female-walk-front-03.png",
+          "sha256": "7e50d38cb698d1fd558ba3a3c6add4c243371b856dc1fb849c0997570bbae224"
+        },
+        {
+          "src": "references/female-walk-front-04.png",
+          "sha256": "744eba450c542055a8a5f4bedad56a6a8804db6dc071e9013742d6c46cb99b56"
+        },
+        {
+          "src": "references/female-walk-front-05.png",
+          "sha256": "79cf25b2e8584dbe76eaf9eeae6e9dcd265997a0536d23dfd474dff7f27a7fa0"
+        },
+        {
+          "src": "references/female-walk-front-06.png",
+          "sha256": "a8bd4bca16ec8320cb80c8a3408c29aaa42369c28f50d206ebd45f181633eb98"
+        },
+        {
+          "src": "references/female-walk-front-07.png",
+          "sha256": "4ab3b15bea54baf32704c94b298a5cd4d3a44276ea76d96d314c133d9451f8cb"
+        }
+      ]
+    },
+    "female-walk-right": {
+      "anchor": [
+        48,
+        80
+      ],
+      "frames": [
+        {
+          "src": "references/female-walk-right-00.png",
+          "sha256": "3b525608f406bb313fdf466027ae14e943b75058b95b2070ab9665b01f3ce850"
+        },
+        {
+          "src": "references/female-walk-right-01.png",
+          "sha256": "e7966cd31f673d1d91581f9881dc233a759e9078f47cc842fd0f225f10598945"
+        },
+        {
+          "src": "references/female-walk-right-02.png",
+          "sha256": "934f9883f693c1d9d34b683352448b8ada6d3bc4c8fce1c1fa7ef1f810363d49"
+        },
+        {
+          "src": "references/female-walk-right-03.png",
+          "sha256": "fdfc2e69434d38a0655779c10d9222558554c683ef94c64cf63345310e93ddc8"
+        },
+        {
+          "src": "references/female-walk-right-04.png",
+          "sha256": "cab4dde025aee22fb6114736293c0bf4d1d03d0e465211407dba2c2634256abf"
+        },
+        {
+          "src": "references/female-walk-right-05.png",
+          "sha256": "d2c30aff3cf3403eccc391b9b90704b100d238c85bbf6cc185d2a482078d6e33"
+        },
+        {
+          "src": "references/female-walk-right-06.png",
+          "sha256": "88a434c8a4d3b2368c104e2815722bc67b499ccd7532502cba69d582cd0b3d35"
+        },
+        {
+          "src": "references/female-walk-right-07.png",
+          "sha256": "ff1da6846d97243342a97fc71b5523c8dee03a3f71bbcee0ff297594bcd19c2f"
+        }
+      ]
+    },
+    "female-walk-back": {
+      "anchor": [
+        48,
+        80
+      ],
+      "frames": [
+        {
+          "src": "references/female-walk-back-00.png",
+          "sha256": "ae1a6b165ef1e43f01d2732775efb58fa5d0587b155362387d148888b16d4c0f"
+        },
+        {
+          "src": "references/female-walk-back-01.png",
+          "sha256": "df57b2e7e7128e6936f67023c54511e5e9d3592c5542734bc834cc1c0b48301e"
+        },
+        {
+          "src": "references/female-walk-back-02.png",
+          "sha256": "546141619d58bac5ba45ef0dbe897e84e5b8eda9dd4f6f0022092b95395ed2c6"
+        },
+        {
+          "src": "references/female-walk-back-03.png",
+          "sha256": "7331f9d384b81da64591b2e224ae736201d017483f487a74b34c914c4cd899cb"
+        },
+        {
+          "src": "references/female-walk-back-04.png",
+          "sha256": "30aadc875a0f356879cda3cc874b408e00a7a9253541a7de12bfbe3e4ddcf993"
+        },
+        {
+          "src": "references/female-walk-back-05.png",
+          "sha256": "56bbd229fcadd87ceaa8e9d513a15758d3bfe5345360ab00da48fb499e79f61c"
+        },
+        {
+          "src": "references/female-walk-back-06.png",
+          "sha256": "c8e4e18b75767092c189460223ac6633e375a61977553c9c4dfd68c8d1e46c8c"
+        },
+        {
+          "src": "references/female-walk-back-07.png",
+          "sha256": "6c7c72d4fd8a4a5fdff9482e7cc7ce6547478a60fdc1bb639c8d35e3fe3e3510"
+        }
+      ]
+    },
+    "female-walk-left": {
+      "anchor": [
+        48,
+        80
+      ],
+      "frames": [
+        {
+          "src": "references/female-walk-left-00.png",
+          "sha256": "64a446e1c43091e7b8123d205012b7b176340fc5d4c24cd456f7a68c981ce4d0"
+        },
+        {
+          "src": "references/female-walk-left-01.png",
+          "sha256": "48f04dbad0adc4ca1ec32ae2ededeb01f720e0b7a6657327599debe36a636533"
+        },
+        {
+          "src": "references/female-walk-left-02.png",
+          "sha256": "80e6427ba33e938c7214d173a2fe6e8e97b35962e96129bdb2da763453f61f5d"
+        },
+        {
+          "src": "references/female-walk-left-03.png",
+          "sha256": "7a896fe6b1e70a3be61af6ab44c74f94ddb12e225fe82f2fa33e686e9cd63cc7"
+        },
+        {
+          "src": "references/female-walk-left-04.png",
+          "sha256": "3ecbbe200be6ad05189a80b6194c4214b10a96b45d3998b7628b4b7b70bf8fcb"
+        },
+        {
+          "src": "references/female-walk-left-05.png",
+          "sha256": "53386d0cf001da41f5444f6b0d4c8c4e07dbfb44b6a34f3cb182eb3e3719a4d0"
+        },
+        {
+          "src": "references/female-walk-left-06.png",
+          "sha256": "67aaea1d9d68f1ddb1d7217cc67c3ad483916eace0264b7369122a6126e83471"
+        },
+        {
+          "src": "references/female-walk-left-07.png",
+          "sha256": "e15372a0fe89e0fcfb80a33ce9de9e9fdd3255f0279eea04b7bddd36dd4bc57a"
+        }
+      ]
+    }
+  },
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\reviewed\\blender\\female-walk-center-braid.blend",
+  "source_sha256": "deef3a7f586543605b6c7cde809b35d2c38901412c110a1a816ea01d0cd67bb1"
+}

@@ -1,0 +1,313 @@
+{
+  "status": "candidate-needs-review",
+  "sex": "male",
+  "source_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+  "views": [
+    {
+      "direction": "front",
+      "geometry_file": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2\\blender\\male-walk-exterior.blend",
+      "geometry_sha256": "a0c181a36a4ed0aa41007328c0b214cb7d45813268141616bdd2d0d41b6749b3",
+      "frame": 72
+    },
+    {
+      "direction": "right",
+      "geometry_file": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\blender\\male-idle.blend",
+      "geometry_sha256": "2d4792bee554f50838d1cabef667caf18ab01a8c042ccf3a3e52f9c333e68e55",
+      "frame": 1
+    },
+    {
+      "direction": "back",
+      "geometry_file": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2\\blender\\male-walk-exterior.blend",
+      "geometry_sha256": "a0c181a36a4ed0aa41007328c0b214cb7d45813268141616bdd2d0d41b6749b3",
+      "frame": 72
+    },
+    {
+      "direction": "left",
+      "geometry_file": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\blender\\male-idle.blend",
+      "geometry_sha256": "2d4792bee554f50838d1cabef667caf18ab01a8c042ccf3a3e52f9c333e68e55",
+      "frame": 1
+    }
+  ],
+  "method": "Exact source-pose multi-view texture projection. Front/back accepted walk72 paint; sides registered idle1 paint. Original geometry, depth visibility, normal weights and UV transfer by unchanged vertex index.",
+  "camera_matrices": [
+    [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.5735760927200317,
+        -0.8191521763801575,
+        -10.035422325134277
+      ],
+      [
+        0.0,
+        0.8191521763801575,
+        0.5735760927200317,
+        7.896876811981201
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    [
+      [
+        -4.371138828673793e-08,
+        0.573576033115387,
+        -0.8191522359848022,
+        -10.035422325134277
+      ],
+      [
+        -1.0,
+        5.5519571162676584e-09,
+        5.724925600247843e-08,
+        4.3866225496458355e-07
+      ],
+      [
+        3.738470510938896e-08,
+        0.8191522359848022,
+        0.573576033115387,
+        7.896876811981201
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    [
+      [
+        -1.0,
+        -8.660758510359301e-08,
+        1.236885367461582e-07,
+        8.773245099291671e-07
+      ],
+      [
+        1.5099580252808664e-07,
+        -0.5735760927200317,
+        0.8191521763801575,
+        10.035422325134277
+      ],
+      [
+        -1.0415998033704021e-15,
+        0.8191521763801575,
+        0.5735760927200317,
+        7.896876811981201
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    [
+      [
+        -4.371138828673793e-08,
+        -0.573576033115387,
+        0.8191522359848022,
+        10.035422325134277
+      ],
+      [
+        1.0,
+        -5.569557259832436e-08,
+        1.436331054094353e-08,
+        -7.576533107567229e-07
+      ],
+      [
+        3.738470510938896e-08,
+        0.8191522359848022,
+        0.573576033115387,
+        7.896876811981201
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ]
+  ],
+  "objects": {
+    "player-male_hair_scalp": {
+      "vertices": 537,
+      "uncovered_vertices": 110
+    },
+    "player-male_jaw_beard": {
+      "vertices": 422,
+      "uncovered_vertices": 202
+    },
+    "male_walk_baked_cloth_samples": {
+      "vertices": 2578,
+      "uncovered_vertices": 151
+    },
+    "player-male_waist_cord_cloth_bound": {
+      "vertices": 976,
+      "uncovered_vertices": 783
+    },
+    "player-male_belt_ends_cloth_bound": {
+      "vertices": 168,
+      "uncovered_vertices": 76
+    },
+    "male_ropebelt_turn_0": {
+      "vertices": 976,
+      "uncovered_vertices": 783
+    },
+    "male_ropebelt_turn_1": {
+      "vertices": 976,
+      "uncovered_vertices": 681
+    },
+    "male_sandal_sole_-1": {
+      "vertices": 48,
+      "uncovered_vertices": 23
+    },
+    "male_sandal_strap_-1_0": {
+      "vertices": 22,
+      "uncovered_vertices": 22
+    },
+    "male_sandal_strap_-1_1": {
+      "vertices": 22,
+      "uncovered_vertices": 21
+    },
+    "male_sandal_sole_1": {
+      "vertices": 48,
+      "uncovered_vertices": 22
+    },
+    "male_sandal_strap_1_0": {
+      "vertices": 22,
+      "uncovered_vertices": 22
+    },
+    "male_sandal_strap_1_1": {
+      "vertices": 22,
+      "uncovered_vertices": 20
+    },
+    "MH_male_Body": {
+      "vertices": 19158,
+      "uncovered_vertices": 8425
+    }
+  },
+  "equipment": "branch-club",
+  "target_sha256": "944b097475ab110375a3c5c26ddf47dd746953c9c505c6da65b429df2117e095",
+  "gait": "club-hit",
+  "source_frames": [
+    1,
+    5,
+    9,
+    13,
+    17,
+    21,
+    25,
+    29
+  ],
+  "paint_sampled_fallback_linear_rgb": {
+    "player-male_hair_scalp": [
+      0.14412850141525269,
+      0.06124607101082802,
+      0.029556842520833015
+    ],
+    "player-male_jaw_beard": [
+      0.29613831639289856,
+      0.14702729880809784,
+      0.07036010921001434
+    ],
+    "male_walk_baked_cloth_samples": [
+      0.29177069664001465,
+      0.20507876574993134,
+      0.13286836445331573
+    ],
+    "player-male_waist_cord_cloth_bound": [
+      0.16826945543289185,
+      0.07036010921001434,
+      0.027320891618728638
+    ],
+    "player-male_belt_ends_cloth_bound": [
+      0.12743772566318512,
+      0.06662595272064209,
+      0.027320891618728638
+    ],
+    "male_ropebelt_turn_0": [
+      0.15896086394786835,
+      0.07227186113595963,
+      0.026241222396492958
+    ],
+    "male_ropebelt_turn_1": [
+      0.13013651967048645,
+      0.06847818195819855,
+      0.029556842520833015
+    ],
+    "male_sandal_sole_-1": [
+      0.1946178674697876,
+      0.08437621593475342,
+      0.03954624757170677
+    ],
+    "male_sandal_sole_1": [
+      0.15292617678642273,
+      0.05951124057173729,
+      0.03071345016360283
+    ],
+    "MH_male_Body": [
+      0.28314879536628723,
+      0.14412850141525269,
+      0.07227186113595963
+    ]
+  },
+  "weapon_appearance": {
+    "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+    "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+    "crop": [
+      120,
+      287,
+      194,
+      315
+    ],
+    "region": "Isolated wooden branch in first attack pose, excluding hand",
+    "foreground_samples": 1615,
+    "fallback_linear_rgb": [
+      0.08021982031446832,
+      0.03560131487502034,
+      0.012286488356915872
+    ],
+    "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+    "patch": "painted-branch-patch.png",
+    "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+  },
+  "braid_materials": {},
+  "geometry_before": "1dd813dd59377601d01dc7f7f4f2b7430455992645ff82c74724f011342a1111",
+  "geometry_after": "1dd813dd59377601d01dc7f7f4f2b7430455992645ff82c74724f011342a1111",
+  "camera": {
+    "type": "PERSP",
+    "lens": 204.0,
+    "shift_x": 0.0,
+    "shift_y": -0.022999698296189308,
+    "sensor_width": 36.0,
+    "frame": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      80
+    ],
+    "pixels_per_metre": 48
+  },
+  "copied_from_cohort": "male-v6",
+  "cohort": "male-v7",
+  "source_report_sha256": "eec36e46ac2e11136d8d0c788d84890300e20d08fa68cc3a7a1c115e541d2f05",
+  "render_complete": true,
+  "source_cohort": "male-v6",
+  "raster_pass": {
+    "operation": "Only reconstruction filter changed; unchanged geometry/materials/animation/camera.",
+    "filter_type": "BOX",
+    "filter_width": 1.0,
+    "source_packed_scene_sha256": "3365ca0bd0a3b8be05129354ae8a33e00c77024ef0f977ec681c4cf6d29286b7",
+    "source_report_sha256": "dee4dccfda0f15710bbe63b040bf609153097a726427274b8b896818061480bc",
+    "script_sha256": "778ec03e4b765e1842db042f95ca2e34c6d73b8956f61f1b586f6dafaf478599"
+  }
+}

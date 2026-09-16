@@ -1,0 +1,290 @@
+[
+  {
+    "frame": "male-club-walk-front-00.png",
+    "bbox": [
+      29,
+      8,
+      63,
+      83
+    ]
+  },
+  {
+    "frame": "male-club-walk-front-01.png",
+    "bbox": [
+      28,
+      9,
+      64,
+      90
+    ]
+  },
+  {
+    "frame": "male-club-walk-front-02.png",
+    "bbox": [
+      26,
+      9,
+      64,
+      92
+    ]
+  },
+  {
+    "frame": "male-club-walk-front-03.png",
+    "bbox": [
+      26,
+      7,
+      64,
+      87
+    ]
+  },
+  {
+    "frame": "male-club-walk-front-04.png",
+    "bbox": [
+      28,
+      7,
+      63,
+      82
+    ]
+  },
+  {
+    "frame": "male-club-walk-front-05.png",
+    "bbox": [
+      31,
+      8,
+      64,
+      90
+    ]
+  },
+  {
+    "frame": "male-club-walk-front-06.png",
+    "bbox": [
+      32,
+      8,
+      63,
+      92
+    ]
+  },
+  {
+    "frame": "male-club-walk-front-07.png",
+    "bbox": [
+      30,
+      7,
+      63,
+      87
+    ]
+  },
+  {
+    "frame": "male-club-walk-right-00.png",
+    "bbox": [
+      39,
+      7,
+      72,
+      83
+    ]
+  },
+  {
+    "frame": "male-club-walk-right-01.png",
+    "bbox": [
+      32,
+      7,
+      72,
+      84
+    ]
+  },
+  {
+    "frame": "male-club-walk-right-02.png",
+    "bbox": [
+      22,
+      8,
+      73,
+      84
+    ]
+  },
+  {
+    "frame": "male-club-walk-right-03.png",
+    "bbox": [
+      24,
+      7,
+      66,
+      83
+    ]
+  },
+  {
+    "frame": "male-club-walk-right-04.png",
+    "bbox": [
+      38,
+      6,
+      74,
+      82
+    ]
+  },
+  {
+    "frame": "male-club-walk-right-05.png",
+    "bbox": [
+      30,
+      7,
+      82,
+      82
+    ]
+  },
+  {
+    "frame": "male-club-walk-right-06.png",
+    "bbox": [
+      21,
+      7,
+      83,
+      83
+    ]
+  },
+  {
+    "frame": "male-club-walk-right-07.png",
+    "bbox": [
+      25,
+      6,
+      80,
+      81
+    ]
+  },
+  {
+    "frame": "male-club-walk-back-00.png",
+    "bbox": [
+      32,
+      6,
+      66,
+      86
+    ]
+  },
+  {
+    "frame": "male-club-walk-back-01.png",
+    "bbox": [
+      32,
+      7,
+      67,
+      91
+    ]
+  },
+  {
+    "frame": "male-club-walk-back-02.png",
+    "bbox": [
+      32,
+      7,
+      69,
+      95
+    ]
+  },
+  {
+    "frame": "male-club-walk-back-03.png",
+    "bbox": [
+      33,
+      6,
+      69,
+      88
+    ]
+  },
+  {
+    "frame": "male-club-walk-back-04.png",
+    "bbox": [
+      32,
+      5,
+      67,
+      87
+    ]
+  },
+  {
+    "frame": "male-club-walk-back-05.png",
+    "bbox": [
+      32,
+      6,
+      63,
+      91
+    ]
+  },
+  {
+    "frame": "male-club-walk-back-06.png",
+    "bbox": [
+      33,
+      7,
+      63,
+      93
+    ]
+  },
+  {
+    "frame": "male-club-walk-back-07.png",
+    "bbox": [
+      32,
+      5,
+      65,
+      88
+    ]
+  },
+  {
+    "frame": "male-club-walk-left-00.png",
+    "bbox": [
+      24,
+      7,
+      57,
+      84
+    ]
+  },
+  {
+    "frame": "male-club-walk-left-01.png",
+    "bbox": [
+      24,
+      9,
+      64,
+      84
+    ]
+  },
+  {
+    "frame": "male-club-walk-left-02.png",
+    "bbox": [
+      23,
+      9,
+      74,
+      84
+    ]
+  },
+  {
+    "frame": "male-club-walk-left-03.png",
+    "bbox": [
+      29,
+      8,
+      72,
+      83
+    ]
+  },
+  {
+    "frame": "male-club-walk-left-04.png",
+    "bbox": [
+      23,
+      7,
+      58,
+      83
+    ]
+  },
+  {
+    "frame": "male-club-walk-left-05.png",
+    "bbox": [
+      15,
+      7,
+      66,
+      83
+    ]
+  },
+  {
+    "frame": "male-club-walk-left-06.png",
+    "bbox": [
+      14,
+      9,
+      75,
+      84
+    ]
+  },
+  {
+    "frame": "male-club-walk-left-07.png",
+    "bbox": [
+      17,
+      7,
+      71,
+      83
+    ]
+  }
+]

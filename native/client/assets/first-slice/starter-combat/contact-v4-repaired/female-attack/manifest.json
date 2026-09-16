@@ -1,0 +1,603 @@
+{
+  "status": "source-correction-verified; final appearance and in-game acceptance owned by projection/integration",
+  "gameplay_timing": "No gameplay changes. Native melee effect300ms, sweep400ms; contact normalized.5. Preview20fps is only a review aid.",
+  "source_motion": "Sword_Attack",
+  "clips": [
+    {
+      "sex": "female",
+      "action": "club-attack",
+      "equipment": "branch-club",
+      "direction": "front",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "playback_control": "normalized effect phase; frame=floor(phase*16), clamped0..15",
+      "contact_index": 8,
+      "normalized_contact_phase": 0.5,
+      "preview_fps_only": 20,
+      "frames": [
+        {
+          "path": "contact-v4-repaired/female-attack/references/front-00.png",
+          "sha256": "2d22a1a25572fa01f3f860c3159d827facce40d682ee026af4458a301528ca33",
+          "index": 0,
+          "normalized_effect_phase": 0.0,
+          "role": "preparation",
+          "source_pose": "idle"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/front-01.png",
+          "sha256": "f0a0bd245916994f639a912b3d5305b756450e53a0cdeaeeaeb66bc785f96345",
+          "index": 1,
+          "normalized_effect_phase": 0.0625,
+          "role": "preparation",
+          "source_pose": "entry-1"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/front-02.png",
+          "sha256": "7ffe382607e44c85b7d1df65d17ab64124b42cf43fb7136aaf3a6930ab1ce35d",
+          "index": 2,
+          "normalized_effect_phase": 0.125,
+          "role": "preparation",
+          "source_pose": "entry-2"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/front-03.png",
+          "sha256": "fe459f0a89e60d2760eff0fdcb5a42f301798a8c7d2956f3942ef34277cfa431",
+          "index": 3,
+          "normalized_effect_phase": 0.1875,
+          "role": "preparation",
+          "source_pose": "entry-3"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/front-04.png",
+          "sha256": "a15482665c09514e71602700c6eb0c93359532042f63a20c23667904dd8d2fb6",
+          "index": 4,
+          "normalized_effect_phase": 0.25,
+          "role": "preparation",
+          "source_pose": "attack-0"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/front-05.png",
+          "sha256": "7cd38b65426791e24e4c30fd17fe4b34075e382046c12d8aaae335e7ace15395",
+          "index": 5,
+          "normalized_effect_phase": 0.3125,
+          "role": "preparation",
+          "source_pose": "attack-1"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/front-06.png",
+          "sha256": "bb1fbb2bdb2321609c1464d3057cf71326c7d2eeb0e046383525abbcf215e721",
+          "index": 6,
+          "normalized_effect_phase": 0.375,
+          "role": "preparation",
+          "source_pose": "attack-2"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/front-07.png",
+          "sha256": "9fdf8dd5e39133143bf005c6617c4c1800170b980455d54b13c27bd047c4ad39",
+          "index": 7,
+          "normalized_effect_phase": 0.4375,
+          "role": "preparation",
+          "source_pose": "attack-4"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/front-08.png",
+          "sha256": "d16bfc2f9e4feeaacefd6171452a31f60acc40e50f66203ad964dc32b6510d01",
+          "index": 8,
+          "normalized_effect_phase": 0.5,
+          "role": "contact",
+          "source_pose": "attack-5"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/front-09.png",
+          "sha256": "9bd35e217d188cb66a12519f39c62288edafcc6eb04ebe92dcdd8cc97229fa30",
+          "index": 9,
+          "normalized_effect_phase": 0.5625,
+          "role": "recovery",
+          "source_pose": "attack-6"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/front-10.png",
+          "sha256": "f99714ccf20904255b93d8057f9c276fe4158a52b9e6412ebf50df739042004e",
+          "index": 10,
+          "normalized_effect_phase": 0.625,
+          "role": "recovery",
+          "source_pose": "attack-7"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/front-11.png",
+          "sha256": "b3a674f3bb34c109f42d3c7523a9f58dc9f671497418b83ca06c034296bc2ef5",
+          "index": 11,
+          "normalized_effect_phase": 0.6875,
+          "role": "recovery",
+          "source_pose": "recovery-1"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/front-12.png",
+          "sha256": "662eebadafb7182558627360b37229541c456db9036d89b5767a21c3fbf26868",
+          "index": 12,
+          "normalized_effect_phase": 0.75,
+          "role": "recovery",
+          "source_pose": "recovery-2"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/front-13.png",
+          "sha256": "9dc7a79eb30c871b4f61e3c2bd762bf33b885e71d8de65d31983619a5d697c0e",
+          "index": 13,
+          "normalized_effect_phase": 0.8125,
+          "role": "recovery",
+          "source_pose": "recovery-3"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/front-14.png",
+          "sha256": "98cb60396e7505826c9927d1b6cdfeef674d6874307b0b679a8415ec7e07fd1e",
+          "index": 14,
+          "normalized_effect_phase": 0.875,
+          "role": "recovery",
+          "source_pose": "recovery-4"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/front-15.png",
+          "sha256": "f35fa83c7f668d9d752f1ecda1bab36e76379ab284e6814eaad62e482ffb3a99",
+          "index": 15,
+          "normalized_effect_phase": 0.9375,
+          "role": "recovery",
+          "source_pose": "idle-end"
+        }
+      ]
+    },
+    {
+      "sex": "female",
+      "action": "club-attack",
+      "equipment": "branch-club",
+      "direction": "right",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "playback_control": "normalized effect phase; frame=floor(phase*16), clamped0..15",
+      "contact_index": 8,
+      "normalized_contact_phase": 0.5,
+      "preview_fps_only": 20,
+      "frames": [
+        {
+          "path": "contact-v4-repaired/female-attack/references/right-00.png",
+          "sha256": "724845df55c7e74154750bcbb4c7564fe2c084ffdc3d720a7be081fc46dfa965",
+          "index": 0,
+          "normalized_effect_phase": 0.0,
+          "role": "preparation",
+          "source_pose": "idle"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/right-01.png",
+          "sha256": "47c5cd21048eb443a971da852d8a4af7768cc5a68171b9baf87516ce48b04583",
+          "index": 1,
+          "normalized_effect_phase": 0.0625,
+          "role": "preparation",
+          "source_pose": "entry-1"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/right-02.png",
+          "sha256": "f59c6a0a4a2379b920688f013240c3e5227ffbf5afc6df337a47228aecc23077",
+          "index": 2,
+          "normalized_effect_phase": 0.125,
+          "role": "preparation",
+          "source_pose": "entry-2"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/right-03.png",
+          "sha256": "d6962cbfdd791b7379a77a8c10ebab3b704b567edf68df4701d5a277111b6a78",
+          "index": 3,
+          "normalized_effect_phase": 0.1875,
+          "role": "preparation",
+          "source_pose": "entry-3"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/right-04.png",
+          "sha256": "af64f6a59cd5feeb7070571a6bbe2ef6a1eabe279edc20cc57bde16dae3d3f9d",
+          "index": 4,
+          "normalized_effect_phase": 0.25,
+          "role": "preparation",
+          "source_pose": "attack-0"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/right-05.png",
+          "sha256": "86b5c0ded732914cadeb19fc009bf5b07d4d0b5abdc2fc07ecf3b0bd03da1916",
+          "index": 5,
+          "normalized_effect_phase": 0.3125,
+          "role": "preparation",
+          "source_pose": "attack-1"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/right-06.png",
+          "sha256": "a7ea04eebb0fc7e6d072828dba28704e25b28ab738534d81454ed83b88f945ae",
+          "index": 6,
+          "normalized_effect_phase": 0.375,
+          "role": "preparation",
+          "source_pose": "attack-2"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/right-07.png",
+          "sha256": "c39e0388247688354d380cccef96b84b2029211a5232b4fa34d5b3da20e3eec8",
+          "index": 7,
+          "normalized_effect_phase": 0.4375,
+          "role": "preparation",
+          "source_pose": "attack-4"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/right-08.png",
+          "sha256": "5f3dc419aed2621b35ee6b584726dbf53765246761c8d83abf3342cbc73d28f6",
+          "index": 8,
+          "normalized_effect_phase": 0.5,
+          "role": "contact",
+          "source_pose": "attack-5"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/right-09.png",
+          "sha256": "877d3dde6d4f3ff83e4fc5b0a2a04f6135dd5afe5f3b9286b08bc27a61144937",
+          "index": 9,
+          "normalized_effect_phase": 0.5625,
+          "role": "recovery",
+          "source_pose": "attack-6"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/right-10.png",
+          "sha256": "24c593258b8b97d20c28f0e2473275f36bf35ec4883c52636e1c0f8e558bf9c2",
+          "index": 10,
+          "normalized_effect_phase": 0.625,
+          "role": "recovery",
+          "source_pose": "attack-7"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/right-11.png",
+          "sha256": "bf06147e8da7e6e2500313a279fa3d331317dc19e3dda84705ad56c4a8c06d18",
+          "index": 11,
+          "normalized_effect_phase": 0.6875,
+          "role": "recovery",
+          "source_pose": "recovery-1"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/right-12.png",
+          "sha256": "48212b0cf524c392455a08133708caa2127e289d8b57cf9d168f5e1dfa9395f8",
+          "index": 12,
+          "normalized_effect_phase": 0.75,
+          "role": "recovery",
+          "source_pose": "recovery-2"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/right-13.png",
+          "sha256": "5ea374d5ed9627167c1b357ddb35a62a73a7063fb1bf9f628dcce5ed0027c38f",
+          "index": 13,
+          "normalized_effect_phase": 0.8125,
+          "role": "recovery",
+          "source_pose": "recovery-3"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/right-14.png",
+          "sha256": "818c599526cb0674977b561a28a4bce66cad9def0892ec8933d2501b15369a74",
+          "index": 14,
+          "normalized_effect_phase": 0.875,
+          "role": "recovery",
+          "source_pose": "recovery-4"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/right-15.png",
+          "sha256": "137dee80e7976bb3e3aaf1075ae73c6e8e3b6eadeb6add431df2f1de4c8b78e9",
+          "index": 15,
+          "normalized_effect_phase": 0.9375,
+          "role": "recovery",
+          "source_pose": "idle-end"
+        }
+      ]
+    },
+    {
+      "sex": "female",
+      "action": "club-attack",
+      "equipment": "branch-club",
+      "direction": "back",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "playback_control": "normalized effect phase; frame=floor(phase*16), clamped0..15",
+      "contact_index": 8,
+      "normalized_contact_phase": 0.5,
+      "preview_fps_only": 20,
+      "frames": [
+        {
+          "path": "contact-v4-repaired/female-attack/references/back-00.png",
+          "sha256": "c2c5489b672b1fd32ea76a4d4d8dbc43c2ae877bb60f26b5915d444cbad51fd1",
+          "index": 0,
+          "normalized_effect_phase": 0.0,
+          "role": "preparation",
+          "source_pose": "idle"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/back-01.png",
+          "sha256": "bd410f28651104136e11798edec2b1fcb0645e6afb5366409bac63f45e5181a4",
+          "index": 1,
+          "normalized_effect_phase": 0.0625,
+          "role": "preparation",
+          "source_pose": "entry-1"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/back-02.png",
+          "sha256": "0eb747ce213b7e38da65d9249410927696a0a2b6d158272f281bd03597fc0af7",
+          "index": 2,
+          "normalized_effect_phase": 0.125,
+          "role": "preparation",
+          "source_pose": "entry-2"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/back-03.png",
+          "sha256": "cc1a979e46c2bc520cfae3739de6274233bf1117b42614875af2b6b0efd68be0",
+          "index": 3,
+          "normalized_effect_phase": 0.1875,
+          "role": "preparation",
+          "source_pose": "entry-3"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/back-04.png",
+          "sha256": "9e5490464850e91ecdb29482bf76cfbc7f864e42d5a69f7e672ed7ee971931d9",
+          "index": 4,
+          "normalized_effect_phase": 0.25,
+          "role": "preparation",
+          "source_pose": "attack-0"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/back-05.png",
+          "sha256": "9559f2fe5031fe7930bdbb04437633103e18d21c98cffe9bcb4ab26e0bed9339",
+          "index": 5,
+          "normalized_effect_phase": 0.3125,
+          "role": "preparation",
+          "source_pose": "attack-1"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/back-06.png",
+          "sha256": "ed76b79ea39de349c18ec624a1aec53f8018e1f05c463eb6a8cbd50b0ceb2abd",
+          "index": 6,
+          "normalized_effect_phase": 0.375,
+          "role": "preparation",
+          "source_pose": "attack-2"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/back-07.png",
+          "sha256": "c341566a7ba579c12e9871478481f8bdaa094190ad8bc8e8edbd40d9472f99c7",
+          "index": 7,
+          "normalized_effect_phase": 0.4375,
+          "role": "preparation",
+          "source_pose": "attack-4"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/back-08.png",
+          "sha256": "7429f3b029e7461802b6ec82983c30bf24d6a50409f07a89de304a521bf6ba2c",
+          "index": 8,
+          "normalized_effect_phase": 0.5,
+          "role": "contact",
+          "source_pose": "attack-5"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/back-09.png",
+          "sha256": "03b4e0838cc041f81e38cc91c2f461be2e526b714469d5443a63b406c8d8e5b9",
+          "index": 9,
+          "normalized_effect_phase": 0.5625,
+          "role": "recovery",
+          "source_pose": "attack-6"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/back-10.png",
+          "sha256": "53293157ba9ca10b4507f736d87d0d343e267800693ac42944fa656bc6557ec3",
+          "index": 10,
+          "normalized_effect_phase": 0.625,
+          "role": "recovery",
+          "source_pose": "attack-7"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/back-11.png",
+          "sha256": "cf7fa8ddd2d58ae0aac138fac25189b6407677259bd6c387ccf1ed32f9afeb08",
+          "index": 11,
+          "normalized_effect_phase": 0.6875,
+          "role": "recovery",
+          "source_pose": "recovery-1"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/back-12.png",
+          "sha256": "d4979e0cf7c359059156370b9c08671d0d832d57411cc24aeeca0d07da2b5906",
+          "index": 12,
+          "normalized_effect_phase": 0.75,
+          "role": "recovery",
+          "source_pose": "recovery-2"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/back-13.png",
+          "sha256": "2f9947a4b237141e7cc555810bda1981733993077c2b8baa9a19f679ba0f3a67",
+          "index": 13,
+          "normalized_effect_phase": 0.8125,
+          "role": "recovery",
+          "source_pose": "recovery-3"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/back-14.png",
+          "sha256": "4bd9f254c3225ff7874b5ba30064f7286648987b32a0ffdb0f6cc9bb30171b25",
+          "index": 14,
+          "normalized_effect_phase": 0.875,
+          "role": "recovery",
+          "source_pose": "recovery-4"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/back-15.png",
+          "sha256": "d7c1699dd09544fd936667014f32ec8e41aeb8e7c0214bef2ba09e317f95c556",
+          "index": 15,
+          "normalized_effect_phase": 0.9375,
+          "role": "recovery",
+          "source_pose": "idle-end"
+        }
+      ]
+    },
+    {
+      "sex": "female",
+      "action": "club-attack",
+      "equipment": "branch-club",
+      "direction": "left",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "playback_control": "normalized effect phase; frame=floor(phase*16), clamped0..15",
+      "contact_index": 8,
+      "normalized_contact_phase": 0.5,
+      "preview_fps_only": 20,
+      "frames": [
+        {
+          "path": "contact-v4-repaired/female-attack/references/left-00.png",
+          "sha256": "cb1c35adf8dbd263612923c3bbdc9c83147ffd99204ca2cb81f1f6fa2cb29a16",
+          "index": 0,
+          "normalized_effect_phase": 0.0,
+          "role": "preparation",
+          "source_pose": "idle"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/left-01.png",
+          "sha256": "35a65b918af2cc0bef3f303c4b1bbbeb78a05ef460d9bb3623c3672fb64c70a7",
+          "index": 1,
+          "normalized_effect_phase": 0.0625,
+          "role": "preparation",
+          "source_pose": "entry-1"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/left-02.png",
+          "sha256": "10c592c14d69074bc42419ccd8c44b4d909ab4f0da63845964cb2294e0edc2dc",
+          "index": 2,
+          "normalized_effect_phase": 0.125,
+          "role": "preparation",
+          "source_pose": "entry-2"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/left-03.png",
+          "sha256": "8e02ba1b01b18e0ecf2cd104f5d4643be009e699223a74fa9f819f160347ad19",
+          "index": 3,
+          "normalized_effect_phase": 0.1875,
+          "role": "preparation",
+          "source_pose": "entry-3"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/left-04.png",
+          "sha256": "aa593c8d9f51e9947667f53865ac7e4eb1d4224552b064a1e302b5fa767dd1c2",
+          "index": 4,
+          "normalized_effect_phase": 0.25,
+          "role": "preparation",
+          "source_pose": "attack-0"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/left-05.png",
+          "sha256": "3e13eba324ef7d164a1d0b9fc708cc0839a48c1114ae258725aef821382624ae",
+          "index": 5,
+          "normalized_effect_phase": 0.3125,
+          "role": "preparation",
+          "source_pose": "attack-1"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/left-06.png",
+          "sha256": "24d5c004dded4f5f9624a5acc66217bf31c13a8a6f7744b1cd28982ede0954b5",
+          "index": 6,
+          "normalized_effect_phase": 0.375,
+          "role": "preparation",
+          "source_pose": "attack-2"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/left-07.png",
+          "sha256": "207254e7203deea65d0cc88638c4656441a4ed85e574db5122af7843f10e9312",
+          "index": 7,
+          "normalized_effect_phase": 0.4375,
+          "role": "preparation",
+          "source_pose": "attack-4"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/left-08.png",
+          "sha256": "84b3b13993cf1703228bbe8f5781e2b4038b91278944a441e17dc7c97ca1cac6",
+          "index": 8,
+          "normalized_effect_phase": 0.5,
+          "role": "contact",
+          "source_pose": "attack-5"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/left-09.png",
+          "sha256": "bdc47226f6639ee3fda201294e92034f26f38f032dc54523a3e53e66c8d575b6",
+          "index": 9,
+          "normalized_effect_phase": 0.5625,
+          "role": "recovery",
+          "source_pose": "attack-6"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/left-10.png",
+          "sha256": "64af85fa59cf005ddb44bd9446c3208221337d1267afe5ebf92a45aace49a046",
+          "index": 10,
+          "normalized_effect_phase": 0.625,
+          "role": "recovery",
+          "source_pose": "attack-7"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/left-11.png",
+          "sha256": "ee3a8a99ca1ebe02c0ece3f9cacff17babf9d73042f7b2b3a1bf85ca09cdbc9a",
+          "index": 11,
+          "normalized_effect_phase": 0.6875,
+          "role": "recovery",
+          "source_pose": "recovery-1"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/left-12.png",
+          "sha256": "b5ab1f9f00f7dd189b4ce2a2929d3227a5609494387aadfd618b0e045beba47e",
+          "index": 12,
+          "normalized_effect_phase": 0.75,
+          "role": "recovery",
+          "source_pose": "recovery-2"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/left-13.png",
+          "sha256": "7248e4c7ca5e3868bbb2fdc54485dbbc4eb1c08d411bb8c6391c1ab786f9ee42",
+          "index": 13,
+          "normalized_effect_phase": 0.8125,
+          "role": "recovery",
+          "source_pose": "recovery-3"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/left-14.png",
+          "sha256": "f7a4c0733ed8830c6a9b372f2498e34afda94ad4480c86babd1221cabae5657c",
+          "index": 14,
+          "normalized_effect_phase": 0.875,
+          "role": "recovery",
+          "source_pose": "recovery-4"
+        },
+        {
+          "path": "contact-v4-repaired/female-attack/references/left-15.png",
+          "sha256": "89264becb6ca4fdfcf9cd27ad2cce5539472328ee944b891d3a4f2f3d64d139b",
+          "index": 15,
+          "normalized_effect_phase": 0.9375,
+          "role": "recovery",
+          "source_pose": "idle-end"
+        }
+      ]
+    }
+  ]
+}

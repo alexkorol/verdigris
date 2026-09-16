@@ -1,0 +1,166 @@
+{
+  "clips": {
+    "male-walk-front": {
+      "anchor": [
+        48,
+        80
+      ],
+      "frames": [
+        {
+          "src": "references/male-walk-front-00.png",
+          "sha256": "fed515db577db94caaecf3b99723a2fe020ab7c1ea62ef41a6bd720f5ec3ad4e"
+        },
+        {
+          "src": "references/male-walk-front-01.png",
+          "sha256": "35173676a0689dd1525dea0fbae0d380ecda4639deeda3371db062e94c80ef4c"
+        },
+        {
+          "src": "references/male-walk-front-02.png",
+          "sha256": "1689afca53ed0bbce00ec0110a9ec128135e9d7ff5e4e96e529845c543f89c10"
+        },
+        {
+          "src": "references/male-walk-front-03.png",
+          "sha256": "ed298bda182d51d44365f04c6330910c988c7270754cf0db82ad377e65262a33"
+        },
+        {
+          "src": "references/male-walk-front-04.png",
+          "sha256": "6acbdbfa1444e3311092395b1e5ff0170a7eb8eb2025d4bf76c21d16fd6a5ef3"
+        },
+        {
+          "src": "references/male-walk-front-05.png",
+          "sha256": "3a25c5992713a014eed55710589231bf28260d75402bfc2e538d5abd83e438e4"
+        },
+        {
+          "src": "references/male-walk-front-06.png",
+          "sha256": "f84eeead7c67c6ca7c7fe60623e8268e8970c14d47262df825ac232caf73a24f"
+        },
+        {
+          "src": "references/male-walk-front-07.png",
+          "sha256": "7d310b05703a35dae5042fd02bc5064c508cb598a4f30c082ad5bb40da0aa65f"
+        }
+      ]
+    },
+    "male-walk-right": {
+      "anchor": [
+        48,
+        80
+      ],
+      "frames": [
+        {
+          "src": "references/male-walk-right-00.png",
+          "sha256": "04a73926e4050c0e7861961a2956896ebfc95dcf36d7f44aa1077a89297c52e7"
+        },
+        {
+          "src": "references/male-walk-right-01.png",
+          "sha256": "f47391559a7a8a6fd52d718d077649c90b50a504fa126d039bf2785323331a1b"
+        },
+        {
+          "src": "references/male-walk-right-02.png",
+          "sha256": "1287e9aaca5ae638e0b12046590498f1728e0dec17a52a930905dfae7a90b3e3"
+        },
+        {
+          "src": "references/male-walk-right-03.png",
+          "sha256": "ac66673a2e5c18a21f01b47f7fb4c07516d816d8e67753a8196fffe7e2f1953f"
+        },
+        {
+          "src": "references/male-walk-right-04.png",
+          "sha256": "ce14c882d66328568c84e47d99348d48be97e95d5a499694d1d094359e49c50c"
+        },
+        {
+          "src": "references/male-walk-right-05.png",
+          "sha256": "4fa5914e497d26f0545255e93cb07c2cfe336c4fb0c3c5c1db1524ab4124ac5a"
+        },
+        {
+          "src": "references/male-walk-right-06.png",
+          "sha256": "f95e794c8eb790a082e95f3a4b7e7d073a3961ffa38c1075ed6f6d4b631a21a1"
+        },
+        {
+          "src": "references/male-walk-right-07.png",
+          "sha256": "d18bca57d9b72328cf43f7685f95e3a5a3036bf14bef8b0a09705d7e4fe14ae1"
+        }
+      ]
+    },
+    "male-walk-back": {
+      "anchor": [
+        48,
+        80
+      ],
+      "frames": [
+        {
+          "src": "references/male-walk-back-00.png",
+          "sha256": "a3f4f61b28c33aa0de6e2b6e6e459e78fd812b10c107a8bf88a4a6493bff3a5b"
+        },
+        {
+          "src": "references/male-walk-back-01.png",
+          "sha256": "c91d2f737469963b5af683bbfd136e3ee168ff5988abdd6d234cc4c861587802"
+        },
+        {
+          "src": "references/male-walk-back-02.png",
+          "sha256": "6b7fbc8fa768ff96953c967a7e7798e7d72a6bc12ac3efe2f36b17be4d96915e"
+        },
+        {
+          "src": "references/male-walk-back-03.png",
+          "sha256": "a05a93dc27bfaa85b0745ae80c30f83052fe9d0de8990867315868815ef74ea7"
+        },
+        {
+          "src": "references/male-walk-back-04.png",
+          "sha256": "309fa9e7e7e29e8a870865b1f52a4b129d7e949fad166771fb3b035a8dc9670b"
+        },
+        {
+          "src": "references/male-walk-back-05.png",
+          "sha256": "c7ec196081dc45d8bf2e8b9010ebf696ac071752303460dbc5fb5ef8a0fa5a9f"
+        },
+        {
+          "src": "references/male-walk-back-06.png",
+          "sha256": "673f631b172c99352621b968542fa35e9b3f3d872a3b8f08db2bfb34deee3a46"
+        },
+        {
+          "src": "references/male-walk-back-07.png",
+          "sha256": "07d9699945dddded02354335f10147fe2d08acdc8ba15329a321fac5c8d0a265"
+        }
+      ]
+    },
+    "male-walk-left": {
+      "anchor": [
+        48,
+        80
+      ],
+      "frames": [
+        {
+          "src": "references/male-walk-left-00.png",
+          "sha256": "bca119d46af261a0883800be768b16c7140d4bd749d5ac1bc868c5500c8ad0d5"
+        },
+        {
+          "src": "references/male-walk-left-01.png",
+          "sha256": "3d870b2febae4280a02ffadc9d4f950f49835fa70303a308a559ae88b8f60d63"
+        },
+        {
+          "src": "references/male-walk-left-02.png",
+          "sha256": "85a8fefb81131a9afe43f8b3427201726e08571e7245dad8e93ad43ff9b1657f"
+        },
+        {
+          "src": "references/male-walk-left-03.png",
+          "sha256": "cf5356771078e8004a216d2092ac8da6ee7018fd04d361a82cd0226bbf2b041b"
+        },
+        {
+          "src": "references/male-walk-left-04.png",
+          "sha256": "c42ad5beb41449a435799f62adac9f54f1971bdd07aa1de15868d1e3451fe993"
+        },
+        {
+          "src": "references/male-walk-left-05.png",
+          "sha256": "3ac4344c27f4e37f7c54c5aafaa73c07c0e3d17296db68b7eaf9bfeb4a9466f8"
+        },
+        {
+          "src": "references/male-walk-left-06.png",
+          "sha256": "fe905ec580db035b258a342b81a223ebc998a359d2ddc78b8506757cea15c79c"
+        },
+        {
+          "src": "references/male-walk-left-07.png",
+          "sha256": "f70d9cce77913c025cca530d964d1ac66b6804045c58b3eea29b80f4b208ac5c"
+        }
+      ]
+    }
+  },
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\reviewed\\blender\\male-walk-linen.blend",
+  "source_sha256": "c1c0b7304f10f4481d82dc20c29b2d6b29ec1f910e02b70e866b4dbab98c155c"
+}

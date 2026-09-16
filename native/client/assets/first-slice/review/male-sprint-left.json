@@ -1,0 +1,412 @@
+{
+  "clip": "male-sprint-left",
+  "source_sha256": "0e4e039ffcb6502d4b02e9344a3d554e75c363b46980c521c93144c671dcd508",
+  "frame_size": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "base_cell": 48,
+  "alpha_policy": "Returned alpha threshold 128; no RGB key",
+  "grid_candidates": [
+    {
+      "size": 18,
+      "source": "autocorr",
+      "offset": [
+        1,
+        5
+      ],
+      "score": 1.209569729998353,
+      "variance": 544.1223754882812,
+      "gated_out": false
+    },
+    {
+      "size": 21,
+      "source": "autocorr",
+      "offset": [
+        19,
+        4
+      ],
+      "score": 1.2047176423524681,
+      "variance": 622.4016723632812,
+      "gated_out": true
+    },
+    {
+      "size": 16,
+      "source": "autocorr",
+      "offset": [
+        0,
+        6
+      ],
+      "score": 1.1839862284046827,
+      "variance": 515.3385620117188,
+      "gated_out": false
+    },
+    {
+      "size": 11,
+      "source": "autocorr",
+      "offset": [
+        0,
+        4
+      ],
+      "score": 1.134944489026057,
+      "variance": 373.8985900878906,
+      "gated_out": false
+    },
+    {
+      "size": 13,
+      "source": "autocorr",
+      "offset": [
+        2,
+        8
+      ],
+      "score": 1.1265230176491599,
+      "variance": 448.4757385253906,
+      "gated_out": false
+    },
+    {
+      "size": 8,
+      "source": "autocorr",
+      "offset": [
+        0,
+        6
+      ],
+      "score": 1.106939646437336,
+      "variance": 279.2335510253906,
+      "gated_out": false
+    },
+    {
+      "size": 7,
+      "source": "fine",
+      "offset": [
+        1,
+        4
+      ],
+      "score": 1.0710085713042208,
+      "variance": 251.89501953125,
+      "gated_out": false
+    },
+    {
+      "size": 6,
+      "source": "fine",
+      "offset": [
+        3,
+        5
+      ],
+      "score": 1.0424941790048206,
+      "variance": 218.1639404296875,
+      "gated_out": false
+    },
+    {
+      "size": 5,
+      "source": "autocorr",
+      "offset": [
+        2,
+        1
+      ],
+      "score": 1.034678470602464,
+      "variance": 177.674072265625,
+      "gated_out": false
+    },
+    {
+      "size": 4,
+      "source": "fine",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 1.000381256931051,
+      "variance": 143.68060302734375,
+      "gated_out": false
+    },
+    {
+      "size": 3,
+      "source": "autocorr",
+      "offset": [
+        0,
+        1
+      ],
+      "score": 0.9881428508191206,
+      "variance": 102.6097412109375,
+      "gated_out": false
+    },
+    {
+      "size": 169,
+      "source": "fold",
+      "offset": [
+        145,
+        145
+      ],
+      "score": 0.40785475388845815,
+      "variance": 2292.32666015625,
+      "gated_out": true
+    },
+    {
+      "size": 187,
+      "source": "fold",
+      "offset": [
+        162,
+        157
+      ],
+      "score": 0.3095575230039689,
+      "variance": 2138.9423828125,
+      "gated_out": true
+    },
+    {
+      "size": 189,
+      "source": "fold",
+      "offset": [
+        158,
+        149
+      ],
+      "score": 0.3077313056341945,
+      "variance": 2213.9140625,
+      "gated_out": true
+    },
+    {
+      "size": 188,
+      "source": "fold",
+      "offset": [
+        162,
+        153
+      ],
+      "score": 0.29665653249280727,
+      "variance": 2172.620361328125,
+      "gated_out": true
+    },
+    {
+      "size": 192,
+      "source": "fold",
+      "offset": [
+        154,
+        139
+      ],
+      "score": 0.2906378336114856,
+      "variance": 2344.41552734375,
+      "gated_out": true
+    },
+    {
+      "size": 191,
+      "source": "fold",
+      "offset": [
+        159,
+        143
+      ],
+      "score": 0.2712736489804373,
+      "variance": 2307.892578125,
+      "gated_out": true
+    },
+    {
+      "size": 190,
+      "source": "fold",
+      "offset": [
+        162,
+        145
+      ],
+      "score": 0.26501292234878654,
+      "variance": 2265.496337890625,
+      "gated_out": true
+    },
+    {
+      "size": 184,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.2213812524507113,
+      "variance": 2180.5390625,
+      "gated_out": true
+    }
+  ],
+  "visual_acceptance": false,
+  "frames": [
+    {
+      "file": "male-sprint-left-00.png",
+      "bbox": [
+        27,
+        7,
+        81,
+        81
+      ],
+      "reference": {
+        "src": "paint-v2/linen-frames/male-sprint-left-1.png",
+        "sha256": "b07c762332b7dced93a9bd9973e0491cdc86e5b7b29e15328791e36f64a91490",
+        "width": 96,
+        "height": 96,
+        "anchor": [
+          48,
+          80
+        ]
+      },
+      "silhouette_iou": 0.8540268456375839,
+      "sha256": "7a0f40c24108424de33282703a7501593dfe754bcb248637f9eafb182cec621a"
+    },
+    {
+      "file": "male-sprint-left-01.png",
+      "bbox": [
+        28,
+        7,
+        82,
+        80
+      ],
+      "reference": {
+        "src": "paint-v2/linen-frames/male-sprint-left-2.png",
+        "sha256": "68d64c4e531134dfd298dee51bdf191529d5f69d2f119771cd53fddc23a193fd",
+        "width": 96,
+        "height": 96,
+        "anchor": [
+          48,
+          80
+        ]
+      },
+      "silhouette_iou": 0.883495145631068,
+      "sha256": "8b13cab48b6fe6b91bd7fef0e3ea493f18335e3a640442334d2ddd089b89c219"
+    },
+    {
+      "file": "male-sprint-left-02.png",
+      "bbox": [
+        26,
+        10,
+        69,
+        81
+      ],
+      "reference": {
+        "src": "paint-v2/linen-frames/male-sprint-left-3.png",
+        "sha256": "d80dbf2dec6bc1ec6f3da0b7bdcacb3c7ab6ae14645ac68cefe1ae8e3e03b2f5",
+        "width": 96,
+        "height": 96,
+        "anchor": [
+          48,
+          80
+        ]
+      },
+      "silhouette_iou": 0.8505013673655424,
+      "sha256": "0d77597c015464ce7f695d61ce6e3618b7207dd38baefca237488039944e30f6"
+    },
+    {
+      "file": "male-sprint-left-03.png",
+      "bbox": [
+        25,
+        7,
+        74,
+        81
+      ],
+      "reference": {
+        "src": "paint-v2/linen-frames/male-sprint-left-4.png",
+        "sha256": "77eb6044a79a93a29a2fe989d64216c7448fb695642d64f6ef0385255540c8fb",
+        "width": 96,
+        "height": 96,
+        "anchor": [
+          48,
+          80
+        ]
+      },
+      "silhouette_iou": 0.8135179153094463,
+      "sha256": "029de472fd13cfa01293778a865a1a5ec3384d761542d2530bc4a441518ec291"
+    },
+    {
+      "file": "male-sprint-left-04.png",
+      "bbox": [
+        27,
+        6,
+        80,
+        82
+      ],
+      "reference": {
+        "src": "paint-v2/linen-frames/male-sprint-left-5.png",
+        "sha256": "0e57eedc8db8cc820f254041c002ab45fb7b2402ba06a4e527d81e88d998c08e",
+        "width": 96,
+        "height": 96,
+        "anchor": [
+          48,
+          80
+        ]
+      },
+      "silhouette_iou": 0.8884120171673819,
+      "sha256": "c7d25ebbb3fd938f3372da60144b1b3acedda4ce1666300133758ffdff7f7f71"
+    },
+    {
+      "file": "male-sprint-left-05.png",
+      "bbox": [
+        29,
+        8,
+        81,
+        84
+      ],
+      "reference": {
+        "src": "paint-v2/linen-frames/male-sprint-left-6.png",
+        "sha256": "dd44948679ffbe1815e182a0db450df07a42766f57cc7d60ad682e6e311f0a21",
+        "width": 96,
+        "height": 96,
+        "anchor": [
+          48,
+          80
+        ]
+      },
+      "silhouette_iou": 0.8624891209747607,
+      "sha256": "c772e69c685526ec44d8e249b5e2976c8b4b7c2b44434b657800762a456f4f20"
+    },
+    {
+      "file": "male-sprint-left-06.png",
+      "bbox": [
+        24,
+        10,
+        69,
+        82
+      ],
+      "reference": {
+        "src": "paint-v2/linen-frames/male-sprint-left-7.png",
+        "sha256": "221a40db5a5f0c7b293e457797c756868f1fafd342f0b7f34cd6e684e9f3356a",
+        "width": 96,
+        "height": 96,
+        "anchor": [
+          48,
+          80
+        ]
+      },
+      "silhouette_iou": 0.8365650969529086,
+      "sha256": "e33013e31c15f61d48fa0579b10369e402ae7b4571ec90cb16e67b4c892a2d3b"
+    },
+    {
+      "file": "male-sprint-left-07.png",
+      "bbox": [
+        27,
+        7,
+        73,
+        83
+      ],
+      "reference": {
+        "src": "paint-v2/linen-frames/male-sprint-left-8.png",
+        "sha256": "fe966f74f1f7f0b8276e3849949a1be22a2f121d10ec9bf18ac91f970d0c13a4",
+        "width": 96,
+        "height": 96,
+        "anchor": [
+          48,
+          80
+        ]
+      },
+      "silhouette_iou": 0.7865804365400162,
+      "sha256": "4100991d2ac072c3cc9190c2196e47e424c86bcff58c304cac2bc6e1f74d1639"
+    }
+  ],
+  "selected_grid": {
+    "size": 4,
+    "source": "fine",
+    "offset": [
+      0,
+      0
+    ],
+    "score": 1.000381256931051,
+    "variance": 143.68060302734375,
+    "gated_out": false
+  },
+  "whole_cycle_translation": [
+    0,
+    0
+  ],
+  "registered_mean_iou": 0.8469484931973384
+}

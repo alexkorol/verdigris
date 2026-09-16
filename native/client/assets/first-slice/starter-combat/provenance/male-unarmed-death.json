@@ -1,0 +1,370 @@
+{
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\blender\\male-death.blend",
+  "source_sha256": "2504345ffa2b3706d64a580898a9e0ba99256e6c1b3b3c18e71020cae75fff95",
+  "equipment": "unarmed",
+  "hand": null,
+  "frame_size": [
+    128,
+    128
+  ],
+  "anchor": [
+    64,
+    96
+  ],
+  "pixels_per_metre": 48,
+  "frames": [
+    {
+      "src": "references/male-unarmed-death-front-00.png",
+      "direction": "front",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "7d3224a4d0f7bca0b707f8612b2f2d11c875149d9695696773b37a380491f15d"
+    },
+    {
+      "src": "references/male-unarmed-death-front-01.png",
+      "direction": "front",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "3835c38c6b384e8e9c377ce9832862abe5908b8f3142ddb0f9563dcfabe0eed6"
+    },
+    {
+      "src": "references/male-unarmed-death-front-02.png",
+      "direction": "front",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "96954f373223a97884ccddeef38ca936a168787f48138d4fcc5866bbc738a5ca"
+    },
+    {
+      "src": "references/male-unarmed-death-front-03.png",
+      "direction": "front",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "d6d30219915eb4fbff0d7188637a5963a5b752d39eedc02a9fb0dfd7d59eb28f"
+    },
+    {
+      "src": "references/male-unarmed-death-front-04.png",
+      "direction": "front",
+      "phase": 4,
+      "source_frame": 17,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "c676749da29c97e0b0e132d9578cfdb18bec59b76150cc58f0e783cdbadc43b5"
+    },
+    {
+      "src": "references/male-unarmed-death-front-05.png",
+      "direction": "front",
+      "phase": 5,
+      "source_frame": 21,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "62cfbe3623cc3100f21ec44ca0ba7ba55e5e2a6ebf0fd3d6e3b75b0cc440b5ba"
+    },
+    {
+      "src": "references/male-unarmed-death-front-06.png",
+      "direction": "front",
+      "phase": 6,
+      "source_frame": 25,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "74ab1a88a6f72eb3f98d17f460eca839f217709e92a6e06f6cd85571389e4b40"
+    },
+    {
+      "src": "references/male-unarmed-death-front-07.png",
+      "direction": "front",
+      "phase": 7,
+      "source_frame": 29,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "ee21a8d51fe0fdf85474bb166c72b69a8493f945549c0e80d15603e4c440e99d"
+    },
+    {
+      "src": "references/male-unarmed-death-right-00.png",
+      "direction": "right",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "1e2d5dcfdaadb2a6a71c343daa7da187b473b5e1c0a4a36e6f0f52efb111616b"
+    },
+    {
+      "src": "references/male-unarmed-death-right-01.png",
+      "direction": "right",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "557f14079b83980cd7700d818d9fe53119bcff79286f33204cd9925b2d961759"
+    },
+    {
+      "src": "references/male-unarmed-death-right-02.png",
+      "direction": "right",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "cdfcc056c0feb762a9128aaf671a73cd6fbc996b37de947c5c990dc4b8f468f5"
+    },
+    {
+      "src": "references/male-unarmed-death-right-03.png",
+      "direction": "right",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "349a2217b6c6e31b30cae6f6c00daac80df139fe7a9e5d05961ab78a0f1bb860"
+    },
+    {
+      "src": "references/male-unarmed-death-right-04.png",
+      "direction": "right",
+      "phase": 4,
+      "source_frame": 17,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "4ef7785fee4e03cc46563d3ebe434c410e987a0557d5766bf1ce8932f6aafb37"
+    },
+    {
+      "src": "references/male-unarmed-death-right-05.png",
+      "direction": "right",
+      "phase": 5,
+      "source_frame": 21,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "d172863b6ff3d97521b0014394f35d9e605fcb2c009789766d599036c6d7c7dd"
+    },
+    {
+      "src": "references/male-unarmed-death-right-06.png",
+      "direction": "right",
+      "phase": 6,
+      "source_frame": 25,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "55f5d29795b52fc6dd26195f8cb9cc5a2cc3a041a4e3cfb44db23e37f87b9548"
+    },
+    {
+      "src": "references/male-unarmed-death-right-07.png",
+      "direction": "right",
+      "phase": 7,
+      "source_frame": 29,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "7501dbd5f09395dbf5f38f0b73f8f53e2bbc1869f504a8787a28707d9faf7ec3"
+    },
+    {
+      "src": "references/male-unarmed-death-back-00.png",
+      "direction": "back",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "4e575097386b014fe517c7b07db7286a4ddbfee0282d804d8a4df0921a5fe85c"
+    },
+    {
+      "src": "references/male-unarmed-death-back-01.png",
+      "direction": "back",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "f3ae8c120de993e47f4e6f2517c2327f30a88a11540c63eccd0de4cbcde28384"
+    },
+    {
+      "src": "references/male-unarmed-death-back-02.png",
+      "direction": "back",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "3c82461ed4a8c9bb75746b51a7f78d193f5aa500fd4d6c1d1175a216f062334a"
+    },
+    {
+      "src": "references/male-unarmed-death-back-03.png",
+      "direction": "back",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "d98ba28eb379de7d8681022c829d65ad63d959399e1c7a3aa43d379f6e83a1c0"
+    },
+    {
+      "src": "references/male-unarmed-death-back-04.png",
+      "direction": "back",
+      "phase": 4,
+      "source_frame": 17,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "849b3f8588d537a996a28cc6b4ea37c31c04a79efcd297167b2d2f79b52e726f"
+    },
+    {
+      "src": "references/male-unarmed-death-back-05.png",
+      "direction": "back",
+      "phase": 5,
+      "source_frame": 21,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "0edf3a30a353fc2e216b4231875ce314ce64f25f8aa60492efd885fa1cb3b33d"
+    },
+    {
+      "src": "references/male-unarmed-death-back-06.png",
+      "direction": "back",
+      "phase": 6,
+      "source_frame": 25,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "0f4efc9675804375ab10f76e4076965b9d38d977ca098e591daa55d4fe163e71"
+    },
+    {
+      "src": "references/male-unarmed-death-back-07.png",
+      "direction": "back",
+      "phase": 7,
+      "source_frame": 29,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "dfc0b4c6638e22f42ab2c779bb9d456631798cbf80c203bf8c6b9f7d9982e061"
+    },
+    {
+      "src": "references/male-unarmed-death-left-00.png",
+      "direction": "left",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "87ebec425655b219b0c8b4b12552b6aef2ee1377d4f683426d6bc5515ffbf3b3"
+    },
+    {
+      "src": "references/male-unarmed-death-left-01.png",
+      "direction": "left",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "4fdaaa1dd2447192aec6fcb41e37cf729066955788ac9639621305a462677ea5"
+    },
+    {
+      "src": "references/male-unarmed-death-left-02.png",
+      "direction": "left",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "d87983b146b1104ec146e6a81879009dc132720515ec9cf3c2b1b01940174d8b"
+    },
+    {
+      "src": "references/male-unarmed-death-left-03.png",
+      "direction": "left",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "192294b4919a4f30ac741472c76e68447f9691ae4f29fd07df579fda5958bf55"
+    },
+    {
+      "src": "references/male-unarmed-death-left-04.png",
+      "direction": "left",
+      "phase": 4,
+      "source_frame": 17,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "b81dcf0306e7ee6bbad0afd57f1b0619a2612356196ee3d93b43280911081d1e"
+    },
+    {
+      "src": "references/male-unarmed-death-left-05.png",
+      "direction": "left",
+      "phase": 5,
+      "source_frame": 21,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "11f5a621e0d0d2d3759626f0c9141efec4476fb7a00d997bce84c7aeb082cd35"
+    },
+    {
+      "src": "references/male-unarmed-death-left-06.png",
+      "direction": "left",
+      "phase": 6,
+      "source_frame": 25,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "e4f7adb1e0ee4cc50ab15396a4b3692bbef6f4bb574769ac4792303bc3f705d1"
+    },
+    {
+      "src": "references/male-unarmed-death-left-07.png",
+      "direction": "left",
+      "phase": 7,
+      "source_frame": 29,
+      "anchor": [
+        64,
+        96
+      ],
+      "sha256": "3153a82368b763a633e24b7960c9a58992c7442046578bbd0b7bfa7d894d1db3"
+    }
+  ],
+  "status": "motion-reference-reviewed; not painted final game art"
+}

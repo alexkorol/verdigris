@@ -1,0 +1,733 @@
+{
+  "clips": {
+    "pack-wolf-death-front": {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "front",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "death-v2/pack-wolf-death-front-00.png",
+          "sha256": "2c83b45820cfba115c2c99355572cfbb5f5c312d79bc347aaeda231c7f657867",
+          "blender_frame": 0
+        },
+        {
+          "src": "death-v2/pack-wolf-death-front-01.png",
+          "sha256": "e4ded52669b8ced0ff1c203bf1dc04db16f90b03be7226b61d352fdbf5ec7377",
+          "blender_frame": 1
+        },
+        {
+          "src": "death-v2/pack-wolf-death-front-02.png",
+          "sha256": "ee5711c18d31b9f324a947c3beade2511591274564898721da2f6b468c96ef00",
+          "blender_frame": 2
+        },
+        {
+          "src": "death-v2/pack-wolf-death-front-03.png",
+          "sha256": "fc6431710270de58f37be6488177d62a9578b42057ddd2e6dcc7647bbe6647e1",
+          "blender_frame": 3
+        }
+      ],
+      "source_sha256": "3aba8648e44f945f9fd1ec2098e0af02fcc5e8b6eed74e1be2c52c6441cc7fb1",
+      "blender": "death-v2/pack-wolf-death-v2.blend",
+      "authored_action": "Verdigris_pack-wolf_death_folded_v2",
+      "physical_poses": [
+        {
+          "phase": 0,
+          "roll_degrees": 0,
+          "fold_amount": 0.0,
+          "ground_lift": -1.669549419602845e-05,
+          "body_height_metres": 0.6644949255041865
+        },
+        {
+          "phase": 1,
+          "roll_degrees": 24,
+          "fold_amount": 0.3,
+          "ground_lift": 0.03397325053811073,
+          "body_height_metres": 0.628765556961298
+        },
+        {
+          "phase": 2,
+          "roll_degrees": 67,
+          "fold_amount": 0.8,
+          "ground_lift": 0.07463409006595612,
+          "body_height_metres": 0.37756429612636566
+        },
+        {
+          "phase": 3,
+          "roll_degrees": 94,
+          "fold_amount": 1.0,
+          "ground_lift": 0.15970979630947113,
+          "body_height_metres": 0.2935694009065628
+        }
+      ],
+      "visual_acceptance": false,
+      "blender_sha256": "45892d11a7dae3cc13461c80ed845ea613a2bf10dbbe365df8a815379a9f5275",
+      "layout": {
+        "columns": 2,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "scale": 4,
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/guides/pack-wolf-death-front.png",
+      "guide_sha256": "ae1cec656630e7a697ca6c8b76d930d1ee74f171d013152c0d79896c754aa260"
+    },
+    "pack-wolf-death-right": {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "right",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "death-v2/pack-wolf-death-right-00.png",
+          "sha256": "bfb3c6e3b19ddabed06195dac6a246c4f61cd3d5e05b52d6567d61e821f788c0",
+          "blender_frame": 0
+        },
+        {
+          "src": "death-v2/pack-wolf-death-right-01.png",
+          "sha256": "0526048e409b2c288a2ee77129c5e4b5868ff54da35cd976cf1e0f0322d4c400",
+          "blender_frame": 1
+        },
+        {
+          "src": "death-v2/pack-wolf-death-right-02.png",
+          "sha256": "d865a7b8cd6e132bf76de03a2a0bfe16ba348d6854563a711f4c592b2f1488f6",
+          "blender_frame": 2
+        },
+        {
+          "src": "death-v2/pack-wolf-death-right-03.png",
+          "sha256": "6628e9781661b03961f20f7adef3877148f227a0d78c5e1b59334627de31b2ce",
+          "blender_frame": 3
+        }
+      ],
+      "source_sha256": "3aba8648e44f945f9fd1ec2098e0af02fcc5e8b6eed74e1be2c52c6441cc7fb1",
+      "blender": "death-v2/pack-wolf-death-v2.blend",
+      "authored_action": "Verdigris_pack-wolf_death_folded_v2",
+      "physical_poses": [
+        {
+          "phase": 0,
+          "roll_degrees": 0,
+          "fold_amount": 0.0,
+          "ground_lift": -1.669549419602845e-05,
+          "body_height_metres": 0.6644949255041865
+        },
+        {
+          "phase": 1,
+          "roll_degrees": 24,
+          "fold_amount": 0.3,
+          "ground_lift": 0.03397325053811073,
+          "body_height_metres": 0.628765556961298
+        },
+        {
+          "phase": 2,
+          "roll_degrees": 67,
+          "fold_amount": 0.8,
+          "ground_lift": 0.07463409006595612,
+          "body_height_metres": 0.37756429612636566
+        },
+        {
+          "phase": 3,
+          "roll_degrees": 94,
+          "fold_amount": 1.0,
+          "ground_lift": 0.15970979630947113,
+          "body_height_metres": 0.2935694009065628
+        }
+      ],
+      "visual_acceptance": false,
+      "blender_sha256": "45892d11a7dae3cc13461c80ed845ea613a2bf10dbbe365df8a815379a9f5275",
+      "layout": {
+        "columns": 2,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "scale": 4,
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/guides/pack-wolf-death-right.png",
+      "guide_sha256": "302dad2375ce7fc6962a0a0f51e721477e4b2b91deb00ae41d1ce43fa1af1390"
+    },
+    "pack-wolf-death-back": {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "back",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "death-v2/pack-wolf-death-back-00.png",
+          "sha256": "2208d6fada4e08bc4616e91e25e2d26b8df52117d2d0a63c8fd98e9e9eb5f1e7",
+          "blender_frame": 0
+        },
+        {
+          "src": "death-v2/pack-wolf-death-back-01.png",
+          "sha256": "ef699dca113fd23ad4f259d31222d0bd75026036f90e2f8288ad98ab55110b06",
+          "blender_frame": 1
+        },
+        {
+          "src": "death-v2/pack-wolf-death-back-02.png",
+          "sha256": "50f06e30c640c8119d523718c96e5dd8404067422425d9b5338fb0a149b53306",
+          "blender_frame": 2
+        },
+        {
+          "src": "death-v2/pack-wolf-death-back-03.png",
+          "sha256": "535bcdf71d7ca44cc3d49be3b25a4b8fff4ffcf1598a49d01ba88c5440c9bcf9",
+          "blender_frame": 3
+        }
+      ],
+      "source_sha256": "3aba8648e44f945f9fd1ec2098e0af02fcc5e8b6eed74e1be2c52c6441cc7fb1",
+      "blender": "death-v2/pack-wolf-death-v2.blend",
+      "authored_action": "Verdigris_pack-wolf_death_folded_v2",
+      "physical_poses": [
+        {
+          "phase": 0,
+          "roll_degrees": 0,
+          "fold_amount": 0.0,
+          "ground_lift": -1.669549419602845e-05,
+          "body_height_metres": 0.6644949255041865
+        },
+        {
+          "phase": 1,
+          "roll_degrees": 24,
+          "fold_amount": 0.3,
+          "ground_lift": 0.03397325053811073,
+          "body_height_metres": 0.628765556961298
+        },
+        {
+          "phase": 2,
+          "roll_degrees": 67,
+          "fold_amount": 0.8,
+          "ground_lift": 0.07463409006595612,
+          "body_height_metres": 0.37756429612636566
+        },
+        {
+          "phase": 3,
+          "roll_degrees": 94,
+          "fold_amount": 1.0,
+          "ground_lift": 0.15970979630947113,
+          "body_height_metres": 0.2935694009065628
+        }
+      ],
+      "visual_acceptance": false,
+      "blender_sha256": "45892d11a7dae3cc13461c80ed845ea613a2bf10dbbe365df8a815379a9f5275",
+      "layout": {
+        "columns": 2,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "scale": 4,
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/guides/pack-wolf-death-back.png",
+      "guide_sha256": "346be99e5586e8a9aad1615ecb902628f30a2ba5346a6e29d0a2585a5019671b"
+    },
+    "pack-wolf-death-left": {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "left",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "death-v2/pack-wolf-death-left-00.png",
+          "sha256": "1f170f3e8ad08ce3dad3d465746d62feafedb9756e38d6005fa7f5b40e22da35",
+          "blender_frame": 0
+        },
+        {
+          "src": "death-v2/pack-wolf-death-left-01.png",
+          "sha256": "1c884ec924135b75be7f3cce72704cb3798efdb023e1361efc6577bc69a58371",
+          "blender_frame": 1
+        },
+        {
+          "src": "death-v2/pack-wolf-death-left-02.png",
+          "sha256": "e4aa0d6be27197a8aef392fb48346bd9583f78a5ef2c4e2fee5dde5fdc73ddd3",
+          "blender_frame": 2
+        },
+        {
+          "src": "death-v2/pack-wolf-death-left-03.png",
+          "sha256": "dc815d64f7b03317c67b7b495cd8b55bd3a78988a8709d7c890325e01721c5fa",
+          "blender_frame": 3
+        }
+      ],
+      "source_sha256": "3aba8648e44f945f9fd1ec2098e0af02fcc5e8b6eed74e1be2c52c6441cc7fb1",
+      "blender": "death-v2/pack-wolf-death-v2.blend",
+      "authored_action": "Verdigris_pack-wolf_death_folded_v2",
+      "physical_poses": [
+        {
+          "phase": 0,
+          "roll_degrees": 0,
+          "fold_amount": 0.0,
+          "ground_lift": -1.669549419602845e-05,
+          "body_height_metres": 0.6644949255041865
+        },
+        {
+          "phase": 1,
+          "roll_degrees": 24,
+          "fold_amount": 0.3,
+          "ground_lift": 0.03397325053811073,
+          "body_height_metres": 0.628765556961298
+        },
+        {
+          "phase": 2,
+          "roll_degrees": 67,
+          "fold_amount": 0.8,
+          "ground_lift": 0.07463409006595612,
+          "body_height_metres": 0.37756429612636566
+        },
+        {
+          "phase": 3,
+          "roll_degrees": 94,
+          "fold_amount": 1.0,
+          "ground_lift": 0.15970979630947113,
+          "body_height_metres": 0.2935694009065628
+        }
+      ],
+      "visual_acceptance": false,
+      "blender_sha256": "45892d11a7dae3cc13461c80ed845ea613a2bf10dbbe365df8a815379a9f5275",
+      "layout": {
+        "columns": 2,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "scale": 4,
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/guides/pack-wolf-death-left.png",
+      "guide_sha256": "f2efe004f0aea7ba1e84903ae657994a009570c1c3a7672f8dc1670e0cdfb563"
+    },
+    "well-alpha-death-front": {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "front",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "death-v2/well-alpha-death-front-00.png",
+          "sha256": "1b4ba9b6843e7a558b99cdf8040b77821a7df605c28b3795ebaf81d32d9c4f53",
+          "blender_frame": 0
+        },
+        {
+          "src": "death-v2/well-alpha-death-front-01.png",
+          "sha256": "aa1bdbf98b730c05e9050ac104257359c0d65eb6bb5d11e9976947fe8cd3a086",
+          "blender_frame": 1
+        },
+        {
+          "src": "death-v2/well-alpha-death-front-02.png",
+          "sha256": "9f7b56d2397fc55aa8231410bde38c14b0425230abbcdf4f2cdd3a4e928e2b0b",
+          "blender_frame": 2
+        },
+        {
+          "src": "death-v2/well-alpha-death-front-03.png",
+          "sha256": "b7b83444bac952e122afc25648581ca5a14a0f78574907412db9ade497bc5d4e",
+          "blender_frame": 3
+        }
+      ],
+      "source_sha256": "b23e698a3ba948fa5b4047da1995680d78f8491362a9781e913f8c70f3fe46df",
+      "blender": "death-v2/well-alpha-death-v2.blend",
+      "authored_action": "Verdigris_well-alpha_death_folded_v2",
+      "physical_poses": [
+        {
+          "phase": 0,
+          "roll_degrees": 0,
+          "fold_amount": 0.0,
+          "ground_lift": -2.4730788936722092e-05,
+          "body_height_metres": 0.9834524444468116
+        },
+        {
+          "phase": 1,
+          "roll_degrees": 24,
+          "fold_amount": 0.3,
+          "ground_lift": 0.050280336290597916,
+          "body_height_metres": 0.930572871118784
+        },
+        {
+          "phase": 2,
+          "roll_degrees": 67,
+          "fold_amount": 0.8,
+          "ground_lift": 0.11045841127634048,
+          "body_height_metres": 0.5587952211499214
+        },
+        {
+          "phase": 3,
+          "roll_degrees": 94,
+          "fold_amount": 1.0,
+          "ground_lift": 0.2363705188035965,
+          "body_height_metres": 0.43448276817798615
+        }
+      ],
+      "visual_acceptance": false,
+      "blender_sha256": "3048e50e59ef722151d16739a75fbf7c5ddc06f199c553b7c11c9d812a3ebe2a",
+      "layout": {
+        "columns": 2,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "scale": 4,
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/guides/well-alpha-death-front.png",
+      "guide_sha256": "4ea8cc4f66f0886bcb9bc98f89595cf600d443a183483a2a88a673758637187f"
+    },
+    "well-alpha-death-right": {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "right",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "death-v2/well-alpha-death-right-00.png",
+          "sha256": "38d1b2bd82f93e35b707517dab95db91944d42a01f66ed641b262b4201fdd947",
+          "blender_frame": 0
+        },
+        {
+          "src": "death-v2/well-alpha-death-right-01.png",
+          "sha256": "bb087dec27f0b1d13398d8cdde640c67a05c4248af76df0fcee5de65faae6200",
+          "blender_frame": 1
+        },
+        {
+          "src": "death-v2/well-alpha-death-right-02.png",
+          "sha256": "8e923d5b10791bd06ef7a821df5fd672850f36f93c0f9a45423f99919ea0dba6",
+          "blender_frame": 2
+        },
+        {
+          "src": "death-v2/well-alpha-death-right-03.png",
+          "sha256": "1d8d2468f4acba80b4ad897e7c78dd45ddd1bfa79218f03c901f90a1f1996cab",
+          "blender_frame": 3
+        }
+      ],
+      "source_sha256": "b23e698a3ba948fa5b4047da1995680d78f8491362a9781e913f8c70f3fe46df",
+      "blender": "death-v2/well-alpha-death-v2.blend",
+      "authored_action": "Verdigris_well-alpha_death_folded_v2",
+      "physical_poses": [
+        {
+          "phase": 0,
+          "roll_degrees": 0,
+          "fold_amount": 0.0,
+          "ground_lift": -2.4730788936722092e-05,
+          "body_height_metres": 0.9834524444468116
+        },
+        {
+          "phase": 1,
+          "roll_degrees": 24,
+          "fold_amount": 0.3,
+          "ground_lift": 0.050280336290597916,
+          "body_height_metres": 0.930572871118784
+        },
+        {
+          "phase": 2,
+          "roll_degrees": 67,
+          "fold_amount": 0.8,
+          "ground_lift": 0.11045841127634048,
+          "body_height_metres": 0.5587952211499214
+        },
+        {
+          "phase": 3,
+          "roll_degrees": 94,
+          "fold_amount": 1.0,
+          "ground_lift": 0.2363705188035965,
+          "body_height_metres": 0.43448276817798615
+        }
+      ],
+      "visual_acceptance": false,
+      "blender_sha256": "3048e50e59ef722151d16739a75fbf7c5ddc06f199c553b7c11c9d812a3ebe2a",
+      "layout": {
+        "columns": 2,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "scale": 4,
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/guides/well-alpha-death-right.png",
+      "guide_sha256": "f7ed1a96e83067e4fbb2abb6cc90220f29892b0dd94c40bbec543c52dc9da6df"
+    },
+    "well-alpha-death-back": {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "back",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "death-v2/well-alpha-death-back-00.png",
+          "sha256": "b4346b47e9fb645ad332797c28295b0a2695a671dfb746817da3346c9a71a315",
+          "blender_frame": 0
+        },
+        {
+          "src": "death-v2/well-alpha-death-back-01.png",
+          "sha256": "9b7e193bc463412a98655c4b54b2ffcc90cc5dfdc9f6972309b1c760fdb49358",
+          "blender_frame": 1
+        },
+        {
+          "src": "death-v2/well-alpha-death-back-02.png",
+          "sha256": "feb1c65110ea6fcd7be8f92db42b37cf8e9f4316651b496ea210572fc009f6f8",
+          "blender_frame": 2
+        },
+        {
+          "src": "death-v2/well-alpha-death-back-03.png",
+          "sha256": "3189d1296bcf260b69f1f6f5e6258610b319ec084b09da119b2fafee2f1c675f",
+          "blender_frame": 3
+        }
+      ],
+      "source_sha256": "b23e698a3ba948fa5b4047da1995680d78f8491362a9781e913f8c70f3fe46df",
+      "blender": "death-v2/well-alpha-death-v2.blend",
+      "authored_action": "Verdigris_well-alpha_death_folded_v2",
+      "physical_poses": [
+        {
+          "phase": 0,
+          "roll_degrees": 0,
+          "fold_amount": 0.0,
+          "ground_lift": -2.4730788936722092e-05,
+          "body_height_metres": 0.9834524444468116
+        },
+        {
+          "phase": 1,
+          "roll_degrees": 24,
+          "fold_amount": 0.3,
+          "ground_lift": 0.050280336290597916,
+          "body_height_metres": 0.930572871118784
+        },
+        {
+          "phase": 2,
+          "roll_degrees": 67,
+          "fold_amount": 0.8,
+          "ground_lift": 0.11045841127634048,
+          "body_height_metres": 0.5587952211499214
+        },
+        {
+          "phase": 3,
+          "roll_degrees": 94,
+          "fold_amount": 1.0,
+          "ground_lift": 0.2363705188035965,
+          "body_height_metres": 0.43448276817798615
+        }
+      ],
+      "visual_acceptance": false,
+      "blender_sha256": "3048e50e59ef722151d16739a75fbf7c5ddc06f199c553b7c11c9d812a3ebe2a",
+      "layout": {
+        "columns": 2,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "scale": 4,
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/guides/well-alpha-death-back.png",
+      "guide_sha256": "33ad3b955a218bcbc9ed953c7fcc4eec060bd4ce602b62e52f3791169553d26d"
+    },
+    "well-alpha-death-left": {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "left",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "death-v2/well-alpha-death-left-00.png",
+          "sha256": "dd6f4a0f50efc6b2ab47005d051220f62ccce7c9915f24a062c22b179454e250",
+          "blender_frame": 0
+        },
+        {
+          "src": "death-v2/well-alpha-death-left-01.png",
+          "sha256": "3bde84f6c0a053d209ff279d6ddffc9a3925414e7ae1b9fcc97a5d83742a0e17",
+          "blender_frame": 1
+        },
+        {
+          "src": "death-v2/well-alpha-death-left-02.png",
+          "sha256": "c78adb82240a9a57c4f3d3c2b8a9a134f7486176036473627817a53dfad21833",
+          "blender_frame": 2
+        },
+        {
+          "src": "death-v2/well-alpha-death-left-03.png",
+          "sha256": "1ccd658cbfb6c22eb84ec644f3f10b2d0eeabdab69565b1246f91dfead64083d",
+          "blender_frame": 3
+        }
+      ],
+      "source_sha256": "b23e698a3ba948fa5b4047da1995680d78f8491362a9781e913f8c70f3fe46df",
+      "blender": "death-v2/well-alpha-death-v2.blend",
+      "authored_action": "Verdigris_well-alpha_death_folded_v2",
+      "physical_poses": [
+        {
+          "phase": 0,
+          "roll_degrees": 0,
+          "fold_amount": 0.0,
+          "ground_lift": -2.4730788936722092e-05,
+          "body_height_metres": 0.9834524444468116
+        },
+        {
+          "phase": 1,
+          "roll_degrees": 24,
+          "fold_amount": 0.3,
+          "ground_lift": 0.050280336290597916,
+          "body_height_metres": 0.930572871118784
+        },
+        {
+          "phase": 2,
+          "roll_degrees": 67,
+          "fold_amount": 0.8,
+          "ground_lift": 0.11045841127634048,
+          "body_height_metres": 0.5587952211499214
+        },
+        {
+          "phase": 3,
+          "roll_degrees": 94,
+          "fold_amount": 1.0,
+          "ground_lift": 0.2363705188035965,
+          "body_height_metres": 0.43448276817798615
+        }
+      ],
+      "visual_acceptance": false,
+      "blender_sha256": "3048e50e59ef722151d16739a75fbf7c5ddc06f199c553b7c11c9d812a3ebe2a",
+      "layout": {
+        "columns": 2,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "scale": 4,
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/guides/well-alpha-death-left.png",
+      "guide_sha256": "519c50fcd2010e56a160a2eeab12117c573fce0608801cbf42a462323cba4b80"
+    }
+  },
+  "source_manifest": "death-v2/manifest.json"
+}

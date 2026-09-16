@@ -1,0 +1,31 @@
+{
+  "clip": "pack-wolf-combat-back",
+  "source_sha256": "787f46ba0fdbef2b09fa9f7c1412972895c3a0010642d90fc64a5254b8c93a2c",
+  "selected_grid": {
+    "size": 4,
+    "source": "autocorr",
+    "offset": [
+      2,
+      0
+    ],
+    "score": 0.6850047958476142,
+    "variance": 72.26644134521484,
+    "gated_out": false
+  },
+  "frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "whole_cycle_translation": [
+    0,
+    8
+  ],
+  "registered_mean_iou": 0.6020804489961993,
+  "alpha_policy": "Native alpha threshold128, noRGBkey",
+  "visual_acceptance": false,
+  "frames": []
+}

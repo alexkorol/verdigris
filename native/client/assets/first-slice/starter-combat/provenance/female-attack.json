@@ -1,0 +1,316 @@
+{
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2-female-refine\\blender\\female-walk-exterior.blend",
+  "source_sha256": "a668944a456fa2ba79de9617b4562501a690b060c5461ab12424e2cb6fee4cd4",
+  "motion": "Quaternius Universal Animation Library / Sword_Attack",
+  "source_frames": [
+    0,
+    5,
+    9,
+    12,
+    15,
+    19,
+    25,
+    36
+  ],
+  "frame_size": [
+    128,
+    128
+  ],
+  "anchor": [
+    64,
+    96
+  ],
+  "pixels_per_metre": 48,
+  "equipment": "branch-club",
+  "frames": [
+    {
+      "src": "references/female-attack-front-00.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 0,
+      "sha256": "0612ca73436118f68c6fad3c4f86fd6b4dbf8dda6104839f73fc7a884bc562e7"
+    },
+    {
+      "src": "references/female-attack-front-01.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 5,
+      "sha256": "6233669f89c4b1ef23e46df66e70f4fca82d4eb08e3723a05832dd8146ee00bf"
+    },
+    {
+      "src": "references/female-attack-front-02.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 9,
+      "sha256": "f78ab367a3fd96e7e2ec9f0d60619b983b07094f61c7117bfd0ba637f9bbfe12"
+    },
+    {
+      "src": "references/female-attack-front-03.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 12,
+      "sha256": "642281249b89f237bb4f221fcd3a451e2be24a3051899363019b93d60ec5c609"
+    },
+    {
+      "src": "references/female-attack-front-04.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 15,
+      "sha256": "e7810d5302b19d135e23c1885a6016929863a0839bb91d42c693124e18e85367"
+    },
+    {
+      "src": "references/female-attack-front-05.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 19,
+      "sha256": "9fdb9b5dccc738f744a02fdd8b284ba7122a3bd3d6a22406a48fa24f34853b68"
+    },
+    {
+      "src": "references/female-attack-front-06.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 25,
+      "sha256": "4bfd83ad7aa3978dcefbafa93d33ce2446f88db7d4e7729b1dc86ab4116c15ae"
+    },
+    {
+      "src": "references/female-attack-front-07.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 36,
+      "sha256": "150e2763dbfd737c31de04bb934ec7ed9023c1e0a134caa8b6dc05db129f4f4c"
+    },
+    {
+      "src": "references/female-attack-right-00.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 0,
+      "sha256": "ec93b81efb85f32d9a17f6eb3e80e77f780668a51fc60ef582afc742f2fbd6fb"
+    },
+    {
+      "src": "references/female-attack-right-01.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 5,
+      "sha256": "09748d4a9cfb1dee54a7b5090bee403237b5fabe1b0226e94ea19ffce902be2a"
+    },
+    {
+      "src": "references/female-attack-right-02.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 9,
+      "sha256": "1336db47360af2763452f402c193c25a9c1659589de2313eff2dd4cd7797a029"
+    },
+    {
+      "src": "references/female-attack-right-03.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 12,
+      "sha256": "903c6a08143b5dbb7dc86275b51610da9fe4d449ba0b5eb0592a119d05793444"
+    },
+    {
+      "src": "references/female-attack-right-04.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 15,
+      "sha256": "1d0814494672804db16b695f28c7a128cda8b8f31d4afc8eab5d3071d8f2ffc6"
+    },
+    {
+      "src": "references/female-attack-right-05.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 19,
+      "sha256": "250512725057c3e27257afd562200d109b8f0778a952a7c4306f15c8c6381c1a"
+    },
+    {
+      "src": "references/female-attack-right-06.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 25,
+      "sha256": "56d0e52bd67f3daa90785cccad6c755bb4c417e93c8ccad3f21eab90a280fb5c"
+    },
+    {
+      "src": "references/female-attack-right-07.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 36,
+      "sha256": "84d29918f4b36109d07b9e180494da78cbee3f5a8b61e830f89361b56c0e8532"
+    },
+    {
+      "src": "references/female-attack-back-00.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 0,
+      "sha256": "65a13ab84875c016dcfc96a90a2ceb5e91bd8b0ca79221867db27bcd4ff15619"
+    },
+    {
+      "src": "references/female-attack-back-01.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 5,
+      "sha256": "635917a67fade792c7139e996dbd5a6b541d68ae4c097d38bf0ae5efbfc9dcfd"
+    },
+    {
+      "src": "references/female-attack-back-02.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 9,
+      "sha256": "f63a62e7518d0f1b53085c2de2e369d3f9d8884b28567a579dfcd1f34cc3c47d"
+    },
+    {
+      "src": "references/female-attack-back-03.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 12,
+      "sha256": "50a5b4976e980df7df9eb3eb5a53225b98fabb1659d990758cf440954487dfc5"
+    },
+    {
+      "src": "references/female-attack-back-04.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 15,
+      "sha256": "eb384ad5d1c54f9f471d2149b3fb4170f2ffb20a814a1adfde762ebc9c520678"
+    },
+    {
+      "src": "references/female-attack-back-05.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 19,
+      "sha256": "0041a94aa4f121a711da175e2cda6ba1cf72659c3e9dfc6438448fe68a5fedf5"
+    },
+    {
+      "src": "references/female-attack-back-06.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 25,
+      "sha256": "465262b8fa6553d16e8eb759bb7e6ad4d68c3e6f6b6697590181273c76eacdf2"
+    },
+    {
+      "src": "references/female-attack-back-07.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 36,
+      "sha256": "4aea9c2e505a1d17279cb98044c099c98f1bd2e298d2d2a374da461f0ec13580"
+    },
+    {
+      "src": "references/female-attack-left-00.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 0,
+      "sha256": "012d2b9e45a946dd7d68ca0ae60a100f133f4d99edae32e431e1a7440a3ea509"
+    },
+    {
+      "src": "references/female-attack-left-01.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 5,
+      "sha256": "e6c416011918571d01d672c4976d688ed608c9ba1304c8860410e2eacb2452d2"
+    },
+    {
+      "src": "references/female-attack-left-02.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 9,
+      "sha256": "04d5feed3c7cb5b318b139f7e10f6b214dfdfa42a2fc62daf9a7d1d672521ad1"
+    },
+    {
+      "src": "references/female-attack-left-03.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 12,
+      "sha256": "a5f1276f58f53e43646b36da53b38806cf00e227a306cd71af847d8fb5966c56"
+    },
+    {
+      "src": "references/female-attack-left-04.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 15,
+      "sha256": "5a6266dfe1cc25e684242cb0b1eda0a3273c673e1c52e3f5104fb56433d7967f"
+    },
+    {
+      "src": "references/female-attack-left-05.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 19,
+      "sha256": "d8d4be5eaffab4f2dce2e2f4616a104a3e86d8b8461455f8c8c9c29c14fa31b3"
+    },
+    {
+      "src": "references/female-attack-left-06.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 25,
+      "sha256": "52e8d1719e2330965360bb79603a241634af6b8d455a110fdb8877f6d9ac098f"
+    },
+    {
+      "src": "references/female-attack-left-07.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 36,
+      "sha256": "05773a419631076c55bf7babe0cbe0a63a6d3f0d97158f7c4d3efe5a23bddb3b"
+    }
+  ],
+  "status": "motion-reference-reviewed; not painted final game art"
+}

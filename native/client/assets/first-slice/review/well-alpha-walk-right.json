@@ -1,0 +1,391 @@
+{
+  "clip": "well-alpha-walk-right",
+  "source_sha256": "e657b04f80afa8314ffa0ca522b82c1e92d68c9b9e79cb530b04bc7417ad4fe7",
+  "frame_size": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    64
+  ],
+  "base_cell": 48,
+  "alpha_policy": "Returned alpha threshold 128; no RGB key",
+  "grid_candidates": [
+    {
+      "size": 16,
+      "source": "autocorr",
+      "offset": [
+        8,
+        11
+      ],
+      "score": 1.3084829744931725,
+      "variance": 465.8815002441406,
+      "gated_out": false
+    },
+    {
+      "size": 24,
+      "source": "autocorr",
+      "offset": [
+        16,
+        11
+      ],
+      "score": 1.2985366234045916,
+      "variance": 674.5498046875,
+      "gated_out": true
+    },
+    {
+      "size": 22,
+      "source": "autocorr",
+      "offset": [
+        13,
+        5
+      ],
+      "score": 1.2701491451873144,
+      "variance": 625.8892211914062,
+      "gated_out": true
+    },
+    {
+      "size": 19,
+      "source": "autocorr",
+      "offset": [
+        10,
+        12
+      ],
+      "score": 1.2660252979204163,
+      "variance": 568.328125,
+      "gated_out": false
+    },
+    {
+      "size": 13,
+      "source": "autocorr",
+      "offset": [
+        7,
+        9
+      ],
+      "score": 1.2372404199881128,
+      "variance": 411.3701477050781,
+      "gated_out": false
+    },
+    {
+      "size": 8,
+      "source": "fine",
+      "offset": [
+        0,
+        3
+      ],
+      "score": 1.137395173697199,
+      "variance": 254.6167755126953,
+      "gated_out": false
+    },
+    {
+      "size": 9,
+      "source": "autocorr",
+      "offset": [
+        6,
+        2
+      ],
+      "score": 1.1239468961158436,
+      "variance": 298.28851318359375,
+      "gated_out": false
+    },
+    {
+      "size": 7,
+      "source": "fine",
+      "offset": [
+        3,
+        6
+      ],
+      "score": 1.0772866701287602,
+      "variance": 241.19381713867188,
+      "gated_out": false
+    },
+    {
+      "size": 6,
+      "source": "autocorr",
+      "offset": [
+        5,
+        5
+      ],
+      "score": 1.0497574694051774,
+      "variance": 206.327392578125,
+      "gated_out": false
+    },
+    {
+      "size": 5,
+      "source": "fine",
+      "offset": [
+        1,
+        3
+      ],
+      "score": 1.0077073128057212,
+      "variance": 170.4685821533203,
+      "gated_out": false
+    },
+    {
+      "size": 4,
+      "source": "fine",
+      "offset": [
+        0,
+        3
+      ],
+      "score": 0.9659736024414151,
+      "variance": 137.6662139892578,
+      "gated_out": false
+    },
+    {
+      "size": 3,
+      "source": "autocorr",
+      "offset": [
+        2,
+        2
+      ],
+      "score": 0.9643380555232975,
+      "variance": 93.95307159423828,
+      "gated_out": false
+    },
+    {
+      "size": 170,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.513643769259008,
+      "variance": 1572.1826171875,
+      "gated_out": true
+    },
+    {
+      "size": 171,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.5086836718690622,
+      "variance": 1582.6201171875,
+      "gated_out": true
+    },
+    {
+      "size": 175,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.48289229515410764,
+      "variance": 1737.8511962890625,
+      "gated_out": true
+    },
+    {
+      "size": 192,
+      "source": "fold",
+      "offset": [
+        101,
+        10
+      ],
+      "score": 0.43517661040785005,
+      "variance": 2956.758544921875,
+      "gated_out": true
+    },
+    {
+      "size": 190,
+      "source": "fold",
+      "offset": [
+        105,
+        12
+      ],
+      "score": 0.4313368041249441,
+      "variance": 2919.529541015625,
+      "gated_out": true
+    },
+    {
+      "size": 184,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.4269845020231569,
+      "variance": 2485.095947265625,
+      "gated_out": true
+    },
+    {
+      "size": 188,
+      "source": "fold",
+      "offset": [
+        109,
+        14
+      ],
+      "score": 0.4266217900051554,
+      "variance": 2879.843505859375,
+      "gated_out": true
+    },
+    {
+      "size": 187,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.4107127854143329,
+      "variance": 2674.52392578125,
+      "gated_out": true
+    }
+  ],
+  "visual_acceptance": false,
+  "frames": [
+    {
+      "file": "well-alpha-walk-right-00.png",
+      "bbox": [
+        4,
+        22,
+        94,
+        70
+      ],
+      "reference": {
+        "file": "well-alpha-walk-right-00.png",
+        "blender_frame": 0,
+        "src": "blender-wolves/well-alpha-walk-right-00.png",
+        "sha256": "d64e2797ba7ae4c2bf99d4da2b736ca54957caeb5cb9156b8ab59ff6b298a726"
+      },
+      "silhouette_iou": 0.8827514330380406,
+      "sha256": "eb22f2ab0ad28e030f595a43225a951052b2e7376fea09208bb922187887b295"
+    },
+    {
+      "file": "well-alpha-walk-right-01.png",
+      "bbox": [
+        4,
+        22,
+        94,
+        70
+      ],
+      "reference": {
+        "file": "well-alpha-walk-right-01.png",
+        "blender_frame": 5,
+        "src": "blender-wolves/well-alpha-walk-right-01.png",
+        "sha256": "763548de544117d180773af73f8b66dfe74fef46a3c110bb40a751370668669b"
+      },
+      "silhouette_iou": 0.8953846153846153,
+      "sha256": "e0f5c9d798a2fd6ff817faa43d98dfccb01b9bab42065472093d893abdd8332d"
+    },
+    {
+      "file": "well-alpha-walk-right-02.png",
+      "bbox": [
+        4,
+        20,
+        93,
+        68
+      ],
+      "reference": {
+        "file": "well-alpha-walk-right-02.png",
+        "blender_frame": 10,
+        "src": "blender-wolves/well-alpha-walk-right-02.png",
+        "sha256": "5a8d23a7a2cecc13c7bd5b628d03deb0ecd2e605f3fb189dd47718a5b24ea12e"
+      },
+      "silhouette_iou": 0.9029579657498703,
+      "sha256": "9f3b354ed080c038f183d639a4e0ec3684c0c817394761df2f6bfa0d9ea46d26"
+    },
+    {
+      "file": "well-alpha-walk-right-03.png",
+      "bbox": [
+        6,
+        22,
+        94,
+        69
+      ],
+      "reference": {
+        "file": "well-alpha-walk-right-03.png",
+        "blender_frame": 15,
+        "src": "blender-wolves/well-alpha-walk-right-03.png",
+        "sha256": "101a207f0e0965746f74c1f3847e0c50a1bd1befd35d6860a39872450c85868b"
+      },
+      "silhouette_iou": 0.8997455470737914,
+      "sha256": "9635dac754daf67973182ca731ac4c304daec8574c5726f4e20348ec1a397b87"
+    },
+    {
+      "file": "well-alpha-walk-right-04.png",
+      "bbox": [
+        9,
+        22,
+        94,
+        69
+      ],
+      "reference": {
+        "file": "well-alpha-walk-right-04.png",
+        "blender_frame": 20,
+        "src": "blender-wolves/well-alpha-walk-right-04.png",
+        "sha256": "116c2004d624c5e608bd23b4ba37caee91ca21d9e25d9b571fb13140c13c23ed"
+      },
+      "silhouette_iou": 0.8912480580010357,
+      "sha256": "0007c194bd77443dfa54b44c3cb829f07c30402f3db2b3dbff195007b0434f7e"
+    },
+    {
+      "file": "well-alpha-walk-right-05.png",
+      "bbox": [
+        6,
+        22,
+        94,
+        69
+      ],
+      "reference": {
+        "file": "well-alpha-walk-right-05.png",
+        "blender_frame": 25,
+        "src": "blender-wolves/well-alpha-walk-right-05.png",
+        "sha256": "c175c4b50600e5c6e9ee18d55e3723fe73ac7dfb6fcae9b677ae2d97366a6209"
+      },
+      "silhouette_iou": 0.8952528379772962,
+      "sha256": "aaacec241cdb1a3effb5d3b5f77fbb1711af61f98cfc8438d1497cc0f2262997"
+    },
+    {
+      "file": "well-alpha-walk-right-06.png",
+      "bbox": [
+        4,
+        21,
+        93,
+        70
+      ],
+      "reference": {
+        "file": "well-alpha-walk-right-06.png",
+        "blender_frame": 30,
+        "src": "blender-wolves/well-alpha-walk-right-06.png",
+        "sha256": "1f15769bc4c4dc8a9f12ac85e2487dbd27e6097733b77590526d50381a38a563"
+      },
+      "silhouette_iou": 0.8945473251028807,
+      "sha256": "f08bcddd3448a7714960c8791644f37dffdd37f1e7e48c36f5d9775561266fdf"
+    },
+    {
+      "file": "well-alpha-walk-right-07.png",
+      "bbox": [
+        4,
+        22,
+        94,
+        70
+      ],
+      "reference": {
+        "file": "well-alpha-walk-right-07.png",
+        "blender_frame": 35,
+        "src": "blender-wolves/well-alpha-walk-right-07.png",
+        "sha256": "45244fddad3ac97875ac879f40922434c316f1c2f3fd8116d023508b458c5dc4"
+      },
+      "silhouette_iou": 0.8932847475273296,
+      "sha256": "16e678eeb4ae25c364dee336056165bf3a344cf1949ef1cb6b9f4e1078e24b14"
+    }
+  ],
+  "selected_grid": {
+    "size": 4,
+    "source": "fine",
+    "offset": [
+      0,
+      3
+    ],
+    "score": 0.9659736024414151,
+    "variance": 137.6662139892578,
+    "gated_out": false
+  },
+  "whole_cycle_translation": [
+    0,
+    -1
+  ],
+  "registered_mean_iou": 0.9050712875325012
+}

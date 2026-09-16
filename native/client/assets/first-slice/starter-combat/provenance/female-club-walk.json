@@ -1,0 +1,370 @@
+{
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2-female-refine\\blender\\female-walk-exterior.blend",
+  "source_sha256": "a668944a456fa2ba79de9617b4562501a690b060c5461ab12424e2cb6fee4cd4",
+  "equipment": "branch-club",
+  "hand": "right",
+  "frame_size": [
+    96,
+    96
+  ],
+  "pixels_per_metre": 48,
+  "frames": [
+    {
+      "src": "references/female-club-walk-front-00.png",
+      "direction": "front",
+      "phase": 0,
+      "source_frame": 72,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "3ddb608a19f97e4b56b64ab88103639a6f1ad614ea5cc6a669e163ef6fa90d3a"
+    },
+    {
+      "src": "references/female-club-walk-front-01.png",
+      "direction": "front",
+      "phase": 1,
+      "source_frame": 76,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "c059aec4313ba061898ff930bbec09076f9b1f3301bc771dab0f4affead83ee1"
+    },
+    {
+      "src": "references/female-club-walk-front-02.png",
+      "direction": "front",
+      "phase": 2,
+      "source_frame": 80,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "10df559b8dee5e9869a894f9fb7b3829277fedd3405d6a719109475ad830a242"
+    },
+    {
+      "src": "references/female-club-walk-front-03.png",
+      "direction": "front",
+      "phase": 3,
+      "source_frame": 84,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "9d8e46452b8e78add480b1697ccf58fa5403b0ff8e80f489b78e8cfaad456b6a"
+    },
+    {
+      "src": "references/female-club-walk-front-04.png",
+      "direction": "front",
+      "phase": 4,
+      "source_frame": 88,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "bd4e12660cb5f046251043201766883c611ad84b5342dcecdccad862bd4dd606"
+    },
+    {
+      "src": "references/female-club-walk-front-05.png",
+      "direction": "front",
+      "phase": 5,
+      "source_frame": 92,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "edfc0b05b8097805902d991f928529a0aa2616492dfbdcc444134a406008db7c"
+    },
+    {
+      "src": "references/female-club-walk-front-06.png",
+      "direction": "front",
+      "phase": 6,
+      "source_frame": 96,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "6c7968a31e5f2bcb8ac8b271e76e64410aac063442a0ca7ba497fde1cab8576f"
+    },
+    {
+      "src": "references/female-club-walk-front-07.png",
+      "direction": "front",
+      "phase": 7,
+      "source_frame": 100,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "9af53886d71a830094129ae69cfc062d93504815b1cdddafa37efae078bf9c50"
+    },
+    {
+      "src": "references/female-club-walk-right-00.png",
+      "direction": "right",
+      "phase": 0,
+      "source_frame": 72,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "7d8b2fcf460a600c732310ecd9f76b83d4bfd59d177fdadc36ed5280ecbaeea4"
+    },
+    {
+      "src": "references/female-club-walk-right-01.png",
+      "direction": "right",
+      "phase": 1,
+      "source_frame": 76,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "78c8696892ba74c4f3bc218f7680090d36dbcdc33807104e8a547a1ca44419f6"
+    },
+    {
+      "src": "references/female-club-walk-right-02.png",
+      "direction": "right",
+      "phase": 2,
+      "source_frame": 80,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "e4a045d420657b0d4c8c83548567825a1ee1e570e9394b137adf5be030e6eaa3"
+    },
+    {
+      "src": "references/female-club-walk-right-03.png",
+      "direction": "right",
+      "phase": 3,
+      "source_frame": 84,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "673191ee127d5dd7f40553338134753fdba1741c215f81f4dc2c020e8095531a"
+    },
+    {
+      "src": "references/female-club-walk-right-04.png",
+      "direction": "right",
+      "phase": 4,
+      "source_frame": 88,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "c7a8192fa09fd8dd21874e2b2ecab3eb979516685de3481172c15737711c760b"
+    },
+    {
+      "src": "references/female-club-walk-right-05.png",
+      "direction": "right",
+      "phase": 5,
+      "source_frame": 92,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "faed4cec6e014f18826bf3ae6a2ef1946035911bc7bd54ef66722a0f2c784328"
+    },
+    {
+      "src": "references/female-club-walk-right-06.png",
+      "direction": "right",
+      "phase": 6,
+      "source_frame": 96,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "b6c729b0fe6d35a361802fe687734b0943e1945a332717ea5887f2af24357816"
+    },
+    {
+      "src": "references/female-club-walk-right-07.png",
+      "direction": "right",
+      "phase": 7,
+      "source_frame": 100,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "6ea471d10d28aa45e4e4fb0812c33ee3152795dc5c736d4de7ba1af77b37e7df"
+    },
+    {
+      "src": "references/female-club-walk-back-00.png",
+      "direction": "back",
+      "phase": 0,
+      "source_frame": 72,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "721f8685476b45ce397cf350fe137d35f45d3083271613de38b0b856acaa4c6d"
+    },
+    {
+      "src": "references/female-club-walk-back-01.png",
+      "direction": "back",
+      "phase": 1,
+      "source_frame": 76,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "e8bf6243aef290754a8ee6757ef4c79c08c82e5cf6d1e704f5192bc0773a5803"
+    },
+    {
+      "src": "references/female-club-walk-back-02.png",
+      "direction": "back",
+      "phase": 2,
+      "source_frame": 80,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "56b0480c456857af86ebc92e957b21a0d421d077d709ddc1ee759e8636cc0f66"
+    },
+    {
+      "src": "references/female-club-walk-back-03.png",
+      "direction": "back",
+      "phase": 3,
+      "source_frame": 84,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "938a91ff8b58e3e6243586d7bc4d07ed7b94098d2e87a9ea44354ea9b1caa282"
+    },
+    {
+      "src": "references/female-club-walk-back-04.png",
+      "direction": "back",
+      "phase": 4,
+      "source_frame": 88,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "74fc070ef5b4b93d041832d85a4c6d48c87ef34d602003add993a2abb4cdd5c6"
+    },
+    {
+      "src": "references/female-club-walk-back-05.png",
+      "direction": "back",
+      "phase": 5,
+      "source_frame": 92,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "26084a2c4abe2ccd26ffb8ac1d4e32dfedda6c8e8fbb0ce25963f1e31b98740b"
+    },
+    {
+      "src": "references/female-club-walk-back-06.png",
+      "direction": "back",
+      "phase": 6,
+      "source_frame": 96,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "de471627c2ffd2d77c779793c4a76554dfa1806261463749506acceea30814fe"
+    },
+    {
+      "src": "references/female-club-walk-back-07.png",
+      "direction": "back",
+      "phase": 7,
+      "source_frame": 100,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "855e42070c82fa76160096692572447fb9aa930298ac019468814567682603a9"
+    },
+    {
+      "src": "references/female-club-walk-left-00.png",
+      "direction": "left",
+      "phase": 0,
+      "source_frame": 72,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "40f29cfcb74cc6295d361287c0a1665163d45e34c0fc2ac555dff7a10bf28e90"
+    },
+    {
+      "src": "references/female-club-walk-left-01.png",
+      "direction": "left",
+      "phase": 1,
+      "source_frame": 76,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "13d8da23c52a6cae26e840e16410ffeadb4f8c1b5f26f110d66ce0f70d6f6d71"
+    },
+    {
+      "src": "references/female-club-walk-left-02.png",
+      "direction": "left",
+      "phase": 2,
+      "source_frame": 80,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "6ad4c46ad9cd0f7017bef2099094d2ad2815d966cdeaa42f1a2efee3ed106777"
+    },
+    {
+      "src": "references/female-club-walk-left-03.png",
+      "direction": "left",
+      "phase": 3,
+      "source_frame": 84,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "c6b1cf6951264925fa5c73403f0b0620c22677e0e409d9caa9a6c5fa89557a67"
+    },
+    {
+      "src": "references/female-club-walk-left-04.png",
+      "direction": "left",
+      "phase": 4,
+      "source_frame": 88,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "1e99f2971bee75998f2e787505c313f54f2cd2fb52cb39fa4f0bc65de76d8cbe"
+    },
+    {
+      "src": "references/female-club-walk-left-05.png",
+      "direction": "left",
+      "phase": 5,
+      "source_frame": 92,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "8692436a2bb6dafff7d34a6b0ea766d259c87d755c4075e6af1fe2811e7a6d35"
+    },
+    {
+      "src": "references/female-club-walk-left-06.png",
+      "direction": "left",
+      "phase": 6,
+      "source_frame": 96,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "42e5bb29232f6add56c8371a7142934cec7a2d0369e3e22199e9ae24ac02a17b"
+    },
+    {
+      "src": "references/female-club-walk-left-07.png",
+      "direction": "left",
+      "phase": 7,
+      "source_frame": 100,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "97259af73921e4ae476469e4e0aefd041e46cb5931392f88a8d35674d6286208"
+    }
+  ],
+  "status": "motion-reference-reviewed; not painted final game art",
+  "anchor": [
+    48,
+    80
+  ]
+}

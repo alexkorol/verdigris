@@ -1,0 +1,230 @@
+[
+  {
+    "actor": "field-hand",
+    "source": "Z:\\Code\\.worktrees\\wizard-art-player-guides\\art_studies\\starter-slice-v02-identities\\sources\\field-hand.blend",
+    "source_sha256": "08a1189987d4d19fd54761abba193cf17d9dd9d08f4cdedeffd4c07a8f75d09e",
+    "frame": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      80
+    ],
+    "pixels_per_metre": 48,
+    "frames": [
+      {
+        "direction": "front",
+        "file": "field-hand-front.png",
+        "sha256": "4a6544b007b1657822dcd72da1d57a6bc63e8219c02d13febbf8586cb257deba"
+      },
+      {
+        "direction": "right",
+        "file": "field-hand-right.png",
+        "sha256": "dac37f107204669016091f58fb779fba0fa63de573089a5cb481527ca8406789"
+      },
+      {
+        "direction": "back",
+        "file": "field-hand-back.png",
+        "sha256": "7f60feb536004851ffce4135cf22002e3d2559eebc4e3ce5f8ee0b1a23026689"
+      },
+      {
+        "direction": "left",
+        "file": "field-hand-left.png",
+        "sha256": "0ff3af497204e005342e16e9fda2b071c57db2f9b75e938fb1e5014a7c4f55a0"
+      }
+    ],
+    "actions": []
+  },
+  {
+    "actor": "scribe",
+    "source": "Z:\\Code\\.worktrees\\wizard-art-player-guides\\art_studies\\starter-slice-v02-identities\\sources\\scribe.blend",
+    "source_sha256": "63c2d772eaf1b8a0e44b719087c6db20b1d257197772294e0c7bacb257285351",
+    "frame": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      80
+    ],
+    "pixels_per_metre": 48,
+    "frames": [
+      {
+        "direction": "front",
+        "file": "scribe-front.png",
+        "sha256": "21ed9d1d9310581be697f394cc57d4472c08ee8461446ff1a740584960f829f7"
+      },
+      {
+        "direction": "right",
+        "file": "scribe-right.png",
+        "sha256": "46e0fc3d112e1756430b7fdaa8cf079705605dac215f8965cb39bf0d4b7e8b35"
+      },
+      {
+        "direction": "back",
+        "file": "scribe-back.png",
+        "sha256": "e4abda8895938a7e2882fe888819ebb7372d336d6e71636bb3010c69c750cdf3"
+      },
+      {
+        "direction": "left",
+        "file": "scribe-left.png",
+        "sha256": "53ea473636a910a04c5a42c81f426e58551a1307083d3bfffb5ad447d6f48728"
+      }
+    ],
+    "actions": []
+  },
+  {
+    "actor": "scout",
+    "source": "Z:\\Code\\.worktrees\\wizard-art-player-guides\\art_studies\\starter-slice-v02-identities\\sources\\scout.blend",
+    "source_sha256": "fc5000d48295277223861530e067ab685e9343c5486c51e68702e3243e5ed939",
+    "frame": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      80
+    ],
+    "pixels_per_metre": 48,
+    "frames": [
+      {
+        "direction": "front",
+        "file": "scout-front.png",
+        "sha256": "fab4ff1990c58b5d5e1e12ebd0235fb105f98a47f03be00a5fa4f077909d6057"
+      },
+      {
+        "direction": "right",
+        "file": "scout-right.png",
+        "sha256": "74d3913647b5ced432de1c731bb056fe7d6f4c38b4bd1ed0c1359fc844a5f612"
+      },
+      {
+        "direction": "back",
+        "file": "scout-back.png",
+        "sha256": "61073feb15e0ca3a830253ce6c5e82f009ccad1dc0fe31951d91840af0009e86"
+      },
+      {
+        "direction": "left",
+        "file": "scout-left.png",
+        "sha256": "a18615c6b86fc35575147c3d91022e7613904a4b0e09580216a63fd8f618b17f"
+      }
+    ],
+    "actions": []
+  },
+  {
+    "actor": "defender",
+    "source": "Z:\\Code\\.worktrees\\wizard-art-player-guides\\art_studies\\starter-slice-v02-identities\\sources\\defender.blend",
+    "source_sha256": "f19b1b0bcb62a5dc80ab86417516e4d92f1f97a2516b7db411a739f8365b12ce",
+    "frame": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      80
+    ],
+    "pixels_per_metre": 48,
+    "frames": [
+      {
+        "direction": "front",
+        "file": "defender-front.png",
+        "sha256": "da05ee1e4ce6d9ccdc97779a544a56c57590c3455ebe2396cd5591364c7e7ba6"
+      },
+      {
+        "direction": "right",
+        "file": "defender-right.png",
+        "sha256": "de12c6d7e9d9555bc71a29e480a47c91a7cf83caf3bf01c895ac2ffe827c05a6"
+      },
+      {
+        "direction": "back",
+        "file": "defender-back.png",
+        "sha256": "a6c477222f80fe0be17cc15b1142de02a8488dfef481152e3c584c9e1aa70bf2"
+      },
+      {
+        "direction": "left",
+        "file": "defender-left.png",
+        "sha256": "cd22d9509a30007312ea0267f7bb0f11392a097496ccdb938910ba472a173020"
+      }
+    ],
+    "actions": []
+  },
+  {
+    "actor": "pack-wolf",
+    "source": "Z:\\Code\\.worktrees\\wizard-art-player-guides\\art_studies\\starter-slice-v01\\sources\\pack-wolf.blend",
+    "source_sha256": "a56f8c072413d7e17031477f406e48086e6b971d6d3270796f32bf8e349234bf",
+    "frame": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      80
+    ],
+    "pixels_per_metre": 48,
+    "frames": [
+      {
+        "direction": "front",
+        "file": "pack-wolf-front.png",
+        "sha256": "c9b843d2265a6330409cf144f3aa485f776db06c140eaf06192642ef4638a09a"
+      },
+      {
+        "direction": "right",
+        "file": "pack-wolf-right.png",
+        "sha256": "811dc591efce09156bdd16631e89b274e0186d9a061fc7cdef6ff5c5457f5687"
+      },
+      {
+        "direction": "back",
+        "file": "pack-wolf-back.png",
+        "sha256": "95cf858c108a10b4d867cad51232f90016586ec2d0688bdee86ad3cdd1324300"
+      },
+      {
+        "direction": "left",
+        "file": "pack-wolf-left.png",
+        "sha256": "04b76ad982870a5b966528c87c222a0ab94d6faebfc4071339c609cf83438a19"
+      }
+    ],
+    "actions": [
+      "Idle",
+      "Walking"
+    ]
+  },
+  {
+    "actor": "well-alpha",
+    "source": "Z:\\Code\\.worktrees\\wizard-art-player-guides\\art_studies\\starter-slice-v01\\sources\\well-alpha.blend",
+    "source_sha256": "cf35b75d3c0676eeace77a5b5f5d23d055671d4945dbd1188e90fe3ca51e6a29",
+    "frame": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      80
+    ],
+    "pixels_per_metre": 48,
+    "frames": [
+      {
+        "direction": "front",
+        "file": "well-alpha-front.png",
+        "sha256": "eeddb2bb524371ff81cb138a2fa699b87d86fdd4ff0f9541c4f2be7bdcf8b999"
+      },
+      {
+        "direction": "right",
+        "file": "well-alpha-right.png",
+        "sha256": "c770a4436fb4588399ea6796d30e27636dd1692f8ba2794b1c1294f29108521d"
+      },
+      {
+        "direction": "back",
+        "file": "well-alpha-back.png",
+        "sha256": "7ae1b1fcc6fa1235140bc504642a97e050fc00286871561d7015006d8599c056"
+      },
+      {
+        "direction": "left",
+        "file": "well-alpha-left.png",
+        "sha256": "4f0d8684790dbded1990a43bce3ab16b537345e20450a5eafc096d796f08a9ca"
+      }
+    ],
+    "actions": [
+      "Idle",
+      "Walking"
+    ]
+  }
+]

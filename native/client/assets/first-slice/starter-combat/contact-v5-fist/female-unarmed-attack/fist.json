@@ -1,0 +1,52 @@
+{
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\contact-v4-repaired\\female-unarmed-attack\\unarmed-attack-transition.blend",
+  "source_sha256": "a686965c258bb04ae376d8b9c8f38d4471fc7b21e527c949abfc77a1f6a733c0",
+  "method": "Existing curved fingers move gently toward a palm-plane contact target using bounded CCD corrections; each joint changes at most20.05degrees. Thumb remains outside. Closure ramps with preparation/recovery; endpoints unchanged.",
+  "changes": [
+    {
+      "phase": 8,
+      "closure_weight": 1,
+      "fingers": {
+        "index": {
+          "tip_plane_before_m": 0.021055385237559676,
+          "tip_plane_after_m": 0.013999956892803311,
+          "joint_adjustments_degrees": {
+            "index_01_r": 4.743597976920404,
+            "index_02_r": 7.314798481134707,
+            "index_03_r": -0.27448438090011995
+          }
+        },
+        "middle": {
+          "tip_plane_before_m": 0.02901863696752116,
+          "tip_plane_after_m": 0.013999917573528364,
+          "joint_adjustments_degrees": {
+            "middle_01_r": 8.949867731325853,
+            "middle_02_r": 8.764497089856025,
+            "middle_03_r": 7.156859547986846
+          }
+        },
+        "ring": {
+          "tip_plane_before_m": 0.02499100956993061,
+          "tip_plane_after_m": 0.013999960978253512,
+          "joint_adjustments_degrees": {
+            "ring_01_r": 6.151956001954193,
+            "ring_02_r": 7.098688405988383,
+            "ring_03_r": 5.086915470830298
+          }
+        },
+        "pinky": {
+          "tip_plane_before_m": 0.02014303402393125,
+          "tip_plane_after_m": 0.013999853312270716,
+          "joint_adjustments_degrees": {
+            "pinky_01_r": 4.289767251430993,
+            "pinky_02_r": 7.645299022744995,
+            "pinky_03_r": 0.8207494785619812
+          }
+        }
+      }
+    }
+  ],
+  "contact_index": 8,
+  "normalized_contact_phase": 0.5,
+  "equipment": "unarmed"
+}

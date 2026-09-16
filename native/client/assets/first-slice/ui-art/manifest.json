@@ -1,0 +1,325 @@
+{
+  "version": 1,
+  "source_sha256": "10676d359f3491774b5f83922f7c2ef4671fb81a64978c4c6699c0388f531c4c",
+  "source_size": [
+    1536,
+    1024
+  ],
+  "alpha_zero_fraction": 0.8285846710205078,
+  "native_frame": [
+    48,
+    96
+  ],
+  "pixel_grid": {
+    "size": 8,
+    "source": "fine",
+    "offset": [
+      7,
+      3
+    ],
+    "score": 1.2769587354656011,
+    "variance": 254.1878204345703,
+    "gated_out": false
+  },
+  "grid_candidates": [
+    {
+      "size": 7,
+      "source": "fine",
+      "offset": [
+        5,
+        2
+      ],
+      "score": 1.3622316092633098,
+      "variance": 198.98667907714844,
+      "gated_out": false
+    },
+    {
+      "size": 35,
+      "source": "autocorr",
+      "offset": [
+        32,
+        10
+      ],
+      "score": 1.353453261773317,
+      "variance": 906.182373046875,
+      "gated_out": true
+    },
+    {
+      "size": 41,
+      "source": "autocorr",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 1.3269945569805435,
+      "variance": 970.11376953125,
+      "gated_out": true
+    },
+    {
+      "size": 6,
+      "source": "autocorr",
+      "offset": [
+        3,
+        3
+      ],
+      "score": 1.3173842604389008,
+      "variance": 186.12445068359375,
+      "gated_out": false
+    },
+    {
+      "size": 29,
+      "source": "autocorr",
+      "offset": [
+        21,
+        12
+      ],
+      "score": 1.3142186281537975,
+      "variance": 797.5362548828125,
+      "gated_out": true
+    },
+    {
+      "size": 8,
+      "source": "fine",
+      "offset": [
+        7,
+        3
+      ],
+      "score": 1.2769587354656011,
+      "variance": 254.1878204345703,
+      "gated_out": false
+    },
+    {
+      "size": 23,
+      "source": "autocorr",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 1.2705740025592847,
+      "variance": 643.4756469726562,
+      "gated_out": true
+    },
+    {
+      "size": 11,
+      "source": "autocorr",
+      "offset": [
+        10,
+        9
+      ],
+      "score": 1.2674744878788335,
+      "variance": 355.77777099609375,
+      "gated_out": false
+    },
+    {
+      "size": 17,
+      "source": "autocorr",
+      "offset": [
+        0,
+        6
+      ],
+      "score": 1.260776969292018,
+      "variance": 507.5166320800781,
+      "gated_out": false
+    },
+    {
+      "size": 12,
+      "source": "autocorr",
+      "offset": [
+        3,
+        4
+      ],
+      "score": 1.258224857963727,
+      "variance": 376.4468078613281,
+      "gated_out": false
+    },
+    {
+      "size": 5,
+      "source": "fine",
+      "offset": [
+        0,
+        1
+      ],
+      "score": 1.2395149232084788,
+      "variance": 161.72525024414062,
+      "gated_out": false
+    },
+    {
+      "size": 4,
+      "source": "fine",
+      "offset": [
+        3,
+        2
+      ],
+      "score": 1.224680835440394,
+      "variance": 126.96664428710938,
+      "gated_out": false
+    },
+    {
+      "size": 3,
+      "source": "fine",
+      "offset": [
+        1,
+        1
+      ],
+      "score": 1.1980949888621306,
+      "variance": 87.0657730102539,
+      "gated_out": false
+    },
+    {
+      "size": 187,
+      "source": "fold",
+      "offset": [
+        102,
+        151
+      ],
+      "score": 0.6582200560940767,
+      "variance": 3008.455078125,
+      "gated_out": true
+    },
+    {
+      "size": 183,
+      "source": "fold",
+      "offset": [
+        108,
+        175
+      ],
+      "score": 0.633781710211363,
+      "variance": 3242.9814453125,
+      "gated_out": true
+    },
+    {
+      "size": 156,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.5809091869082571,
+      "variance": 1800.3209228515625,
+      "gated_out": true
+    },
+    {
+      "size": 157,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.5781467190217539,
+      "variance": 1812.0498046875,
+      "gated_out": true
+    },
+    {
+      "size": 162,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.5148373192792346,
+      "variance": 2021.1995849609375,
+      "gated_out": true
+    },
+    {
+      "size": 174,
+      "source": "fold",
+      "offset": [
+        153,
+        59
+      ],
+      "score": 0.5082135805230805,
+      "variance": 3260.59765625,
+      "gated_out": true
+    },
+    {
+      "size": 177,
+      "source": "fold",
+      "offset": [
+        166,
+        4
+      ],
+      "score": 0.4628761990711072,
+      "variance": 2881.622314453125,
+      "gated_out": true
+    },
+    {
+      "size": 168,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.4253472794363362,
+      "variance": 2367.524169921875,
+      "gated_out": true
+    }
+  ],
+  "processing": "Pixel Respecter empirical reconstruction on fixed 8x grid. No arbitrary resize, per-item fitting, RGB keying, or interpolation.",
+  "visual_acceptance": false,
+  "items": [
+    {
+      "id": "wooden_club",
+      "file": "icons/wooden_club.png",
+      "bbox": [
+        16,
+        23,
+        30,
+        81
+      ],
+      "size": [
+        48,
+        96
+      ],
+      "usage": "inventory only; not a world drop or held-weapon sprite",
+      "sha256": "38164b772d3d2ffd6cb3eeebd3e2f788764ffd8aff71d28891d28b1323d5a935"
+    },
+    {
+      "id": "starter_flax_tunic_male",
+      "file": "icons/starter_flax_tunic_male.png",
+      "bbox": [
+        5,
+        22,
+        42,
+        84
+      ],
+      "size": [
+        48,
+        96
+      ],
+      "usage": "inventory only; not a world drop or held-weapon sprite",
+      "sha256": "b9b4a7922e7a5b3d8a2fd03faecd8612db7bee9845ba4125e500bdc874118b23"
+    },
+    {
+      "id": "starter_flax_tunic_female",
+      "file": "icons/starter_flax_tunic_female.png",
+      "bbox": [
+        6,
+        25,
+        41,
+        83
+      ],
+      "size": [
+        48,
+        96
+      ],
+      "usage": "inventory only; not a world drop or held-weapon sprite",
+      "sha256": "43ed70518a29a639dc866e26751cb30325bf50a945a717e3c11b2f062f2096bc"
+    },
+    {
+      "id": "starter_woven_footwear",
+      "file": "icons/starter_woven_footwear.png",
+      "bbox": [
+        2,
+        55,
+        40,
+        83
+      ],
+      "size": [
+        48,
+        96
+      ],
+      "usage": "inventory only; not a world drop or held-weapon sprite",
+      "sha256": "0af5aa54026fc330687b147ec0eeba2e7cca2542a581e78973f11ffe24d2ed82"
+    }
+  ]
+}

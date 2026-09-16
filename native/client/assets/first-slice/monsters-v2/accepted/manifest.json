@@ -2582,6 +2582,314 @@
       "blender_action": "Verdigris_well-alpha_hit",
       "reference_guide": "guides/well-alpha-hit-left.png",
       "reference_guide_sha256": "46d1ecaa1e0c53e3c66cd0567079d3752e4b04cf08a2dc50d7c390db2a478a29"
+    },
+    "well-alpha-attack-front": {
+      "actor": "well-alpha",
+      "action": "attack",
+      "direction": "front",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/well-alpha-attack-front-00.png",
+          "sha256": "b9e71680c3dee13826774d62fea20f78ad7abc872e4d2fde5dd4596ec71d775b",
+          "reference": "references/well-alpha-attack-front-00.png",
+          "reference_sha256": "e64d298e556d8757e00001452d73195ba5d02624c077baa45387bb208be663df",
+          "phase": 0,
+          "source": "originals/well-alpha-attack-front.png",
+          "source_sha256": "3cc3398edcf9ccde0b58aeceafddb43699be0d0905631da62ed9c3223502fe1b",
+          "silhouette_iou": 0.8613636363636363,
+          "report": "reports/well-alpha-attack-front.json"
+        },
+        {
+          "file": "frames/well-alpha-attack-front-01.png",
+          "sha256": "1e35d1ec1a8780874244354159128d1ec23a4d4d0639ceabd4bc561adbb8665f",
+          "reference": "references/well-alpha-attack-front-01.png",
+          "reference_sha256": "06fa85e28cc2bf08962d457a694f4e0bed3269ad2f5c6137cb8881c379af2d94",
+          "phase": 1,
+          "source": "originals/well-alpha-attack-front.png",
+          "source_sha256": "3cc3398edcf9ccde0b58aeceafddb43699be0d0905631da62ed9c3223502fe1b",
+          "silhouette_iou": 0.8747346072186837,
+          "report": "reports/well-alpha-attack-front.json"
+        },
+        {
+          "file": "frames/well-alpha-attack-front-02.png",
+          "sha256": "d0e345bf9a036a1d11361c2f691fef4ed6644a34a2ad82726d26151c5eedb088",
+          "reference": "references/well-alpha-attack-front-02.png",
+          "reference_sha256": "1309a5c649300f7f3c3bc79ee289005e89e31159c05e9e0e86381a31854fdf40",
+          "phase": 2,
+          "source": "originals/well-alpha-attack-front.png",
+          "source_sha256": "3cc3398edcf9ccde0b58aeceafddb43699be0d0905631da62ed9c3223502fe1b",
+          "silhouette_iou": 0.8615702479338843,
+          "report": "reports/well-alpha-attack-front.json"
+        },
+        {
+          "file": "frames/well-alpha-attack-front-03.png",
+          "sha256": "d12ede9e7c16ad9cadffca2317313c0e512c54d629a9ab0534d4dc0748ff9a83",
+          "reference": "references/well-alpha-attack-front-03.png",
+          "reference_sha256": "0867e5813521617394a814bbf30e3721afd6e3a7db4e3e7d08dfd538ca3cf5b5",
+          "phase": 3,
+          "source": "originals/well-alpha-attack-front.png",
+          "source_sha256": "3cc3398edcf9ccde0b58aeceafddb43699be0d0905631da62ed9c3223502fe1b",
+          "silhouette_iou": 0.8561946902654868,
+          "report": "reports/well-alpha-attack-front.json"
+        }
+      ],
+      "blender": "blender/well-alpha-attack-canvas128.blend",
+      "blender_sha256": "294e5d0b56962978f46b85f6b2d3e764e9141895719b2c73bdf2df0a0f93a689",
+      "blender_action": "Verdigris_well-alpha_attack",
+      "reference_guide": "guides/well-alpha-attack-front.png",
+      "reference_guide_sha256": "37117218547f2a8f20f97d639701358e73225bb006bfe6bac92dff1aac2c26f5"
+    },
+    "well-alpha-attack-back": {
+      "actor": "well-alpha",
+      "action": "attack",
+      "direction": "back",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/well-alpha-attack-back-00.png",
+          "sha256": "9c89eadfb6fad8a982d8e983da2bc52889ba26ea159c7cf483ea99a5124fc7bb",
+          "reference": "references/well-alpha-attack-back-00.png",
+          "reference_sha256": "a1450982ad5293875960e505109360717c94a8e026e2c2dbb10ffeedc10434e2",
+          "phase": 0,
+          "source": "originals/well-alpha-attack-back.png",
+          "source_sha256": "56c61eff514193021dbacbb3c6123793172ebf7c7e4174e68a8c728607d29c0a",
+          "silhouette_iou": 0.8261464750171116,
+          "report": "reports/well-alpha-attack-back.json"
+        },
+        {
+          "file": "frames/well-alpha-attack-back-01.png",
+          "sha256": "31ca11d3bc33c9711cc10063bf79c4a44221e0644611e8ecc965696277f70ec5",
+          "reference": "references/well-alpha-attack-back-01.png",
+          "reference_sha256": "d668577df618477c6dee445a99afdfc240a2cec3e6d8b013b2b6854df94cd6cc",
+          "phase": 1,
+          "source": "originals/well-alpha-attack-back.png",
+          "source_sha256": "56c61eff514193021dbacbb3c6123793172ebf7c7e4174e68a8c728607d29c0a",
+          "silhouette_iou": 0.8322487346348517,
+          "report": "reports/well-alpha-attack-back.json"
+        },
+        {
+          "file": "frames/well-alpha-attack-back-02.png",
+          "sha256": "8c0727bfa7b7cf6274025cb71fb865b532117736c38d1c9b66aa6c96e5c4ca84",
+          "reference": "references/well-alpha-attack-back-02.png",
+          "reference_sha256": "99254a99910007b28665ef1191e8c6057a2f3e78ab59c5fec484a1e83cffeda3",
+          "phase": 2,
+          "source": "originals/well-alpha-attack-back.png",
+          "source_sha256": "56c61eff514193021dbacbb3c6123793172ebf7c7e4174e68a8c728607d29c0a",
+          "silhouette_iou": 0.8348148148148148,
+          "report": "reports/well-alpha-attack-back.json"
+        },
+        {
+          "file": "frames/well-alpha-attack-back-03.png",
+          "sha256": "8111292dc39678fc147ab5e1f1187b54eb62b416184d2557316836d540882117",
+          "reference": "references/well-alpha-attack-back-03.png",
+          "reference_sha256": "712e71953a22e3ab583563c964bd57bc97dad4b1cb20e3866b0c1f90e4794d4d",
+          "phase": 3,
+          "source": "originals/well-alpha-attack-back.png",
+          "source_sha256": "56c61eff514193021dbacbb3c6123793172ebf7c7e4174e68a8c728607d29c0a",
+          "silhouette_iou": 0.8354253835425384,
+          "report": "reports/well-alpha-attack-back.json"
+        }
+      ],
+      "blender": "blender/well-alpha-attack-canvas128.blend",
+      "blender_sha256": "294e5d0b56962978f46b85f6b2d3e764e9141895719b2c73bdf2df0a0f93a689",
+      "blender_action": "Verdigris_well-alpha_attack",
+      "reference_guide": "guides/well-alpha-attack-back.png",
+      "reference_guide_sha256": "f099f5c16b80da104a5134b740226efd692466f7c34cded9853e216b5c105d4b"
+    },
+    "well-alpha-attack-left": {
+      "actor": "well-alpha",
+      "action": "attack",
+      "direction": "left",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/well-alpha-attack-left-00.png",
+          "sha256": "e5c602561c006a3a79e8bff00ea9930c53af5fc297e303dd393f3ff15d518d92",
+          "reference": "references/well-alpha-attack-left-00.png",
+          "reference_sha256": "d87273b6a5a452e310bfe74c4cbccc34d3db93f1830a0c5d152c133f487f7469",
+          "phase": 0,
+          "source": "originals/well-alpha-attack-left-original-good.png",
+          "source_sha256": "f548ce4de3c2e00ed6857f6fe694b82fa7d38f6e5ce0d430f8128b6accf4ae6d",
+          "silhouette_iou": 0.8042328042328042,
+          "report": "reports/well-alpha-attack-left-original-good.json"
+        },
+        {
+          "file": "frames/well-alpha-attack-left-01.png",
+          "sha256": "87cf0377089e9d78dca5f31f4c5cee97dbb5b791574908390e83722d3550d6e6",
+          "reference": "references/well-alpha-attack-left-01.png",
+          "reference_sha256": "45271810444be1f3b778572ea497f1c294f0bd531fcb34e9819fc55f76b2f4e7",
+          "phase": 1,
+          "source": "originals/well-alpha-attack-left-original-good.png",
+          "source_sha256": "f548ce4de3c2e00ed6857f6fe694b82fa7d38f6e5ce0d430f8128b6accf4ae6d",
+          "silhouette_iou": 0.8057441253263707,
+          "report": "reports/well-alpha-attack-left-original-good.json"
+        },
+        {
+          "file": "frames/well-alpha-attack-left-02.png",
+          "sha256": "09252ce17fa24abea28f675da2ca24fb82ccf968e3c48d469ff455ccb4185f3c",
+          "reference": "references/well-alpha-attack-left-02.png",
+          "reference_sha256": "54cac804ffe84413aa37e88e48100c77db6f1a8a515adf37bfceef51e121f089",
+          "phase": 2,
+          "source": "originals/well-alpha-attack-left-single-02.png",
+          "source_sha256": "dc0a1aea154d6512d8f8f15bed3c993bab130284631225ad6d602a8f884fbc6e",
+          "silhouette_iou": 0.944544906570223,
+          "report": "reports/well-alpha-attack-left-single-02.json",
+          "upload_guide": "guides/well-alpha-attack-left-02.png",
+          "upload_guide_sha256": "5bb970dc1628ea3ca589a08df3522306d19226da3377d3984002bafc06b77c67",
+          "additional_references": [
+            {
+              "file": "guides/idle-left-style-4x.png",
+              "sha256": "230b42b10710d4dda3e7475364e6c8187795832f91692347102dd95c47af1c2d"
+            }
+          ]
+        },
+        {
+          "file": "frames/well-alpha-attack-left-03.png",
+          "sha256": "21346a25781b2c4abf9651f94e9d357f85024271cab3e0f0184a990263717b61",
+          "reference": "references/well-alpha-attack-left-03.png",
+          "reference_sha256": "409cde5171b7a8d1604ef87cd98f6c7f5430711eff3b0154dd2d3a15ebfdb96c",
+          "phase": 3,
+          "source": "originals/well-alpha-attack-left-original-good.png",
+          "source_sha256": "f548ce4de3c2e00ed6857f6fe694b82fa7d38f6e5ce0d430f8128b6accf4ae6d",
+          "silhouette_iou": 0.7308853118712274,
+          "report": "reports/well-alpha-attack-left-original-good.json"
+        }
+      ],
+      "blender": "blender/well-alpha-attack-canvas128.blend",
+      "blender_sha256": "294e5d0b56962978f46b85f6b2d3e764e9141895719b2c73bdf2df0a0f93a689",
+      "blender_action": "Verdigris_well-alpha_attack",
+      "reference_guide": "guides/well-alpha-attack-left.png",
+      "reference_guide_sha256": "db730048c6a96b6faef8af2b266d8eed1c966b4fc8750535c9bd23f672236072"
+    },
+    "well-alpha-attack-right": {
+      "actor": "well-alpha",
+      "action": "attack",
+      "direction": "right",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "file": "frames/well-alpha-attack-right-00.png",
+          "sha256": "981c9bf832aa6c0db51a45fccd9a04bce4656f6699df70e500aaa2bbc2fa514d",
+          "reference": "references/well-alpha-attack-right-00.png",
+          "reference_sha256": "a2b37601665c4ea809822f6ca709ef2614c7db4090567f4639ca3d4fdf20f655",
+          "phase": 0,
+          "source": "originals/well-alpha-attack-right-single-00.png",
+          "source_sha256": "c513e6afa36f69a279241c51e6c35d92bbb4ddd49b3613e2493489b1fb095e95",
+          "silhouette_iou": 0.9598021026592455,
+          "report": "reports/well-alpha-attack-right-single-00.json",
+          "upload_guide": "guides/well-alpha-attack-right-00.png",
+          "upload_guide_sha256": "bec422c29fc92c6b0f5ef8eb8c6982f543d19edd5359a871ae19ca82a9218f12",
+          "additional_references": [
+            {
+              "file": "guides/idle-right-style-4x.png",
+              "sha256": "02de3f9b6ee39b148defb2a132f2931c1dbb5381be648c6851429723532e8d3f"
+            }
+          ]
+        },
+        {
+          "file": "frames/well-alpha-attack-right-01.png",
+          "sha256": "662bad748becc04c06e55b8e5b638eac41c1ee430cbad11ebeab0106e494e173",
+          "reference": "references/well-alpha-attack-right-01.png",
+          "reference_sha256": "fd4c81f8748d9e7b27a6151a81eff6f33c83473bdb88439adf6d4f8dfccc509d",
+          "phase": 1,
+          "source": "originals/well-alpha-attack-right-single-01.png",
+          "source_sha256": "5bbeb36630753e5f476e051cc11439cacac15a621f174867c54576682e30caff",
+          "silhouette_iou": 0.9604449938195303,
+          "report": "reports/well-alpha-attack-right-single-01.json",
+          "upload_guide": "guides/well-alpha-attack-right-01.png",
+          "upload_guide_sha256": "1a2459121b14a55debcc495890b4400de4d38ec9b0f6187589d84782d2556152",
+          "additional_references": [
+            {
+              "file": "guides/idle-right-style-4x.png",
+              "sha256": "02de3f9b6ee39b148defb2a132f2931c1dbb5381be648c6851429723532e8d3f"
+            }
+          ]
+        },
+        {
+          "file": "frames/well-alpha-attack-right-02.png",
+          "sha256": "f4d8840bd9a45a42222e9324ff5c0fa5d2595a1ada718a45222c90f8214c54ce",
+          "reference": "references/well-alpha-attack-right-02.png",
+          "reference_sha256": "243455b907a6cbfbea631cc0af6507aef36266c55e612e048fb4eea34464cc17",
+          "phase": 2,
+          "source": "originals/well-alpha-attack-right-single-02.png",
+          "source_sha256": "948f5f42e5f075a4ff509ce50e9ccab6c09915eef65304faf72a1349dc711546",
+          "silhouette_iou": 0.9641089108910891,
+          "report": "reports/well-alpha-attack-right-single-02.json",
+          "upload_guide": "guides/well-alpha-attack-right-02.png",
+          "upload_guide_sha256": "5ac5f829a670f40113ad0218435e888a331698ddc053b8569ae389a3aa9df20a",
+          "additional_references": [
+            {
+              "file": "guides/idle-right-style-4x.png",
+              "sha256": "02de3f9b6ee39b148defb2a132f2931c1dbb5381be648c6851429723532e8d3f"
+            }
+          ]
+        },
+        {
+          "file": "frames/well-alpha-attack-right-03.png",
+          "sha256": "b816488fd0b7be1cb9d52003f535043f77bd31aea280252255925390246bdba4",
+          "reference": "references/well-alpha-attack-right-03.png",
+          "reference_sha256": "9ff6a6ddebf4742dd63e60a6317c2ca26806ffa929c8ab9d156c32517da29504",
+          "phase": 3,
+          "source": "originals/well-alpha-attack-right-single-03.png",
+          "source_sha256": "472fde1cdf4ea3a8e0b8a89585720a24abe78f1ae1b000b1b9d2379cb8dbf601",
+          "silhouette_iou": 0.9487643158529234,
+          "report": "reports/well-alpha-attack-right-single-03.json",
+          "upload_guide": "guides/well-alpha-attack-right-03.png",
+          "upload_guide_sha256": "3d86f55cf686a3336073dc09cb7f81f77f929491ec5841483220afc320262a48",
+          "additional_references": [
+            {
+              "file": "guides/idle-right-style-4x.png",
+              "sha256": "02de3f9b6ee39b148defb2a132f2931c1dbb5381be648c6851429723532e8d3f"
+            }
+          ]
+        }
+      ],
+      "blender": "blender/well-alpha-attack-canvas128.blend",
+      "blender_sha256": "294e5d0b56962978f46b85f6b2d3e764e9141895719b2c73bdf2df0a0f93a689",
+      "blender_action": "Verdigris_well-alpha_attack",
+      "reference_guide": "guides/well-alpha-attack-right.png",
+      "reference_guide_sha256": "8c539f2a1b87e4f530b03f11a74285db3a428d8f5501e7c82034ebc7b5a9e3ff"
     }
   },
   "source": "Blender authored poses, built-in imagegen paint, Pixel Respecter4xgrid reconstruction",

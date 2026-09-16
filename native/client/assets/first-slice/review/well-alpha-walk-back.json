@@ -1,0 +1,380 @@
+{
+  "clip": "well-alpha-walk-back",
+  "source_sha256": "e5c2b839519987ad68afbbe501fbf7086c050b1332bf452e01227f11e3b12ed5",
+  "frame_size": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    64
+  ],
+  "base_cell": 48,
+  "alpha_policy": "Returned alpha threshold 128; no RGB key",
+  "grid_candidates": [
+    {
+      "size": 16,
+      "source": "autocorr",
+      "offset": [
+        11,
+        15
+      ],
+      "score": 1.0412104623066498,
+      "variance": 365.8857116699219,
+      "gated_out": false
+    },
+    {
+      "size": 22,
+      "source": "autocorr",
+      "offset": [
+        15,
+        9
+      ],
+      "score": 1.0196882702001246,
+      "variance": 503.6654357910156,
+      "gated_out": false
+    },
+    {
+      "size": 11,
+      "source": "autocorr",
+      "offset": [
+        4,
+        9
+      ],
+      "score": 0.958290267700629,
+      "variance": 273.77484130859375,
+      "gated_out": false
+    },
+    {
+      "size": 13,
+      "source": "autocorr",
+      "offset": [
+        11,
+        5
+      ],
+      "score": 0.9531931562452932,
+      "variance": 320.51531982421875,
+      "gated_out": false
+    },
+    {
+      "size": 8,
+      "source": "autocorr",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.915224276577994,
+      "variance": 202.05560302734375,
+      "gated_out": false
+    },
+    {
+      "size": 7,
+      "source": "autocorr",
+      "offset": [
+        6,
+        6
+      ],
+      "score": 0.8714816083842248,
+      "variance": 186.57501220703125,
+      "gated_out": false
+    },
+    {
+      "size": 128,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.8539819525372964,
+      "variance": 1455.5975341796875,
+      "gated_out": true
+    },
+    {
+      "size": 6,
+      "source": "fine",
+      "offset": [
+        2,
+        4
+      ],
+      "score": 0.8431350709310329,
+      "variance": 160.92425537109375,
+      "gated_out": false
+    },
+    {
+      "size": 2,
+      "source": "autocorr",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.8206095743923191,
+      "variance": 43.292327880859375,
+      "gated_out": false
+    },
+    {
+      "size": 5,
+      "source": "autocorr",
+      "offset": [
+        3,
+        3
+      ],
+      "score": 0.8170357765175775,
+      "variance": 136.29962158203125,
+      "gated_out": false
+    },
+    {
+      "size": 4,
+      "source": "fine",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.8117176494268663,
+      "variance": 104.25789642333984,
+      "gated_out": false
+    },
+    {
+      "size": 3,
+      "source": "fine",
+      "offset": [
+        2,
+        1
+      ],
+      "score": 0.7894475996881182,
+      "variance": 77.22106170654297,
+      "gated_out": false
+    },
+    {
+      "size": 184,
+      "source": "fold",
+      "offset": [
+        68,
+        95
+      ],
+      "score": 0.44105563702861084,
+      "variance": 2558.214111328125,
+      "gated_out": true
+    },
+    {
+      "size": 191,
+      "source": "fold",
+      "offset": [
+        151,
+        95
+      ],
+      "score": 0.4110578856340336,
+      "variance": 2557.594970703125,
+      "gated_out": true
+    },
+    {
+      "size": 189,
+      "source": "fold",
+      "offset": [
+        157,
+        95
+      ],
+      "score": 0.40911194021768443,
+      "variance": 2522.414794921875,
+      "gated_out": true
+    },
+    {
+      "size": 187,
+      "source": "fold",
+      "offset": [
+        177,
+        95
+      ],
+      "score": 0.29930371199038963,
+      "variance": 2652.477294921875,
+      "gated_out": true
+    },
+    {
+      "size": 192,
+      "source": "fold",
+      "offset": [
+        28,
+        95
+      ],
+      "score": 0.2990760479701467,
+      "variance": 2927.89453125,
+      "gated_out": true
+    },
+    {
+      "size": 188,
+      "source": "fold",
+      "offset": [
+        175,
+        95
+      ],
+      "score": 0.296335665395451,
+      "variance": 2712.52880859375,
+      "gated_out": true
+    },
+    {
+      "size": 186,
+      "source": "fold",
+      "offset": [
+        183,
+        95
+      ],
+      "score": 0.2687738858199556,
+      "variance": 2658.349853515625,
+      "gated_out": true
+    }
+  ],
+  "visual_acceptance": false,
+  "frames": [
+    {
+      "file": "well-alpha-walk-back-00.png",
+      "bbox": [
+        37,
+        5,
+        60,
+        81
+      ],
+      "reference": {
+        "file": "well-alpha-walk-back-00.png",
+        "blender_frame": 0,
+        "src": "blender-wolves/well-alpha-walk-back-00.png",
+        "sha256": "7cbfbc593b597d8aa985a111c07a476da16b0ca445b39a0912b2357528057c87"
+      },
+      "silhouette_iou": 0.89,
+      "sha256": "93c4142782951b7ba1ad145e7c0c3a23e5af6f4e055c71c4c84fd02aa0157aeb"
+    },
+    {
+      "file": "well-alpha-walk-back-01.png",
+      "bbox": [
+        37,
+        5,
+        60,
+        80
+      ],
+      "reference": {
+        "file": "well-alpha-walk-back-01.png",
+        "blender_frame": 5,
+        "src": "blender-wolves/well-alpha-walk-back-01.png",
+        "sha256": "d9bfcfbf5b9c57abe1c17095f08f706e30b72d39ca01f0ee7e14b1a0e61e0173"
+      },
+      "silhouette_iou": 0.8917018284106891,
+      "sha256": "2219c42a781a4671984411ebc6b0b0c33bf20c047fcf0b1704e9cb124a8fe128"
+    },
+    {
+      "file": "well-alpha-walk-back-02.png",
+      "bbox": [
+        36,
+        5,
+        60,
+        83
+      ],
+      "reference": {
+        "file": "well-alpha-walk-back-02.png",
+        "blender_frame": 10,
+        "src": "blender-wolves/well-alpha-walk-back-02.png",
+        "sha256": "943d3ff73fc565ef0b9a68e4f566b9cd282d8d646383703caf95329e3ff282d3"
+      },
+      "silhouette_iou": 0.8854961832061069,
+      "sha256": "348350aa3cda102f836c608473d00b8831920bb29f97a1e8ecdc3ac0546438b0"
+    },
+    {
+      "file": "well-alpha-walk-back-03.png",
+      "bbox": [
+        37,
+        5,
+        60,
+        80
+      ],
+      "reference": {
+        "file": "well-alpha-walk-back-03.png",
+        "blender_frame": 15,
+        "src": "blender-wolves/well-alpha-walk-back-03.png",
+        "sha256": "c64370d06de9f9b45affe77383269556b956c419a811dd5979516faa97903b95"
+      },
+      "silhouette_iou": 0.8763966480446927,
+      "sha256": "f7929d4134c3d61fc9011de0253211cd031954b1d9aec3af9c55105cc96c3c0a"
+    },
+    {
+      "file": "well-alpha-walk-back-04.png",
+      "bbox": [
+        37,
+        5,
+        60,
+        81
+      ],
+      "reference": {
+        "file": "well-alpha-walk-back-04.png",
+        "blender_frame": 20,
+        "src": "blender-wolves/well-alpha-walk-back-04.png",
+        "sha256": "92ccd9e5198c8b317add7193f66b70ec73677f1ee5049909f25c459c76842c13"
+      },
+      "silhouette_iou": 0.9037776193870278,
+      "sha256": "bc69026e52bfba29e8f552863cd0b62040b7ca4847e144e76ef291c9f0fb32e0"
+    },
+    {
+      "file": "well-alpha-walk-back-05.png",
+      "bbox": [
+        37,
+        5,
+        60,
+        82
+      ],
+      "reference": {
+        "file": "well-alpha-walk-back-05.png",
+        "blender_frame": 25,
+        "src": "blender-wolves/well-alpha-walk-back-05.png",
+        "sha256": "1a30d432833d9aee7d7f0202d3cb20178c12eae75dce17ebd84163856bbdeacf"
+      },
+      "silhouette_iou": 0.9089625970359916,
+      "sha256": "8c162b0c8404e792bfd09eacecf5019a82981284a9ac43e2462ac3e35600185d"
+    },
+    {
+      "file": "well-alpha-walk-back-06.png",
+      "bbox": [
+        36,
+        5,
+        60,
+        82
+      ],
+      "reference": {
+        "file": "well-alpha-walk-back-06.png",
+        "blender_frame": 30,
+        "src": "blender-wolves/well-alpha-walk-back-06.png",
+        "sha256": "c05541fdea255f4fd79fcd3533bbaa8c5750bd7631c06f4d552d3343929a3332"
+      },
+      "silhouette_iou": 0.8927576601671309,
+      "sha256": "09d67028c6f0f640da2fbcefef88e5807e64114abfd37effc31e60e853c9d3da"
+    },
+    {
+      "file": "well-alpha-walk-back-07.png",
+      "bbox": [
+        36,
+        5,
+        60,
+        80
+      ],
+      "reference": {
+        "file": "well-alpha-walk-back-07.png",
+        "blender_frame": 35,
+        "src": "blender-wolves/well-alpha-walk-back-07.png",
+        "sha256": "9ce03301dd319ca32371a4f04392aa7832a50ebbdac8e747a43baa119a24d446"
+      },
+      "silhouette_iou": 0.9051663128096249,
+      "sha256": "425195fc7cedf0bdce61bc15015f8239c1246d4e22651805a2bb8528ec496552"
+    }
+  ],
+  "selected_grid": {
+    "size": 4,
+    "source": "fine",
+    "offset": [
+      0,
+      0
+    ],
+    "score": 0.8117176494268663,
+    "variance": 104.25789642333984,
+    "gated_out": false
+  },
+  "whole_cycle_translation": [
+    0,
+    -1
+  ],
+  "registered_mean_iou": 0.8551337900461025
+}

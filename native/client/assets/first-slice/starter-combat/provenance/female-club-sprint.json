@@ -1,0 +1,370 @@
+{
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2-female-refine\\blender\\female-sprint-exterior.blend",
+  "source_sha256": "d24f01a02b4b5d801a29b6e621330d3703d2de6e2b336f51ed99f47c74588f4a",
+  "equipment": "branch-club",
+  "hand": "right",
+  "frame_size": [
+    96,
+    96
+  ],
+  "pixels_per_metre": 48,
+  "frames": [
+    {
+      "src": "references/female-club-sprint-front-00.png",
+      "direction": "front",
+      "phase": 0,
+      "source_frame": 72,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "4deee8d24199d4f408b7380c65f78b42756f7fd89665dc6e97c4c81aab3b847d"
+    },
+    {
+      "src": "references/female-club-sprint-front-01.png",
+      "direction": "front",
+      "phase": 1,
+      "source_frame": 76,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "73c4f12fc05358d9576a2b3801329deb5ea6b6779e8c04a6d25517c49b5c47bd"
+    },
+    {
+      "src": "references/female-club-sprint-front-02.png",
+      "direction": "front",
+      "phase": 2,
+      "source_frame": 80,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "41bd08c2cd04d9417f02233aea769094e944eb8c50e6f353400394ac035ecd9b"
+    },
+    {
+      "src": "references/female-club-sprint-front-03.png",
+      "direction": "front",
+      "phase": 3,
+      "source_frame": 84,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "af0918c27aa86a2c86efce8a7511a6c22817b13a47f0fbc0a9b2fe95ebfe4756"
+    },
+    {
+      "src": "references/female-club-sprint-front-04.png",
+      "direction": "front",
+      "phase": 4,
+      "source_frame": 88,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "505842e9fbd68642dc527689421705a157a0c59b163cf8d1059c2e1bb054240c"
+    },
+    {
+      "src": "references/female-club-sprint-front-05.png",
+      "direction": "front",
+      "phase": 5,
+      "source_frame": 92,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "6cfbe0169da3e8bfbd3b12374e43934ccf46ae4d7c43c48ac70ab23acce0b10f"
+    },
+    {
+      "src": "references/female-club-sprint-front-06.png",
+      "direction": "front",
+      "phase": 6,
+      "source_frame": 96,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "f1479e5742bd7f02fd24db458abaa7b6503e1fdc81ea0ff840caed7ad5ef4161"
+    },
+    {
+      "src": "references/female-club-sprint-front-07.png",
+      "direction": "front",
+      "phase": 7,
+      "source_frame": 100,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "a1db5f7f2a14d049567a5d5f88fce64cd5bdc0fb5dd2d4b19e78546722dd9cf5"
+    },
+    {
+      "src": "references/female-club-sprint-right-00.png",
+      "direction": "right",
+      "phase": 0,
+      "source_frame": 72,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "86411caef3c42da482803395cbdf50d884bcfc499f4388418e1fd0c27fedbeea"
+    },
+    {
+      "src": "references/female-club-sprint-right-01.png",
+      "direction": "right",
+      "phase": 1,
+      "source_frame": 76,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "bc524505d698fcf4508dd93eddbb46f1a4007903f6e92f6418998923486e1788"
+    },
+    {
+      "src": "references/female-club-sprint-right-02.png",
+      "direction": "right",
+      "phase": 2,
+      "source_frame": 80,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "3445e498df23cc5f034aeb03c16df533600ecb7d10ea792e9e5cb0084d1b710f"
+    },
+    {
+      "src": "references/female-club-sprint-right-03.png",
+      "direction": "right",
+      "phase": 3,
+      "source_frame": 84,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "ed661f354f7f8a42d93f80358de1c50dda52222de23af82dcc5823565932ecc7"
+    },
+    {
+      "src": "references/female-club-sprint-right-04.png",
+      "direction": "right",
+      "phase": 4,
+      "source_frame": 88,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "29c8829d784f92862b4f065d0e45697ed6bb59c6c1826d8363e502049d5f12f2"
+    },
+    {
+      "src": "references/female-club-sprint-right-05.png",
+      "direction": "right",
+      "phase": 5,
+      "source_frame": 92,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "4665a11d6c0f7bd86cc52b5881d9895cf0312fc056fcdad31da89d76be64de4c"
+    },
+    {
+      "src": "references/female-club-sprint-right-06.png",
+      "direction": "right",
+      "phase": 6,
+      "source_frame": 96,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "95805e2c3100e8999102ab8ebfaab2803b6d5a034e77a696e448478c3b79535a"
+    },
+    {
+      "src": "references/female-club-sprint-right-07.png",
+      "direction": "right",
+      "phase": 7,
+      "source_frame": 100,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "2bebefb8a3614e69760504648ea5b856c3185624597248b938bdbad8df065389"
+    },
+    {
+      "src": "references/female-club-sprint-back-00.png",
+      "direction": "back",
+      "phase": 0,
+      "source_frame": 72,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "a9b44ec714e759e58b4981b5fff5d5495616bb05b67ce50b39eae18c61a26f79"
+    },
+    {
+      "src": "references/female-club-sprint-back-01.png",
+      "direction": "back",
+      "phase": 1,
+      "source_frame": 76,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "bf7984abf8b109df0ace74881e3055d82a76b661524326dd1336c6c6b0c895b7"
+    },
+    {
+      "src": "references/female-club-sprint-back-02.png",
+      "direction": "back",
+      "phase": 2,
+      "source_frame": 80,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "89e236576eea7434267f1943c358c4581e8d48e6698dedfa62ab9ab763ef81ca"
+    },
+    {
+      "src": "references/female-club-sprint-back-03.png",
+      "direction": "back",
+      "phase": 3,
+      "source_frame": 84,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "aed95665e413dfd77639217eed9a5cf40d4a37556ecdde20b241f64b59fca742"
+    },
+    {
+      "src": "references/female-club-sprint-back-04.png",
+      "direction": "back",
+      "phase": 4,
+      "source_frame": 88,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "35d871b407452f54de05fd0452658fd28f6d731122d5e131bcbc1f0362e52f4b"
+    },
+    {
+      "src": "references/female-club-sprint-back-05.png",
+      "direction": "back",
+      "phase": 5,
+      "source_frame": 92,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "3f830b06187f5b04afdabaf0064a987144ca14846f18e4dc433a5b370f5a13df"
+    },
+    {
+      "src": "references/female-club-sprint-back-06.png",
+      "direction": "back",
+      "phase": 6,
+      "source_frame": 96,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "15cdc7c0b070db567db5c59f8db93c1e027f3ff7c6e82be7b8198da028baf9b5"
+    },
+    {
+      "src": "references/female-club-sprint-back-07.png",
+      "direction": "back",
+      "phase": 7,
+      "source_frame": 100,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "c36c7de75931a0c790019c109406f4d8edbf38a51aad26b239cda640c31968e8"
+    },
+    {
+      "src": "references/female-club-sprint-left-00.png",
+      "direction": "left",
+      "phase": 0,
+      "source_frame": 72,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "289732cb71b9d6a0f18c575f259f290b9f8f98fbd0f503656b75832777f8fb9f"
+    },
+    {
+      "src": "references/female-club-sprint-left-01.png",
+      "direction": "left",
+      "phase": 1,
+      "source_frame": 76,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "f53eff842f91babeb605e02d34b6e7f5a8113f2a71adf464898e99f282b15e48"
+    },
+    {
+      "src": "references/female-club-sprint-left-02.png",
+      "direction": "left",
+      "phase": 2,
+      "source_frame": 80,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "cc872f03389b5be4608ee4b1ac4c1ee9bac3b8b68f078db165580991923f3b7a"
+    },
+    {
+      "src": "references/female-club-sprint-left-03.png",
+      "direction": "left",
+      "phase": 3,
+      "source_frame": 84,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "4cb52801980323c2e4920315785104e3dcf47d6d4e6fb05ee81075ddcea862b0"
+    },
+    {
+      "src": "references/female-club-sprint-left-04.png",
+      "direction": "left",
+      "phase": 4,
+      "source_frame": 88,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "9b802d164a0ce1c3a511cb5c84682801d92db45f4ce4232ce56e6b2c84ace5d8"
+    },
+    {
+      "src": "references/female-club-sprint-left-05.png",
+      "direction": "left",
+      "phase": 5,
+      "source_frame": 92,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "70a227d2929f6e60d4ebe13df29cc41219118e6c92a3ce4c9ec9ecac91c3534f"
+    },
+    {
+      "src": "references/female-club-sprint-left-06.png",
+      "direction": "left",
+      "phase": 6,
+      "source_frame": 96,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "28e7c9a6738bef935e1246b5732d819278e66d31e9a7efae8bb9a9d0b096a04b"
+    },
+    {
+      "src": "references/female-club-sprint-left-07.png",
+      "direction": "left",
+      "phase": 7,
+      "source_frame": 100,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "e69c250184554c2cd70b9467a257edc408db42d006945808b7083d47c285811c"
+    }
+  ],
+  "status": "motion-reference-reviewed; not painted final game art",
+  "anchor": [
+    48,
+    80
+  ]
+}

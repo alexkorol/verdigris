@@ -1,0 +1,31 @@
+{
+  "clip": "pack-wolf-hit-left-fromcombat",
+  "source_sha256": "0b9c33bc0a59f83147f768e5777ae4379625e112a617fb55d2b75589e10d2893",
+  "selected_grid": {
+    "size": 4,
+    "source": "fine",
+    "offset": [
+      0,
+      2
+    ],
+    "score": 0.7624426832377178,
+    "variance": 105.41419982910156,
+    "gated_out": false
+  },
+  "frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "whole_cycle_translation": [
+    -4,
+    8
+  ],
+  "registered_mean_iou": 0.5919400870448167,
+  "alpha_policy": "Native alpha threshold128, noRGBkey",
+  "visual_acceptance": false,
+  "frames": []
+}

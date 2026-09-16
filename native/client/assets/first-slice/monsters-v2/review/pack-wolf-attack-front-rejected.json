@@ -1,0 +1,31 @@
+{
+  "clip": "pack-wolf-attack-front",
+  "source_sha256": "5b170178e3f080571897363761f7cfd4d0b3ea542bf44a76b9d4af5a0e472e51",
+  "selected_grid": {
+    "size": 4,
+    "source": "fine",
+    "offset": [
+      1,
+      0
+    ],
+    "score": 0.42124559583930765,
+    "variance": 20.11503028869629,
+    "gated_out": false
+  },
+  "frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "whole_cycle_translation": [
+    0,
+    4
+  ],
+  "registered_mean_iou": 0.6412351411322512,
+  "alpha_policy": "Native alpha threshold128, noRGBkey",
+  "visual_acceptance": false,
+  "frames": []
+}

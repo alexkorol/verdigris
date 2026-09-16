@@ -1,0 +1,44 @@
+{
+  "clips": {
+    "player-unarmed-idle": {
+      "anchor": [
+        48,
+        80
+      ],
+      "frames": [
+        {
+          "src": "../starter-combat/references/male-idle-front-00.png",
+          "sha256": "cf51f944364ec28eebc6067f88ebe5464fdbd71a89ae56e00e12bd04b62e9324"
+        },
+        {
+          "src": "../starter-combat/references/male-idle-right-00.png",
+          "sha256": "e7bac012df19a093469a15c23cfa422086d19a80ee22df5a785394d61dd4ddeb"
+        },
+        {
+          "src": "../starter-combat/references/male-idle-back-00.png",
+          "sha256": "8c40a4207360bac96ef5e6c1362d03488e859467e6fba7a07d4f411bd00e201d"
+        },
+        {
+          "src": "../starter-combat/references/male-idle-left-00.png",
+          "sha256": "2575c191ff8f4fc9284c49889c553924674e2e34bdc4de025b326028bd81fe72"
+        },
+        {
+          "src": "../starter-combat/references/female-idle-front-00.png",
+          "sha256": "7e1b6eedd64c0e94b4169135029fbace3f6241ec48b84207b47704cd925867ff"
+        },
+        {
+          "src": "../starter-combat/references/female-idle-right-00.png",
+          "sha256": "5acfb7e5781233a664ab008b4028b553da210f718aa3e77804e5e739c91767cc"
+        },
+        {
+          "src": "../starter-combat/references/female-idle-back-00.png",
+          "sha256": "2949398cc0478176f722684b5b88a7533d6fbae5e6e3bc0ba9b24db5cd6ba6ae"
+        },
+        {
+          "src": "../starter-combat/references/female-idle-left-00.png",
+          "sha256": "ce11b35ca2ea325d70ba04c6c3810287715890c759a26ebc7d6b01dfd950594f"
+        }
+      ]
+    }
+  }
+}

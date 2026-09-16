@@ -1,0 +1,26 @@
+[
+  {
+    "direction": "front",
+    "source": "native\\client\\assets\\first-slice\\monsters-v2\\accepted\\frames\\pack-wolf-idle-front-00.png",
+    "source_sha256": "0c98ca5387b3c8c382480286b93a3d6656a7fcc14e7c1daa500c5265f0aa7a51",
+    "exemplar": "native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\pack-style-work\\style-exemplars\\pack-wolf-idle-front-4x.png",
+    "sha256": "b57154a814c9645c6a03c8a06c48de03c6f58fee564608e618f3b8762f6c9b0c",
+    "operation": "nearest-neighbor4x"
+  },
+  {
+    "direction": "right",
+    "source": "native\\client\\assets\\first-slice\\monsters-v2\\accepted\\frames\\pack-wolf-idle-right-00.png",
+    "source_sha256": "a0a2634ed777aabdcd6fb038ef3a66e8d17685c3121e7328f411c15af5988362",
+    "exemplar": "native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\pack-style-work\\style-exemplars\\pack-wolf-idle-right-4x.png",
+    "sha256": "ea686e2c51a9b21f10e70a7be87bf9fc132599d3d63fc2421be08bc26be4b94b",
+    "operation": "nearest-neighbor4x"
+  },
+  {
+    "direction": "back",
+    "source": "native\\client\\assets\\first-slice\\monsters-v2\\accepted\\frames\\pack-wolf-idle-back-00.png",
+    "source_sha256": "ac26a990ca7b59c07032907bf2919ef2b88ebfd626a2d1c01dcba8d6f1519915",
+    "exemplar": "native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\pack-style-work\\style-exemplars\\pack-wolf-idle-back-4x.png",
+    "sha256": "dac6f29efb4718d62d39db50591e242843683ad0f93fa7c9abb8b6299cf10682",
+    "operation": "nearest-neighbor4x"
+  }
+]

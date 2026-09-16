@@ -1,0 +1,96 @@
+{
+  "clip": "pack-wolf-death-right",
+  "source_sha256": "38d9695e034056d0ef598f2a0b757e068e5caa620bdca90443d3a553e456dc53",
+  "selected_grid": {
+    "size": 4,
+    "source": "fine",
+    "offset": [
+      3,
+      0
+    ],
+    "score": 0.649436070426285,
+    "variance": 60.45732879638672,
+    "gated_out": false
+  },
+  "frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "whole_cycle_translation": [
+    0,
+    0
+  ],
+  "registered_mean_iou": 0.7861180139858691,
+  "alpha_policy": "Native alpha threshold128, noRGBkey",
+  "visual_acceptance": false,
+  "frames": [
+    {
+      "file": "pack-wolf-death-right-00.png",
+      "reference": {
+        "src": "references/pack-wolf-death-right-00.png",
+        "sha256": "091ba48ba5dff0128705b2b38bb974c07465749ec1c0f352c990e3219274edd7",
+        "blender_frame": 0
+      },
+      "bbox": [
+        15,
+        52,
+        81,
+        87
+      ],
+      "silhouette_iou": 0.7566988210075026,
+      "sha256": "60c183a79c3567e83fbec184b5cf777d34e899f447795427f636d006c9f0e57a"
+    },
+    {
+      "file": "pack-wolf-death-right-01.png",
+      "reference": {
+        "src": "references/pack-wolf-death-right-01.png",
+        "sha256": "bf9bc59b6f77ca3de52b1258421e999fab8b180fa32da9ed669437e75103b9cd",
+        "blender_frame": 1
+      },
+      "bbox": [
+        17,
+        60,
+        83,
+        87
+      ],
+      "silhouette_iou": 0.7528604118993135,
+      "sha256": "56078c251cd0ed771ceb5b1b91c6175bdd67b54bb97e28bae44bc4e6e26fc32f"
+    },
+    {
+      "file": "pack-wolf-death-right-02.png",
+      "reference": {
+        "src": "references/pack-wolf-death-right-02.png",
+        "sha256": "272f7b79797c4550b55d171f6ed4ba2bf6d6da51c02594dfb4c9726269156400",
+        "blender_frame": 2
+      },
+      "bbox": [
+        16,
+        70,
+        81,
+        87
+      ],
+      "silhouette_iou": 0.7931488801054019,
+      "sha256": "fe587954b7421129f4d7058d0155d662492eeb1d8dfd36c50c87d55dd7941605"
+    },
+    {
+      "file": "pack-wolf-death-right-03.png",
+      "reference": {
+        "src": "references/pack-wolf-death-right-03.png",
+        "sha256": "0778678448bebb722eb5fb016b8676f66eff0fe2ece7a8e41cb824c7a3e34994",
+        "blender_frame": 3
+      },
+      "bbox": [
+        17,
+        70,
+        82,
+        92
+      ],
+      "silhouette_iou": 0.8417639429312581,
+      "sha256": "1f121d98d4bc28e865b5be09f74e218c6139e91a3e6a86f3b250285aefa6a0be"
+    }
+  ]
+}

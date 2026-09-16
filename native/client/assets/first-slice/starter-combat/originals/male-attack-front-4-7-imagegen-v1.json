@@ -1,0 +1,23 @@
+{
+  "original": "male-attack-front-4-7-imagegen-v1.png",
+  "actual_size": [
+    1254,
+    1254
+  ],
+  "logical_frame": [
+    128,
+    128
+  ],
+  "anchor": [
+    64,
+    96
+  ],
+  "layout": [
+    2,
+    2
+  ],
+  "sha256": "dc28d5c3a4f9cec6a3e035fc5232bd087690aaeda98dfa68b45a2fce4ac8f37e",
+  "prompt_sha256": "9bf1a839f0db1f176b837c7478dc83a5b22a10c4e53801f557dd58b021184d2d",
+  "alpha_zero_fraction": 0.8849862258953168,
+  "status": "paint-proof; pending native-grid recovery"
+}

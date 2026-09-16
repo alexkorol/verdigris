@@ -1,0 +1,31 @@
+{
+  "clip": "pack-wolf-death-back",
+  "source_sha256": "c6af17446f7d1e71a8b4c4832c6fff465d3a5ff3ddf2adf86b08712fc63f633a",
+  "selected_grid": {
+    "size": 4,
+    "source": "fine",
+    "offset": [
+      0,
+      2
+    ],
+    "score": 0.6188921557511137,
+    "variance": 44.655738830566406,
+    "gated_out": false
+  },
+  "frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "whole_cycle_translation": [
+    -1,
+    5
+  ],
+  "registered_mean_iou": 0.6636884535172968,
+  "alpha_policy": "Native alpha threshold128, noRGBkey",
+  "visual_acceptance": false,
+  "frames": []
+}

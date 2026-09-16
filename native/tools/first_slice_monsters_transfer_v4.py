@@ -23,7 +23,8 @@ def recover(raw,clip):
     recovered.save(ROOT/'review'/f'{clip}-recovered.png');ox,oy=fit['offset'];slots=[];masks=[]
     for i,ref in enumerate(refs):
         p=ROOT/ref['src'];assert hashlib.sha256(p.read_bytes()).hexdigest()==ref['sha256']
-        x=round(-ox/scale)+(i%columns)*slot_w;y=round(-oy/scale)+(i//columns)*slot_h+row_offset
+        cell_index=layout.get('cell_indices',list(range(len(refs))))[i]
+        x=round(-ox/scale)+(cell_index%columns)*slot_w;y=round(-oy/scale)+(cell_index//columns)*slot_h+row_offset
         slots.append(recovered.crop((x,y,x+slot_w,y+slot_h)))
         masks.append(np.array(Image.open(p).convert('RGBA'))[:,:,3]>=128)
     best=(-1,0,0)

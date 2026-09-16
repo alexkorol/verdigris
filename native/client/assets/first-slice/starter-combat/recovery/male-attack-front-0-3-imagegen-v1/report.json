@@ -1,0 +1,347 @@
+{
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+  "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+  "actual_dimensions": [
+    1254,
+    1254
+  ],
+  "requested_dimensions": [
+    1024,
+    1024
+  ],
+  "grid": {
+    "size": 5,
+    "source": "autocorr",
+    "offset": [
+      3,
+      4
+    ],
+    "score": 0.8180114075340683,
+    "variance": 127.57640075683594,
+    "gated_out": false
+  },
+  "all_grid_candidates": [
+    {
+      "size": 28,
+      "source": "autocorr",
+      "offset": [
+        17,
+        21
+      ],
+      "score": 1.0199389040315632,
+      "variance": 546.0502319335938,
+      "gated_out": false
+    },
+    {
+      "size": 23,
+      "source": "autocorr",
+      "offset": [
+        14,
+        13
+      ],
+      "score": 1.0067461754959453,
+      "variance": 489.8541564941406,
+      "gated_out": false
+    },
+    {
+      "size": 19,
+      "source": "autocorr",
+      "offset": [
+        5,
+        4
+      ],
+      "score": 0.9862189930925288,
+      "variance": 410.6451416015625,
+      "gated_out": false
+    },
+    {
+      "size": 14,
+      "source": "autocorr",
+      "offset": [
+        7,
+        8
+      ],
+      "score": 0.9346489695922914,
+      "variance": 327.3954772949219,
+      "gated_out": false
+    },
+    {
+      "size": 37,
+      "source": "autocorr",
+      "offset": [
+        35,
+        7
+      ],
+      "score": 0.8946433688081018,
+      "variance": 721.357421875,
+      "gated_out": true
+    },
+    {
+      "size": 9,
+      "source": "autocorr",
+      "offset": [
+        4,
+        7
+      ],
+      "score": 0.8712046859449645,
+      "variance": 226.5982208251953,
+      "gated_out": false
+    },
+    {
+      "size": 42,
+      "source": "autocorr",
+      "offset": [
+        30,
+        23
+      ],
+      "score": 0.8630792592795513,
+      "variance": 774.824951171875,
+      "gated_out": true
+    },
+    {
+      "size": 7,
+      "source": "fine",
+      "offset": [
+        2,
+        1
+      ],
+      "score": 0.8516670139143977,
+      "variance": 175.09149169921875,
+      "gated_out": false
+    },
+    {
+      "size": 8,
+      "source": "fine",
+      "offset": [
+        5,
+        4
+      ],
+      "score": 0.8457541761341651,
+      "variance": 206.54217529296875,
+      "gated_out": false
+    },
+    {
+      "size": 5,
+      "source": "autocorr",
+      "offset": [
+        3,
+        4
+      ],
+      "score": 0.8180114075340683,
+      "variance": 127.57640075683594,
+      "gated_out": false
+    },
+    {
+      "size": 6,
+      "source": "fine",
+      "offset": [
+        5,
+        3
+      ],
+      "score": 0.8070342035902,
+      "variance": 158.4268035888672,
+      "gated_out": false
+    },
+    {
+      "size": 4,
+      "source": "fine",
+      "offset": [
+        0,
+        1
+      ],
+      "score": 0.7567809429488701,
+      "variance": 104.93328094482422,
+      "gated_out": false
+    },
+    {
+      "size": 3,
+      "source": "fine",
+      "offset": [
+        0,
+        1
+      ],
+      "score": 0.7308731817166649,
+      "variance": 73.91703033447266,
+      "gated_out": false
+    },
+    {
+      "size": 192,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.47948608342147314,
+      "variance": 1255.245849609375,
+      "gated_out": true
+    },
+    {
+      "size": 186,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.4676073323932646,
+      "variance": 1311.4732666015625,
+      "gated_out": true
+    },
+    {
+      "size": 183,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.45678242329839164,
+      "variance": 1358.5189208984375,
+      "gated_out": true
+    },
+    {
+      "size": 181,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.4454422979803965,
+      "variance": 1403.0478515625,
+      "gated_out": true
+    },
+    {
+      "size": 180,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.4396082032121656,
+      "variance": 1426.3763427734375,
+      "gated_out": true
+    },
+    {
+      "size": 179,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.4335169095411981,
+      "variance": 1450.8985595703125,
+      "gated_out": true
+    },
+    {
+      "size": 174,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.4056491664077674,
+      "variance": 1587.1097412109375,
+      "gated_out": true
+    },
+    {
+      "size": 146,
+      "source": "fold",
+      "offset": [
+        116,
+        128
+      ],
+      "score": 0.40430153868838264,
+      "variance": 1787.1370849609375,
+      "gated_out": true
+    }
+  ],
+  "frame": [
+    128,
+    128
+  ],
+  "anchor": [
+    64,
+    96
+  ],
+  "pixels_per_metre": 48,
+  "registration": [
+    1,
+    1
+  ],
+  "mean_iou_alpha128": 0.7520439886055532,
+  "visual_acceptance": false,
+  "resizing": "none; measured native grid reconstructed directly",
+  "frames": [
+    {
+      "file": "male-club-attack-front-00.png",
+      "sha256": "5259ed70ba73ce6906acde33834031c1b8f87a603578df022386e87dda37e751",
+      "reference": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\references\\male-attack-front-00.png",
+      "reference_sha256": "d065c6132f3f5e8920c21d6ab72faf55baca73b2d774ea6ce9ba134c9764d299",
+      "raw_lattice_origin": [
+        -1,
+        -1
+      ],
+      "foreground_pixels": 1643,
+      "bbox": [
+        25,
+        33,
+        84,
+        107
+      ],
+      "iou_alpha128": 0.7678787878787878
+    },
+    {
+      "file": "male-club-attack-front-01.png",
+      "sha256": "543978837f67641ef84b71c43df1c36da78eadb897af744fde2b27ae15248941",
+      "reference": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\references\\male-attack-front-01.png",
+      "reference_sha256": "1d5e2be6b9d034f749c31096f7887c3d85c1e62aa7bf05ce8946b6b943b321df",
+      "raw_lattice_origin": [
+        125,
+        -1
+      ],
+      "foreground_pixels": 1702,
+      "bbox": [
+        23,
+        25,
+        83,
+        106
+      ],
+      "iou_alpha128": 0.772196261682243
+    },
+    {
+      "file": "male-club-attack-front-02.png",
+      "sha256": "65b47f95078bb72ed6b0a5200f0a1c7f21d6d7ae5d9aa3336d1cee061d7d4bf6",
+      "reference": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\references\\male-attack-front-02.png",
+      "reference_sha256": "4e34a8a1f94114d4bde5ebd08e4902664681db3428383c026d892b64cbd0ccff",
+      "raw_lattice_origin": [
+        -1,
+        125
+      ],
+      "foreground_pixels": 1698,
+      "bbox": [
+        27,
+        17,
+        107,
+        110
+      ],
+      "iou_alpha128": 0.708162066940693
+    },
+    {
+      "file": "male-club-attack-front-03.png",
+      "sha256": "ef554bd08fc78511358c8893c90c320883dbb716547c54cf65da6800063cb89a",
+      "reference": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\references\\male-attack-front-03.png",
+      "reference_sha256": "06e269d8beb8ffdd4fceaef40ee7c208f1e72f36f4bdbd0815be620beb2a0b25",
+      "raw_lattice_origin": [
+        125,
+        125
+      ],
+      "foreground_pixels": 1300,
+      "bbox": [
+        51,
+        38,
+        100,
+        109
+      ],
+      "iou_alpha128": 0.7599388379204893
+    }
+  ],
+  "geometry_gate_pass": true
+}

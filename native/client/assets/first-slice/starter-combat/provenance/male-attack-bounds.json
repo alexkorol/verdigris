@@ -1,0 +1,290 @@
+[
+  {
+    "frame": "male-attack-front-00.png",
+    "bbox": [
+      24,
+      32,
+      84,
+      107
+    ]
+  },
+  {
+    "frame": "male-attack-front-01.png",
+    "bbox": [
+      23,
+      25,
+      82,
+      107
+    ]
+  },
+  {
+    "frame": "male-attack-front-02.png",
+    "bbox": [
+      27,
+      18,
+      107,
+      112
+    ]
+  },
+  {
+    "frame": "male-attack-front-03.png",
+    "bbox": [
+      52,
+      39,
+      101,
+      110
+    ]
+  },
+  {
+    "frame": "male-attack-front-04.png",
+    "bbox": [
+      52,
+      37,
+      103,
+      110
+    ]
+  },
+  {
+    "frame": "male-attack-front-05.png",
+    "bbox": [
+      50,
+      40,
+      96,
+      109
+    ]
+  },
+  {
+    "frame": "male-attack-front-06.png",
+    "bbox": [
+      41,
+      30,
+      98,
+      104
+    ]
+  },
+  {
+    "frame": "male-attack-front-07.png",
+    "bbox": [
+      24,
+      32,
+      84,
+      107
+    ]
+  },
+  {
+    "frame": "male-attack-right-00.png",
+    "bbox": [
+      49,
+      31,
+      88,
+      107
+    ]
+  },
+  {
+    "frame": "male-attack-right-01.png",
+    "bbox": [
+      37,
+      27,
+      96,
+      105
+    ]
+  },
+  {
+    "frame": "male-attack-right-02.png",
+    "bbox": [
+      43,
+      31,
+      90,
+      102
+    ]
+  },
+  {
+    "frame": "male-attack-right-03.png",
+    "bbox": [
+      30,
+      34,
+      87,
+      102
+    ]
+  },
+  {
+    "frame": "male-attack-right-04.png",
+    "bbox": [
+      29,
+      34,
+      87,
+      102
+    ]
+  },
+  {
+    "frame": "male-attack-right-05.png",
+    "bbox": [
+      30,
+      34,
+      98,
+      104
+    ]
+  },
+  {
+    "frame": "male-attack-right-06.png",
+    "bbox": [
+      51,
+      27,
+      99,
+      105
+    ]
+  },
+  {
+    "frame": "male-attack-right-07.png",
+    "bbox": [
+      49,
+      31,
+      88,
+      107
+    ]
+  },
+  {
+    "frame": "male-attack-back-00.png",
+    "bbox": [
+      45,
+      25,
+      103,
+      103
+    ]
+  },
+  {
+    "frame": "male-attack-back-01.png",
+    "bbox": [
+      47,
+      25,
+      105,
+      103
+    ]
+  },
+  {
+    "frame": "male-attack-back-02.png",
+    "bbox": [
+      22,
+      26,
+      100,
+      106
+    ]
+  },
+  {
+    "frame": "male-attack-back-03.png",
+    "bbox": [
+      28,
+      36,
+      76,
+      112
+    ]
+  },
+  {
+    "frame": "male-attack-back-04.png",
+    "bbox": [
+      27,
+      36,
+      76,
+      114
+    ]
+  },
+  {
+    "frame": "male-attack-back-05.png",
+    "bbox": [
+      35,
+      33,
+      78,
+      112
+    ]
+  },
+  {
+    "frame": "male-attack-back-06.png",
+    "bbox": [
+      31,
+      22,
+      85,
+      96
+    ]
+  },
+  {
+    "frame": "male-attack-back-07.png",
+    "bbox": [
+      45,
+      25,
+      103,
+      103
+    ]
+  },
+  {
+    "frame": "male-attack-left-00.png",
+    "bbox": [
+      39,
+      27,
+      78,
+      104
+    ]
+  },
+  {
+    "frame": "male-attack-left-01.png",
+    "bbox": [
+      32,
+      11,
+      89,
+      106
+    ]
+  },
+  {
+    "frame": "male-attack-left-02.png",
+    "bbox": [
+      39,
+      13,
+      84,
+      106
+    ]
+  },
+  {
+    "frame": "male-attack-left-03.png",
+    "bbox": [
+      41,
+      49,
+      99,
+      107
+    ]
+  },
+  {
+    "frame": "male-attack-left-04.png",
+    "bbox": [
+      41,
+      48,
+      100,
+      107
+    ]
+  },
+  {
+    "frame": "male-attack-left-05.png",
+    "bbox": [
+      27,
+      45,
+      99,
+      105
+    ]
+  },
+  {
+    "frame": "male-attack-left-06.png",
+    "bbox": [
+      30,
+      26,
+      77,
+      99
+    ]
+  },
+  {
+    "frame": "male-attack-left-07.png",
+    "bbox": [
+      39,
+      27,
+      78,
+      104
+    ]
+  }
+]

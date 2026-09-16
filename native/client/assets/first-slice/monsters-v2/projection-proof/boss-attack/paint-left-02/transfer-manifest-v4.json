@@ -1,0 +1,51 @@
+{
+  "clips": {
+    "well-alpha-attack-left-single-02": {
+      "actor": "well-alpha",
+      "action": "attack",
+      "direction": "left",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\references\\well-alpha-attack-left-02.png",
+          "sha256": "54cac804ffe84413aa37e88e48100c77db6f1a8a515adf37bfceef51e121f089",
+          "blender_frame": 2
+        }
+      ],
+      "authored_action": "Verdigris_well-alpha_attack",
+      "blender_source": "blender/well-alpha-attack-canvas128.blend",
+      "layout": {
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "scale": 8,
+        "output": [
+          1536,
+          1024
+        ],
+        "fixed_translation": [
+          0,
+          0
+        ]
+      },
+      "guide": "guides-v4/well-alpha-attack-left.png",
+      "guide_sha256": "db730048c6a96b6faef8af2b266d8eed1c966b4fc8750535c9bd23f672236072"
+    }
+  }
+}

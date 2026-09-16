@@ -1,0 +1,167 @@
+{
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2\\blender\\male-walk-exterior.blend",
+  "source_sha256": "a0c181a36a4ed0aa41007328c0b214cb7d45813268141616bdd2d0d41b6749b3",
+  "motion": "Anatomical rest with subtle breathing",
+  "source_frames": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "frame_size": [
+    96,
+    96
+  ],
+  "pixels_per_metre": 48,
+  "frames": [
+    {
+      "src": "references/male-idle-front-00.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "cf51f944364ec28eebc6067f88ebe5464fdbd71a89ae56e00e12bd04b62e9324"
+    },
+    {
+      "src": "references/male-idle-front-01.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "a42178df64fe08047793dc39c6a13da5bb5c7b5878db3b0b096e85869a27e10e"
+    },
+    {
+      "src": "references/male-idle-front-02.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "382a9f0eaf1013b7ddfd3430e767cb2c5799f3062d9e72de8d1d7efb4e01c43d"
+    },
+    {
+      "src": "references/male-idle-front-03.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "06bdc969f8e345b839eaba5e57e8d05c49d476c7aeb30e7178241b0584bc084d"
+    },
+    {
+      "src": "references/male-idle-right-00.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "e7bac012df19a093469a15c23cfa422086d19a80ee22df5a785394d61dd4ddeb"
+    },
+    {
+      "src": "references/male-idle-right-01.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "429150c59dca608525cf6c071c983251c002070d0c78396227080cb95cbff5a7"
+    },
+    {
+      "src": "references/male-idle-right-02.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "4db8047dba6244e8b8a42bb17005ef2d9b489fa2fb7e09de440be4eba5368a83"
+    },
+    {
+      "src": "references/male-idle-right-03.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "9932558cbe6037a8fc23cb9e7030fa613d8b82be9a573a3099207fc44fdde3ae"
+    },
+    {
+      "src": "references/male-idle-back-00.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "8c40a4207360bac96ef5e6c1362d03488e859467e6fba7a07d4f411bd00e201d"
+    },
+    {
+      "src": "references/male-idle-back-01.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "ef2cd70a450ec0cf2e986f7066bf0167548c89a63902faed05acbf4ad1716358"
+    },
+    {
+      "src": "references/male-idle-back-02.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "d66b3b0f665faacb5fca1bc60bef577db178a631bc794f05cbb5a2d06ab55aed"
+    },
+    {
+      "src": "references/male-idle-back-03.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "8e5aa1d6406a06f83d315d1c214a1478b0a76816a888486d15075fa20f2b4298"
+    },
+    {
+      "src": "references/male-idle-left-00.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "2575c191ff8f4fc9284c49889c553924674e2e34bdc4de025b326028bd81fe72"
+    },
+    {
+      "src": "references/male-idle-left-01.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "d7f7b2dd33e384d4a787bf2d8f6c16d2b1a3667a4c606f91ed1f74189c09c797"
+    },
+    {
+      "src": "references/male-idle-left-02.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "cd66a86cb06792cf2bbaecb77a80e8622c920b3759e3ee578966b9e5368dc174"
+    },
+    {
+      "src": "references/male-idle-left-03.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "cb4f3eb82707a63c1b39f0f493936c51afa2c1e084abed33dc5e99bcd8415f70"
+    }
+  ],
+  "status": "motion-reference-reviewed; not painted final game art",
+  "anchor": [
+    48,
+    80
+  ]
+}

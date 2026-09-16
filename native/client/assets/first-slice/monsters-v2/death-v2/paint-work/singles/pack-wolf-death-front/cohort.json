@@ -1,0 +1,89 @@
+{
+  "accepted": false,
+  "clip": "pack-wolf-death-front",
+  "frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    76
+  ],
+  "pixels_per_metre": 48,
+  "alignment": "authored position unchanged; no per-frame translation",
+  "frames": [
+    {
+      "phase": 0,
+      "frame": "phase-00/fixed-placement.png",
+      "sha256": "c2da5f5d1226dd7d654532876e29807512a75c673138974ae6b9504894d2bff2",
+      "source": "phase-00/source.png",
+      "source_sha256": "bed39bbccc13e65539ae340b296e29814bf9db1e37844cfed65c16c61011d840",
+      "prompt": "phase-00/prompt.txt",
+      "guide": "native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\single-guides\\pack-wolf-death-front-00.png",
+      "guide_sha256": "be56e9e6d934f15d34178e96feb663ca8f47f7c3abd21cf6d1bbce8181d26041",
+      "fixed_iou": 0.9686609686609686,
+      "diagnostic_translation": [
+        0,
+        0
+      ],
+      "prompt_sha256": "85142d8529b64ae47e33689aac8d24c826f5dc93b50e20df7b8b7837143a5515",
+      "geometry_reference": "native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\pack-wolf-death-front-00.png",
+      "geometry_reference_sha256": "2c83b45820cfba115c2c99355572cfbb5f5c312d79bc347aaeda231c7f657867"
+    },
+    {
+      "phase": 1,
+      "frame": "phase-01/fixed-placement.png",
+      "sha256": "2625376c0a2b88097458fd3bb70aa1b8730cc301fee76c2de8a2c56e8eaedade",
+      "source": "phase-01/source.png",
+      "source_sha256": "ad9b8762607e513d21fead78daa477950230fa167fd388b25a92f462de9db41a",
+      "prompt": "phase-01/prompt.txt",
+      "guide": "native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\single-guides\\pack-wolf-death-front-01.png",
+      "guide_sha256": "d00db99e3fe02eb1fce9c9f986fd3e6e030657a338d53f91f76b8c8592b0ba32",
+      "fixed_iou": 0.9111111111111111,
+      "diagnostic_translation": [
+        0,
+        0
+      ],
+      "prompt_sha256": "743ee808928c2a57b472434faaca8ee124af25e4f539189a2935a41d38b6d81f",
+      "geometry_reference": "native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\pack-wolf-death-front-01.png",
+      "geometry_reference_sha256": "e4ded52669b8ced0ff1c203bf1dc04db16f90b03be7226b61d352fdbf5ec7377"
+    },
+    {
+      "phase": 2,
+      "frame": "phase-02/fixed-placement.png",
+      "sha256": "11c49219bf8447c6376cf164689d5b911d61357848cc25e480e46e54fabb8cf3",
+      "source": "phase-02/source.png",
+      "source_sha256": "ac4c20f00fe331deef8dd94a69a8673ca2beb17bb2125120f223a489e21f7a40",
+      "prompt": "phase-02/prompt.txt",
+      "guide": "native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\single-guides\\pack-wolf-death-front-02.png",
+      "guide_sha256": "8d46a552b9ab0d43c004359ae4dc7e9a9189e341e3808d64ce29c840b58f51b7",
+      "fixed_iou": 0.8772635814889336,
+      "diagnostic_translation": [
+        0,
+        0
+      ],
+      "prompt_sha256": "ce2db78d106b97336963652108be32a85b83d68521f0163b7175b89258830529",
+      "geometry_reference": "native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\pack-wolf-death-front-02.png",
+      "geometry_reference_sha256": "ee5711c18d31b9f324a947c3beade2511591274564898721da2f6b468c96ef00"
+    },
+    {
+      "phase": 3,
+      "frame": "phase-03/fixed-placement.png",
+      "sha256": "eed837c310f050e4ea1c1ae7f8cac69f902edf80b164818766f3683a8f480925",
+      "source": "phase-03/source.png",
+      "source_sha256": "082381404344364714c210a67515a6c85d792a78b8d06ec838207f821f03191b",
+      "prompt": "phase-03/prompt.txt",
+      "guide": "native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\single-guides\\pack-wolf-death-front-03.png",
+      "guide_sha256": "08bb2812b19b2db9e74f3a8a1d17de3772dd30d50abf2fc6a3a64ad1fb5a1b7d",
+      "fixed_iou": 0.9663865546218487,
+      "diagnostic_translation": [
+        0,
+        0
+      ],
+      "prompt_sha256": "0120ee00ae19c2ea5fc0f803e6d001bdb8148b4b0ce6e2fcc59d6386f574be6b",
+      "geometry_reference": "native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\pack-wolf-death-front-03.png",
+      "geometry_reference_sha256": "fc6431710270de58f37be6488177d62a9578b42057ddd2e6dcc7647bbe6647e1"
+    }
+  ],
+  "visual_review_status": "Pending independent review; finer fur and lighter edge treatment than idle/walk flagged."
+}

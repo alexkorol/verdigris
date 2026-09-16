@@ -1,0 +1,10 @@
+{
+  "source_sha256": "fbaa7115c99a935e357019ef47ff0309572549e413a9e7d84d1189baeb605b2a",
+  "reference": {
+    "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\projection-proof\\v3-faces\\pack-wolf-death-left-colored-guide.png",
+    "sha256": "d25af865f6e71f3b1f47ca760ea8a9200e2b37c34c4aad056e5166e3f6fc09da",
+    "role": "sole edit target: exact Blender death geometry and projected accepted coat"
+  },
+  "accepted": false,
+  "rejection": "Mean geometry IoU0.674 below0.70; phase1 IoU0.604 below0.65. Candidate still straightens falling torso."
+}

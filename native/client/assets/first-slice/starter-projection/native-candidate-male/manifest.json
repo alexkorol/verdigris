@@ -1,0 +1,2775 @@
+{
+  "accepted": false,
+  "status": "Candidate awaiting visual review",
+  "technique": "ImageGen-painted appearance projected onto unchanged Blender geometry; these are rerenders, not independently generated animation sheets.",
+  "source_manifest_sha256": "2036f1032583ff2f917abeee90cda76ab44c0dded9eda3690c2fecc68c533955",
+  "clips": [
+    {
+      "identity": "player_male_club",
+      "action": "idle",
+      "direction": "front",
+      "frames": [
+        "frames/male-club-idle-front-00.png",
+        "frames/male-club-idle-front-01.png",
+        "frames/male-club-idle-front-02.png",
+        "frames/male-club-idle-front-03.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_male_club",
+      "action": "idle",
+      "direction": "right",
+      "frames": [
+        "frames/male-club-idle-right-00.png",
+        "frames/male-club-idle-right-01.png",
+        "frames/male-club-idle-right-02.png",
+        "frames/male-club-idle-right-03.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_male_club",
+      "action": "idle",
+      "direction": "back",
+      "frames": [
+        "frames/male-club-idle-back-00.png",
+        "frames/male-club-idle-back-01.png",
+        "frames/male-club-idle-back-02.png",
+        "frames/male-club-idle-back-03.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_male_club",
+      "action": "idle",
+      "direction": "left",
+      "frames": [
+        "frames/male-club-idle-left-00.png",
+        "frames/male-club-idle-left-01.png",
+        "frames/male-club-idle-left-02.png",
+        "frames/male-club-idle-left-03.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_male_club",
+      "action": "sprint",
+      "direction": "front",
+      "frames": [
+        "frames/male-club-sprint-front-00.png",
+        "frames/male-club-sprint-front-01.png",
+        "frames/male-club-sprint-front-02.png",
+        "frames/male-club-sprint-front-03.png",
+        "frames/male-club-sprint-front-04.png",
+        "frames/male-club-sprint-front-05.png",
+        "frames/male-club-sprint-front-06.png",
+        "frames/male-club-sprint-front-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 14,
+      "loop": true
+    },
+    {
+      "identity": "player_male_club",
+      "action": "sprint",
+      "direction": "right",
+      "frames": [
+        "frames/male-club-sprint-right-00.png",
+        "frames/male-club-sprint-right-01.png",
+        "frames/male-club-sprint-right-02.png",
+        "frames/male-club-sprint-right-03.png",
+        "frames/male-club-sprint-right-04.png",
+        "frames/male-club-sprint-right-05.png",
+        "frames/male-club-sprint-right-06.png",
+        "frames/male-club-sprint-right-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 14,
+      "loop": true
+    },
+    {
+      "identity": "player_male_club",
+      "action": "sprint",
+      "direction": "back",
+      "frames": [
+        "frames/male-club-sprint-back-00.png",
+        "frames/male-club-sprint-back-01.png",
+        "frames/male-club-sprint-back-02.png",
+        "frames/male-club-sprint-back-03.png",
+        "frames/male-club-sprint-back-04.png",
+        "frames/male-club-sprint-back-05.png",
+        "frames/male-club-sprint-back-06.png",
+        "frames/male-club-sprint-back-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 14,
+      "loop": true
+    },
+    {
+      "identity": "player_male_club",
+      "action": "sprint",
+      "direction": "left",
+      "frames": [
+        "frames/male-club-sprint-left-00.png",
+        "frames/male-club-sprint-left-01.png",
+        "frames/male-club-sprint-left-02.png",
+        "frames/male-club-sprint-left-03.png",
+        "frames/male-club-sprint-left-04.png",
+        "frames/male-club-sprint-left-05.png",
+        "frames/male-club-sprint-left-06.png",
+        "frames/male-club-sprint-left-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 14,
+      "loop": true
+    },
+    {
+      "identity": "player_male_club",
+      "action": "walk",
+      "direction": "front",
+      "frames": [
+        "frames/male-club-walk-front-00.png",
+        "frames/male-club-walk-front-01.png",
+        "frames/male-club-walk-front-02.png",
+        "frames/male-club-walk-front-03.png",
+        "frames/male-club-walk-front-04.png",
+        "frames/male-club-walk-front-05.png",
+        "frames/male-club-walk-front-06.png",
+        "frames/male-club-walk-front-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 10,
+      "loop": true
+    },
+    {
+      "identity": "player_male_club",
+      "action": "walk",
+      "direction": "right",
+      "frames": [
+        "frames/male-club-walk-right-00.png",
+        "frames/male-club-walk-right-01.png",
+        "frames/male-club-walk-right-02.png",
+        "frames/male-club-walk-right-03.png",
+        "frames/male-club-walk-right-04.png",
+        "frames/male-club-walk-right-05.png",
+        "frames/male-club-walk-right-06.png",
+        "frames/male-club-walk-right-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 10,
+      "loop": true
+    },
+    {
+      "identity": "player_male_club",
+      "action": "walk",
+      "direction": "back",
+      "frames": [
+        "frames/male-club-walk-back-00.png",
+        "frames/male-club-walk-back-01.png",
+        "frames/male-club-walk-back-02.png",
+        "frames/male-club-walk-back-03.png",
+        "frames/male-club-walk-back-04.png",
+        "frames/male-club-walk-back-05.png",
+        "frames/male-club-walk-back-06.png",
+        "frames/male-club-walk-back-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 10,
+      "loop": true
+    },
+    {
+      "identity": "player_male_club",
+      "action": "walk",
+      "direction": "left",
+      "frames": [
+        "frames/male-club-walk-left-00.png",
+        "frames/male-club-walk-left-01.png",
+        "frames/male-club-walk-left-02.png",
+        "frames/male-club-walk-left-03.png",
+        "frames/male-club-walk-left-04.png",
+        "frames/male-club-walk-left-05.png",
+        "frames/male-club-walk-left-06.png",
+        "frames/male-club-walk-left-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 10,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "idle",
+      "direction": "front",
+      "frames": [
+        "frames/male-idle-front-00.png",
+        "frames/male-idle-front-01.png",
+        "frames/male-idle-front-02.png",
+        "frames/male-idle-front-03.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "idle",
+      "direction": "right",
+      "frames": [
+        "frames/male-idle-right-00.png",
+        "frames/male-idle-right-01.png",
+        "frames/male-idle-right-02.png",
+        "frames/male-idle-right-03.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "idle",
+      "direction": "back",
+      "frames": [
+        "frames/male-idle-back-00.png",
+        "frames/male-idle-back-01.png",
+        "frames/male-idle-back-02.png",
+        "frames/male-idle-back-03.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "idle",
+      "direction": "left",
+      "frames": [
+        "frames/male-idle-left-00.png",
+        "frames/male-idle-left-01.png",
+        "frames/male-idle-left-02.png",
+        "frames/male-idle-left-03.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "sprint",
+      "direction": "front",
+      "frames": [
+        "frames/male-sprint-front-00.png",
+        "frames/male-sprint-front-01.png",
+        "frames/male-sprint-front-02.png",
+        "frames/male-sprint-front-03.png",
+        "frames/male-sprint-front-04.png",
+        "frames/male-sprint-front-05.png",
+        "frames/male-sprint-front-06.png",
+        "frames/male-sprint-front-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 14,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "sprint",
+      "direction": "right",
+      "frames": [
+        "frames/male-sprint-right-00.png",
+        "frames/male-sprint-right-01.png",
+        "frames/male-sprint-right-02.png",
+        "frames/male-sprint-right-03.png",
+        "frames/male-sprint-right-04.png",
+        "frames/male-sprint-right-05.png",
+        "frames/male-sprint-right-06.png",
+        "frames/male-sprint-right-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 14,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "sprint",
+      "direction": "back",
+      "frames": [
+        "frames/male-sprint-back-00.png",
+        "frames/male-sprint-back-01.png",
+        "frames/male-sprint-back-02.png",
+        "frames/male-sprint-back-03.png",
+        "frames/male-sprint-back-04.png",
+        "frames/male-sprint-back-05.png",
+        "frames/male-sprint-back-06.png",
+        "frames/male-sprint-back-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 14,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "sprint",
+      "direction": "left",
+      "frames": [
+        "frames/male-sprint-left-00.png",
+        "frames/male-sprint-left-01.png",
+        "frames/male-sprint-left-02.png",
+        "frames/male-sprint-left-03.png",
+        "frames/male-sprint-left-04.png",
+        "frames/male-sprint-left-05.png",
+        "frames/male-sprint-left-06.png",
+        "frames/male-sprint-left-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 14,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "walk",
+      "direction": "front",
+      "frames": [
+        "frames/male-walk-front-00.png",
+        "frames/male-walk-front-01.png",
+        "frames/male-walk-front-02.png",
+        "frames/male-walk-front-03.png",
+        "frames/male-walk-front-04.png",
+        "frames/male-walk-front-05.png",
+        "frames/male-walk-front-06.png",
+        "frames/male-walk-front-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 10,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "walk",
+      "direction": "right",
+      "frames": [
+        "frames/male-walk-right-00.png",
+        "frames/male-walk-right-01.png",
+        "frames/male-walk-right-02.png",
+        "frames/male-walk-right-03.png",
+        "frames/male-walk-right-04.png",
+        "frames/male-walk-right-05.png",
+        "frames/male-walk-right-06.png",
+        "frames/male-walk-right-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 10,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "walk",
+      "direction": "back",
+      "frames": [
+        "frames/male-walk-back-00.png",
+        "frames/male-walk-back-01.png",
+        "frames/male-walk-back-02.png",
+        "frames/male-walk-back-03.png",
+        "frames/male-walk-back-04.png",
+        "frames/male-walk-back-05.png",
+        "frames/male-walk-back-06.png",
+        "frames/male-walk-back-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 10,
+      "loop": true
+    },
+    {
+      "identity": "player_male_unarmed",
+      "action": "walk",
+      "direction": "left",
+      "frames": [
+        "frames/male-walk-left-00.png",
+        "frames/male-walk-left-01.png",
+        "frames/male-walk-left-02.png",
+        "frames/male-walk-left-03.png",
+        "frames/male-walk-left-04.png",
+        "frames/male-walk-left-05.png",
+        "frames/male-walk-left-06.png",
+        "frames/male-walk-left-07.png"
+      ],
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "fps": 10,
+      "loop": true
+    }
+  ],
+  "provenance": {
+    "male-club-idle-front": {
+      "geometry_sha256": "a97ff778566290be600d119bb1d44deeb4ddae957bd6f75fd0978dd213ff5dda",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-club-idle-front-00.png",
+          "sha256": "a8d18bcbde3d3699c46d0a9985485d1e8bf27d203b399942d95e253cd68daa47",
+          "source_sha256": "b7127af00e2848520a5ce11f9c5e48cf8e79c24f32cad2b00ac96960206ad8e6",
+          "bbox": [
+            29,
+            7,
+            67,
+            86
+          ]
+        },
+        {
+          "src": "male-club-idle-front-01.png",
+          "sha256": "7b5cb8355cde412e78d0bb7e69150be920541d0ea84a21ee30259f8c2185dba1",
+          "source_sha256": "e18e812e4ced3efb1e34d77c628cff2061fa95bef83a9326428fd5fb7481df72",
+          "bbox": [
+            29,
+            7,
+            67,
+            86
+          ]
+        },
+        {
+          "src": "male-club-idle-front-02.png",
+          "sha256": "a8d18bcbde3d3699c46d0a9985485d1e8bf27d203b399942d95e253cd68daa47",
+          "source_sha256": "123b126463762b9280e0561ed36c217407d96f35ec75c24c45f528abc2e961b5",
+          "bbox": [
+            29,
+            7,
+            67,
+            86
+          ]
+        },
+        {
+          "src": "male-club-idle-front-03.png",
+          "sha256": "f28a9b5aa7911510b36d3039fd22816ac05daf2bfbc71c550839b5e2a045e4d1",
+          "source_sha256": "2c8c4584d75d951bd0e0ec5a3c909d3d2350292b3ccf5cb51e2ca116a1a6a463",
+          "bbox": [
+            29,
+            7,
+            67,
+            86
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "a8d18bcbde3d3699c46d0a9985485d1e8bf27d203b399942d95e253cd68daa47",
+        "7b5cb8355cde412e78d0bb7e69150be920541d0ea84a21ee30259f8c2185dba1",
+        "a8d18bcbde3d3699c46d0a9985485d1e8bf27d203b399942d95e253cd68daa47",
+        "f28a9b5aa7911510b36d3039fd22816ac05daf2bfbc71c550839b5e2a045e4d1"
+      ]
+    },
+    "male-club-idle-right": {
+      "geometry_sha256": "a97ff778566290be600d119bb1d44deeb4ddae957bd6f75fd0978dd213ff5dda",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-club-idle-right-00.png",
+          "sha256": "0ff70149d96909dd61b4ebe61c887a255bb7d79de1a1db4e423b321f6f2a3b7d",
+          "source_sha256": "769bb5a15c3b1f52708edd20f3c4e0aa600cf1305a77c3100c5fd49f1f3fce60",
+          "bbox": [
+            41,
+            6,
+            66,
+            85
+          ]
+        },
+        {
+          "src": "male-club-idle-right-01.png",
+          "sha256": "412919270a684553e75d85b2d125051723f7778d092521c24ef7e32254804dcb",
+          "source_sha256": "114e132ace3e2b1bf12f5196d3224cac038fe8c295ede1d7178c468d5bcfdace",
+          "bbox": [
+            41,
+            6,
+            66,
+            85
+          ]
+        },
+        {
+          "src": "male-club-idle-right-02.png",
+          "sha256": "0ff70149d96909dd61b4ebe61c887a255bb7d79de1a1db4e423b321f6f2a3b7d",
+          "source_sha256": "b3ce8a48180ed9e9ad052c48975119661302f4d3a0b7400116cecec32e0f1efd",
+          "bbox": [
+            41,
+            6,
+            66,
+            85
+          ]
+        },
+        {
+          "src": "male-club-idle-right-03.png",
+          "sha256": "7595503cb999af3f22721fc344d0e1be43515d3464f698f9475cf3b7b9341a51",
+          "source_sha256": "6d7289a49e3e9ecadf058400d37786e1c9aea6ed500ecc4e363a4dfbcb3b1271",
+          "bbox": [
+            41,
+            6,
+            66,
+            85
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "0ff70149d96909dd61b4ebe61c887a255bb7d79de1a1db4e423b321f6f2a3b7d",
+        "412919270a684553e75d85b2d125051723f7778d092521c24ef7e32254804dcb",
+        "0ff70149d96909dd61b4ebe61c887a255bb7d79de1a1db4e423b321f6f2a3b7d",
+        "7595503cb999af3f22721fc344d0e1be43515d3464f698f9475cf3b7b9341a51"
+      ]
+    },
+    "male-club-idle-back": {
+      "geometry_sha256": "a97ff778566290be600d119bb1d44deeb4ddae957bd6f75fd0978dd213ff5dda",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-club-idle-back-00.png",
+          "sha256": "aaf87f719d0c5b3e8d1b3db3cf1734feaad001aa285d591f858ba331da1ea782",
+          "source_sha256": "85f8971baa11b20237c3d62ff0d77906edb2f637207640f58891423f011b54d0",
+          "bbox": [
+            30,
+            4,
+            67,
+            83
+          ]
+        },
+        {
+          "src": "male-club-idle-back-01.png",
+          "sha256": "a954057148367b6b53fc8d3cd8a8acecacf490baae4e05414a2d43abe92dd7af",
+          "source_sha256": "d8302d731e6ad85832a2bd5def0bfb12cc8a653c86c5bf5b6528a6f0e89a055c",
+          "bbox": [
+            30,
+            4,
+            67,
+            83
+          ]
+        },
+        {
+          "src": "male-club-idle-back-02.png",
+          "sha256": "aaf87f719d0c5b3e8d1b3db3cf1734feaad001aa285d591f858ba331da1ea782",
+          "source_sha256": "6d89bebcd726a7830324605c35d6625bd402a3084119c7e92cb4a39f51087972",
+          "bbox": [
+            30,
+            4,
+            67,
+            83
+          ]
+        },
+        {
+          "src": "male-club-idle-back-03.png",
+          "sha256": "775baf318757f71040ebf7a397a1526bb9fa52cd67ea1bc4cd224d57dfd35bff",
+          "source_sha256": "06d6eae588c785477ce1d4cbbc5690cc971fecd6b9c49b7f9953dad1a60fb114",
+          "bbox": [
+            30,
+            4,
+            67,
+            83
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "aaf87f719d0c5b3e8d1b3db3cf1734feaad001aa285d591f858ba331da1ea782",
+        "a954057148367b6b53fc8d3cd8a8acecacf490baae4e05414a2d43abe92dd7af",
+        "aaf87f719d0c5b3e8d1b3db3cf1734feaad001aa285d591f858ba331da1ea782",
+        "775baf318757f71040ebf7a397a1526bb9fa52cd67ea1bc4cd224d57dfd35bff"
+      ]
+    },
+    "male-club-idle-left": {
+      "geometry_sha256": "a97ff778566290be600d119bb1d44deeb4ddae957bd6f75fd0978dd213ff5dda",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-club-idle-left-00.png",
+          "sha256": "e89f11c5e6d4a4002720450d3c4100a1c7979e5cd1d55f4b750fe9bf5396ff42",
+          "source_sha256": "89ab5927a6d3f98ee6c0a7c822a1002468528d09f081e2ec5330de58776da2eb",
+          "bbox": [
+            30,
+            6,
+            55,
+            85
+          ]
+        },
+        {
+          "src": "male-club-idle-left-01.png",
+          "sha256": "c1249691b92e0c1867b89817fb8c38fa73b16db67e3d31130e7d414c1cc5b338",
+          "source_sha256": "6cd94d4026edb9a35b6e6326842fd95a10dbe5fb27e02eadd5d2614032c15448",
+          "bbox": [
+            30,
+            6,
+            55,
+            85
+          ]
+        },
+        {
+          "src": "male-club-idle-left-02.png",
+          "sha256": "e89f11c5e6d4a4002720450d3c4100a1c7979e5cd1d55f4b750fe9bf5396ff42",
+          "source_sha256": "4191b4e928747a95364e21d317df4b76a8d0fac58db3230b8d7e60bfae5e8c24",
+          "bbox": [
+            30,
+            6,
+            55,
+            85
+          ]
+        },
+        {
+          "src": "male-club-idle-left-03.png",
+          "sha256": "72b0d13b1e61321e2a1cf220adddb8dda85ad03d3192436bf311b5956f1bca26",
+          "source_sha256": "752727a05b69d902cd9da0d7cb9cfdd5727b174df46f7d66f8ba6867ae34cde6",
+          "bbox": [
+            30,
+            6,
+            55,
+            85
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "e89f11c5e6d4a4002720450d3c4100a1c7979e5cd1d55f4b750fe9bf5396ff42",
+        "c1249691b92e0c1867b89817fb8c38fa73b16db67e3d31130e7d414c1cc5b338",
+        "e89f11c5e6d4a4002720450d3c4100a1c7979e5cd1d55f4b750fe9bf5396ff42",
+        "72b0d13b1e61321e2a1cf220adddb8dda85ad03d3192436bf311b5956f1bca26"
+      ]
+    },
+    "male-club-sprint-front": {
+      "geometry_sha256": "145e54244a779981ec7c3e1f1ac091fa668c2306c14c22067bb18a04c467ed02",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-club-sprint-front-00.png",
+          "sha256": "5464f218299de89883ad83be2ff962553b396cd7e70fd0d03e63ff3a0c10e2cf",
+          "source_sha256": "1411904de7a7c49738a44a7d523aefd28d0ecb6535bc31e3b30aaeb9a7462010",
+          "bbox": [
+            24,
+            11,
+            64,
+            89
+          ]
+        },
+        {
+          "src": "male-club-sprint-front-01.png",
+          "sha256": "f286f9d467e255d07b41c637fcbfbb55ccd5238a0d2e8bc541117b559bf904d4",
+          "source_sha256": "63f4cbfcd21df5b0d10874be787135d88a98b1c75a80174da428007eee001b44",
+          "bbox": [
+            25,
+            12,
+            63,
+            88
+          ]
+        },
+        {
+          "src": "male-club-sprint-front-02.png",
+          "sha256": "c859b280fe04a1fb692a56b1a7410534cf1b61eebf2b95c22a649f96175e3400",
+          "source_sha256": "e88e2a044c92e928898b72efc789e8dd149f252e1059c8ddaf554cbd9233c0c9",
+          "bbox": [
+            29,
+            16,
+            62,
+            81
+          ]
+        },
+        {
+          "src": "male-club-sprint-front-03.png",
+          "sha256": "d2ad6b5906f48a987976c1baa9c623b534305d44c6accc0f25fd2ba93c4447ce",
+          "source_sha256": "11820a6fba28cc6c24b9cfbe55fa1151ddb4ab3aa1b1a406dcfc0f97dd15b918",
+          "bbox": [
+            32,
+            13,
+            61,
+            74
+          ]
+        },
+        {
+          "src": "male-club-sprint-front-04.png",
+          "sha256": "a35e97e9af68f449a15ba7d702da69a4faef000f810c1ab4382a2735176f94d2",
+          "source_sha256": "6a5fa3c571db177023e437ada58e9366facd2b0dd4b75f60593ac723bb3e7f7b",
+          "bbox": [
+            32,
+            11,
+            61,
+            89
+          ]
+        },
+        {
+          "src": "male-club-sprint-front-05.png",
+          "sha256": "bdc867c50ff1f5e016031ba5d2f83b6a16fb948e052f398e6715517a35e6892f",
+          "source_sha256": "11b0df4bc6eddfceacf740d3195839c12c4dc95b88930116e4cceb6620a0e3c9",
+          "bbox": [
+            33,
+            12,
+            61,
+            89
+          ]
+        },
+        {
+          "src": "male-club-sprint-front-06.png",
+          "sha256": "733d09b97697da6e0ddfca76d78e85681070ba4c1c88e9ffe603abcb54472068",
+          "source_sha256": "7fcded94978b8162f4b615579968c4f9d57b136b781caba7c43623e0d7e9207d",
+          "bbox": [
+            30,
+            14,
+            62,
+            81
+          ]
+        },
+        {
+          "src": "male-club-sprint-front-07.png",
+          "sha256": "1e55b042ac3266b098dbc89134a74401b3f7c8a4879c42878db77a9fb4b76ebb",
+          "source_sha256": "2557bc43a335d19383592aa5f216d0ac966aefb5d7df323e2a38aa1ab03a78aa",
+          "bbox": [
+            27,
+            12,
+            62,
+            77
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "5464f218299de89883ad83be2ff962553b396cd7e70fd0d03e63ff3a0c10e2cf",
+        "f286f9d467e255d07b41c637fcbfbb55ccd5238a0d2e8bc541117b559bf904d4",
+        "c859b280fe04a1fb692a56b1a7410534cf1b61eebf2b95c22a649f96175e3400",
+        "d2ad6b5906f48a987976c1baa9c623b534305d44c6accc0f25fd2ba93c4447ce",
+        "a35e97e9af68f449a15ba7d702da69a4faef000f810c1ab4382a2735176f94d2",
+        "bdc867c50ff1f5e016031ba5d2f83b6a16fb948e052f398e6715517a35e6892f",
+        "733d09b97697da6e0ddfca76d78e85681070ba4c1c88e9ffe603abcb54472068",
+        "1e55b042ac3266b098dbc89134a74401b3f7c8a4879c42878db77a9fb4b76ebb"
+      ]
+    },
+    "male-club-sprint-right": {
+      "geometry_sha256": "145e54244a779981ec7c3e1f1ac091fa668c2306c14c22067bb18a04c467ed02",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-club-sprint-right-00.png",
+          "sha256": "840b54032cbc407c9e1c92bb47920bf325c505c8f140a279e4a00f3cf5136bc3",
+          "source_sha256": "e9c506814a7f05ca9d1cb11e56b10dbff383f7eda2e39ea7e37e1fa189bd16d2",
+          "bbox": [
+            16,
+            7,
+            71,
+            81
+          ]
+        },
+        {
+          "src": "male-club-sprint-right-01.png",
+          "sha256": "ef57179cf65fe4668e032b5aeff939a42e5c6e15f8d860ac7ee0393b40c3e789",
+          "source_sha256": "433700b740808f01e0bcc5dee18ba7095204e9ce6795ba9388effbd4ab7d6abe",
+          "bbox": [
+            15,
+            9,
+            75,
+            82
+          ]
+        },
+        {
+          "src": "male-club-sprint-right-02.png",
+          "sha256": "1a175503f1500bb59304ac42f1173ca6cd30713a880e96c0e6ab1d5a13a46415",
+          "source_sha256": "e43f3d50bc6b8c68754508fe7feb8a0bac23bf5e2af1175edbb6ac21a50ab158",
+          "bbox": [
+            28,
+            11,
+            81,
+            82
+          ]
+        },
+        {
+          "src": "male-club-sprint-right-03.png",
+          "sha256": "a929353a014debfc0ccd8962f39c7da1893e274309bb2ac90c64b4511c1ceca6",
+          "source_sha256": "8c7a2bea2f74ecfaa4652dcd9359e0f98f33de9ca6ce1f6e35637a9da479b28f",
+          "bbox": [
+            24,
+            10,
+            79,
+            81
+          ]
+        },
+        {
+          "src": "male-club-sprint-right-04.png",
+          "sha256": "88c4b1b70e1f3462186d3315656e95bf1528d3893a96a6ed7773536cc3cd2792",
+          "source_sha256": "62360bb1bbb211e35a9d60945eabefa144232a4c801ac693c7717b4627ad355a",
+          "bbox": [
+            15,
+            7,
+            78,
+            78
+          ]
+        },
+        {
+          "src": "male-club-sprint-right-05.png",
+          "sha256": "879bdc657b684e911295c9aef141b1d482de4bde29a438e45797194356e0f195",
+          "source_sha256": "0239fa9cf7077ba80626a401bb4918cea43f380654685fa5bfde0531f017926f",
+          "bbox": [
+            16,
+            8,
+            81,
+            79
+          ]
+        },
+        {
+          "src": "male-club-sprint-right-06.png",
+          "sha256": "170633e08b2a4b1938be3134666471366de3375415f1dd6edca63ac28bec1e38",
+          "source_sha256": "c8b290c2ee92e3c098700b90640c76887775a6d14625e50400c0e6fc8f82cfcd",
+          "bbox": [
+            28,
+            9,
+            79,
+            80
+          ]
+        },
+        {
+          "src": "male-club-sprint-right-07.png",
+          "sha256": "0b07fec680af18cad28a2a6e3c5c110318b5fea0f78c9d9c7d8a70f1a9e8c6d7",
+          "source_sha256": "632c32d8dd9207ebaafcf262258a6199cc39aa24f2bf2bf3ba003e6ceed51122",
+          "bbox": [
+            25,
+            7,
+            75,
+            80
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "840b54032cbc407c9e1c92bb47920bf325c505c8f140a279e4a00f3cf5136bc3",
+        "ef57179cf65fe4668e032b5aeff939a42e5c6e15f8d860ac7ee0393b40c3e789",
+        "1a175503f1500bb59304ac42f1173ca6cd30713a880e96c0e6ab1d5a13a46415",
+        "a929353a014debfc0ccd8962f39c7da1893e274309bb2ac90c64b4511c1ceca6",
+        "88c4b1b70e1f3462186d3315656e95bf1528d3893a96a6ed7773536cc3cd2792",
+        "879bdc657b684e911295c9aef141b1d482de4bde29a438e45797194356e0f195",
+        "170633e08b2a4b1938be3134666471366de3375415f1dd6edca63ac28bec1e38",
+        "0b07fec680af18cad28a2a6e3c5c110318b5fea0f78c9d9c7d8a70f1a9e8c6d7"
+      ]
+    },
+    "male-club-sprint-back": {
+      "geometry_sha256": "145e54244a779981ec7c3e1f1ac091fa668c2306c14c22067bb18a04c467ed02",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-club-sprint-back-00.png",
+          "sha256": "63440c63e96e6b6b52282b28dc9c3810c6589dd4da185ae8413a67dd59e4a83b",
+          "source_sha256": "60db4497d4294d4710c36faf02bb1d262a84bdc9358b826273f1184b3f9a8915",
+          "bbox": [
+            32,
+            2,
+            70,
+            93
+          ]
+        },
+        {
+          "src": "male-club-sprint-back-01.png",
+          "sha256": "386df4d919cd1d5b05b864a5967719bb80daaf9a985c40a57c720c04b933bae8",
+          "source_sha256": "3f6ee43665eedf85740a45370cd2476a995830e0bebd057e28efe89c4e58fc46",
+          "bbox": [
+            33,
+            3,
+            70,
+            88
+          ]
+        },
+        {
+          "src": "male-club-sprint-back-02.png",
+          "sha256": "79d79feb52c6e283117cc5b355ec9bbd63c413782604645fbe38721955963ddd",
+          "source_sha256": "3d867d179b82ad56ac61abe00839207596a8a06e6c1e5d744d89d33039d006d7",
+          "bbox": [
+            34,
+            5,
+            66,
+            86
+          ]
+        },
+        {
+          "src": "male-club-sprint-back-03.png",
+          "sha256": "30fdb656a50a27f39c18d3397734661e4858b196ef1a141ba0dab61b774da871",
+          "source_sha256": "e9b17dda6c6e17cbe982dd3d90fd5f968d4ce66ee367523344267f9de9cb0b60",
+          "bbox": [
+            35,
+            4,
+            63,
+            90
+          ]
+        },
+        {
+          "src": "male-club-sprint-back-04.png",
+          "sha256": "7515a64aa2f88f52ce1195d0af4a370e6d58fc6ca515068160fbf68967fad6d8",
+          "source_sha256": "48bacbda478cc8f17b5099e3c8b2c65ce7f50cc45e7f7e2f7627332e1c95b8d6",
+          "bbox": [
+            36,
+            3,
+            64,
+            94
+          ]
+        },
+        {
+          "src": "male-club-sprint-back-05.png",
+          "sha256": "98bcb862b7e90c09c37fa16079e2023b380dd05d26520cb09006d0d0ab77fd43",
+          "source_sha256": "cfe7be1e3c725cec0717f9d08c3aa1478cc902e3f93e3066ab563b588e6fa8be",
+          "bbox": [
+            35,
+            4,
+            63,
+            89
+          ]
+        },
+        {
+          "src": "male-club-sprint-back-06.png",
+          "sha256": "cc5f6d71028d468f7f53e73698abfe515ef6335021e8655d95191812f55df96e",
+          "source_sha256": "31fe2805cbedab371e33574753118d74a015a85bc4385d93663daf401e6e09df",
+          "bbox": [
+            34,
+            5,
+            65,
+            86
+          ]
+        },
+        {
+          "src": "male-club-sprint-back-07.png",
+          "sha256": "9e01a2d5b0353a8c97ac86cb2ae17dbe6235e5b23442ad5d3806dd1bcb742e59",
+          "source_sha256": "8a293978746222155b7126af04ee2a4a7095e2d3923da3ceb8b4e7688b9e9e36",
+          "bbox": [
+            34,
+            3,
+            67,
+            89
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "63440c63e96e6b6b52282b28dc9c3810c6589dd4da185ae8413a67dd59e4a83b",
+        "386df4d919cd1d5b05b864a5967719bb80daaf9a985c40a57c720c04b933bae8",
+        "79d79feb52c6e283117cc5b355ec9bbd63c413782604645fbe38721955963ddd",
+        "30fdb656a50a27f39c18d3397734661e4858b196ef1a141ba0dab61b774da871",
+        "7515a64aa2f88f52ce1195d0af4a370e6d58fc6ca515068160fbf68967fad6d8",
+        "98bcb862b7e90c09c37fa16079e2023b380dd05d26520cb09006d0d0ab77fd43",
+        "cc5f6d71028d468f7f53e73698abfe515ef6335021e8655d95191812f55df96e",
+        "9e01a2d5b0353a8c97ac86cb2ae17dbe6235e5b23442ad5d3806dd1bcb742e59"
+      ]
+    },
+    "male-club-sprint-left": {
+      "geometry_sha256": "145e54244a779981ec7c3e1f1ac091fa668c2306c14c22067bb18a04c467ed02",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-club-sprint-left-00.png",
+          "sha256": "6a213515d94341c92418ad4ee6c704bd95626db82965353859522c23481529d7",
+          "source_sha256": "0af04a52398441b54c97d8539312f2fdbd595a8e22a1e3f898423254580da6c3",
+          "bbox": [
+            27,
+            7,
+            80,
+            78
+          ]
+        },
+        {
+          "src": "male-club-sprint-left-01.png",
+          "sha256": "c59d9cda8a7f63f6c0d4d3579e7a2f928033269c425213c9a81cdd7b2668f9a6",
+          "source_sha256": "a39a4d30deb2ae0ebf9cbc2150b82e86a0314b61f89c28fa65b9224866bf4bf8",
+          "bbox": [
+            23,
+            8,
+            81,
+            80
+          ]
+        },
+        {
+          "src": "male-club-sprint-left-02.png",
+          "sha256": "2540fdc0dcf7af7a15bdc78fa28440ab781f46030ba90972416e2910887d5033",
+          "source_sha256": "e33ef4bc0d8f02854f888157a0fe7517d8268b6b0c5eb5d0fdd999a661d75dfe",
+          "bbox": [
+            16,
+            10,
+            68,
+            81
+          ]
+        },
+        {
+          "src": "male-club-sprint-left-03.png",
+          "sha256": "7cbdb75e9e5fce2e7d832e054bc5f12f6cba400f9b1db4d74881ae3383f75a98",
+          "source_sha256": "52ded9f08d1b8429537f06016e2b0da114784a0569cfb29e20a7600aa2bb8de5",
+          "bbox": [
+            19,
+            8,
+            72,
+            80
+          ]
+        },
+        {
+          "src": "male-club-sprint-left-04.png",
+          "sha256": "4bfd993337a26d0effcc669fcb7359741c70c6d5ee914cd6a50e174acc7a7c91",
+          "source_sha256": "916f3d72b308ccf16a5c31e221780cfb9a47964c796c4e3dac3010fa101e6102",
+          "bbox": [
+            19,
+            7,
+            80,
+            82
+          ]
+        },
+        {
+          "src": "male-club-sprint-left-05.png",
+          "sha256": "d29c9cd3690046bd88b7b3dd9327da87bdff8b7aba3a66b52144059605bde71c",
+          "source_sha256": "e268317ee209b2709528ceee92adffbe461609ce7b726def63f8f7c539461d44",
+          "bbox": [
+            16,
+            9,
+            79,
+            83
+          ]
+        },
+        {
+          "src": "male-club-sprint-left-06.png",
+          "sha256": "2adac3335a5c569f4901e6fefbc8bad8db2ef12fcd032498a17f25834a0cab36",
+          "source_sha256": "0e1a9206509e48f48a6e9d54609450e58a4684e5d6eb23e81a6e1a82d8caa093",
+          "bbox": [
+            19,
+            11,
+            67,
+            83
+          ]
+        },
+        {
+          "src": "male-club-sprint-left-07.png",
+          "sha256": "a4825a1a08cc1af930ac4eefc17eb071b3a8e36f3c4ba3060ad3b89ae93f50da",
+          "source_sha256": "e3b1f8aebe48a576aab4766d77df0da3f45c3bdec0e1189a32947ea465167861",
+          "bbox": [
+            22,
+            8,
+            71,
+            82
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "6a213515d94341c92418ad4ee6c704bd95626db82965353859522c23481529d7",
+        "c59d9cda8a7f63f6c0d4d3579e7a2f928033269c425213c9a81cdd7b2668f9a6",
+        "2540fdc0dcf7af7a15bdc78fa28440ab781f46030ba90972416e2910887d5033",
+        "7cbdb75e9e5fce2e7d832e054bc5f12f6cba400f9b1db4d74881ae3383f75a98",
+        "4bfd993337a26d0effcc669fcb7359741c70c6d5ee914cd6a50e174acc7a7c91",
+        "d29c9cd3690046bd88b7b3dd9327da87bdff8b7aba3a66b52144059605bde71c",
+        "2adac3335a5c569f4901e6fefbc8bad8db2ef12fcd032498a17f25834a0cab36",
+        "a4825a1a08cc1af930ac4eefc17eb071b3a8e36f3c4ba3060ad3b89ae93f50da"
+      ]
+    },
+    "male-club-walk-front": {
+      "geometry_sha256": "e97d8fcdec09aa21754c3f51510290250351950d2ca457588dc6f6110a5d9799",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-club-walk-front-00.png",
+          "sha256": "2db01d116fd903b48963767fac357ee66c7fc032823d7d4377ac5eaad8a63e25",
+          "source_sha256": "be5c9f104bb0a59c47be10e38897e1ddd23869b7864b59b0c59156d24d847477",
+          "bbox": [
+            30,
+            9,
+            62,
+            83
+          ]
+        },
+        {
+          "src": "male-club-walk-front-01.png",
+          "sha256": "ad6b99d46f6bf904bf8044b96c2805e3cd271b4321c6cf3bc72ca6301d1dba62",
+          "source_sha256": "3aade8e8717c29bd454d5a3333a658b6150ff0481b4845093147707a32e4af88",
+          "bbox": [
+            29,
+            10,
+            63,
+            89
+          ]
+        },
+        {
+          "src": "male-club-walk-front-02.png",
+          "sha256": "70a092b55f43bf10757f95012da1f423b572ea5f339e7d88146cc12fd1a4262f",
+          "source_sha256": "9d9b579de631b8309e08fcb77f60876785b7f858f1ed759d906119d1d5ad88e7",
+          "bbox": [
+            27,
+            10,
+            63,
+            91
+          ]
+        },
+        {
+          "src": "male-club-walk-front-03.png",
+          "sha256": "57e42a89f08e29f0df6d0c2ff1e9e9933d38250d851c1b68c7fa5073886d16f6",
+          "source_sha256": "c21d22e183a5e4a959c796ae36a6e9b75c1eddf4698da2fda6cc73d3e91a260b",
+          "bbox": [
+            27,
+            8,
+            63,
+            86
+          ]
+        },
+        {
+          "src": "male-club-walk-front-04.png",
+          "sha256": "10c38967b3d1176b1eaab77f47be5b053d224a0edbcd214bc23a66d9ecb49bd2",
+          "source_sha256": "d3c575998c4951fa322f72917f53411b8295e06e3b467088d7624b3e7c8881a9",
+          "bbox": [
+            29,
+            8,
+            62,
+            81
+          ]
+        },
+        {
+          "src": "male-club-walk-front-05.png",
+          "sha256": "89e653cc43676aca773d3049907d873c0f2056f414497fc9a6668d22588c3177",
+          "source_sha256": "aed91b555f9f26a01886b09797859cfee050100c51009149707ded10657ca223",
+          "bbox": [
+            32,
+            9,
+            63,
+            90
+          ]
+        },
+        {
+          "src": "male-club-walk-front-06.png",
+          "sha256": "d9480f97c6c425d7fc87d8f1519bc8df7a8e1b5b50e4a5ea9488a8d3b567a9b1",
+          "source_sha256": "59baf7b5cb713e8a5767ae433be8ca393eede5a440089b3a2d7fdea567471e9e",
+          "bbox": [
+            33,
+            9,
+            62,
+            91
+          ]
+        },
+        {
+          "src": "male-club-walk-front-07.png",
+          "sha256": "add47dd7497bde70fece9653353a3f423e75a028aa605aceeb58b8a0d8e76574",
+          "source_sha256": "44c852802f57640b472ea6def0cdb2262e8158f074b9f81f7feff648ec252ca5",
+          "bbox": [
+            31,
+            8,
+            62,
+            86
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "2db01d116fd903b48963767fac357ee66c7fc032823d7d4377ac5eaad8a63e25",
+        "ad6b99d46f6bf904bf8044b96c2805e3cd271b4321c6cf3bc72ca6301d1dba62",
+        "70a092b55f43bf10757f95012da1f423b572ea5f339e7d88146cc12fd1a4262f",
+        "57e42a89f08e29f0df6d0c2ff1e9e9933d38250d851c1b68c7fa5073886d16f6",
+        "10c38967b3d1176b1eaab77f47be5b053d224a0edbcd214bc23a66d9ecb49bd2",
+        "89e653cc43676aca773d3049907d873c0f2056f414497fc9a6668d22588c3177",
+        "d9480f97c6c425d7fc87d8f1519bc8df7a8e1b5b50e4a5ea9488a8d3b567a9b1",
+        "add47dd7497bde70fece9653353a3f423e75a028aa605aceeb58b8a0d8e76574"
+      ]
+    },
+    "male-club-walk-right": {
+      "geometry_sha256": "e97d8fcdec09aa21754c3f51510290250351950d2ca457588dc6f6110a5d9799",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-club-walk-right-00.png",
+          "sha256": "21b8ec1c32adb4beb1cdcb9a964558c75dc1e48e288dc19e46139f23ebefcf02",
+          "source_sha256": "128993a38ae9973eb1a4f554a9459dac02d4f93670137d493fd265fefde3e42e",
+          "bbox": [
+            40,
+            8,
+            72,
+            82
+          ]
+        },
+        {
+          "src": "male-club-walk-right-01.png",
+          "sha256": "1cf803e938e912421f72ff99603f1110fdd0060ec1f3fef65f80c2d0d8132842",
+          "source_sha256": "79e2120166ce75cd5ea8fb9f691901e5c15c3fee2da8ae4933de374f8612d7c2",
+          "bbox": [
+            33,
+            8,
+            71,
+            83
+          ]
+        },
+        {
+          "src": "male-club-walk-right-02.png",
+          "sha256": "f21d8db190e692acc1b993486e427a08622e88a663cec83da04e2800e90ceaf2",
+          "source_sha256": "d252f99d031de66bdb729b289ec4feab870d85b156e3406b3511b72bd6a93c34",
+          "bbox": [
+            23,
+            9,
+            71,
+            83
+          ]
+        },
+        {
+          "src": "male-club-walk-right-03.png",
+          "sha256": "deb299f27fae7e2ff203037632b73ddad6badd849763d14a859ce9c0df12b761",
+          "source_sha256": "a0565948899e22edab7fe9bf53abd9d97195ce1ee1546cdc3cf507fc1bf05aac",
+          "bbox": [
+            25,
+            7,
+            66,
+            82
+          ]
+        },
+        {
+          "src": "male-club-walk-right-04.png",
+          "sha256": "d8f753e8a6a68065d4dc6e1ca5ed27b02eb9758011875e12791da887623f09e3",
+          "source_sha256": "aef871b68a3d83853afe8a8febe651780a0319ec1828f563643063c5565397e1",
+          "bbox": [
+            39,
+            7,
+            73,
+            81
+          ]
+        },
+        {
+          "src": "male-club-walk-right-05.png",
+          "sha256": "782592b127d86187179df4012a481de0d31bdee55baea76ca4fdfbb947b050c9",
+          "source_sha256": "1d05f324bf2647f9fdacbf7f192a89c220e89f0b1c5b61b72fcc4b315bc6b91b",
+          "bbox": [
+            31,
+            8,
+            81,
+            81
+          ]
+        },
+        {
+          "src": "male-club-walk-right-06.png",
+          "sha256": "84918627fbac6f0783813b4c5ecea71fcad0ff61fadbe218ab90b15c4e4024c3",
+          "source_sha256": "ec31c253e951f759b7e88178a0bc6290840f9eb28ba93f29c0b52325d7debbac",
+          "bbox": [
+            21,
+            8,
+            82,
+            83
+          ]
+        },
+        {
+          "src": "male-club-walk-right-07.png",
+          "sha256": "c3a64d21900bb7fff59175e399728120ff8bde1716784c05cf62334823c9839f",
+          "source_sha256": "650df4b060c32004ff32608c12c6dbca316a812d070bdae4d0ab3cecfddaaae9",
+          "bbox": [
+            26,
+            7,
+            79,
+            80
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "21b8ec1c32adb4beb1cdcb9a964558c75dc1e48e288dc19e46139f23ebefcf02",
+        "1cf803e938e912421f72ff99603f1110fdd0060ec1f3fef65f80c2d0d8132842",
+        "f21d8db190e692acc1b993486e427a08622e88a663cec83da04e2800e90ceaf2",
+        "deb299f27fae7e2ff203037632b73ddad6badd849763d14a859ce9c0df12b761",
+        "d8f753e8a6a68065d4dc6e1ca5ed27b02eb9758011875e12791da887623f09e3",
+        "782592b127d86187179df4012a481de0d31bdee55baea76ca4fdfbb947b050c9",
+        "84918627fbac6f0783813b4c5ecea71fcad0ff61fadbe218ab90b15c4e4024c3",
+        "c3a64d21900bb7fff59175e399728120ff8bde1716784c05cf62334823c9839f"
+      ]
+    },
+    "male-club-walk-back": {
+      "geometry_sha256": "e97d8fcdec09aa21754c3f51510290250351950d2ca457588dc6f6110a5d9799",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-club-walk-back-00.png",
+          "sha256": "e43c47b430b77815db4e942c77e2e6a77d8d3587dcda79289b2912e0246522a0",
+          "source_sha256": "dd9c39280101f46e584b9a16c6695e5286ee320efff7fc4938f1d81c374359c5",
+          "bbox": [
+            34,
+            7,
+            65,
+            85
+          ]
+        },
+        {
+          "src": "male-club-walk-back-01.png",
+          "sha256": "8a22eaee3f7a4b1fdb36376c272d75502727472eb65d5360686d355c92987071",
+          "source_sha256": "205d055471811ead5c7488641d56cd32ff8e004685b2ed5adee4711a3cea4581",
+          "bbox": [
+            33,
+            8,
+            67,
+            90
+          ]
+        },
+        {
+          "src": "male-club-walk-back-02.png",
+          "sha256": "ee0b84faaf147c5d5008e871faed3e2aafab3f4e474aed897edc3892a1b14965",
+          "source_sha256": "0aa6e0f8963ed00196c06f457358ca941ddf88e22788c02ddc431e02761d5290",
+          "bbox": [
+            33,
+            8,
+            68,
+            94
+          ]
+        },
+        {
+          "src": "male-club-walk-back-03.png",
+          "sha256": "b66e71ff323f01b9d0b9a3808dbb59ed6c63443ef35d6e85035e351bf441f8e5",
+          "source_sha256": "2b4297b03bf275171a1f65d0b1240b902353dcfb8db4e09ec7168141e42462df",
+          "bbox": [
+            34,
+            7,
+            69,
+            87
+          ]
+        },
+        {
+          "src": "male-club-walk-back-04.png",
+          "sha256": "0d9981aaa8f11e8e7a3c2526c44dbf291c98b3be7d2e3e8fd86e8f967cb2c093",
+          "source_sha256": "e93645a8cc777bc79b1553a59f08eb935f51ea39765e0bf2920227da20ada0f3",
+          "bbox": [
+            34,
+            6,
+            66,
+            86
+          ]
+        },
+        {
+          "src": "male-club-walk-back-05.png",
+          "sha256": "91fb0c1f12c1cc3323443d834642b4a8cf0a981ba262ec7c523274af48405117",
+          "source_sha256": "c274d327600cae83bb3a0622a36e980acbbb4adb1f77bef15ca8647ebb6bd68e",
+          "bbox": [
+            33,
+            7,
+            62,
+            90
+          ]
+        },
+        {
+          "src": "male-club-walk-back-06.png",
+          "sha256": "eb9c6d5fe788b6538d76acf0bedd693ae32374275c0c919b5dc4c256e4c84281",
+          "source_sha256": "a210d948a192b2a3a82d2095d22246da810354ec5b5692ef5360c5202193ff51",
+          "bbox": [
+            34,
+            7,
+            62,
+            92
+          ]
+        },
+        {
+          "src": "male-club-walk-back-07.png",
+          "sha256": "f47612ca1d1a0ad6b009ef76232b3055d2f3ebfd7231ea7e08f40526145b39b3",
+          "source_sha256": "7981bfc38b5a9592575247d1df9008f3080fd134713cd46a2016ed4a86f4d7a2",
+          "bbox": [
+            33,
+            6,
+            63,
+            87
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "e43c47b430b77815db4e942c77e2e6a77d8d3587dcda79289b2912e0246522a0",
+        "8a22eaee3f7a4b1fdb36376c272d75502727472eb65d5360686d355c92987071",
+        "ee0b84faaf147c5d5008e871faed3e2aafab3f4e474aed897edc3892a1b14965",
+        "b66e71ff323f01b9d0b9a3808dbb59ed6c63443ef35d6e85035e351bf441f8e5",
+        "0d9981aaa8f11e8e7a3c2526c44dbf291c98b3be7d2e3e8fd86e8f967cb2c093",
+        "91fb0c1f12c1cc3323443d834642b4a8cf0a981ba262ec7c523274af48405117",
+        "eb9c6d5fe788b6538d76acf0bedd693ae32374275c0c919b5dc4c256e4c84281",
+        "f47612ca1d1a0ad6b009ef76232b3055d2f3ebfd7231ea7e08f40526145b39b3"
+      ]
+    },
+    "male-club-walk-left": {
+      "geometry_sha256": "e97d8fcdec09aa21754c3f51510290250351950d2ca457588dc6f6110a5d9799",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-club-walk-left-00.png",
+          "sha256": "a76b15b02851c3bc32724b59dfdc0292c77362256883d1ed065064119ba9d79e",
+          "source_sha256": "2076078b85702c816513e0096f1d19060029d11eebf55f74ffe315713ee84188",
+          "bbox": [
+            25,
+            9,
+            56,
+            83
+          ]
+        },
+        {
+          "src": "male-club-walk-left-01.png",
+          "sha256": "9ebffeb1164d63346985ef332fa531e540db2b61ffd1c98dc133f94ab2d967f4",
+          "source_sha256": "6fdc07ef35db4836964a05955fabc2ec87f29c16b0698629980edd4c118cb4d6",
+          "bbox": [
+            25,
+            10,
+            63,
+            83
+          ]
+        },
+        {
+          "src": "male-club-walk-left-02.png",
+          "sha256": "12426d0f2e05739fbc056852e99dd61d99d1208ad9635e0d24ef1ea737bdb5bf",
+          "source_sha256": "174f315ba29df1fc16deb9acfc16db68a645bca2659a53fda5643c4da5834749",
+          "bbox": [
+            24,
+            10,
+            73,
+            83
+          ]
+        },
+        {
+          "src": "male-club-walk-left-03.png",
+          "sha256": "6988ed51d64b6b5d24b88c7b2133dd7c6e34994f8f8d96a6bd3391ead9d12081",
+          "source_sha256": "88b44ba1f65c3e86965c9fde1d1fe609983848b46d9195d4a25f7e6e58c0a182",
+          "bbox": [
+            30,
+            9,
+            71,
+            82
+          ]
+        },
+        {
+          "src": "male-club-walk-left-04.png",
+          "sha256": "7b4b67c2e7389515a2bf5b2977923ed30c81675f2a6def8f37638e439b41f515",
+          "source_sha256": "7f0c10693fd6b0f3fc5a08ae9c8a4cf05dacad437d82a89b6db621ca63d40f58",
+          "bbox": [
+            24,
+            8,
+            57,
+            82
+          ]
+        },
+        {
+          "src": "male-club-walk-left-05.png",
+          "sha256": "390045971fa31d546ebe5267d2a156c2ed6199705ef21ae9e392a28ff5525581",
+          "source_sha256": "4ab704f519071367e13e2d766fb2cc76aa90b9a7d3dd8d9d046b8513f9f98c90",
+          "bbox": [
+            16,
+            8,
+            65,
+            82
+          ]
+        },
+        {
+          "src": "male-club-walk-left-06.png",
+          "sha256": "263feebdd6e50bc07ab767cf544d20f8e8292dd428d67aaa197837295daaf120",
+          "source_sha256": "cb9fabe77bc1d02e562e97a11db3e84ac6116bbd8b0cb57ad669b90e508af0e7",
+          "bbox": [
+            15,
+            9,
+            74,
+            83
+          ]
+        },
+        {
+          "src": "male-club-walk-left-07.png",
+          "sha256": "9b73408f8583e0f567a7c9be4daaaf72af0aa450c635bead76497e08991e47b0",
+          "source_sha256": "8c6bb935d6a03910b5168fe2ca4c68b26b0ff65f88c8de36ac71f601d4addaca",
+          "bbox": [
+            18,
+            8,
+            70,
+            82
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "a76b15b02851c3bc32724b59dfdc0292c77362256883d1ed065064119ba9d79e",
+        "9ebffeb1164d63346985ef332fa531e540db2b61ffd1c98dc133f94ab2d967f4",
+        "12426d0f2e05739fbc056852e99dd61d99d1208ad9635e0d24ef1ea737bdb5bf",
+        "6988ed51d64b6b5d24b88c7b2133dd7c6e34994f8f8d96a6bd3391ead9d12081",
+        "7b4b67c2e7389515a2bf5b2977923ed30c81675f2a6def8f37638e439b41f515",
+        "390045971fa31d546ebe5267d2a156c2ed6199705ef21ae9e392a28ff5525581",
+        "263feebdd6e50bc07ab767cf544d20f8e8292dd428d67aaa197837295daaf120",
+        "9b73408f8583e0f567a7c9be4daaaf72af0aa450c635bead76497e08991e47b0"
+      ]
+    },
+    "male-idle-front": {
+      "geometry_sha256": "30b58b46b31bbfc6bca93708ffe09b9b7be1e0e2f39a3d1fa83f65716a547089",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-idle-front-00.png",
+          "sha256": "756a53c87e95775f25ccb5148ac35493d40a979a1f899296491b326cbe7df585",
+          "source_sha256": "5af4e9ee8df904b01733071b7a1f124e058d66cf1d810fd2a5e972666c597fba",
+          "bbox": [
+            29,
+            7,
+            67,
+            86
+          ]
+        },
+        {
+          "src": "male-idle-front-01.png",
+          "sha256": "8dca05f3273e9fce55070d2225f74c400417940eef89ae2e433c1b8033d203ca",
+          "source_sha256": "48e2b9ca3bef7daa5e1d9147768f3362d20169b2c24f6d84d7ca5de4df4a4191",
+          "bbox": [
+            29,
+            7,
+            67,
+            86
+          ]
+        },
+        {
+          "src": "male-idle-front-02.png",
+          "sha256": "756a53c87e95775f25ccb5148ac35493d40a979a1f899296491b326cbe7df585",
+          "source_sha256": "123ce60de30108d0bf8861ea5442ca9dcaa9d9fe653a093856d0a41be2d1b015",
+          "bbox": [
+            29,
+            7,
+            67,
+            86
+          ]
+        },
+        {
+          "src": "male-idle-front-03.png",
+          "sha256": "7c0995a40faedf8856f41f92df7aaa1ca80115f524ef9231645cfba63043fc37",
+          "source_sha256": "0e698150496a4be10c768b058fe317942a49d150c61c3b7d7c9ea5f329bff64f",
+          "bbox": [
+            29,
+            7,
+            67,
+            86
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "756a53c87e95775f25ccb5148ac35493d40a979a1f899296491b326cbe7df585",
+        "8dca05f3273e9fce55070d2225f74c400417940eef89ae2e433c1b8033d203ca",
+        "756a53c87e95775f25ccb5148ac35493d40a979a1f899296491b326cbe7df585",
+        "7c0995a40faedf8856f41f92df7aaa1ca80115f524ef9231645cfba63043fc37"
+      ]
+    },
+    "male-idle-right": {
+      "geometry_sha256": "30b58b46b31bbfc6bca93708ffe09b9b7be1e0e2f39a3d1fa83f65716a547089",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-idle-right-00.png",
+          "sha256": "80f793468cab2fe14b63ee3f8da6ac9324b300db34d831cd7701e936fa142bcc",
+          "source_sha256": "3f1454e74714fb2232e34b2ef2e3c7928ae3827d9bfd419687f4d04977a5f036",
+          "bbox": [
+            41,
+            6,
+            65,
+            85
+          ]
+        },
+        {
+          "src": "male-idle-right-01.png",
+          "sha256": "d935d399bb016626d1e88771cfff42138f9ce978fd7587099b5b87af898f49a1",
+          "source_sha256": "672ab9d56772595194fc90b4133757da47f0e68f8403729a3497b87dbeeb1489",
+          "bbox": [
+            41,
+            6,
+            65,
+            85
+          ]
+        },
+        {
+          "src": "male-idle-right-02.png",
+          "sha256": "80f793468cab2fe14b63ee3f8da6ac9324b300db34d831cd7701e936fa142bcc",
+          "source_sha256": "64be409678dc4e511dc26c127ec5ebc70661adb3efd0a8eca3d1d097532d7910",
+          "bbox": [
+            41,
+            6,
+            65,
+            85
+          ]
+        },
+        {
+          "src": "male-idle-right-03.png",
+          "sha256": "f714cb93dff47a870d51fab0a3a0a64d5691deb6a0d1c5e310e0ffc8b03e051e",
+          "source_sha256": "bd08e07a9e4bbe85f549b5b2156bb57ce914cd4f755c3da667d142670b220725",
+          "bbox": [
+            41,
+            6,
+            65,
+            85
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "80f793468cab2fe14b63ee3f8da6ac9324b300db34d831cd7701e936fa142bcc",
+        "d935d399bb016626d1e88771cfff42138f9ce978fd7587099b5b87af898f49a1",
+        "80f793468cab2fe14b63ee3f8da6ac9324b300db34d831cd7701e936fa142bcc",
+        "f714cb93dff47a870d51fab0a3a0a64d5691deb6a0d1c5e310e0ffc8b03e051e"
+      ]
+    },
+    "male-idle-back": {
+      "geometry_sha256": "30b58b46b31bbfc6bca93708ffe09b9b7be1e0e2f39a3d1fa83f65716a547089",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-idle-back-00.png",
+          "sha256": "4edee2eb82ae9dcafecfda805459a0f5c1fb72df25c135a1b057cace81738324",
+          "source_sha256": "ee30da3c559603abf7f70da033d213b9451d288236650eb98aab2c8fb4605954",
+          "bbox": [
+            30,
+            4,
+            66,
+            83
+          ]
+        },
+        {
+          "src": "male-idle-back-01.png",
+          "sha256": "ff99e265fcf3122a4d52952118a590c4394715a88bbcc199ad1a78433d1e097d",
+          "source_sha256": "4d63a311d3878b266ac68909f9aad9c87a348afd7fc8d41b61256aa676e1ebcf",
+          "bbox": [
+            30,
+            4,
+            66,
+            83
+          ]
+        },
+        {
+          "src": "male-idle-back-02.png",
+          "sha256": "4edee2eb82ae9dcafecfda805459a0f5c1fb72df25c135a1b057cace81738324",
+          "source_sha256": "0c5a66be13ec1f270978894b7a024897fd1fe446e6c7bddd8d748f5118618ed6",
+          "bbox": [
+            30,
+            4,
+            66,
+            83
+          ]
+        },
+        {
+          "src": "male-idle-back-03.png",
+          "sha256": "a2bfb212cd4240a650e40e172989195212039b5ad77a3f6cbfcf92265d09fcad",
+          "source_sha256": "5cfe48fbe9ea3233e80ad70e8eaff98d4fa965e728a7d1469dc7e6bd34607cc6",
+          "bbox": [
+            30,
+            4,
+            66,
+            83
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "4edee2eb82ae9dcafecfda805459a0f5c1fb72df25c135a1b057cace81738324",
+        "ff99e265fcf3122a4d52952118a590c4394715a88bbcc199ad1a78433d1e097d",
+        "4edee2eb82ae9dcafecfda805459a0f5c1fb72df25c135a1b057cace81738324",
+        "a2bfb212cd4240a650e40e172989195212039b5ad77a3f6cbfcf92265d09fcad"
+      ]
+    },
+    "male-idle-left": {
+      "geometry_sha256": "30b58b46b31bbfc6bca93708ffe09b9b7be1e0e2f39a3d1fa83f65716a547089",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-idle-left-00.png",
+          "sha256": "8f3d58d1bda326ca133b63313f27c745818fd9ffc0a2156d398a2cf23d33d716",
+          "source_sha256": "291cd5b611fa3a2bf512c6401a98d36280e3473491e7ca4f2ef1ce09030edb3b",
+          "bbox": [
+            30,
+            6,
+            55,
+            85
+          ]
+        },
+        {
+          "src": "male-idle-left-01.png",
+          "sha256": "ce6af963151d7fd506b72c36d0bf37f97e396e755252b2dcfb2286c07c51d74b",
+          "source_sha256": "5504f3f5aead5b0d48251beb90f3a12fce5dc60b85384fcdd08ebf4077ba6083",
+          "bbox": [
+            30,
+            6,
+            55,
+            85
+          ]
+        },
+        {
+          "src": "male-idle-left-02.png",
+          "sha256": "8f3d58d1bda326ca133b63313f27c745818fd9ffc0a2156d398a2cf23d33d716",
+          "source_sha256": "6b096d28af8378d3a6449e71bf69f75a041ac1cb44f04a3037255afb2807dafe",
+          "bbox": [
+            30,
+            6,
+            55,
+            85
+          ]
+        },
+        {
+          "src": "male-idle-left-03.png",
+          "sha256": "bdd45e4ad030a76844fa5f3b8b38b0c71da39eb05241c5be3b8a45b591f91fe1",
+          "source_sha256": "0477fa1b077e44fad342eab97efe46ad70057d6026afea2b29acdf5372a9a36e",
+          "bbox": [
+            30,
+            6,
+            55,
+            85
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "8f3d58d1bda326ca133b63313f27c745818fd9ffc0a2156d398a2cf23d33d716",
+        "ce6af963151d7fd506b72c36d0bf37f97e396e755252b2dcfb2286c07c51d74b",
+        "8f3d58d1bda326ca133b63313f27c745818fd9ffc0a2156d398a2cf23d33d716",
+        "bdd45e4ad030a76844fa5f3b8b38b0c71da39eb05241c5be3b8a45b591f91fe1"
+      ]
+    },
+    "male-sprint-front": {
+      "geometry_sha256": "c3e19851684ab555ce438e75a4abb3a393a1ba74524e900872fe91ee9b4f76d9",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-sprint-front-00.png",
+          "sha256": "a868633c8dd54f2d757b70190375639beb91f322011df61f8bcc67a426b98371",
+          "source_sha256": "b42d8f2e4a1c1c17dd5d0829433f6a0aa8567420b0bdbe32f35a2fb41310b1c4",
+          "bbox": [
+            32,
+            11,
+            64,
+            89
+          ]
+        },
+        {
+          "src": "male-sprint-front-01.png",
+          "sha256": "bfe8aeb11ee07fa9fab8764baf25781cf5df9ae52c99cd1fdab350d3cf48f62e",
+          "source_sha256": "ac4a3fb75eeefc8bed4107707c553f60f49195eb32e7819ae58596dc305b107d",
+          "bbox": [
+            32,
+            12,
+            63,
+            88
+          ]
+        },
+        {
+          "src": "male-sprint-front-02.png",
+          "sha256": "98e89a874b0dc263d4b48e743a01387104f8ed51727da0b66ffdcf68c0f97f5d",
+          "source_sha256": "f71cc340dc8a1f1ade97a0a52831b0ef8c35dc4e9932b527d327acd31ebbcfd9",
+          "bbox": [
+            33,
+            16,
+            62,
+            81
+          ]
+        },
+        {
+          "src": "male-sprint-front-03.png",
+          "sha256": "fc0054e93099bfb3d96aca54a118c855b1b1adc4bf85a5e0c1d11ce52300a123",
+          "source_sha256": "c95e3783ce975f64bc7a1152db59375de60e635023c8d9ca0b9b6caeaa784d2c",
+          "bbox": [
+            32,
+            13,
+            61,
+            74
+          ]
+        },
+        {
+          "src": "male-sprint-front-04.png",
+          "sha256": "c6819c01d6ef9f91b176075546114cb5c5e46078bc42f647f0dd505770ab1fef",
+          "source_sha256": "99e6eecf78e57dcce0c45d52ab0093f0a371171c7415a5508ff03d918db0ee7e",
+          "bbox": [
+            32,
+            11,
+            61,
+            89
+          ]
+        },
+        {
+          "src": "male-sprint-front-05.png",
+          "sha256": "c6f1ae94d04e902cc0f01c74cba06c7b4406d98ffe482cbf52472b9b959e8d55",
+          "source_sha256": "0bb70f778b695b9e4893293543478c0f6a0f3518ef2cc8f0da47e2503e66f22e",
+          "bbox": [
+            33,
+            12,
+            61,
+            89
+          ]
+        },
+        {
+          "src": "male-sprint-front-06.png",
+          "sha256": "a6209e3cf28ad632625b8ac61900324dd3988cbb07b050d5438d4b53928efb84",
+          "source_sha256": "2c96767514fb4e382c3c56a443ce9cc9f492aa3abffa6504219af3e65ea1a96b",
+          "bbox": [
+            34,
+            14,
+            62,
+            81
+          ]
+        },
+        {
+          "src": "male-sprint-front-07.png",
+          "sha256": "008ce5a720a1b16694ea9e0b8f68ed09c4bf9148fa32fd06a6ecbbef9867fc4e",
+          "source_sha256": "5c7abea0a5428b8dafd63b4512b811737b5988721dbe00e7e0485aedb4e8e572",
+          "bbox": [
+            34,
+            12,
+            62,
+            77
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "a868633c8dd54f2d757b70190375639beb91f322011df61f8bcc67a426b98371",
+        "bfe8aeb11ee07fa9fab8764baf25781cf5df9ae52c99cd1fdab350d3cf48f62e",
+        "98e89a874b0dc263d4b48e743a01387104f8ed51727da0b66ffdcf68c0f97f5d",
+        "fc0054e93099bfb3d96aca54a118c855b1b1adc4bf85a5e0c1d11ce52300a123",
+        "c6819c01d6ef9f91b176075546114cb5c5e46078bc42f647f0dd505770ab1fef",
+        "c6f1ae94d04e902cc0f01c74cba06c7b4406d98ffe482cbf52472b9b959e8d55",
+        "a6209e3cf28ad632625b8ac61900324dd3988cbb07b050d5438d4b53928efb84",
+        "008ce5a720a1b16694ea9e0b8f68ed09c4bf9148fa32fd06a6ecbbef9867fc4e"
+      ]
+    },
+    "male-sprint-right": {
+      "geometry_sha256": "c3e19851684ab555ce438e75a4abb3a393a1ba74524e900872fe91ee9b4f76d9",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-sprint-right-00.png",
+          "sha256": "b90e9080d2cd4ba4bccd855d556392016bac00c081be8c865384d2ce86ef1fee",
+          "source_sha256": "ef4afb121a6ad028460a8d344d9fa969e13e6c5e22c7c12c431bebb5b1dae713",
+          "bbox": [
+            16,
+            7,
+            69,
+            81
+          ]
+        },
+        {
+          "src": "male-sprint-right-01.png",
+          "sha256": "3638840704023f3a3aa1ad84acb10d4f2ec40ddc0ded7e600744c7afa910ce4d",
+          "source_sha256": "5f702f3b12a03086be556e9e26880df8d80552bf10a8d595c75b1c942115471d",
+          "bbox": [
+            15,
+            9,
+            68,
+            82
+          ]
+        },
+        {
+          "src": "male-sprint-right-02.png",
+          "sha256": "5f6aa73e08d5d1537b08295bcd7e41f5babc248786acd96462a3059e4f869ceb",
+          "source_sha256": "b4e7e312370ebe44d42a6d15799372188033cfede6f5b1d54573bd07af33ec81",
+          "bbox": [
+            28,
+            11,
+            71,
+            82
+          ]
+        },
+        {
+          "src": "male-sprint-right-03.png",
+          "sha256": "b1f3fa15a9ba841a6a435c3fdf3cb7773fc34fbdf930f293f36b3d2397ec4e18",
+          "source_sha256": "41a8ce226c033e87ca878f6e35d8f22fac4937739856a8bc7114d789f41611a8",
+          "bbox": [
+            24,
+            10,
+            72,
+            81
+          ]
+        },
+        {
+          "src": "male-sprint-right-04.png",
+          "sha256": "d5fe39c08d2ca605d7d1d59dfe7822151e41e61778b081fb0e835cc50912a3c8",
+          "source_sha256": "47b2857a0a3f39e2edddc441ccb0c4d4c43c1b064b0c7e493dc43c4a4c2c64ac",
+          "bbox": [
+            15,
+            7,
+            69,
+            78
+          ]
+        },
+        {
+          "src": "male-sprint-right-05.png",
+          "sha256": "6e226f07179c1e186d7c66955818d69ee0d85165429948f19cb8bbf0440dc9f5",
+          "source_sha256": "9f71c1424dcbecf9c97f8db536676fd45b27ec2bb3e9490bfd754c4749a0d6a8",
+          "bbox": [
+            16,
+            8,
+            68,
+            79
+          ]
+        },
+        {
+          "src": "male-sprint-right-06.png",
+          "sha256": "83357c38b3d41131a019586769a90bb20074d7fc316013173016bd4d5f96a979",
+          "source_sha256": "0c883570d4e1eaf0ff3c0df77243e8c01c39013dd24cb6ab66701364df4dfb38",
+          "bbox": [
+            28,
+            9,
+            72,
+            80
+          ]
+        },
+        {
+          "src": "male-sprint-right-07.png",
+          "sha256": "1867159eac1376cf1a0657ffbca1fe8d0c9c583fb3173123d60f7023def65ae2",
+          "source_sha256": "5b86ee3ff7d10ffa1c2ff8e0e13b16a10923178b106988d2b88192f97fcfa78c",
+          "bbox": [
+            25,
+            7,
+            70,
+            80
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "b90e9080d2cd4ba4bccd855d556392016bac00c081be8c865384d2ce86ef1fee",
+        "3638840704023f3a3aa1ad84acb10d4f2ec40ddc0ded7e600744c7afa910ce4d",
+        "5f6aa73e08d5d1537b08295bcd7e41f5babc248786acd96462a3059e4f869ceb",
+        "b1f3fa15a9ba841a6a435c3fdf3cb7773fc34fbdf930f293f36b3d2397ec4e18",
+        "d5fe39c08d2ca605d7d1d59dfe7822151e41e61778b081fb0e835cc50912a3c8",
+        "6e226f07179c1e186d7c66955818d69ee0d85165429948f19cb8bbf0440dc9f5",
+        "83357c38b3d41131a019586769a90bb20074d7fc316013173016bd4d5f96a979",
+        "1867159eac1376cf1a0657ffbca1fe8d0c9c583fb3173123d60f7023def65ae2"
+      ]
+    },
+    "male-sprint-back": {
+      "geometry_sha256": "c3e19851684ab555ce438e75a4abb3a393a1ba74524e900872fe91ee9b4f76d9",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-sprint-back-00.png",
+          "sha256": "39537d1f151cab82504adc6697293ab21a59b89550e50169fdf83271de2b2efd",
+          "source_sha256": "a5c2030b51db9290ef08023e56e1abc3e4623e05bd6a06db3df47549d0178b19",
+          "bbox": [
+            32,
+            2,
+            63,
+            93
+          ]
+        },
+        {
+          "src": "male-sprint-back-01.png",
+          "sha256": "4dfd929f18db1d9052f52d7ca2db94808bd21cc1d88e3c309598fb39a6f161c4",
+          "source_sha256": "a67afc54aa7cab5ca4e82bfeece1a8971a6dd2d5ddbb9aa5ffd7cbe40fcf767d",
+          "bbox": [
+            33,
+            3,
+            64,
+            88
+          ]
+        },
+        {
+          "src": "male-sprint-back-02.png",
+          "sha256": "7d13edafd6327217502429251568081ed4af9d6781bf2f74d229894c2bc8e392",
+          "source_sha256": "a6e29de616f47f298a3fe8ed0d10b1519cbbb78ed04e56982b833ce0d95c5671",
+          "bbox": [
+            34,
+            5,
+            63,
+            86
+          ]
+        },
+        {
+          "src": "male-sprint-back-03.png",
+          "sha256": "8d0258c1777d15dbb01fe5e1477d4a358c4cad17acddcc03a1517cb7368a015c",
+          "source_sha256": "8d72b9b794622cc9052c442490bedc480a385f02e21769d1db35c5084da73521",
+          "bbox": [
+            35,
+            4,
+            63,
+            90
+          ]
+        },
+        {
+          "src": "male-sprint-back-04.png",
+          "sha256": "d868b52accf5141b46bc2ed4ac71f9a045af2d54f43d4d54b99a7d15c6d96fda",
+          "source_sha256": "52c6066848cff3407839b2fb80ba41e93af90ac8eecba376406a39772206a722",
+          "bbox": [
+            36,
+            3,
+            64,
+            94
+          ]
+        },
+        {
+          "src": "male-sprint-back-05.png",
+          "sha256": "f9ce781b0410a867c9b6883a32f5ac295645b2e45f0b09fabd83d2fcdb79d648",
+          "source_sha256": "a7d257edf27ef66e7441fef10b3fd1e05804884b8eba00bbfd22c23412659063",
+          "bbox": [
+            35,
+            4,
+            63,
+            89
+          ]
+        },
+        {
+          "src": "male-sprint-back-06.png",
+          "sha256": "3a48539aa7ef01e023baf5669c0f3ccafe9f39108ee7bc754f4260752966af12",
+          "source_sha256": "5f896eb26fe6a58fae87cf8aae4e612aef7aa1b040b094ba77df7ec007e084a0",
+          "bbox": [
+            34,
+            5,
+            62,
+            86
+          ]
+        },
+        {
+          "src": "male-sprint-back-07.png",
+          "sha256": "5bfcdf12a5a5a02120e431864d638f7411690cf13b72182472e16a6562b2a0bb",
+          "source_sha256": "d3e3a36cf39e8b44f704316e8c0853231c7d41b66be27363e3c46470d5929668",
+          "bbox": [
+            34,
+            3,
+            61,
+            89
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "39537d1f151cab82504adc6697293ab21a59b89550e50169fdf83271de2b2efd",
+        "4dfd929f18db1d9052f52d7ca2db94808bd21cc1d88e3c309598fb39a6f161c4",
+        "7d13edafd6327217502429251568081ed4af9d6781bf2f74d229894c2bc8e392",
+        "8d0258c1777d15dbb01fe5e1477d4a358c4cad17acddcc03a1517cb7368a015c",
+        "d868b52accf5141b46bc2ed4ac71f9a045af2d54f43d4d54b99a7d15c6d96fda",
+        "f9ce781b0410a867c9b6883a32f5ac295645b2e45f0b09fabd83d2fcdb79d648",
+        "3a48539aa7ef01e023baf5669c0f3ccafe9f39108ee7bc754f4260752966af12",
+        "5bfcdf12a5a5a02120e431864d638f7411690cf13b72182472e16a6562b2a0bb"
+      ]
+    },
+    "male-sprint-left": {
+      "geometry_sha256": "c3e19851684ab555ce438e75a4abb3a393a1ba74524e900872fe91ee9b4f76d9",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-sprint-left-00.png",
+          "sha256": "a63514a092d3410f4ee98b5905c72e4896606c77ac4fd616304b38c8f08e4132",
+          "source_sha256": "5289825e60e8f4095e7b8b432d7737506a980faf12e0a05fdd06bb603f0e158c",
+          "bbox": [
+            28,
+            7,
+            80,
+            78
+          ]
+        },
+        {
+          "src": "male-sprint-left-01.png",
+          "sha256": "6e3d6b23e5ae09d87585230a659258146674c2e908f0e8819a1c0c985d24707d",
+          "source_sha256": "4b41df81aa17083cb8e3dffed38bd2239216479535db7b600b42cf663b849d94",
+          "bbox": [
+            28,
+            8,
+            81,
+            80
+          ]
+        },
+        {
+          "src": "male-sprint-left-02.png",
+          "sha256": "015f877c66af3798c2b96a721ea6f590b1c319dd7ccb96c40db3cf85afb8a475",
+          "source_sha256": "b73226b6ee151ae1d5b094a17b3b11aead131281a15cc670e9427253098732ab",
+          "bbox": [
+            26,
+            10,
+            68,
+            81
+          ]
+        },
+        {
+          "src": "male-sprint-left-03.png",
+          "sha256": "0579bbfa8ea6cd448bca0a11c9bc8d078d5ad5b7f0c7a5d285446e09db3fd2e4",
+          "source_sha256": "de73c8156e1e26f429ef8dda4407f8502ebe761b080f0bd95e8fe35eefd9249f",
+          "bbox": [
+            25,
+            8,
+            72,
+            80
+          ]
+        },
+        {
+          "src": "male-sprint-left-04.png",
+          "sha256": "f8f14ccaa01b49b50aabd99d651c2a0fa180955b1e6af49ec367485b94dc4da4",
+          "source_sha256": "20b2c663bb3e39e6e24b3b80886ae48eb3bffa2665272d9c6c7cca2b6347d417",
+          "bbox": [
+            27,
+            7,
+            80,
+            82
+          ]
+        },
+        {
+          "src": "male-sprint-left-05.png",
+          "sha256": "7cabdb57ed781daff96b0d4ed415b3e6976a617ba0b52ec278e8c2a7351ac390",
+          "source_sha256": "67d93dcc421acca949c87c43772089714fcee418e92f591997c06c7bf133da01",
+          "bbox": [
+            29,
+            9,
+            79,
+            83
+          ]
+        },
+        {
+          "src": "male-sprint-left-06.png",
+          "sha256": "e75c95943a7726b36838d95bf725b5f3b29c0765da589c0b378ff31a86ec1007",
+          "source_sha256": "e59e9c417e33652894ea075ad7346fe4d74fd50a158edf15432701af4ee628f9",
+          "bbox": [
+            24,
+            11,
+            67,
+            83
+          ]
+        },
+        {
+          "src": "male-sprint-left-07.png",
+          "sha256": "f40bf9911935a8bf6e5d189a23d070bf05726c4346cad163ef12571c8d99bd20",
+          "source_sha256": "4dbc8fca5f359ee6bea96fc462d19d1983d03faeea57bd70f4e0cf22bdb5cd82",
+          "bbox": [
+            26,
+            8,
+            71,
+            82
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "a63514a092d3410f4ee98b5905c72e4896606c77ac4fd616304b38c8f08e4132",
+        "6e3d6b23e5ae09d87585230a659258146674c2e908f0e8819a1c0c985d24707d",
+        "015f877c66af3798c2b96a721ea6f590b1c319dd7ccb96c40db3cf85afb8a475",
+        "0579bbfa8ea6cd448bca0a11c9bc8d078d5ad5b7f0c7a5d285446e09db3fd2e4",
+        "f8f14ccaa01b49b50aabd99d651c2a0fa180955b1e6af49ec367485b94dc4da4",
+        "7cabdb57ed781daff96b0d4ed415b3e6976a617ba0b52ec278e8c2a7351ac390",
+        "e75c95943a7726b36838d95bf725b5f3b29c0765da589c0b378ff31a86ec1007",
+        "f40bf9911935a8bf6e5d189a23d070bf05726c4346cad163ef12571c8d99bd20"
+      ]
+    },
+    "male-walk-front": {
+      "geometry_sha256": "56ff6e7485c44cf508a6377f378754a0d0b9e740aa51ee438953d35cdc9e44a9",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-walk-front-00.png",
+          "sha256": "665559690fce502e5eb4b44dd254f74920b1dd37706e3361ce25df0aa176f10f",
+          "source_sha256": "63b292ca5cbc77bc0c2918a688107dfb98cb3dee427ffbfb5a697c800d4e33bc",
+          "bbox": [
+            35,
+            9,
+            62,
+            83
+          ]
+        },
+        {
+          "src": "male-walk-front-01.png",
+          "sha256": "7e1561206f0048f18ee7c8a425ca5ea93637a4205611483626dde51c3d89acd7",
+          "source_sha256": "3cbd6ed7d81ca7d3d8de90ffae170a0d18474d240ab8771e4e25439bcf55d832",
+          "bbox": [
+            35,
+            10,
+            63,
+            89
+          ]
+        },
+        {
+          "src": "male-walk-front-02.png",
+          "sha256": "8242d5c8820b47440f0a6dee3f08df55a4da7da6e1f3d45d82749080a5196d14",
+          "source_sha256": "3091fc5faccf34ab7016ee2f28a2f57a6ae9b6d592ba69d46eb11679a2a5c5ca",
+          "bbox": [
+            35,
+            10,
+            63,
+            91
+          ]
+        },
+        {
+          "src": "male-walk-front-03.png",
+          "sha256": "89d678cf4e915109c25def1d4c2238ca399c60f4898fcad4dfe2f9243c150d68",
+          "source_sha256": "736a911ba7862e6dab7ca34fdfaf107b1b5311a93fe9f07f2ff38de11eab7988",
+          "bbox": [
+            34,
+            8,
+            63,
+            86
+          ]
+        },
+        {
+          "src": "male-walk-front-04.png",
+          "sha256": "54f79446a1ee0413d582e03e37d041259bda78e3b4a553e45ebb81a20ba8ed1e",
+          "source_sha256": "7e598501d4d2a0fcdba80087ce8c3eeb78a2e619b031cdf2373a583fbcfc3ee4",
+          "bbox": [
+            35,
+            8,
+            62,
+            81
+          ]
+        },
+        {
+          "src": "male-walk-front-05.png",
+          "sha256": "85bedd22e6496042e3db197cfa7e83ca66c1b42d9e3646d8566ac6791dab3ea5",
+          "source_sha256": "47210bba236c60ac191976304a3630d6b19bea2bff635fdf2ee518c979432b54",
+          "bbox": [
+            33,
+            9,
+            63,
+            90
+          ]
+        },
+        {
+          "src": "male-walk-front-06.png",
+          "sha256": "b25666ef8e3d11addfa7dfaa904e5fe6b8d546cfb7fef1d9d224df138a9561d0",
+          "source_sha256": "804562275a5f116e3d7a179538f38f13519d676a88b1fb8dbc6f1e31dd69234c",
+          "bbox": [
+            34,
+            9,
+            62,
+            91
+          ]
+        },
+        {
+          "src": "male-walk-front-07.png",
+          "sha256": "341011ec734890aa5d8552bd3a8e5f67b2f6fe71836fdac3851e83c4ccd48834",
+          "source_sha256": "ff0293345104f86f18fac9169eeab8cf5cf50d9861e10a17f330c027b643cc2c",
+          "bbox": [
+            35,
+            8,
+            62,
+            86
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "665559690fce502e5eb4b44dd254f74920b1dd37706e3361ce25df0aa176f10f",
+        "7e1561206f0048f18ee7c8a425ca5ea93637a4205611483626dde51c3d89acd7",
+        "8242d5c8820b47440f0a6dee3f08df55a4da7da6e1f3d45d82749080a5196d14",
+        "89d678cf4e915109c25def1d4c2238ca399c60f4898fcad4dfe2f9243c150d68",
+        "54f79446a1ee0413d582e03e37d041259bda78e3b4a553e45ebb81a20ba8ed1e",
+        "85bedd22e6496042e3db197cfa7e83ca66c1b42d9e3646d8566ac6791dab3ea5",
+        "b25666ef8e3d11addfa7dfaa904e5fe6b8d546cfb7fef1d9d224df138a9561d0",
+        "341011ec734890aa5d8552bd3a8e5f67b2f6fe71836fdac3851e83c4ccd48834"
+      ]
+    },
+    "male-walk-right": {
+      "geometry_sha256": "56ff6e7485c44cf508a6377f378754a0d0b9e740aa51ee438953d35cdc9e44a9",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-walk-right-00.png",
+          "sha256": "4739b85e152d4e43762c724f09a6aa4364c1ce9ddc2d0ef368dba8b4a023dbdd",
+          "source_sha256": "6b54b232f3bcd7b8daabbaa3075d7d1f1b73db6ea89915e1282dbd0c06a26679",
+          "bbox": [
+            40,
+            8,
+            61,
+            82
+          ]
+        },
+        {
+          "src": "male-walk-right-01.png",
+          "sha256": "d3e1231289eaaf8aeab66821336a14df06e904891be4348f748260df28733d18",
+          "source_sha256": "3e1b26ddee02154f09b58a88993b54cbef5c6fc8d483c07471f7cc4156c85989",
+          "bbox": [
+            33,
+            8,
+            71,
+            83
+          ]
+        },
+        {
+          "src": "male-walk-right-02.png",
+          "sha256": "41246e498bcd9d236e10662654bfb105a86954ce9243927b08e1f30a23cb864d",
+          "source_sha256": "890b53d9ec60b9a4b2362f17a342f210a95ab4636400fb5ab8e3688242b8df4b",
+          "bbox": [
+            23,
+            9,
+            71,
+            83
+          ]
+        },
+        {
+          "src": "male-walk-right-03.png",
+          "sha256": "641ecddd0ba7034bcdd2f76ba8e4f64777cd9d3f635215a8e845b21444a1d9f3",
+          "source_sha256": "0cf4f1d3449db885b659313143a156aa0cdc586e20321080248b7bb4215c044f",
+          "bbox": [
+            25,
+            7,
+            66,
+            82
+          ]
+        },
+        {
+          "src": "male-walk-right-04.png",
+          "sha256": "11529c7550703d1f746ef9d8dcc42e93e01a9bdde74d78517cae3707576a58f4",
+          "source_sha256": "92aaa80c23283c89aa35ef64328bb6b87ff74db01669ae6d675f90bbbe5ab0c9",
+          "bbox": [
+            39,
+            7,
+            59,
+            81
+          ]
+        },
+        {
+          "src": "male-walk-right-05.png",
+          "sha256": "3c9bbc3e996389c3b58df6aee2cc4ddc9fe9719ce6b5ff150c0a5abbeed85439",
+          "source_sha256": "cf57795a95701c5ef915f43a845d8c4e415a323bde825412d4213a20db2c75c8",
+          "bbox": [
+            31,
+            8,
+            73,
+            81
+          ]
+        },
+        {
+          "src": "male-walk-right-06.png",
+          "sha256": "06315049cfffa6f96caa5a46e850c3c5c31eabe3c6f430e7e80203652c4608cf",
+          "source_sha256": "40f8b57576018debe0123c4d4612853edccd0a7816a30ee1fa6c82466a1cd464",
+          "bbox": [
+            21,
+            8,
+            71,
+            83
+          ]
+        },
+        {
+          "src": "male-walk-right-07.png",
+          "sha256": "d9e27a9a2667eebb1e22c68dd7f30930d91b1da41b527c9fae6d07f23ce93377",
+          "source_sha256": "511465cba6ebcffc035ea7dc683a00adabc7a829b1cd567166c02a4b3871f5bf",
+          "bbox": [
+            26,
+            7,
+            63,
+            80
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "4739b85e152d4e43762c724f09a6aa4364c1ce9ddc2d0ef368dba8b4a023dbdd",
+        "d3e1231289eaaf8aeab66821336a14df06e904891be4348f748260df28733d18",
+        "41246e498bcd9d236e10662654bfb105a86954ce9243927b08e1f30a23cb864d",
+        "641ecddd0ba7034bcdd2f76ba8e4f64777cd9d3f635215a8e845b21444a1d9f3",
+        "11529c7550703d1f746ef9d8dcc42e93e01a9bdde74d78517cae3707576a58f4",
+        "3c9bbc3e996389c3b58df6aee2cc4ddc9fe9719ce6b5ff150c0a5abbeed85439",
+        "06315049cfffa6f96caa5a46e850c3c5c31eabe3c6f430e7e80203652c4608cf",
+        "d9e27a9a2667eebb1e22c68dd7f30930d91b1da41b527c9fae6d07f23ce93377"
+      ]
+    },
+    "male-walk-back": {
+      "geometry_sha256": "56ff6e7485c44cf508a6377f378754a0d0b9e740aa51ee438953d35cdc9e44a9",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-walk-back-00.png",
+          "sha256": "8738472348f0c1790f8f80a89ab0a62acafaba55e647d16e972a086944a1afaf",
+          "source_sha256": "d9e304f3860593158bc78f461aff8fc6d563091957f110b3755b87caeae41fb0",
+          "bbox": [
+            34,
+            7,
+            61,
+            85
+          ]
+        },
+        {
+          "src": "male-walk-back-01.png",
+          "sha256": "b73e8828d7f185926c030b1f69aadce87dbaadbab5a23a1bf356dbba3f5bfe79",
+          "source_sha256": "f66efcfaaa0262477ee7bb8f6a966c67ae044b539011b2eadf7d02d239372e1d",
+          "bbox": [
+            33,
+            8,
+            61,
+            90
+          ]
+        },
+        {
+          "src": "male-walk-back-02.png",
+          "sha256": "2ad309e1238a10f0b3ec987926fc0726515b7905ec768579ee2312d5a3891531",
+          "source_sha256": "3f4654f98e2b14f2454649c443bab93922d50bffa4f473a297880f84a2bb5e36",
+          "bbox": [
+            33,
+            8,
+            61,
+            94
+          ]
+        },
+        {
+          "src": "male-walk-back-03.png",
+          "sha256": "e51c5abb3f253ded58cd83c8cd78e8a6aab09a0d8504652ea52d6e66b56ea683",
+          "source_sha256": "07d653d74e80cc77ed4de878405807ba4ec7df8b9f2a8aeb1687c316493b6616",
+          "bbox": [
+            34,
+            7,
+            62,
+            87
+          ]
+        },
+        {
+          "src": "male-walk-back-04.png",
+          "sha256": "5aecbad28928fb836aa98f60b1f8815000cc75a5a4e0861b3c26987c8692a4a2",
+          "source_sha256": "cee03b17bfe0725740eb225b2deffb1e57ae8e2ca5efa08411e084c524556200",
+          "bbox": [
+            34,
+            6,
+            61,
+            86
+          ]
+        },
+        {
+          "src": "male-walk-back-05.png",
+          "sha256": "d32ec515fba5a8fdb10ecd2280ba0974e4f778970b00ab7662c7e074ecec21c4",
+          "source_sha256": "c86c54f46e5218aee56dad5da632d4cc051d890cede6c37dfb785b6e479ad55b",
+          "bbox": [
+            33,
+            7,
+            62,
+            90
+          ]
+        },
+        {
+          "src": "male-walk-back-06.png",
+          "sha256": "37772345bb76f28e4230aae104a1a7a0a27cd49d2a194e0d5949ee01ab8b7d03",
+          "source_sha256": "2c5447cec3fefe67ad87d80cfb0b338a25d1f39066eba34f3db6e3850d3785a7",
+          "bbox": [
+            34,
+            7,
+            62,
+            92
+          ]
+        },
+        {
+          "src": "male-walk-back-07.png",
+          "sha256": "16e561ba70c9ee75181f87be35adb607117d0019d95cba3b2896e2b4ad8d57fa",
+          "source_sha256": "8c58f4ab5158052f6cca15c75431df288b518d1d439831c01ec86d0e2f3fd805",
+          "bbox": [
+            33,
+            6,
+            61,
+            87
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "8738472348f0c1790f8f80a89ab0a62acafaba55e647d16e972a086944a1afaf",
+        "b73e8828d7f185926c030b1f69aadce87dbaadbab5a23a1bf356dbba3f5bfe79",
+        "2ad309e1238a10f0b3ec987926fc0726515b7905ec768579ee2312d5a3891531",
+        "e51c5abb3f253ded58cd83c8cd78e8a6aab09a0d8504652ea52d6e66b56ea683",
+        "5aecbad28928fb836aa98f60b1f8815000cc75a5a4e0861b3c26987c8692a4a2",
+        "d32ec515fba5a8fdb10ecd2280ba0974e4f778970b00ab7662c7e074ecec21c4",
+        "37772345bb76f28e4230aae104a1a7a0a27cd49d2a194e0d5949ee01ab8b7d03",
+        "16e561ba70c9ee75181f87be35adb607117d0019d95cba3b2896e2b4ad8d57fa"
+      ]
+    },
+    "male-walk-left": {
+      "geometry_sha256": "56ff6e7485c44cf508a6377f378754a0d0b9e740aa51ee438953d35cdc9e44a9",
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+      "source_frame_entries": [
+        {
+          "src": "male-walk-left-00.png",
+          "sha256": "f36272eb7be84214a94c3e439e729a54d270dabe055cd70dcf0e273891e418fd",
+          "source_sha256": "ce579d76076785c0b63bfb5ea8eafeb52262f2084c63a37fbeb6de966155aa2a",
+          "bbox": [
+            34,
+            9,
+            56,
+            83
+          ]
+        },
+        {
+          "src": "male-walk-left-01.png",
+          "sha256": "cf91e9cd5e1085ecab26673d207576f3ea1aaff4d255a728ce5f6047839ac404",
+          "source_sha256": "2dc45325790ee9916f4a3726d96db63c0965470e01fd14f816efd776687830b3",
+          "bbox": [
+            25,
+            10,
+            63,
+            83
+          ]
+        },
+        {
+          "src": "male-walk-left-02.png",
+          "sha256": "38573c79a6068520f0e29605e94a16119d880ac36161b2b4f826cc4a37b75fe2",
+          "source_sha256": "6ad283e5ca993b987b5be9800db1d1e0492291dfdf084798b81a2a24d541556d",
+          "bbox": [
+            24,
+            10,
+            73,
+            83
+          ]
+        },
+        {
+          "src": "male-walk-left-03.png",
+          "sha256": "064d25574bb7f4931e7ee107bbb6d5b6136a8d3c7d9ee05cc546bca1c09ce870",
+          "source_sha256": "594be8ab22dc5ad6bc6b26f7847f81f677e627545dc4636b797fcdfd7530bcc6",
+          "bbox": [
+            30,
+            9,
+            71,
+            82
+          ]
+        },
+        {
+          "src": "male-walk-left-04.png",
+          "sha256": "938505f65b6dcc4f75ccbf086baa6aa340469bbaddfcf4f75c8f9cbccdbae33b",
+          "source_sha256": "39db7c02b5ff32ef2f3835cd1a6bbf100e4b921f7b6415b881e820f806aa3f1e",
+          "bbox": [
+            36,
+            8,
+            57,
+            82
+          ]
+        },
+        {
+          "src": "male-walk-left-05.png",
+          "sha256": "84d61dcd29b1a5671dfde0c73e1752fc9e94f5ef56dcecc450630787601950cd",
+          "source_sha256": "51d03c23cb17f2189841daa1417e27a3edca4eb5ed9e4c07191810c0db052c07",
+          "bbox": [
+            22,
+            8,
+            65,
+            82
+          ]
+        },
+        {
+          "src": "male-walk-left-06.png",
+          "sha256": "dea88b9a1854e57d8f2eed5ac15a3693ea3b5fd858980ccf18271dce1516cc0e",
+          "source_sha256": "0c57de114e51041924a470f8602a9d4889ddec757c6d88b65d381e1af03f12bb",
+          "bbox": [
+            25,
+            9,
+            74,
+            83
+          ]
+        },
+        {
+          "src": "male-walk-left-07.png",
+          "sha256": "76eb24b5da3e8983691f8d710b2abefb7d22075e5414d35758485dae065e8122",
+          "source_sha256": "06838d4ef569d4cc77a28712aeed752476b8ee7b908522770a67fa42a3b4b6ab",
+          "bbox": [
+            33,
+            8,
+            70,
+            82
+          ]
+        }
+      ],
+      "frame_sha256": [
+        "f36272eb7be84214a94c3e439e729a54d270dabe055cd70dcf0e273891e418fd",
+        "cf91e9cd5e1085ecab26673d207576f3ea1aaff4d255a728ce5f6047839ac404",
+        "38573c79a6068520f0e29605e94a16119d880ac36161b2b4f826cc4a37b75fe2",
+        "064d25574bb7f4931e7ee107bbb6d5b6136a8d3c7d9ee05cc546bca1c09ce870",
+        "938505f65b6dcc4f75ccbf086baa6aa340469bbaddfcf4f75c8f9cbccdbae33b",
+        "84d61dcd29b1a5671dfde0c73e1752fc9e94f5ef56dcecc450630787601950cd",
+        "dea88b9a1854e57d8f2eed5ac15a3693ea3b5fd858980ccf18271dce1516cc0e",
+        "76eb24b5da3e8983691f8d710b2abefb7d22075e5414d35758485dae065e8122"
+      ]
+    }
+  },
+  "coverage": {
+    "player_male_club": [
+      "idle/front",
+      "idle/right",
+      "idle/back",
+      "idle/left",
+      "sprint/front",
+      "sprint/right",
+      "sprint/back",
+      "sprint/left",
+      "walk/front",
+      "walk/right",
+      "walk/back",
+      "walk/left"
+    ],
+    "player_male_unarmed": [
+      "idle/front",
+      "idle/right",
+      "idle/back",
+      "idle/left",
+      "sprint/front",
+      "sprint/right",
+      "sprint/back",
+      "sprint/left",
+      "walk/front",
+      "walk/right",
+      "walk/back",
+      "walk/left"
+    ]
+  },
+  "missing": {
+    "player_male_club": [
+      "attack/front",
+      "attack/right",
+      "attack/back",
+      "attack/left",
+      "hit/front",
+      "hit/right",
+      "hit/back",
+      "hit/left",
+      "death/front",
+      "death/right",
+      "death/back",
+      "death/left"
+    ],
+    "player_male_unarmed": [
+      "attack/front",
+      "attack/right",
+      "attack/back",
+      "attack/left",
+      "hit/front",
+      "hit/right",
+      "hit/back",
+      "hit/left",
+      "death/front",
+      "death/right",
+      "death/back",
+      "death/left"
+    ]
+  },
+  "complete": false
+}

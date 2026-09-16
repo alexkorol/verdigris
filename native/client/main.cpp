@@ -715,6 +715,7 @@ struct ClientState {
     double moving = 0.0;
     double tiles_per_second = 0.0;
     double death_age_ms = 0.0;
+    double velocity_sample_ms = 0.0;
   };
   std::unordered_map<std::string, ActorMotion> motions;
   double breathe_phase = 0.0;
@@ -9361,11 +9362,17 @@ void advance_actor_motion(ClientState& state, double dt_ms) {
   state.breathe_phase = std::fmod(state.breathe_phase + dt_ms / 2400.0, 1.0);
   const auto advance = [&](const std::string& id, const verdigris::Vec2& pos) {
     auto& motion = state.motions[id];
+    motion.velocity_sample_ms+=std::max(0.0,dt_ms);
     if (motion.has_last) {
       const double dx = static_cast<double>(pos.x - motion.last_pos.x);
       const double dy = static_cast<double>(pos.y - motion.last_pos.y);
       const double moved = std::sqrt(dx * dx + dy * dy);
-      if(dt_ms>0 && moved>.5) motion.tiles_per_second=moved/kTileUnits*1000.0/dt_ms;
+      if(motion.velocity_sample_ms>0&&moved>.5) {
+        // Position steps arrive less often than rendering. Divide by time
+        // since the last changed sample, not just this rendered frame.
+        motion.tiles_per_second=moved/kTileUnits*1000.0/motion.velocity_sample_ms;
+        motion.velocity_sample_ms=0;
+      }
       double stride=moved/(kTileUnits*.9);
       // Two contact poses need readable holds at the remote road speed.
       // Keep slow travel distance-driven, and cap rapid travel/dashes to a

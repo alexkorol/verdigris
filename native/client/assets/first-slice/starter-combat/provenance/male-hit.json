@@ -1,0 +1,315 @@
+{
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2\\blender\\male-walk-exterior.blend",
+  "source_sha256": "a0c181a36a4ed0aa41007328c0b214cb7d45813268141616bdd2d0d41b6749b3",
+  "motion": "Quaternius Universal Animation Library / Hit_Chest",
+  "source_frames": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    7,
+    8
+  ],
+  "frame_size": [
+    96,
+    96
+  ],
+  "pixels_per_metre": 48,
+  "frames": [
+    {
+      "src": "references/male-hit-front-00.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "e088b618b0bfa6fc318a1bb3b38b3c3a1fa82f2500ecef20c08b962e6255b55d"
+    },
+    {
+      "src": "references/male-hit-front-01.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 1,
+      "sha256": "2dd48f6c30d3fc130532c19449e5318adfd3f24f4bbf433ee25d47425ead9373"
+    },
+    {
+      "src": "references/male-hit-front-02.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 2,
+      "sha256": "554df4cd91aa854fe1cbbc88866fe5bd684e884d78e1927165ef24a5b427fe09"
+    },
+    {
+      "src": "references/male-hit-front-03.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 3,
+      "sha256": "4ed89b820e7f301663d1f64e4c7339ee198d08b17be2a48b79370307fa315018"
+    },
+    {
+      "src": "references/male-hit-front-04.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 4,
+      "sha256": "3a96592cc160ec3a10b3011fc86929eb45dc4e8d746868ae487da3cb3c84f841"
+    },
+    {
+      "src": "references/male-hit-front-05.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 5,
+      "sha256": "dfdc12087e143d1c36b4acc7c278b11ee5e994d4cd1c580cfd43fede7b24d9fd"
+    },
+    {
+      "src": "references/male-hit-front-06.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 7,
+      "sha256": "19d76a6e29f926dff927ff67c5519720ee6a80c56df820ef0f9d35d03f979ee6"
+    },
+    {
+      "src": "references/male-hit-front-07.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 8,
+      "sha256": "aa59ea82a78305af35188953ead3c3b2eae4cdb76784bffad0dc17f4e75cac74"
+    },
+    {
+      "src": "references/male-hit-right-00.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "d634f3a9b6500c13f123d3b5fe4b5d03fd2086473754c3cdd91a2b57606fb77b"
+    },
+    {
+      "src": "references/male-hit-right-01.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 1,
+      "sha256": "efe988d789a0ac8ef6fba1b5c7b8dd9d02a97a8520679cde676ef0645b18289c"
+    },
+    {
+      "src": "references/male-hit-right-02.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 2,
+      "sha256": "c6c45725dd5833e0c520e948aa636c5248573b257ed822bf150aae5a57e7f667"
+    },
+    {
+      "src": "references/male-hit-right-03.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 3,
+      "sha256": "8c2cdea9ca4da13567f83b56d00eb5cdcedd2d3773e393c6b6b7ad3fdcafa670"
+    },
+    {
+      "src": "references/male-hit-right-04.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 4,
+      "sha256": "0e63644b64abe744ef4fe5cfb5f0b461a2c61601ac9ab2b2cd203f3af9a57e66"
+    },
+    {
+      "src": "references/male-hit-right-05.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 5,
+      "sha256": "cd004e26a73b2cf24fa0eb8411b6debe5197af908913ace5ef8b24470b908378"
+    },
+    {
+      "src": "references/male-hit-right-06.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 7,
+      "sha256": "c9f4a35cc885688baedd302e3e07012167a1ab2dd3dc6208245435207d7ecc6b"
+    },
+    {
+      "src": "references/male-hit-right-07.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 8,
+      "sha256": "aea7342ca4bc5f88f26d5112b2e2c0e7d96d4cd48b1b44055f0c0e4b4a13196f"
+    },
+    {
+      "src": "references/male-hit-back-00.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "c9eb7453b9604dbfd5beac17ad6cf8d6617261822120442164473a102bee9794"
+    },
+    {
+      "src": "references/male-hit-back-01.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 1,
+      "sha256": "8101ac97a3dfca15edbb620bced1def0ea445e4716fbff92405905b20290fcb1"
+    },
+    {
+      "src": "references/male-hit-back-02.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 2,
+      "sha256": "8a957f6c491a6b7eef75b74bb8c5eca147e8b3231085e77d1d41ba36e7fc1e8b"
+    },
+    {
+      "src": "references/male-hit-back-03.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 3,
+      "sha256": "e863c17aa92869dbbb2c692f53277b6751f55daa9e0e7bc9dfbd2ee016a4f2a6"
+    },
+    {
+      "src": "references/male-hit-back-04.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 4,
+      "sha256": "7fed7fb2bd1fcc910ba8638f94e1eb3516da55a960873c3f56b95ba0a775b210"
+    },
+    {
+      "src": "references/male-hit-back-05.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 5,
+      "sha256": "df965245d456ebc09fadb95d8b3528810984b3cad775c2aa5562b5b657e4b5be"
+    },
+    {
+      "src": "references/male-hit-back-06.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 7,
+      "sha256": "9e29c25adda28de7f5e5854c8ae1e2b16ef307ee615fafc5048e62d2736d901e"
+    },
+    {
+      "src": "references/male-hit-back-07.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 8,
+      "sha256": "6cb95cc3db5cc9539a7c77ba017c0e97ab1028298aa411a47d85a56a6a07a506"
+    },
+    {
+      "src": "references/male-hit-left-00.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "3b6a3c39eb2fa6dd81b4b430ea85e5cea3f65a399337954ec3b0c4bf425297c1"
+    },
+    {
+      "src": "references/male-hit-left-01.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 1,
+      "sha256": "ca2726102e2ad351a76e6966eda78134066feb12a180e885add184dbd519bcdf"
+    },
+    {
+      "src": "references/male-hit-left-02.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 2,
+      "sha256": "4c2694af15b395af994575b6ca6e9137caeeda345993fac6d41344c0a336aa70"
+    },
+    {
+      "src": "references/male-hit-left-03.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 3,
+      "sha256": "de7f375be808441f21df916aa0e9170b5279418f00ac65c4be71af1efe26016c"
+    },
+    {
+      "src": "references/male-hit-left-04.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 4,
+      "sha256": "fd8488f2bb30c7eba65c7dc7bcdc578e516fe7c31bca60cb6b1ca6269847040a"
+    },
+    {
+      "src": "references/male-hit-left-05.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 5,
+      "sha256": "df0cdab2377346bcdac3858b3307df42b58470f13db91ea49abd7736bebf1433"
+    },
+    {
+      "src": "references/male-hit-left-06.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 7,
+      "sha256": "96214f65356de5fb54d7487bc7e92ed787d7ced9147bfe8b88073ea6e5db03d1"
+    },
+    {
+      "src": "references/male-hit-left-07.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 8,
+      "sha256": "95a0226c4111d15d9833afb53b03c94923d647f8d146da9aceef99663cd3ebe7"
+    }
+  ],
+  "status": "motion-reference-reviewed; not painted final game art",
+  "anchor": [
+    48,
+    80
+  ]
+}

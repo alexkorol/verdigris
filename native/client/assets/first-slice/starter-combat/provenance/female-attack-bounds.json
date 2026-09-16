@@ -1,0 +1,290 @@
+[
+  {
+    "frame": "female-attack-front-00.png",
+    "bbox": [
+      27,
+      34,
+      83,
+      108
+    ]
+  },
+  {
+    "frame": "female-attack-front-01.png",
+    "bbox": [
+      27,
+      29,
+      82,
+      107
+    ]
+  },
+  {
+    "frame": "female-attack-front-02.png",
+    "bbox": [
+      33,
+      21,
+      104,
+      112
+    ]
+  },
+  {
+    "frame": "female-attack-front-03.png",
+    "bbox": [
+      53,
+      42,
+      103,
+      110
+    ]
+  },
+  {
+    "frame": "female-attack-front-04.png",
+    "bbox": [
+      53,
+      40,
+      104,
+      110
+    ]
+  },
+  {
+    "frame": "female-attack-front-05.png",
+    "bbox": [
+      51,
+      42,
+      97,
+      110
+    ]
+  },
+  {
+    "frame": "female-attack-front-06.png",
+    "bbox": [
+      44,
+      32,
+      96,
+      105
+    ]
+  },
+  {
+    "frame": "female-attack-front-07.png",
+    "bbox": [
+      27,
+      34,
+      83,
+      108
+    ]
+  },
+  {
+    "frame": "female-attack-right-00.png",
+    "bbox": [
+      50,
+      32,
+      86,
+      106
+    ]
+  },
+  {
+    "frame": "female-attack-right-01.png",
+    "bbox": [
+      39,
+      28,
+      93,
+      104
+    ]
+  },
+  {
+    "frame": "female-attack-right-02.png",
+    "bbox": [
+      43,
+      32,
+      89,
+      101
+    ]
+  },
+  {
+    "frame": "female-attack-right-03.png",
+    "bbox": [
+      34,
+      35,
+      87,
+      102
+    ]
+  },
+  {
+    "frame": "female-attack-right-04.png",
+    "bbox": [
+      33,
+      35,
+      87,
+      102
+    ]
+  },
+  {
+    "frame": "female-attack-right-05.png",
+    "bbox": [
+      33,
+      34,
+      99,
+      103
+    ]
+  },
+  {
+    "frame": "female-attack-right-06.png",
+    "bbox": [
+      54,
+      28,
+      97,
+      103
+    ]
+  },
+  {
+    "frame": "female-attack-right-07.png",
+    "bbox": [
+      50,
+      32,
+      86,
+      106
+    ]
+  },
+  {
+    "frame": "female-attack-back-00.png",
+    "bbox": [
+      45,
+      27,
+      100,
+      102
+    ]
+  },
+  {
+    "frame": "female-attack-back-01.png",
+    "bbox": [
+      47,
+      26,
+      101,
+      101
+    ]
+  },
+  {
+    "frame": "female-attack-back-02.png",
+    "bbox": [
+      25,
+      28,
+      95,
+      105
+    ]
+  },
+  {
+    "frame": "female-attack-back-03.png",
+    "bbox": [
+      27,
+      37,
+      74,
+      111
+    ]
+  },
+  {
+    "frame": "female-attack-back-04.png",
+    "bbox": [
+      25,
+      37,
+      75,
+      112
+    ]
+  },
+  {
+    "frame": "female-attack-back-05.png",
+    "bbox": [
+      34,
+      35,
+      76,
+      111
+    ]
+  },
+  {
+    "frame": "female-attack-back-06.png",
+    "bbox": [
+      33,
+      24,
+      83,
+      95
+    ]
+  },
+  {
+    "frame": "female-attack-back-07.png",
+    "bbox": [
+      45,
+      27,
+      100,
+      102
+    ]
+  },
+  {
+    "frame": "female-attack-left-00.png",
+    "bbox": [
+      41,
+      29,
+      77,
+      105
+    ]
+  },
+  {
+    "frame": "female-attack-left-01.png",
+    "bbox": [
+      34,
+      15,
+      88,
+      106
+    ]
+  },
+  {
+    "frame": "female-attack-left-02.png",
+    "bbox": [
+      39,
+      18,
+      84,
+      107
+    ]
+  },
+  {
+    "frame": "female-attack-left-03.png",
+    "bbox": [
+      41,
+      51,
+      96,
+      108
+    ]
+  },
+  {
+    "frame": "female-attack-left-04.png",
+    "bbox": [
+      41,
+      50,
+      96,
+      108
+    ]
+  },
+  {
+    "frame": "female-attack-left-05.png",
+    "bbox": [
+      27,
+      47,
+      95,
+      106
+    ]
+  },
+  {
+    "frame": "female-attack-left-06.png",
+    "bbox": [
+      31,
+      28,
+      74,
+      100
+    ]
+  },
+  {
+    "frame": "female-attack-left-07.png",
+    "bbox": [
+      41,
+      29,
+      77,
+      105
+    ]
+  }
+]

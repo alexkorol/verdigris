@@ -1,0 +1,134 @@
+{
+  "male": {
+    "cohort": "male-v6",
+    "frames": 416,
+    "clips": 48,
+    "body_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd",
+    "braid_profile_sha256": null,
+    "endpoint_checks": [
+      {
+        "action": "club-attack",
+        "direction": "front",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9939393939393939,
+        "idle_rgb_mae_visible": 2.294969512195122
+      },
+      {
+        "action": "club-attack",
+        "direction": "right",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9898063200815495,
+        "idle_rgb_mae_visible": 2.6350841057329215
+      },
+      {
+        "action": "club-attack",
+        "direction": "back",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9913522012578616,
+        "idle_rgb_mae_visible": 2.1747290510177106
+      },
+      {
+        "action": "club-attack",
+        "direction": "left",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9861660079051383,
+        "idle_rgb_mae_visible": 2.693386773547094
+      },
+      {
+        "action": "unarmed-attack",
+        "direction": "front",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9938650306748467,
+        "idle_rgb_mae_visible": 2.2906378600823047
+      },
+      {
+        "action": "unarmed-attack",
+        "direction": "right",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9904862579281184,
+        "idle_rgb_mae_visible": 2.6364283173247953
+      },
+      {
+        "action": "unarmed-attack",
+        "direction": "back",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9902991107518189,
+        "idle_rgb_mae_visible": 2.146938775510204
+      },
+      {
+        "action": "unarmed-attack",
+        "direction": "left",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9866666666666667,
+        "idle_rgb_mae_visible": 2.681219681219681
+      }
+    ],
+    "manifest_sha256": "c5fc9a2859976b7ac86d74e25f1b740bcc9ee530dcd8b00656bab6725badb559"
+  },
+  "female": {
+    "cohort": "female-v3",
+    "frames": 416,
+    "clips": 48,
+    "body_atlas_sha256": "866edf15d3f4a7c6bb59feb99be9a22883a98f2d45ee90f51d5b474ce1404af6",
+    "braid_profile_sha256": "cd5fc30fcd4447424005f7b93521e2a53b44fa66c098499c8ec5705db0d17ffa",
+    "endpoint_checks": [
+      {
+        "action": "club-attack",
+        "direction": "front",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9901639344262295,
+        "idle_rgb_mae_visible": 2.6892935982339954
+      },
+      {
+        "action": "club-attack",
+        "direction": "right",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9898876404494382,
+        "idle_rgb_mae_visible": 2.9296254256526675
+      },
+      {
+        "action": "club-attack",
+        "direction": "back",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9922613929492692,
+        "idle_rgb_mae_visible": 1.89948006932409
+      },
+      {
+        "action": "club-attack",
+        "direction": "left",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.982740021574973,
+        "idle_rgb_mae_visible": 2.392608854738383
+      },
+      {
+        "action": "unarmed-attack",
+        "direction": "front",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9916317991631799,
+        "idle_rgb_mae_visible": 2.648382559774965
+      },
+      {
+        "action": "unarmed-attack",
+        "direction": "right",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9871043376318874,
+        "idle_rgb_mae_visible": 2.9615993665874902
+      },
+      {
+        "action": "unarmed-attack",
+        "direction": "back",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.991971454058876,
+        "idle_rgb_mae_visible": 1.7919664268585132
+      },
+      {
+        "action": "unarmed-attack",
+        "direction": "left",
+        "start_end_exact_pixels": true,
+        "idle_alpha_iou": 0.9807692307692307,
+        "idle_rgb_mae_visible": 2.366782006920415
+      }
+    ],
+    "manifest_sha256": "2e68496379fd4dca4535aea30696d3bec85ca60028dc882f5688580080eb191d"
+  }
+}

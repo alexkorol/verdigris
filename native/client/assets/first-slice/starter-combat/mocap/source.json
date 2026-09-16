@@ -1,0 +1,15 @@
+{
+  "creator": "Quaternius / Gonzalo Furnier",
+  "license": "CC0-1.0",
+  "primary": "https://quaternius.itch.io/universal-animation-library",
+  "mirror": "https://github.com/J-Ponzo/gltf-universal-animation-library",
+  "mirror_distribution_date": "2025-06-10",
+  "selected_actions": [
+    "Sword_Attack",
+    "Hit_Chest",
+    "Death01",
+    "Punch_Cross"
+  ],
+  "input_sha256": "0ff075c7ad6855c5c2c37a171592ee8f0d6ab2f58259e2be77a9b63dd8027765",
+  "note": "Source subset only; palm-frame retarget avoids copying source rig elbow twist."
+}

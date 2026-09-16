@@ -163,6 +163,57 @@ void first_slice_player_death_equipment_lifecycle() {
   }
 }
 
+void first_slice_player_action_matrix() {
+  auto& art=first_slice_art::registry();
+  const auto dir=art_wave_capture_dir();
+  if(dir.empty())return;
+  std::filesystem::create_directories(dir+"/player-actions");
+  for(const auto* sex:{"male","female"})for(const auto* equipment:{"unarmed","club"}) {
+    const auto identity=std::string("player_")+sex+"_"+equipment;
+    if(!art.ready(identity))continue;
+    ClientState state;scenario_begin(state);scenario_follow_camera(state);
+    state.simulation.reset();state.session.reset();state.camera.perspective=true;state.lineage_art=true;
+    state.world.monsters.clear();state.world.npcs.clear();state.scenery.clear();state.world.carried.clear();
+    state.world.has_extraction=false;state.world.player.appearance=sex;
+    if(std::string(equipment)=="club") {
+      verdigris::client::WorldCarriedItem club;club.id="wooden_club";club.name="Wooden club";club.equipped=true;
+      state.world.carried.push_back(club);
+    }
+    for(const auto* action:{"idle","walk","sprint","attack","hit","death"})
+      for(const auto facing:std::array<verdigris::Vec2,4>{{{0,1},{1,0},{0,-1},{-1,0}}}) {
+        const auto* direction=first_slice_art::direction(facing.x,facing.y);
+        const auto* clip=art.find(identity,action,direction);
+        state.effects.clear();state.tick_accum_ms=0;state.world.player.facing=facing;state.world.player.alive=true;
+        auto& motion=state.motions["player"];motion={};motion.travel_direction=facing;
+        motion.walk_phase=.25;motion.moving=std::string(action)=="walk"||std::string(action)=="sprint"?1:0;
+        motion.tiles_per_second=std::string(action)=="sprint"?8:2;
+        sync_player_art_snapshot(state);
+        if(std::string(action)=="attack") {
+          EffectFx fx;fx.kind=EffectFx::Kind::Swing;fx.actor_id=state.world.player.id;
+          fx.ttl=6;fx.age=3;fx.angle=std::atan2(double(facing.y),double(facing.x));
+          fx.wx=state.world.player.position.x;fx.wy=state.world.player.position.y;state.effects.push_back(fx);
+        } else if(std::string(action)=="hit") {
+          EffectFx fx;fx.kind=EffectFx::Kind::TargetFlash;fx.actor_id=state.world.player.id;fx.ttl=8;fx.age=2;state.effects.push_back(fx);
+        } else if(std::string(action)=="death") {
+          state.world.player.alive=false;sync_player_art_snapshot(state);motion.death_age_ms=500*clip->frames.size()/clip->fps;
+        }
+        const auto path=dir+"/player-actions/"+identity+"-"+action+"-"+direction+".png";
+        const bool captured=reference_present(state,1366,768,path);
+        const auto drawn=std::find_if(clip->frames.begin(),clip->frames.end(),[&](const auto& frame){
+          return render_list_has(state,render::Op::Hud,("art:"+frame).c_str());});
+        const bool exact=drawn!=clip->frames.end();
+        bool plain_texture=false;
+        if(exact) {
+          const auto tex=fable_world::renderer().textures.find(*drawn+":0");
+          plain_texture=tex!=fable_world::renderer().textures.end()&&tex->second.width==clip->width&&tex->second.height==clip->height&&
+              !fable_world::renderer().textures.contains(*drawn+":"+std::to_string(int(vector_art::Held::Club)));
+        }
+        scenario_check(captured&&exact&&plain_texture&&fable_world::renderer().gpu.error().empty(),
+            ("first-slice-art: exact player action/direction and unchanged weapon canvas "+identity+"/"+action+"/"+direction).c_str());
+      }
+  }
+}
+
 int scenario_first_slice_art() {
   using namespace first_slice_art;
   auto product=make_product_client();
@@ -180,6 +231,22 @@ int scenario_first_slice_art() {
   }
   first_slice_retained_death_lifecycle();
   first_slice_player_death_equipment_lifecycle();
+  {
+    ClientState motion_probe;motion_probe.world.player.position={0,0};advance_actor_motion(motion_probe,0);
+    bool ordinary_walk=true;int previous_step=0;
+    for(int t=15;t<=300;t+=15) {
+      const int step=t/50;motion_probe.world.player.position.x=step*11;advance_actor_motion(motion_probe,15);
+      if(step!=previous_step)ordinary_walk&=motion_probe.motions["player"].tiles_per_second<5;
+      previous_step=step;
+    }
+    scenario_check(ordinary_walk,"first-slice-art: 50ms walk samples at 15ms render cadence cannot select sprint");
+    for(int t=15;t<=150;t+=15) {
+      motion_probe.world.player.position.x=66+(t/50)*44;advance_actor_motion(motion_probe,15);
+    }
+    scenario_check(motion_probe.motions["player"].tiles_per_second>5,
+        "first-slice-art: genuine faster movement still selects sprint");
+  }
+  first_slice_player_action_matrix();
   scenario_check(first_slice_depth_probe(),
       "first-slice-art: footprint depth reveals below-pivot pixels without moving the screen rectangle");
   scenario_check(fable_world::kTerrainWidth==80*48&&fable_world::kTerrainHeight==64*48,

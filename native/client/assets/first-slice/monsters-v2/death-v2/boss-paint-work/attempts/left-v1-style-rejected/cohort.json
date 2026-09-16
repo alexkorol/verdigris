@@ -1,0 +1,76 @@
+{
+  "accepted": false,
+  "clip": "well-alpha-death-left",
+  "frame": [
+    128,
+    96
+  ],
+  "anchor": [
+    64,
+    64
+  ],
+  "pixels_per_metre": 48,
+  "alignment": "authored position unchanged; no per-frame translation",
+  "frames": [
+    {
+      "phase": 0,
+      "frame": "phase-00/fixed-placement.png",
+      "sha256": "93e7469cc4291ecbf23e0b614bc06838480a6cc1a7509ec5b874a245fa330851",
+      "source": "phase-00/source.png",
+      "source_sha256": "619c6df6a6949d55c31dbe2df20ca4dadcf5100bdf2a39fac4eafdf726448da2",
+      "prompt": "phase-00/prompt.txt",
+      "guide": "native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\single-guides\\well-alpha-death-left-00.png",
+      "guide_sha256": "e26baabb312021aba2d6268b02e0ffcfca4fb79e65ad27a517d48cdf4a17ce6c",
+      "fixed_iou": 0.9346201743462017,
+      "diagnostic_translation": [
+        0,
+        0
+      ]
+    },
+    {
+      "phase": 1,
+      "frame": "phase-01/fixed-placement.png",
+      "sha256": "5352fbb725cad79208b8a635d36ce27e23fe58c4a7ae2de689f8eb22f46cc134",
+      "source": "phase-01/source.png",
+      "source_sha256": "eb3da0be40c176ad90f633a93cba2c8d95b950284f7194ea9337134c6c86db13",
+      "prompt": "phase-01/prompt.txt",
+      "guide": "native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\single-guides\\well-alpha-death-left-01.png",
+      "guide_sha256": "303c79d6429163ca430cf2594e4063edfbd1ec1b0215bf2c48aa9e9c732cd8fa",
+      "fixed_iou": 0.9210875331564987,
+      "diagnostic_translation": [
+        0,
+        0
+      ]
+    },
+    {
+      "phase": 2,
+      "frame": "phase-02/fixed-placement.png",
+      "sha256": "c875166033848ef5904399c31f7a1bea893b8b9423eddd30c14a4e64b1575c6a",
+      "source": "phase-02/source.png",
+      "source_sha256": "5beaaea7e03665ae1cc923be73aa1547bde2017150a73fc9319c69c7f13cc851",
+      "prompt": "phase-02/prompt.txt",
+      "guide": "native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\single-guides\\well-alpha-death-left-02.png",
+      "guide_sha256": "8d1dc16ed74a0bded8e5f5324e6328985b2431f18a58fb6feed4807fb72dbadb",
+      "fixed_iou": 0.9377682403433476,
+      "diagnostic_translation": [
+        0,
+        0
+      ]
+    },
+    {
+      "phase": 3,
+      "frame": "phase-03/fixed-placement.png",
+      "sha256": "a92460849cac35c848e19632af5343c631a3c445ec1f74b614c92ed9a4b99031",
+      "source": "phase-03/source.png",
+      "source_sha256": "181b0f39d73beffebe7a2271ebda7dc23bcd39e48086404189bcc1e702c890d7",
+      "prompt": "phase-03/prompt.txt",
+      "guide": "native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\single-guides\\well-alpha-death-left-03.png",
+      "guide_sha256": "56c28f1c10401294cc0aabdb94d06aa6adbd9dd3868827620fe4161512a2090a",
+      "fixed_iou": 0.8986852281515855,
+      "diagnostic_translation": [
+        -1,
+        0
+      ]
+    }
+  ]
+}

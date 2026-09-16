@@ -1,0 +1,163 @@
+{
+  "status": "diagnostic-not-accepted",
+  "actor": "well-alpha",
+  "source_sha256": "8b46517c3ff78f7e8e48ef6d4e78d3e4e3d797eb189c63fea79140b9e2da5fbe",
+  "views": [
+    {
+      "direction": "front",
+      "geometry_file": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\accepted\\blender\\well-alpha-idle-canvas128.blend",
+      "geometry_sha256": "b23e698a3ba948fa5b4047da1995680d78f8491362a9781e913f8c70f3fe46df",
+      "frame": 0
+    },
+    {
+      "direction": "right",
+      "geometry_file": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\accepted\\blender\\well-alpha-idle-canvas128.blend",
+      "geometry_sha256": "b23e698a3ba948fa5b4047da1995680d78f8491362a9781e913f8c70f3fe46df",
+      "frame": 0
+    },
+    {
+      "direction": "back",
+      "geometry_file": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\accepted\\blender\\well-alpha-idle-canvas128.blend",
+      "geometry_sha256": "b23e698a3ba948fa5b4047da1995680d78f8491362a9781e913f8c70f3fe46df",
+      "frame": 0
+    },
+    {
+      "direction": "left",
+      "geometry_file": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\accepted\\blender\\well-alpha-idle-canvas128.blend",
+      "geometry_sha256": "b23e698a3ba948fa5b4047da1995680d78f8491362a9781e913f8c70f3fe46df",
+      "frame": 0
+    }
+  ],
+  "camera_matrices": [
+    [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.5735762715339661,
+        -0.8191519379615784,
+        -10.035423278808594
+      ],
+      [
+        0.0,
+        0.8191519379615784,
+        0.5735762715339661,
+        7.896876811981201
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    [
+      [
+        -1.6292068494294654e-07,
+        0.5735761523246765,
+        -0.8191519975662231,
+        -10.035423278808594
+      ],
+      [
+        -1.0,
+        -6.282365916376875e-08,
+        1.548997801137375e-07,
+        4.38662283386293e-07
+      ],
+      [
+        3.738470866210264e-08,
+        0.8191519975662231,
+        0.5735761523246765,
+        7.896876811981201
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    [
+      [
+        -1.0,
+        -8.660760641987508e-08,
+        1.2368849411359406e-07,
+        8.77324566772586e-07
+      ],
+      [
+        1.5099580252808664e-07,
+        -0.5735762715339661,
+        0.8191519379615784,
+        10.035423278808594
+      ],
+      [
+        3.4656937489643304e-15,
+        0.8191519379615784,
+        0.5735762715339661,
+        7.896876811981201
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    [
+      [
+        -4.371138828673793e-08,
+        -0.5735761523246765,
+        0.8191519975662231,
+        10.035423278808594
+      ],
+      [
+        1.0,
+        -5.569556904561068e-08,
+        1.4363292777375136e-08,
+        -7.576533676001418e-07
+      ],
+      [
+        3.738470866210264e-08,
+        0.8191519975662231,
+        0.5735761523246765,
+        7.896876811981201
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ]
+  ],
+  "objects": {
+    "Wolf": {
+      "vertices": 313,
+      "uncovered_vertices": 420
+    }
+  },
+  "target_sha256": "3048e50e59ef722151d16739a75fbf7c5ddc06f199c553b7c11c9d812a3ebe2a",
+  "paint_sampled_fallback_linear_rgb": {
+    "Wolf": [
+      0.04970657452940941,
+      0.03954624757170677,
+      0.031896039843559265
+    ]
+  },
+  "braid_materials": {},
+  "geometry_before": "a975dd2e5b0e1e22937ec7c69e1d49e97a251c5b214a97244938ac16d76fedba",
+  "geometry_after": "a975dd2e5b0e1e22937ec7c69e1d49e97a251c5b214a97244938ac16d76fedba",
+  "frame": [
+    128,
+    96
+  ],
+  "anchor": [
+    64,
+    64
+  ],
+  "pixels_per_metre": 48
+}

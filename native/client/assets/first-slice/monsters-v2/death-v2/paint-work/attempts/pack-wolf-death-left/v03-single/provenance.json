@@ -1,0 +1,10 @@
+{
+  "method": "Built-in imagegen, single-frame colored Blender target only",
+  "reference": {
+    "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\projection-proof\\v3-faces\\pack-wolf-death-left-phase1-single-guide.png",
+    "sha256": "8fca381aa5bff2b9d05dae7d4bc6a03630cf405be6d97225c50e5a60e9f2bd30"
+  },
+  "source_sha256": "69b537c1410e19b061bada0bcfb02b08b3d318faaac44b9e32144ffa200aa18b",
+  "prompt": "prompt.txt",
+  "status": "diagnostic proof; independent review pending; no production import"
+}

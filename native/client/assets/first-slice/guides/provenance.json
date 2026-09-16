@@ -1,0 +1,1734 @@
+{
+  "source_manifest_sha256": "f993d49c8f77829a9116d94499c5ae316c696290eb392e61c9823068e78e55fb",
+  "frame": [
+    96,
+    96
+  ],
+  "slot": [
+    96,
+    128
+  ],
+  "inset": [
+    0,
+    16
+  ],
+  "scale": 4,
+  "anchor": [
+    48,
+    80
+  ],
+  "clips": {
+    "male-walk-front": {
+      "frames": [
+        {
+          "src": "paint-v2/linen-frames/male-walk-front-1.png",
+          "sha256": "de58b226567a044660c73b0456e51c47ce8fbffcdefc63dcecf81551f3473498",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-front-2.png",
+          "sha256": "7f6b02cb8c2cd3e55f5797e683761b26afde47a5f0d7c25b84297cc5865797e9",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-front-3.png",
+          "sha256": "d76a5163c988cadebabb24ac7d13f2e4b2d620b0873fe762b0c29ffa1108a1c0",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-front-4.png",
+          "sha256": "b00b377ff93802c6367f80472c33ecad6ea2319607f558c4ae1af539e3052865",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-front-5.png",
+          "sha256": "f51314943ae0efbcc4c45bd3f9ebe4b2928d6baa2c4a851bb0ae74fe9055051c",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-front-6.png",
+          "sha256": "38af45a715b9f07ee641c37694222bfb977bc557bd3f30c272af406423c00f5e",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-front-7.png",
+          "sha256": "33b5e625bd011e256b4fa859008f94f49dd199d54ad38b448e2ff0b1646054a9",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-front-8.png",
+          "sha256": "e6fc4573edd630b2e0a450e964c505e23c8cbe60268ce4a2efc75d4f9a2a05fa",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        }
+      ],
+      "mocap": {
+        "source": "07_01.bvh",
+        "start": 101,
+        "period_source_frames": 130,
+        "source_fps": 120,
+        "duration": 1.0833333333333333,
+        "retarget_scale": 2.3462198731674166,
+        "metres_per_second": 1.4673596856978963,
+        "ground_translation": 0.0008607596158981337,
+        "frames": [
+          101.0,
+          117.25,
+          133.5,
+          149.75,
+          166.0,
+          182.25,
+          198.5,
+          214.75
+        ]
+      },
+      "cloth_simulation": true,
+      "cloth_loop_max_delta_px": 1.1454061759395455,
+      "note": "Natural undyed linen and cord; no neckline trim. Female hem shortened on the existing cloth surface. Blender structure only; painted game art remains unaccepted."
+    },
+    "male-walk-right": {
+      "frames": [
+        {
+          "src": "paint-v2/linen-frames/male-walk-right-1.png",
+          "sha256": "8d88f7d06d8d0193c32b2c581cc3335efc1606f48f24d1623c67dd228c23dd21",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-right-2.png",
+          "sha256": "b08f5a49f7c0e362ab345c1fa2f686531b186ae6e034c396bf8115cfead4fba9",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-right-3.png",
+          "sha256": "100b40382bc4b05e122e23bcbed48a58433d5cbf5fd194a8c1ebe6ebfecd5215",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-right-4.png",
+          "sha256": "641b27d625ce26ac18621a08ff101b7a0d5ceebf1fab3372c4d4d78191292cfc",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-right-5.png",
+          "sha256": "833a7c8b7f85cada39c731cc5dba07dc73af222cc97c63314409b3e7c494d6c0",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-right-6.png",
+          "sha256": "62f17e726977acd4c7f7ddc407c29cfc3e091fb3b552c429da3b9d7d20be6562",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-right-7.png",
+          "sha256": "277f79d0755a9a43d85872a7a91e4be6a527d661ebc3f698e5595a49c684cb2b",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-right-8.png",
+          "sha256": "5e18fd26582126f3466cfc270750d7cedbadaf0b37f2857c64f6396bcd6974ef",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        }
+      ],
+      "mocap": {
+        "source": "07_01.bvh",
+        "start": 101,
+        "period_source_frames": 130,
+        "source_fps": 120,
+        "duration": 1.0833333333333333,
+        "retarget_scale": 2.3462198731674166,
+        "metres_per_second": 1.4673596856978963,
+        "ground_translation": 0.0008607596158981337,
+        "frames": [
+          101.0,
+          117.25,
+          133.5,
+          149.75,
+          166.0,
+          182.25,
+          198.5,
+          214.75
+        ]
+      },
+      "cloth_simulation": true,
+      "cloth_loop_max_delta_px": 1.1454061759395455,
+      "note": "Natural undyed linen and cord; no neckline trim. Female hem shortened on the existing cloth surface. Blender structure only; painted game art remains unaccepted."
+    },
+    "male-walk-back": {
+      "frames": [
+        {
+          "src": "paint-v2/linen-frames/male-walk-back-1.png",
+          "sha256": "fbdc8e5e593fdce54f9cd51bd71f6f6cd1b394c4e8c9959496b8f0a36705b295",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-back-2.png",
+          "sha256": "60d82c253404eddb39f06693814e39b82b357e8a8598d5c2dd0146ca0c1a972c",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-back-3.png",
+          "sha256": "03f633e661099b6e51d59cf2984c7e8c1b236e042f2da9ddfaa884a19d39d216",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-back-4.png",
+          "sha256": "2940b40f1028977f59ffecbe3f9f742065472c77e41d33af10395ce472c6a79e",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-back-5.png",
+          "sha256": "123460e2eb2a4385d431891f4a924cb9dec118bcb621b707f8417d10f93d8037",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-back-6.png",
+          "sha256": "c2a854009b2a9846783de2135ee0b30757c6308748f48f9486b6f7a62ea03154",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-back-7.png",
+          "sha256": "d06f5b28ef4bfabae5b72fabf449b4d76e4b57a4c569502aa296bebe85f3a99d",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-back-8.png",
+          "sha256": "abb569bd972e72c191bfc14fb3e7401960c76cdcca0c12baa453a4ec9cf3c834",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        }
+      ],
+      "mocap": {
+        "source": "07_01.bvh",
+        "start": 101,
+        "period_source_frames": 130,
+        "source_fps": 120,
+        "duration": 1.0833333333333333,
+        "retarget_scale": 2.3462198731674166,
+        "metres_per_second": 1.4673596856978963,
+        "ground_translation": 0.0008607596158981337,
+        "frames": [
+          101.0,
+          117.25,
+          133.5,
+          149.75,
+          166.0,
+          182.25,
+          198.5,
+          214.75
+        ]
+      },
+      "cloth_simulation": true,
+      "cloth_loop_max_delta_px": 1.1454061759395455,
+      "note": "Natural undyed linen and cord; no neckline trim. Female hem shortened on the existing cloth surface. Blender structure only; painted game art remains unaccepted."
+    },
+    "male-walk-left": {
+      "frames": [
+        {
+          "src": "paint-v2/linen-frames/male-walk-left-1.png",
+          "sha256": "7ad711e7399157476f02bfeb18c0e722cf46315755166b922632402012dede4d",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-left-2.png",
+          "sha256": "af2727b5222a32ef96ef6700ac5f6514b1e9c0c8c7bc0391db1f3a71466f352c",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-left-3.png",
+          "sha256": "188f6a8e4b3f9f27e3ebceea2766652d8033ae0fe3333793431787617f2d07e1",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-left-4.png",
+          "sha256": "03b0d91521e58077c72ecb65b5e31e68612277db533ba214ad9f38f850c39e7c",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-left-5.png",
+          "sha256": "f1c7b3d1559ead844eaabea6747a2384969c09566e14ce1eb28526812c2a171d",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-left-6.png",
+          "sha256": "92e0f2da24838d457acca4cca8b9baae437df32e64614a0e88e5b605f47dc3e8",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-left-7.png",
+          "sha256": "ba9bc03d35d7f0b73ff3da9a59464bb4d0544bcaaa5788a9211ce6494aacdaa3",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-walk-left-8.png",
+          "sha256": "235b49d27164c4a7696980f3d3dd307dbbe4b7c0619213d588349a88a1b525d8",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        }
+      ],
+      "mocap": {
+        "source": "07_01.bvh",
+        "start": 101,
+        "period_source_frames": 130,
+        "source_fps": 120,
+        "duration": 1.0833333333333333,
+        "retarget_scale": 2.3462198731674166,
+        "metres_per_second": 1.4673596856978963,
+        "ground_translation": 0.0008607596158981337,
+        "frames": [
+          101.0,
+          117.25,
+          133.5,
+          149.75,
+          166.0,
+          182.25,
+          198.5,
+          214.75
+        ]
+      },
+      "cloth_simulation": true,
+      "cloth_loop_max_delta_px": 1.1454061759395455,
+      "note": "Natural undyed linen and cord; no neckline trim. Female hem shortened on the existing cloth surface. Blender structure only; painted game art remains unaccepted."
+    },
+    "male-sprint-front": {
+      "frames": [
+        {
+          "src": "paint-v2/linen-frames/male-sprint-front-1.png",
+          "sha256": "7d4b1e5848c78a88087bc8dd6c90989c77640efd9da541e4ee1b88978980579e",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-front-2.png",
+          "sha256": "93c7658e84c0c7ce6babe40e3e84f52d9ead306e11b775b305180f9b72295f4a",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-front-3.png",
+          "sha256": "f632c6d13c605f15304039b50e1fddf8dcccef61ab0e06143ca5af6d6fa9cc99",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-front-4.png",
+          "sha256": "58435f4d4fff9bb0a2d68c5e5d6b3ef9e092c605f36a3e3681d82f940d776fd9",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-front-5.png",
+          "sha256": "59d9cc102170de60dc70785f598bf7a6f934a3c9e47e7108a8bcd5e87f9c5178",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-front-6.png",
+          "sha256": "5e5e14126d966d31c71f7961792b4739897d6c98c3236d796aed12ed2905c5b8",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-front-7.png",
+          "sha256": "9f5a2394e1a00dc4ba558d16a52734ae9b86a6e6202ab37f53b1e0aac99dfb81",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-front-8.png",
+          "sha256": "26eb2179da05d1c391e5784b7e75503f60b1341930dface475b883b330c55fd3",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        }
+      ],
+      "mocap": {
+        "source": "09_01.bvh",
+        "start": 32,
+        "period_source_frames": 88,
+        "source_fps": 120,
+        "duration": 0.7333333333333333,
+        "retarget_scale": 2.2029659808518103,
+        "metres_per_second": 3.5789728446575406,
+        "ground_translation": 0.009203539788722993,
+        "frames": [
+          32.0,
+          43.0,
+          54.0,
+          65.0,
+          76.0,
+          87.0,
+          98.0,
+          109.0
+        ]
+      },
+      "cloth_simulation": true,
+      "cloth_loop_max_delta_px": 3.775584707612431,
+      "note": "Natural undyed linen and cord; no neckline trim. Female hem shortened on the existing cloth surface. Blender structure only; painted game art remains unaccepted."
+    },
+    "male-sprint-right": {
+      "frames": [
+        {
+          "src": "paint-v2/linen-frames/male-sprint-right-1.png",
+          "sha256": "98efc473040ba5ddd49cfe37d19581dc7d03a7e465762705f53884bc2bccde51",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-right-2.png",
+          "sha256": "883fa6b0bdf0bf58ecf47ac5fe67c58ac7da7bf76d3032bb9b05f2c62b6d4cd5",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-right-3.png",
+          "sha256": "bcc96d5ed838152d893e0410a4120c559151deddce59dc56582ecf4176a6f4a0",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-right-4.png",
+          "sha256": "3de8d385d14e6e1765a517f1f044cab71035cc6e57b9b063dcc2fc508d6a3cfd",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-right-5.png",
+          "sha256": "376a06fb48c79b62cabc0af28f21eb2c3e5d8b0f84c521b7a78a80cfe8c952c2",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-right-6.png",
+          "sha256": "c8444352528afcbdbde1781e7d54d6f7ec9b28908283f0243ab43457ddaa93fb",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-right-7.png",
+          "sha256": "2028b42706ea59e0dfd0207d7fafe434bf256192bde9f833d2a24f945a54528c",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-right-8.png",
+          "sha256": "3c24006f6d743503169d83f7292530e9f857f52ff4317d56db1edbb804e05d61",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        }
+      ],
+      "mocap": {
+        "source": "09_01.bvh",
+        "start": 32,
+        "period_source_frames": 88,
+        "source_fps": 120,
+        "duration": 0.7333333333333333,
+        "retarget_scale": 2.2029659808518103,
+        "metres_per_second": 3.5789728446575406,
+        "ground_translation": 0.009203539788722993,
+        "frames": [
+          32.0,
+          43.0,
+          54.0,
+          65.0,
+          76.0,
+          87.0,
+          98.0,
+          109.0
+        ]
+      },
+      "cloth_simulation": true,
+      "cloth_loop_max_delta_px": 3.775584707612431,
+      "note": "Natural undyed linen and cord; no neckline trim. Female hem shortened on the existing cloth surface. Blender structure only; painted game art remains unaccepted."
+    },
+    "male-sprint-back": {
+      "frames": [
+        {
+          "src": "paint-v2/linen-frames/male-sprint-back-1.png",
+          "sha256": "7c4148311d38e9c9a633d5f899f83647590e27e3209dacef84e367bf40436837",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-back-2.png",
+          "sha256": "e29697b6b239a3f4bd7ea7c8d4ad2dae681514013df28e9f87919044a3065e2a",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-back-3.png",
+          "sha256": "41bee4e5c75492d5da0ece4922478ea064eea0b504b14f19abbebca3f7998e36",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-back-4.png",
+          "sha256": "3e4b836c9e1279f4ef321ea50a797ff3d9daaa4b78c7bd6cf3e9e900dcaefdbb",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-back-5.png",
+          "sha256": "17f82de03c170a485db8edf0ca763e9a648591c8f0431a12fecbac3ae1898970",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-back-6.png",
+          "sha256": "612b00026763b12f092e803eba053dad7bad5c21ff7264ef65e08c4f7e6a6720",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-back-7.png",
+          "sha256": "1826ec0706f4e43ad715b2a4667aede457421fcbb61a157eedd60b29451646de",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-back-8.png",
+          "sha256": "8f6f2a77d0a7689e64f3f067b9b37c031be1c32e12f0e2165d5d770eaf0593f0",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        }
+      ],
+      "mocap": {
+        "source": "09_01.bvh",
+        "start": 32,
+        "period_source_frames": 88,
+        "source_fps": 120,
+        "duration": 0.7333333333333333,
+        "retarget_scale": 2.2029659808518103,
+        "metres_per_second": 3.5789728446575406,
+        "ground_translation": 0.009203539788722993,
+        "frames": [
+          32.0,
+          43.0,
+          54.0,
+          65.0,
+          76.0,
+          87.0,
+          98.0,
+          109.0
+        ]
+      },
+      "cloth_simulation": true,
+      "cloth_loop_max_delta_px": 3.775584707612431,
+      "note": "Natural undyed linen and cord; no neckline trim. Female hem shortened on the existing cloth surface. Blender structure only; painted game art remains unaccepted."
+    },
+    "male-sprint-left": {
+      "frames": [
+        {
+          "src": "paint-v2/linen-frames/male-sprint-left-1.png",
+          "sha256": "b07c762332b7dced93a9bd9973e0491cdc86e5b7b29e15328791e36f64a91490",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-left-2.png",
+          "sha256": "68d64c4e531134dfd298dee51bdf191529d5f69d2f119771cd53fddc23a193fd",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-left-3.png",
+          "sha256": "d80dbf2dec6bc1ec6f3da0b7bdcacb3c7ab6ae14645ac68cefe1ae8e3e03b2f5",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-left-4.png",
+          "sha256": "77eb6044a79a93a29a2fe989d64216c7448fb695642d64f6ef0385255540c8fb",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-left-5.png",
+          "sha256": "0e57eedc8db8cc820f254041c002ab45fb7b2402ba06a4e527d81e88d998c08e",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-left-6.png",
+          "sha256": "dd44948679ffbe1815e182a0db450df07a42766f57cc7d60ad682e6e311f0a21",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-left-7.png",
+          "sha256": "221a40db5a5f0c7b293e457797c756868f1fafd342f0b7f34cd6e684e9f3356a",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/male-sprint-left-8.png",
+          "sha256": "fe966f74f1f7f0b8276e3849949a1be22a2f121d10ec9bf18ac91f970d0c13a4",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        }
+      ],
+      "mocap": {
+        "source": "09_01.bvh",
+        "start": 32,
+        "period_source_frames": 88,
+        "source_fps": 120,
+        "duration": 0.7333333333333333,
+        "retarget_scale": 2.2029659808518103,
+        "metres_per_second": 3.5789728446575406,
+        "ground_translation": 0.009203539788722993,
+        "frames": [
+          32.0,
+          43.0,
+          54.0,
+          65.0,
+          76.0,
+          87.0,
+          98.0,
+          109.0
+        ]
+      },
+      "cloth_simulation": true,
+      "cloth_loop_max_delta_px": 3.775584707612431,
+      "note": "Natural undyed linen and cord; no neckline trim. Female hem shortened on the existing cloth surface. Blender structure only; painted game art remains unaccepted."
+    },
+    "female-walk-front": {
+      "frames": [
+        {
+          "src": "paint-v2/linen-frames/female-walk-front-1.png",
+          "sha256": "3639e77342dcc78b07b0b1491183b6a196fe7e8b79525a6fa229c58e0b7410af",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-front-2.png",
+          "sha256": "9f6b2a0f6aeea62ba5b65c4606784746b93edef8a5d6727db685e00353606657",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-front-3.png",
+          "sha256": "9c121eeb1a91f6c9d34a763173e25371a02b582c62e77dbcd1a830f4d93bc109",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-front-4.png",
+          "sha256": "993e1c7406c9544cbf8d9d068b8d6c3a2567779943dd88899348d13f333ebcf4",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-front-5.png",
+          "sha256": "1dd11654b6265b2e59bb8a8dddc359f18de30689826c05587847a1c893427abf",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-front-6.png",
+          "sha256": "214ef3749a35aee4310cd99cc8d96d9de35ca2fc9e86fc400439ad04551623d7",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-front-7.png",
+          "sha256": "808834b04b859dbb3d738d80e9f89b9ce3a1b2d5c85850221f121f63b0ba8481",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-front-8.png",
+          "sha256": "1426386e44bf628c488c85f42617daae4a64adf1005588f101e599494342cc49",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        }
+      ],
+      "mocap": {
+        "source": "07_01.bvh",
+        "start": 101,
+        "period_source_frames": 130,
+        "source_fps": 120,
+        "duration": 1.0833333333333333,
+        "retarget_scale": 2.0706373971890493,
+        "metres_per_second": 1.2950064378373065,
+        "ground_translation": 0.002856978774070741,
+        "frames": [
+          101.0,
+          117.25,
+          133.5,
+          149.75,
+          166.0,
+          182.25,
+          198.5,
+          214.75
+        ]
+      },
+      "cloth_simulation": true,
+      "cloth_loop_max_delta_px": 1.699691142144284,
+      "note": "Natural undyed linen and cord; no neckline trim. Female hem shortened on the existing cloth surface. Blender structure only; painted game art remains unaccepted."
+    },
+    "female-walk-right": {
+      "frames": [
+        {
+          "src": "paint-v2/linen-frames/female-walk-right-1.png",
+          "sha256": "0f15663c71fdae64910116fa6eebcc527202d9c8ed5cfc14d450b1395c0e5de0",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-right-2.png",
+          "sha256": "51db7fa034097eee72bf09a5377ef5b6ae73d993e18930d0f2c5373ca0844144",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-right-3.png",
+          "sha256": "dac3c364bd206ba06deb337b44d8fcb3de641fa7d0f399382b8d0419a5d25504",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-right-4.png",
+          "sha256": "c4bf8c72977524f9a1fbbc42cb2fe0963afac82b9ff503067322d89f2c877b03",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-right-5.png",
+          "sha256": "d007cfc4bd64bc699af63776c354fadb04c0e46721592dd917fd440c7ebdcde7",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-right-6.png",
+          "sha256": "1c7ff4aa916ea684396881ad604ea5337d637c5034cea871967b5790a69bce97",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-right-7.png",
+          "sha256": "a9e5c4454fca2644b0882a5ed08846453d91f93c1350ed50073f4a65a913df3a",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-right-8.png",
+          "sha256": "bfce2289d1781d008693d373e667d4bfbf0607332d9a2fdce783eea7220a42a8",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        }
+      ],
+      "mocap": {
+        "source": "07_01.bvh",
+        "start": 101,
+        "period_source_frames": 130,
+        "source_fps": 120,
+        "duration": 1.0833333333333333,
+        "retarget_scale": 2.0706373971890493,
+        "metres_per_second": 1.2950064378373065,
+        "ground_translation": 0.002856978774070741,
+        "frames": [
+          101.0,
+          117.25,
+          133.5,
+          149.75,
+          166.0,
+          182.25,
+          198.5,
+          214.75
+        ]
+      },
+      "cloth_simulation": true,
+      "cloth_loop_max_delta_px": 1.699691142144284,
+      "note": "Natural undyed linen and cord; no neckline trim. Female hem shortened on the existing cloth surface. Blender structure only; painted game art remains unaccepted."
+    },
+    "female-walk-back": {
+      "frames": [
+        {
+          "src": "paint-v2/linen-frames/female-walk-back-1.png",
+          "sha256": "530b161aa753b65974dda681161348fc6501199d9c5a427484fb73f4f5f228b9",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-back-2.png",
+          "sha256": "36debf1594040fc9b706d2095d93a75c51f4bb482b01d863363c3f1d627bfa08",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-back-3.png",
+          "sha256": "10c4deb60d2c54f909ac502b1ac19ad41a29930c7f79027a51301a33647dd25b",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-back-4.png",
+          "sha256": "6c156644ca5f105ed46628c1de333a86dc611b45968ca28cbacfdc3f1647c1a5",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-back-5.png",
+          "sha256": "3c15d3878f468b7d7b71cb3226e79af83b163abad40fe885144a79dd64058fad",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-back-6.png",
+          "sha256": "494496dabdefc62b0cc95399eea5f341673b236c11fe4e5c3912482a6cec23a9",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-back-7.png",
+          "sha256": "d3fc1932bf13682eea60bc50ec5ec136072c0e29896a20aee4e616e080908b35",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-back-8.png",
+          "sha256": "fd3d2c85252298b76a576b53c0e4ef28f49f05d8232d1838f5e76275044df307",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        }
+      ],
+      "mocap": {
+        "source": "07_01.bvh",
+        "start": 101,
+        "period_source_frames": 130,
+        "source_fps": 120,
+        "duration": 1.0833333333333333,
+        "retarget_scale": 2.0706373971890493,
+        "metres_per_second": 1.2950064378373065,
+        "ground_translation": 0.002856978774070741,
+        "frames": [
+          101.0,
+          117.25,
+          133.5,
+          149.75,
+          166.0,
+          182.25,
+          198.5,
+          214.75
+        ]
+      },
+      "cloth_simulation": true,
+      "cloth_loop_max_delta_px": 1.699691142144284,
+      "note": "Natural undyed linen and cord; no neckline trim. Female hem shortened on the existing cloth surface. Blender structure only; painted game art remains unaccepted."
+    },
+    "female-walk-left": {
+      "frames": [
+        {
+          "src": "paint-v2/linen-frames/female-walk-left-1.png",
+          "sha256": "b1a6b7f26f4d8e4c9428b9a2a0801d0eaf58b6c5a3a844b6c421bab5f7e8e189",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-left-2.png",
+          "sha256": "430802e0cf4b399b1e8a68af40f3494eb4719b5453794de7fa26a39124b7e9fd",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-left-3.png",
+          "sha256": "b4d9e1d6ea175dd760a73f5754d312f16e4fa90ee4adb27a312db56b32c5e562",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-left-4.png",
+          "sha256": "e250ff0f0b6078029645b68498d6e8bd14aeb72094704cd1b355911bddafebb9",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-left-5.png",
+          "sha256": "e2b8cd93a9716873453293ccaa0d20204f75c5bcb08bacca9ba8faca0806d5d9",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-left-6.png",
+          "sha256": "1c39bcf476f83bb74edfea6a02fd93a73e2a6de73f73dfd9ab6bd195cf67b71d",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-left-7.png",
+          "sha256": "585cb7853fb2c3d0d00467790fb2ad4c03cce7b99957e945ba99278e53c67ecc",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-walk-left-8.png",
+          "sha256": "821f893494fe5a2035c795099eecc1e85d01204c77a872e990a2add5ecb2cf3b",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        }
+      ],
+      "mocap": {
+        "source": "07_01.bvh",
+        "start": 101,
+        "period_source_frames": 130,
+        "source_fps": 120,
+        "duration": 1.0833333333333333,
+        "retarget_scale": 2.0706373971890493,
+        "metres_per_second": 1.2950064378373065,
+        "ground_translation": 0.002856978774070741,
+        "frames": [
+          101.0,
+          117.25,
+          133.5,
+          149.75,
+          166.0,
+          182.25,
+          198.5,
+          214.75
+        ]
+      },
+      "cloth_simulation": true,
+      "cloth_loop_max_delta_px": 1.699691142144284,
+      "note": "Natural undyed linen and cord; no neckline trim. Female hem shortened on the existing cloth surface. Blender structure only; painted game art remains unaccepted."
+    },
+    "female-sprint-front": {
+      "frames": [
+        {
+          "src": "paint-v2/linen-frames/female-sprint-front-1.png",
+          "sha256": "457bb2e0bea2c85beecbda48afe5c8fb62edf091ba378931041a4e3f9447dfe2",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-front-2.png",
+          "sha256": "26fb90250d2d9f802230523dd0f71ec36d1775a6ec1a3d06164d14b032a6e9b0",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-front-3.png",
+          "sha256": "f3cd74baf5b4da788221703132374c25e8f1cd4e719d5e8ee167d0f6fc768297",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-front-4.png",
+          "sha256": "2d2b0eaf87d893ee707083f8bfe79708487ba9eb390457ec927e0b548d558207",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-front-5.png",
+          "sha256": "20152809143d4af8a0847bd97ee6e0e6778a42a0bc5dc73f94af4fb3b5d15c93",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-front-6.png",
+          "sha256": "76407a2f5529f876a7f28592a7b6c86685429bd943b98694ed6b0ab2fdaf7a6d",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-front-7.png",
+          "sha256": "5225e74529892bf7480bd93845a70b64ec9d2a2aa58a8fbb9e1f8c78c8af7d63",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-front-8.png",
+          "sha256": "433ea8a517a5ad7d0989d2481c60ee4141e20e8eda1a1f9c34d3596a2ed93bf8",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        }
+      ],
+      "mocap": {
+        "source": "09_01.bvh",
+        "start": 32,
+        "period_source_frames": 88,
+        "source_fps": 120,
+        "duration": 0.7333333333333333,
+        "retarget_scale": 1.9442098316765561,
+        "metres_per_second": 3.1585935744664018,
+        "ground_translation": 0.010501110553741456,
+        "frames": [
+          32.0,
+          43.0,
+          54.0,
+          65.0,
+          76.0,
+          87.0,
+          98.0,
+          109.0
+        ]
+      },
+      "cloth_simulation": true,
+      "cloth_loop_max_delta_px": 3.1144470057485845,
+      "note": "Natural undyed linen and cord; no neckline trim. Female hem shortened on the existing cloth surface. Blender structure only; painted game art remains unaccepted."
+    },
+    "female-sprint-right": {
+      "frames": [
+        {
+          "src": "paint-v2/linen-frames/female-sprint-right-1.png",
+          "sha256": "9a9c777efcd9829a0419713a1e50c36d26377b2aedeafd7e173e19454d6613ab",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-right-2.png",
+          "sha256": "ad628c619e20bec527517ceba38c3eca401e740dc36cebfc0493c77cd7ddf0dc",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-right-3.png",
+          "sha256": "51a008685c8997ba95a8b3d73b8b9581c27abd64e9836320283bb9bb21102750",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-right-4.png",
+          "sha256": "306cdb109e8277b129a1c6eb021c0fcdf7cb2a0311f538280abcd02ae8f047bf",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-right-5.png",
+          "sha256": "6da73b89b35d3f8da6d51aaa98b8cd910b6861228623ee14e4b4e5d8b6024648",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-right-6.png",
+          "sha256": "3a7f1b41f311096229810f9a2a4f0a18d29454c85dd5fe2f342b4e0ec5355fe2",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-right-7.png",
+          "sha256": "e2fa612d3cf27ae5d8f5f712263248684c8a0b36dbb9a37bc694273882f0aaae",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-right-8.png",
+          "sha256": "a6b6c7803150241de3000bfe25d36b6b871c5f3fc2bd457e4675f24f24e40181",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        }
+      ],
+      "mocap": {
+        "source": "09_01.bvh",
+        "start": 32,
+        "period_source_frames": 88,
+        "source_fps": 120,
+        "duration": 0.7333333333333333,
+        "retarget_scale": 1.9442098316765561,
+        "metres_per_second": 3.1585935744664018,
+        "ground_translation": 0.010501110553741456,
+        "frames": [
+          32.0,
+          43.0,
+          54.0,
+          65.0,
+          76.0,
+          87.0,
+          98.0,
+          109.0
+        ]
+      },
+      "cloth_simulation": true,
+      "cloth_loop_max_delta_px": 3.1144470057485845,
+      "note": "Natural undyed linen and cord; no neckline trim. Female hem shortened on the existing cloth surface. Blender structure only; painted game art remains unaccepted."
+    },
+    "female-sprint-back": {
+      "frames": [
+        {
+          "src": "paint-v2/linen-frames/female-sprint-back-1.png",
+          "sha256": "866481d9437eb12c81cfd92d035e3addb16801696d8bcdf11ab09e0b3511f6c9",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-back-2.png",
+          "sha256": "3aff933a5e906a18a313a7f4dcf3271b947453a28ff181f35a8d72948fcc03c7",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-back-3.png",
+          "sha256": "14224d21fd27f135666d379365f7dd5cdd73f1fedc51fe5c230285204d361134",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-back-4.png",
+          "sha256": "954364b9a71277e90a124cdbf5f07fe0082959faf13c202f8b37cb5aa152762c",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-back-5.png",
+          "sha256": "d7b11b0d1c3bdf60a64680ffb4bbca00fd9366d88d55f88a3d3882bd5797c161",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-back-6.png",
+          "sha256": "f4a097f74751cf38b92e6a7d64c1fe6bef7648d31931fd2686ae9c854aec2923",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-back-7.png",
+          "sha256": "e8fefbe5f78a466ff4bc462fde5391afc8d9248e2e18f6b9ee06785cb6babc7c",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-back-8.png",
+          "sha256": "c86deb7b20aca116f5071229f55a767b6fe1b4f7bc266552f3a30aff7250f9fa",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        }
+      ],
+      "mocap": {
+        "source": "09_01.bvh",
+        "start": 32,
+        "period_source_frames": 88,
+        "source_fps": 120,
+        "duration": 0.7333333333333333,
+        "retarget_scale": 1.9442098316765561,
+        "metres_per_second": 3.1585935744664018,
+        "ground_translation": 0.010501110553741456,
+        "frames": [
+          32.0,
+          43.0,
+          54.0,
+          65.0,
+          76.0,
+          87.0,
+          98.0,
+          109.0
+        ]
+      },
+      "cloth_simulation": true,
+      "cloth_loop_max_delta_px": 3.1144470057485845,
+      "note": "Natural undyed linen and cord; no neckline trim. Female hem shortened on the existing cloth surface. Blender structure only; painted game art remains unaccepted."
+    },
+    "female-sprint-left": {
+      "frames": [
+        {
+          "src": "paint-v2/linen-frames/female-sprint-left-1.png",
+          "sha256": "866818214b0b0630d8707e7eeaacd83e35c394c3d8c168c029b1d8b2856f515a",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-left-2.png",
+          "sha256": "f0fc256daed93d4312fa8b6e83269c8b4b3eb93ed88b2a5198e0ad23400f4210",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-left-3.png",
+          "sha256": "4f6e5e0a475cf3599be6d35b8c3e585abc06f2146e837b32f85ee91927eb2e86",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-left-4.png",
+          "sha256": "bd6765f6c3b6856e88e57d93904e714774955d863dbc67a4ade424a923b8ecfd",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-left-5.png",
+          "sha256": "3dcc75874257fcef149fe710fa122df82392eb3e17fc4b3b6a0f49f7e50bc5f3",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-left-6.png",
+          "sha256": "f2c8afd9ec5d5db3024457fded93848a51dc25cbf346b9f1732a52930d870155",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-left-7.png",
+          "sha256": "93e5203d35a0da955ac97268ad311b30e6666a6c95197acd418e913a66a80ab9",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        },
+        {
+          "src": "paint-v2/linen-frames/female-sprint-left-8.png",
+          "sha256": "4736fa547dc81bcd0ff9060284c169ee5626c4d8e3759e020c2c8df185b97b27",
+          "width": 96,
+          "height": 96,
+          "anchor": [
+            48,
+            80
+          ]
+        }
+      ],
+      "mocap": {
+        "source": "09_01.bvh",
+        "start": 32,
+        "period_source_frames": 88,
+        "source_fps": 120,
+        "duration": 0.7333333333333333,
+        "retarget_scale": 1.9442098316765561,
+        "metres_per_second": 3.1585935744664018,
+        "ground_translation": 0.010501110553741456,
+        "frames": [
+          32.0,
+          43.0,
+          54.0,
+          65.0,
+          76.0,
+          87.0,
+          98.0,
+          109.0
+        ]
+      },
+      "cloth_simulation": true,
+      "cloth_loop_max_delta_px": 3.1144470057485845,
+      "note": "Natural undyed linen and cord; no neckline trim. Female hem shortened on the existing cloth surface. Blender structure only; painted game art remains unaccepted."
+    }
+  }
+}

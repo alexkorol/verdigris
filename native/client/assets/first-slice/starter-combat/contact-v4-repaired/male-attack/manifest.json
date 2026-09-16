@@ -1,0 +1,603 @@
+{
+  "status": "source-correction-verified; final appearance and in-game acceptance owned by projection/integration",
+  "gameplay_timing": "No gameplay changes. Native melee effect300ms, sweep400ms; contact normalized.5. Preview20fps is only a review aid.",
+  "source_motion": "Sword_Attack",
+  "clips": [
+    {
+      "sex": "male",
+      "action": "club-attack",
+      "equipment": "branch-club",
+      "direction": "front",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "playback_control": "normalized effect phase; frame=floor(phase*16), clamped0..15",
+      "contact_index": 8,
+      "normalized_contact_phase": 0.5,
+      "preview_fps_only": 20,
+      "frames": [
+        {
+          "path": "contact-v4-repaired/male-attack/references/front-00.png",
+          "sha256": "d03f055c953f8712078c3d7c538c9b7bc10889b743f356b6871ec7d78ca09a55",
+          "index": 0,
+          "normalized_effect_phase": 0.0,
+          "role": "preparation",
+          "source_pose": "idle"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/front-01.png",
+          "sha256": "6d1f7250ac428c22feefdee65e2bac03f686c733fe354da9f4eb6139ea87291c",
+          "index": 1,
+          "normalized_effect_phase": 0.0625,
+          "role": "preparation",
+          "source_pose": "entry-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/front-02.png",
+          "sha256": "4be2c66b47f293bac9e9e2f6602a8be56afd819ba234ad76b2a1f3ac5457d3de",
+          "index": 2,
+          "normalized_effect_phase": 0.125,
+          "role": "preparation",
+          "source_pose": "entry-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/front-03.png",
+          "sha256": "8ae9588ee57599ee36c984833ce0385f4948b5b9557a41c3f5c097479c280312",
+          "index": 3,
+          "normalized_effect_phase": 0.1875,
+          "role": "preparation",
+          "source_pose": "entry-3"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/front-04.png",
+          "sha256": "fb6d4a6a53fa1e5802474c251f8d4881c1e47adc9f85841e1fa85a803e8a6da5",
+          "index": 4,
+          "normalized_effect_phase": 0.25,
+          "role": "preparation",
+          "source_pose": "attack-0"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/front-05.png",
+          "sha256": "68afe9ec2c0b83b2075f21cbc38b170b808910cb26dcf7ccb41f819a2370cede",
+          "index": 5,
+          "normalized_effect_phase": 0.3125,
+          "role": "preparation",
+          "source_pose": "attack-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/front-06.png",
+          "sha256": "c83052b5b152af9aaa84ef4f96d31fe1583d5516b85e9e7a916d8d6c7e066d5a",
+          "index": 6,
+          "normalized_effect_phase": 0.375,
+          "role": "preparation",
+          "source_pose": "attack-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/front-07.png",
+          "sha256": "9bd64b29c562411fcbfb6798da2ac17f6d8e0c2a3de77a305f4d798bfac3d5d9",
+          "index": 7,
+          "normalized_effect_phase": 0.4375,
+          "role": "preparation",
+          "source_pose": "attack-4"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/front-08.png",
+          "sha256": "5effb9606fe7f2125dd33801b41e9e6ab1674d59f077d10947d113106f9070b2",
+          "index": 8,
+          "normalized_effect_phase": 0.5,
+          "role": "contact",
+          "source_pose": "attack-5"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/front-09.png",
+          "sha256": "1687280d8f7fb2f6f0f5799985041f5e43cd212cc0ff4b7f04f34ddceb0c21c4",
+          "index": 9,
+          "normalized_effect_phase": 0.5625,
+          "role": "recovery",
+          "source_pose": "attack-6"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/front-10.png",
+          "sha256": "3b0de851ca84811063cf98d43558c7f57d8b657468d021b307c84205e0195495",
+          "index": 10,
+          "normalized_effect_phase": 0.625,
+          "role": "recovery",
+          "source_pose": "attack-7"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/front-11.png",
+          "sha256": "b6ef21a4bda0718ac77b453f17b18be9e1ceaf252c469c3e67f2cad3fa5e2f60",
+          "index": 11,
+          "normalized_effect_phase": 0.6875,
+          "role": "recovery",
+          "source_pose": "recovery-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/front-12.png",
+          "sha256": "7dfe85ff15b57ed8c762e9eb547a0b33abfd715e488a8ef483bc47c726402283",
+          "index": 12,
+          "normalized_effect_phase": 0.75,
+          "role": "recovery",
+          "source_pose": "recovery-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/front-13.png",
+          "sha256": "a5fad4bc5624be52d7085620f4bc359650595cab306492da9ffcc5fc30cc3d66",
+          "index": 13,
+          "normalized_effect_phase": 0.8125,
+          "role": "recovery",
+          "source_pose": "recovery-3"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/front-14.png",
+          "sha256": "f0194d0547bdfd17c1d664ff8620ee1050c26d06b8609738cd2945067c75c720",
+          "index": 14,
+          "normalized_effect_phase": 0.875,
+          "role": "recovery",
+          "source_pose": "recovery-4"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/front-15.png",
+          "sha256": "acb132a4a05ee39b6581e56bfd8ad58a4783489adffbf645e64a47cfd51571c2",
+          "index": 15,
+          "normalized_effect_phase": 0.9375,
+          "role": "recovery",
+          "source_pose": "idle-end"
+        }
+      ]
+    },
+    {
+      "sex": "male",
+      "action": "club-attack",
+      "equipment": "branch-club",
+      "direction": "right",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "playback_control": "normalized effect phase; frame=floor(phase*16), clamped0..15",
+      "contact_index": 8,
+      "normalized_contact_phase": 0.5,
+      "preview_fps_only": 20,
+      "frames": [
+        {
+          "path": "contact-v4-repaired/male-attack/references/right-00.png",
+          "sha256": "477f960c6bac4fba4a62e6eab07da850a77573b437cade505eea99645d442385",
+          "index": 0,
+          "normalized_effect_phase": 0.0,
+          "role": "preparation",
+          "source_pose": "idle"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/right-01.png",
+          "sha256": "f6333a409ab344a1bdeb2b8f389585e0df16bc7b0585dbce1a03ce6d38d35f44",
+          "index": 1,
+          "normalized_effect_phase": 0.0625,
+          "role": "preparation",
+          "source_pose": "entry-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/right-02.png",
+          "sha256": "416c1dbea37f98a4af1fc89ace87277f928d95c5393282cfe33b68f0adca0b66",
+          "index": 2,
+          "normalized_effect_phase": 0.125,
+          "role": "preparation",
+          "source_pose": "entry-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/right-03.png",
+          "sha256": "47337813f9deea39d57c95d26d378b87714ff29c7b5abacdebbe8bc83d772064",
+          "index": 3,
+          "normalized_effect_phase": 0.1875,
+          "role": "preparation",
+          "source_pose": "entry-3"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/right-04.png",
+          "sha256": "e5284464ffabcd634f5cf3d0ee9fb04a85fd7901779e3693649b25ae9807912e",
+          "index": 4,
+          "normalized_effect_phase": 0.25,
+          "role": "preparation",
+          "source_pose": "attack-0"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/right-05.png",
+          "sha256": "2060bb05a57905086ed4418e241793696c68c02e0d0dd9c8b78edd9843c95937",
+          "index": 5,
+          "normalized_effect_phase": 0.3125,
+          "role": "preparation",
+          "source_pose": "attack-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/right-06.png",
+          "sha256": "c3bb9151b755fcd8216918e6c727811c35438e1644bebd49e243a393b45caeb2",
+          "index": 6,
+          "normalized_effect_phase": 0.375,
+          "role": "preparation",
+          "source_pose": "attack-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/right-07.png",
+          "sha256": "901a71236f0172bb89c7528900d066a94f094635534e3c5302ae469c1e5b5e22",
+          "index": 7,
+          "normalized_effect_phase": 0.4375,
+          "role": "preparation",
+          "source_pose": "attack-4"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/right-08.png",
+          "sha256": "16fdaf163a8c09f51a4408fd6e2abd0a9844b3e1a7f5c2a9f3e7ab1fef816bf3",
+          "index": 8,
+          "normalized_effect_phase": 0.5,
+          "role": "contact",
+          "source_pose": "attack-5"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/right-09.png",
+          "sha256": "eb9b60b53812b2c4369ce4484493c91c86a8b1f83f038f5c77b907276b885106",
+          "index": 9,
+          "normalized_effect_phase": 0.5625,
+          "role": "recovery",
+          "source_pose": "attack-6"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/right-10.png",
+          "sha256": "a0897d506334d57926a81b52ff996219dbcf765987d9a88834eb94d319e7195a",
+          "index": 10,
+          "normalized_effect_phase": 0.625,
+          "role": "recovery",
+          "source_pose": "attack-7"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/right-11.png",
+          "sha256": "c95a38673b6b218090a7073f95b7b00421ded51a2c95aff0b6463a67f8c34156",
+          "index": 11,
+          "normalized_effect_phase": 0.6875,
+          "role": "recovery",
+          "source_pose": "recovery-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/right-12.png",
+          "sha256": "cfac4bfc7d652092d85e872ab3fb8f20cd67449f9be822972c7b46d68ff8c4b8",
+          "index": 12,
+          "normalized_effect_phase": 0.75,
+          "role": "recovery",
+          "source_pose": "recovery-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/right-13.png",
+          "sha256": "dba3b2ef2519587aa6653327b12293b4127128bd40a6641552d4606d6857708b",
+          "index": 13,
+          "normalized_effect_phase": 0.8125,
+          "role": "recovery",
+          "source_pose": "recovery-3"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/right-14.png",
+          "sha256": "612bdfe5b48732358ca17f69210e78de66ea18610bd58b45458386d89a701b56",
+          "index": 14,
+          "normalized_effect_phase": 0.875,
+          "role": "recovery",
+          "source_pose": "recovery-4"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/right-15.png",
+          "sha256": "1abb0637d9b1f3b6c308c98f246d55d686aeeaca64a94a51aa3c14d7ffff1a6f",
+          "index": 15,
+          "normalized_effect_phase": 0.9375,
+          "role": "recovery",
+          "source_pose": "idle-end"
+        }
+      ]
+    },
+    {
+      "sex": "male",
+      "action": "club-attack",
+      "equipment": "branch-club",
+      "direction": "back",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "playback_control": "normalized effect phase; frame=floor(phase*16), clamped0..15",
+      "contact_index": 8,
+      "normalized_contact_phase": 0.5,
+      "preview_fps_only": 20,
+      "frames": [
+        {
+          "path": "contact-v4-repaired/male-attack/references/back-00.png",
+          "sha256": "941920eb46df24279195d0ae29150498d07dca4b6a355987c378dca9ed4867b7",
+          "index": 0,
+          "normalized_effect_phase": 0.0,
+          "role": "preparation",
+          "source_pose": "idle"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/back-01.png",
+          "sha256": "b7c20d81f02146110cc310b9d1342daa69f912314abadee68e9325c269ec572f",
+          "index": 1,
+          "normalized_effect_phase": 0.0625,
+          "role": "preparation",
+          "source_pose": "entry-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/back-02.png",
+          "sha256": "98028897ebbe7cf169e6f717561983f55229c00bd2b2edff757e654d8afce25f",
+          "index": 2,
+          "normalized_effect_phase": 0.125,
+          "role": "preparation",
+          "source_pose": "entry-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/back-03.png",
+          "sha256": "e69929f6b672e0626799f4e882cc98c190b08288fcbdfda75672f133337efd04",
+          "index": 3,
+          "normalized_effect_phase": 0.1875,
+          "role": "preparation",
+          "source_pose": "entry-3"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/back-04.png",
+          "sha256": "238e5f4a1a96fae07eca55a7b68108441db7159c5d6d32cc19c1f794691a5c0b",
+          "index": 4,
+          "normalized_effect_phase": 0.25,
+          "role": "preparation",
+          "source_pose": "attack-0"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/back-05.png",
+          "sha256": "87596ba1aca948b85e28cf95842e82da76b1e2b071dc3600cf0c8c3e8a9c004a",
+          "index": 5,
+          "normalized_effect_phase": 0.3125,
+          "role": "preparation",
+          "source_pose": "attack-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/back-06.png",
+          "sha256": "44e2aab72fdcda308a60f864380168edbc74cdbdaa97602082c21e72ca6bf69f",
+          "index": 6,
+          "normalized_effect_phase": 0.375,
+          "role": "preparation",
+          "source_pose": "attack-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/back-07.png",
+          "sha256": "d5b0049222ef0c924ff211e56c1c1d42aabbb279db80366b9e6e9aa845a76476",
+          "index": 7,
+          "normalized_effect_phase": 0.4375,
+          "role": "preparation",
+          "source_pose": "attack-4"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/back-08.png",
+          "sha256": "0a87689cdafe3a83633a3b271536a73931c9f679143ac32b8ea48524ffa0523b",
+          "index": 8,
+          "normalized_effect_phase": 0.5,
+          "role": "contact",
+          "source_pose": "attack-5"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/back-09.png",
+          "sha256": "7dacaf2e36317786da23885a24250d6cfba01b912d4b9ebcb49ce5217e85e695",
+          "index": 9,
+          "normalized_effect_phase": 0.5625,
+          "role": "recovery",
+          "source_pose": "attack-6"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/back-10.png",
+          "sha256": "02b08e82287837145047106fec462bec7304764a1df0ac57b873d0c4d95010d0",
+          "index": 10,
+          "normalized_effect_phase": 0.625,
+          "role": "recovery",
+          "source_pose": "attack-7"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/back-11.png",
+          "sha256": "e687c5a63afa4b430abc89823d152236a70cb88c5b2ca238eae4703350e060a7",
+          "index": 11,
+          "normalized_effect_phase": 0.6875,
+          "role": "recovery",
+          "source_pose": "recovery-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/back-12.png",
+          "sha256": "35b3d36f762f6027703563d169ccc3c013254c1dbaef02e43d7e9c92813f41f8",
+          "index": 12,
+          "normalized_effect_phase": 0.75,
+          "role": "recovery",
+          "source_pose": "recovery-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/back-13.png",
+          "sha256": "6595bb3840f4d162b1d59937459c9a57ab52316bbf93219a5b6478a05a019fec",
+          "index": 13,
+          "normalized_effect_phase": 0.8125,
+          "role": "recovery",
+          "source_pose": "recovery-3"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/back-14.png",
+          "sha256": "d6e54820d3a1acb245f3f5462c2687234b4324d096445e7e5c261e3f25cecf48",
+          "index": 14,
+          "normalized_effect_phase": 0.875,
+          "role": "recovery",
+          "source_pose": "recovery-4"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/back-15.png",
+          "sha256": "666cf83222da461f94e63d28fffdf12fed4dce1937c90f67d11a426d210e52a4",
+          "index": 15,
+          "normalized_effect_phase": 0.9375,
+          "role": "recovery",
+          "source_pose": "idle-end"
+        }
+      ]
+    },
+    {
+      "sex": "male",
+      "action": "club-attack",
+      "equipment": "branch-club",
+      "direction": "left",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "playback_control": "normalized effect phase; frame=floor(phase*16), clamped0..15",
+      "contact_index": 8,
+      "normalized_contact_phase": 0.5,
+      "preview_fps_only": 20,
+      "frames": [
+        {
+          "path": "contact-v4-repaired/male-attack/references/left-00.png",
+          "sha256": "3c960d73dee88ada7289a34ea47a1c0169aa1d996c2cf30560fd988f69fe0e43",
+          "index": 0,
+          "normalized_effect_phase": 0.0,
+          "role": "preparation",
+          "source_pose": "idle"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/left-01.png",
+          "sha256": "550fc409723bb8ee0cd18d1c472e389f22254f129bb12ebc2e8293723d629cff",
+          "index": 1,
+          "normalized_effect_phase": 0.0625,
+          "role": "preparation",
+          "source_pose": "entry-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/left-02.png",
+          "sha256": "d253274ebed2a6a76f7a2e14a077ecc91ea4a00aafa2312cc1ca3ff2ca4ea9d8",
+          "index": 2,
+          "normalized_effect_phase": 0.125,
+          "role": "preparation",
+          "source_pose": "entry-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/left-03.png",
+          "sha256": "0ae20dfa9ec6b1ccd1c8e61c4e125d034a2d3dabe4184bb4e5cced66b2698b35",
+          "index": 3,
+          "normalized_effect_phase": 0.1875,
+          "role": "preparation",
+          "source_pose": "entry-3"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/left-04.png",
+          "sha256": "d31772ad11bdc3305eb71f840d90a8190d3b7f717510a6550a1a45ae59baed60",
+          "index": 4,
+          "normalized_effect_phase": 0.25,
+          "role": "preparation",
+          "source_pose": "attack-0"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/left-05.png",
+          "sha256": "889a3cf48db8004a0434cdadbc1f820f050f4ae558e843e8b0045bb4830ee04e",
+          "index": 5,
+          "normalized_effect_phase": 0.3125,
+          "role": "preparation",
+          "source_pose": "attack-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/left-06.png",
+          "sha256": "5032d1dfcae384225d7dad5ac7e8c2432b68f381a8783425ee1a571e9564493b",
+          "index": 6,
+          "normalized_effect_phase": 0.375,
+          "role": "preparation",
+          "source_pose": "attack-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/left-07.png",
+          "sha256": "92895289e1a4863eaa51581e8e0e6d29a63bcdbef2309a5cddafed792cdc2850",
+          "index": 7,
+          "normalized_effect_phase": 0.4375,
+          "role": "preparation",
+          "source_pose": "attack-4"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/left-08.png",
+          "sha256": "54966cfe98f968295c170a2617736fffd70a56968ff3ff3e99da216ea3140067",
+          "index": 8,
+          "normalized_effect_phase": 0.5,
+          "role": "contact",
+          "source_pose": "attack-5"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/left-09.png",
+          "sha256": "a050d880eaee27c5f074112642bd1b9b0d1cd6c1528bccec3271ac91e90d10b5",
+          "index": 9,
+          "normalized_effect_phase": 0.5625,
+          "role": "recovery",
+          "source_pose": "attack-6"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/left-10.png",
+          "sha256": "e32b46ac1332b925bf5d94d60bc6a3aa30e31d87ad765a37b67109129b2a4cf8",
+          "index": 10,
+          "normalized_effect_phase": 0.625,
+          "role": "recovery",
+          "source_pose": "attack-7"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/left-11.png",
+          "sha256": "5ee78fdee4be4c19eff5d69cd2f4b76169a7b104ba180bf8a5b72932fb5cd0a2",
+          "index": 11,
+          "normalized_effect_phase": 0.6875,
+          "role": "recovery",
+          "source_pose": "recovery-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/left-12.png",
+          "sha256": "99564edc4ddb0141d04cc2018cf581d6e2cb941d95aa9f2945e791d8fa9c1e8e",
+          "index": 12,
+          "normalized_effect_phase": 0.75,
+          "role": "recovery",
+          "source_pose": "recovery-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/left-13.png",
+          "sha256": "bf2e163fcc258091d156b053429c8867495f12c023ff7d582091886baff9ffc5",
+          "index": 13,
+          "normalized_effect_phase": 0.8125,
+          "role": "recovery",
+          "source_pose": "recovery-3"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/left-14.png",
+          "sha256": "243925b9372f0860d821cf4bdd0c0ef1565d9f871befb4709d9e2d7de0c8ff57",
+          "index": 14,
+          "normalized_effect_phase": 0.875,
+          "role": "recovery",
+          "source_pose": "recovery-4"
+        },
+        {
+          "path": "contact-v4-repaired/male-attack/references/left-15.png",
+          "sha256": "8c682935e7af810fbeca8d1a4f784f5a5aec830421fdd72e1884de2cd4be1d36",
+          "index": 15,
+          "normalized_effect_phase": 0.9375,
+          "role": "recovery",
+          "source_pose": "idle-end"
+        }
+      ]
+    }
+  ]
+}

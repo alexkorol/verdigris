@@ -1,0 +1,96 @@
+{
+  "clip": "well-alpha-hit-front",
+  "source_sha256": "102786c57c310aab0d6a870e692fac42717a47dffb11a156350dcb112fd60e1d",
+  "selected_grid": {
+    "size": 4,
+    "source": "fine",
+    "offset": [
+      0,
+      0
+    ],
+    "score": 0.5702713738303381,
+    "variance": 40.66926193237305,
+    "gated_out": false
+  },
+  "frame": [
+    128,
+    96
+  ],
+  "anchor": [
+    64,
+    64
+  ],
+  "whole_cycle_translation": [
+    0,
+    1
+  ],
+  "registered_mean_iou": 0.8004122972703769,
+  "alpha_policy": "Native alpha threshold128, noRGBkey",
+  "visual_acceptance": false,
+  "frames": [
+    {
+      "file": "well-alpha-hit-front-00.png",
+      "reference": {
+        "src": "references/well-alpha-hit-front-00.png",
+        "sha256": "865a26ac2249e4c9e3ce8161fab4c2e63d598de9d4fb51e8656cf53093b7315a",
+        "blender_frame": 0
+      },
+      "bbox": [
+        52,
+        25,
+        76,
+        78
+      ],
+      "silhouette_iou": 0.8070539419087137,
+      "sha256": "4811423600d7b0bf7723af0463a7bcb23d184074915359e1c74ac68df6a3b716"
+    },
+    {
+      "file": "well-alpha-hit-front-01.png",
+      "reference": {
+        "src": "references/well-alpha-hit-front-01.png",
+        "sha256": "20981df8f0e2fa77beb16200dfe565a17939745040eca788a45a73cc53abf396",
+        "blender_frame": 1
+      },
+      "bbox": [
+        52,
+        25,
+        76,
+        78
+      ],
+      "silhouette_iou": 0.785639958376691,
+      "sha256": "460c4d07dd798b28a94c8fffa45874a447594f7e907694f3e26c0c387a5d18aa"
+    },
+    {
+      "file": "well-alpha-hit-front-02.png",
+      "reference": {
+        "src": "references/well-alpha-hit-front-02.png",
+        "sha256": "e3f4a816c44ad635b91f4dad9d559a96c348abfbfb57f49bb85ab0eddb934c84",
+        "blender_frame": 2
+      },
+      "bbox": [
+        52,
+        25,
+        76,
+        78
+      ],
+      "silhouette_iou": 0.7985386221294363,
+      "sha256": "7b3a8e195e522925aa535c8e03549d0e75a86442b0a6733f6b056223f612b247"
+    },
+    {
+      "file": "well-alpha-hit-front-03.png",
+      "reference": {
+        "src": "references/well-alpha-hit-front-03.png",
+        "sha256": "7a30e0190646f3fe80e7bb343e4f50cf60af67aad3dfeed8106d85f99748f24d",
+        "blender_frame": 3
+      },
+      "bbox": [
+        52,
+        25,
+        76,
+        78
+      ],
+      "silhouette_iou": 0.8104166666666667,
+      "sha256": "8c9d32375e2417a9f20af113ed7311b793d4eb06ffd058ad0a4ab1ede53f8234"
+    }
+  ]
+}

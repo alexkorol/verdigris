@@ -1,0 +1,290 @@
+[
+  {
+    "frame": "male-unarmed-death-front-00.png",
+    "bbox": [
+      46,
+      25,
+      82,
+      106
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-front-01.png",
+    "bbox": [
+      38,
+      35,
+      82,
+      109
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-front-02.png",
+    "bbox": [
+      38,
+      38,
+      84,
+      109
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-front-03.png",
+    "bbox": [
+      41,
+      41,
+      79,
+      122
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-front-04.png",
+    "bbox": [
+      35,
+      54,
+      87,
+      115
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-front-05.png",
+    "bbox": [
+      35,
+      57,
+      86,
+      124
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-front-06.png",
+    "bbox": [
+      35,
+      56,
+      86,
+      124
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-front-07.png",
+    "bbox": [
+      35,
+      56,
+      86,
+      124
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-right-00.png",
+    "bbox": [
+      49,
+      23,
+      81,
+      106
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-right-01.png",
+    "bbox": [
+      55,
+      32,
+      84,
+      108
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-right-02.png",
+    "bbox": [
+      56,
+      35,
+      85,
+      108
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-right-03.png",
+    "bbox": [
+      46,
+      48,
+      109,
+      102
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-right-04.png",
+    "bbox": [
+      20,
+      63,
+      109,
+      102
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-right-05.png",
+    "bbox": [
+      17,
+      68,
+      112,
+      108
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-right-06.png",
+    "bbox": [
+      17,
+      68,
+      112,
+      108
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-right-07.png",
+    "bbox": [
+      17,
+      68,
+      112,
+      108
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-back-00.png",
+    "bbox": [
+      46,
+      19,
+      82,
+      105
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-back-01.png",
+    "bbox": [
+      46,
+      25,
+      89,
+      101
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-back-02.png",
+    "bbox": [
+      44,
+      28,
+      90,
+      99
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-back-03.png",
+    "bbox": [
+      50,
+      49,
+      86,
+      88
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-back-04.png",
+    "bbox": [
+      39,
+      48,
+      96,
+      116
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-back-05.png",
+    "bbox": [
+      40,
+      58,
+      97,
+      113
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-back-06.png",
+    "bbox": [
+      40,
+      57,
+      96,
+      113
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-back-07.png",
+    "bbox": [
+      40,
+      57,
+      96,
+      113
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-left-00.png",
+    "bbox": [
+      46,
+      21,
+      79,
+      104
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-left-01.png",
+    "bbox": [
+      43,
+      28,
+      72,
+      104
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-left-02.png",
+    "bbox": [
+      42,
+      31,
+      72,
+      103
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-left-03.png",
+    "bbox": [
+      18,
+      47,
+      83,
+      104
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-left-04.png",
+    "bbox": [
+      18,
+      52,
+      105,
+      105
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-left-05.png",
+    "bbox": [
+      15,
+      65,
+      108,
+      105
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-left-06.png",
+    "bbox": [
+      15,
+      65,
+      109,
+      105
+    ]
+  },
+  {
+    "frame": "male-unarmed-death-left-07.png",
+    "bbox": [
+      15,
+      65,
+      109,
+      105
+    ]
+  }
+]

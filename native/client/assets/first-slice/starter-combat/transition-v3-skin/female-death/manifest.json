@@ -1,0 +1,492 @@
+{
+  "status": "source-mask-repair-verified; appearance-projection-pending",
+  "clips": [
+    {
+      "sex": "female",
+      "action": "club-death",
+      "direction": "front",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "duration_ms": 400,
+      "frames": [
+        {
+          "path": "transition-v3-skin/female-death/references/front-00.png",
+          "sha256": "b1cfe2ed51e9c282ac4a37bc58c6f371511ab69e481008bab1ceed41b0691441",
+          "phase": 0,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/front-01.png",
+          "sha256": "f307a8e039751d1af2da33ddca3af54d70c9d3ed86a57a703a040fbd0a4500aa",
+          "phase": 1,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/front-02.png",
+          "sha256": "d78894cdbea541f0bfbbc66f9bdd148d77dc5833ace9539cf1d3fa5f7d00e4e6",
+          "phase": 2,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/front-03.png",
+          "sha256": "f05e4be8bd9b54183eff641b5610ba024714feab198158a7e34ea72d78769e30",
+          "phase": 3,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/front-04.png",
+          "sha256": "b8d1897fbcb2a0531083bb70bdb5f522515c3131c04026953b6bf33c6a76855a",
+          "phase": 4,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/front-05.png",
+          "sha256": "9407fbced68399c3bcc175f556f9e461700871275f2c8c5bf5c1455a9bf055a5",
+          "phase": 5,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/front-06.png",
+          "sha256": "cc861d0735513035169d4ae3f274ad9bd30ff0d8105d2a03afef9795c425bb37",
+          "phase": 6,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/front-07.png",
+          "sha256": "e0feefc3902080c86451e933f08aa7638351bed327f853290c6db441ecbe7569",
+          "phase": 7,
+          "duration_ms": 50
+        }
+      ]
+    },
+    {
+      "sex": "female",
+      "action": "club-death",
+      "direction": "right",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "duration_ms": 400,
+      "frames": [
+        {
+          "path": "transition-v3-skin/female-death/references/right-00.png",
+          "sha256": "3ac312b74f75c016750c64efa2aee1ec15df9fd75e73b9d0823e046564849313",
+          "phase": 0,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/right-01.png",
+          "sha256": "39dc38f2e013770ec932f04fcc31d679a7927c20033bf8e2fd930193dd3ab909",
+          "phase": 1,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/right-02.png",
+          "sha256": "6aa02b5b3eb72e7e3d4be5c7f2e59f44ccc35bf5a1c0ebc2228ebd16d14fb1c9",
+          "phase": 2,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/right-03.png",
+          "sha256": "da32305f9128aefe50c6c0ece30281a849c59c7959826bb5843205ecf53dcba4",
+          "phase": 3,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/right-04.png",
+          "sha256": "5d527083288ff58fa6312f5f34c1b1211477feadbc9ec940774c0f9e6a1e309e",
+          "phase": 4,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/right-05.png",
+          "sha256": "13320b02cd0c599b9eb55bdfd033aecd5ca0cec1bb5374ee93acc0c72244eb30",
+          "phase": 5,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/right-06.png",
+          "sha256": "10b6ccdf9aafeb7e80a97d45a4ebab95cad11c189f4e6a031fa93688e8a47022",
+          "phase": 6,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/right-07.png",
+          "sha256": "84a7c9c01cc4e1d0598f90685e2f43488322bc7049a04dc749ce8ffab408bd32",
+          "phase": 7,
+          "duration_ms": 50
+        }
+      ]
+    },
+    {
+      "sex": "female",
+      "action": "club-death",
+      "direction": "back",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "duration_ms": 400,
+      "frames": [
+        {
+          "path": "transition-v3-skin/female-death/references/back-00.png",
+          "sha256": "279c6e5fae44eb0a1d0ca5b4776f726e77d90441b70036a22b201374b90a07c6",
+          "phase": 0,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/back-01.png",
+          "sha256": "420f6ab68363c1c780dc99758789b99fe8e1100615ee09380f760a3fda859aa3",
+          "phase": 1,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/back-02.png",
+          "sha256": "fbcd37bb2b380ea238d3561dc6e17be7589afdf041fa04bd2a064d3488e9c0d8",
+          "phase": 2,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/back-03.png",
+          "sha256": "4392a68376f3872a16efbf1b9e6a458042b757a664ba2f58066cceb43d754860",
+          "phase": 3,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/back-04.png",
+          "sha256": "7144053fddb6b85f81551877afed88a73fb3cd28ab17eb6b1a3a31a74019b898",
+          "phase": 4,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/back-05.png",
+          "sha256": "913de759375067c95013bfbe40c72731b970591cd0d708e6be0f45554ccf2346",
+          "phase": 5,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/back-06.png",
+          "sha256": "dde2fd9575edcc2f91c8b4793790537985b5779dee04bb409b856652f6d2c1f8",
+          "phase": 6,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/back-07.png",
+          "sha256": "cf217608c51b046a371beaf2da7f04d662e435d770744cd8151d4645ca92a9cd",
+          "phase": 7,
+          "duration_ms": 50
+        }
+      ]
+    },
+    {
+      "sex": "female",
+      "action": "club-death",
+      "direction": "left",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "duration_ms": 400,
+      "frames": [
+        {
+          "path": "transition-v3-skin/female-death/references/left-00.png",
+          "sha256": "3cf93396e64d28ea8cade3f252ea56cd1e0fc09ca994e1f62407f9f5e924df1a",
+          "phase": 0,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/left-01.png",
+          "sha256": "d991c61c6986e7fba85b7f5524e326491dc03fa4f7126ecd30fdb3189848f3af",
+          "phase": 1,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/left-02.png",
+          "sha256": "8cc52a0232df177c85cb53682ba6bc26f8bcfc7d1338509d56c11863b5e6b7b2",
+          "phase": 2,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/left-03.png",
+          "sha256": "1c3e10f94be3967e22ce423c6ca85a0fe2638f9f274b5cf3fa09837d6b945d90",
+          "phase": 3,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/left-04.png",
+          "sha256": "eecc67d1540154edb30c7661ef8d14b62d00cb669a69b860f34f73469e0cabf7",
+          "phase": 4,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/left-05.png",
+          "sha256": "2201d64d75056c2b155c01edefa32e607e217b43bfcdf1d8575c087f7a96e370",
+          "phase": 5,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/left-06.png",
+          "sha256": "1940065db7a5a14420bcfc3f4ac2093e4371ab8c48a321b2e5bd9b98fa8fcb11",
+          "phase": 6,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/female-death/references/left-07.png",
+          "sha256": "55d5fcdf2cf383f2d3c89701ac9f4854492ec86ad3633fab05141d884e4f56f4",
+          "phase": 7,
+          "duration_ms": 50
+        }
+      ]
+    }
+  ],
+  "changes_from_transition_v2": [
+    {
+      "direction": "front",
+      "phase": 0,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "front",
+      "phase": 1,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "front",
+      "phase": 2,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "front",
+      "phase": 3,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "front",
+      "phase": 4,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "front",
+      "phase": 5,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "front",
+      "phase": 6,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "front",
+      "phase": 7,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "right",
+      "phase": 0,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "right",
+      "phase": 1,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 3
+    },
+    {
+      "direction": "right",
+      "phase": 2,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 2
+    },
+    {
+      "direction": "right",
+      "phase": 3,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 4
+    },
+    {
+      "direction": "right",
+      "phase": 4,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 7
+    },
+    {
+      "direction": "right",
+      "phase": 5,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 11
+    },
+    {
+      "direction": "right",
+      "phase": 6,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 9
+    },
+    {
+      "direction": "right",
+      "phase": 7,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 9
+    },
+    {
+      "direction": "back",
+      "phase": 0,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 1,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 2,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 3,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 4,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 5,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 6,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 7,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "left",
+      "phase": 0,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "left",
+      "phase": 1,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 3
+    },
+    {
+      "direction": "left",
+      "phase": 2,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "left",
+      "phase": 3,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "left",
+      "phase": 4,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 9
+    },
+    {
+      "direction": "left",
+      "phase": 5,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 10
+    },
+    {
+      "direction": "left",
+      "phase": 6,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 7
+    },
+    {
+      "direction": "left",
+      "phase": 7,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 7
+    }
+  ],
+  "visual_review": "Four cardinal directions at native scale and high-resolution torso views; no new visible skin protrusions. Dark underarm deformation shadow distinguished from missing skin using emission diagnostic."
+}

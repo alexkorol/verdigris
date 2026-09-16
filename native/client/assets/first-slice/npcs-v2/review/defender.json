@@ -1,0 +1,64 @@
+{
+  "identity": "defender",
+  "raw_sha256": "84d5cf508f175e993cd44613730231de3cf263803d5b2d89ef503bce65892452",
+  "frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "pixels_per_metre": 48,
+  "grid": {
+    "size": 5,
+    "source": "fine",
+    "offset": [
+      2,
+      0
+    ],
+    "score": 0.6833243709130237,
+    "variance": 93.81019592285156,
+    "gated_out": false
+  },
+  "mean_iou": 0.8849827690791634,
+  "static_view_registration": [
+    [
+      1,
+      1
+    ],
+    [
+      4,
+      2
+    ],
+    [
+      2,
+      3
+    ],
+    [
+      4,
+      4
+    ]
+  ],
+  "iou": [
+    0.8961121733588273,
+    0.867595818815331,
+    0.9014360313315927,
+    0.8747870528109029
+  ],
+  "visual_acceptance": true,
+  "reference_sha256": [
+    "da05ee1e4ce6d9ccdc97779a544a56c57590c3455ebe2396cd5591364c7e7ba6",
+    "de12c6d7e9d9555bc71a29e480a47c91a7cf83caf3bf01c895ac2ffe827c05a6",
+    "a6c477222f80fe0be17cc15b1142de02a8488dfef481152e3c584c9e1aa70bf2",
+    "cd22d9509a30007312ea0267f7bb0f11392a097496ccdb938910ba472a173020"
+  ],
+  "registration_policy": "Independent static views matched to actual Blender silhouettes; no animation, rescaling or bbox fitting",
+  "frame_sha256": [
+    "c8bf65895ff8e25a8a5a967f1f842c168ba4adbad9165f92444282e5c91eb06d",
+    "4f44534083960637d3c8b07f282a967b4011abded3a31a3245c0ac2e6b5f1574",
+    "003f11c0b05fef2fe5ca12e1e15d16592ec2f5d5e65d31bb992be92e2463a098",
+    "b37d97a6806a531d9c1d122ba86cff48f4269f6b23a67400dc31ba48b4edd208"
+  ],
+  "review_notes": "Viewed native96 and 2x nearest-neighbor: four correct static cardinal views, consistent character and clothing, held tools close to actual hand, clean binary alpha after original alpha audit. Independent reference-derived integer view offsets restore the rig anchor; no rescaling."
+}

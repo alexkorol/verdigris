@@ -1,0 +1,96 @@
+{
+  "clip": "pack-wolf-death-left",
+  "source_sha256": "2093145ba0452d0df6995757f880dfb2272dfe596d37a51f47f78e52a8b479fe",
+  "selected_grid": {
+    "size": 4,
+    "source": "autocorr",
+    "offset": [
+      0,
+      1
+    ],
+    "score": 0.4521533708396495,
+    "variance": 35.339412689208984,
+    "gated_out": false
+  },
+  "frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    76
+  ],
+  "whole_cycle_translation": [
+    0,
+    0
+  ],
+  "registered_mean_iou": 0.8209814558831334,
+  "alpha_policy": "Native alpha threshold128, noRGBkey",
+  "visual_acceptance": false,
+  "frames": [
+    {
+      "file": "pack-wolf-death-left-00.png",
+      "reference": {
+        "src": "death-v2/pack-wolf-death-left-00.png",
+        "sha256": "1f170f3e8ad08ce3dad3d465746d62feafedb9756e38d6005fa7f5b40e22da35",
+        "blender_frame": 0
+      },
+      "bbox": [
+        16,
+        47,
+        80,
+        79
+      ],
+      "silhouette_iou": 0.8517618469015796,
+      "sha256": "2657549e56cf71e80a063d2559aa15f09bb1385782219de5ae3ef152529ed83a"
+    },
+    {
+      "file": "pack-wolf-death-left-01.png",
+      "reference": {
+        "src": "death-v2/pack-wolf-death-left-01.png",
+        "sha256": "1c884ec924135b75be7f3cce72704cb3798efdb023e1361efc6577bc69a58371",
+        "blender_frame": 1
+      },
+      "bbox": [
+        16,
+        45,
+        80,
+        76
+      ],
+      "silhouette_iou": 0.8053204353083434,
+      "sha256": "8e6df56077d3b5ad161a8a954ebc90cab9d5ab54eb5a8d74bc2222da46a7131e"
+    },
+    {
+      "file": "pack-wolf-death-left-02.png",
+      "reference": {
+        "src": "death-v2/pack-wolf-death-left-02.png",
+        "sha256": "e4aa0d6be27197a8aef392fb48346bd9583f78a5ef2c4e2fee5dde5fdc73ddd3",
+        "blender_frame": 2
+      },
+      "bbox": [
+        16,
+        48,
+        79,
+        71
+      ],
+      "silhouette_iou": 0.8342105263157895,
+      "sha256": "48b5523c37b21f7c4afe9edc625d249ae7db1bef5b3fc4300d4a722474f56b66"
+    },
+    {
+      "file": "pack-wolf-death-left-03.png",
+      "reference": {
+        "src": "death-v2/pack-wolf-death-left-03.png",
+        "sha256": "dc815d64f7b03317c67b7b495cd8b55bd3a78988a8709d7c890325e01721c5fa",
+        "blender_frame": 3
+      },
+      "bbox": [
+        17,
+        52,
+        80,
+        71
+      ],
+      "silhouette_iou": 0.7926330150068213,
+      "sha256": "5967bdfbce66ce7fb498d1e285f6b57243d60245675406fe3ed83d4dbb7dd8b4"
+    }
+  ]
+}

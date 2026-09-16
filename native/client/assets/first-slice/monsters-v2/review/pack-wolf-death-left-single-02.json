@@ -1,0 +1,71 @@
+{
+  "clip": "pack-wolf-death-left-single-02",
+  "source_sha256": "dc98d1f786b5b32a59e80a9e7eb35e654ebc747c543bebcd551b442691165e09",
+  "selected_grid": {
+    "size": 8,
+    "source": "fine",
+    "offset": [
+      2,
+      0
+    ],
+    "score": 0.6689567509434313,
+    "variance": 50.71791458129883,
+    "gated_out": false
+  },
+  "frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    76
+  ],
+  "whole_cycle_translation": [
+    0,
+    0
+  ],
+  "registered_mean_iou": 0.9286821705426357,
+  "alpha_policy": "Native alpha threshold128, noRGBkey",
+  "visual_acceptance": true,
+  "frames": [
+    {
+      "file": "pack-wolf-death-left-02.png",
+      "reference": {
+        "src": "death-v2/pack-wolf-death-left-02.png",
+        "sha256": "e4aa0d6be27197a8aef392fb48346bd9583f78a5ef2c4e2fee5dde5fdc73ddd3",
+        "blender_frame": 2
+      },
+      "bbox": [
+        18,
+        50,
+        76,
+        71
+      ],
+      "silhouette_iou": 0.9286821705426357,
+      "sha256": "f70b22a185c34782db6d9376c481b9932835b934cc7f86249a5c3726f09ac8f0"
+    }
+  ],
+  "upload_guide": "guides-single\\pack-wolf-death-left-single-02.png",
+  "upload_guide_sha256": "1aa89e8a8efb73f1f87e63ef3f652a1fdb58ea6834ea99dfb5009da9e7ad95b6",
+  "layout": {
+    "columns": 1,
+    "slot": [
+      192,
+      128
+    ],
+    "inset": [
+      48,
+      16
+    ],
+    "scale": 8,
+    "output": [
+      1536,
+      1024
+    ],
+    "fixed_translation": [
+      0,
+      0
+    ]
+  },
+  "review_note": "Independent review by first_slice_world_assets: all four authored poses preserved; folded grounded corpse and coherent coat; no recentering. 2026-09-15."
+}

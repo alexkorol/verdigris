@@ -1,0 +1,370 @@
+{
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2\\blender\\male-walk-exterior.blend",
+  "source_sha256": "a0c181a36a4ed0aa41007328c0b214cb7d45813268141616bdd2d0d41b6749b3",
+  "equipment": "branch-club",
+  "hand": "right",
+  "frame_size": [
+    96,
+    96
+  ],
+  "pixels_per_metre": 48,
+  "frames": [
+    {
+      "src": "references/male-club-walk-front-00.png",
+      "direction": "front",
+      "phase": 0,
+      "source_frame": 72,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "2dd9f6e40769785beacb50e9cf1e9908f51c1b0007e4e06bf14a473a04e90149"
+    },
+    {
+      "src": "references/male-club-walk-front-01.png",
+      "direction": "front",
+      "phase": 1,
+      "source_frame": 76,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "c0d49375986396f1f29bb10b9389c6b2c5c64f638abd427e1723c9b875a3db29"
+    },
+    {
+      "src": "references/male-club-walk-front-02.png",
+      "direction": "front",
+      "phase": 2,
+      "source_frame": 80,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "2818b64dedcba983f10513df9aec54cf26f05ad63aac10b62203a0cf0d6147a1"
+    },
+    {
+      "src": "references/male-club-walk-front-03.png",
+      "direction": "front",
+      "phase": 3,
+      "source_frame": 84,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "c942de53329443416d51e90a92c55e6bea4f1520e72fe76737fe699e80adc99f"
+    },
+    {
+      "src": "references/male-club-walk-front-04.png",
+      "direction": "front",
+      "phase": 4,
+      "source_frame": 88,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "3da129981ddb37ea955ac07f232f27664087446690b1d7d591cb12664e9f5693"
+    },
+    {
+      "src": "references/male-club-walk-front-05.png",
+      "direction": "front",
+      "phase": 5,
+      "source_frame": 92,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "3cc31094a69dea5862868054e6784163dcb2dff76d09162deed65c8041516e89"
+    },
+    {
+      "src": "references/male-club-walk-front-06.png",
+      "direction": "front",
+      "phase": 6,
+      "source_frame": 96,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "be8ea229ed0a453718ac6100f7c725115c093657f0283d85d4f240c16279315d"
+    },
+    {
+      "src": "references/male-club-walk-front-07.png",
+      "direction": "front",
+      "phase": 7,
+      "source_frame": 100,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "d9ea0162850a5cd3b349b28c36f56976629824b813cb6b842e9354a9761c6c04"
+    },
+    {
+      "src": "references/male-club-walk-right-00.png",
+      "direction": "right",
+      "phase": 0,
+      "source_frame": 72,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "2208c68876bb753d336ddc9f9c52a3cc5e05c9f3bcd699379befaefd26ecd4ad"
+    },
+    {
+      "src": "references/male-club-walk-right-01.png",
+      "direction": "right",
+      "phase": 1,
+      "source_frame": 76,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "9f1afdee44b0e47990c2178bbccf760c449e84d539bbfbaca5fd5228ce80a487"
+    },
+    {
+      "src": "references/male-club-walk-right-02.png",
+      "direction": "right",
+      "phase": 2,
+      "source_frame": 80,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "a75cbe798a449ed4260e25c27ac25f7e902d60f89c75955e4b27228e37255839"
+    },
+    {
+      "src": "references/male-club-walk-right-03.png",
+      "direction": "right",
+      "phase": 3,
+      "source_frame": 84,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "5af11620eb01450d393d707317a36892789ae8ef4702cb090833eb28e032d216"
+    },
+    {
+      "src": "references/male-club-walk-right-04.png",
+      "direction": "right",
+      "phase": 4,
+      "source_frame": 88,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "bc85f2b5d4432692da78b29fc2c318bb6c94af42ee779474a774dc1b7ead0402"
+    },
+    {
+      "src": "references/male-club-walk-right-05.png",
+      "direction": "right",
+      "phase": 5,
+      "source_frame": 92,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "f9c422cea221793f854c9c21d4b080fb7abdb7f1bf3c273f9c10f5c67438932b"
+    },
+    {
+      "src": "references/male-club-walk-right-06.png",
+      "direction": "right",
+      "phase": 6,
+      "source_frame": 96,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "f3565b3bbee94bba8509e38c947910cbebb900fe73941cd00a3fc3d26f4d1a90"
+    },
+    {
+      "src": "references/male-club-walk-right-07.png",
+      "direction": "right",
+      "phase": 7,
+      "source_frame": 100,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "b5a6be1b92cba150845dca30961843c24c9dec1ac301867eb8aee7f9e7411f3d"
+    },
+    {
+      "src": "references/male-club-walk-back-00.png",
+      "direction": "back",
+      "phase": 0,
+      "source_frame": 72,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "41c1373f4e72c4fb1a45b746c4d447de9351370a830f849a213fbf6334a12999"
+    },
+    {
+      "src": "references/male-club-walk-back-01.png",
+      "direction": "back",
+      "phase": 1,
+      "source_frame": 76,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "3a7013ef4cee6dec7b71d3d72e9165a64069c843fb7ef48bcd54233c02729660"
+    },
+    {
+      "src": "references/male-club-walk-back-02.png",
+      "direction": "back",
+      "phase": 2,
+      "source_frame": 80,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "822b35b78cf6ac987d4133e33f425028086a693f2bcd6db6f857162fe035fee7"
+    },
+    {
+      "src": "references/male-club-walk-back-03.png",
+      "direction": "back",
+      "phase": 3,
+      "source_frame": 84,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "c6e04fec2537d11a0cacd6dab02494ae41e903962d2d89564e6280f80a96d5c3"
+    },
+    {
+      "src": "references/male-club-walk-back-04.png",
+      "direction": "back",
+      "phase": 4,
+      "source_frame": 88,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "599cd673f87992a8422b86f317cfc90858926bae783a68e6537e81ef671a3f00"
+    },
+    {
+      "src": "references/male-club-walk-back-05.png",
+      "direction": "back",
+      "phase": 5,
+      "source_frame": 92,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "07f98a002f9f6421503e876acd41e133e74439a81fb2966a9da32057ed3ce8cf"
+    },
+    {
+      "src": "references/male-club-walk-back-06.png",
+      "direction": "back",
+      "phase": 6,
+      "source_frame": 96,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "30d40505a1caf702f2c9379d5d3a445771d53c8b4efe07238ce24eecc7680427"
+    },
+    {
+      "src": "references/male-club-walk-back-07.png",
+      "direction": "back",
+      "phase": 7,
+      "source_frame": 100,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "6e2b6cd453ecafa72a344247802c3475911a8bb357c42d7cf1cbecc419d6f8fa"
+    },
+    {
+      "src": "references/male-club-walk-left-00.png",
+      "direction": "left",
+      "phase": 0,
+      "source_frame": 72,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "89f7ca4a7dd0bfec2c8ec324a2bd87c9316b740c81b70232acd23579b9bd66e8"
+    },
+    {
+      "src": "references/male-club-walk-left-01.png",
+      "direction": "left",
+      "phase": 1,
+      "source_frame": 76,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "8119d3ff11ccb4469d55d0d8a6b18b16d65de393b6b5089c7b5ffd99319646d3"
+    },
+    {
+      "src": "references/male-club-walk-left-02.png",
+      "direction": "left",
+      "phase": 2,
+      "source_frame": 80,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "a128062de96bda4e0efbe4b6cb8d6146bab11a8b794bb85cb55cdc9c556c3455"
+    },
+    {
+      "src": "references/male-club-walk-left-03.png",
+      "direction": "left",
+      "phase": 3,
+      "source_frame": 84,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "f556762c50c893209083a0d9442e640e8a929fa23e08cbb5eb7e5c5507b44363"
+    },
+    {
+      "src": "references/male-club-walk-left-04.png",
+      "direction": "left",
+      "phase": 4,
+      "source_frame": 88,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "b977b70e19152c8f0cd08f86970b90c44a3fd587c2aa32689c22f64774aa57a1"
+    },
+    {
+      "src": "references/male-club-walk-left-05.png",
+      "direction": "left",
+      "phase": 5,
+      "source_frame": 92,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "c7ab0e2d6e7c821347adb717b6126f68331cccf63d8455d64ca29c6b2879c028"
+    },
+    {
+      "src": "references/male-club-walk-left-06.png",
+      "direction": "left",
+      "phase": 6,
+      "source_frame": 96,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "c99851545e1d9bf137c4470a749a3a10d16e505cc77ddacb4d3ff1bb12354dd4"
+    },
+    {
+      "src": "references/male-club-walk-left-07.png",
+      "direction": "left",
+      "phase": 7,
+      "source_frame": 100,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "9cfa8b4a53997e206bdee8d9769889448d7e222d64650563b484315b94090f99"
+    }
+  ],
+  "status": "motion-reference-reviewed; not painted final game art",
+  "anchor": [
+    48,
+    80
+  ]
+}

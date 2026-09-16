@@ -1,0 +1,122 @@
+{
+  "pack-wolf-death-front": {
+    "prompt": "Use case: style-transfer. Paint ONLY the four small wolf silhouettes in this exact LANDSCAPE image. Preserve image dimensions 1536x1024, all four locations, poses and blank spacing. This is a game animation sprite sheet at logical 384x256 resolution displayed 4x nearest-neighbor: every implied pixel must be a hard 4x4 square. Two columns and two rows, read left to right then next row. Each native frame is 96x96 inset48,16 inside192x128 slot. Do not enlarge the wolves or move them. Paint muted natural grey-brown wolf fur with charcoal back, pale grey belly, dark pointed muzzle, tiny amber eyes, realistic gritty1990s Diablo2 prerendered sprite shading. Preserve exact head angle, ear position, tail, each paw location and body length from the supplied Blender poses. All wolves face FRONT. These are four successive DEATH phases: an initial stagger, a lowering collapse, folded limbs approaching the ground, then a fully folded lying corpse. Preserve the supplied body height, head tilt, paw folds and final side-lying corpse; do not replace any phase with standing, walking or a crouching live wolf. No reposing or extra legs, no full-resolution illustration, no cartoon. Add fur through subtle clusters inside the given silhouette, no subpixel hairs. Output genuine transparent RGBA background (background=transparent). Every background pixel, all margins, and gaps between legs must have true transparent alpha0. No checkerboard, backdrop, glow or shadow. Return full1536x1024 landscape PNG with true alpha and the same four original pose placements. Image1 is EDIT TARGET, four exact Blender death poses. Image2 is STYLE REFERENCE ONLY: match this exact wolf's continuous charcoal saddle, cream neck patch and horizontal belly band, taupe side fur and crisp subtle dark contour. Coat markings, pixel clustering, brightness and palette must match Image2. Do not replace with random light speckled fur. Preserve Image1 every paw and muzzle position. Render only the four Image1 wolves, not the eight Image2 poses. True alpha transparent background.",
+    "references": [
+      {
+        "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\guides\\pack-wolf-death-front.png",
+        "sha256": "ae1cec656630e7a697ca6c8b76d930d1ee74f171d013152c0d79896c754aa260",
+        "role": "edit target: exact death pose geometry"
+      },
+      {
+        "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\accepted\\originals\\pack-wolf-idle-front.png",
+        "sha256": "7b51a563c78de3f91e57f58362b67feb4d9fe9b48f4d6cc0807a33a6ec4fbe0e",
+        "role": "style only: same actor and direction accepted idle"
+      }
+    ]
+  },
+  "pack-wolf-death-right": {
+    "prompt": "Use case: style-transfer. Paint ONLY the four small wolf silhouettes in this exact LANDSCAPE image. Preserve image dimensions 1536x1024, all four locations, poses and blank spacing. This is a game animation sprite sheet at logical 384x256 resolution displayed 4x nearest-neighbor: every implied pixel must be a hard 4x4 square. Two columns and two rows, read left to right then next row. Each native frame is 96x96 inset48,16 inside192x128 slot. Do not enlarge the wolves or move them. Paint muted natural grey-brown wolf fur with charcoal back, pale grey belly, dark pointed muzzle, tiny amber eyes, realistic gritty1990s Diablo2 prerendered sprite shading. Preserve exact head angle, ear position, tail, each paw location and body length from the supplied Blender poses. All wolves face RIGHT. These are four successive DEATH phases: an initial stagger, a lowering collapse, folded limbs approaching the ground, then a fully folded lying corpse. Preserve the supplied body height, head tilt, paw folds and final side-lying corpse; do not replace any phase with standing, walking or a crouching live wolf. No reposing or extra legs, no full-resolution illustration, no cartoon. Add fur through subtle clusters inside the given silhouette, no subpixel hairs. Output genuine transparent RGBA background (background=transparent). Every background pixel, all margins, and gaps between legs must have true transparent alpha0. No checkerboard, backdrop, glow or shadow. Return full1536x1024 landscape PNG with true alpha and the same four original pose placements. Image1 is EDIT TARGET, four exact Blender death poses. Image2 is STYLE REFERENCE ONLY: match this exact wolf's continuous charcoal saddle, cream neck patch and horizontal belly band, taupe side fur and crisp subtle dark contour. Coat markings, pixel clustering, brightness and palette must match Image2. Do not replace with random light speckled fur. Preserve Image1 every paw and muzzle position. Render only the four Image1 wolves, not the eight Image2 poses. True alpha transparent background.",
+    "references": [
+      {
+        "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\guides\\pack-wolf-death-right.png",
+        "sha256": "302dad2375ce7fc6962a0a0f51e721477e4b2b91deb00ae41d1ce43fa1af1390",
+        "role": "edit target: exact death pose geometry"
+      },
+      {
+        "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\accepted\\originals\\pack-wolf-idle-right.png",
+        "sha256": "03b2e8e56f54cfb9698c44170733dd62ac52d965f60e003c6b13d6e421c20bb5",
+        "role": "style only: same actor and direction accepted idle"
+      }
+    ]
+  },
+  "pack-wolf-death-back": {
+    "prompt": "Use case: style-transfer. Paint ONLY the four small wolf silhouettes in this exact LANDSCAPE image. Preserve image dimensions 1536x1024, all four locations, poses and blank spacing. This is a game animation sprite sheet at logical 384x256 resolution displayed 4x nearest-neighbor: every implied pixel must be a hard 4x4 square. Two columns and two rows, read left to right then next row. Each native frame is 96x96 inset48,16 inside192x128 slot. Do not enlarge the wolves or move them. Paint muted natural grey-brown wolf fur with charcoal back, pale grey belly, dark pointed muzzle, tiny amber eyes, realistic gritty1990s Diablo2 prerendered sprite shading. Preserve exact head angle, ear position, tail, each paw location and body length from the supplied Blender poses. All wolves face BACK. These are four successive DEATH phases: an initial stagger, a lowering collapse, folded limbs approaching the ground, then a fully folded lying corpse. Preserve the supplied body height, head tilt, paw folds and final side-lying corpse; do not replace any phase with standing, walking or a crouching live wolf. No reposing or extra legs, no full-resolution illustration, no cartoon. Add fur through subtle clusters inside the given silhouette, no subpixel hairs. Output genuine transparent RGBA background (background=transparent). Every background pixel, all margins, and gaps between legs must have true transparent alpha0. No checkerboard, backdrop, glow or shadow. Return full1536x1024 landscape PNG with true alpha and the same four original pose placements. Image1 is EDIT TARGET, four exact Blender death poses. Image2 is STYLE REFERENCE ONLY: match this exact wolf's continuous charcoal saddle, cream neck patch and horizontal belly band, taupe side fur and crisp subtle dark contour. Coat markings, pixel clustering, brightness and palette must match Image2. Do not replace with random light speckled fur. Preserve Image1 every paw and muzzle position. Render only the four Image1 wolves, not the eight Image2 poses. True alpha transparent background.",
+    "references": [
+      {
+        "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\guides\\pack-wolf-death-back.png",
+        "sha256": "346be99e5586e8a9aad1615ecb902628f30a2ba5346a6e29d0a2585a5019671b",
+        "role": "edit target: exact death pose geometry"
+      },
+      {
+        "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\accepted\\originals\\pack-wolf-idle-back.png",
+        "sha256": "8c02f4c70f7351997d369c9d2dbda78afca37fa9e80281dd8445c8e030854813",
+        "role": "style only: same actor and direction accepted idle"
+      }
+    ]
+  },
+  "pack-wolf-death-left": {
+    "prompt": "Use case: style-transfer. Paint ONLY the four small wolf silhouettes in this exact LANDSCAPE image. Preserve image dimensions 1536x1024, all four locations, poses and blank spacing. This is a game animation sprite sheet at logical 384x256 resolution displayed 4x nearest-neighbor: every implied pixel must be a hard 4x4 square. Two columns and two rows, read left to right then next row. Each native frame is 96x96 inset48,16 inside192x128 slot. Do not enlarge the wolves or move them. Paint muted natural grey-brown wolf fur with charcoal back, pale grey belly, dark pointed muzzle, tiny amber eyes, realistic gritty1990s Diablo2 prerendered sprite shading. Preserve exact head angle, ear position, tail, each paw location and body length from the supplied Blender poses. All wolves face LEFT. These are four successive DEATH phases: an initial stagger, a lowering collapse, folded limbs approaching the ground, then a fully folded lying corpse. Preserve the supplied body height, head tilt, paw folds and final side-lying corpse; do not replace any phase with standing, walking or a crouching live wolf. No reposing or extra legs, no full-resolution illustration, no cartoon. Add fur through subtle clusters inside the given silhouette, no subpixel hairs. Output genuine transparent RGBA background (background=transparent). Every background pixel, all margins, and gaps between legs must have true transparent alpha0. No checkerboard, backdrop, glow or shadow. Return full1536x1024 landscape PNG with true alpha and the same four original pose placements. Image1 is EDIT TARGET, four exact Blender death poses. Image2 is STYLE REFERENCE ONLY: match this exact wolf's continuous charcoal saddle, cream neck patch and horizontal belly band, taupe side fur and crisp subtle dark contour. Coat markings, pixel clustering, brightness and palette must match Image2. Do not replace with random light speckled fur. Preserve Image1 every paw and muzzle position. Render only the four Image1 wolves, not the eight Image2 poses. True alpha transparent background.",
+    "references": [
+      {
+        "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\guides\\pack-wolf-death-left.png",
+        "sha256": "f2efe004f0aea7ba1e84903ae657994a009570c1c3a7672f8dc1670e0cdfb563",
+        "role": "edit target: exact death pose geometry"
+      },
+      {
+        "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\accepted\\originals\\pack-wolf-idle-left.png",
+        "sha256": "8afa97078d9afbc88c7766b656263cecf5eb36cfd04a23243315fe2c8ca31b4b",
+        "role": "style only: same actor and direction accepted idle"
+      }
+    ]
+  },
+  "well-alpha-death-front": {
+    "prompt": "Use case: style-transfer. Paint ONLY the four small wolf silhouettes in this exact LANDSCAPE image. Preserve image dimensions 1536x1024, all four locations, poses and blank spacing. This is a game animation sprite sheet at logical 384x256 resolution displayed 4x nearest-neighbor: every implied pixel must be a hard 4x4 square. Two columns and two rows, read left to right then next row. Each native frame is 128x96 inset32,16 inside192x128 slot. Do not enlarge the wolves or move them. Paint muted natural grey-brown wolf fur with charcoal back, subdued grey-tan belly, dark pointed muzzle, tiny amber eyes, realistic gritty1990s Diablo2 prerendered sprite shading. Preserve exact head angle, ear position, tail, each paw location and body length from the supplied Blender poses. All wolves face FRONT. These are four successive DEATH phases: an initial stagger, a lowering collapse, folded limbs approaching the ground, then a fully folded lying corpse. Preserve the supplied body height, head tilt, paw folds and final side-lying corpse; do not replace any phase with standing, walking or a crouching live wolf. No reposing or extra legs, no full-resolution illustration, no cartoon. Add fur through subtle clusters inside the given silhouette, no subpixel hairs. Output genuine transparent RGBA background (background=transparent). Every background pixel, all margins, and gaps between legs must have true transparent alpha0. No checkerboard, backdrop, glow or shadow. Return full1536x1024 landscape PNG with true alpha and the same four original pose placements. Image1 is EDIT TARGET, four exact Blender death poses. Image2 is STYLE REFERENCE ONLY: match this exact wolf's continuous near-charcoal mantle, muted tawny neck patch and subdued grey-tan belly band, dark taupe side fur and crisp subtle dark contour. Coat markings, pixel clustering, brightness and palette must match Image2. Do not replace with random light speckled fur. Preserve Image1 every paw and muzzle position. Render only the four Image1 wolves, not the eight Image2 poses. True alpha transparent background.",
+    "references": [
+      {
+        "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\guides\\well-alpha-death-front.png",
+        "sha256": "4ea8cc4f66f0886bcb9bc98f89595cf600d443a183483a2a88a673758637187f",
+        "role": "edit target: exact death pose geometry"
+      },
+      {
+        "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\accepted\\originals\\well-alpha-idle-front.png",
+        "sha256": "ffb697fe3890b22413ba5b075168e3c617e742a73df589978087b9bce267899d",
+        "role": "style only: same actor and direction accepted idle"
+      }
+    ]
+  },
+  "well-alpha-death-right": {
+    "prompt": "Use case: style-transfer. Paint ONLY the four small wolf silhouettes in this exact LANDSCAPE image. Preserve image dimensions 1536x1024, all four locations, poses and blank spacing. This is a game animation sprite sheet at logical 384x256 resolution displayed 4x nearest-neighbor: every implied pixel must be a hard 4x4 square. Two columns and two rows, read left to right then next row. Each native frame is 128x96 inset32,16 inside192x128 slot. Do not enlarge the wolves or move them. Paint muted natural grey-brown wolf fur with charcoal back, subdued grey-tan belly, dark pointed muzzle, tiny amber eyes, realistic gritty1990s Diablo2 prerendered sprite shading. Preserve exact head angle, ear position, tail, each paw location and body length from the supplied Blender poses. All wolves face RIGHT. These are four successive DEATH phases: an initial stagger, a lowering collapse, folded limbs approaching the ground, then a fully folded lying corpse. Preserve the supplied body height, head tilt, paw folds and final side-lying corpse; do not replace any phase with standing, walking or a crouching live wolf. No reposing or extra legs, no full-resolution illustration, no cartoon. Add fur through subtle clusters inside the given silhouette, no subpixel hairs. Output genuine transparent RGBA background (background=transparent). Every background pixel, all margins, and gaps between legs must have true transparent alpha0. No checkerboard, backdrop, glow or shadow. Return full1536x1024 landscape PNG with true alpha and the same four original pose placements. Image1 is EDIT TARGET, four exact Blender death poses. Image2 is STYLE REFERENCE ONLY: match this exact wolf's continuous near-charcoal mantle, muted tawny neck patch and subdued grey-tan belly band, dark taupe side fur and crisp subtle dark contour. Coat markings, pixel clustering, brightness and palette must match Image2. Do not replace with random light speckled fur. Preserve Image1 every paw and muzzle position. Render only the four Image1 wolves, not the eight Image2 poses. True alpha transparent background.",
+    "references": [
+      {
+        "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\guides\\well-alpha-death-right.png",
+        "sha256": "f7ed1a96e83067e4fbb2abb6cc90220f29892b0dd94c40bbec543c52dc9da6df",
+        "role": "edit target: exact death pose geometry"
+      },
+      {
+        "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\accepted\\originals\\well-alpha-idle-right.png",
+        "sha256": "e5d9adb7e6967fe6c8187b78c3b904e065c4ca52e1ee10d8d9abdb3fad625682",
+        "role": "style only: same actor and direction accepted idle"
+      }
+    ]
+  },
+  "well-alpha-death-back": {
+    "prompt": "Use case: style-transfer. Paint ONLY the four small wolf silhouettes in this exact LANDSCAPE image. Preserve image dimensions 1536x1024, all four locations, poses and blank spacing. This is a game animation sprite sheet at logical 384x256 resolution displayed 4x nearest-neighbor: every implied pixel must be a hard 4x4 square. Two columns and two rows, read left to right then next row. Each native frame is 128x96 inset32,16 inside192x128 slot. Do not enlarge the wolves or move them. Paint muted natural grey-brown wolf fur with charcoal back, subdued grey-tan belly, dark pointed muzzle, tiny amber eyes, realistic gritty1990s Diablo2 prerendered sprite shading. Preserve exact head angle, ear position, tail, each paw location and body length from the supplied Blender poses. All wolves face BACK. These are four successive DEATH phases: an initial stagger, a lowering collapse, folded limbs approaching the ground, then a fully folded lying corpse. Preserve the supplied body height, head tilt, paw folds and final side-lying corpse; do not replace any phase with standing, walking or a crouching live wolf. No reposing or extra legs, no full-resolution illustration, no cartoon. Add fur through subtle clusters inside the given silhouette, no subpixel hairs. Output genuine transparent RGBA background (background=transparent). Every background pixel, all margins, and gaps between legs must have true transparent alpha0. No checkerboard, backdrop, glow or shadow. Return full1536x1024 landscape PNG with true alpha and the same four original pose placements. Image1 is EDIT TARGET, four exact Blender death poses. Image2 is STYLE REFERENCE ONLY: match this exact wolf's continuous near-charcoal mantle, muted tawny neck patch and subdued grey-tan belly band, dark taupe side fur and crisp subtle dark contour. Coat markings, pixel clustering, brightness and palette must match Image2. Do not replace with random light speckled fur. Preserve Image1 every paw and muzzle position. Render only the four Image1 wolves, not the eight Image2 poses. True alpha transparent background.",
+    "references": [
+      {
+        "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\guides\\well-alpha-death-back.png",
+        "sha256": "33ad3b955a218bcbc9ed953c7fcc4eec060bd4ce602b62e52f3791169553d26d",
+        "role": "edit target: exact death pose geometry"
+      },
+      {
+        "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\accepted\\originals\\well-alpha-idle-back.png",
+        "sha256": "a44b2e274402e952ffa1c9ba46ab32d9447c2b7ba6d69a99fd8278a0e1f35e9c",
+        "role": "style only: same actor and direction accepted idle"
+      }
+    ]
+  },
+  "well-alpha-death-left": {
+    "prompt": "Use case: style-transfer. Paint ONLY the four small wolf silhouettes in this exact LANDSCAPE image. Preserve image dimensions 1536x1024, all four locations, poses and blank spacing. This is a game animation sprite sheet at logical 384x256 resolution displayed 4x nearest-neighbor: every implied pixel must be a hard 4x4 square. Two columns and two rows, read left to right then next row. Each native frame is 128x96 inset32,16 inside192x128 slot. Do not enlarge the wolves or move them. Paint muted natural grey-brown wolf fur with charcoal back, subdued grey-tan belly, dark pointed muzzle, tiny amber eyes, realistic gritty1990s Diablo2 prerendered sprite shading. Preserve exact head angle, ear position, tail, each paw location and body length from the supplied Blender poses. All wolves face LEFT. These are four successive DEATH phases: an initial stagger, a lowering collapse, folded limbs approaching the ground, then a fully folded lying corpse. Preserve the supplied body height, head tilt, paw folds and final side-lying corpse; do not replace any phase with standing, walking or a crouching live wolf. No reposing or extra legs, no full-resolution illustration, no cartoon. Add fur through subtle clusters inside the given silhouette, no subpixel hairs. Output genuine transparent RGBA background (background=transparent). Every background pixel, all margins, and gaps between legs must have true transparent alpha0. No checkerboard, backdrop, glow or shadow. Return full1536x1024 landscape PNG with true alpha and the same four original pose placements. Image1 is EDIT TARGET, four exact Blender death poses. Image2 is STYLE REFERENCE ONLY: match this exact wolf's continuous near-charcoal mantle, muted tawny neck patch and subdued grey-tan belly band, dark taupe side fur and crisp subtle dark contour. Coat markings, pixel clustering, brightness and palette must match Image2. Do not replace with random light speckled fur. Preserve Image1 every paw and muzzle position. Render only the four Image1 wolves, not the eight Image2 poses. True alpha transparent background.",
+    "references": [
+      {
+        "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\guides\\well-alpha-death-left.png",
+        "sha256": "519c50fcd2010e56a160a2eeab12117c573fce0608801cbf42a462323cba4b80",
+        "role": "edit target: exact death pose geometry"
+      },
+      {
+        "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\accepted\\originals\\well-alpha-idle-left.png",
+        "sha256": "1f50670a73ffd6fded2214c33fb9fa401923dcf50ebcccb59d339b7a50284d75",
+        "role": "style only: same actor and direction accepted idle"
+      }
+    ]
+  }
+}

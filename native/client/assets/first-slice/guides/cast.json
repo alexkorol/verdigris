@@ -1,0 +1,86 @@
+{
+  "villagers": [
+    {
+      "actor": "field-hand",
+      "direction": "front",
+      "file": "field-hand-front.png"
+    },
+    {
+      "actor": "field-hand",
+      "direction": "right",
+      "file": "field-hand-right.png"
+    },
+    {
+      "actor": "field-hand",
+      "direction": "back",
+      "file": "field-hand-back.png"
+    },
+    {
+      "actor": "field-hand",
+      "direction": "left",
+      "file": "field-hand-left.png"
+    },
+    {
+      "actor": "scribe",
+      "direction": "front",
+      "file": "scribe-front.png"
+    },
+    {
+      "actor": "scribe",
+      "direction": "right",
+      "file": "scribe-right.png"
+    },
+    {
+      "actor": "scribe",
+      "direction": "back",
+      "file": "scribe-back.png"
+    },
+    {
+      "actor": "scribe",
+      "direction": "left",
+      "file": "scribe-left.png"
+    }
+  ],
+  "defense": [
+    {
+      "actor": "scout",
+      "direction": "front",
+      "file": "scout-front.png"
+    },
+    {
+      "actor": "scout",
+      "direction": "right",
+      "file": "scout-right.png"
+    },
+    {
+      "actor": "scout",
+      "direction": "back",
+      "file": "scout-back.png"
+    },
+    {
+      "actor": "scout",
+      "direction": "left",
+      "file": "scout-left.png"
+    },
+    {
+      "actor": "defender",
+      "direction": "front",
+      "file": "defender-front.png"
+    },
+    {
+      "actor": "defender",
+      "direction": "right",
+      "file": "defender-right.png"
+    },
+    {
+      "actor": "defender",
+      "direction": "back",
+      "file": "defender-back.png"
+    },
+    {
+      "actor": "defender",
+      "direction": "left",
+      "file": "defender-left.png"
+    }
+  ]
+}

@@ -1,0 +1,758 @@
+[
+  {
+    "sex": "male",
+    "action": "attack",
+    "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\contact-v4-repaired\\male-attack\\club-attack-transition.blend",
+    "forward_axis": "negative world Y",
+    "contact_landmark_definition": "Farthest forward club surface vertex, or right finger joints for punch; forward extent is a visible contact proxy, not a collision solver.",
+    "samples": [
+      {
+        "phase": 0,
+        "frame": 1,
+        "normalized_effect_phase": 0.0,
+        "farthest_forward_world": [
+          -0.3332938849925995,
+          -0.3427945375442505,
+          1.3296345472335815
+        ],
+        "forward_reach_m": 0.3427945375442505
+      },
+      {
+        "phase": 1,
+        "frame": 5,
+        "normalized_effect_phase": 0.0625,
+        "farthest_forward_world": [
+          -0.4542766809463501,
+          -0.3675365746021271,
+          1.2329154014587402
+        ],
+        "forward_reach_m": 0.3675365746021271
+      },
+      {
+        "phase": 2,
+        "frame": 9,
+        "normalized_effect_phase": 0.125,
+        "farthest_forward_world": [
+          -0.576386034488678,
+          -0.3173432946205139,
+          1.079141616821289
+        ],
+        "forward_reach_m": 0.3173432946205139
+      },
+      {
+        "phase": 3,
+        "frame": 13,
+        "normalized_effect_phase": 0.1875,
+        "farthest_forward_world": [
+          -0.6696895956993103,
+          -0.20093733072280884,
+          0.9482637643814087
+        ],
+        "forward_reach_m": 0.20093733072280884
+      },
+      {
+        "phase": 4,
+        "frame": 17,
+        "normalized_effect_phase": 0.25,
+        "farthest_forward_world": [
+          -0.7467407584190369,
+          -0.04384112358093262,
+          0.8627939224243164
+        ],
+        "forward_reach_m": 0.04384112358093262
+      },
+      {
+        "phase": 5,
+        "frame": 21,
+        "normalized_effect_phase": 0.3125,
+        "farthest_forward_world": [
+          -0.7375035881996155,
+          0.11062407493591309,
+          1.550849199295044
+        ],
+        "forward_reach_m": -0.11062407493591309
+      },
+      {
+        "phase": 6,
+        "frame": 25,
+        "normalized_effect_phase": 0.375,
+        "farthest_forward_world": [
+          -0.6714317798614502,
+          -0.044138431549072266,
+          1.4138718843460083
+        ],
+        "forward_reach_m": 0.044138431549072266
+      },
+      {
+        "phase": 7,
+        "frame": 29,
+        "normalized_effect_phase": 0.4375,
+        "farthest_forward_world": [
+          0.7345842123031616,
+          -0.3210737109184265,
+          0.6009345650672913
+        ],
+        "forward_reach_m": 0.3210737109184265
+      },
+      {
+        "phase": 8,
+        "frame": 33,
+        "normalized_effect_phase": 0.5,
+        "farthest_forward_world": [
+          0.5572909116744995,
+          -0.6935688257217407,
+          0.7084171175956726
+        ],
+        "forward_reach_m": 0.6935688257217407
+      },
+      {
+        "phase": 9,
+        "frame": 37,
+        "normalized_effect_phase": 0.5625,
+        "farthest_forward_world": [
+          -0.24613702297210693,
+          -0.6551874876022339,
+          1.3054070472717285
+        ],
+        "forward_reach_m": 0.6551874876022339
+      },
+      {
+        "phase": 10,
+        "frame": 41,
+        "normalized_effect_phase": 0.625,
+        "farthest_forward_world": [
+          -0.7470220327377319,
+          -0.04111003875732422,
+          0.8626335263252258
+        ],
+        "forward_reach_m": 0.04111003875732422
+      },
+      {
+        "phase": 11,
+        "frame": 45,
+        "normalized_effect_phase": 0.6875,
+        "farthest_forward_world": [
+          -0.6803045868873596,
+          -0.16971611976623535,
+          0.9369505047798157
+        ],
+        "forward_reach_m": 0.16971611976623535
+      },
+      {
+        "phase": 12,
+        "frame": 49,
+        "normalized_effect_phase": 0.75,
+        "farthest_forward_world": [
+          -0.6067109704017639,
+          -0.27640414237976074,
+          1.0292240381240845
+        ],
+        "forward_reach_m": 0.27640414237976074
+      },
+      {
+        "phase": 13,
+        "frame": 53,
+        "normalized_effect_phase": 0.8125,
+        "farthest_forward_world": [
+          -0.5289003252983093,
+          -0.3462812304496765,
+          1.1407239437103271
+        ],
+        "forward_reach_m": 0.3462812304496765
+      },
+      {
+        "phase": 14,
+        "frame": 57,
+        "normalized_effect_phase": 0.875,
+        "farthest_forward_world": [
+          -0.4301719069480896,
+          -0.3676415681838989,
+          1.2614527940750122
+        ],
+        "forward_reach_m": 0.3676415681838989
+      },
+      {
+        "phase": 15,
+        "frame": 61,
+        "normalized_effect_phase": 0.9375,
+        "farthest_forward_world": [
+          -0.3332938849925995,
+          -0.3427945375442505,
+          1.3296345472335815
+        ],
+        "forward_reach_m": 0.3427945375442505
+      }
+    ],
+    "peak_phase": 8,
+    "normalized_contact_phase": 0.5,
+    "endpoint_bone_matrix_max_error": 0.0,
+    "equipment_hidden": false
+  },
+  {
+    "sex": "male",
+    "action": "unarmed-attack",
+    "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\contact-v4-repaired\\male-unarmed-attack\\unarmed-attack-transition.blend",
+    "forward_axis": "negative world Y",
+    "contact_landmark_definition": "Farthest forward club surface vertex, or right finger joints for punch; forward extent is a visible contact proxy, not a collision solver.",
+    "samples": [
+      {
+        "phase": 0,
+        "frame": 1,
+        "normalized_effect_phase": 0.0,
+        "farthest_forward_world": [
+          -0.3146509826183319,
+          -0.30536481738090515,
+          0.9695070385932922
+        ],
+        "forward_reach_m": 0.30536481738090515
+      },
+      {
+        "phase": 1,
+        "frame": 5,
+        "normalized_effect_phase": 0.0625,
+        "farthest_forward_world": [
+          -0.299024373292923,
+          -0.3911746144294739,
+          1.0679173469543457
+        ],
+        "forward_reach_m": 0.3911746144294739
+      },
+      {
+        "phase": 2,
+        "frame": 9,
+        "normalized_effect_phase": 0.125,
+        "farthest_forward_world": [
+          -0.2749863266944885,
+          -0.42105215787887573,
+          1.1853582859039307
+        ],
+        "forward_reach_m": 0.42105215787887573
+      },
+      {
+        "phase": 3,
+        "frame": 13,
+        "normalized_effect_phase": 0.1875,
+        "farthest_forward_world": [
+          -0.24003279209136963,
+          -0.39051714539527893,
+          1.3095864057540894
+        ],
+        "forward_reach_m": 0.39051714539527893
+      },
+      {
+        "phase": 4,
+        "frame": 17,
+        "normalized_effect_phase": 0.25,
+        "farthest_forward_world": [
+          -0.20583532750606537,
+          -0.3015417456626892,
+          1.3951292037963867
+        ],
+        "forward_reach_m": 0.3015417456626892
+      },
+      {
+        "phase": 5,
+        "frame": 21,
+        "normalized_effect_phase": 0.3125,
+        "farthest_forward_world": [
+          -0.20584283769130707,
+          -0.277371883392334,
+          1.4148523807525635
+        ],
+        "forward_reach_m": 0.277371883392334
+      },
+      {
+        "phase": 6,
+        "frame": 25,
+        "normalized_effect_phase": 0.375,
+        "farthest_forward_world": [
+          -0.21901006996631622,
+          -0.48117950558662415,
+          1.410011649131775
+        ],
+        "forward_reach_m": 0.48117950558662415
+      },
+      {
+        "phase": 7,
+        "frame": 29,
+        "normalized_effect_phase": 0.4375,
+        "farthest_forward_world": [
+          -0.186011403799057,
+          -0.620533287525177,
+          1.400699496269226
+        ],
+        "forward_reach_m": 0.620533287525177
+      },
+      {
+        "phase": 8,
+        "frame": 33,
+        "normalized_effect_phase": 0.5,
+        "farthest_forward_world": [
+          -0.12878035008907318,
+          -0.6733567118644714,
+          1.3605209589004517
+        ],
+        "forward_reach_m": 0.6733567118644714
+      },
+      {
+        "phase": 9,
+        "frame": 37,
+        "normalized_effect_phase": 0.5625,
+        "farthest_forward_world": [
+          -0.12408822029829025,
+          -0.6146009564399719,
+          1.2357741594314575
+        ],
+        "forward_reach_m": 0.6146009564399719
+      },
+      {
+        "phase": 10,
+        "frame": 41,
+        "normalized_effect_phase": 0.625,
+        "farthest_forward_world": [
+          -0.18258246779441833,
+          -0.46895313262939453,
+          1.2739003896713257
+        ],
+        "forward_reach_m": 0.46895313262939453
+      },
+      {
+        "phase": 11,
+        "frame": 45,
+        "normalized_effect_phase": 0.6875,
+        "farthest_forward_world": [
+          -0.20583532750606537,
+          -0.3015417456626892,
+          1.3951292037963867
+        ],
+        "forward_reach_m": 0.3015417456626892
+      },
+      {
+        "phase": 12,
+        "frame": 49,
+        "normalized_effect_phase": 0.75,
+        "farthest_forward_world": [
+          -0.24003279209136963,
+          -0.39051714539527893,
+          1.3095864057540894
+        ],
+        "forward_reach_m": 0.39051714539527893
+      },
+      {
+        "phase": 13,
+        "frame": 53,
+        "normalized_effect_phase": 0.8125,
+        "farthest_forward_world": [
+          -0.2749863266944885,
+          -0.42105215787887573,
+          1.1853582859039307
+        ],
+        "forward_reach_m": 0.42105215787887573
+      },
+      {
+        "phase": 14,
+        "frame": 57,
+        "normalized_effect_phase": 0.875,
+        "farthest_forward_world": [
+          -0.299024373292923,
+          -0.3911746144294739,
+          1.0679173469543457
+        ],
+        "forward_reach_m": 0.3911746144294739
+      },
+      {
+        "phase": 15,
+        "frame": 61,
+        "normalized_effect_phase": 0.9375,
+        "farthest_forward_world": [
+          -0.3146509826183319,
+          -0.30536481738090515,
+          0.9695070385932922
+        ],
+        "forward_reach_m": 0.30536481738090515
+      }
+    ],
+    "peak_phase": 8,
+    "normalized_contact_phase": 0.5,
+    "endpoint_bone_matrix_max_error": 0.0,
+    "equipment_hidden": true
+  },
+  {
+    "sex": "female",
+    "action": "attack",
+    "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\contact-v4-repaired\\female-attack\\club-attack-transition.blend",
+    "forward_axis": "negative world Y",
+    "contact_landmark_definition": "Farthest forward club surface vertex, or right finger joints for punch; forward extent is a visible contact proxy, not a collision solver.",
+    "samples": [
+      {
+        "phase": 0,
+        "frame": 1,
+        "normalized_effect_phase": 0.0,
+        "farthest_forward_world": [
+          -0.2617224156856537,
+          -0.3146296739578247,
+          1.3547755479812622
+        ],
+        "forward_reach_m": 0.3146296739578247
+      },
+      {
+        "phase": 1,
+        "frame": 5,
+        "normalized_effect_phase": 0.0625,
+        "farthest_forward_world": [
+          -0.3817947506904602,
+          -0.3609257638454437,
+          1.2691535949707031
+        ],
+        "forward_reach_m": 0.3609257638454437
+      },
+      {
+        "phase": 2,
+        "frame": 9,
+        "normalized_effect_phase": 0.125,
+        "farthest_forward_world": [
+          -0.5078591704368591,
+          -0.33025071024894714,
+          1.1166701316833496
+        ],
+        "forward_reach_m": 0.33025071024894714
+      },
+      {
+        "phase": 3,
+        "frame": 13,
+        "normalized_effect_phase": 0.1875,
+        "farthest_forward_world": [
+          -0.6054098606109619,
+          -0.22841814160346985,
+          0.9816464781761169
+        ],
+        "forward_reach_m": 0.22841814160346985
+      },
+      {
+        "phase": 4,
+        "frame": 17,
+        "normalized_effect_phase": 0.25,
+        "farthest_forward_world": [
+          -0.6864941120147705,
+          -0.07956524938344955,
+          0.8790746927261353
+        ],
+        "forward_reach_m": 0.07956524938344955
+      },
+      {
+        "phase": 5,
+        "frame": 21,
+        "normalized_effect_phase": 0.3125,
+        "farthest_forward_world": [
+          -0.6609545946121216,
+          0.0478496216237545,
+          1.5082926750183105
+        ],
+        "forward_reach_m": -0.0478496216237545
+      },
+      {
+        "phase": 6,
+        "frame": 25,
+        "normalized_effect_phase": 0.375,
+        "farthest_forward_world": [
+          -0.5776982307434082,
+          -0.07925216853618622,
+          1.3393977880477905
+        ],
+        "forward_reach_m": 0.07925216853618622
+      },
+      {
+        "phase": 7,
+        "frame": 29,
+        "normalized_effect_phase": 0.4375,
+        "farthest_forward_world": [
+          0.7648261785507202,
+          -0.3526410162448883,
+          0.5631003379821777
+        ],
+        "forward_reach_m": 0.3526410162448883
+      },
+      {
+        "phase": 8,
+        "frame": 33,
+        "normalized_effect_phase": 0.5,
+        "farthest_forward_world": [
+          0.5805242657661438,
+          -0.7140359282493591,
+          0.67373126745224
+        ],
+        "forward_reach_m": 0.7140359282493591
+      },
+      {
+        "phase": 9,
+        "frame": 37,
+        "normalized_effect_phase": 0.5625,
+        "farthest_forward_world": [
+          -0.1829577386379242,
+          -0.6245953440666199,
+          1.3145241737365723
+        ],
+        "forward_reach_m": 0.6245953440666199
+      },
+      {
+        "phase": 10,
+        "frame": 41,
+        "normalized_effect_phase": 0.625,
+        "farthest_forward_world": [
+          -0.6869325637817383,
+          -0.07687412202358246,
+          0.878928005695343
+        ],
+        "forward_reach_m": 0.07687412202358246
+      },
+      {
+        "phase": 11,
+        "frame": 45,
+        "normalized_effect_phase": 0.6875,
+        "farthest_forward_world": [
+          -0.616442084312439,
+          -0.19957900047302246,
+          0.9697155952453613
+        ],
+        "forward_reach_m": 0.19957900047302246
+      },
+      {
+        "phase": 12,
+        "frame": 49,
+        "normalized_effect_phase": 0.75,
+        "farthest_forward_world": [
+          -0.5391329526901245,
+          -0.295957088470459,
+          1.0659326314926147
+        ],
+        "forward_reach_m": 0.295957088470459
+      },
+      {
+        "phase": 13,
+        "frame": 53,
+        "normalized_effect_phase": 0.8125,
+        "farthest_forward_world": [
+          -0.4585301876068115,
+          -0.35195839405059814,
+          1.1786327362060547
+        ],
+        "forward_reach_m": 0.35195839405059814
+      },
+      {
+        "phase": 14,
+        "frame": 57,
+        "normalized_effect_phase": 0.875,
+        "farthest_forward_world": [
+          -0.3573513627052307,
+          -0.35675284266471863,
+          1.296568512916565
+        ],
+        "forward_reach_m": 0.35675284266471863
+      },
+      {
+        "phase": 15,
+        "frame": 61,
+        "normalized_effect_phase": 0.9375,
+        "farthest_forward_world": [
+          -0.2617224156856537,
+          -0.3146296739578247,
+          1.3547755479812622
+        ],
+        "forward_reach_m": 0.3146296739578247
+      }
+    ],
+    "peak_phase": 8,
+    "normalized_contact_phase": 0.5,
+    "endpoint_bone_matrix_max_error": 0.0,
+    "equipment_hidden": false
+  },
+  {
+    "sex": "female",
+    "action": "unarmed-attack",
+    "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\contact-v4-repaired\\female-unarmed-attack\\unarmed-attack-transition.blend",
+    "forward_axis": "negative world Y",
+    "contact_landmark_definition": "Farthest forward club surface vertex, or right finger joints for punch; forward extent is a visible contact proxy, not a collision solver.",
+    "samples": [
+      {
+        "phase": 0,
+        "frame": 1,
+        "normalized_effect_phase": 0.0,
+        "farthest_forward_world": [
+          -0.25478053092956543,
+          -0.27152344584465027,
+          0.9688138961791992
+        ],
+        "forward_reach_m": 0.27152344584465027
+      },
+      {
+        "phase": 1,
+        "frame": 5,
+        "normalized_effect_phase": 0.0625,
+        "farthest_forward_world": [
+          -0.2437736988067627,
+          -0.344578355550766,
+          1.0536231994628906
+        ],
+        "forward_reach_m": 0.344578355550766
+      },
+      {
+        "phase": 2,
+        "frame": 9,
+        "normalized_effect_phase": 0.125,
+        "farthest_forward_world": [
+          -0.22610652446746826,
+          -0.3699324131011963,
+          1.1532957553863525
+        ],
+        "forward_reach_m": 0.3699324131011963
+      },
+      {
+        "phase": 3,
+        "frame": 13,
+        "normalized_effect_phase": 0.1875,
+        "farthest_forward_world": [
+          -0.19805899262428284,
+          -0.3437139391899109,
+          1.2581970691680908
+        ],
+        "forward_reach_m": 0.3437139391899109
+      },
+      {
+        "phase": 4,
+        "frame": 17,
+        "normalized_effect_phase": 0.25,
+        "farthest_forward_world": [
+          -0.1704619973897934,
+          -0.26784080266952515,
+          1.3262263536453247
+        ],
+        "forward_reach_m": 0.26784080266952515
+      },
+      {
+        "phase": 5,
+        "frame": 21,
+        "normalized_effect_phase": 0.3125,
+        "farthest_forward_world": [
+          -0.17046847939491272,
+          -0.24719585478305817,
+          1.343071699142456
+        ],
+        "forward_reach_m": 0.24719585478305817
+      },
+      {
+        "phase": 6,
+        "frame": 25,
+        "normalized_effect_phase": 0.375,
+        "farthest_forward_world": [
+          -0.17567554116249084,
+          -0.43892744183540344,
+          1.3500447273254395
+        ],
+        "forward_reach_m": 0.43892744183540344
+      },
+      {
+        "phase": 7,
+        "frame": 29,
+        "normalized_effect_phase": 0.4375,
+        "farthest_forward_world": [
+          -0.13849391043186188,
+          -0.5710117220878601,
+          1.3519424200057983
+        ],
+        "forward_reach_m": 0.5710117220878601
+      },
+      {
+        "phase": 8,
+        "frame": 33,
+        "normalized_effect_phase": 0.5,
+        "farthest_forward_world": [
+          -0.08041691780090332,
+          -0.6226349472999573,
+          1.3270618915557861
+        ],
+        "forward_reach_m": 0.6226349472999573
+      },
+      {
+        "phase": 9,
+        "frame": 37,
+        "normalized_effect_phase": 0.5625,
+        "farthest_forward_world": [
+          -0.090376116335392,
+          -0.5695125460624695,
+          1.21091628074646
+        ],
+        "forward_reach_m": 0.5695125460624695
+      },
+      {
+        "phase": 10,
+        "frame": 41,
+        "normalized_effect_phase": 0.625,
+        "farthest_forward_world": [
+          -0.15386150777339935,
+          -0.42451754212379456,
+          1.230629324913025
+        ],
+        "forward_reach_m": 0.42451754212379456
+      },
+      {
+        "phase": 11,
+        "frame": 45,
+        "normalized_effect_phase": 0.6875,
+        "farthest_forward_world": [
+          -0.1704619973897934,
+          -0.26784080266952515,
+          1.3262263536453247
+        ],
+        "forward_reach_m": 0.26784080266952515
+      },
+      {
+        "phase": 12,
+        "frame": 49,
+        "normalized_effect_phase": 0.75,
+        "farthest_forward_world": [
+          -0.19805899262428284,
+          -0.3437139391899109,
+          1.2581970691680908
+        ],
+        "forward_reach_m": 0.3437139391899109
+      },
+      {
+        "phase": 13,
+        "frame": 53,
+        "normalized_effect_phase": 0.8125,
+        "farthest_forward_world": [
+          -0.22610652446746826,
+          -0.3699324131011963,
+          1.1532957553863525
+        ],
+        "forward_reach_m": 0.3699324131011963
+      },
+      {
+        "phase": 14,
+        "frame": 57,
+        "normalized_effect_phase": 0.875,
+        "farthest_forward_world": [
+          -0.2437736988067627,
+          -0.344578355550766,
+          1.0536231994628906
+        ],
+        "forward_reach_m": 0.344578355550766
+      },
+      {
+        "phase": 15,
+        "frame": 61,
+        "normalized_effect_phase": 0.9375,
+        "farthest_forward_world": [
+          -0.25478053092956543,
+          -0.27152344584465027,
+          0.9688138961791992
+        ],
+        "forward_reach_m": 0.27152344584465027
+      }
+    ],
+    "peak_phase": 8,
+    "normalized_contact_phase": 0.5,
+    "endpoint_bone_matrix_max_error": 0.0,
+    "equipment_hidden": true
+  }
+]

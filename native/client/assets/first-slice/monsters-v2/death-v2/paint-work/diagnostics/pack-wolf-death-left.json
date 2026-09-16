@@ -1,0 +1,26 @@
+{
+  "source_sha256": "fbaa7115c99a935e357019ef47ff0309572549e413a9e7d84d1189baeb605b2a",
+  "accepted": false,
+  "grid": {
+    "size": 4,
+    "source": "fine",
+    "offset": [
+      3,
+      0
+    ],
+    "score": 0.5282727562515089,
+    "variance": 45.385501861572266,
+    "gated_out": false
+  },
+  "whole_cycle_translation": [
+    0,
+    5
+  ],
+  "mean_iou": 0.6744080524332876,
+  "per_phase_iou": [
+    0.7546346782988005,
+    0.6038647342995169,
+    0.6812080536912751,
+    0.6579247434435576
+  ]
+}

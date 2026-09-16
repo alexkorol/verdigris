@@ -1,0 +1,160 @@
+{
+  "clip": "well-alpha-idle-right",
+  "source_sha256": "e5d9adb7e6967fe6c8187b78c3b904e065c4ca52e1ee10d8d9abdb3fad625682",
+  "selected_grid": {
+    "size": 4,
+    "source": "autocorr",
+    "offset": [
+      0,
+      3
+    ],
+    "score": 0.9374942426727527,
+    "variance": 163.52777099609375,
+    "gated_out": false
+  },
+  "frame": [
+    128,
+    96
+  ],
+  "anchor": [
+    64,
+    64
+  ],
+  "whole_cycle_translation": [
+    0,
+    0
+  ],
+  "registered_mean_iou": 0.8346513767079988,
+  "alpha_policy": "Native alpha threshold128, noRGBkey",
+  "visual_acceptance": false,
+  "frames": [
+    {
+      "file": "well-alpha-idle-right-00.png",
+      "reference": {
+        "src": "references/well-alpha-idle-right-00.png",
+        "sha256": "ad9ba9570b385cd4eef322ca8ff23d150320d97616f16574fee13e6659098778",
+        "blender_frame": 0
+      },
+      "bbox": [
+        18,
+        21,
+        111,
+        71
+      ],
+      "silhouette_iou": 0.8403361344537815,
+      "sha256": "e201a1a0231155fec26c02819eb2a9724c593409c335009ec64b674626c01d79"
+    },
+    {
+      "file": "well-alpha-idle-right-01.png",
+      "reference": {
+        "src": "references/well-alpha-idle-right-01.png",
+        "sha256": "737748d464f29dd0cf7b2202090d256382e46280ba5825b29fa86b9d92eb4286",
+        "blender_frame": 5
+      },
+      "bbox": [
+        18,
+        21,
+        111,
+        71
+      ],
+      "silhouette_iou": 0.8387605042016807,
+      "sha256": "1165f72e816e276d4a10bd1ce2b5c4ddda14429bfed494f849f75c0391c3ca08"
+    },
+    {
+      "file": "well-alpha-idle-right-02.png",
+      "reference": {
+        "src": "references/well-alpha-idle-right-02.png",
+        "sha256": "19780699f77a73bbf72eb16617bb595b1190d4ec9b63febbf1688ff38d8c59f9",
+        "blender_frame": 10
+      },
+      "bbox": [
+        18,
+        21,
+        111,
+        71
+      ],
+      "silhouette_iou": 0.837099316868103,
+      "sha256": "296f22d8fae733b4eb2794d17cb44a136df738f079408ebe83f231e25e01b086"
+    },
+    {
+      "file": "well-alpha-idle-right-03.png",
+      "reference": {
+        "src": "references/well-alpha-idle-right-03.png",
+        "sha256": "d7d587c8f4d94b5d81406619274334e21f24ed78f73c01afd6760aabef38fef3",
+        "blender_frame": 15
+      },
+      "bbox": [
+        18,
+        21,
+        111,
+        71
+      ],
+      "silhouette_iou": 0.8371970495258166,
+      "sha256": "71e0e8209f8b3421f0814c88ad4ec1176012987a9388709045c07396d8aa057a"
+    },
+    {
+      "file": "well-alpha-idle-right-04.png",
+      "reference": {
+        "src": "references/well-alpha-idle-right-04.png",
+        "sha256": "1b94e51d8b1388bd481f92da8091a83757493020098e5276f3e9ad067217e340",
+        "blender_frame": 20
+      },
+      "bbox": [
+        18,
+        21,
+        111,
+        72
+      ],
+      "silhouette_iou": 0.8270637408568443,
+      "sha256": "fe0312148109a86489beceba60041767b00f28ed7198c595595afa01ecf57869"
+    },
+    {
+      "file": "well-alpha-idle-right-05.png",
+      "reference": {
+        "src": "references/well-alpha-idle-right-05.png",
+        "sha256": "ecb3cb7a6fc08e770deef2a898a148b4aabb7615f5d6a94ab948cae050b190c4",
+        "blender_frame": 25
+      },
+      "bbox": [
+        18,
+        21,
+        111,
+        72
+      ],
+      "silhouette_iou": 0.8257930317212688,
+      "sha256": "f994649428f7d3ba077ac21ceb09e6dd607a9cc61d1f72884fb80d3e563c3277"
+    },
+    {
+      "file": "well-alpha-idle-right-06.png",
+      "reference": {
+        "src": "references/well-alpha-idle-right-06.png",
+        "sha256": "254b1ffbbbce6f863f80dfdf5666608b9a56be7f616e7c4af9328eba8c65ed79",
+        "blender_frame": 30
+      },
+      "bbox": [
+        18,
+        21,
+        111,
+        72
+      ],
+      "silhouette_iou": 0.8322007318348145,
+      "sha256": "badc143e7dd75918dcdb5c97bbf945b1efed222717289114c9b20f0e08574b38"
+    },
+    {
+      "file": "well-alpha-idle-right-07.png",
+      "reference": {
+        "src": "references/well-alpha-idle-right-07.png",
+        "sha256": "ef5d91248c53509c0898520af9b2ceacee3d1b3c98fa7c49cf56f51c951e8c8a",
+        "blender_frame": 35
+      },
+      "bbox": [
+        19,
+        21,
+        111,
+        72
+      ],
+      "silhouette_iou": 0.8387605042016807,
+      "sha256": "22298e5c0b0abca0b2bf0a30f501751d35d5bab18350e683abe2b1c816d0881a"
+    }
+  ]
+}

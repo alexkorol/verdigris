@@ -1,0 +1,122 @@
+[
+  {
+    "id": "hut",
+    "size": [
+      240,
+      240
+    ],
+    "anchor": [
+      128,
+      192
+    ],
+    "pixels_per_metre": 48,
+    "source_objects": "parity_dwelling_west",
+    "pivot": [
+      -3.15,
+      3.3,
+      0
+    ],
+    "camera_depth": 12.75,
+    "canvas": [
+      256,
+      256
+    ],
+    "scale": 4,
+    "bbox": [
+      31,
+      50,
+      225,
+      242
+    ]
+  },
+  {
+    "id": "well",
+    "size": [
+      96,
+      128
+    ],
+    "anchor": [
+      64,
+      100
+    ],
+    "pixels_per_metre": 48,
+    "source_objects": "parity_well",
+    "pivot": [
+      1.45,
+      1.6,
+      0
+    ],
+    "camera_depth": 12.75,
+    "canvas": [
+      128,
+      128
+    ],
+    "scale": 8,
+    "bbox": [
+      29,
+      28,
+      99,
+      120
+    ]
+  },
+  {
+    "id": "fence",
+    "size": [
+      192,
+      96
+    ],
+    "anchor": [
+      128,
+      96
+    ],
+    "pixels_per_metre": 48,
+    "source_objects": "parity_fence",
+    "pivot": [
+      -0.3,
+      4.25,
+      0
+    ],
+    "camera_depth": 12.75,
+    "canvas": [
+      256,
+      128
+    ],
+    "scale": 4,
+    "bbox": [
+      49,
+      54,
+      207,
+      99
+    ]
+  },
+  {
+    "id": "tree",
+    "size": [
+      240,
+      240
+    ],
+    "anchor": [
+      128,
+      232
+    ],
+    "pixels_per_metre": 48,
+    "source_objects": "parity_tree_west",
+    "pivot": [
+      -4.55,
+      0.6,
+      0
+    ],
+    "camera_depth": 12.75,
+    "canvas": [
+      256,
+      256
+    ],
+    "scale": 4,
+    "bbox": [
+      39,
+      61,
+      230,
+      238
+    ]
+  }
+]

@@ -1,0 +1,96 @@
+{
+  "clip": "pack-wolf-hit-back",
+  "source_sha256": "65d2717133c2539284eec0c46f5b68b323c56a20559a29b5ec6238624ae577d3",
+  "selected_grid": {
+    "size": 4,
+    "source": "fine",
+    "offset": [
+      0,
+      0
+    ],
+    "score": 0.4874580246933811,
+    "variance": 30.786827087402344,
+    "gated_out": false
+  },
+  "frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "whole_cycle_translation": [
+    0,
+    0
+  ],
+  "registered_mean_iou": 0.765403883160394,
+  "alpha_policy": "Native alpha threshold128, noRGBkey",
+  "visual_acceptance": false,
+  "frames": [
+    {
+      "file": "pack-wolf-hit-back-00.png",
+      "reference": {
+        "src": "references/pack-wolf-hit-back-00.png",
+        "sha256": "d4cf96d33f9ccbc775797ad73eecfe9308c17fe195462fefbb886ad9251fee4a",
+        "blender_frame": 0
+      },
+      "bbox": [
+        40,
+        35,
+        56,
+        92
+      ],
+      "silhouette_iou": 0.7629009762900977,
+      "sha256": "34ab227b8a36942e1633f6d553b994dc95830c0fab979f19a128cb3ed5cc246c"
+    },
+    {
+      "file": "pack-wolf-hit-back-01.png",
+      "reference": {
+        "src": "references/pack-wolf-hit-back-01.png",
+        "sha256": "f58aa1273fd7535de1e34befc453621d54b8364fb9ca49d8cddc20e89724d851",
+        "blender_frame": 1
+      },
+      "bbox": [
+        40,
+        35,
+        56,
+        92
+      ],
+      "silhouette_iou": 0.775766016713092,
+      "sha256": "627dc427b74c4d55107f343843e9e2436d17ea88a58485fbad6f66b17e26e5eb"
+    },
+    {
+      "file": "pack-wolf-hit-back-02.png",
+      "reference": {
+        "src": "references/pack-wolf-hit-back-02.png",
+        "sha256": "6a271221ce27b651571b4e3866a7cd58a3c6457a3223754d8bbaf700d06acf1c",
+        "blender_frame": 2
+      },
+      "bbox": [
+        40,
+        35,
+        56,
+        92
+      ],
+      "silhouette_iou": 0.7621696801112656,
+      "sha256": "65a622050b1b04b9ad2061f354feeb7104c0161679700b980f27f6643743b715"
+    },
+    {
+      "file": "pack-wolf-hit-back-03.png",
+      "reference": {
+        "src": "references/pack-wolf-hit-back-03.png",
+        "sha256": "06a8d587f0349f25b1ab66b9c0f238fc8125bd5429f3c1f1fbfbdb883e7da5be",
+        "blender_frame": 3
+      },
+      "bbox": [
+        40,
+        35,
+        56,
+        92
+      ],
+      "silhouette_iou": 0.760778859527121,
+      "sha256": "e5110aac0256362ad7170d34fa44387c931fb0196b0a006b0feab5c80c00eb31"
+    }
+  ]
+}

@@ -1,0 +1,370 @@
+{
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\blender\\female-hit.blend",
+  "source_sha256": "87e7c68afca0ccf6735d5bd95003c9acd92243ac12e029e5e423c0ee16153d4d",
+  "equipment": "unarmed",
+  "hand": null,
+  "frame_size": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "pixels_per_metre": 48,
+  "frames": [
+    {
+      "src": "references/female-unarmed-hit-front-00.png",
+      "direction": "front",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "41dc22cd3a81f3b8cef0b6f788ea1acb7df8cb36006f277fe3133e580c3c0790"
+    },
+    {
+      "src": "references/female-unarmed-hit-front-01.png",
+      "direction": "front",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "50525ef82886717c0dfe5fc7f2050646822435ef0747bdf9de22ef4ef830b4c4"
+    },
+    {
+      "src": "references/female-unarmed-hit-front-02.png",
+      "direction": "front",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "6109d4e40e4633062c2a8738a244d92cd7b76a9304503f4c74f1cf50a960b224"
+    },
+    {
+      "src": "references/female-unarmed-hit-front-03.png",
+      "direction": "front",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "abc42c09d79804009806175048fbb141bd7649a96051a8ba2c6524316f75eb9c"
+    },
+    {
+      "src": "references/female-unarmed-hit-front-04.png",
+      "direction": "front",
+      "phase": 4,
+      "source_frame": 17,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "ebe9396bed8fcecc07969961d2c6061a09f9c102d8576db1448346a7bf3be84d"
+    },
+    {
+      "src": "references/female-unarmed-hit-front-05.png",
+      "direction": "front",
+      "phase": 5,
+      "source_frame": 21,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "d5ca02ad3b032324e2332c67b541de3e8d37fbc622e5fdbc363f456c32ac43e8"
+    },
+    {
+      "src": "references/female-unarmed-hit-front-06.png",
+      "direction": "front",
+      "phase": 6,
+      "source_frame": 25,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "b1b36171aae52d4666e85d265746b991e333e3a7dc70e5ab61c5db7431a1386a"
+    },
+    {
+      "src": "references/female-unarmed-hit-front-07.png",
+      "direction": "front",
+      "phase": 7,
+      "source_frame": 29,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "28d9f00bb63bd76725fa08f864a872a7c82a1a021776fe2ac64660ac68d914f9"
+    },
+    {
+      "src": "references/female-unarmed-hit-right-00.png",
+      "direction": "right",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "be7207959a46319b247f99c9f7f168573ca1242738236c4b7bc15d65bcb2fb85"
+    },
+    {
+      "src": "references/female-unarmed-hit-right-01.png",
+      "direction": "right",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "79555ac6b9455a5c79651a700dc6b8d6daeb6d9a6d5f223342259b94ef073c94"
+    },
+    {
+      "src": "references/female-unarmed-hit-right-02.png",
+      "direction": "right",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "4f5594fb515041e82505b8166dd47ce34871e8d7155359c7e47f204d08090e9a"
+    },
+    {
+      "src": "references/female-unarmed-hit-right-03.png",
+      "direction": "right",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "d32ed512c2fb8c84a0f3f0754cc96472abbc08296acdf6d88a27055be232ee0c"
+    },
+    {
+      "src": "references/female-unarmed-hit-right-04.png",
+      "direction": "right",
+      "phase": 4,
+      "source_frame": 17,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "6889a18c6ea8a9a32dd52fed5362712882ce7de99272a35796075c51b82442fa"
+    },
+    {
+      "src": "references/female-unarmed-hit-right-05.png",
+      "direction": "right",
+      "phase": 5,
+      "source_frame": 21,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "ac349399722a7fbfa4478cbf694e20c12b2820a82cbf8bd29b59428d03ca1482"
+    },
+    {
+      "src": "references/female-unarmed-hit-right-06.png",
+      "direction": "right",
+      "phase": 6,
+      "source_frame": 25,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "869d9bfcb84a5265b0ec9b7c91a9873a4a6f88fdaffc2e7479d0e03b860eda3a"
+    },
+    {
+      "src": "references/female-unarmed-hit-right-07.png",
+      "direction": "right",
+      "phase": 7,
+      "source_frame": 29,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "e023d6e9fa77e532afa0c1494ae1b955cf717e6be0626a8ae2349ddc3b34fce3"
+    },
+    {
+      "src": "references/female-unarmed-hit-back-00.png",
+      "direction": "back",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "7cb31edd298ae4f47c9d7bd3c8b07490460cdf97c5ed56e3f9bf3c945cf7bab2"
+    },
+    {
+      "src": "references/female-unarmed-hit-back-01.png",
+      "direction": "back",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "d17445b171f18de86983679dd8e6b601ddf7663efe652e6f0995ee7e335b0488"
+    },
+    {
+      "src": "references/female-unarmed-hit-back-02.png",
+      "direction": "back",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "63bf3f291cdcb4ad3835e72cbb2f02a831e5d879c39c818a51baa892078823a8"
+    },
+    {
+      "src": "references/female-unarmed-hit-back-03.png",
+      "direction": "back",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "835178ba247874ec735c663b3ac78160f2dfc6ed096fd91527774095e22c9636"
+    },
+    {
+      "src": "references/female-unarmed-hit-back-04.png",
+      "direction": "back",
+      "phase": 4,
+      "source_frame": 17,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "ec2d89af1bd379d5b3730906f36434170b0814f08f16ccf5017a6eebaece3aa6"
+    },
+    {
+      "src": "references/female-unarmed-hit-back-05.png",
+      "direction": "back",
+      "phase": 5,
+      "source_frame": 21,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "291dd6623274db47206d09044d3d79f2be0a3a4f8bab304cbad5e09c3fff1502"
+    },
+    {
+      "src": "references/female-unarmed-hit-back-06.png",
+      "direction": "back",
+      "phase": 6,
+      "source_frame": 25,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "afd4f3ab7ca6f1fe2cf2cbc3d241ce5913a3fc8b8d642827a96c2d3e7dabc616"
+    },
+    {
+      "src": "references/female-unarmed-hit-back-07.png",
+      "direction": "back",
+      "phase": 7,
+      "source_frame": 29,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "96ec4354b014927405301b8251c923826cbfe4a804a343885417b1b8ac82e219"
+    },
+    {
+      "src": "references/female-unarmed-hit-left-00.png",
+      "direction": "left",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "7b04be05ef446c21191872107dc6be46b1c81b06159b25fa6664760c9a211dfe"
+    },
+    {
+      "src": "references/female-unarmed-hit-left-01.png",
+      "direction": "left",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "7b4e5f2a6ddf2e9bbddde74948fd0f4340f404d63fc3c0b9c852b0bfd2072e9a"
+    },
+    {
+      "src": "references/female-unarmed-hit-left-02.png",
+      "direction": "left",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "92a691f38ca28e515b1ae6931cea61d6b39ab5fd71182aa8698ef0f6357e62cb"
+    },
+    {
+      "src": "references/female-unarmed-hit-left-03.png",
+      "direction": "left",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "fff34e53517c375249ea8f323214811f90a07b4c7c875f8f466a5e56cd3a8e52"
+    },
+    {
+      "src": "references/female-unarmed-hit-left-04.png",
+      "direction": "left",
+      "phase": 4,
+      "source_frame": 17,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "c8b1e78f79e81c24c536cbc4bf34f9576a3058ee67ba871512b965f1ed1825c3"
+    },
+    {
+      "src": "references/female-unarmed-hit-left-05.png",
+      "direction": "left",
+      "phase": 5,
+      "source_frame": 21,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "8414920d2c3b2e7e96a589da7201b66519b36280d963ffbaa080c788b4150ab9"
+    },
+    {
+      "src": "references/female-unarmed-hit-left-06.png",
+      "direction": "left",
+      "phase": 6,
+      "source_frame": 25,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "8f6cc9a7674f2a4c9f7c3179fb63f9c5b1d3bd4906e34a179db3e92e11d7a0f0"
+    },
+    {
+      "src": "references/female-unarmed-hit-left-07.png",
+      "direction": "left",
+      "phase": 7,
+      "source_frame": 29,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "0677a624d87b1882740ffe908fe47341e337b13d84f6cd3bb0d9ed99235c2ef7"
+    }
+  ],
+  "status": "motion-reference-reviewed; not painted final game art"
+}

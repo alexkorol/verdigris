@@ -1,0 +1,22 @@
+[
+  {
+    "direction": "front",
+    "mask_iou": 1.0,
+    "alpha_identical": true
+  },
+  {
+    "direction": "right",
+    "mask_iou": 1.0,
+    "alpha_identical": true
+  },
+  {
+    "direction": "back",
+    "mask_iou": 1.0,
+    "alpha_identical": true
+  },
+  {
+    "direction": "left",
+    "mask_iou": 1.0,
+    "alpha_identical": true
+  }
+]

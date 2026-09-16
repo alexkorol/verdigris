@@ -1,0 +1,12 @@
+from pathlib import Path
+p=Path('native/tools/first_slice_monsters_transfer.py')
+s=p.read_text().replace("w,h=data['frame'];sheet=Image.new('RGBA',(w*4,256))", "w,h=data['frame']; scale=3 if w==128 else 4; slot_h=160 if w==128 else 128; inset=32 if w==128 else 16; sheet=Image.new('RGBA',(w*4,341 if w==128 else 256))")
+s=s.replace("((i%4)*w,(i//4)*128+16)","((i%4)*w,(i//4)*slot_h+inset)")
+s=s.replace("sheet.resize((w*16,1024),Image.Resampling.NEAREST).save(ROOT/'guides'/f'{clip}.png')", "canvas=Image.new('RGBA',(1536,1024));canvas.paste(sheet.resize((w*4*scale,sheet.height*scale),Image.Resampling.NEAREST),(0,0));canvas.save(ROOT/'guides'/f'{clip}.png')")
+s=s.replace("refs=m['frames'];w,h=m['frame']", "refs=m['frames'];w,h=m['frame']; scale=3 if w==128 else 4; slot_h=160 if w==128 else 128; inset=32 if w==128 else 16")
+s=s.replace("im.size!=(w*16,1024)","im.size!=(1536,1024)")
+s=s.replace("c['size']==4","c['size']==scale").replace("rec.cell_size=4","rec.cell_size=scale")
+s=s.replace("round(-ox/4)","round(-ox/scale)").replace("round(-oy/4)+(i//4)*128","round(-oy/scale)+(i//4)*slot_h")
+s=s.replace("x+w,y+128","x+w,y+slot_h")
+s=s.replace("16-dy,w-dx,112-dy","inset-dy,w-dx,inset+h-dy")
+p.write_text(s)

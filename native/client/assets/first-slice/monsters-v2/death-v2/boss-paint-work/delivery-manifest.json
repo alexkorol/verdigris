@@ -1,0 +1,164 @@
+{
+  "status": "reviewed art handoff; packaging owner controls promotion",
+  "frame": [
+    128,
+    96
+  ],
+  "anchor": [
+    64,
+    64
+  ],
+  "pixels_per_metre": 48,
+  "generator": "built-in imagegen; exact8x colored pose plus4x same-direction style exemplar",
+  "reconstruction": "PixelRespecter authored8px grid; fixed inset32,16; no per-frame translation or scale",
+  "clips": [
+    "left"
+  ],
+  "frames": [
+    {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "left",
+      "phase": 0,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "fixed_placement_iou": 0.970570202329859,
+      "applied_translation": [
+        0,
+        0
+      ],
+      "rescaled": false,
+      "visual_review": "cohort reviewed against same-direction accepted idle/walk; owner packaging approval separate",
+      "sprite": "singles/well-alpha-death-left/phase-00/fixed-placement.png",
+      "sprite_sha256": "bc9152367ba4692cd3021190c57528c22a2c978ccd5ae51778560cebec7da02b",
+      "source": "singles/well-alpha-death-left/phase-00/source.png",
+      "source_sha256": "b3d65f95cd5910f6623ce59fc7e1b0639d07f5e09a04626cbced9d410ca6ee46",
+      "guide": "guides/well-alpha-death-left-00.png",
+      "guide_sha256": "e26baabb312021aba2d6268b02e0ffcfca4fb79e65ad27a517d48cdf4a17ce6c",
+      "geometry_reference": "death-v2/well-alpha-death-left-00.png",
+      "geometry_reference_sha256": "dd6f4a0f50efc6b2ab47005d051220f62ccce7c9915f24a062c22b179454e250",
+      "style_exemplar": "style-exemplars/idle-left-4x.png",
+      "style_exemplar_sha256": "230b42b10710d4dda3e7475364e6c8187795832f91692347102dd95c47af1c2d",
+      "prompt": "singles/well-alpha-death-left/phase-00/prompt.txt",
+      "prompt_sha256": "313ee4063c002485acf3d2416f226ea2c9f8d57c7c94747cc2b95093dda37651",
+      "reconstruction_report": "singles/well-alpha-death-left/phase-00/reconstruction.json",
+      "reconstruction_report_sha256": "ac64840f18e14142a2282a5900f0e5f8b13e40c86e2599ad550daf5927ba65e3"
+    },
+    {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "left",
+      "phase": 1,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "fixed_placement_iou": 0.9146023468057366,
+      "applied_translation": [
+        0,
+        0
+      ],
+      "rescaled": false,
+      "visual_review": "cohort reviewed against same-direction accepted idle/walk; owner packaging approval separate",
+      "sprite": "singles/well-alpha-death-left/phase-01/fixed-placement.png",
+      "sprite_sha256": "ed6a5a0ea0f64864cfa84d8fac01cd798a305b0cf17cb198d9030c6e56bda847",
+      "source": "singles/well-alpha-death-left/phase-01/source.png",
+      "source_sha256": "aa62da9565901b91786be9e11fe85e14ff40700ebf769fa8c27e2d07523498c7",
+      "guide": "guides/well-alpha-death-left-01.png",
+      "guide_sha256": "303c79d6429163ca430cf2594e4063edfbd1ec1b0215bf2c48aa9e9c732cd8fa",
+      "geometry_reference": "death-v2/well-alpha-death-left-01.png",
+      "geometry_reference_sha256": "3bde84f6c0a053d209ff279d6ddffc9a3925414e7ae1b9fcc97a5d83742a0e17",
+      "style_exemplar": "style-exemplars/idle-left-4x.png",
+      "style_exemplar_sha256": "230b42b10710d4dda3e7475364e6c8187795832f91692347102dd95c47af1c2d",
+      "prompt": "singles/well-alpha-death-left/phase-01/prompt.txt",
+      "prompt_sha256": "bfbf2230b6d556945a4a07f7d30084a33c4e449fcd6f4d1c0500f668ef97c3e0",
+      "reconstruction_report": "singles/well-alpha-death-left/phase-01/reconstruction.json",
+      "reconstruction_report_sha256": "3d0c9036d97cbd32322d7fb5344bb37a053da06f1496ebe50daa98ea57ca8556"
+    },
+    {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "left",
+      "phase": 2,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "fixed_placement_iou": 0.8899653979238754,
+      "applied_translation": [
+        0,
+        0
+      ],
+      "rescaled": false,
+      "visual_review": "cohort reviewed against same-direction accepted idle/walk; owner packaging approval separate",
+      "sprite": "singles/well-alpha-death-left/phase-02/fixed-placement.png",
+      "sprite_sha256": "698732667506609eac0627e3ae67e4f2f553dadd786ad9dd0ec3d334bd30cac4",
+      "source": "singles/well-alpha-death-left/phase-02/source.png",
+      "source_sha256": "6eefff091ddb01aeb18298b78337b6f53ae214a7ff15226d4fe1a3b961606b1d",
+      "guide": "guides/well-alpha-death-left-02.png",
+      "guide_sha256": "8d1dc16ed74a0bded8e5f5324e6328985b2431f18a58fb6feed4807fb72dbadb",
+      "geometry_reference": "death-v2/well-alpha-death-left-02.png",
+      "geometry_reference_sha256": "c78adb82240a9a57c4f3d3c2b8a9a134f7486176036473627817a53dfad21833",
+      "style_exemplar": "style-exemplars/idle-left-4x.png",
+      "style_exemplar_sha256": "230b42b10710d4dda3e7475364e6c8187795832f91692347102dd95c47af1c2d",
+      "prompt": "singles/well-alpha-death-left/phase-02/prompt.txt",
+      "prompt_sha256": "9c682169df8a8db277a47ad6f7bdbb7ef1cd57edc1beeb0d0b1ede3f6f4e977b",
+      "reconstruction_report": "singles/well-alpha-death-left/phase-02/reconstruction.json",
+      "reconstruction_report_sha256": "41178205e969603bed16b0f0d70b6015d830bb955e74128a6d911e2e4af4d52d"
+    },
+    {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "left",
+      "phase": 3,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "fixed_placement_iou": 0.9247058823529412,
+      "applied_translation": [
+        0,
+        0
+      ],
+      "rescaled": false,
+      "visual_review": "cohort reviewed against same-direction accepted idle/walk; owner packaging approval separate",
+      "sprite": "singles/well-alpha-death-left/phase-03/fixed-placement.png",
+      "sprite_sha256": "e8e9ed7834c3f0f95737852100f0e7a828636dab9eb8b524bec1dbdeaa6e0efb",
+      "source": "singles/well-alpha-death-left/phase-03/source.png",
+      "source_sha256": "962bdfee903fd8bd432ddc981eeb6c0a3c4ecaef043473ce7cad08f5c3212bf0",
+      "guide": "guides/well-alpha-death-left-03.png",
+      "guide_sha256": "56c28f1c10401294cc0aabdb94d06aa6adbd9dd3868827620fe4161512a2090a",
+      "geometry_reference": "death-v2/well-alpha-death-left-03.png",
+      "geometry_reference_sha256": "1ccd658cbfb6c22eb84ec644f3f10b2d0eeabdab69565b1246f91dfead64083d",
+      "style_exemplar": "style-exemplars/idle-left-4x.png",
+      "style_exemplar_sha256": "230b42b10710d4dda3e7475364e6c8187795832f91692347102dd95c47af1c2d",
+      "prompt": "singles/well-alpha-death-left/phase-03/prompt.txt",
+      "prompt_sha256": "946340019ddfc57ef97a80f5c092ca59454d1cf8c16ed3cee6852110711280ee",
+      "reconstruction_report": "singles/well-alpha-death-left/phase-03/reconstruction.json",
+      "reconstruction_report_sha256": "210f5757f9f3122f743b8ed6015e6360e5d022e3abc3eaa815317b76a7496ed3"
+    }
+  ],
+  "counts": 4
+}

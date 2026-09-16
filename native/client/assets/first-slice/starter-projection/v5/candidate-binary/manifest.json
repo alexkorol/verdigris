@@ -1,0 +1,6068 @@
+{
+  "status": "candidate-pending-independent-native-review",
+  "technique": "ImageGen-painted appearance projected onto unchanged Blender geometry; these are rerenders, not independently generated animation sheets.",
+  "base_cell": 48,
+  "pixels_per_metre": 48,
+  "alpha_policy": "threshold128; zeroRGB under alpha0; no resizing, no recentering",
+  "clips": {
+    "male-club-attack-front": {
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "direction": "front",
+      "action": "club-attack",
+      "equipment": "branch-club",
+      "loop": false,
+      "frames": [
+        {
+          "src": "male-club-attack-front-00.png",
+          "sha256": "3456357573de278ecc3340fd8042bbc06f1299bd596578bf6fa0281db28de207",
+          "source_sha256": "bdc1683b22ff7147d5a300d4d9482f8bfdcfc397cc0a1c0af88438cdfae03722",
+          "bbox": [
+            45,
+            23,
+            83,
+            102
+          ]
+        },
+        {
+          "src": "male-club-attack-front-01.png",
+          "sha256": "a8e1e61f4e4c0b0e8e7f4a014b9cb806642c5bb3b8b9eaf7ef5659bb27374744",
+          "source_sha256": "dff5bc9c50d5c5eb3cc782ca82f21a5beb93f34cb1e07dec7f986d1980e89c30",
+          "bbox": [
+            39,
+            24,
+            83,
+            103
+          ]
+        },
+        {
+          "src": "male-club-attack-front-02.png",
+          "sha256": "438155ca891f0bb036e3d249748725bb5880825a8fe7343938400294299b81d6",
+          "source_sha256": "b6d1ae8a290d8b40d77a2dd8a3a7065819a26f399826fa566a3e6f0dc1f9f607",
+          "bbox": [
+            33,
+            27,
+            83,
+            104
+          ]
+        },
+        {
+          "src": "male-club-attack-front-03.png",
+          "sha256": "6e2a773fbea7d052583987a896f0734fdb5b07bc71117a9035cad5e15de16f8f",
+          "source_sha256": "ac597fea7e6987f09aa6e0cc84a54b8a98b0a0bb3167655b7f1b55e7a5f52ce4",
+          "bbox": [
+            29,
+            30,
+            83,
+            105
+          ]
+        },
+        {
+          "src": "male-club-attack-front-04.png",
+          "sha256": "f348b4f17b9ba4a77bf6c87cb3c199011837a2467dd7ee4f5e17ab13babdeaf3",
+          "source_sha256": "448884cf65fd2f8a6063dd540318c877364f2b84ab21e03db369117f05986cdc",
+          "bbox": [
+            25,
+            33,
+            83,
+            106
+          ]
+        },
+        {
+          "src": "male-club-attack-front-05.png",
+          "sha256": "6c971ca7003f232081676b29ad26e959735a810c67a99aa88f1553e748653819",
+          "source_sha256": "3791683e2ab4984641d284f48d336af7510cab0807e33a1a7cde0bdf23cc21b3",
+          "bbox": [
+            24,
+            26,
+            81,
+            106
+          ]
+        },
+        {
+          "src": "male-club-attack-front-06.png",
+          "sha256": "2dc0d6e859a24af0deebd6967ee4c395490968b89e67639fda36b452dca94b4c",
+          "source_sha256": "5bc141d321ae4b3ebd0bb14652628ce723bf78348a0ec5f6c9de30dc3bdea0ee",
+          "bbox": [
+            29,
+            19,
+            105,
+            111
+          ]
+        },
+        {
+          "src": "male-club-attack-front-07.png",
+          "sha256": "cc2ee072374f1b6b23bebb0d1825682539a57095955f8fe88796d1c191c2ec89",
+          "source_sha256": "91e6e2b52bff9297f9768baad507f956488fd501631ac5b92a45b2f7eab1f1fd",
+          "bbox": [
+            53,
+            40,
+            100,
+            109
+          ]
+        },
+        {
+          "src": "male-club-attack-front-08.png",
+          "sha256": "9ff351f2df878fb6c82db0155fd0b7acf04487e70d63ab32d3037e20b25c1b36",
+          "source_sha256": "6e962986718f7ce3c54ff987a3c451c5c6bb61c4bb00f6f9477032bd5003420c",
+          "bbox": [
+            53,
+            38,
+            102,
+            109
+          ]
+        },
+        {
+          "src": "male-club-attack-front-09.png",
+          "sha256": "d3d71df595e5ba86debc07a93249f65f41e633abcdd0b4074cb32bad2575ef3c",
+          "source_sha256": "2f638faaa8a22918f0092202a0f771cf142ef2ddb1003b03e0e9b32c1d6f0235",
+          "bbox": [
+            51,
+            41,
+            95,
+            108
+          ]
+        },
+        {
+          "src": "male-club-attack-front-10.png",
+          "sha256": "df478488e21fd558b8ecb03fa172d206781bfbcc6c28f91fa4567f72b4781bb6",
+          "source_sha256": "75c939d8ed79b4a3db4ca24f9c0366c3f501290a52059fe1c9b521f2077486d4",
+          "bbox": [
+            42,
+            31,
+            97,
+            104
+          ]
+        },
+        {
+          "src": "male-club-attack-front-11.png",
+          "sha256": "73434f6d713a929eee505aabd29bea4cff830f55557a584c25ba3dee7867e835",
+          "source_sha256": "235f38d381f96630a6f7b8ac3ae0fb53a11a3ba880605e13c23bc2381c0b1af4",
+          "bbox": [
+            25,
+            33,
+            83,
+            106
+          ]
+        },
+        {
+          "src": "male-club-attack-front-12.png",
+          "sha256": "9fa2060011f12e874967cb5b2d0b656d5f23b73bdfe80dad3e0f45d8575fe29d",
+          "source_sha256": "479cfc886c38fa0fea602e8500a8175553e6e072534953cfb473012914148bfa",
+          "bbox": [
+            29,
+            30,
+            83,
+            105
+          ]
+        },
+        {
+          "src": "male-club-attack-front-13.png",
+          "sha256": "0f720b0db5720735a7ecbc7838814811313d94ac7b68a4ed6f530f61eb517452",
+          "source_sha256": "6a2ae1c880d7349424ed011f1d428ed50fbfc6d299ef9405ab23edbb87fc78fc",
+          "bbox": [
+            33,
+            27,
+            83,
+            104
+          ]
+        },
+        {
+          "src": "male-club-attack-front-14.png",
+          "sha256": "8bb2ff6ae4e4d132eb879977a4f9c8ac4b477ef3c7b8dcdb12a644d28aeff56f",
+          "source_sha256": "5a46bc01567e6e6fc6688eb3c4a59b2017dbc5396c16455cf155321080422fcf",
+          "bbox": [
+            39,
+            24,
+            83,
+            103
+          ]
+        },
+        {
+          "src": "male-club-attack-front-15.png",
+          "sha256": "3456357573de278ecc3340fd8042bbc06f1299bd596578bf6fa0281db28de207",
+          "source_sha256": "b34419b68e14c56b30be3b6932e152b788e683552ed9c3a31bc9811bc2513ebf",
+          "bbox": [
+            45,
+            23,
+            83,
+            102
+          ]
+        }
+      ],
+      "geometry_sha256": "7b4c95e654c6bd9afb4db5ef32c904f4bb15c58d0e2043db30c6dca77e6b9c66",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-attack-right": {
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "direction": "right",
+      "action": "club-attack",
+      "equipment": "branch-club",
+      "loop": false,
+      "frames": [
+        {
+          "src": "male-club-attack-right-00.png",
+          "sha256": "49ec0848a99819b77f0bed38cbef535e6cc6034c02a960c531b15226ef74fd64",
+          "source_sha256": "8ed3273000e2809c60a164836a3d102c949be692e18bc3c9f3d4901c4d256001",
+          "bbox": [
+            57,
+            22,
+            82,
+            101
+          ]
+        },
+        {
+          "src": "male-club-attack-right-01.png",
+          "sha256": "e49dbf055cce911db8d45e7ac0e85ee5116e2493844a9c38c06b0fc01e755be8",
+          "source_sha256": "73e9988bbc728f53dd46190353fc9e9b20ca08281a0714c4dbb86c8e6e801af8",
+          "bbox": [
+            56,
+            23,
+            83,
+            103
+          ]
+        },
+        {
+          "src": "male-club-attack-right-02.png",
+          "sha256": "7148a20feff7ff141f2481fbcbbaa8624dd81d4021d3933a44581c194cdcb5d7",
+          "source_sha256": "4bf357875b613ba8a147d850d88bb6f7a96bc7cf698b7db13f8482e1a0dbfaac",
+          "bbox": [
+            55,
+            25,
+            84,
+            104
+          ]
+        },
+        {
+          "src": "male-club-attack-right-03.png",
+          "sha256": "0e270f48067c87bae52000e36a60816fca24adb84dfa82981bfd965a95867321",
+          "source_sha256": "6188f7c664b084d98f035a1a103f10930472fc4dec260673d859e23d08928ffe",
+          "bbox": [
+            54,
+            28,
+            86,
+            105
+          ]
+        },
+        {
+          "src": "male-club-attack-right-04.png",
+          "sha256": "74d055f1a0129ff8cfa455a801bf9bab8e2ed90361896dace95c2414c251d975",
+          "source_sha256": "337113a8b657ea064ae2ddac3c4f33e0bcc12471b39dc9ba38e6a68a9a72829b",
+          "bbox": [
+            51,
+            32,
+            87,
+            106
+          ]
+        },
+        {
+          "src": "male-club-attack-right-05.png",
+          "sha256": "122bb86c8aaf02354a3806cd97696618c976e70149f8bea3a5e89fd2fab04f89",
+          "source_sha256": "3ec90d3a520bceedc4b218603f4d2dc617fbbe7e13be6e2a59ad88ad1a71b86e",
+          "bbox": [
+            37,
+            28,
+            95,
+            105
+          ]
+        },
+        {
+          "src": "male-club-attack-right-06.png",
+          "sha256": "0de1a28010f79654c0b060c90cc5ea9ce1bd6f8a9c50b03db20312c340ad8466",
+          "source_sha256": "e1104f68f8a10b1e653117602f76ad1131d8c5ee6266ac023ff3454a65baffd7",
+          "bbox": [
+            44,
+            32,
+            89,
+            101
+          ]
+        },
+        {
+          "src": "male-club-attack-right-07.png",
+          "sha256": "b15c33b683db68fb06380ec916c9b15429c1b3c390ec76083bedb21a9b3ad73c",
+          "source_sha256": "e1a9c0ec7a721536ef04fda5357e7dc63f69e124aea4f1d045a718a5c6900d22",
+          "bbox": [
+            31,
+            35,
+            86,
+            101
+          ]
+        },
+        {
+          "src": "male-club-attack-right-08.png",
+          "sha256": "deb17acc149982f676ff287fa3777d90738b76d418876a3aefd58e69c71137e3",
+          "source_sha256": "4bf7f330b1512ead211b1516d1f5ea5c7621470ed3a340425412e3a71f740a3d",
+          "bbox": [
+            30,
+            35,
+            86,
+            101
+          ]
+        },
+        {
+          "src": "male-club-attack-right-09.png",
+          "sha256": "5f5c7addd2264745b740bc85e920eab8cd715c5306bcdc083f1e31ca9bb5d6e9",
+          "source_sha256": "1627cfa3713b1cf2cbd28251ccde989da2141b95abd77cf23df1fa6f6510b711",
+          "bbox": [
+            31,
+            34,
+            97,
+            103
+          ]
+        },
+        {
+          "src": "male-club-attack-right-10.png",
+          "sha256": "660a8b3f52c1b7127f08d06a06a7787d93a12186cb51415f34e8e37a02f22784",
+          "source_sha256": "b5a58222d1a5b02c71a5d49a4f80e01762680684749ff922ed0557079fd83221",
+          "bbox": [
+            52,
+            28,
+            98,
+            103
+          ]
+        },
+        {
+          "src": "male-club-attack-right-11.png",
+          "sha256": "5ea34989b377beb0d6959cfc724c1f0119194078899bae59fc1caf6433301480",
+          "source_sha256": "9dd1ad02d0a283915d77a98cc51ae9dc1f175fb7b24398fb52ea5658640450c1",
+          "bbox": [
+            51,
+            32,
+            87,
+            106
+          ]
+        },
+        {
+          "src": "male-club-attack-right-12.png",
+          "sha256": "bb24dad0987a5048e5f5a31a9d7d25c32d19d1b592df1a7a6c6769ec822169dd",
+          "source_sha256": "bf9e53c7022a524631e3fc359ce4b613d64e184eceeb9218ca6fff1a8acfd0c8",
+          "bbox": [
+            54,
+            28,
+            86,
+            105
+          ]
+        },
+        {
+          "src": "male-club-attack-right-13.png",
+          "sha256": "14879f0595a4a0606516c4f34afe84a3503babaea3b68866d65366bad7c496d4",
+          "source_sha256": "35749f95697e49a643901bdae99ab66aedd304be53f51811fc2daa5ed2069a36",
+          "bbox": [
+            55,
+            25,
+            84,
+            104
+          ]
+        },
+        {
+          "src": "male-club-attack-right-14.png",
+          "sha256": "7c87b68f1543eb22600a12f39415bc0ec89fa8cdd5bddd45a40862a975af2ade",
+          "source_sha256": "65ea2434adbd83091f52596448bc2bc747ac68a63bcbcf3b3e434f5ce6884ea2",
+          "bbox": [
+            56,
+            23,
+            83,
+            103
+          ]
+        },
+        {
+          "src": "male-club-attack-right-15.png",
+          "sha256": "49ec0848a99819b77f0bed38cbef535e6cc6034c02a960c531b15226ef74fd64",
+          "source_sha256": "416af3b9f020feca35faf78f73233a78622e755488f0d2ec85b55f1bccb9bfbe",
+          "bbox": [
+            57,
+            22,
+            82,
+            101
+          ]
+        }
+      ],
+      "geometry_sha256": "7b4c95e654c6bd9afb4db5ef32c904f4bb15c58d0e2043db30c6dca77e6b9c66",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-attack-back": {
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "direction": "back",
+      "action": "club-attack",
+      "equipment": "branch-club",
+      "loop": false,
+      "frames": [
+        {
+          "src": "male-club-attack-back-00.png",
+          "sha256": "0f6efa30e9d04054984529a698b4a35f7f29aedb9ef804c42acc1c23e2fc0529",
+          "source_sha256": "44faf00c3fc8fade36709f0a3b959d82bef4b28051ae1952eb55d1de5c03937f",
+          "bbox": [
+            46,
+            20,
+            83,
+            99
+          ]
+        },
+        {
+          "src": "male-club-attack-back-01.png",
+          "sha256": "0bc1c34ecdc8e802c134362f3b7e2e89dd2c851b2be5915615286e0211007905",
+          "source_sha256": "0a39420d2d8e6bda5de1171f14c5234cb95ef5d349c33055c24bd7452f12a33e",
+          "bbox": [
+            46,
+            20,
+            88,
+            100
+          ]
+        },
+        {
+          "src": "male-club-attack-back-02.png",
+          "sha256": "1019027498d19bf1bdddedd4bd6551faa91e8e6b749cf13b9f9bfdd1e416bf7f",
+          "source_sha256": "507f930707ba40120f0064b0250ebcd1e49ead4b4da55da538ddb52eb17277e7",
+          "bbox": [
+            46,
+            21,
+            93,
+            101
+          ]
+        },
+        {
+          "src": "male-club-attack-back-03.png",
+          "sha256": "87de606f58d1431ba539d6b3c850373b986fc548e74b9732afba85a1166b88a6",
+          "source_sha256": "f160a5650ebdd7bde8299d6fa000718c8902874091f69954541851f4db75a8de",
+          "bbox": [
+            46,
+            23,
+            98,
+            102
+          ]
+        },
+        {
+          "src": "male-club-attack-back-04.png",
+          "sha256": "9cb4572dab7e186c5ea8f70896a1e7424632588d2fdd964eab266472db2390ba",
+          "source_sha256": "a0df7a5707c771da74bc01861586d46460636e4a19d59327a4ed4a348e741e7c",
+          "bbox": [
+            46,
+            26,
+            103,
+            102
+          ]
+        },
+        {
+          "src": "male-club-attack-back-05.png",
+          "sha256": "3b9c11c7be79c11acc77e154e8074e0a08e285c7baa2192365d70ce7585bfc16",
+          "source_sha256": "a4509969f98027c87d98d528fde5c0404d2bc0bb308364011b6e5529c455dcfe",
+          "bbox": [
+            48,
+            26,
+            104,
+            102
+          ]
+        },
+        {
+          "src": "male-club-attack-back-06.png",
+          "sha256": "d8f182e2516ce7bbcd4f589e321ab51f77a111665285d3e1427db858b4df2bfd",
+          "source_sha256": "bdcea620abb2c561946ed81553f54c846c7979d88f20ee2d6b12d614cac4fc01",
+          "bbox": [
+            24,
+            27,
+            100,
+            105
+          ]
+        },
+        {
+          "src": "male-club-attack-back-07.png",
+          "sha256": "54c1666e2a1f4ecdb0cc3477ade047df45153a71115f825e691709a89f2d73dc",
+          "source_sha256": "ec45af0fa7c40a97c6fd27199be31551db7024e8baf09d5770c48f2d274a6871",
+          "bbox": [
+            29,
+            37,
+            75,
+            112
+          ]
+        },
+        {
+          "src": "male-club-attack-back-08.png",
+          "sha256": "67e174c8b2471829ad7231014d067a52c5ebb7c8a538328e71a976fc26d2f0d2",
+          "source_sha256": "67df5befa4cd30801d641b760f002de7252cd416118fc00999a9f77a7d05ecdb",
+          "bbox": [
+            27,
+            37,
+            75,
+            113
+          ]
+        },
+        {
+          "src": "male-club-attack-back-09.png",
+          "sha256": "c3f0bf9afb5f4b5dcfb686ed19e0d3386dcbe77e7cd219cecf0cc43c63c94f72",
+          "source_sha256": "0e21d4b474e9a0c681c6ad2d4785972bfef5fa0e7f6916548ab4203ad4e32d5d",
+          "bbox": [
+            36,
+            34,
+            77,
+            111
+          ]
+        },
+        {
+          "src": "male-club-attack-back-10.png",
+          "sha256": "eaa9677d90dc2efcea8cc9bb5c504543dc03aad46e4551540f9e68903bcb2c67",
+          "source_sha256": "7b7a9552de93e302bac4a35620f6770583d8c36356e010f11bda4a532d0fc894",
+          "bbox": [
+            32,
+            23,
+            85,
+            95
+          ]
+        },
+        {
+          "src": "male-club-attack-back-11.png",
+          "sha256": "b7ccc9ca0ec498651e61db014983bead80a31fd42bf6624671c0fff2a06446dd",
+          "source_sha256": "cab2ed3fc17e529ca65eb10756bd786127b2e9e140d90bcf3935454535177159",
+          "bbox": [
+            46,
+            26,
+            103,
+            102
+          ]
+        },
+        {
+          "src": "male-club-attack-back-12.png",
+          "sha256": "92124d068c8a0874234970a7dee67650b815ca6ed5eaff4635687d303aeae3c0",
+          "source_sha256": "b5e81e7e6de6e83d4659884180a11b93221a40b101420299a4bb9bdbe6db9136",
+          "bbox": [
+            46,
+            23,
+            99,
+            102
+          ]
+        },
+        {
+          "src": "male-club-attack-back-13.png",
+          "sha256": "307d1f436726a07bde0421d7a285839f1e1cbecc174c514c13080726a1df00de",
+          "source_sha256": "f4f5df36dbfeb25a3533e733f712290d9b2bb261ae9f1b67962f80cee70f0443",
+          "bbox": [
+            46,
+            21,
+            93,
+            101
+          ]
+        },
+        {
+          "src": "male-club-attack-back-14.png",
+          "sha256": "a3e1b5ef6274b0d69cac8bc76b6f1e1a4ad8584b3bd421e8b92c4afa822143c5",
+          "source_sha256": "204fa6414373f0ab27778be45f028c12cb2b6ca4f369c306dc05094e04e83612",
+          "bbox": [
+            46,
+            20,
+            88,
+            100
+          ]
+        },
+        {
+          "src": "male-club-attack-back-15.png",
+          "sha256": "0f6efa30e9d04054984529a698b4a35f7f29aedb9ef804c42acc1c23e2fc0529",
+          "source_sha256": "c703002b31d4be271d7a40fe5468898bea219eee57bf2cb2b99c07746c6c558c",
+          "bbox": [
+            46,
+            20,
+            83,
+            99
+          ]
+        }
+      ],
+      "geometry_sha256": "7b4c95e654c6bd9afb4db5ef32c904f4bb15c58d0e2043db30c6dca77e6b9c66",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-attack-left": {
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "direction": "left",
+      "action": "club-attack",
+      "equipment": "branch-club",
+      "loop": false,
+      "frames": [
+        {
+          "src": "male-club-attack-left-00.png",
+          "sha256": "abea82e159c791b1c5e0922cf5eabe0c6f69c0fffba832c7a79a28b5550c3c5c",
+          "source_sha256": "ba683d5d544f85709a5b7e52fd578ad1a123825149f0faa0479b4c790f6526b1",
+          "bbox": [
+            46,
+            22,
+            71,
+            101
+          ]
+        },
+        {
+          "src": "male-club-attack-left-01.png",
+          "sha256": "6e9f5ab148b3fec0c7a31311a162f11dabf97bf6bf3642aebe07a0a9d057c7f0",
+          "source_sha256": "9dce5cca197b71e641709029fc356ab056793da36cd191c4d32fa7fd2c8f12ea",
+          "bbox": [
+            44,
+            22,
+            71,
+            102
+          ]
+        },
+        {
+          "src": "male-club-attack-left-02.png",
+          "sha256": "3acf95067c00f38049ad6eba8038e3f89b5e16952e734ee0c3ed2d0232701229",
+          "source_sha256": "ec76ebfe23505879579e4d78bf9ef436fc853ca62013ffc62d3e6dc3b7298481",
+          "bbox": [
+            42,
+            23,
+            73,
+            102
+          ]
+        },
+        {
+          "src": "male-club-attack-left-03.png",
+          "sha256": "3779047010898a7b48351e08270c19ba5dd11b13ac0f28a9bc032f0ba24fe965",
+          "source_sha256": "9d095d32532614548de2efc440d32c057f3b0e20e7455564040e88951c563e6d",
+          "bbox": [
+            41,
+            25,
+            74,
+            103
+          ]
+        },
+        {
+          "src": "male-club-attack-left-04.png",
+          "sha256": "680fc88b138a61e2aa1a9d71f3f5bc9932cbb56ab7d618bafbe0c8a07eb6670a",
+          "source_sha256": "6cbe525db5472827e1751eab2816633fe82335b97640c7f096b97d4662f0edb0",
+          "bbox": [
+            40,
+            28,
+            77,
+            103
+          ]
+        },
+        {
+          "src": "male-club-attack-left-05.png",
+          "sha256": "5f33325610c42d21b2de14ca870c8d83964368fe8a167647040658652eaabc88",
+          "source_sha256": "6e37f1a1f9388ae27b0e4c83cb0b57458274516f4c295a4dc005c50fffeca35c",
+          "bbox": [
+            32,
+            12,
+            89,
+            105
+          ]
+        },
+        {
+          "src": "male-club-attack-left-06.png",
+          "sha256": "d9c1cd057ee455c21b0919b2967afb2c934fadb8a3d9bf1d41039d567a5e9227",
+          "source_sha256": "dce18a579d507b5e12bd0f2216a404437829c7a794afac07ee2d9522aed471b6",
+          "bbox": [
+            39,
+            14,
+            83,
+            105
+          ]
+        },
+        {
+          "src": "male-club-attack-left-07.png",
+          "sha256": "cce3171c50a330995b4b3b059a98fae2596865b59ed85be6dba76270200a7c88",
+          "source_sha256": "e26e324df170833c1c7490277a5d596974c22b603f4c7034244ae883ee0b9912",
+          "bbox": [
+            42,
+            50,
+            99,
+            106
+          ]
+        },
+        {
+          "src": "male-club-attack-left-08.png",
+          "sha256": "3bec325d953669ede1e0a98693d1a5757c111259eeb062f7e7408da462ad25ef",
+          "source_sha256": "7b0a068f68bd7c82b2f90567136381930572bad19ab26c0818aadc3b4c5b25f0",
+          "bbox": [
+            43,
+            49,
+            99,
+            106
+          ]
+        },
+        {
+          "src": "male-club-attack-left-09.png",
+          "sha256": "4829b9506121ecbbc075bfb949c7597a03635cbd663d67605e04944de35cec3f",
+          "source_sha256": "2e1be694d1e78f0bddedf964b793d5a3be3bfd9a8d1e2ee6035d3024de670a66",
+          "bbox": [
+            29,
+            46,
+            98,
+            105
+          ]
+        },
+        {
+          "src": "male-club-attack-left-10.png",
+          "sha256": "fe76916e3a6e6373f1c1b911014ccd9b1aa4683bdefdc46dcb1a7b13a9c84c4d",
+          "source_sha256": "cc30ff9a5906874484f160ccaa5334ef5b94182d2e991a65d2c9bf78e88e5c68",
+          "bbox": [
+            31,
+            27,
+            76,
+            98
+          ]
+        },
+        {
+          "src": "male-club-attack-left-11.png",
+          "sha256": "29a2ea1e98927018e8b6c8e3ac61c331123696509db723e8978db8265b9d5bee",
+          "source_sha256": "c91ead7fd51ff0c6d15b083e977a9562d48eb78a37eafc7b2efb42cf61a7306e",
+          "bbox": [
+            40,
+            27,
+            77,
+            103
+          ]
+        },
+        {
+          "src": "male-club-attack-left-12.png",
+          "sha256": "95f7fa38198bf5698fee76744e44af1424c5a8d71c1f45518ff705a72d319a66",
+          "source_sha256": "5c508343177095cbec894f080b3e8d7e0f50841a71ca907ee36d9e17651c3e81",
+          "bbox": [
+            41,
+            25,
+            74,
+            103
+          ]
+        },
+        {
+          "src": "male-club-attack-left-13.png",
+          "sha256": "2759b0d0086b73963724836f8bb2651c06a272f01bae7dc6d2feda81f884bd9e",
+          "source_sha256": "13d988b86aa1742a7799b07a62a2ce66e836c5fdb6c50c744b38c87c2f7e1894",
+          "bbox": [
+            42,
+            23,
+            73,
+            102
+          ]
+        },
+        {
+          "src": "male-club-attack-left-14.png",
+          "sha256": "6e14e754baa99217fab1781af5e847efe2e5f2b19668dfd5fd575bade2c9fe48",
+          "source_sha256": "5831788cf5ed26a2ff275104fa84a8d8d708da202146c4bf38429e9c703423d7",
+          "bbox": [
+            44,
+            22,
+            71,
+            102
+          ]
+        },
+        {
+          "src": "male-club-attack-left-15.png",
+          "sha256": "abea82e159c791b1c5e0922cf5eabe0c6f69c0fffba832c7a79a28b5550c3c5c",
+          "source_sha256": "2187292a1819cf5d00cb4118c77bcc72134bc8b868f16adbd7c9e7d55aa20ac4",
+          "bbox": [
+            46,
+            22,
+            71,
+            101
+          ]
+        }
+      ],
+      "geometry_sha256": "7b4c95e654c6bd9afb4db5ef32c904f4bb15c58d0e2043db30c6dca77e6b9c66",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-death-front": {
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "direction": "front",
+      "action": "club-death",
+      "equipment": "branch-club",
+      "loop": false,
+      "frames": [
+        {
+          "src": "male-club-death-front-00.png",
+          "sha256": "ddb596451fecbd40e722b0148a839a2dff165121ff03a3e251ccc1f85902e971",
+          "source_sha256": "b98d309bd39829ece9dc36fab864b38ab6cebb1cf2524595af100cf0dad69642",
+          "bbox": [
+            47,
+            26,
+            81,
+            105
+          ]
+        },
+        {
+          "src": "male-club-death-front-01.png",
+          "sha256": "dad57bb28190d038eba35328090bba257b919a5a9164742cc69458972a2a21ed",
+          "source_sha256": "a316acedaeea56e2f4fb8ac6b70c716003312166280c25306c3943ba2efd7aa7",
+          "bbox": [
+            39,
+            36,
+            81,
+            108
+          ]
+        },
+        {
+          "src": "male-club-death-front-02.png",
+          "sha256": "e05cd2015439b6c9a16bdb12a159162f98af18b41e8a2a5ca68c07a29771004d",
+          "source_sha256": "99e6aa4aa897cd2d08f5d2b8dc5c108eb958e9dd2cd8cc9032cdb7803edf611b",
+          "bbox": [
+            38,
+            39,
+            83,
+            108
+          ]
+        },
+        {
+          "src": "male-club-death-front-03.png",
+          "sha256": "f6fa4d4c9949414f6aaaca65dc2e095d7e1232d670cff21b212b64e91e13816c",
+          "source_sha256": "7d833ff66bca60032960255707f7fe68aa91ca02b8b0954029e3b52e8a467463",
+          "bbox": [
+            42,
+            42,
+            78,
+            121
+          ]
+        },
+        {
+          "src": "male-club-death-front-04.png",
+          "sha256": "5f4fedd1d92ebca3d31e50644aebe057672f96eabb35c2acb2dc3d7acfb9ec29",
+          "source_sha256": "2dad677df11245f51e0a9af7ab5c70dd48c03b499e835eca5b6b331921ac152b",
+          "bbox": [
+            35,
+            51,
+            86,
+            114
+          ]
+        },
+        {
+          "src": "male-club-death-front-05.png",
+          "sha256": "801e32a96ad17b166d6173924e8c6e2e96b0da418edb1120abf91221486d7491",
+          "source_sha256": "e3e726273f62b8f64952a4b3908cbfda106695b60d5b2d779ae84b3f14e76cd2",
+          "bbox": [
+            34,
+            51,
+            86,
+            123
+          ]
+        },
+        {
+          "src": "male-club-death-front-06.png",
+          "sha256": "dd47f2661507235b4c5b6a71b59e5e75fffcb1258fdfc6be057991a25f11e27a",
+          "source_sha256": "430e57fa06bfdcba085ae56f81add6cebebccf52b55649084514dada1aceebe9",
+          "bbox": [
+            35,
+            50,
+            86,
+            123
+          ]
+        },
+        {
+          "src": "male-club-death-front-07.png",
+          "sha256": "d1e7904ccd6b25704506bc96889d662942015232c3b237193263c48c3d6e7fd3",
+          "source_sha256": "a840fe9ea12fc51d7ba528083b05524a6c1579111de609addb7aa891c165e9b3",
+          "bbox": [
+            35,
+            50,
+            86,
+            123
+          ]
+        }
+      ],
+      "geometry_sha256": "82d287955010a727a7f952d3b9c95aabb29c846fc81fe0f44cb0602eed780afa",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-death-right": {
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "direction": "right",
+      "action": "club-death",
+      "equipment": "branch-club",
+      "loop": false,
+      "frames": [
+        {
+          "src": "male-club-death-right-00.png",
+          "sha256": "62a410459ca378bbfc19eb0405a283ae9c1775ce705af14d3b79414999d011f8",
+          "source_sha256": "5a5e7025230b1ff3cae426347f29b61d2476dd30aee9a8b23688b978ecc78d4f",
+          "bbox": [
+            50,
+            24,
+            87,
+            105
+          ]
+        },
+        {
+          "src": "male-club-death-right-01.png",
+          "sha256": "defcf980170cdd010952e91c3412ddbddea55c523792037fd70f5db1ebcb1174",
+          "source_sha256": "4e4c3e2f2f28a67166460672a980036b77c1189512eb974704fc8fc2cab5193d",
+          "bbox": [
+            56,
+            33,
+            86,
+            107
+          ]
+        },
+        {
+          "src": "male-club-death-right-02.png",
+          "sha256": "2d15a4cc6f493f65de48f1d523b4fad1cab22625fce2a9a0b9040d959f278cea",
+          "source_sha256": "031f2237f910791caac6bf632024a2eed879ff82732cd205202682970782a5cc",
+          "bbox": [
+            57,
+            37,
+            88,
+            107
+          ]
+        },
+        {
+          "src": "male-club-death-right-03.png",
+          "sha256": "59c4a9d41f663948b6e51429c36c46e69c09adcdea06f3fd57e11c18226a65df",
+          "source_sha256": "12b7e71b9ed6161ebed71eddc9607e00f0803de9049962fd05a5644eefc9f0f2",
+          "bbox": [
+            46,
+            49,
+            108,
+            101
+          ]
+        },
+        {
+          "src": "male-club-death-right-04.png",
+          "sha256": "6daaf33c466387d3a388010de744729c641fd361d4584fcddde821bb61707440",
+          "source_sha256": "629050878523f819fdfbc1f1d18c628dbedd08b1bab5590ea5d0ee78f347a6b2",
+          "bbox": [
+            10,
+            64,
+            108,
+            101
+          ]
+        },
+        {
+          "src": "male-club-death-right-05.png",
+          "sha256": "46e9caf2f730a3fa62f8fe172717ebbd1040f91881ad242527fad4ee9765dfe5",
+          "source_sha256": "02aa8379a6b4c461302d815f8b1064688918ba5a40f74182ac4abc90fd4e9909",
+          "bbox": [
+            9,
+            69,
+            111,
+            107
+          ]
+        },
+        {
+          "src": "male-club-death-right-06.png",
+          "sha256": "0893683a62c2d5115a072b04ca77b31e8264e2910e170173f73565d80d3e86c3",
+          "source_sha256": "3d6c769cddac5ed45056f8239085c6f24a2255d5a2e535ac938d96b6fb4eff90",
+          "bbox": [
+            9,
+            69,
+            111,
+            106
+          ]
+        },
+        {
+          "src": "male-club-death-right-07.png",
+          "sha256": "4f73a5186e9d4295e6cb058eb701299aad04e6a6e61ab244b9cc74cce931cf34",
+          "source_sha256": "6b1a2d67a163f47608dd9685621f1c8cb333009479becda88b1e6dd63c34e629",
+          "bbox": [
+            9,
+            69,
+            111,
+            106
+          ]
+        }
+      ],
+      "geometry_sha256": "82d287955010a727a7f952d3b9c95aabb29c846fc81fe0f44cb0602eed780afa",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-death-back": {
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "direction": "back",
+      "action": "club-death",
+      "equipment": "branch-club",
+      "loop": false,
+      "frames": [
+        {
+          "src": "male-club-death-back-00.png",
+          "sha256": "b033a071d27b209cb994fe4fa2d9658c4444dd010cb7f818732b38e423950e74",
+          "source_sha256": "1f6df36906b37883a113da5486604800151904f280e28476c9d8176599f4692e",
+          "bbox": [
+            47,
+            20,
+            81,
+            104
+          ]
+        },
+        {
+          "src": "male-club-death-back-01.png",
+          "sha256": "fcc57197ae1c6530e5d086b24974535e4397c8267a4aa8261324e51a0f486bfe",
+          "source_sha256": "6cf3065b280e78ca93f32dab4e6b9b49e59a66940315adca72ec3d5b67201dc6",
+          "bbox": [
+            47,
+            26,
+            89,
+            100
+          ]
+        },
+        {
+          "src": "male-club-death-back-02.png",
+          "sha256": "b99d12cf99b7f1e6d32089567d931f32018edb0fb17d8f27e0af405fbc76f352",
+          "source_sha256": "44437673a3b0bc3c064a87a29f989489e1d75a354a4b4f156347b258b9d959a9",
+          "bbox": [
+            45,
+            29,
+            89,
+            98
+          ]
+        },
+        {
+          "src": "male-club-death-back-03.png",
+          "sha256": "fac6845a3b95e7110051d9983d87724f9abfd665aa701b489bc2a58ed2177ae3",
+          "source_sha256": "9d34cf4edc3590f81728faa1273f635ac34721b05cc0dc8d616d8da01a7c2081",
+          "bbox": [
+            50,
+            37,
+            85,
+            87
+          ]
+        },
+        {
+          "src": "male-club-death-back-04.png",
+          "sha256": "9ef40728811ddbe185e7818e7d4dc628a318d3210ade22084897eb6aa71c9304",
+          "source_sha256": "67e80ab126a088044b608c7d22ab6ce1409911b09aa2b5714d365b8f9ba974bb",
+          "bbox": [
+            40,
+            49,
+            96,
+            117
+          ]
+        },
+        {
+          "src": "male-club-death-back-05.png",
+          "sha256": "a9bab513c5794c8ced5ca4a557131b20ab8bc65447ff184b19c4109d319e0907",
+          "source_sha256": "403b9d297c9a63f95554acaaa645d9e266e1a9691b606b9e9861aa9be4e3e2c5",
+          "bbox": [
+            41,
+            59,
+            97,
+            118
+          ]
+        },
+        {
+          "src": "male-club-death-back-06.png",
+          "sha256": "84f273d438f1a95464e0b1f81bdc3fa9b8b255c64590b52d289f08e35a75fe4a",
+          "source_sha256": "641ab9055d53e2969393f74b527469efcb37d889375d9b5ace7c2f19bab7e3bc",
+          "bbox": [
+            41,
+            59,
+            96,
+            116
+          ]
+        },
+        {
+          "src": "male-club-death-back-07.png",
+          "sha256": "2418b24890e938263947a1aaa1140a2a8e75ae7c674017db434f552ed3fce2e1",
+          "source_sha256": "50fb4be7eca65e4e676e3503ea8f2c048323d114d1ea9745a4a5e8751776471d",
+          "bbox": [
+            41,
+            59,
+            96,
+            116
+          ]
+        }
+      ],
+      "geometry_sha256": "82d287955010a727a7f952d3b9c95aabb29c846fc81fe0f44cb0602eed780afa",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-death-left": {
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "direction": "left",
+      "action": "club-death",
+      "equipment": "branch-club",
+      "loop": false,
+      "frames": [
+        {
+          "src": "male-club-death-left-00.png",
+          "sha256": "9eacb23dfebc8be51826abf15380758638f49b4a076053f6f1a3852d345886db",
+          "source_sha256": "2d69a4f7a53002eef3eb026731e72cb024bf65cecad0af2f81ad63b432e408d0",
+          "bbox": [
+            42,
+            22,
+            78,
+            103
+          ]
+        },
+        {
+          "src": "male-club-death-left-01.png",
+          "sha256": "f9c85b70824e87059d6d57a39df08ff228247e0bf81341fa6b2c46e52379da08",
+          "source_sha256": "954e2bf02194c3b9bdfd4e454c8ec46b891be19cc3a5b50d493f92670fb9b498",
+          "bbox": [
+            43,
+            29,
+            72,
+            103
+          ]
+        },
+        {
+          "src": "male-club-death-left-02.png",
+          "sha256": "bd22225020faa3666071c45cf17563bb09daadbd1ea78fe0828b6f138e259077",
+          "source_sha256": "000a2be302518c4dc4f0dcd99d501999d9270bca6a29f9dbaaf7f3f94c5058fb",
+          "bbox": [
+            40,
+            32,
+            70,
+            103
+          ]
+        },
+        {
+          "src": "male-club-death-left-03.png",
+          "sha256": "a0f793ed778c1297651232f64688c52df4d21eb7dedd297194649219dd2498a1",
+          "source_sha256": "26d03216780df246a5ba35c587c3d65d61f778f107d16db8b22bf3fa0d97f24a",
+          "bbox": [
+            19,
+            45,
+            82,
+            103
+          ]
+        },
+        {
+          "src": "male-club-death-left-04.png",
+          "sha256": "f5c1dfa6080fa0090da07a5dc74f369d0c42114c093ea7c3f9ccf90ad13d3752",
+          "source_sha256": "5484ae6c7f21d67f5f6abe58729cd700873a2541ec792dd04bd84e1bfc32ed20",
+          "bbox": [
+            19,
+            53,
+            116,
+            104
+          ]
+        },
+        {
+          "src": "male-club-death-left-05.png",
+          "sha256": "2edda167ee73e032db33936b3da08a282fecdfe93be54272dc69d684a45c291a",
+          "source_sha256": "fcdc931e66cddac4c76384e02acdd0d394a53b43c983e4a7937d39742a29ca63",
+          "bbox": [
+            16,
+            65,
+            117,
+            104
+          ]
+        },
+        {
+          "src": "male-club-death-left-06.png",
+          "sha256": "cac589cee4a0623c47969aedabf4d88cba52bf88ded816e0db5befd8266e74ec",
+          "source_sha256": "e25c71dc3ef8e71e62ca9a525a5135f0b25a791bfdb440b9c29cf6a3dedeb544",
+          "bbox": [
+            16,
+            65,
+            118,
+            104
+          ]
+        },
+        {
+          "src": "male-club-death-left-07.png",
+          "sha256": "38f60b9da2edd7b8160c3eb20fd49476b6ad824339ee650df5cbf3d01c363ecc",
+          "source_sha256": "b3963df855e9b50d2df718e11c7dccba0074d4cbc6ebd69bb7b2255aebec1ee5",
+          "bbox": [
+            16,
+            65,
+            118,
+            104
+          ]
+        }
+      ],
+      "geometry_sha256": "82d287955010a727a7f952d3b9c95aabb29c846fc81fe0f44cb0602eed780afa",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-hit-front": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "front",
+      "action": "club-hit",
+      "equipment": "branch-club",
+      "loop": false,
+      "frames": [
+        {
+          "src": "male-club-hit-front-00.png",
+          "sha256": "fb95a6f53a7e82a14f6656b2ebd20fd170fe4d0acef0d54c1130107f5451f963",
+          "source_sha256": "ca53fbc43392a485433ae2266a35e9268f7c8a8e1e343af0d7f37d8e0d7843ca",
+          "bbox": [
+            30,
+            4,
+            66,
+            89
+          ]
+        },
+        {
+          "src": "male-club-hit-front-01.png",
+          "sha256": "ac7f2e0eff860082ae1b5e35f7603081e0b002cca42216d40736d0035408a9bf",
+          "source_sha256": "f697fe75b855fcc09bf433e82d8d9356b5d640941fc6f2241a3253d6883078c6",
+          "bbox": [
+            30,
+            4,
+            66,
+            89
+          ]
+        },
+        {
+          "src": "male-club-hit-front-02.png",
+          "sha256": "383729a69db43f5d8bb1851d98475daaf149880569a2f646af7e8ef6e0bf6e48",
+          "source_sha256": "9e72ce68b5bc67602959ea2835534c664cfc0b101abd7dbb9c16fa8356af2745",
+          "bbox": [
+            30,
+            5,
+            66,
+            89
+          ]
+        },
+        {
+          "src": "male-club-hit-front-03.png",
+          "sha256": "e9da6c611efa61af63835d7f9c5d4af0a8550f4bb9fce9208f3de0efbabbe970",
+          "source_sha256": "c17f2924c924462b59082dd4f9f380f33a409e5fe58f0e6011dad999707716fe",
+          "bbox": [
+            30,
+            5,
+            66,
+            89
+          ]
+        },
+        {
+          "src": "male-club-hit-front-04.png",
+          "sha256": "f6de29e08c8cb7cd7c00c14c75d447915475d80a94b7590c282d6a7afdb73cdb",
+          "source_sha256": "4d0a220829afb2c26dce3c8f75ae5504c89f5e3045d05aa4651a3dbf77116c22",
+          "bbox": [
+            30,
+            6,
+            66,
+            89
+          ]
+        },
+        {
+          "src": "male-club-hit-front-05.png",
+          "sha256": "7906faef23235d95fbba680a09d7e2f26c93c475ebf26e5e11e466139bea340a",
+          "source_sha256": "7a852a74fb9a8179b759a5fec3e82bd5d825889896c94d2065578c4ffa57c0f3",
+          "bbox": [
+            30,
+            7,
+            66,
+            89
+          ]
+        },
+        {
+          "src": "male-club-hit-front-06.png",
+          "sha256": "6b5341791f90dcd53f37b6dc5e7a4ca21acc857357580caf5ad41eb537a0f7e9",
+          "source_sha256": "69b42f6b13760923749e5d319079dea5e0b435e298b1fbf1b62a7318212e4c01",
+          "bbox": [
+            30,
+            9,
+            66,
+            89
+          ]
+        },
+        {
+          "src": "male-club-hit-front-07.png",
+          "sha256": "bace7439d1a5033ff8668d8fdbadbb6c6faa76c728a95a1f9cb2a2b4e2bbf74f",
+          "source_sha256": "357ae9e42ca70686ab4584896ab0cade92a882ad3bf142cb8c2608c8c6cd0330",
+          "bbox": [
+            30,
+            10,
+            66,
+            89
+          ]
+        }
+      ],
+      "geometry_sha256": "1dd813dd59377601d01dc7f7f4f2b7430455992645ff82c74724f011342a1111",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-hit-right": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "right",
+      "action": "club-hit",
+      "equipment": "branch-club",
+      "loop": false,
+      "frames": [
+        {
+          "src": "male-club-hit-right-00.png",
+          "sha256": "df845dc54560023aaeb59e7e3eeef93233335c063145f64ca3cac0b934d8167f",
+          "source_sha256": "fc80781a41ca035d8ea69ae19f08cb0337d5b6571e4957e4d81874f1a1ff348a",
+          "bbox": [
+            33,
+            8,
+            74,
+            89
+          ]
+        },
+        {
+          "src": "male-club-hit-right-01.png",
+          "sha256": "4a43bcc1ebb1533d4ffde14712aef26b7a001d375139cd5d34266048eadffffa",
+          "source_sha256": "7309eda40351fe1dd69828c207f269889137acc5079fd55d61b749f16614f025",
+          "bbox": [
+            33,
+            8,
+            74,
+            89
+          ]
+        },
+        {
+          "src": "male-club-hit-right-02.png",
+          "sha256": "d6bdbdfab4a047a897d019ac099691fadc18cb93d9be8e05e8c62f65ad76c3d6",
+          "source_sha256": "857684421caeab2e6dbb16cd6ab4eaf87d2f0264d9446341abb6c3ad37fb6a02",
+          "bbox": [
+            33,
+            8,
+            75,
+            89
+          ]
+        },
+        {
+          "src": "male-club-hit-right-03.png",
+          "sha256": "0c6e9d7adf0a089ba846dc8df5e38e9d91c319801366e8a0326d96e6dad1266d",
+          "source_sha256": "61bf15438d7a4ba4ca6b4d5572cb2e7a87994ed313caf1f5013c0f6eb5f871fb",
+          "bbox": [
+            33,
+            8,
+            75,
+            89
+          ]
+        },
+        {
+          "src": "male-club-hit-right-04.png",
+          "sha256": "b42aca11acae3d75c918002df0b2c61152af8810170675e679ae879835a53fbe",
+          "source_sha256": "6921f375fe8b2a533bb7e260579d38091b304d9c5b9c1b979db5cc708a5e0d30",
+          "bbox": [
+            33,
+            8,
+            75,
+            89
+          ]
+        },
+        {
+          "src": "male-club-hit-right-05.png",
+          "sha256": "e0d1c02a179d43fa8d987c173b3fa3b0d75f67f109712e34d0b77a2979f948d1",
+          "source_sha256": "e840b370defe54275521160623af7187998792f9adebe624a8f2397bfa5dd540",
+          "bbox": [
+            33,
+            8,
+            75,
+            89
+          ]
+        },
+        {
+          "src": "male-club-hit-right-06.png",
+          "sha256": "e29cf14a8ac7346a376e29f77762bd51a6c3f958ad0e9a2bc27549889c61a7d0",
+          "source_sha256": "cf9f5484bdbebe1836c97ec64d10103f130a3143e89bab989c664fba2ab6c7a1",
+          "bbox": [
+            33,
+            8,
+            73,
+            89
+          ]
+        },
+        {
+          "src": "male-club-hit-right-07.png",
+          "sha256": "3986d0653a15a94511f0f33c6d186d35b5cf687265357601cb7d0fb44bb875b3",
+          "source_sha256": "30eea52fe96d494fe7380962c1997ed767185d047ac51e3c5e8ecc0154c12822",
+          "bbox": [
+            34,
+            8,
+            71,
+            89
+          ]
+        }
+      ],
+      "geometry_sha256": "1dd813dd59377601d01dc7f7f4f2b7430455992645ff82c74724f011342a1111",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-hit-back": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "back",
+      "action": "club-hit",
+      "equipment": "branch-club",
+      "loop": false,
+      "frames": [
+        {
+          "src": "male-club-hit-back-00.png",
+          "sha256": "a1ed894b788913698dcb45beb607e563e3bec63f90e4944529d6ab1c50b96296",
+          "source_sha256": "6305f7343d16c14fb708b2067eb4ec23bac8e0afe8dd8317771deb5bdb571bf2",
+          "bbox": [
+            31,
+            11,
+            65,
+            88
+          ]
+        },
+        {
+          "src": "male-club-hit-back-01.png",
+          "sha256": "4bc070b55d733678104c580db7c4998e5600b857e4a8540b6f6a387ff1f16d18",
+          "source_sha256": "380497901fc75a2dc7a7a170d875e81687a17cbbc174da0714117fbe221cdbe0",
+          "bbox": [
+            31,
+            10,
+            65,
+            88
+          ]
+        },
+        {
+          "src": "male-club-hit-back-02.png",
+          "sha256": "f8052af3eacad5c1248fd513a08ba64716ac348496390a9b5a5b3bf0bf905426",
+          "source_sha256": "b50b9ccb0ec5549a699ad4a354b9437c9c7b5502cd1dfa4aa149e9216413aa86",
+          "bbox": [
+            31,
+            10,
+            66,
+            88
+          ]
+        },
+        {
+          "src": "male-club-hit-back-03.png",
+          "sha256": "e5c8f16a4405dff48166d154d43567efbbb0f529791c17057ab8f3816ad7ad98",
+          "source_sha256": "f6045c3a531d0b52165d9effa1fa70072a08549440c06e23bbfe36da94f01c7f",
+          "bbox": [
+            31,
+            9,
+            66,
+            88
+          ]
+        },
+        {
+          "src": "male-club-hit-back-04.png",
+          "sha256": "6ab7ecd5312514060e58f2a35399ed65634a3db24a45faf3eeb9809b04d479fa",
+          "source_sha256": "7bb1ae8437f3619a9dfbe804bb9d4e18885a3beddd6a9a88cc60d9b8d1947b1e",
+          "bbox": [
+            31,
+            7,
+            65,
+            88
+          ]
+        },
+        {
+          "src": "male-club-hit-back-05.png",
+          "sha256": "c95c86c582b67256764f5dd152b71ecef9a6128d3be7c493e2143191a12bae15",
+          "source_sha256": "bc95bfeab147f9259e0a60b0bd025088dc0295a615e4ae84a38046c45f845c0d",
+          "bbox": [
+            31,
+            6,
+            65,
+            88
+          ]
+        },
+        {
+          "src": "male-club-hit-back-06.png",
+          "sha256": "db0c528c65ae1f5ad6afe1dc2782dbf311177275b7c5a935ad73f0d7c6911862",
+          "source_sha256": "12ac50674de4ced83b02c7fe14411f3c951c88337833e79be298c50cb455e888",
+          "bbox": [
+            30,
+            4,
+            66,
+            88
+          ]
+        },
+        {
+          "src": "male-club-hit-back-07.png",
+          "sha256": "13e0af146e54d8f5ff59b73c30f56d69c505a77185ca84cf3b6aa5d75c5d93cf",
+          "source_sha256": "c89fbd136a568af57d1178c006a92d0aabb9b499bc89216cef8e70e2f5a6dfd3",
+          "bbox": [
+            30,
+            4,
+            66,
+            88
+          ]
+        }
+      ],
+      "geometry_sha256": "1dd813dd59377601d01dc7f7f4f2b7430455992645ff82c74724f011342a1111",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-hit-left": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "left",
+      "action": "club-hit",
+      "equipment": "branch-club",
+      "loop": false,
+      "frames": [
+        {
+          "src": "male-club-hit-left-00.png",
+          "sha256": "1125c2a556946f2360da29d4c7b17a73dc84a2098be14436ee4ba82b3b7482b4",
+          "source_sha256": "61e8224a6386c83a1c31002ad6419f07fc7c032a33bf48df94de697a38979102",
+          "bbox": [
+            23,
+            7,
+            63,
+            88
+          ]
+        },
+        {
+          "src": "male-club-hit-left-01.png",
+          "sha256": "5e3b745f5c2b2851f708c75327caec48c667da10009fc72e2fc321eacf855c10",
+          "source_sha256": "ac317622b47a9b6a8e4655932681b856f8cd2bd16e656a79670f3a56f1ca8f67",
+          "bbox": [
+            23,
+            7,
+            63,
+            88
+          ]
+        },
+        {
+          "src": "male-club-hit-left-02.png",
+          "sha256": "d90b4504ce03bcbef3818d6af21ed20c689f0a0acb7f15f3e3c2a5a2effae9ba",
+          "source_sha256": "fe3775a9fbd5966ccf3877ad3a7180e7a9755487207b6708e2e47bbb5f64093c",
+          "bbox": [
+            22,
+            7,
+            63,
+            88
+          ]
+        },
+        {
+          "src": "male-club-hit-left-03.png",
+          "sha256": "ca8b630040c825ef8d4b35c5948856b6f01539555a25110f2b943f1902af0402",
+          "source_sha256": "002ac8e6e44affbe6cb5d7fbeb8ff0a0225aeeb013a2f800ebbb31bd691d1bdd",
+          "bbox": [
+            22,
+            6,
+            63,
+            88
+          ]
+        },
+        {
+          "src": "male-club-hit-left-04.png",
+          "sha256": "ed0f5b621f16dda0901e6f52f257f6a637aa40b60e61bb72da8d72a2cd87cad3",
+          "source_sha256": "22e67745a59a3ec79c1fbbf3cd1ddd5bdadbec8c039d6b8d72efb219f7e4a867",
+          "bbox": [
+            22,
+            6,
+            63,
+            88
+          ]
+        },
+        {
+          "src": "male-club-hit-left-05.png",
+          "sha256": "3682fe461712228bf96fba442432dec1ac1954be2d033933aa288e34d0533024",
+          "source_sha256": "484b755d15a8117a07ec51c48b5a3a09beeae4c4b1d0444a9e61293f60337746",
+          "bbox": [
+            22,
+            6,
+            63,
+            88
+          ]
+        },
+        {
+          "src": "male-club-hit-left-06.png",
+          "sha256": "9fc6be3f42a7c89075ef9f5da6cb9f97659986d8276c7a5b1a9b666622da0863",
+          "source_sha256": "904301b0b270b18d018cf475533d5623b4e74df015fb12e7a3c476a4b27340c3",
+          "bbox": [
+            24,
+            6,
+            62,
+            87
+          ]
+        },
+        {
+          "src": "male-club-hit-left-07.png",
+          "sha256": "e2dc3da239e225d3ca6175af1cbc7df86a5a36396cd7572010249fe3659bdbbe",
+          "source_sha256": "7570c650948804d9b45a0a27d7b0d5baeaaa9dacead0b3fac36d0596092ed9ab",
+          "bbox": [
+            25,
+            6,
+            62,
+            87
+          ]
+        }
+      ],
+      "geometry_sha256": "1dd813dd59377601d01dc7f7f4f2b7430455992645ff82c74724f011342a1111",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-idle-front": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "front",
+      "action": "club-idle",
+      "equipment": "branch-club",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-club-idle-front-00.png",
+          "sha256": "ca1afc8f0e2c040eaeb3ac23a6c2acf9139b16b09ebcb1cb40fa88ea735e2dde",
+          "source_sha256": "6760645d24ff7ffab18ae7ca0b41b4f2e2ea574bb25189d81d3a37ebe107a1b6",
+          "bbox": [
+            29,
+            7,
+            67,
+            86
+          ]
+        },
+        {
+          "src": "male-club-idle-front-01.png",
+          "sha256": "a886a02c0acb1b36da37cffcc1979d14be576702f2dd30dfcc57972549189a15",
+          "source_sha256": "bd2760e01e71b3b24249ba879d380be5ccb77943101cea5121ca988b9e3074e3",
+          "bbox": [
+            29,
+            7,
+            67,
+            86
+          ]
+        },
+        {
+          "src": "male-club-idle-front-02.png",
+          "sha256": "ca1afc8f0e2c040eaeb3ac23a6c2acf9139b16b09ebcb1cb40fa88ea735e2dde",
+          "source_sha256": "99733d462ad123de98bd4a646cb96529ee30c563ad7be78e87ef9052cd8a906f",
+          "bbox": [
+            29,
+            7,
+            67,
+            86
+          ]
+        },
+        {
+          "src": "male-club-idle-front-03.png",
+          "sha256": "1e7a42e30750d2bd69caaf240c3bb07d3eebe1e47519c96c3d7998024e7bf93b",
+          "source_sha256": "bfdfaf84bae47f49d0e57d8403492ad3eab8461d63df610ae1edd6c1397e440d",
+          "bbox": [
+            29,
+            7,
+            67,
+            86
+          ]
+        }
+      ],
+      "geometry_sha256": "a97ff778566290be600d119bb1d44deeb4ddae957bd6f75fd0978dd213ff5dda",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-idle-right": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "right",
+      "action": "club-idle",
+      "equipment": "branch-club",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-club-idle-right-00.png",
+          "sha256": "1b7d8f06c66dee6dc5371b1423622345f4a31f670d338af826f8d99d1806e377",
+          "source_sha256": "9578aa4379df42c79c35e8aab802be595456848b2c2e502f785c5ff67a76ada9",
+          "bbox": [
+            41,
+            6,
+            66,
+            85
+          ]
+        },
+        {
+          "src": "male-club-idle-right-01.png",
+          "sha256": "08bab20d39519ceb63ef0d270fdd61c6ac1381286c0ca7fa6271ef7148b7be06",
+          "source_sha256": "c9d5f598981177af2f3e3b0696f5d600f0e9fbd4f29ee5c4e2d931ca8f795d95",
+          "bbox": [
+            41,
+            6,
+            66,
+            85
+          ]
+        },
+        {
+          "src": "male-club-idle-right-02.png",
+          "sha256": "1b7d8f06c66dee6dc5371b1423622345f4a31f670d338af826f8d99d1806e377",
+          "source_sha256": "396bb5a89baf4d02c928ad049da28e5a4171ae47241b4bfe3b4a1294027ff18e",
+          "bbox": [
+            41,
+            6,
+            66,
+            85
+          ]
+        },
+        {
+          "src": "male-club-idle-right-03.png",
+          "sha256": "fda065a200799cf9b3c1ea7ed827b4b254c8df74dbe94afad0e0993726f035da",
+          "source_sha256": "c3ce0280f9172ab478995615c6c5d7c1c034987ce72e2036800ce11d0e9c616d",
+          "bbox": [
+            41,
+            6,
+            66,
+            85
+          ]
+        }
+      ],
+      "geometry_sha256": "a97ff778566290be600d119bb1d44deeb4ddae957bd6f75fd0978dd213ff5dda",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-idle-back": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "back",
+      "action": "club-idle",
+      "equipment": "branch-club",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-club-idle-back-00.png",
+          "sha256": "a148671d2096fc114ef806b50f1dc4cc1d0350fa7f65a0f06049cd2084d11d53",
+          "source_sha256": "d7452f25a953788f2957ed6dd78e11d8d5acfc03aeac27bfde7c1532aea72f11",
+          "bbox": [
+            30,
+            4,
+            67,
+            83
+          ]
+        },
+        {
+          "src": "male-club-idle-back-01.png",
+          "sha256": "fcc96f8ce7b3dcb5c79f95a83555db41f02bebc590673f706e006065300c111f",
+          "source_sha256": "32008764b532dd405d50606f15e2e97dc2094ba80921fe63b8d75617618f14e6",
+          "bbox": [
+            30,
+            4,
+            67,
+            83
+          ]
+        },
+        {
+          "src": "male-club-idle-back-02.png",
+          "sha256": "a148671d2096fc114ef806b50f1dc4cc1d0350fa7f65a0f06049cd2084d11d53",
+          "source_sha256": "8144519a3a0c8404a7824a8201112e4a7a1ee9e338a430bd9a833ae66567992f",
+          "bbox": [
+            30,
+            4,
+            67,
+            83
+          ]
+        },
+        {
+          "src": "male-club-idle-back-03.png",
+          "sha256": "16a3cfc0d5b8bd21788c306a36b2d482989418f0270394f4103a9a4e5c5435c2",
+          "source_sha256": "66df28e10104cbded98d775267d0c5d62748dae05cac429511b56d1e4991ae2c",
+          "bbox": [
+            30,
+            4,
+            67,
+            83
+          ]
+        }
+      ],
+      "geometry_sha256": "a97ff778566290be600d119bb1d44deeb4ddae957bd6f75fd0978dd213ff5dda",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-idle-left": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "left",
+      "action": "club-idle",
+      "equipment": "branch-club",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-club-idle-left-00.png",
+          "sha256": "733be708e06df33fea272dfa6690ecce59b2bfba9c36d9d501679b834b78e2e1",
+          "source_sha256": "32fd2c532e36277c63d05eb519f2e709a1ddde6f2931303530fc410d6f2be403",
+          "bbox": [
+            30,
+            6,
+            55,
+            85
+          ]
+        },
+        {
+          "src": "male-club-idle-left-01.png",
+          "sha256": "df22e7bfcc90ddc3f686bee74dda33ef7a5bbc8d81ab4f59f7892e3921ccdda3",
+          "source_sha256": "9cebc3f0cc2a9d94c332d841cd39c21d37a78832a6380c7513a8a403a7d38ea5",
+          "bbox": [
+            30,
+            6,
+            55,
+            85
+          ]
+        },
+        {
+          "src": "male-club-idle-left-02.png",
+          "sha256": "733be708e06df33fea272dfa6690ecce59b2bfba9c36d9d501679b834b78e2e1",
+          "source_sha256": "6f300f52b367dff5855877c225d2329e8b0662153c21626f5fd3637d5cad3e67",
+          "bbox": [
+            30,
+            6,
+            55,
+            85
+          ]
+        },
+        {
+          "src": "male-club-idle-left-03.png",
+          "sha256": "1d49dc4300bcdc9f43dc063bd1c20f23a13375af0428c779fb95eb5355c96f1e",
+          "source_sha256": "174b25522f072bb23f5b626e374f7ff91801a96954969449c1fd8f516a5431d7",
+          "bbox": [
+            30,
+            6,
+            55,
+            85
+          ]
+        }
+      ],
+      "geometry_sha256": "a97ff778566290be600d119bb1d44deeb4ddae957bd6f75fd0978dd213ff5dda",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-sprint-front": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "front",
+      "action": "club-sprint",
+      "equipment": "branch-club",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-club-sprint-front-00.png",
+          "sha256": "cfd20b183145faa2534b3e7d686ca4eaafdb8d4b4783debb02990eabe67fd4af",
+          "source_sha256": "44f5576e09e57091c05b79185448731c82e4b98b2187881d4b4482ce41882de1",
+          "bbox": [
+            24,
+            11,
+            64,
+            89
+          ]
+        },
+        {
+          "src": "male-club-sprint-front-01.png",
+          "sha256": "a0be3293282064d46294e6c6f4cf89caa242a78af83b2ccca3ecff9f0de0d3e7",
+          "source_sha256": "16f421d72c2151ea2821b9e39d3edc86afc33c92b19d364830c60e9084eecf3f",
+          "bbox": [
+            25,
+            12,
+            63,
+            88
+          ]
+        },
+        {
+          "src": "male-club-sprint-front-02.png",
+          "sha256": "780f09d530770463d8dcb0a5acaa6559c8605863209bd257f2d28038b2b3edb5",
+          "source_sha256": "52e268667a59a3bcf4ec2ae67db5696e61ef3bfe903c516eec4add09db8752fc",
+          "bbox": [
+            29,
+            16,
+            62,
+            81
+          ]
+        },
+        {
+          "src": "male-club-sprint-front-03.png",
+          "sha256": "c99ade156264c07164835ff0ec146a2eef617e6562ba263fd925b5b07ef446f5",
+          "source_sha256": "30d40adf43858f11e5e5d0115dc25028288a00a5e7c0f5a82bcd891547458c18",
+          "bbox": [
+            32,
+            13,
+            61,
+            74
+          ]
+        },
+        {
+          "src": "male-club-sprint-front-04.png",
+          "sha256": "a9950f6c5f3c218c9701638bf5df3d359064a8696350aae04d5e7e774f3a99d1",
+          "source_sha256": "b625375b3f0ccb5e77c98f698b993ec34700aec55cc4561cc61c4faa2d213e45",
+          "bbox": [
+            32,
+            11,
+            61,
+            89
+          ]
+        },
+        {
+          "src": "male-club-sprint-front-05.png",
+          "sha256": "ab8a829ef655bbe01005a0f1475d46061c12761eaeae374553fbfc32acf16762",
+          "source_sha256": "8caba433b9ebb49d4fd7d480d50090d0c943ed56934b211a8dd2194ec7935358",
+          "bbox": [
+            33,
+            12,
+            61,
+            89
+          ]
+        },
+        {
+          "src": "male-club-sprint-front-06.png",
+          "sha256": "e4003296bc410b9d9e1e69eb5d44723f59d989e37f1ffd3e8ff388db7ce7d2cf",
+          "source_sha256": "12f1f08fdd8bc0b6327f42c9882ef0ce1f14b01195990e58e8ee55c976967b5d",
+          "bbox": [
+            30,
+            14,
+            62,
+            81
+          ]
+        },
+        {
+          "src": "male-club-sprint-front-07.png",
+          "sha256": "8cc9943d6487384ce01930ebd370f60bef37322cdcad601723664577f20f29f4",
+          "source_sha256": "fc0ff4b6a237336c70333044ab57d94ae622b45fb9be2814030f053ce05ef30e",
+          "bbox": [
+            27,
+            12,
+            62,
+            77
+          ]
+        }
+      ],
+      "geometry_sha256": "145e54244a779981ec7c3e1f1ac091fa668c2306c14c22067bb18a04c467ed02",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-sprint-right": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "right",
+      "action": "club-sprint",
+      "equipment": "branch-club",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-club-sprint-right-00.png",
+          "sha256": "8fa8c6ed1b69617015c389d92798551bf3b6e525eb7f059b720775c1c90d67aa",
+          "source_sha256": "c2a7cfeff4ef68375607d4b854579626193c19f609c9ff5ef576c7a54e553acf",
+          "bbox": [
+            16,
+            7,
+            71,
+            81
+          ]
+        },
+        {
+          "src": "male-club-sprint-right-01.png",
+          "sha256": "4feb48ad55efe5402ed87acc30f3bff087064bdf6c3904c5f0c49dd96999b62a",
+          "source_sha256": "a5ece233ab9931809fca10c20d52be149ffa9f375ba41af79c75659c7df7fd39",
+          "bbox": [
+            15,
+            9,
+            75,
+            82
+          ]
+        },
+        {
+          "src": "male-club-sprint-right-02.png",
+          "sha256": "82de2528ccc984d89249cde70b2e9c94a60ae4b0b2893231d2b82887aaa4064c",
+          "source_sha256": "1f591052385997abc600561f9f7056ec0a1517a03889c4b01e460fcdca40698d",
+          "bbox": [
+            28,
+            11,
+            81,
+            82
+          ]
+        },
+        {
+          "src": "male-club-sprint-right-03.png",
+          "sha256": "68517f14991a7a1f5f3c6ca195db4e394b518b55eb132de32f75ff86643bd252",
+          "source_sha256": "2d3c04e3e4d8c8de23184b4ab43e8b577d38556b4527212be5745e92347c2988",
+          "bbox": [
+            24,
+            10,
+            79,
+            81
+          ]
+        },
+        {
+          "src": "male-club-sprint-right-04.png",
+          "sha256": "40719a81782ccbd0ecee0787df55c6c40cc056c6c961d0013556e81332f78c22",
+          "source_sha256": "28b3829ebebfaded49a1c57a1170dbb8d61cd537446a653910f11364fe488a04",
+          "bbox": [
+            15,
+            7,
+            78,
+            78
+          ]
+        },
+        {
+          "src": "male-club-sprint-right-05.png",
+          "sha256": "4188d632ab08a0f1174211d67bc2eea04981878ef5b49b168755b55833dc51ec",
+          "source_sha256": "7bf2dd4a52db0e8d00a204cc868a1e3da569aed156fade6b6a3cd91031f4d41a",
+          "bbox": [
+            16,
+            8,
+            81,
+            79
+          ]
+        },
+        {
+          "src": "male-club-sprint-right-06.png",
+          "sha256": "011b304e82212776f30cd8a1642552ff97377d4b5c52cc95f0406e26b7cb7f4a",
+          "source_sha256": "8c0f2680d858b37bf4685e2a557383b1305916ec6dc4bbfa6ae2bcb376a308b5",
+          "bbox": [
+            28,
+            9,
+            79,
+            80
+          ]
+        },
+        {
+          "src": "male-club-sprint-right-07.png",
+          "sha256": "e7fda8a7e37ad8ed7ae5bd6c97687ac5c79c9a07eda11181854a74dc534f21c2",
+          "source_sha256": "c89ff358c11c69d7163ebab1c180fda9777fce64f48f313edb3863ed9dc73dd5",
+          "bbox": [
+            25,
+            7,
+            75,
+            80
+          ]
+        }
+      ],
+      "geometry_sha256": "145e54244a779981ec7c3e1f1ac091fa668c2306c14c22067bb18a04c467ed02",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-sprint-back": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "back",
+      "action": "club-sprint",
+      "equipment": "branch-club",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-club-sprint-back-00.png",
+          "sha256": "bd934f57cc651d7079bdf2a7410c29ec8df666ef0217e13c040210652c2823e3",
+          "source_sha256": "ad3afe83b992967773209d2d9fa553fc1b9c7ee4b72b41aad5943999f2b7c037",
+          "bbox": [
+            32,
+            2,
+            70,
+            93
+          ]
+        },
+        {
+          "src": "male-club-sprint-back-01.png",
+          "sha256": "dd39f8b3ec846a03880d7c7c60b2ece1af4ad80622d01d705167c86504f01bf1",
+          "source_sha256": "ef3b3fe69d7ebc4ac04eec01ddc918762e8df9c090b5f7bd343cb3e40a2d2af1",
+          "bbox": [
+            33,
+            3,
+            70,
+            88
+          ]
+        },
+        {
+          "src": "male-club-sprint-back-02.png",
+          "sha256": "f1812e86c680669b69d7d7911a8eb62bd37725c4b1484563681a3ffbe81414b1",
+          "source_sha256": "2c87c9608313a3d08f9ab028e5c3599828d955d580cd3b6d01ecec3bc8a2746c",
+          "bbox": [
+            34,
+            5,
+            66,
+            86
+          ]
+        },
+        {
+          "src": "male-club-sprint-back-03.png",
+          "sha256": "790848211aba079f6c12feb974dc177020383f6acb472b3196bba2e68eda1490",
+          "source_sha256": "84baabe21a66608e8fb4d0a2fb1e222f7771ff77f21d28e78a17605b180457af",
+          "bbox": [
+            35,
+            4,
+            63,
+            90
+          ]
+        },
+        {
+          "src": "male-club-sprint-back-04.png",
+          "sha256": "b1c7b3971a0f61887d624bd8b08f9033d05b26da32052a46d798f12b5fa85bce",
+          "source_sha256": "ca68d92e842a6d0b0cddc83718d61a059028c40714e9ef2655189ac5be956d01",
+          "bbox": [
+            36,
+            3,
+            64,
+            94
+          ]
+        },
+        {
+          "src": "male-club-sprint-back-05.png",
+          "sha256": "2624f424446fb434f83f7315f61dce7f070805f5093d0323ec6dcbb1b0b1ece3",
+          "source_sha256": "67a18490205f36ca9222c57de8c2bfc7668c09aa26c1a9d582c0950010679698",
+          "bbox": [
+            35,
+            4,
+            63,
+            89
+          ]
+        },
+        {
+          "src": "male-club-sprint-back-06.png",
+          "sha256": "9a9cde7c0a6bcdc470ec9385d993da0557db1c7d6c2c8e018139e81b16247d17",
+          "source_sha256": "e567d091256a388a7f39104c4bc31d1214c898f13308a0b9943988f2bf64e994",
+          "bbox": [
+            34,
+            5,
+            65,
+            86
+          ]
+        },
+        {
+          "src": "male-club-sprint-back-07.png",
+          "sha256": "6a356ec3d4c05e0cfad6e69eebc5c9071b183a2769a14b1b24ddf6926aedc6da",
+          "source_sha256": "e7cb79bad82f3aa40dfcb31c24d1870fcc7c59e0c2a6e11e5053886b59d13709",
+          "bbox": [
+            34,
+            3,
+            67,
+            89
+          ]
+        }
+      ],
+      "geometry_sha256": "145e54244a779981ec7c3e1f1ac091fa668c2306c14c22067bb18a04c467ed02",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-sprint-left": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "left",
+      "action": "club-sprint",
+      "equipment": "branch-club",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-club-sprint-left-00.png",
+          "sha256": "678d2e393d59e053a39dac83c5f6f2ddef476eae185fd004711a1bb9ff029e35",
+          "source_sha256": "9e031e4898a45666b37b6de23efd1b42456c28ee0c1351abbf29ad9e6deccab1",
+          "bbox": [
+            27,
+            7,
+            80,
+            78
+          ]
+        },
+        {
+          "src": "male-club-sprint-left-01.png",
+          "sha256": "4b309bb57196668183db3de74226f331a7fdd4189a0b798129ca60b615505284",
+          "source_sha256": "369ce57f6adacdcd087ea3d6a0ed7f853a9481369954f82dcff234ed591e42d3",
+          "bbox": [
+            23,
+            8,
+            81,
+            80
+          ]
+        },
+        {
+          "src": "male-club-sprint-left-02.png",
+          "sha256": "88b92ceecc100910c95d7ed0bf69ebf797c0884b94cf694c533f4a5e37532cac",
+          "source_sha256": "182c0c0699df9507adb95613cf16466328f485b618f565e791373ce8c48b422c",
+          "bbox": [
+            16,
+            10,
+            68,
+            81
+          ]
+        },
+        {
+          "src": "male-club-sprint-left-03.png",
+          "sha256": "1548f53134db993d7af213bd69a42c35fcd6de49c7e9dc72b487b221747667cc",
+          "source_sha256": "3107557d45da62730b19fbfc20edbd94536856bbbac99c0db00a07d115a2f6c8",
+          "bbox": [
+            19,
+            8,
+            72,
+            80
+          ]
+        },
+        {
+          "src": "male-club-sprint-left-04.png",
+          "sha256": "4934d57fdf266fe9093fd8f046015523284aeab1c18618b1fa65cc6e24f17266",
+          "source_sha256": "1e7e18703c501b55bbb32b0c9b3e5032db46ec60ffd4fdb408c8353aa53dcb8a",
+          "bbox": [
+            19,
+            7,
+            80,
+            82
+          ]
+        },
+        {
+          "src": "male-club-sprint-left-05.png",
+          "sha256": "d3b7049bf0a455a39688e51121713b87e4caaddad4d729096132cda718b7a102",
+          "source_sha256": "30213a790780a8fc46ad3796ed2ee793902d4302eb307804cb10d30449e4d3f6",
+          "bbox": [
+            16,
+            9,
+            79,
+            83
+          ]
+        },
+        {
+          "src": "male-club-sprint-left-06.png",
+          "sha256": "afc85c2a38c072560390296103b2048f092ad2c2e553c4cc74e7a4c6ce770c79",
+          "source_sha256": "602d73eacab9ceba6806a84720e1d57baf7777db6d6ada40587c95518447cf57",
+          "bbox": [
+            19,
+            11,
+            67,
+            83
+          ]
+        },
+        {
+          "src": "male-club-sprint-left-07.png",
+          "sha256": "7b12162b8b8f0bdbdf7ab7c5e4ea72f300ef02fd10b5de44facd99962ad1191f",
+          "source_sha256": "398d47c4bdd02fc38e1196bdb83800903b6a0ba14d9923654da3124b1be8cc92",
+          "bbox": [
+            22,
+            8,
+            71,
+            82
+          ]
+        }
+      ],
+      "geometry_sha256": "145e54244a779981ec7c3e1f1ac091fa668c2306c14c22067bb18a04c467ed02",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-walk-front": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "front",
+      "action": "club-walk",
+      "equipment": "branch-club",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-club-walk-front-00.png",
+          "sha256": "0731ea8ac876a822565efafc83324cee91decea069cb468a59d94f2f2d99ef4f",
+          "source_sha256": "4d26892d2fa5ccf959c72f039e42f7ecd0ea20a0b4d4d651c21c0c927aa6c8a9",
+          "bbox": [
+            30,
+            9,
+            62,
+            83
+          ]
+        },
+        {
+          "src": "male-club-walk-front-01.png",
+          "sha256": "dac988f9eebeb1b3c962e9f994ba520b74676230aa48f5c489c82faf5bb625b5",
+          "source_sha256": "7515c65bcb635c429bd00c9a7ec6eda9d3cf942aa1eb2bc50c99d2965aa4d0bc",
+          "bbox": [
+            29,
+            10,
+            63,
+            89
+          ]
+        },
+        {
+          "src": "male-club-walk-front-02.png",
+          "sha256": "3750a7ffd3cda6f02d5d12113ba5a3bb7b8b5f093b91b6db33e06cc3ece8cd9f",
+          "source_sha256": "45c5e1bd27c7be2391c24e64068f43504ee1c2133a345cff456145d26525c29e",
+          "bbox": [
+            27,
+            10,
+            63,
+            91
+          ]
+        },
+        {
+          "src": "male-club-walk-front-03.png",
+          "sha256": "420feda012bad4ce8af1410f9ac594e3339737b1f49dc2bc13654c66b8041da2",
+          "source_sha256": "f1813217320691d1cd76f2fa5e1881bcbbf4655e4c72586828b9119a3dc1ef97",
+          "bbox": [
+            27,
+            8,
+            63,
+            86
+          ]
+        },
+        {
+          "src": "male-club-walk-front-04.png",
+          "sha256": "166c301ef3be1f33c62dc71a35b42a8a5731e9411ec5d9b39d34cd2353a2bd52",
+          "source_sha256": "886462416b8d75251e517b0202e26ad3480b1a5b8928fad02cce606f994782a1",
+          "bbox": [
+            29,
+            8,
+            62,
+            81
+          ]
+        },
+        {
+          "src": "male-club-walk-front-05.png",
+          "sha256": "aefb9fc2ad146b4f28f232989fdc27f87b247f9283cc2b50104a64385921e9ac",
+          "source_sha256": "be6f76ee5d3c45346562d94156671d0eecc3083e1514d248946c215eb8e27da2",
+          "bbox": [
+            32,
+            9,
+            63,
+            90
+          ]
+        },
+        {
+          "src": "male-club-walk-front-06.png",
+          "sha256": "b467b23acba7936362f8838997b330a9bdec32c0e951d9c315318a5eeae5aa97",
+          "source_sha256": "e8889e7c1b587489139f50c970ad1ddce9da3ef4e65d49078912a4b0d63a27f3",
+          "bbox": [
+            33,
+            9,
+            62,
+            91
+          ]
+        },
+        {
+          "src": "male-club-walk-front-07.png",
+          "sha256": "a1f6d1bd9dd3efba752eb347ade3a257cb99e9344f4c0ba79c20c6553f9fd64a",
+          "source_sha256": "04680221887787b04f744e76da8377524d1e2c34880f54cae31f7bd78fd5f0d4",
+          "bbox": [
+            31,
+            8,
+            62,
+            86
+          ]
+        }
+      ],
+      "geometry_sha256": "e97d8fcdec09aa21754c3f51510290250351950d2ca457588dc6f6110a5d9799",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-walk-right": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "right",
+      "action": "club-walk",
+      "equipment": "branch-club",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-club-walk-right-00.png",
+          "sha256": "0939484091ccfd2f4f770de06a2613354a8e153d26b64b56628664f74532a6d2",
+          "source_sha256": "c5ddddbf170bbe929c04ee0b874cb071957f944fd1d2a3f4744eebbbd9055d27",
+          "bbox": [
+            40,
+            8,
+            72,
+            82
+          ]
+        },
+        {
+          "src": "male-club-walk-right-01.png",
+          "sha256": "475a82e750a6b849064fc91a3647269b9333c8c5003d1dddf951d4bd6308e415",
+          "source_sha256": "78b0ac7dc5bae0dd24a8c5b7acb555cba1b2308979386042e5c5b910a59796f3",
+          "bbox": [
+            33,
+            8,
+            71,
+            83
+          ]
+        },
+        {
+          "src": "male-club-walk-right-02.png",
+          "sha256": "05ceda0dfa73aac4a3c633d52bfd27209ff64b9a4f25ddfa3614073a1495c3ff",
+          "source_sha256": "e78c67694f08bc2ba433b9026ef67b6618b3b88aaa057459823c366256cfd619",
+          "bbox": [
+            23,
+            9,
+            71,
+            83
+          ]
+        },
+        {
+          "src": "male-club-walk-right-03.png",
+          "sha256": "b3caa772c8a8c74388adbf7bc3d20eba4dce051ad11bfabcd0a5dfcd06d3d0b9",
+          "source_sha256": "98cbb827d92d0019ce86a263633e1e37f1ee87a82176e6d7064f98fb4042d942",
+          "bbox": [
+            25,
+            7,
+            66,
+            82
+          ]
+        },
+        {
+          "src": "male-club-walk-right-04.png",
+          "sha256": "45f622967d2a88380afb2238ccdf40d10df0b95938d9e9007d5615ed404e74da",
+          "source_sha256": "828a3c9f4192d176da218c0be8dbd9997414bc081287c8ede0ad23c9e287162e",
+          "bbox": [
+            39,
+            7,
+            73,
+            81
+          ]
+        },
+        {
+          "src": "male-club-walk-right-05.png",
+          "sha256": "3ed9f9434e5a59f57d4bd650117e5f9a0b287a46c3f8373d6e75be77175c9775",
+          "source_sha256": "64f43b8c69bbd93b389d928b11e26bae1a09f4bb92e54e8c49ab2b9d381b1074",
+          "bbox": [
+            31,
+            8,
+            81,
+            81
+          ]
+        },
+        {
+          "src": "male-club-walk-right-06.png",
+          "sha256": "391e382b7608edd89f17428a9a24f5f8394ecabbb0b390226b60f751fcb7b3e7",
+          "source_sha256": "1dcab86b47e335525226f2f5e2893670a3fd01a6103ffab89e9100e6aaed1516",
+          "bbox": [
+            21,
+            8,
+            82,
+            83
+          ]
+        },
+        {
+          "src": "male-club-walk-right-07.png",
+          "sha256": "f68066ed07d97c1131d635e336eca0abf1ccebb96defd6331833aff4adef6ec3",
+          "source_sha256": "71d3d1a2bbf7198dfe81cf6842c4643c3868261392dc08d7f5383c29a2b0a869",
+          "bbox": [
+            26,
+            7,
+            79,
+            80
+          ]
+        }
+      ],
+      "geometry_sha256": "e97d8fcdec09aa21754c3f51510290250351950d2ca457588dc6f6110a5d9799",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-walk-back": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "back",
+      "action": "club-walk",
+      "equipment": "branch-club",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-club-walk-back-00.png",
+          "sha256": "ecdc6e7fe973333ba6fbc0bf7c9223d10755199d8f1b9da8e660034d593e5462",
+          "source_sha256": "cd0e33b840b67173298e8f4cece8544542426222be8479c542a07410fea98648",
+          "bbox": [
+            34,
+            7,
+            65,
+            85
+          ]
+        },
+        {
+          "src": "male-club-walk-back-01.png",
+          "sha256": "916a7a0b7d75e0f60c0ed3ed0c3554c48947f50790d475558d2f9864b9981019",
+          "source_sha256": "f6222d3d7e0412c5f472665faeb58a26d5f67ea5e5e8a10ff4b1991aed924749",
+          "bbox": [
+            33,
+            8,
+            67,
+            90
+          ]
+        },
+        {
+          "src": "male-club-walk-back-02.png",
+          "sha256": "4e5bf4edf26b246a26027de5b708d28d9ecb50ba8cd99f02f9bb3360c2b82682",
+          "source_sha256": "18651ff548bf0982bb9be34c80de7fd0159808a814b7872e7eded5211b47f112",
+          "bbox": [
+            33,
+            8,
+            68,
+            94
+          ]
+        },
+        {
+          "src": "male-club-walk-back-03.png",
+          "sha256": "e1ad803d73ea010a5ef6df36500d0db924c984bb46a40e777cca43fb3283394e",
+          "source_sha256": "ebb3d110f141e074f986e5f65dcb3caf51ff48a9aaa34343143bd51d78c362d7",
+          "bbox": [
+            34,
+            7,
+            69,
+            87
+          ]
+        },
+        {
+          "src": "male-club-walk-back-04.png",
+          "sha256": "fab500ac6c52bf85036dc256e3cd50bec409d88569f916a9c16abcb30eadd564",
+          "source_sha256": "1d027fa4e251b5dfac98cd32f2e37db26c5c0252db49fac6d7a1882b96e193b2",
+          "bbox": [
+            34,
+            6,
+            66,
+            86
+          ]
+        },
+        {
+          "src": "male-club-walk-back-05.png",
+          "sha256": "fa004e857aa4aee394d93a023026fbac1132af72a296c3b49912fb5cfcb131e8",
+          "source_sha256": "cc10a49b9cc5b108c8e7a4753bef2738c1dd97a1f34bad7fea0e3261b74fcf26",
+          "bbox": [
+            33,
+            7,
+            62,
+            90
+          ]
+        },
+        {
+          "src": "male-club-walk-back-06.png",
+          "sha256": "6fdd7277753043d6c1316777473c03734c90ae2bff75445edc04564180cef1b9",
+          "source_sha256": "cc3a901360fe2ac968f915a15b2158d2ab5e12470cd39fdf23551edbd9a7c391",
+          "bbox": [
+            34,
+            7,
+            62,
+            92
+          ]
+        },
+        {
+          "src": "male-club-walk-back-07.png",
+          "sha256": "1b816c7a48bfca73f59bd7d53f60f75780c9e7c80014570e88e8742a922874f4",
+          "source_sha256": "e2805749d44cdf695b49b4d2e801c64aa26158173bdd1ba3d3890fe7e7f5192b",
+          "bbox": [
+            33,
+            6,
+            63,
+            87
+          ]
+        }
+      ],
+      "geometry_sha256": "e97d8fcdec09aa21754c3f51510290250351950d2ca457588dc6f6110a5d9799",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-club-walk-left": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "left",
+      "action": "club-walk",
+      "equipment": "branch-club",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-club-walk-left-00.png",
+          "sha256": "948040f69f071c2af03277acdf9c6220d92595146be3677795c5ce4431c9c73c",
+          "source_sha256": "d5b70192b3e06a66dc752af3e5afe061273b2c63c42d67e843bc6711f0148eb4",
+          "bbox": [
+            25,
+            9,
+            56,
+            83
+          ]
+        },
+        {
+          "src": "male-club-walk-left-01.png",
+          "sha256": "63901f67ed304b388fbda64221b517cd45875caca6b54d55284fc172d5cf355f",
+          "source_sha256": "cfbdbe1482d149bb49a8d32659b38a82839de2a89ff88d4b01e8c0a215e8561c",
+          "bbox": [
+            25,
+            10,
+            63,
+            83
+          ]
+        },
+        {
+          "src": "male-club-walk-left-02.png",
+          "sha256": "8d5976345933b959924ff318d25524bd72950965302c2e84275e05c67fd4c354",
+          "source_sha256": "b2e7baf6a49af1e64199ed5102819721db62a5b432c119486394a19ed8b39f5e",
+          "bbox": [
+            24,
+            10,
+            73,
+            83
+          ]
+        },
+        {
+          "src": "male-club-walk-left-03.png",
+          "sha256": "8a09543acb8d969eac7322b354e8bc3f72066d04f5672937d032c2eb49090626",
+          "source_sha256": "4b364f5bfc36d77ac6a093e13f75c5247c60d7e3a074fb6817ab308e697d4ec5",
+          "bbox": [
+            30,
+            9,
+            71,
+            82
+          ]
+        },
+        {
+          "src": "male-club-walk-left-04.png",
+          "sha256": "6533debadf7fc345fc5dee1cb2acd8cd196498660cae898916d4bd04d6316e9f",
+          "source_sha256": "080e7bab4dc5be3768d8045ab3b7fe804d443417e565651c30a8ba38e5dcd61d",
+          "bbox": [
+            24,
+            8,
+            57,
+            82
+          ]
+        },
+        {
+          "src": "male-club-walk-left-05.png",
+          "sha256": "bc4ce16ae9e4ec05193e5f74baea5cb9d75934d760023204a19bbb0eca2ab2d1",
+          "source_sha256": "ad63f852523c705bde20a34c0a7498d3b081215b9dd88871d9327df3d2382c1e",
+          "bbox": [
+            16,
+            8,
+            65,
+            82
+          ]
+        },
+        {
+          "src": "male-club-walk-left-06.png",
+          "sha256": "e45b2306a13401a259736f499a9fda985aa2afa026cdf265a218e7f8663a07ac",
+          "source_sha256": "159b5aafb510ab7531b8d19e258f44fce1854c8f2d6fcb1a99ccaaa362b98666",
+          "bbox": [
+            15,
+            9,
+            74,
+            83
+          ]
+        },
+        {
+          "src": "male-club-walk-left-07.png",
+          "sha256": "7b41c4f7c9063f511a0bd0c8634508b50693ae27d59be315f9bf474a8ca71bda",
+          "source_sha256": "032d8fe91dc06913abd8f4cf4c8f868b17ccc588f4f2c461ba2d98c72df29d82",
+          "bbox": [
+            18,
+            8,
+            70,
+            82
+          ]
+        }
+      ],
+      "geometry_sha256": "e97d8fcdec09aa21754c3f51510290250351950d2ca457588dc6f6110a5d9799",
+      "weapon_appearance": {
+        "source": "native\\client\\assets\\first-slice\\starter-combat\\originals\\male-attack-front-0-3-imagegen-v1.png",
+        "source_sha256": "065b7c3001425f2e7eae31efb39e31660e78cc3b97fcec743cf28874d0f086c2",
+        "crop": [
+          120,
+          287,
+          194,
+          315
+        ],
+        "region": "Isolated wooden branch in first attack pose, excluding hand",
+        "foreground_samples": 1615,
+        "fallback_linear_rgb": [
+          0.08021982031446832,
+          0.03560131487502034,
+          0.012286488356915872
+        ],
+        "method": "ImageGen wood texture patch; texture alpha controls confidence only; original club mesh supplies final alpha",
+        "patch": "painted-branch-patch.png",
+        "patch_sha256": "1f589bdb4447a4f0143e4dd4484a3764c68543f6b0b2e06d14beb5a00be8fd58"
+      },
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-idle-front": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "front",
+      "action": "idle",
+      "equipment": "unarmed",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-idle-front-00.png",
+          "sha256": "756a53c87e95775f25ccb5148ac35493d40a979a1f899296491b326cbe7df585",
+          "source_sha256": "5af4e9ee8df904b01733071b7a1f124e058d66cf1d810fd2a5e972666c597fba",
+          "bbox": [
+            29,
+            7,
+            67,
+            86
+          ]
+        },
+        {
+          "src": "male-idle-front-01.png",
+          "sha256": "8dca05f3273e9fce55070d2225f74c400417940eef89ae2e433c1b8033d203ca",
+          "source_sha256": "48e2b9ca3bef7daa5e1d9147768f3362d20169b2c24f6d84d7ca5de4df4a4191",
+          "bbox": [
+            29,
+            7,
+            67,
+            86
+          ]
+        },
+        {
+          "src": "male-idle-front-02.png",
+          "sha256": "756a53c87e95775f25ccb5148ac35493d40a979a1f899296491b326cbe7df585",
+          "source_sha256": "123ce60de30108d0bf8861ea5442ca9dcaa9d9fe653a093856d0a41be2d1b015",
+          "bbox": [
+            29,
+            7,
+            67,
+            86
+          ]
+        },
+        {
+          "src": "male-idle-front-03.png",
+          "sha256": "7c0995a40faedf8856f41f92df7aaa1ca80115f524ef9231645cfba63043fc37",
+          "source_sha256": "0e698150496a4be10c768b058fe317942a49d150c61c3b7d7c9ea5f329bff64f",
+          "bbox": [
+            29,
+            7,
+            67,
+            86
+          ]
+        }
+      ],
+      "geometry_sha256": "30b58b46b31bbfc6bca93708ffe09b9b7be1e0e2f39a3d1fa83f65716a547089",
+      "weapon_appearance": null,
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-idle-right": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "right",
+      "action": "idle",
+      "equipment": "unarmed",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-idle-right-00.png",
+          "sha256": "80f793468cab2fe14b63ee3f8da6ac9324b300db34d831cd7701e936fa142bcc",
+          "source_sha256": "3f1454e74714fb2232e34b2ef2e3c7928ae3827d9bfd419687f4d04977a5f036",
+          "bbox": [
+            41,
+            6,
+            65,
+            85
+          ]
+        },
+        {
+          "src": "male-idle-right-01.png",
+          "sha256": "d935d399bb016626d1e88771cfff42138f9ce978fd7587099b5b87af898f49a1",
+          "source_sha256": "672ab9d56772595194fc90b4133757da47f0e68f8403729a3497b87dbeeb1489",
+          "bbox": [
+            41,
+            6,
+            65,
+            85
+          ]
+        },
+        {
+          "src": "male-idle-right-02.png",
+          "sha256": "80f793468cab2fe14b63ee3f8da6ac9324b300db34d831cd7701e936fa142bcc",
+          "source_sha256": "64be409678dc4e511dc26c127ec5ebc70661adb3efd0a8eca3d1d097532d7910",
+          "bbox": [
+            41,
+            6,
+            65,
+            85
+          ]
+        },
+        {
+          "src": "male-idle-right-03.png",
+          "sha256": "f714cb93dff47a870d51fab0a3a0a64d5691deb6a0d1c5e310e0ffc8b03e051e",
+          "source_sha256": "bd08e07a9e4bbe85f549b5b2156bb57ce914cd4f755c3da667d142670b220725",
+          "bbox": [
+            41,
+            6,
+            65,
+            85
+          ]
+        }
+      ],
+      "geometry_sha256": "30b58b46b31bbfc6bca93708ffe09b9b7be1e0e2f39a3d1fa83f65716a547089",
+      "weapon_appearance": null,
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-idle-back": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "back",
+      "action": "idle",
+      "equipment": "unarmed",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-idle-back-00.png",
+          "sha256": "4edee2eb82ae9dcafecfda805459a0f5c1fb72df25c135a1b057cace81738324",
+          "source_sha256": "ee30da3c559603abf7f70da033d213b9451d288236650eb98aab2c8fb4605954",
+          "bbox": [
+            30,
+            4,
+            66,
+            83
+          ]
+        },
+        {
+          "src": "male-idle-back-01.png",
+          "sha256": "ff99e265fcf3122a4d52952118a590c4394715a88bbcc199ad1a78433d1e097d",
+          "source_sha256": "4d63a311d3878b266ac68909f9aad9c87a348afd7fc8d41b61256aa676e1ebcf",
+          "bbox": [
+            30,
+            4,
+            66,
+            83
+          ]
+        },
+        {
+          "src": "male-idle-back-02.png",
+          "sha256": "4edee2eb82ae9dcafecfda805459a0f5c1fb72df25c135a1b057cace81738324",
+          "source_sha256": "0c5a66be13ec1f270978894b7a024897fd1fe446e6c7bddd8d748f5118618ed6",
+          "bbox": [
+            30,
+            4,
+            66,
+            83
+          ]
+        },
+        {
+          "src": "male-idle-back-03.png",
+          "sha256": "a2bfb212cd4240a650e40e172989195212039b5ad77a3f6cbfcf92265d09fcad",
+          "source_sha256": "5cfe48fbe9ea3233e80ad70e8eaff98d4fa965e728a7d1469dc7e6bd34607cc6",
+          "bbox": [
+            30,
+            4,
+            66,
+            83
+          ]
+        }
+      ],
+      "geometry_sha256": "30b58b46b31bbfc6bca93708ffe09b9b7be1e0e2f39a3d1fa83f65716a547089",
+      "weapon_appearance": null,
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-idle-left": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "left",
+      "action": "idle",
+      "equipment": "unarmed",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-idle-left-00.png",
+          "sha256": "8f3d58d1bda326ca133b63313f27c745818fd9ffc0a2156d398a2cf23d33d716",
+          "source_sha256": "291cd5b611fa3a2bf512c6401a98d36280e3473491e7ca4f2ef1ce09030edb3b",
+          "bbox": [
+            30,
+            6,
+            55,
+            85
+          ]
+        },
+        {
+          "src": "male-idle-left-01.png",
+          "sha256": "ce6af963151d7fd506b72c36d0bf37f97e396e755252b2dcfb2286c07c51d74b",
+          "source_sha256": "5504f3f5aead5b0d48251beb90f3a12fce5dc60b85384fcdd08ebf4077ba6083",
+          "bbox": [
+            30,
+            6,
+            55,
+            85
+          ]
+        },
+        {
+          "src": "male-idle-left-02.png",
+          "sha256": "8f3d58d1bda326ca133b63313f27c745818fd9ffc0a2156d398a2cf23d33d716",
+          "source_sha256": "6b096d28af8378d3a6449e71bf69f75a041ac1cb44f04a3037255afb2807dafe",
+          "bbox": [
+            30,
+            6,
+            55,
+            85
+          ]
+        },
+        {
+          "src": "male-idle-left-03.png",
+          "sha256": "bdd45e4ad030a76844fa5f3b8b38b0c71da39eb05241c5be3b8a45b591f91fe1",
+          "source_sha256": "0477fa1b077e44fad342eab97efe46ad70057d6026afea2b29acdf5372a9a36e",
+          "bbox": [
+            30,
+            6,
+            55,
+            85
+          ]
+        }
+      ],
+      "geometry_sha256": "30b58b46b31bbfc6bca93708ffe09b9b7be1e0e2f39a3d1fa83f65716a547089",
+      "weapon_appearance": null,
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-sprint-front": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "front",
+      "action": "sprint",
+      "equipment": "unarmed",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-sprint-front-00.png",
+          "sha256": "a868633c8dd54f2d757b70190375639beb91f322011df61f8bcc67a426b98371",
+          "source_sha256": "b42d8f2e4a1c1c17dd5d0829433f6a0aa8567420b0bdbe32f35a2fb41310b1c4",
+          "bbox": [
+            32,
+            11,
+            64,
+            89
+          ]
+        },
+        {
+          "src": "male-sprint-front-01.png",
+          "sha256": "bfe8aeb11ee07fa9fab8764baf25781cf5df9ae52c99cd1fdab350d3cf48f62e",
+          "source_sha256": "ac4a3fb75eeefc8bed4107707c553f60f49195eb32e7819ae58596dc305b107d",
+          "bbox": [
+            32,
+            12,
+            63,
+            88
+          ]
+        },
+        {
+          "src": "male-sprint-front-02.png",
+          "sha256": "98e89a874b0dc263d4b48e743a01387104f8ed51727da0b66ffdcf68c0f97f5d",
+          "source_sha256": "f71cc340dc8a1f1ade97a0a52831b0ef8c35dc4e9932b527d327acd31ebbcfd9",
+          "bbox": [
+            33,
+            16,
+            62,
+            81
+          ]
+        },
+        {
+          "src": "male-sprint-front-03.png",
+          "sha256": "fc0054e93099bfb3d96aca54a118c855b1b1adc4bf85a5e0c1d11ce52300a123",
+          "source_sha256": "c95e3783ce975f64bc7a1152db59375de60e635023c8d9ca0b9b6caeaa784d2c",
+          "bbox": [
+            32,
+            13,
+            61,
+            74
+          ]
+        },
+        {
+          "src": "male-sprint-front-04.png",
+          "sha256": "c6819c01d6ef9f91b176075546114cb5c5e46078bc42f647f0dd505770ab1fef",
+          "source_sha256": "99e6eecf78e57dcce0c45d52ab0093f0a371171c7415a5508ff03d918db0ee7e",
+          "bbox": [
+            32,
+            11,
+            61,
+            89
+          ]
+        },
+        {
+          "src": "male-sprint-front-05.png",
+          "sha256": "c6f1ae94d04e902cc0f01c74cba06c7b4406d98ffe482cbf52472b9b959e8d55",
+          "source_sha256": "0bb70f778b695b9e4893293543478c0f6a0f3518ef2cc8f0da47e2503e66f22e",
+          "bbox": [
+            33,
+            12,
+            61,
+            89
+          ]
+        },
+        {
+          "src": "male-sprint-front-06.png",
+          "sha256": "a6209e3cf28ad632625b8ac61900324dd3988cbb07b050d5438d4b53928efb84",
+          "source_sha256": "2c96767514fb4e382c3c56a443ce9cc9f492aa3abffa6504219af3e65ea1a96b",
+          "bbox": [
+            34,
+            14,
+            62,
+            81
+          ]
+        },
+        {
+          "src": "male-sprint-front-07.png",
+          "sha256": "008ce5a720a1b16694ea9e0b8f68ed09c4bf9148fa32fd06a6ecbbef9867fc4e",
+          "source_sha256": "5c7abea0a5428b8dafd63b4512b811737b5988721dbe00e7e0485aedb4e8e572",
+          "bbox": [
+            34,
+            12,
+            62,
+            77
+          ]
+        }
+      ],
+      "geometry_sha256": "c3e19851684ab555ce438e75a4abb3a393a1ba74524e900872fe91ee9b4f76d9",
+      "weapon_appearance": null,
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-sprint-right": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "right",
+      "action": "sprint",
+      "equipment": "unarmed",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-sprint-right-00.png",
+          "sha256": "b90e9080d2cd4ba4bccd855d556392016bac00c081be8c865384d2ce86ef1fee",
+          "source_sha256": "ef4afb121a6ad028460a8d344d9fa969e13e6c5e22c7c12c431bebb5b1dae713",
+          "bbox": [
+            16,
+            7,
+            69,
+            81
+          ]
+        },
+        {
+          "src": "male-sprint-right-01.png",
+          "sha256": "3638840704023f3a3aa1ad84acb10d4f2ec40ddc0ded7e600744c7afa910ce4d",
+          "source_sha256": "5f702f3b12a03086be556e9e26880df8d80552bf10a8d595c75b1c942115471d",
+          "bbox": [
+            15,
+            9,
+            68,
+            82
+          ]
+        },
+        {
+          "src": "male-sprint-right-02.png",
+          "sha256": "5f6aa73e08d5d1537b08295bcd7e41f5babc248786acd96462a3059e4f869ceb",
+          "source_sha256": "b4e7e312370ebe44d42a6d15799372188033cfede6f5b1d54573bd07af33ec81",
+          "bbox": [
+            28,
+            11,
+            71,
+            82
+          ]
+        },
+        {
+          "src": "male-sprint-right-03.png",
+          "sha256": "b1f3fa15a9ba841a6a435c3fdf3cb7773fc34fbdf930f293f36b3d2397ec4e18",
+          "source_sha256": "41a8ce226c033e87ca878f6e35d8f22fac4937739856a8bc7114d789f41611a8",
+          "bbox": [
+            24,
+            10,
+            72,
+            81
+          ]
+        },
+        {
+          "src": "male-sprint-right-04.png",
+          "sha256": "d5fe39c08d2ca605d7d1d59dfe7822151e41e61778b081fb0e835cc50912a3c8",
+          "source_sha256": "47b2857a0a3f39e2edddc441ccb0c4d4c43c1b064b0c7e493dc43c4a4c2c64ac",
+          "bbox": [
+            15,
+            7,
+            69,
+            78
+          ]
+        },
+        {
+          "src": "male-sprint-right-05.png",
+          "sha256": "6e226f07179c1e186d7c66955818d69ee0d85165429948f19cb8bbf0440dc9f5",
+          "source_sha256": "9f71c1424dcbecf9c97f8db536676fd45b27ec2bb3e9490bfd754c4749a0d6a8",
+          "bbox": [
+            16,
+            8,
+            68,
+            79
+          ]
+        },
+        {
+          "src": "male-sprint-right-06.png",
+          "sha256": "83357c38b3d41131a019586769a90bb20074d7fc316013173016bd4d5f96a979",
+          "source_sha256": "0c883570d4e1eaf0ff3c0df77243e8c01c39013dd24cb6ab66701364df4dfb38",
+          "bbox": [
+            28,
+            9,
+            72,
+            80
+          ]
+        },
+        {
+          "src": "male-sprint-right-07.png",
+          "sha256": "1867159eac1376cf1a0657ffbca1fe8d0c9c583fb3173123d60f7023def65ae2",
+          "source_sha256": "5b86ee3ff7d10ffa1c2ff8e0e13b16a10923178b106988d2b88192f97fcfa78c",
+          "bbox": [
+            25,
+            7,
+            70,
+            80
+          ]
+        }
+      ],
+      "geometry_sha256": "c3e19851684ab555ce438e75a4abb3a393a1ba74524e900872fe91ee9b4f76d9",
+      "weapon_appearance": null,
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-sprint-back": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "back",
+      "action": "sprint",
+      "equipment": "unarmed",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-sprint-back-00.png",
+          "sha256": "39537d1f151cab82504adc6697293ab21a59b89550e50169fdf83271de2b2efd",
+          "source_sha256": "a5c2030b51db9290ef08023e56e1abc3e4623e05bd6a06db3df47549d0178b19",
+          "bbox": [
+            32,
+            2,
+            63,
+            93
+          ]
+        },
+        {
+          "src": "male-sprint-back-01.png",
+          "sha256": "4dfd929f18db1d9052f52d7ca2db94808bd21cc1d88e3c309598fb39a6f161c4",
+          "source_sha256": "a67afc54aa7cab5ca4e82bfeece1a8971a6dd2d5ddbb9aa5ffd7cbe40fcf767d",
+          "bbox": [
+            33,
+            3,
+            64,
+            88
+          ]
+        },
+        {
+          "src": "male-sprint-back-02.png",
+          "sha256": "7d13edafd6327217502429251568081ed4af9d6781bf2f74d229894c2bc8e392",
+          "source_sha256": "a6e29de616f47f298a3fe8ed0d10b1519cbbb78ed04e56982b833ce0d95c5671",
+          "bbox": [
+            34,
+            5,
+            63,
+            86
+          ]
+        },
+        {
+          "src": "male-sprint-back-03.png",
+          "sha256": "8d0258c1777d15dbb01fe5e1477d4a358c4cad17acddcc03a1517cb7368a015c",
+          "source_sha256": "8d72b9b794622cc9052c442490bedc480a385f02e21769d1db35c5084da73521",
+          "bbox": [
+            35,
+            4,
+            63,
+            90
+          ]
+        },
+        {
+          "src": "male-sprint-back-04.png",
+          "sha256": "d868b52accf5141b46bc2ed4ac71f9a045af2d54f43d4d54b99a7d15c6d96fda",
+          "source_sha256": "52c6066848cff3407839b2fb80ba41e93af90ac8eecba376406a39772206a722",
+          "bbox": [
+            36,
+            3,
+            64,
+            94
+          ]
+        },
+        {
+          "src": "male-sprint-back-05.png",
+          "sha256": "f9ce781b0410a867c9b6883a32f5ac295645b2e45f0b09fabd83d2fcdb79d648",
+          "source_sha256": "a7d257edf27ef66e7441fef10b3fd1e05804884b8eba00bbfd22c23412659063",
+          "bbox": [
+            35,
+            4,
+            63,
+            89
+          ]
+        },
+        {
+          "src": "male-sprint-back-06.png",
+          "sha256": "3a48539aa7ef01e023baf5669c0f3ccafe9f39108ee7bc754f4260752966af12",
+          "source_sha256": "5f896eb26fe6a58fae87cf8aae4e612aef7aa1b040b094ba77df7ec007e084a0",
+          "bbox": [
+            34,
+            5,
+            62,
+            86
+          ]
+        },
+        {
+          "src": "male-sprint-back-07.png",
+          "sha256": "5bfcdf12a5a5a02120e431864d638f7411690cf13b72182472e16a6562b2a0bb",
+          "source_sha256": "d3e3a36cf39e8b44f704316e8c0853231c7d41b66be27363e3c46470d5929668",
+          "bbox": [
+            34,
+            3,
+            61,
+            89
+          ]
+        }
+      ],
+      "geometry_sha256": "c3e19851684ab555ce438e75a4abb3a393a1ba74524e900872fe91ee9b4f76d9",
+      "weapon_appearance": null,
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-sprint-left": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "left",
+      "action": "sprint",
+      "equipment": "unarmed",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-sprint-left-00.png",
+          "sha256": "a63514a092d3410f4ee98b5905c72e4896606c77ac4fd616304b38c8f08e4132",
+          "source_sha256": "5289825e60e8f4095e7b8b432d7737506a980faf12e0a05fdd06bb603f0e158c",
+          "bbox": [
+            28,
+            7,
+            80,
+            78
+          ]
+        },
+        {
+          "src": "male-sprint-left-01.png",
+          "sha256": "6e3d6b23e5ae09d87585230a659258146674c2e908f0e8819a1c0c985d24707d",
+          "source_sha256": "4b41df81aa17083cb8e3dffed38bd2239216479535db7b600b42cf663b849d94",
+          "bbox": [
+            28,
+            8,
+            81,
+            80
+          ]
+        },
+        {
+          "src": "male-sprint-left-02.png",
+          "sha256": "015f877c66af3798c2b96a721ea6f590b1c319dd7ccb96c40db3cf85afb8a475",
+          "source_sha256": "b73226b6ee151ae1d5b094a17b3b11aead131281a15cc670e9427253098732ab",
+          "bbox": [
+            26,
+            10,
+            68,
+            81
+          ]
+        },
+        {
+          "src": "male-sprint-left-03.png",
+          "sha256": "0579bbfa8ea6cd448bca0a11c9bc8d078d5ad5b7f0c7a5d285446e09db3fd2e4",
+          "source_sha256": "de73c8156e1e26f429ef8dda4407f8502ebe761b080f0bd95e8fe35eefd9249f",
+          "bbox": [
+            25,
+            8,
+            72,
+            80
+          ]
+        },
+        {
+          "src": "male-sprint-left-04.png",
+          "sha256": "f8f14ccaa01b49b50aabd99d651c2a0fa180955b1e6af49ec367485b94dc4da4",
+          "source_sha256": "20b2c663bb3e39e6e24b3b80886ae48eb3bffa2665272d9c6c7cca2b6347d417",
+          "bbox": [
+            27,
+            7,
+            80,
+            82
+          ]
+        },
+        {
+          "src": "male-sprint-left-05.png",
+          "sha256": "7cabdb57ed781daff96b0d4ed415b3e6976a617ba0b52ec278e8c2a7351ac390",
+          "source_sha256": "67d93dcc421acca949c87c43772089714fcee418e92f591997c06c7bf133da01",
+          "bbox": [
+            29,
+            9,
+            79,
+            83
+          ]
+        },
+        {
+          "src": "male-sprint-left-06.png",
+          "sha256": "e75c95943a7726b36838d95bf725b5f3b29c0765da589c0b378ff31a86ec1007",
+          "source_sha256": "e59e9c417e33652894ea075ad7346fe4d74fd50a158edf15432701af4ee628f9",
+          "bbox": [
+            24,
+            11,
+            67,
+            83
+          ]
+        },
+        {
+          "src": "male-sprint-left-07.png",
+          "sha256": "f40bf9911935a8bf6e5d189a23d070bf05726c4346cad163ef12571c8d99bd20",
+          "source_sha256": "4dbc8fca5f359ee6bea96fc462d19d1983d03faeea57bd70f4e0cf22bdb5cd82",
+          "bbox": [
+            26,
+            8,
+            71,
+            82
+          ]
+        }
+      ],
+      "geometry_sha256": "c3e19851684ab555ce438e75a4abb3a393a1ba74524e900872fe91ee9b4f76d9",
+      "weapon_appearance": null,
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-unarmed-hit-front": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "front",
+      "action": "unarmed-hit",
+      "equipment": "unarmed",
+      "loop": false,
+      "frames": [
+        {
+          "src": "male-unarmed-hit-front-00.png",
+          "sha256": "c3cafacbe500bcaa8431318486b6636537e87c30afbcf588e491c8cd3c198679",
+          "source_sha256": "611e36841af4b95a4d86ecf6c9be043bc74823627c33b0c1004c5dc0ad8de8fa",
+          "bbox": [
+            30,
+            4,
+            66,
+            89
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-front-01.png",
+          "sha256": "d90ac98efd522e4920668f42d90d1d02abdc9ce2e7456420b352b4ee6552ea70",
+          "source_sha256": "bee4f90c1f216cb95d38f7936ea629607288470298d5d56da84ac94ff69d84e6",
+          "bbox": [
+            30,
+            4,
+            66,
+            89
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-front-02.png",
+          "sha256": "39dd1d6ba0ca85ab4e11a88237254b3cff5dc5af200c73d85a08c03d274a3bfa",
+          "source_sha256": "7ca41db3ef281fa5438645503a986089e181e5de49d92dad9a088367c520f020",
+          "bbox": [
+            30,
+            5,
+            66,
+            89
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-front-03.png",
+          "sha256": "4b68ce6472bd5739d30936932ed686adeb1eac931da5231932bc7946d7a0135a",
+          "source_sha256": "e3d70e52e2accc9c796a43d58000a4b6eb86c586f42ff3b3be56e995015fc414",
+          "bbox": [
+            30,
+            5,
+            66,
+            89
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-front-04.png",
+          "sha256": "957d2823d58e2372af44246a744d517c13ed3746100037b3ef86cb26f9651ffa",
+          "source_sha256": "d0f3fda3fb2102f37e0a1712e19c684f084f3d3525738fe32d82761d2d2f68db",
+          "bbox": [
+            30,
+            6,
+            66,
+            89
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-front-05.png",
+          "sha256": "e692bb013e956b6b52528535e8c2916e453ee464acf9dc2ab9ce1d063318b7e1",
+          "source_sha256": "987e3ac3984f41e61dcd240a3f965d953607a96673ffd7e64bd989b0ae21a0ec",
+          "bbox": [
+            30,
+            7,
+            66,
+            89
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-front-06.png",
+          "sha256": "00fe2d72d409f46253f22b688ddac8c09204ecfe8a4c2909e8fa742466ae5963",
+          "source_sha256": "da545aa314e371c02cf2d2b959c06775a9426a81b3835b0269af1caa865efd9d",
+          "bbox": [
+            30,
+            9,
+            66,
+            89
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-front-07.png",
+          "sha256": "44812f7433553e6eda0964e5a265386a65220c3fdda86aa6dc85c8ec8715273d",
+          "source_sha256": "3d23325e5cad855063bce3e556e72f4c8fbc5cdb19f2053e6f86328d4785a09d",
+          "bbox": [
+            30,
+            10,
+            66,
+            89
+          ]
+        }
+      ],
+      "geometry_sha256": "1dd813dd59377601d01dc7f7f4f2b7430455992645ff82c74724f011342a1111",
+      "weapon_appearance": null,
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-unarmed-hit-right": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "right",
+      "action": "unarmed-hit",
+      "equipment": "unarmed",
+      "loop": false,
+      "frames": [
+        {
+          "src": "male-unarmed-hit-right-00.png",
+          "sha256": "c9bd26cd73e233a53d632287a676101d46fedf5123582db0bf39725b40b1a88e",
+          "source_sha256": "6a445853b29baa08add8c77262480fbd0756cf0953e71ec31a15a27fd8e9e516",
+          "bbox": [
+            33,
+            8,
+            66,
+            89
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-right-01.png",
+          "sha256": "6e17fae6330c3ffdf861beabcd6afde6d336b499911332d68a6b38be068c3576",
+          "source_sha256": "b83070d3d053317b9566ddf636be8b1f478c8d920ee41dc55e3d04ba1a02434c",
+          "bbox": [
+            33,
+            8,
+            67,
+            89
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-right-02.png",
+          "sha256": "beae902c38191cc4789c9ac65c8798d4aefc4cd1453033e587d1ce9d57428abf",
+          "source_sha256": "a7333e0470b75fb4fda96500834c886a49f0743bd3277d81eae11b2c91bc1276",
+          "bbox": [
+            33,
+            8,
+            68,
+            89
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-right-03.png",
+          "sha256": "6c94f187e99d0096d42320c1f4c998d5be7a8d7599196695acdbf8d4541dac58",
+          "source_sha256": "7b5c90b01a7e029c8b8f49510e718e25bb421156c7c5fce890bd6618cb04a823",
+          "bbox": [
+            33,
+            8,
+            68,
+            89
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-right-04.png",
+          "sha256": "2aa4c0c0b47623911e75e5245a644b818c3faa717b629afb1590c2364737e4ae",
+          "source_sha256": "281f37889ce4e288d53a61e67587a9c1f1580ecb1a14f69c2cc6344d6d63be15",
+          "bbox": [
+            33,
+            8,
+            67,
+            89
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-right-05.png",
+          "sha256": "e871a162706e717f5e46f1392b4434be1a3eb7e325014eaa5cb47cd439ea0fbd",
+          "source_sha256": "cc53c9cef3af33e0acdcec0e4c5d64526f208d8f997e19f6a54ff1d354ee794f",
+          "bbox": [
+            33,
+            8,
+            66,
+            89
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-right-06.png",
+          "sha256": "f492133ad9dc0b8ea5ef333c4e5fb78fcc032a3c147ebb005a884079b77eb012",
+          "source_sha256": "2770a4cb60b7f0b67624724e191fec1e7ed7c3071bda8bf1c12f3793d45f24e4",
+          "bbox": [
+            33,
+            8,
+            64,
+            89
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-right-07.png",
+          "sha256": "71fb4d8f5b1aa78cd4eaa217affd1ec4e27303387012ca6d68fb5e80eef9285f",
+          "source_sha256": "81a121bd9fd2882309caee9fe43482d96a9c1c01b1ce4ed3df39fa0e7b9e819e",
+          "bbox": [
+            34,
+            8,
+            64,
+            89
+          ]
+        }
+      ],
+      "geometry_sha256": "1dd813dd59377601d01dc7f7f4f2b7430455992645ff82c74724f011342a1111",
+      "weapon_appearance": null,
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-unarmed-hit-back": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "back",
+      "action": "unarmed-hit",
+      "equipment": "unarmed",
+      "loop": false,
+      "frames": [
+        {
+          "src": "male-unarmed-hit-back-00.png",
+          "sha256": "12ccbe44139dd3f638089181b56fde7857bb684656d822d4384a1af74cce5490",
+          "source_sha256": "e4c0fb77d5bb73c4b8bb14ffb961d541baeb5117b4ee0929022b750263425da0",
+          "bbox": [
+            31,
+            11,
+            65,
+            88
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-back-01.png",
+          "sha256": "1bf1ea95ba85f91c8f475da4d1f9af4f32d5ed9bf08f3c34f0abe2c2eff6a8e9",
+          "source_sha256": "88b495b26e3f4fedc522ea16b271c297a7663f53e7946743bb53515919c39c84",
+          "bbox": [
+            31,
+            10,
+            65,
+            88
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-back-02.png",
+          "sha256": "2e58d6d1ef9a0426c1c1adf1148dad6cc6c4b2069efb80d2977f07adc4a96ae7",
+          "source_sha256": "34511bf462a9055f41c493a2ea2f2f7817c6880facae4a88e8f9449fce837f0d",
+          "bbox": [
+            31,
+            10,
+            66,
+            88
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-back-03.png",
+          "sha256": "185285dd396107e0ac4355377e044b3b683a7d6cac4ba38fd909d4819289ec57",
+          "source_sha256": "a957d133da245b04612271c5f6caaa792656dacd382bc4cd8058252843a1cc35",
+          "bbox": [
+            31,
+            9,
+            66,
+            88
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-back-04.png",
+          "sha256": "d766d4aefbb48b0203da2d94e48f3df62b058848c5d818f392beb18366af5fc1",
+          "source_sha256": "f87a115e385b6e54f11d635354541d9f1873269fdc3be3307c8e9d8db95f6d4a",
+          "bbox": [
+            31,
+            7,
+            65,
+            88
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-back-05.png",
+          "sha256": "f47e452558523dad078a2c40ebe1781ce51ac516d9d43a5a86fa4cdd9d8a97a3",
+          "source_sha256": "788500ba386bdcbbea06aa0be6bdb2403445974c36ca0ef031c3af338a20ca7b",
+          "bbox": [
+            31,
+            6,
+            65,
+            88
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-back-06.png",
+          "sha256": "97a30d1323a98c360b2af0b943ae0cd2f98a19877b5ba8ebff15e009591329ed",
+          "source_sha256": "968e361f4aaf2004edb6798b0f04119349b8d8b9151f4016bbef79b1de9e0299",
+          "bbox": [
+            30,
+            4,
+            66,
+            88
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-back-07.png",
+          "sha256": "c67663f0f8805bf912d85e89d3fb521d175cc365a4374abd10c25c19206b3889",
+          "source_sha256": "87d3138e36d9abd09f4b1abfd60b35a7e7a95dbaf4e4b3348dba0c6d5dc79a2e",
+          "bbox": [
+            30,
+            4,
+            66,
+            88
+          ]
+        }
+      ],
+      "geometry_sha256": "1dd813dd59377601d01dc7f7f4f2b7430455992645ff82c74724f011342a1111",
+      "weapon_appearance": null,
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-unarmed-hit-left": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "left",
+      "action": "unarmed-hit",
+      "equipment": "unarmed",
+      "loop": false,
+      "frames": [
+        {
+          "src": "male-unarmed-hit-left-00.png",
+          "sha256": "e1e803f43d629f4f6587ca3281ec74cf75d2dfba8746ca9478667484f7fdb44f",
+          "source_sha256": "eadfc4576eef8eee4a6c675550d6dcc199b6652e8bb5220e9fc353f705553566",
+          "bbox": [
+            30,
+            7,
+            63,
+            88
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-left-01.png",
+          "sha256": "e367322e7c187ceab90f324fd026befc0def3da048c2b693387f11929482727f",
+          "source_sha256": "8a3108b3feaa0b8eaaf33fc8364941d5eaf42c4986deced2108c66c5e56f1307",
+          "bbox": [
+            29,
+            7,
+            63,
+            88
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-left-02.png",
+          "sha256": "f61e76f4e936a0d4f48bddc11acb11eaeb0c29ac770d68032bbe1993fa5b15f1",
+          "source_sha256": "9cd9218f77fb583f5eeaf449e36e2bef0a157a8d6a1af0f90c3e43e47cde2b38",
+          "bbox": [
+            28,
+            7,
+            63,
+            88
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-left-03.png",
+          "sha256": "015356755b540cfecb2cad6726b18835491daf6c2d046847f420487809b5bb9a",
+          "source_sha256": "70cf029408abe0df456206610080f7744a5841efb178bc09ea2f9398c4b51d20",
+          "bbox": [
+            27,
+            6,
+            63,
+            88
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-left-04.png",
+          "sha256": "9c443da1f437ca4c727fc1f6865f4ee77009cd1a23dd89c66e9213f000c8d116",
+          "source_sha256": "99fbd010413543ca9b5b236d75eb99e44016f0e405b7d918910a88521b33b98a",
+          "bbox": [
+            28,
+            6,
+            63,
+            88
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-left-05.png",
+          "sha256": "da0a74a2678d64da752429fdca66e773ac23fac4a961d1b93bfd86fb8491d170",
+          "source_sha256": "cb51bfbc3de8a76a62138b3d4bbf377a9129692f30ddffbae73db8cab9e384ff",
+          "bbox": [
+            30,
+            6,
+            63,
+            88
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-left-06.png",
+          "sha256": "89a2914c2de4748f1d9e7b3d56401475e89142ed9a3a7862a0dddad922a507d2",
+          "source_sha256": "a5fe3d7d8e867f1162a9adcf48753b92554b7af2c3478c62c70009064514b75a",
+          "bbox": [
+            32,
+            6,
+            62,
+            87
+          ]
+        },
+        {
+          "src": "male-unarmed-hit-left-07.png",
+          "sha256": "4c8cc73c0449117ab8a6aad4272a2a5838de60973a4572098c3952d76b0d848f",
+          "source_sha256": "fdd6a9b9df2325cdf31eba92f2fe14ebf6e6217b4a538ba3b2a4aa1b0cde661c",
+          "bbox": [
+            32,
+            6,
+            62,
+            87
+          ]
+        }
+      ],
+      "geometry_sha256": "1dd813dd59377601d01dc7f7f4f2b7430455992645ff82c74724f011342a1111",
+      "weapon_appearance": null,
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-walk-front": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "front",
+      "action": "walk",
+      "equipment": "unarmed",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-walk-front-00.png",
+          "sha256": "665559690fce502e5eb4b44dd254f74920b1dd37706e3361ce25df0aa176f10f",
+          "source_sha256": "63b292ca5cbc77bc0c2918a688107dfb98cb3dee427ffbfb5a697c800d4e33bc",
+          "bbox": [
+            35,
+            9,
+            62,
+            83
+          ]
+        },
+        {
+          "src": "male-walk-front-01.png",
+          "sha256": "7e1561206f0048f18ee7c8a425ca5ea93637a4205611483626dde51c3d89acd7",
+          "source_sha256": "3cbd6ed7d81ca7d3d8de90ffae170a0d18474d240ab8771e4e25439bcf55d832",
+          "bbox": [
+            35,
+            10,
+            63,
+            89
+          ]
+        },
+        {
+          "src": "male-walk-front-02.png",
+          "sha256": "8242d5c8820b47440f0a6dee3f08df55a4da7da6e1f3d45d82749080a5196d14",
+          "source_sha256": "3091fc5faccf34ab7016ee2f28a2f57a6ae9b6d592ba69d46eb11679a2a5c5ca",
+          "bbox": [
+            35,
+            10,
+            63,
+            91
+          ]
+        },
+        {
+          "src": "male-walk-front-03.png",
+          "sha256": "89d678cf4e915109c25def1d4c2238ca399c60f4898fcad4dfe2f9243c150d68",
+          "source_sha256": "736a911ba7862e6dab7ca34fdfaf107b1b5311a93fe9f07f2ff38de11eab7988",
+          "bbox": [
+            34,
+            8,
+            63,
+            86
+          ]
+        },
+        {
+          "src": "male-walk-front-04.png",
+          "sha256": "54f79446a1ee0413d582e03e37d041259bda78e3b4a553e45ebb81a20ba8ed1e",
+          "source_sha256": "7e598501d4d2a0fcdba80087ce8c3eeb78a2e619b031cdf2373a583fbcfc3ee4",
+          "bbox": [
+            35,
+            8,
+            62,
+            81
+          ]
+        },
+        {
+          "src": "male-walk-front-05.png",
+          "sha256": "85bedd22e6496042e3db197cfa7e83ca66c1b42d9e3646d8566ac6791dab3ea5",
+          "source_sha256": "47210bba236c60ac191976304a3630d6b19bea2bff635fdf2ee518c979432b54",
+          "bbox": [
+            33,
+            9,
+            63,
+            90
+          ]
+        },
+        {
+          "src": "male-walk-front-06.png",
+          "sha256": "b25666ef8e3d11addfa7dfaa904e5fe6b8d546cfb7fef1d9d224df138a9561d0",
+          "source_sha256": "804562275a5f116e3d7a179538f38f13519d676a88b1fb8dbc6f1e31dd69234c",
+          "bbox": [
+            34,
+            9,
+            62,
+            91
+          ]
+        },
+        {
+          "src": "male-walk-front-07.png",
+          "sha256": "341011ec734890aa5d8552bd3a8e5f67b2f6fe71836fdac3851e83c4ccd48834",
+          "source_sha256": "ff0293345104f86f18fac9169eeab8cf5cf50d9861e10a17f330c027b643cc2c",
+          "bbox": [
+            35,
+            8,
+            62,
+            86
+          ]
+        }
+      ],
+      "geometry_sha256": "56ff6e7485c44cf508a6377f378754a0d0b9e740aa51ee438953d35cdc9e44a9",
+      "weapon_appearance": null,
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-walk-right": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "right",
+      "action": "walk",
+      "equipment": "unarmed",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-walk-right-00.png",
+          "sha256": "4739b85e152d4e43762c724f09a6aa4364c1ce9ddc2d0ef368dba8b4a023dbdd",
+          "source_sha256": "6b54b232f3bcd7b8daabbaa3075d7d1f1b73db6ea89915e1282dbd0c06a26679",
+          "bbox": [
+            40,
+            8,
+            61,
+            82
+          ]
+        },
+        {
+          "src": "male-walk-right-01.png",
+          "sha256": "d3e1231289eaaf8aeab66821336a14df06e904891be4348f748260df28733d18",
+          "source_sha256": "3e1b26ddee02154f09b58a88993b54cbef5c6fc8d483c07471f7cc4156c85989",
+          "bbox": [
+            33,
+            8,
+            71,
+            83
+          ]
+        },
+        {
+          "src": "male-walk-right-02.png",
+          "sha256": "41246e498bcd9d236e10662654bfb105a86954ce9243927b08e1f30a23cb864d",
+          "source_sha256": "890b53d9ec60b9a4b2362f17a342f210a95ab4636400fb5ab8e3688242b8df4b",
+          "bbox": [
+            23,
+            9,
+            71,
+            83
+          ]
+        },
+        {
+          "src": "male-walk-right-03.png",
+          "sha256": "641ecddd0ba7034bcdd2f76ba8e4f64777cd9d3f635215a8e845b21444a1d9f3",
+          "source_sha256": "0cf4f1d3449db885b659313143a156aa0cdc586e20321080248b7bb4215c044f",
+          "bbox": [
+            25,
+            7,
+            66,
+            82
+          ]
+        },
+        {
+          "src": "male-walk-right-04.png",
+          "sha256": "11529c7550703d1f746ef9d8dcc42e93e01a9bdde74d78517cae3707576a58f4",
+          "source_sha256": "92aaa80c23283c89aa35ef64328bb6b87ff74db01669ae6d675f90bbbe5ab0c9",
+          "bbox": [
+            39,
+            7,
+            59,
+            81
+          ]
+        },
+        {
+          "src": "male-walk-right-05.png",
+          "sha256": "3c9bbc3e996389c3b58df6aee2cc4ddc9fe9719ce6b5ff150c0a5abbeed85439",
+          "source_sha256": "cf57795a95701c5ef915f43a845d8c4e415a323bde825412d4213a20db2c75c8",
+          "bbox": [
+            31,
+            8,
+            73,
+            81
+          ]
+        },
+        {
+          "src": "male-walk-right-06.png",
+          "sha256": "06315049cfffa6f96caa5a46e850c3c5c31eabe3c6f430e7e80203652c4608cf",
+          "source_sha256": "40f8b57576018debe0123c4d4612853edccd0a7816a30ee1fa6c82466a1cd464",
+          "bbox": [
+            21,
+            8,
+            71,
+            83
+          ]
+        },
+        {
+          "src": "male-walk-right-07.png",
+          "sha256": "d9e27a9a2667eebb1e22c68dd7f30930d91b1da41b527c9fae6d07f23ce93377",
+          "source_sha256": "511465cba6ebcffc035ea7dc683a00adabc7a829b1cd567166c02a4b3871f5bf",
+          "bbox": [
+            26,
+            7,
+            63,
+            80
+          ]
+        }
+      ],
+      "geometry_sha256": "56ff6e7485c44cf508a6377f378754a0d0b9e740aa51ee438953d35cdc9e44a9",
+      "weapon_appearance": null,
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-walk-back": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "back",
+      "action": "walk",
+      "equipment": "unarmed",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-walk-back-00.png",
+          "sha256": "8738472348f0c1790f8f80a89ab0a62acafaba55e647d16e972a086944a1afaf",
+          "source_sha256": "d9e304f3860593158bc78f461aff8fc6d563091957f110b3755b87caeae41fb0",
+          "bbox": [
+            34,
+            7,
+            61,
+            85
+          ]
+        },
+        {
+          "src": "male-walk-back-01.png",
+          "sha256": "b73e8828d7f185926c030b1f69aadce87dbaadbab5a23a1bf356dbba3f5bfe79",
+          "source_sha256": "f66efcfaaa0262477ee7bb8f6a966c67ae044b539011b2eadf7d02d239372e1d",
+          "bbox": [
+            33,
+            8,
+            61,
+            90
+          ]
+        },
+        {
+          "src": "male-walk-back-02.png",
+          "sha256": "2ad309e1238a10f0b3ec987926fc0726515b7905ec768579ee2312d5a3891531",
+          "source_sha256": "3f4654f98e2b14f2454649c443bab93922d50bffa4f473a297880f84a2bb5e36",
+          "bbox": [
+            33,
+            8,
+            61,
+            94
+          ]
+        },
+        {
+          "src": "male-walk-back-03.png",
+          "sha256": "e51c5abb3f253ded58cd83c8cd78e8a6aab09a0d8504652ea52d6e66b56ea683",
+          "source_sha256": "07d653d74e80cc77ed4de878405807ba4ec7df8b9f2a8aeb1687c316493b6616",
+          "bbox": [
+            34,
+            7,
+            62,
+            87
+          ]
+        },
+        {
+          "src": "male-walk-back-04.png",
+          "sha256": "5aecbad28928fb836aa98f60b1f8815000cc75a5a4e0861b3c26987c8692a4a2",
+          "source_sha256": "cee03b17bfe0725740eb225b2deffb1e57ae8e2ca5efa08411e084c524556200",
+          "bbox": [
+            34,
+            6,
+            61,
+            86
+          ]
+        },
+        {
+          "src": "male-walk-back-05.png",
+          "sha256": "d32ec515fba5a8fdb10ecd2280ba0974e4f778970b00ab7662c7e074ecec21c4",
+          "source_sha256": "c86c54f46e5218aee56dad5da632d4cc051d890cede6c37dfb785b6e479ad55b",
+          "bbox": [
+            33,
+            7,
+            62,
+            90
+          ]
+        },
+        {
+          "src": "male-walk-back-06.png",
+          "sha256": "37772345bb76f28e4230aae104a1a7a0a27cd49d2a194e0d5949ee01ab8b7d03",
+          "source_sha256": "2c5447cec3fefe67ad87d80cfb0b338a25d1f39066eba34f3db6e3850d3785a7",
+          "bbox": [
+            34,
+            7,
+            62,
+            92
+          ]
+        },
+        {
+          "src": "male-walk-back-07.png",
+          "sha256": "16e561ba70c9ee75181f87be35adb607117d0019d95cba3b2896e2b4ad8d57fa",
+          "source_sha256": "8c58f4ab5158052f6cca15c75431df288b518d1d439831c01ec86d0e2f3fd805",
+          "bbox": [
+            33,
+            6,
+            61,
+            87
+          ]
+        }
+      ],
+      "geometry_sha256": "56ff6e7485c44cf508a6377f378754a0d0b9e740aa51ee438953d35cdc9e44a9",
+      "weapon_appearance": null,
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    },
+    "male-walk-left": {
+      "frame_size": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        80
+      ],
+      "direction": "left",
+      "action": "walk",
+      "equipment": "unarmed",
+      "loop": true,
+      "frames": [
+        {
+          "src": "male-walk-left-00.png",
+          "sha256": "f36272eb7be84214a94c3e439e729a54d270dabe055cd70dcf0e273891e418fd",
+          "source_sha256": "ce579d76076785c0b63bfb5ea8eafeb52262f2084c63a37fbeb6de966155aa2a",
+          "bbox": [
+            34,
+            9,
+            56,
+            83
+          ]
+        },
+        {
+          "src": "male-walk-left-01.png",
+          "sha256": "cf91e9cd5e1085ecab26673d207576f3ea1aaff4d255a728ce5f6047839ac404",
+          "source_sha256": "2dc45325790ee9916f4a3726d96db63c0965470e01fd14f816efd776687830b3",
+          "bbox": [
+            25,
+            10,
+            63,
+            83
+          ]
+        },
+        {
+          "src": "male-walk-left-02.png",
+          "sha256": "38573c79a6068520f0e29605e94a16119d880ac36161b2b4f826cc4a37b75fe2",
+          "source_sha256": "6ad283e5ca993b987b5be9800db1d1e0492291dfdf084798b81a2a24d541556d",
+          "bbox": [
+            24,
+            10,
+            73,
+            83
+          ]
+        },
+        {
+          "src": "male-walk-left-03.png",
+          "sha256": "064d25574bb7f4931e7ee107bbb6d5b6136a8d3c7d9ee05cc546bca1c09ce870",
+          "source_sha256": "594be8ab22dc5ad6bc6b26f7847f81f677e627545dc4636b797fcdfd7530bcc6",
+          "bbox": [
+            30,
+            9,
+            71,
+            82
+          ]
+        },
+        {
+          "src": "male-walk-left-04.png",
+          "sha256": "938505f65b6dcc4f75ccbf086baa6aa340469bbaddfcf4f75c8f9cbccdbae33b",
+          "source_sha256": "39db7c02b5ff32ef2f3835cd1a6bbf100e4b921f7b6415b881e820f806aa3f1e",
+          "bbox": [
+            36,
+            8,
+            57,
+            82
+          ]
+        },
+        {
+          "src": "male-walk-left-05.png",
+          "sha256": "84d61dcd29b1a5671dfde0c73e1752fc9e94f5ef56dcecc450630787601950cd",
+          "source_sha256": "51d03c23cb17f2189841daa1417e27a3edca4eb5ed9e4c07191810c0db052c07",
+          "bbox": [
+            22,
+            8,
+            65,
+            82
+          ]
+        },
+        {
+          "src": "male-walk-left-06.png",
+          "sha256": "dea88b9a1854e57d8f2eed5ac15a3693ea3b5fd858980ccf18271dce1516cc0e",
+          "source_sha256": "0c57de114e51041924a470f8602a9d4889ddec757c6d88b65d381e1af03f12bb",
+          "bbox": [
+            25,
+            9,
+            74,
+            83
+          ]
+        },
+        {
+          "src": "male-walk-left-07.png",
+          "sha256": "76eb24b5da3e8983691f8d710b2abefb7d22075e5414d35758485dae065e8122",
+          "source_sha256": "06838d4ef569d4cc77a28712aeed752476b8ee7b908522770a67fa42a3b4b6ab",
+          "bbox": [
+            33,
+            8,
+            70,
+            82
+          ]
+        }
+      ],
+      "geometry_sha256": "56ff6e7485c44cf508a6377f378754a0d0b9e740aa51ee438953d35cdc9e44a9",
+      "weapon_appearance": null,
+      "intentional_braid_geometry_change": {},
+      "appearance_atlas_sha256": "d92a8aa79884d0ed2a5eaa29d6d4b129e7b65849840768b4af0936883000c3bd"
+    }
+  },
+  "source_directory": "../frames",
+  "changed_alpha_counts": [
+    {
+      "file": "male-club-attack-front-00.png",
+      "nonbinary_source_pixels": 612
+    },
+    {
+      "file": "male-club-attack-front-01.png",
+      "nonbinary_source_pixels": 657
+    },
+    {
+      "file": "male-club-attack-front-02.png",
+      "nonbinary_source_pixels": 639
+    },
+    {
+      "file": "male-club-attack-front-03.png",
+      "nonbinary_source_pixels": 627
+    },
+    {
+      "file": "male-club-attack-front-04.png",
+      "nonbinary_source_pixels": 623
+    },
+    {
+      "file": "male-club-attack-front-05.png",
+      "nonbinary_source_pixels": 642
+    },
+    {
+      "file": "male-club-attack-front-06.png",
+      "nonbinary_source_pixels": 629
+    },
+    {
+      "file": "male-club-attack-front-07.png",
+      "nonbinary_source_pixels": 413
+    },
+    {
+      "file": "male-club-attack-front-08.png",
+      "nonbinary_source_pixels": 427
+    },
+    {
+      "file": "male-club-attack-front-09.png",
+      "nonbinary_source_pixels": 403
+    },
+    {
+      "file": "male-club-attack-front-10.png",
+      "nonbinary_source_pixels": 604
+    },
+    {
+      "file": "male-club-attack-front-11.png",
+      "nonbinary_source_pixels": 624
+    },
+    {
+      "file": "male-club-attack-front-12.png",
+      "nonbinary_source_pixels": 623
+    },
+    {
+      "file": "male-club-attack-front-13.png",
+      "nonbinary_source_pixels": 641
+    },
+    {
+      "file": "male-club-attack-front-14.png",
+      "nonbinary_source_pixels": 657
+    },
+    {
+      "file": "male-club-attack-front-15.png",
+      "nonbinary_source_pixels": 612
+    },
+    {
+      "file": "male-club-attack-right-00.png",
+      "nonbinary_source_pixels": 421
+    },
+    {
+      "file": "male-club-attack-right-01.png",
+      "nonbinary_source_pixels": 463
+    },
+    {
+      "file": "male-club-attack-right-02.png",
+      "nonbinary_source_pixels": 428
+    },
+    {
+      "file": "male-club-attack-right-03.png",
+      "nonbinary_source_pixels": 455
+    },
+    {
+      "file": "male-club-attack-right-04.png",
+      "nonbinary_source_pixels": 523
+    },
+    {
+      "file": "male-club-attack-right-05.png",
+      "nonbinary_source_pixels": 530
+    },
+    {
+      "file": "male-club-attack-right-06.png",
+      "nonbinary_source_pixels": 503
+    },
+    {
+      "file": "male-club-attack-right-07.png",
+      "nonbinary_source_pixels": 554
+    },
+    {
+      "file": "male-club-attack-right-08.png",
+      "nonbinary_source_pixels": 540
+    },
+    {
+      "file": "male-club-attack-right-09.png",
+      "nonbinary_source_pixels": 594
+    },
+    {
+      "file": "male-club-attack-right-10.png",
+      "nonbinary_source_pixels": 527
+    },
+    {
+      "file": "male-club-attack-right-11.png",
+      "nonbinary_source_pixels": 525
+    },
+    {
+      "file": "male-club-attack-right-12.png",
+      "nonbinary_source_pixels": 454
+    },
+    {
+      "file": "male-club-attack-right-13.png",
+      "nonbinary_source_pixels": 429
+    },
+    {
+      "file": "male-club-attack-right-14.png",
+      "nonbinary_source_pixels": 464
+    },
+    {
+      "file": "male-club-attack-right-15.png",
+      "nonbinary_source_pixels": 421
+    },
+    {
+      "file": "male-club-attack-back-00.png",
+      "nonbinary_source_pixels": 524
+    },
+    {
+      "file": "male-club-attack-back-01.png",
+      "nonbinary_source_pixels": 571
+    },
+    {
+      "file": "male-club-attack-back-02.png",
+      "nonbinary_source_pixels": 592
+    },
+    {
+      "file": "male-club-attack-back-03.png",
+      "nonbinary_source_pixels": 602
+    },
+    {
+      "file": "male-club-attack-back-04.png",
+      "nonbinary_source_pixels": 611
+    },
+    {
+      "file": "male-club-attack-back-05.png",
+      "nonbinary_source_pixels": 583
+    },
+    {
+      "file": "male-club-attack-back-06.png",
+      "nonbinary_source_pixels": 558
+    },
+    {
+      "file": "male-club-attack-back-07.png",
+      "nonbinary_source_pixels": 437
+    },
+    {
+      "file": "male-club-attack-back-08.png",
+      "nonbinary_source_pixels": 441
+    },
+    {
+      "file": "male-club-attack-back-09.png",
+      "nonbinary_source_pixels": 460
+    },
+    {
+      "file": "male-club-attack-back-10.png",
+      "nonbinary_source_pixels": 548
+    },
+    {
+      "file": "male-club-attack-back-11.png",
+      "nonbinary_source_pixels": 601
+    },
+    {
+      "file": "male-club-attack-back-12.png",
+      "nonbinary_source_pixels": 601
+    },
+    {
+      "file": "male-club-attack-back-13.png",
+      "nonbinary_source_pixels": 592
+    },
+    {
+      "file": "male-club-attack-back-14.png",
+      "nonbinary_source_pixels": 571
+    },
+    {
+      "file": "male-club-attack-back-15.png",
+      "nonbinary_source_pixels": 524
+    },
+    {
+      "file": "male-club-attack-left-00.png",
+      "nonbinary_source_pixels": 480
+    },
+    {
+      "file": "male-club-attack-left-01.png",
+      "nonbinary_source_pixels": 491
+    },
+    {
+      "file": "male-club-attack-left-02.png",
+      "nonbinary_source_pixels": 485
+    },
+    {
+      "file": "male-club-attack-left-03.png",
+      "nonbinary_source_pixels": 498
+    },
+    {
+      "file": "male-club-attack-left-04.png",
+      "nonbinary_source_pixels": 507
+    },
+    {
+      "file": "male-club-attack-left-05.png",
+      "nonbinary_source_pixels": 634
+    },
+    {
+      "file": "male-club-attack-left-06.png",
+      "nonbinary_source_pixels": 588
+    },
+    {
+      "file": "male-club-attack-left-07.png",
+      "nonbinary_source_pixels": 541
+    },
+    {
+      "file": "male-club-attack-left-08.png",
+      "nonbinary_source_pixels": 538
+    },
+    {
+      "file": "male-club-attack-left-09.png",
+      "nonbinary_source_pixels": 639
+    },
+    {
+      "file": "male-club-attack-left-10.png",
+      "nonbinary_source_pixels": 494
+    },
+    {
+      "file": "male-club-attack-left-11.png",
+      "nonbinary_source_pixels": 503
+    },
+    {
+      "file": "male-club-attack-left-12.png",
+      "nonbinary_source_pixels": 499
+    },
+    {
+      "file": "male-club-attack-left-13.png",
+      "nonbinary_source_pixels": 485
+    },
+    {
+      "file": "male-club-attack-left-14.png",
+      "nonbinary_source_pixels": 495
+    },
+    {
+      "file": "male-club-attack-left-15.png",
+      "nonbinary_source_pixels": 480
+    },
+    {
+      "file": "male-club-death-front-00.png",
+      "nonbinary_source_pixels": 587
+    },
+    {
+      "file": "male-club-death-front-01.png",
+      "nonbinary_source_pixels": 568
+    },
+    {
+      "file": "male-club-death-front-02.png",
+      "nonbinary_source_pixels": 598
+    },
+    {
+      "file": "male-club-death-front-03.png",
+      "nonbinary_source_pixels": 510
+    },
+    {
+      "file": "male-club-death-front-04.png",
+      "nonbinary_source_pixels": 514
+    },
+    {
+      "file": "male-club-death-front-05.png",
+      "nonbinary_source_pixels": 583
+    },
+    {
+      "file": "male-club-death-front-06.png",
+      "nonbinary_source_pixels": 583
+    },
+    {
+      "file": "male-club-death-front-07.png",
+      "nonbinary_source_pixels": 583
+    },
+    {
+      "file": "male-club-death-right-00.png",
+      "nonbinary_source_pixels": 430
+    },
+    {
+      "file": "male-club-death-right-01.png",
+      "nonbinary_source_pixels": 422
+    },
+    {
+      "file": "male-club-death-right-02.png",
+      "nonbinary_source_pixels": 435
+    },
+    {
+      "file": "male-club-death-right-03.png",
+      "nonbinary_source_pixels": 553
+    },
+    {
+      "file": "male-club-death-right-04.png",
+      "nonbinary_source_pixels": 548
+    },
+    {
+      "file": "male-club-death-right-05.png",
+      "nonbinary_source_pixels": 709
+    },
+    {
+      "file": "male-club-death-right-06.png",
+      "nonbinary_source_pixels": 709
+    },
+    {
+      "file": "male-club-death-right-07.png",
+      "nonbinary_source_pixels": 709
+    },
+    {
+      "file": "male-club-death-back-00.png",
+      "nonbinary_source_pixels": 568
+    },
+    {
+      "file": "male-club-death-back-01.png",
+      "nonbinary_source_pixels": 487
+    },
+    {
+      "file": "male-club-death-back-02.png",
+      "nonbinary_source_pixels": 511
+    },
+    {
+      "file": "male-club-death-back-03.png",
+      "nonbinary_source_pixels": 321
+    },
+    {
+      "file": "male-club-death-back-04.png",
+      "nonbinary_source_pixels": 569
+    },
+    {
+      "file": "male-club-death-back-05.png",
+      "nonbinary_source_pixels": 522
+    },
+    {
+      "file": "male-club-death-back-06.png",
+      "nonbinary_source_pixels": 549
+    },
+    {
+      "file": "male-club-death-back-07.png",
+      "nonbinary_source_pixels": 550
+    },
+    {
+      "file": "male-club-death-left-00.png",
+      "nonbinary_source_pixels": 469
+    },
+    {
+      "file": "male-club-death-left-01.png",
+      "nonbinary_source_pixels": 472
+    },
+    {
+      "file": "male-club-death-left-02.png",
+      "nonbinary_source_pixels": 432
+    },
+    {
+      "file": "male-club-death-left-03.png",
+      "nonbinary_source_pixels": 589
+    },
+    {
+      "file": "male-club-death-left-04.png",
+      "nonbinary_source_pixels": 706
+    },
+    {
+      "file": "male-club-death-left-05.png",
+      "nonbinary_source_pixels": 684
+    },
+    {
+      "file": "male-club-death-left-06.png",
+      "nonbinary_source_pixels": 716
+    },
+    {
+      "file": "male-club-death-left-07.png",
+      "nonbinary_source_pixels": 716
+    },
+    {
+      "file": "male-club-hit-front-00.png",
+      "nonbinary_source_pixels": 617
+    },
+    {
+      "file": "male-club-hit-front-01.png",
+      "nonbinary_source_pixels": 607
+    },
+    {
+      "file": "male-club-hit-front-02.png",
+      "nonbinary_source_pixels": 607
+    },
+    {
+      "file": "male-club-hit-front-03.png",
+      "nonbinary_source_pixels": 607
+    },
+    {
+      "file": "male-club-hit-front-04.png",
+      "nonbinary_source_pixels": 611
+    },
+    {
+      "file": "male-club-hit-front-05.png",
+      "nonbinary_source_pixels": 611
+    },
+    {
+      "file": "male-club-hit-front-06.png",
+      "nonbinary_source_pixels": 616
+    },
+    {
+      "file": "male-club-hit-front-07.png",
+      "nonbinary_source_pixels": 596
+    },
+    {
+      "file": "male-club-hit-right-00.png",
+      "nonbinary_source_pixels": 512
+    },
+    {
+      "file": "male-club-hit-right-01.png",
+      "nonbinary_source_pixels": 521
+    },
+    {
+      "file": "male-club-hit-right-02.png",
+      "nonbinary_source_pixels": 525
+    },
+    {
+      "file": "male-club-hit-right-03.png",
+      "nonbinary_source_pixels": 515
+    },
+    {
+      "file": "male-club-hit-right-04.png",
+      "nonbinary_source_pixels": 509
+    },
+    {
+      "file": "male-club-hit-right-05.png",
+      "nonbinary_source_pixels": 494
+    },
+    {
+      "file": "male-club-hit-right-06.png",
+      "nonbinary_source_pixels": 464
+    },
+    {
+      "file": "male-club-hit-right-07.png",
+      "nonbinary_source_pixels": 442
+    },
+    {
+      "file": "male-club-hit-back-00.png",
+      "nonbinary_source_pixels": 502
+    },
+    {
+      "file": "male-club-hit-back-01.png",
+      "nonbinary_source_pixels": 500
+    },
+    {
+      "file": "male-club-hit-back-02.png",
+      "nonbinary_source_pixels": 496
+    },
+    {
+      "file": "male-club-hit-back-03.png",
+      "nonbinary_source_pixels": 501
+    },
+    {
+      "file": "male-club-hit-back-04.png",
+      "nonbinary_source_pixels": 497
+    },
+    {
+      "file": "male-club-hit-back-05.png",
+      "nonbinary_source_pixels": 516
+    },
+    {
+      "file": "male-club-hit-back-06.png",
+      "nonbinary_source_pixels": 538
+    },
+    {
+      "file": "male-club-hit-back-07.png",
+      "nonbinary_source_pixels": 551
+    },
+    {
+      "file": "male-club-hit-left-00.png",
+      "nonbinary_source_pixels": 531
+    },
+    {
+      "file": "male-club-hit-left-01.png",
+      "nonbinary_source_pixels": 551
+    },
+    {
+      "file": "male-club-hit-left-02.png",
+      "nonbinary_source_pixels": 560
+    },
+    {
+      "file": "male-club-hit-left-03.png",
+      "nonbinary_source_pixels": 550
+    },
+    {
+      "file": "male-club-hit-left-04.png",
+      "nonbinary_source_pixels": 537
+    },
+    {
+      "file": "male-club-hit-left-05.png",
+      "nonbinary_source_pixels": 521
+    },
+    {
+      "file": "male-club-hit-left-06.png",
+      "nonbinary_source_pixels": 485
+    },
+    {
+      "file": "male-club-hit-left-07.png",
+      "nonbinary_source_pixels": 465
+    },
+    {
+      "file": "male-club-idle-front-00.png",
+      "nonbinary_source_pixels": 602
+    },
+    {
+      "file": "male-club-idle-front-01.png",
+      "nonbinary_source_pixels": 598
+    },
+    {
+      "file": "male-club-idle-front-02.png",
+      "nonbinary_source_pixels": 602
+    },
+    {
+      "file": "male-club-idle-front-03.png",
+      "nonbinary_source_pixels": 605
+    },
+    {
+      "file": "male-club-idle-right-00.png",
+      "nonbinary_source_pixels": 425
+    },
+    {
+      "file": "male-club-idle-right-01.png",
+      "nonbinary_source_pixels": 418
+    },
+    {
+      "file": "male-club-idle-right-02.png",
+      "nonbinary_source_pixels": 425
+    },
+    {
+      "file": "male-club-idle-right-03.png",
+      "nonbinary_source_pixels": 422
+    },
+    {
+      "file": "male-club-idle-back-00.png",
+      "nonbinary_source_pixels": 535
+    },
+    {
+      "file": "male-club-idle-back-01.png",
+      "nonbinary_source_pixels": 535
+    },
+    {
+      "file": "male-club-idle-back-02.png",
+      "nonbinary_source_pixels": 535
+    },
+    {
+      "file": "male-club-idle-back-03.png",
+      "nonbinary_source_pixels": 537
+    },
+    {
+      "file": "male-club-idle-left-00.png",
+      "nonbinary_source_pixels": 468
+    },
+    {
+      "file": "male-club-idle-left-01.png",
+      "nonbinary_source_pixels": 470
+    },
+    {
+      "file": "male-club-idle-left-02.png",
+      "nonbinary_source_pixels": 468
+    },
+    {
+      "file": "male-club-idle-left-03.png",
+      "nonbinary_source_pixels": 468
+    },
+    {
+      "file": "male-club-sprint-front-00.png",
+      "nonbinary_source_pixels": 435
+    },
+    {
+      "file": "male-club-sprint-front-01.png",
+      "nonbinary_source_pixels": 410
+    },
+    {
+      "file": "male-club-sprint-front-02.png",
+      "nonbinary_source_pixels": 389
+    },
+    {
+      "file": "male-club-sprint-front-03.png",
+      "nonbinary_source_pixels": 338
+    },
+    {
+      "file": "male-club-sprint-front-04.png",
+      "nonbinary_source_pixels": 366
+    },
+    {
+      "file": "male-club-sprint-front-05.png",
+      "nonbinary_source_pixels": 354
+    },
+    {
+      "file": "male-club-sprint-front-06.png",
+      "nonbinary_source_pixels": 392
+    },
+    {
+      "file": "male-club-sprint-front-07.png",
+      "nonbinary_source_pixels": 420
+    },
+    {
+      "file": "male-club-sprint-right-00.png",
+      "nonbinary_source_pixels": 521
+    },
+    {
+      "file": "male-club-sprint-right-01.png",
+      "nonbinary_source_pixels": 512
+    },
+    {
+      "file": "male-club-sprint-right-02.png",
+      "nonbinary_source_pixels": 520
+    },
+    {
+      "file": "male-club-sprint-right-03.png",
+      "nonbinary_source_pixels": 464
+    },
+    {
+      "file": "male-club-sprint-right-04.png",
+      "nonbinary_source_pixels": 557
+    },
+    {
+      "file": "male-club-sprint-right-05.png",
+      "nonbinary_source_pixels": 573
+    },
+    {
+      "file": "male-club-sprint-right-06.png",
+      "nonbinary_source_pixels": 511
+    },
+    {
+      "file": "male-club-sprint-right-07.png",
+      "nonbinary_source_pixels": 538
+    },
+    {
+      "file": "male-club-sprint-back-00.png",
+      "nonbinary_source_pixels": 512
+    },
+    {
+      "file": "male-club-sprint-back-01.png",
+      "nonbinary_source_pixels": 499
+    },
+    {
+      "file": "male-club-sprint-back-02.png",
+      "nonbinary_source_pixels": 455
+    },
+    {
+      "file": "male-club-sprint-back-03.png",
+      "nonbinary_source_pixels": 469
+    },
+    {
+      "file": "male-club-sprint-back-04.png",
+      "nonbinary_source_pixels": 484
+    },
+    {
+      "file": "male-club-sprint-back-05.png",
+      "nonbinary_source_pixels": 458
+    },
+    {
+      "file": "male-club-sprint-back-06.png",
+      "nonbinary_source_pixels": 454
+    },
+    {
+      "file": "male-club-sprint-back-07.png",
+      "nonbinary_source_pixels": 499
+    },
+    {
+      "file": "male-club-sprint-left-00.png",
+      "nonbinary_source_pixels": 502
+    },
+    {
+      "file": "male-club-sprint-left-01.png",
+      "nonbinary_source_pixels": 536
+    },
+    {
+      "file": "male-club-sprint-left-02.png",
+      "nonbinary_source_pixels": 524
+    },
+    {
+      "file": "male-club-sprint-left-03.png",
+      "nonbinary_source_pixels": 580
+    },
+    {
+      "file": "male-club-sprint-left-04.png",
+      "nonbinary_source_pixels": 565
+    },
+    {
+      "file": "male-club-sprint-left-05.png",
+      "nonbinary_source_pixels": 569
+    },
+    {
+      "file": "male-club-sprint-left-06.png",
+      "nonbinary_source_pixels": 466
+    },
+    {
+      "file": "male-club-sprint-left-07.png",
+      "nonbinary_source_pixels": 479
+    },
+    {
+      "file": "male-club-walk-front-00.png",
+      "nonbinary_source_pixels": 533
+    },
+    {
+      "file": "male-club-walk-front-01.png",
+      "nonbinary_source_pixels": 502
+    },
+    {
+      "file": "male-club-walk-front-02.png",
+      "nonbinary_source_pixels": 475
+    },
+    {
+      "file": "male-club-walk-front-03.png",
+      "nonbinary_source_pixels": 466
+    },
+    {
+      "file": "male-club-walk-front-04.png",
+      "nonbinary_source_pixels": 536
+    },
+    {
+      "file": "male-club-walk-front-05.png",
+      "nonbinary_source_pixels": 528
+    },
+    {
+      "file": "male-club-walk-front-06.png",
+      "nonbinary_source_pixels": 484
+    },
+    {
+      "file": "male-club-walk-front-07.png",
+      "nonbinary_source_pixels": 471
+    },
+    {
+      "file": "male-club-walk-right-00.png",
+      "nonbinary_source_pixels": 411
+    },
+    {
+      "file": "male-club-walk-right-01.png",
+      "nonbinary_source_pixels": 511
+    },
+    {
+      "file": "male-club-walk-right-02.png",
+      "nonbinary_source_pixels": 531
+    },
+    {
+      "file": "male-club-walk-right-03.png",
+      "nonbinary_source_pixels": 475
+    },
+    {
+      "file": "male-club-walk-right-04.png",
+      "nonbinary_source_pixels": 367
+    },
+    {
+      "file": "male-club-walk-right-05.png",
+      "nonbinary_source_pixels": 495
+    },
+    {
+      "file": "male-club-walk-right-06.png",
+      "nonbinary_source_pixels": 573
+    },
+    {
+      "file": "male-club-walk-right-07.png",
+      "nonbinary_source_pixels": 457
+    },
+    {
+      "file": "male-club-walk-back-00.png",
+      "nonbinary_source_pixels": 479
+    },
+    {
+      "file": "male-club-walk-back-01.png",
+      "nonbinary_source_pixels": 453
+    },
+    {
+      "file": "male-club-walk-back-02.png",
+      "nonbinary_source_pixels": 478
+    },
+    {
+      "file": "male-club-walk-back-03.png",
+      "nonbinary_source_pixels": 488
+    },
+    {
+      "file": "male-club-walk-back-04.png",
+      "nonbinary_source_pixels": 512
+    },
+    {
+      "file": "male-club-walk-back-05.png",
+      "nonbinary_source_pixels": 459
+    },
+    {
+      "file": "male-club-walk-back-06.png",
+      "nonbinary_source_pixels": 482
+    },
+    {
+      "file": "male-club-walk-back-07.png",
+      "nonbinary_source_pixels": 500
+    },
+    {
+      "file": "male-club-walk-left-00.png",
+      "nonbinary_source_pixels": 398
+    },
+    {
+      "file": "male-club-walk-left-01.png",
+      "nonbinary_source_pixels": 478
+    },
+    {
+      "file": "male-club-walk-left-02.png",
+      "nonbinary_source_pixels": 487
+    },
+    {
+      "file": "male-club-walk-left-03.png",
+      "nonbinary_source_pixels": 444
+    },
+    {
+      "file": "male-club-walk-left-04.png",
+      "nonbinary_source_pixels": 430
+    },
+    {
+      "file": "male-club-walk-left-05.png",
+      "nonbinary_source_pixels": 542
+    },
+    {
+      "file": "male-club-walk-left-06.png",
+      "nonbinary_source_pixels": 535
+    },
+    {
+      "file": "male-club-walk-left-07.png",
+      "nonbinary_source_pixels": 471
+    },
+    {
+      "file": "male-idle-front-00.png",
+      "nonbinary_source_pixels": 597
+    },
+    {
+      "file": "male-idle-front-01.png",
+      "nonbinary_source_pixels": 594
+    },
+    {
+      "file": "male-idle-front-02.png",
+      "nonbinary_source_pixels": 597
+    },
+    {
+      "file": "male-idle-front-03.png",
+      "nonbinary_source_pixels": 600
+    },
+    {
+      "file": "male-idle-right-00.png",
+      "nonbinary_source_pixels": 392
+    },
+    {
+      "file": "male-idle-right-01.png",
+      "nonbinary_source_pixels": 385
+    },
+    {
+      "file": "male-idle-right-02.png",
+      "nonbinary_source_pixels": 392
+    },
+    {
+      "file": "male-idle-right-03.png",
+      "nonbinary_source_pixels": 391
+    },
+    {
+      "file": "male-idle-back-00.png",
+      "nonbinary_source_pixels": 495
+    },
+    {
+      "file": "male-idle-back-01.png",
+      "nonbinary_source_pixels": 494
+    },
+    {
+      "file": "male-idle-back-02.png",
+      "nonbinary_source_pixels": 495
+    },
+    {
+      "file": "male-idle-back-03.png",
+      "nonbinary_source_pixels": 494
+    },
+    {
+      "file": "male-idle-left-00.png",
+      "nonbinary_source_pixels": 409
+    },
+    {
+      "file": "male-idle-left-01.png",
+      "nonbinary_source_pixels": 413
+    },
+    {
+      "file": "male-idle-left-02.png",
+      "nonbinary_source_pixels": 409
+    },
+    {
+      "file": "male-idle-left-03.png",
+      "nonbinary_source_pixels": 410
+    },
+    {
+      "file": "male-sprint-front-00.png",
+      "nonbinary_source_pixels": 401
+    },
+    {
+      "file": "male-sprint-front-01.png",
+      "nonbinary_source_pixels": 384
+    },
+    {
+      "file": "male-sprint-front-02.png",
+      "nonbinary_source_pixels": 371
+    },
+    {
+      "file": "male-sprint-front-03.png",
+      "nonbinary_source_pixels": 340
+    },
+    {
+      "file": "male-sprint-front-04.png",
+      "nonbinary_source_pixels": 373
+    },
+    {
+      "file": "male-sprint-front-05.png",
+      "nonbinary_source_pixels": 351
+    },
+    {
+      "file": "male-sprint-front-06.png",
+      "nonbinary_source_pixels": 370
+    },
+    {
+      "file": "male-sprint-front-07.png",
+      "nonbinary_source_pixels": 397
+    },
+    {
+      "file": "male-sprint-right-00.png",
+      "nonbinary_source_pixels": 484
+    },
+    {
+      "file": "male-sprint-right-01.png",
+      "nonbinary_source_pixels": 459
+    },
+    {
+      "file": "male-sprint-right-02.png",
+      "nonbinary_source_pixels": 481
+    },
+    {
+      "file": "male-sprint-right-03.png",
+      "nonbinary_source_pixels": 424
+    },
+    {
+      "file": "male-sprint-right-04.png",
+      "nonbinary_source_pixels": 517
+    },
+    {
+      "file": "male-sprint-right-05.png",
+      "nonbinary_source_pixels": 528
+    },
+    {
+      "file": "male-sprint-right-06.png",
+      "nonbinary_source_pixels": 460
+    },
+    {
+      "file": "male-sprint-right-07.png",
+      "nonbinary_source_pixels": 487
+    },
+    {
+      "file": "male-sprint-back-00.png",
+      "nonbinary_source_pixels": 464
+    },
+    {
+      "file": "male-sprint-back-01.png",
+      "nonbinary_source_pixels": 447
+    },
+    {
+      "file": "male-sprint-back-02.png",
+      "nonbinary_source_pixels": 424
+    },
+    {
+      "file": "male-sprint-back-03.png",
+      "nonbinary_source_pixels": 428
+    },
+    {
+      "file": "male-sprint-back-04.png",
+      "nonbinary_source_pixels": 460
+    },
+    {
+      "file": "male-sprint-back-05.png",
+      "nonbinary_source_pixels": 440
+    },
+    {
+      "file": "male-sprint-back-06.png",
+      "nonbinary_source_pixels": 437
+    },
+    {
+      "file": "male-sprint-back-07.png",
+      "nonbinary_source_pixels": 461
+    },
+    {
+      "file": "male-sprint-left-00.png",
+      "nonbinary_source_pixels": 507
+    },
+    {
+      "file": "male-sprint-left-01.png",
+      "nonbinary_source_pixels": 493
+    },
+    {
+      "file": "male-sprint-left-02.png",
+      "nonbinary_source_pixels": 472
+    },
+    {
+      "file": "male-sprint-left-03.png",
+      "nonbinary_source_pixels": 521
+    },
+    {
+      "file": "male-sprint-left-04.png",
+      "nonbinary_source_pixels": 508
+    },
+    {
+      "file": "male-sprint-left-05.png",
+      "nonbinary_source_pixels": 513
+    },
+    {
+      "file": "male-sprint-left-06.png",
+      "nonbinary_source_pixels": 440
+    },
+    {
+      "file": "male-sprint-left-07.png",
+      "nonbinary_source_pixels": 464
+    },
+    {
+      "file": "male-unarmed-hit-front-00.png",
+      "nonbinary_source_pixels": 622
+    },
+    {
+      "file": "male-unarmed-hit-front-01.png",
+      "nonbinary_source_pixels": 615
+    },
+    {
+      "file": "male-unarmed-hit-front-02.png",
+      "nonbinary_source_pixels": 614
+    },
+    {
+      "file": "male-unarmed-hit-front-03.png",
+      "nonbinary_source_pixels": 611
+    },
+    {
+      "file": "male-unarmed-hit-front-04.png",
+      "nonbinary_source_pixels": 617
+    },
+    {
+      "file": "male-unarmed-hit-front-05.png",
+      "nonbinary_source_pixels": 616
+    },
+    {
+      "file": "male-unarmed-hit-front-06.png",
+      "nonbinary_source_pixels": 612
+    },
+    {
+      "file": "male-unarmed-hit-front-07.png",
+      "nonbinary_source_pixels": 592
+    },
+    {
+      "file": "male-unarmed-hit-right-00.png",
+      "nonbinary_source_pixels": 456
+    },
+    {
+      "file": "male-unarmed-hit-right-01.png",
+      "nonbinary_source_pixels": 465
+    },
+    {
+      "file": "male-unarmed-hit-right-02.png",
+      "nonbinary_source_pixels": 464
+    },
+    {
+      "file": "male-unarmed-hit-right-03.png",
+      "nonbinary_source_pixels": 454
+    },
+    {
+      "file": "male-unarmed-hit-right-04.png",
+      "nonbinary_source_pixels": 452
+    },
+    {
+      "file": "male-unarmed-hit-right-05.png",
+      "nonbinary_source_pixels": 436
+    },
+    {
+      "file": "male-unarmed-hit-right-06.png",
+      "nonbinary_source_pixels": 413
+    },
+    {
+      "file": "male-unarmed-hit-right-07.png",
+      "nonbinary_source_pixels": 393
+    },
+    {
+      "file": "male-unarmed-hit-back-00.png",
+      "nonbinary_source_pixels": 487
+    },
+    {
+      "file": "male-unarmed-hit-back-01.png",
+      "nonbinary_source_pixels": 480
+    },
+    {
+      "file": "male-unarmed-hit-back-02.png",
+      "nonbinary_source_pixels": 474
+    },
+    {
+      "file": "male-unarmed-hit-back-03.png",
+      "nonbinary_source_pixels": 483
+    },
+    {
+      "file": "male-unarmed-hit-back-04.png",
+      "nonbinary_source_pixels": 486
+    },
+    {
+      "file": "male-unarmed-hit-back-05.png",
+      "nonbinary_source_pixels": 513
+    },
+    {
+      "file": "male-unarmed-hit-back-06.png",
+      "nonbinary_source_pixels": 538
+    },
+    {
+      "file": "male-unarmed-hit-back-07.png",
+      "nonbinary_source_pixels": 556
+    },
+    {
+      "file": "male-unarmed-hit-left-00.png",
+      "nonbinary_source_pixels": 482
+    },
+    {
+      "file": "male-unarmed-hit-left-01.png",
+      "nonbinary_source_pixels": 500
+    },
+    {
+      "file": "male-unarmed-hit-left-02.png",
+      "nonbinary_source_pixels": 506
+    },
+    {
+      "file": "male-unarmed-hit-left-03.png",
+      "nonbinary_source_pixels": 496
+    },
+    {
+      "file": "male-unarmed-hit-left-04.png",
+      "nonbinary_source_pixels": 483
+    },
+    {
+      "file": "male-unarmed-hit-left-05.png",
+      "nonbinary_source_pixels": 468
+    },
+    {
+      "file": "male-unarmed-hit-left-06.png",
+      "nonbinary_source_pixels": 429
+    },
+    {
+      "file": "male-unarmed-hit-left-07.png",
+      "nonbinary_source_pixels": 417
+    },
+    {
+      "file": "male-walk-front-00.png",
+      "nonbinary_source_pixels": 495
+    },
+    {
+      "file": "male-walk-front-01.png",
+      "nonbinary_source_pixels": 460
+    },
+    {
+      "file": "male-walk-front-02.png",
+      "nonbinary_source_pixels": 429
+    },
+    {
+      "file": "male-walk-front-03.png",
+      "nonbinary_source_pixels": 423
+    },
+    {
+      "file": "male-walk-front-04.png",
+      "nonbinary_source_pixels": 501
+    },
+    {
+      "file": "male-walk-front-05.png",
+      "nonbinary_source_pixels": 510
+    },
+    {
+      "file": "male-walk-front-06.png",
+      "nonbinary_source_pixels": 472
+    },
+    {
+      "file": "male-walk-front-07.png",
+      "nonbinary_source_pixels": 442
+    },
+    {
+      "file": "male-walk-right-00.png",
+      "nonbinary_source_pixels": 370
+    },
+    {
+      "file": "male-walk-right-01.png",
+      "nonbinary_source_pixels": 497
+    },
+    {
+      "file": "male-walk-right-02.png",
+      "nonbinary_source_pixels": 498
+    },
+    {
+      "file": "male-walk-right-03.png",
+      "nonbinary_source_pixels": 454
+    },
+    {
+      "file": "male-walk-right-04.png",
+      "nonbinary_source_pixels": 319
+    },
+    {
+      "file": "male-walk-right-05.png",
+      "nonbinary_source_pixels": 447
+    },
+    {
+      "file": "male-walk-right-06.png",
+      "nonbinary_source_pixels": 520
+    },
+    {
+      "file": "male-walk-right-07.png",
+      "nonbinary_source_pixels": 402
+    },
+    {
+      "file": "male-walk-back-00.png",
+      "nonbinary_source_pixels": 469
+    },
+    {
+      "file": "male-walk-back-01.png",
+      "nonbinary_source_pixels": 432
+    },
+    {
+      "file": "male-walk-back-02.png",
+      "nonbinary_source_pixels": 455
+    },
+    {
+      "file": "male-walk-back-03.png",
+      "nonbinary_source_pixels": 460
+    },
+    {
+      "file": "male-walk-back-04.png",
+      "nonbinary_source_pixels": 495
+    },
+    {
+      "file": "male-walk-back-05.png",
+      "nonbinary_source_pixels": 464
+    },
+    {
+      "file": "male-walk-back-06.png",
+      "nonbinary_source_pixels": 480
+    },
+    {
+      "file": "male-walk-back-07.png",
+      "nonbinary_source_pixels": 494
+    },
+    {
+      "file": "male-walk-left-00.png",
+      "nonbinary_source_pixels": 350
+    },
+    {
+      "file": "male-walk-left-01.png",
+      "nonbinary_source_pixels": 464
+    },
+    {
+      "file": "male-walk-left-02.png",
+      "nonbinary_source_pixels": 487
+    },
+    {
+      "file": "male-walk-left-03.png",
+      "nonbinary_source_pixels": 425
+    },
+    {
+      "file": "male-walk-left-04.png",
+      "nonbinary_source_pixels": 372
+    },
+    {
+      "file": "male-walk-left-05.png",
+      "nonbinary_source_pixels": 487
+    },
+    {
+      "file": "male-walk-left-06.png",
+      "nonbinary_source_pixels": 478
+    },
+    {
+      "file": "male-walk-left-07.png",
+      "nonbinary_source_pixels": 423
+    }
+  ]
+}

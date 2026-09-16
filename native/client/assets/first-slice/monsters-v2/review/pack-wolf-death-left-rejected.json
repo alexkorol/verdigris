@@ -1,0 +1,31 @@
+{
+  "clip": "pack-wolf-death-left",
+  "source_sha256": "6c5f8205df17c73b789c282709a2eb17d35376880a40697f5533120778fe5f19",
+  "selected_grid": {
+    "size": 4,
+    "source": "fine",
+    "offset": [
+      3,
+      2
+    ],
+    "score": 0.6439051342742909,
+    "variance": 70.43281555175781,
+    "gated_out": false
+  },
+  "frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "whole_cycle_translation": [
+    -2,
+    0
+  ],
+  "registered_mean_iou": 0.6813757801383561,
+  "alpha_policy": "Native alpha threshold128, noRGBkey",
+  "visual_acceptance": false,
+  "frames": []
+}

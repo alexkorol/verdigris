@@ -1,0 +1,170 @@
+[
+  {
+    "actor": "pack-wolf",
+    "direction": "front",
+    "world_registered_iou": 0.9971509971509972,
+    "centroid_delta": [
+      0.0074969474969464045,
+      0.04227920227920379
+    ],
+    "source_bbox": [
+      41,
+      54,
+      55,
+      89
+    ],
+    "death_bbox_in_idle_pivot": [
+      41,
+      54,
+      55,
+      89
+    ]
+  },
+  {
+    "actor": "pack-wolf",
+    "direction": "right",
+    "world_registered_iou": 0.9916317991631799,
+    "centroid_delta": [
+      -0.013397542149299113,
+      -0.020982944124597225
+    ],
+    "source_bbox": [
+      18,
+      52,
+      79,
+      84
+    ],
+    "death_bbox_in_idle_pivot": [
+      18,
+      52,
+      79,
+      84
+    ]
+  },
+  {
+    "actor": "pack-wolf",
+    "direction": "back",
+    "world_registered_iou": 0.9981718464351006,
+    "centroid_delta": [
+      0.011805988039995441,
+      0.003803630860303997
+    ],
+    "source_bbox": [
+      41,
+      41,
+      55,
+      91
+    ],
+    "death_bbox_in_idle_pivot": [
+      41,
+      41,
+      55,
+      91
+    ]
+  },
+  {
+    "actor": "pack-wolf",
+    "direction": "left",
+    "world_registered_iou": 0.9986072423398329,
+    "centroid_delta": [
+      0.014988170301045045,
+      -0.008453669926154816
+    ],
+    "source_bbox": [
+      17,
+      52,
+      78,
+      84
+    ],
+    "death_bbox_in_idle_pivot": [
+      17,
+      52,
+      78,
+      84
+    ]
+  },
+  {
+    "actor": "well-alpha",
+    "direction": "front",
+    "world_registered_iou": 0.9987146529562982,
+    "centroid_delta": [
+      0.01233734652758045,
+      -0.014315821513761762
+    ],
+    "source_bbox": [
+      54,
+      26,
+      74,
+      77
+    ],
+    "death_bbox_in_idle_pivot": [
+      54,
+      26,
+      74,
+      77
+    ]
+  },
+  {
+    "actor": "well-alpha",
+    "direction": "right",
+    "world_registered_iou": 0.9950093574547723,
+    "centroid_delta": [
+      -0.0018468397997537522,
+      -0.002661138923656381
+    ],
+    "source_bbox": [
+      20,
+      22,
+      110,
+      70
+    ],
+    "death_bbox_in_idle_pivot": [
+      20,
+      22,
+      110,
+      70
+    ]
+  },
+  {
+    "actor": "well-alpha",
+    "direction": "back",
+    "world_registered_iou": 0.9966694421315571,
+    "centroid_delta": [
+      -0.014049805230939683,
+      0.007264885920982067
+    ],
+    "source_bbox": [
+      54,
+      6,
+      74,
+      81
+    ],
+    "death_bbox_in_idle_pivot": [
+      54,
+      6,
+      74,
+      81
+    ]
+  },
+  {
+    "actor": "well-alpha",
+    "direction": "left",
+    "world_registered_iou": 0.9968808484092326,
+    "centroid_delta": [
+      -0.06455813909910546,
+      -0.01720293348136437
+    ],
+    "source_bbox": [
+      18,
+      22,
+      108,
+      70
+    ],
+    "death_bbox_in_idle_pivot": [
+      18,
+      22,
+      108,
+      70
+    ]
+  }
+]

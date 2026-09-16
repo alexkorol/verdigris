@@ -1,0 +1,271 @@
+{
+  "status": "diagnostic-only",
+  "sex": "male",
+  "source_sha256": "b63b00ff4c9708e29727cd3dab22e5e7f064bcc72b10b4c912eda3e7646b8a93",
+  "idle_sha256": "2d4792bee554f50838d1cabef667caf18ab01a8c042ccf3a3e52f9c333e68e55",
+  "motion_sha256": "a0c181a36a4ed0aa41007328c0b214cb7d45813268141616bdd2d0d41b6749b3",
+  "method": "Four exact idle camera projections. Per-surface depth test and angle weighting. Static UV coordinates deform with original mesh. Geometry determines alpha. Emission avoids double lighting. No silhouette warp or cutout.",
+  "camera_matrices": [
+    [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.5735760927200317,
+        -0.8191521763801575,
+        -10.035422325134277
+      ],
+      [
+        0.0,
+        0.8191521763801575,
+        0.5735760927200317,
+        7.896876811981201
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    [
+      [
+        -4.371138828673793e-08,
+        0.5735760927200317,
+        -0.8191521763801575,
+        -10.035422325134277
+      ],
+      [
+        -1.0,
+        -2.507180774102835e-08,
+        3.580628060717572e-08,
+        4.3866225496458355e-07
+      ],
+      [
+        0.0,
+        0.8191521763801575,
+        0.5735760927200317,
+        7.896876811981201
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    [
+      [
+        -1.0,
+        -5.01436154820567e-08,
+        7.161256121435144e-08,
+        8.773245099291671e-07
+      ],
+      [
+        8.742277657347586e-08,
+        -0.5735760927200317,
+        0.8191521763801575,
+        10.035422325134277
+      ],
+      [
+        0.0,
+        0.8191521763801575,
+        0.5735760927200317,
+        7.896876811981201
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    [
+      [
+        7.549790126404332e-08,
+        -0.5735760927200317,
+        0.8191521763801575,
+        10.035422325134277
+      ],
+      [
+        1.0,
+        4.3303792551796505e-08,
+        -6.18442683730791e-08,
+        -7.576533107567229e-07
+      ],
+      [
+        0.0,
+        0.8191521763801575,
+        0.5735760927200317,
+        7.896876811981201
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ]
+  ],
+  "objects": {
+    "player-male_hair_scalp": {
+      "vertices": 537,
+      "uncovered_vertices": 110
+    },
+    "player-male_jaw_beard": {
+      "vertices": 422,
+      "uncovered_vertices": 201
+    },
+    "male_walk_baked_cloth_samples": {
+      "vertices": 2578,
+      "uncovered_vertices": 150
+    },
+    "player-male_waist_cord_cloth_bound": {
+      "vertices": 976,
+      "uncovered_vertices": 779
+    },
+    "player-male_belt_ends_cloth_bound": {
+      "vertices": 168,
+      "uncovered_vertices": 77
+    },
+    "male_ropebelt_turn_0": {
+      "vertices": 976,
+      "uncovered_vertices": 780
+    },
+    "male_ropebelt_turn_1": {
+      "vertices": 976,
+      "uncovered_vertices": 676
+    },
+    "male_sandal_sole_-1": {
+      "vertices": 48,
+      "uncovered_vertices": 27
+    },
+    "male_sandal_strap_-1_0": {
+      "vertices": 22,
+      "uncovered_vertices": 22
+    },
+    "male_sandal_strap_-1_1": {
+      "vertices": 22,
+      "uncovered_vertices": 19
+    },
+    "male_sandal_sole_1": {
+      "vertices": 48,
+      "uncovered_vertices": 25
+    },
+    "male_sandal_strap_1_0": {
+      "vertices": 22,
+      "uncovered_vertices": 22
+    },
+    "male_sandal_strap_1_1": {
+      "vertices": 22,
+      "uncovered_vertices": 19
+    },
+    "MH_male_Body": {
+      "vertices": 19158,
+      "uncovered_vertices": 8619
+    }
+  },
+  "registration": {
+    "mean_iou": 0.569915849326022,
+    "translation": [
+      -1,
+      -2
+    ]
+  },
+  "idle_pose_verification": {
+    "file": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\blender\\male-idle.blend",
+    "frame": 1,
+    "checks": [
+      {
+        "render": "frames/source-idle-0.png",
+        "source_reference": "starter-combat/references/male-idle-front-00.png"
+      },
+      {
+        "render": "frames/source-idle-1.png",
+        "source_reference": "starter-combat/references/male-idle-right-00.png"
+      },
+      {
+        "render": "frames/source-idle-2.png",
+        "source_reference": "starter-combat/references/male-idle-back-00.png"
+      },
+      {
+        "render": "frames/source-idle-3.png",
+        "source_reference": "starter-combat/references/male-idle-left-00.png"
+      }
+    ]
+  },
+  "paint_sampled_fallback_linear_rgb": {
+    "player-male_hair_scalp": [
+      0.16669651865959167,
+      0.07036010921001434,
+      0.03130148723721504
+    ],
+    "player-male_jaw_beard": [
+      0.04893569275736809,
+      0.015996292233467102,
+      0.007758529856801033
+    ],
+    "male_walk_baked_cloth_samples": [
+      0.304987370967865,
+      0.2158605307340622,
+      0.14412850141525269
+    ],
+    "player-male_waist_cord_cloth_bound": [
+      0.2176889032125473,
+      0.10461649298667908,
+      0.04091520980000496
+    ],
+    "player-male_belt_ends_cloth_bound": [
+      0.13286836445331573,
+      0.06662595272064209,
+      0.023153364658355713
+    ],
+    "male_ropebelt_turn_0": [
+      0.1314983069896698,
+      0.06571093201637268,
+      0.026241222396492958
+    ],
+    "male_ropebelt_turn_1": [
+      0.20155629515647888,
+      0.12743772566318512,
+      0.07818742841482162
+    ],
+    "male_sandal_sole_-1": [
+      0.31398874521255493,
+      0.14412850141525269,
+      0.05951124057173729
+    ],
+    "male_sandal_sole_1": [
+      0.17626358568668365,
+      0.07618539035320282,
+      0.030131909996271133
+    ],
+    "MH_male_Body": [
+      0.3277781307697296,
+      0.17144115269184113,
+      0.08865560591220856
+    ]
+  },
+  "geometry_before": "56ff6e7485c44cf508a6377f378754a0d0b9e740aa51ee438953d35cdc9e44a9",
+  "geometry_after": "56ff6e7485c44cf508a6377f378754a0d0b9e740aa51ee438953d35cdc9e44a9",
+  "camera": {
+    "type": "PERSP",
+    "lens": 204.0,
+    "shift_x": 0.0,
+    "shift_y": -0.022999698296189308,
+    "sensor_width": 36.0,
+    "frame": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      80
+    ],
+    "pixels_per_metre": 48
+  }
+}

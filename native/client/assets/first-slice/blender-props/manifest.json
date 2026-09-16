@@ -1,0 +1,82 @@
+{
+  "source": "Z:\\Code\\.worktrees\\wizard-art-player-guides\\art_studies\\starter-derivatives-v01\\blender\\village-parity.blend",
+  "source_sha256": "ae9fc2502b79b4b7f21fa18d60539d25be47a55c170812e3f7c54e1391f1e850",
+  "assets": [
+    {
+      "id": "hut",
+      "size": [
+        240,
+        240
+      ],
+      "anchor": [
+        120,
+        184
+      ],
+      "pixels_per_metre": 48,
+      "source_objects": "parity_dwelling_west",
+      "pivot": [
+        -3.15,
+        3.3,
+        0
+      ],
+      "camera_depth": 12.75
+    },
+    {
+      "id": "well",
+      "size": [
+        96,
+        128
+      ],
+      "anchor": [
+        48,
+        100
+      ],
+      "pixels_per_metre": 48,
+      "source_objects": "parity_well",
+      "pivot": [
+        1.45,
+        1.6,
+        0
+      ],
+      "camera_depth": 12.75
+    },
+    {
+      "id": "fence",
+      "size": [
+        192,
+        96
+      ],
+      "anchor": [
+        96,
+        80
+      ],
+      "pixels_per_metre": 48,
+      "source_objects": "parity_fence",
+      "pivot": [
+        -0.3,
+        4.25,
+        0
+      ],
+      "camera_depth": 12.75
+    },
+    {
+      "id": "tree",
+      "size": [
+        240,
+        240
+      ],
+      "anchor": [
+        120,
+        224
+      ],
+      "pixels_per_metre": 48,
+      "source_objects": "parity_tree_west",
+      "pivot": [
+        -4.55,
+        0.6,
+        0
+      ],
+      "camera_depth": 12.75
+    }
+  ]
+}

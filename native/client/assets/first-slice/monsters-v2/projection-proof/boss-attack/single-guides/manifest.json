@@ -1,0 +1,194 @@
+{
+  "frames": [
+    {
+      "guide": "projection-proof/boss-attack/single-guides/well-alpha-attack-left-02.png",
+      "guide_sha256": "5bb970dc1628ea3ca589a08df3522306d19226da3377d3984002bafc06b77c67",
+      "color_reference": "projection-proof/boss-attack/frames/well-alpha-attack-left-02.png",
+      "geometry_reference": "references/well-alpha-attack-left-02.png",
+      "geometry_reference_sha256": "54cac804ffe84413aa37e88e48100c77db6f1a8a515adf37bfceef51e121f089",
+      "phase": 2,
+      "direction": "left",
+      "layout": {
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "scale": 8,
+        "output": [
+          1536,
+          1024
+        ],
+        "fixed_translation": [
+          0,
+          0
+        ]
+      },
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48
+    },
+    {
+      "guide": "projection-proof/boss-attack/single-guides/well-alpha-attack-right-00.png",
+      "guide_sha256": "bec422c29fc92c6b0f5ef8eb8c6982f543d19edd5359a871ae19ca82a9218f12",
+      "color_reference": "projection-proof/boss-attack/frames/well-alpha-attack-right-00.png",
+      "geometry_reference": "references/well-alpha-attack-right-00.png",
+      "geometry_reference_sha256": "a2b37601665c4ea809822f6ca709ef2614c7db4090567f4639ca3d4fdf20f655",
+      "phase": 0,
+      "direction": "right",
+      "layout": {
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "scale": 8,
+        "output": [
+          1536,
+          1024
+        ],
+        "fixed_translation": [
+          0,
+          0
+        ]
+      },
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48
+    },
+    {
+      "guide": "projection-proof/boss-attack/single-guides/well-alpha-attack-right-01.png",
+      "guide_sha256": "1a2459121b14a55debcc495890b4400de4d38ec9b0f6187589d84782d2556152",
+      "color_reference": "projection-proof/boss-attack/frames/well-alpha-attack-right-01.png",
+      "geometry_reference": "references/well-alpha-attack-right-01.png",
+      "geometry_reference_sha256": "fd4c81f8748d9e7b27a6151a81eff6f33c83473bdb88439adf6d4f8dfccc509d",
+      "phase": 1,
+      "direction": "right",
+      "layout": {
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "scale": 8,
+        "output": [
+          1536,
+          1024
+        ],
+        "fixed_translation": [
+          0,
+          0
+        ]
+      },
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48
+    },
+    {
+      "guide": "projection-proof/boss-attack/single-guides/well-alpha-attack-right-02.png",
+      "guide_sha256": "5ac5f829a670f40113ad0218435e888a331698ddc053b8569ae389a3aa9df20a",
+      "color_reference": "projection-proof/boss-attack/frames/well-alpha-attack-right-02.png",
+      "geometry_reference": "references/well-alpha-attack-right-02.png",
+      "geometry_reference_sha256": "243455b907a6cbfbea631cc0af6507aef36266c55e612e048fb4eea34464cc17",
+      "phase": 2,
+      "direction": "right",
+      "layout": {
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "scale": 8,
+        "output": [
+          1536,
+          1024
+        ],
+        "fixed_translation": [
+          0,
+          0
+        ]
+      },
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48
+    },
+    {
+      "guide": "projection-proof/boss-attack/single-guides/well-alpha-attack-right-03.png",
+      "guide_sha256": "3d86f55cf686a3336073dc09cb7f81f77f929491ec5841483220afc320262a48",
+      "color_reference": "projection-proof/boss-attack/frames/well-alpha-attack-right-03.png",
+      "geometry_reference": "references/well-alpha-attack-right-03.png",
+      "geometry_reference_sha256": "9ff6a6ddebf4742dd63e60a6317c2ca26806ffa929c8ab9d156c32517da29504",
+      "phase": 3,
+      "direction": "right",
+      "layout": {
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "scale": 8,
+        "output": [
+          1536,
+          1024
+        ],
+        "fixed_translation": [
+          0,
+          0
+        ]
+      },
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48
+    }
+  ]
+}

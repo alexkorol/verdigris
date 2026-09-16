@@ -1,0 +1,48 @@
+{
+  "clip": "pack-wolf-death-left-single-01",
+  "source_sha256": "69b537c1410e19b061bada0bcfb02b08b3d318faaac44b9e32144ffa200aa18b",
+  "selected_grid": {
+    "size": 8,
+    "source": "fine",
+    "offset": [
+      0,
+      0
+    ],
+    "score": 0.6496341656711511,
+    "variance": 51.12614822387695,
+    "gated_out": false
+  },
+  "frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    76
+  ],
+  "whole_cycle_translation": [
+    0,
+    0
+  ],
+  "registered_mean_iou": 0.9442815249266863,
+  "alpha_policy": "Native alpha threshold128, noRGBkey",
+  "visual_acceptance": false,
+  "frames": [
+    {
+      "file": "pack-wolf-death-left-01.png",
+      "reference": {
+        "src": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\pack-wolf-death-left-01.png",
+        "sha256": "1c884ec924135b75be7f3cce72704cb3798efdb023e1361efc6577bc69a58371",
+        "blender_frame": 1
+      },
+      "bbox": [
+        18,
+        45,
+        78,
+        75
+      ],
+      "silhouette_iou": 0.9442815249266863,
+      "sha256": "7e8a5c93f13e4042eb8837ffacfede8477979032aec420c39b54c1f06738bc1e"
+    }
+  ]
+}

@@ -1,0 +1,194 @@
+{
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\blender\\female-idle.blend",
+  "source_sha256": "3a60c2bddef8de8d17b048a16762e74753e5e2aefac35fb84d949d737dd54117",
+  "equipment": "branch-club",
+  "hand": "right",
+  "frame_size": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "pixels_per_metre": 48,
+  "frames": [
+    {
+      "src": "references/female-club-idle-front-00.png",
+      "direction": "front",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "11b5723dac312995cb2ab70079bdb2eae035c4f5cc6023d6dad4766c85f3cb33"
+    },
+    {
+      "src": "references/female-club-idle-front-01.png",
+      "direction": "front",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "a6774ddd3d73b90b0427a60cf8082b47710ad4360f5f3000b9b824dd0b8d65bb"
+    },
+    {
+      "src": "references/female-club-idle-front-02.png",
+      "direction": "front",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "05fa3102954ec44dc3f0f776139ae99b5d63a16593e2e7f37a2e5713d12cf945"
+    },
+    {
+      "src": "references/female-club-idle-front-03.png",
+      "direction": "front",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "55f1b082ac580daae7715293d928b0cb156e87f0252f5e39a62ec27285710d3a"
+    },
+    {
+      "src": "references/female-club-idle-right-00.png",
+      "direction": "right",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "8ccf871bf463afc67226196ca942963b0951dca642d781b62056476d721d9279"
+    },
+    {
+      "src": "references/female-club-idle-right-01.png",
+      "direction": "right",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "1566cba83078096655f6d816ab9c8bde18676ac0a5a41bd27f470dc0704c0e7b"
+    },
+    {
+      "src": "references/female-club-idle-right-02.png",
+      "direction": "right",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "42f7cacb3d50f861a11a0e5e7ba34295cfb02172ea6bef5c2117fcfcdaf0969f"
+    },
+    {
+      "src": "references/female-club-idle-right-03.png",
+      "direction": "right",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "2d6cb171c4041e193c0be509129604b0bfb50e3e2c586da5b21a1a040f41902c"
+    },
+    {
+      "src": "references/female-club-idle-back-00.png",
+      "direction": "back",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "45a6a8917e651421d85351e86fcf4c9ba6c83aa7210e5623af89906210da3914"
+    },
+    {
+      "src": "references/female-club-idle-back-01.png",
+      "direction": "back",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "1a72948f1a2259fa4719112cc0acde2eeed22bc3f4770dd50d14696f1ff21aa9"
+    },
+    {
+      "src": "references/female-club-idle-back-02.png",
+      "direction": "back",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "00245e890efe35152443004070284305bc193f5600202982cebce6ba82327add"
+    },
+    {
+      "src": "references/female-club-idle-back-03.png",
+      "direction": "back",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "7ec1b7ce1d282afd77bb12f3ecd7462d8e3b3ea7c9492b83e0d1d795c3373d05"
+    },
+    {
+      "src": "references/female-club-idle-left-00.png",
+      "direction": "left",
+      "phase": 0,
+      "source_frame": 1,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "d69f1bb8741dc5186f18b59ad41788231cd1a7b1a128570649b88b8181450a42"
+    },
+    {
+      "src": "references/female-club-idle-left-01.png",
+      "direction": "left",
+      "phase": 1,
+      "source_frame": 5,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "8027755104e0319485a802c74448dc63fb112fa1cb3c646643b9a00155e86f89"
+    },
+    {
+      "src": "references/female-club-idle-left-02.png",
+      "direction": "left",
+      "phase": 2,
+      "source_frame": 9,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "3ea7d3283991a1d480aacf056708a52eb462693a56ae6ebdde37a9a8b3129efa"
+    },
+    {
+      "src": "references/female-club-idle-left-03.png",
+      "direction": "left",
+      "phase": 3,
+      "source_frame": 13,
+      "anchor": [
+        48,
+        80
+      ],
+      "sha256": "98d5d58435337a8bd0071f8cf969d05cd259772dc636db3aaf36fe1fe282a501"
+    }
+  ],
+  "status": "motion-reference-reviewed; not painted final game art"
+}

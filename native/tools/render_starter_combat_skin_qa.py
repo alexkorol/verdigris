@@ -3,8 +3,8 @@ import bpy,json,sys
 from pathlib import Path
 from mathutils.bvhtree import BVHTree
 OUT=Path(__file__).resolve().parents[1]/'client/assets/first-slice/starter-combat/transition-v3-skin'
-args=sys.argv[sys.argv.index('--')+1:];sex=args[0];clip=next((x for x in args[1:] if x in ['hit','death']),'attack');derive='derive-exclusions' in args;dest=OUT/(sex if clip=='attack' else f'{sex}-{clip}');repair=json.loads((dest/'repair.json').read_text());added=set(repair['restored_existing_vertices']);count=16 if clip=='attack' else 8
-bpy.ops.wm.open_mainfile(filepath=str(dest/('club-attack-transition.blend' if clip=='attack' else f'club-{clip}.blend')));s=bpy.context.scene;body=bpy.data.objects[f'MH_{sex}_Body'];cloth=bpy.data.objects[f'{sex}_walk_baked_cloth_samples']
+args=sys.argv[sys.argv.index('--')+1:];sex=args[0];clip=next((x for x in args[1:] if x in ['hit','death','unarmed-attack']),'attack');derive='derive-exclusions' in args;aligned='aligned' in args;dest=OUT.parent/'contact-v4-repaired'/f'{sex}-{clip}' if aligned else OUT/(sex if clip=='attack' else f'{sex}-{clip}');repair=json.loads((dest/'repair.json').read_text());added=set(repair['restored_existing_vertices']);count=16 if clip in ['attack','unarmed-attack'] else 8
+bpy.ops.wm.open_mainfile(filepath=str(dest/('unarmed-attack-transition.blend' if clip=='unarmed-attack' else 'club-attack-transition.blend' if clip=='attack' else f'club-{clip}.blend')));s=bpy.context.scene;body=bpy.data.objects[f'MH_{sex}_Body'];cloth=bpy.data.objects[f'{sex}_walk_baked_cloth_samples']
 if derive:
  rig=bpy.data.objects[f'MH_{sex}_Rig'];shoulder=rig.data.bones['upperarm_r'].head_local;vg=body.vertex_groups[repair['mask_vertex_group']];bg=body.vertex_groups['body'].index
  for v in body.data.vertices:

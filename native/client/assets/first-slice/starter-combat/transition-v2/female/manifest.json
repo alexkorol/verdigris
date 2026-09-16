@@ -1,0 +1,752 @@
+{
+  "status": "source-candidate; requires cloth/skin clearance review before final projection",
+  "clips": [
+    {
+      "sex": "female",
+      "action": "club-attack",
+      "direction": "front",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "duration_ms": 800,
+      "frames": [
+        {
+          "path": "transition-v2/female/references/front-00-idle.png",
+          "sha256": "710eb57a01e6d46c4d4170e0734ae512c7fe04475705da1c00482278303adbf9",
+          "phase": 0,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/front-01-entry-1.png",
+          "sha256": "03350b61ade36aad5b4b39c2ab0211eed48a5777f5f7d7f338674e051fa239a3",
+          "phase": 1,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/front-02-entry-2.png",
+          "sha256": "354b0b470ec7aae9a200f1cdd5804042b4146b7637457a395a7fa13286753f01",
+          "phase": 2,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/front-03-entry-3.png",
+          "sha256": "731be4ee8ebcafead79ede310d428231fc6613338c4f9d40fc1f0b380f564575",
+          "phase": 3,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/front-04-attack-0.png",
+          "sha256": "5b7c5055c54359c065d784f7ea1b7a17a1392b010a0f5825e454bb85f7a4fdb1",
+          "phase": 4,
+          "duration_ms": 50,
+          "source_phase": 0
+        },
+        {
+          "path": "transition-v2/female/references/front-05-attack-1.png",
+          "sha256": "6f5f35ee406cf49f4d60b8f53ef699f5350f4c010981cf8d91bd2f774e33f5cb",
+          "phase": 5,
+          "duration_ms": 50,
+          "source_phase": 1
+        },
+        {
+          "path": "transition-v2/female/references/front-06-attack-2.png",
+          "sha256": "26cff60289b4d1705086c2b731f506d6b974629a6c2bdf184d972f8d828680e6",
+          "phase": 6,
+          "duration_ms": 50,
+          "source_phase": 2
+        },
+        {
+          "path": "transition-v2/female/references/front-07-attack-3.png",
+          "sha256": "d26555a390bc6fea1fe1bc78e8c2cb05956b8ec39d3074cb428d22fb71979998",
+          "phase": 7,
+          "duration_ms": 50,
+          "source_phase": 3
+        },
+        {
+          "path": "transition-v2/female/references/front-08-attack-4.png",
+          "sha256": "54b9ef908c1daa385b132879ee59fa4a2d198f4228a3bd2c348b7fc7abb73201",
+          "phase": 8,
+          "duration_ms": 50,
+          "source_phase": 4
+        },
+        {
+          "path": "transition-v2/female/references/front-09-attack-5.png",
+          "sha256": "336ecd6d86f6c6e6e71ebdd6b1c2ecc7618fb56cb476f0620b854b99e750db5b",
+          "phase": 9,
+          "duration_ms": 50,
+          "source_phase": 5
+        },
+        {
+          "path": "transition-v2/female/references/front-10-attack-6.png",
+          "sha256": "ecaae1d8f2da04f4ad67d4301cecdfbe85d7e9be48170c4c34412dbcd456eb56",
+          "phase": 10,
+          "duration_ms": 50,
+          "source_phase": 6
+        },
+        {
+          "path": "transition-v2/female/references/front-11-attack-7.png",
+          "sha256": "cb5ac2eb51ac390c447c5ab0fede4c9cdc279ebbc2d1bb377c699607de658ca1",
+          "phase": 11,
+          "duration_ms": 50,
+          "source_phase": 7
+        },
+        {
+          "path": "transition-v2/female/references/front-12-recovery-1.png",
+          "sha256": "9cd413023d51e6f339f02809eb892e55e1bb27e88399b8b1036e2845b6a4b93c",
+          "phase": 12,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/front-13-recovery-2.png",
+          "sha256": "c31bb8ba1830697b3e4bea3915ee8cbe4bb61850b987174fc31de7861f4c43ac",
+          "phase": 13,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/front-14-recovery-3.png",
+          "sha256": "f16287046623005d74912ab232ab90830e8ceea542e2afe0925ce808c7ca8457",
+          "phase": 14,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/front-15-idle-end.png",
+          "sha256": "8667de201dabc2b51feb3a4ff026264c33ac1a9463d6f5cb755888dfecff415c",
+          "phase": 15,
+          "duration_ms": 50,
+          "source_phase": null
+        }
+      ]
+    },
+    {
+      "sex": "female",
+      "action": "club-attack",
+      "direction": "right",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "duration_ms": 800,
+      "frames": [
+        {
+          "path": "transition-v2/female/references/right-00-idle.png",
+          "sha256": "441805a5ecf5913e797cd84e596b2cb9ad5b92b78db5498cbce64eefa1d4a0d7",
+          "phase": 0,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/right-01-entry-1.png",
+          "sha256": "3f36ab913a34f168f19789efa32939bf41045e0993986b094a87bde099b8b338",
+          "phase": 1,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/right-02-entry-2.png",
+          "sha256": "0977e29eb504bbf4bbce6969421f3cbb7c2b43e799b816d70509d954a1fc17e8",
+          "phase": 2,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/right-03-entry-3.png",
+          "sha256": "31a8ad02c8412dcbac114e0fbb34f6cf47547e6f4c59a30478a0fd0b55118812",
+          "phase": 3,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/right-04-attack-0.png",
+          "sha256": "032a0469c706add6406051749d4f1c9939bca711fd1ecba68b288c8a29985ed5",
+          "phase": 4,
+          "duration_ms": 50,
+          "source_phase": 0
+        },
+        {
+          "path": "transition-v2/female/references/right-05-attack-1.png",
+          "sha256": "854b8b5a1caf8eddda102f62716138a5ec99d06e6c1fff6af4e25e70155b2757",
+          "phase": 5,
+          "duration_ms": 50,
+          "source_phase": 1
+        },
+        {
+          "path": "transition-v2/female/references/right-06-attack-2.png",
+          "sha256": "86fd0ffc21f2ffdcdb77f14d3137577854901e9a2cf164b054e398b54f2714a2",
+          "phase": 6,
+          "duration_ms": 50,
+          "source_phase": 2
+        },
+        {
+          "path": "transition-v2/female/references/right-07-attack-3.png",
+          "sha256": "1eced81845c6ed3cbafcea92c18dba88bdc2f05c32e47e9818bcc6a47e585e14",
+          "phase": 7,
+          "duration_ms": 50,
+          "source_phase": 3
+        },
+        {
+          "path": "transition-v2/female/references/right-08-attack-4.png",
+          "sha256": "850465bbc04ea59cbca0913f8c7090080cfd66c94b8cee107035fba5188b7b87",
+          "phase": 8,
+          "duration_ms": 50,
+          "source_phase": 4
+        },
+        {
+          "path": "transition-v2/female/references/right-09-attack-5.png",
+          "sha256": "1da38d05d068d46158858d8d718d70ae12a3664d09d6e9f86edf324ce8a22ccd",
+          "phase": 9,
+          "duration_ms": 50,
+          "source_phase": 5
+        },
+        {
+          "path": "transition-v2/female/references/right-10-attack-6.png",
+          "sha256": "5cb48b0b773eb516383627fcc3eb36bc5df7c291215bc8eaa45129919e57cf64",
+          "phase": 10,
+          "duration_ms": 50,
+          "source_phase": 6
+        },
+        {
+          "path": "transition-v2/female/references/right-11-attack-7.png",
+          "sha256": "2383d41af0836099f800090225a373cbd9072d94eaf14c069b7447a641ec6cf9",
+          "phase": 11,
+          "duration_ms": 50,
+          "source_phase": 7
+        },
+        {
+          "path": "transition-v2/female/references/right-12-recovery-1.png",
+          "sha256": "443b2db4e49800688106bdadff590d4298de2bca7f0246dfcb747747f475e304",
+          "phase": 12,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/right-13-recovery-2.png",
+          "sha256": "7da4abd6c34888013534481e524398c1b0126c21ea9e24bd22b5dcbdd11c63ab",
+          "phase": 13,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/right-14-recovery-3.png",
+          "sha256": "bc18cff0c36b426d748cde2b6e187218022a86141f65cad38dd796f083c4bdfb",
+          "phase": 14,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/right-15-idle-end.png",
+          "sha256": "0b37857aca41eae04f07ea477a2744537cef3f5281c087d0fe6898534ae0da53",
+          "phase": 15,
+          "duration_ms": 50,
+          "source_phase": null
+        }
+      ]
+    },
+    {
+      "sex": "female",
+      "action": "club-attack",
+      "direction": "back",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "duration_ms": 800,
+      "frames": [
+        {
+          "path": "transition-v2/female/references/back-00-idle.png",
+          "sha256": "42177612f47c378feabf345e5067da487509f0b2eecade6127bd152113274a6d",
+          "phase": 0,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/back-01-entry-1.png",
+          "sha256": "036274ba3c161026468159aae890b3992e1f1f307e259ede22906929fa0ff061",
+          "phase": 1,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/back-02-entry-2.png",
+          "sha256": "744373ee8a7b98bb973cc2347f1f7ec4a5085245450a5e2abfa322aa5b2ef8a1",
+          "phase": 2,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/back-03-entry-3.png",
+          "sha256": "d4acaf1c850c077c6b3c6c2f4cda09c7e0721e6f9c9673d28d4cba22f0698d12",
+          "phase": 3,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/back-04-attack-0.png",
+          "sha256": "9f5b257119d6c378848a56e8471399744dd6cef94f76eb2fd867c4f59c04a2f3",
+          "phase": 4,
+          "duration_ms": 50,
+          "source_phase": 0
+        },
+        {
+          "path": "transition-v2/female/references/back-05-attack-1.png",
+          "sha256": "099dfdf0ba0213b60f457434a929a32fe1fb3294cc08ecac09f9e55801ad64b1",
+          "phase": 5,
+          "duration_ms": 50,
+          "source_phase": 1
+        },
+        {
+          "path": "transition-v2/female/references/back-06-attack-2.png",
+          "sha256": "be77b6cfc42254a9389b7c8441bcb74207c86bf972c22e0048fcadb71f32828e",
+          "phase": 6,
+          "duration_ms": 50,
+          "source_phase": 2
+        },
+        {
+          "path": "transition-v2/female/references/back-07-attack-3.png",
+          "sha256": "8fc0caa2d262fe449535a2395de2adce08c946dc6ff2b678991f94abb540f4b7",
+          "phase": 7,
+          "duration_ms": 50,
+          "source_phase": 3
+        },
+        {
+          "path": "transition-v2/female/references/back-08-attack-4.png",
+          "sha256": "c8b01ce85f68ad95a899542831c7752d372121fd686826244109ff77362ebd75",
+          "phase": 8,
+          "duration_ms": 50,
+          "source_phase": 4
+        },
+        {
+          "path": "transition-v2/female/references/back-09-attack-5.png",
+          "sha256": "9bafc81565c2fccef0f5c4660e94f82b01e589504e6558b7cffb671ea9a27d71",
+          "phase": 9,
+          "duration_ms": 50,
+          "source_phase": 5
+        },
+        {
+          "path": "transition-v2/female/references/back-10-attack-6.png",
+          "sha256": "f37309652f9a84d787b68d814e38d351f672cfaaf43e24db6ac6749a554c7b10",
+          "phase": 10,
+          "duration_ms": 50,
+          "source_phase": 6
+        },
+        {
+          "path": "transition-v2/female/references/back-11-attack-7.png",
+          "sha256": "d76c867eeb0d973ea24fb78e64bdee3c3983bad7d1f8059d1feebb0de3e5dfac",
+          "phase": 11,
+          "duration_ms": 50,
+          "source_phase": 7
+        },
+        {
+          "path": "transition-v2/female/references/back-12-recovery-1.png",
+          "sha256": "30e32a3c900a562caae91fdf296150c00fc6503dcfc63066648fb11a40605051",
+          "phase": 12,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/back-13-recovery-2.png",
+          "sha256": "c43f4262bc242200d22d32d25623d2c0aeeecf5231c0ff9291cf6f15d6c88de5",
+          "phase": 13,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/back-14-recovery-3.png",
+          "sha256": "ccb6457ed145cf86e89b09b11810a7f2423c26cae8adf5247a3d9750ccbae099",
+          "phase": 14,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/back-15-idle-end.png",
+          "sha256": "d5afb0070e03c184744ac4d38853b54808e8c5936b7ef1633ad83cef494a2d3b",
+          "phase": 15,
+          "duration_ms": 50,
+          "source_phase": null
+        }
+      ]
+    },
+    {
+      "sex": "female",
+      "action": "club-attack",
+      "direction": "left",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "duration_ms": 800,
+      "frames": [
+        {
+          "path": "transition-v2/female/references/left-00-idle.png",
+          "sha256": "1f3733c90c588f21f73f768435cd977957318891acb933e11cdeb9ac50bce366",
+          "phase": 0,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/left-01-entry-1.png",
+          "sha256": "9880927fa361d171caabb469a5931b6512e1dbd015eeb56fa5506b3541a0d893",
+          "phase": 1,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/left-02-entry-2.png",
+          "sha256": "50ce89400199f15102787d1130fb3b5e4db7ce825149f7bd9fc4dbc2c05f064b",
+          "phase": 2,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/left-03-entry-3.png",
+          "sha256": "ccaeb5c5117af8b5f6df2ccddf4741d98ae744f240356932b8bea7d9e1fa5c48",
+          "phase": 3,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/left-04-attack-0.png",
+          "sha256": "1210b21b49c5704c152d49ca2f0a43eac40080af4a99c0fbfce7ef799dd04eca",
+          "phase": 4,
+          "duration_ms": 50,
+          "source_phase": 0
+        },
+        {
+          "path": "transition-v2/female/references/left-05-attack-1.png",
+          "sha256": "5f13dfd54ca0f5ff14d72f8e008cc7a8ebdbd841d670dec7a59548bc84b62c58",
+          "phase": 5,
+          "duration_ms": 50,
+          "source_phase": 1
+        },
+        {
+          "path": "transition-v2/female/references/left-06-attack-2.png",
+          "sha256": "9ecb73e0ba85bbb21319ca43ebadb1acf2839642d130572b530faefa6033459a",
+          "phase": 6,
+          "duration_ms": 50,
+          "source_phase": 2
+        },
+        {
+          "path": "transition-v2/female/references/left-07-attack-3.png",
+          "sha256": "f6b5e2c7794e268a09c785b902b07eab6e14b3b0e6466ae452c08b919e2e9398",
+          "phase": 7,
+          "duration_ms": 50,
+          "source_phase": 3
+        },
+        {
+          "path": "transition-v2/female/references/left-08-attack-4.png",
+          "sha256": "8f45bdc07ce0130965013f910ee877f0062d53f4ad925c581ce6077ac9d894e0",
+          "phase": 8,
+          "duration_ms": 50,
+          "source_phase": 4
+        },
+        {
+          "path": "transition-v2/female/references/left-09-attack-5.png",
+          "sha256": "91e264007381eae3024a886c04a6f534dbef3237c905d85e3390ee23d2b0a16f",
+          "phase": 9,
+          "duration_ms": 50,
+          "source_phase": 5
+        },
+        {
+          "path": "transition-v2/female/references/left-10-attack-6.png",
+          "sha256": "a6ed0bee133673efde4591419ca69be3120b88f8c841766f692c01b46ef2a458",
+          "phase": 10,
+          "duration_ms": 50,
+          "source_phase": 6
+        },
+        {
+          "path": "transition-v2/female/references/left-11-attack-7.png",
+          "sha256": "b2b0acebf98aa4fe8b68b133a0fd0c9e3b16896dad95c893af8d587ea86be8d4",
+          "phase": 11,
+          "duration_ms": 50,
+          "source_phase": 7
+        },
+        {
+          "path": "transition-v2/female/references/left-12-recovery-1.png",
+          "sha256": "4687d578b67ec8f97265ef05d75dbc30fafcaaa282e8ddbcc4214b7426994c5f",
+          "phase": 12,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/left-13-recovery-2.png",
+          "sha256": "c6f838f5f2a4cdfe3adff83fa264a31d813c8f17387381d576b17ff037785618",
+          "phase": 13,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/left-14-recovery-3.png",
+          "sha256": "8d921ceb01997140280ed5858c6b8164b0109c3b117824d6d42c2000ea421ad2",
+          "phase": 14,
+          "duration_ms": 50,
+          "source_phase": null
+        },
+        {
+          "path": "transition-v2/female/references/left-15-idle-end.png",
+          "sha256": "e1fa3fba27bc35539dc69bba374f432dae06b5cfb9a9562d298a511f428b2cab",
+          "phase": 15,
+          "duration_ms": 50,
+          "source_phase": null
+        }
+      ]
+    }
+  ],
+  "interior_rerender_comparison": [
+    {
+      "direction": "front",
+      "phase": 4,
+      "source_phase": 0,
+      "changed_pixels": 4,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "front",
+      "phase": 5,
+      "source_phase": 1,
+      "changed_pixels": 3,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "front",
+      "phase": 6,
+      "source_phase": 2,
+      "changed_pixels": 5,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "front",
+      "phase": 7,
+      "source_phase": 3,
+      "changed_pixels": 1,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "front",
+      "phase": 8,
+      "source_phase": 4,
+      "changed_pixels": 1,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "front",
+      "phase": 9,
+      "source_phase": 5,
+      "changed_pixels": 3,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "front",
+      "phase": 10,
+      "source_phase": 6,
+      "changed_pixels": 2,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "front",
+      "phase": 11,
+      "source_phase": 7,
+      "changed_pixels": 5,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "right",
+      "phase": 4,
+      "source_phase": 0,
+      "changed_pixels": 1,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "right",
+      "phase": 5,
+      "source_phase": 1,
+      "changed_pixels": 3,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "right",
+      "phase": 6,
+      "source_phase": 2,
+      "changed_pixels": 4,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "right",
+      "phase": 7,
+      "source_phase": 3,
+      "changed_pixels": 3,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "right",
+      "phase": 8,
+      "source_phase": 4,
+      "changed_pixels": 0,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "right",
+      "phase": 9,
+      "source_phase": 5,
+      "changed_pixels": 1,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "right",
+      "phase": 10,
+      "source_phase": 6,
+      "changed_pixels": 6,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "right",
+      "phase": 11,
+      "source_phase": 7,
+      "changed_pixels": 1,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "back",
+      "phase": 4,
+      "source_phase": 0,
+      "changed_pixels": 0,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "back",
+      "phase": 5,
+      "source_phase": 1,
+      "changed_pixels": 2,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "back",
+      "phase": 6,
+      "source_phase": 2,
+      "changed_pixels": 3,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "back",
+      "phase": 7,
+      "source_phase": 3,
+      "changed_pixels": 3,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "back",
+      "phase": 8,
+      "source_phase": 4,
+      "changed_pixels": 1,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "back",
+      "phase": 9,
+      "source_phase": 5,
+      "changed_pixels": 1,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "back",
+      "phase": 10,
+      "source_phase": 6,
+      "changed_pixels": 1,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "back",
+      "phase": 11,
+      "source_phase": 7,
+      "changed_pixels": 4,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "left",
+      "phase": 4,
+      "source_phase": 0,
+      "changed_pixels": 0,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "left",
+      "phase": 5,
+      "source_phase": 1,
+      "changed_pixels": 4,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "left",
+      "phase": 6,
+      "source_phase": 2,
+      "changed_pixels": 4,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "left",
+      "phase": 7,
+      "source_phase": 3,
+      "changed_pixels": 1,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "left",
+      "phase": 8,
+      "source_phase": 4,
+      "changed_pixels": 2,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "left",
+      "phase": 9,
+      "source_phase": 5,
+      "changed_pixels": 5,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "left",
+      "phase": 10,
+      "source_phase": 6,
+      "changed_pixels": 3,
+      "mask_xor_pixels": 0
+    },
+    {
+      "direction": "left",
+      "phase": 11,
+      "source_phase": 7,
+      "changed_pixels": 3,
+      "mask_xor_pixels": 0
+    }
+  ],
+  "notes": [
+    "Original eight input files are untouched. Skeletal samples and cloth keys are preserved; minute raster differences may arise from floating-point skeletal matrix conversion.",
+    "Entry/recovery uses quaternion pose blends and floor height correction. Horizontal foot planting is not constrained.",
+    "Foreground bounds checked at native scale; no resizing or framewise registration."
+  ]
+}

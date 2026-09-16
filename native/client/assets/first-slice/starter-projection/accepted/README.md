@@ -1,0 +1,7 @@
+832 frozen player frames: male/female, unarmed/club, idle/walk/sprint/attack/hit/death, four cardinal directions. All96clips form complete appearance/equipment cohorts. Native96px frames use anchor48,80;128px combat/death frames use64,96, retaining48pixels/metre throughout. All pixels are binaryRGBA with sanitized transparentRGB.
+
+Appearance derives from ImageGen-painted references, not independently invented animation sheets. Depth/visibility-aware projection binds that paint to editable source geometry. Final raster uses Box1.0 consistently; native frames are never resized or individually centered. Source PNGs, exact available generation calls, atlases, packed editable scenes and reports are archived here. Scene/report references in the top manifest are self-contained. Historical input paths inside reports identify original production inputs and are not runtime dependencies.
+
+Both16-frame attack types contact atindex8 and return to their exact idle endpoints. Punches use real Punch_Cross motion with closed striking fingers. Corpse grounding and exposed skin masks were checked in3D; the female braid has one recorded wider, tapered forward-draped profile across all actions. Final contacts were inspected by player/projection agents; game integration acceptance remains a separate native check.
+
+Runtime packaging must include only imported runtime PNGs/registry, not this editable source archive. Superseded candidate passes are excluded.

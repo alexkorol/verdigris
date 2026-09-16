@@ -1,0 +1,38 @@
+[
+  {
+    "phase": 0,
+    "outside_frame_pixels": 0,
+    "native_alpha": [
+      0,
+      255
+    ],
+    "grid_gated_out": false
+  },
+  {
+    "phase": 1,
+    "outside_frame_pixels": 0,
+    "native_alpha": [
+      0,
+      255
+    ],
+    "grid_gated_out": false
+  },
+  {
+    "phase": 2,
+    "outside_frame_pixels": 0,
+    "native_alpha": [
+      0,
+      255
+    ],
+    "grid_gated_out": false
+  },
+  {
+    "phase": 3,
+    "outside_frame_pixels": 0,
+    "native_alpha": [
+      0,
+      255
+    ],
+    "grid_gated_out": false
+  }
+]

@@ -1,0 +1,325 @@
+{
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\originals\\female-attack-front-0-3-imagegen-v1.png",
+  "source_sha256": "28986a172554a2df9735118467b71a88f9ee08827dc72da7560d6436986d0609",
+  "actual_dimensions": [
+    1254,
+    1254
+  ],
+  "requested_dimensions": [
+    1024,
+    1024
+  ],
+  "grid": {
+    "size": 5,
+    "source": "fine",
+    "offset": [
+      0,
+      0
+    ],
+    "score": 0.7734888438958807,
+    "variance": 100.2141342163086,
+    "gated_out": false
+  },
+  "all_grid_candidates": [
+    {
+      "size": 22,
+      "source": "autocorr",
+      "offset": [
+        13,
+        10
+      ],
+      "score": 1.007020445369245,
+      "variance": 381.244384765625,
+      "gated_out": false
+    },
+    {
+      "size": 19,
+      "source": "autocorr",
+      "offset": [
+        4,
+        9
+      ],
+      "score": 0.9675547502474224,
+      "variance": 343.0913391113281,
+      "gated_out": false
+    },
+    {
+      "size": 18,
+      "source": "autocorr",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.9609735427200479,
+      "variance": 316.027587890625,
+      "gated_out": false
+    },
+    {
+      "size": 15,
+      "source": "autocorr",
+      "offset": [
+        9,
+        9
+      ],
+      "score": 0.9564531484709065,
+      "variance": 270.2984924316406,
+      "gated_out": false
+    },
+    {
+      "size": 11,
+      "source": "autocorr",
+      "offset": [
+        4,
+        10
+      ],
+      "score": 0.8778412205663426,
+      "variance": 218.57687377929688,
+      "gated_out": false
+    },
+    {
+      "size": 8,
+      "source": "autocorr",
+      "offset": [
+        5,
+        6
+      ],
+      "score": 0.8506404563198118,
+      "variance": 155.19015502929688,
+      "gated_out": false
+    },
+    {
+      "size": 7,
+      "source": "autocorr",
+      "offset": [
+        4,
+        3
+      ],
+      "score": 0.838729995855135,
+      "variance": 137.72247314453125,
+      "gated_out": false
+    },
+    {
+      "size": 6,
+      "source": "fine",
+      "offset": [
+        3,
+        5
+      ],
+      "score": 0.8095050572842771,
+      "variance": 117.69336700439453,
+      "gated_out": false
+    },
+    {
+      "size": 5,
+      "source": "fine",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.7734888438958807,
+      "variance": 100.2141342163086,
+      "gated_out": false
+    },
+    {
+      "size": 4,
+      "source": "autocorr",
+      "offset": [
+        1,
+        2
+      ],
+      "score": 0.7619012270422243,
+      "variance": 76.65145874023438,
+      "gated_out": false
+    },
+    {
+      "size": 3,
+      "source": "fine",
+      "offset": [
+        1,
+        2
+      ],
+      "score": 0.7209665932289205,
+      "variance": 56.406124114990234,
+      "gated_out": false
+    },
+    {
+      "size": 190,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.4510194188801666,
+      "variance": 1170.2408447265625,
+      "gated_out": true
+    },
+    {
+      "size": 189,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.4495908041616769,
+      "variance": 1178.3648681640625,
+      "gated_out": true
+    },
+    {
+      "size": 186,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.44240195042502145,
+      "variance": 1218.0614013671875,
+      "gated_out": true
+    },
+    {
+      "size": 185,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.4390185879705665,
+      "variance": 1232.962158203125,
+      "gated_out": true
+    },
+    {
+      "size": 184,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.43564372195203077,
+      "variance": 1247.00048828125,
+      "gated_out": true
+    },
+    {
+      "size": 183,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.43168110586110947,
+      "variance": 1262.4434814453125,
+      "gated_out": true
+    },
+    {
+      "size": 182,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.4277190846315583,
+      "variance": 1278.380859375,
+      "gated_out": true
+    },
+    {
+      "size": 176,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.40940653961854284,
+      "variance": 1393.6885986328125,
+      "gated_out": true
+    }
+  ],
+  "frame": [
+    128,
+    128
+  ],
+  "anchor": [
+    64,
+    96
+  ],
+  "pixels_per_metre": 48,
+  "registration": [
+    1,
+    1
+  ],
+  "mean_iou_alpha128": 0.6919339958437813,
+  "visual_acceptance": false,
+  "resizing": "none; measured native grid reconstructed directly",
+  "frames": [
+    {
+      "file": "female-club-attack-front-00.png",
+      "sha256": "808a51a34c3bd9f307931e212cc704bc3b7a5a164e4ca57c7e223b366698ac2c",
+      "reference": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\references\\female-attack-front-00.png",
+      "reference_sha256": "0612ca73436118f68c6fad3c4f86fd6b4dbf8dda6104839f73fc7a884bc562e7",
+      "raw_lattice_origin": [
+        0,
+        0
+      ],
+      "foreground_pixels": 1561,
+      "bbox": [
+        26,
+        33,
+        83,
+        108
+      ],
+      "iou_alpha128": 0.7358008934269304
+    },
+    {
+      "file": "female-club-attack-front-01.png",
+      "sha256": "b9a43a9e54e05861524c27f3dafd1c77c48fc3ae2421bbc16fd17003940cc6a6",
+      "reference": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\references\\female-attack-front-01.png",
+      "reference_sha256": "6233669f89c4b1ef23e46df66e70f4fca82d4eb08e3723a05832dd8146ee00bf",
+      "raw_lattice_origin": [
+        125,
+        0
+      ],
+      "foreground_pixels": 1590,
+      "bbox": [
+        27,
+        28,
+        86,
+        108
+      ],
+      "iou_alpha128": 0.6436915887850467
+    },
+    {
+      "file": "female-club-attack-front-02.png",
+      "sha256": "12e6de46ca31dcd84d85c83513c847ede1366074296fabb676cd18cb787d00d0",
+      "reference": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\references\\female-attack-front-02.png",
+      "reference_sha256": "f78ab367a3fd96e7e2ec9f0d60619b983b07094f61c7117bfd0ba637f9bbfe12",
+      "raw_lattice_origin": [
+        0,
+        125
+      ],
+      "foreground_pixels": 1608,
+      "bbox": [
+        32,
+        19,
+        104,
+        111
+      ],
+      "iou_alpha128": 0.686530105524519
+    },
+    {
+      "file": "female-club-attack-front-03.png",
+      "sha256": "2a01dfc05870b324989ef579ed81b0fc9c6b04fa5a6ccbe6a312eb94b9533cc3",
+      "reference": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\references\\female-attack-front-03.png",
+      "reference_sha256": "642281249b89f237bb4f221fcd3a451e2be24a3051899363019b93d60ec5c609",
+      "raw_lattice_origin": [
+        125,
+        125
+      ],
+      "foreground_pixels": 1246,
+      "bbox": [
+        53,
+        40,
+        107,
+        109
+      ],
+      "iou_alpha128": 0.7017133956386293
+    }
+  ],
+  "geometry_gate_pass": false
+}

@@ -1,0 +1,77 @@
+{
+  "clip": "well-alpha-attack-right-single-03",
+  "source_sha256": "472fde1cdf4ea3a8e0b8a89585720a24abe78f1ae1b000b1b9d2379cb8dbf601",
+  "selected_grid": {
+    "size": 8,
+    "source": "autocorr",
+    "offset": [
+      7,
+      1
+    ],
+    "score": 0.8841464498393654,
+    "variance": 71.83556365966797,
+    "gated_out": false
+  },
+  "frame": [
+    128,
+    96
+  ],
+  "anchor": [
+    64,
+    64
+  ],
+  "whole_cycle_translation": [
+    0,
+    0
+  ],
+  "registered_mean_iou": 0.9487643158529234,
+  "alpha_policy": "Native alpha threshold128, noRGBkey",
+  "visual_acceptance": true,
+  "frames": [
+    {
+      "file": "well-alpha-attack-right-03.png",
+      "reference": {
+        "src": "references/well-alpha-attack-right-03.png",
+        "sha256": "9ff6a6ddebf4742dd63e60a6317c2ca26806ffa929c8ab9d156c32517da29504",
+        "blender_frame": 3
+      },
+      "bbox": [
+        20,
+        22,
+        110,
+        70
+      ],
+      "silhouette_iou": 0.9487643158529234,
+      "sha256": "b816488fd0b7be1cb9d52003f535043f77bd31aea280252255925390246bdba4"
+    }
+  ],
+  "upload_guide": "projection-proof\\boss-attack\\single-guides\\well-alpha-attack-right-03.png",
+  "upload_guide_sha256": "3d86f55cf686a3336073dc09cb7f81f77f929491ec5841483220afc320262a48",
+  "additional_references": [
+    {
+      "file": "projection-proof\\boss-attack\\idle-right-style-4x.png",
+      "sha256": "02de3f9b6ee39b148defb2a132f2931c1dbb5381be648c6851429723532e8d3f"
+    }
+  ],
+  "layout": {
+    "columns": 1,
+    "slot": [
+      192,
+      128
+    ],
+    "inset": [
+      32,
+      16
+    ],
+    "scale": 8,
+    "output": [
+      1536,
+      1024
+    ],
+    "fixed_translation": [
+      0,
+      0
+    ]
+  },
+  "review_note": "Independent complete cohort reviewed; exact authored placement, matching coarse coat and contour."
+}

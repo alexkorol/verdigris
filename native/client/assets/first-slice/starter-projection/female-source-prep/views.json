@@ -1,0 +1,199 @@
+{
+  "sex": "female",
+  "atlas": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-projection\\female-source-prep\\appearance-atlas.png",
+  "atlas_sha256": "866edf15d3f4a7c6bb59feb99be9a22883a98f2d45ee90f51d5b474ce1404af6",
+  "views": [
+    {
+      "direction": "front",
+      "image": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-projection\\female-source-prep\\front.png",
+      "image_sha256": "2195e0acc6237f3cd89ad7156444f9caa537c0f7d686ccea73364c7523ffb882",
+      "source_image": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2\\originals\\female-walk-front.png",
+      "source_image_sha256": "cf9f0cef62b9e12f28bf6daf34d671562b964d1530531b888db342bbfbfb0bd0",
+      "geometry_file": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2-female-refine\\blender\\female-walk-exterior.blend",
+      "geometry_sha256": "a668944a456fa2ba79de9617b4562501a690b060c5461ab12424e2cb6fee4cd4",
+      "frame": 72,
+      "shared_sheet_registration": {
+        "frames": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "translation": [
+          0,
+          0
+        ],
+        "mean_iou": 0.8695220925046816,
+        "frame_iou": [
+          0.8750988142292491,
+          0.8650546021840874,
+          0.8566748566748567,
+          0.8812600969305331
+        ]
+      },
+      "native_grid": {
+        "size": 4,
+        "source": "fine",
+        "offset": [
+          1,
+          3
+        ],
+        "score": 0.9546608529028294,
+        "variance": 117.8595199584961,
+        "gated_out": false
+      },
+      "scale": 4,
+      "original_native_reference": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2-female-refine\\references\\female-walk-front-00.png",
+      "original_native_reference_sha256": "4253e6e806879e80f2b54302ae3cb255afd07a9f96cb18a31d3ee97fb06e22c5",
+      "source_guide": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2-female-refine\\guides\\female-walk-front.png",
+      "exact_generation_call": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-projection\\female-source-prep\\call-456.js",
+      "exact_generation_call_sha256": "82ba83971bf5a81a11a11f2ab32d03aaa781bd173157489bbe5b39f878062049",
+      "use": "Surface appearance only; Blender geometry and visibility determine silhouette. Generated side/back silhouettes failed geometry gate and are not standalone accepted sprites.",
+      "geometry_input_verified": "Exact tool call618 uses starter-v2-female-refine guide for this direction; front call456 uses refined front guide."
+    },
+    {
+      "direction": "right",
+      "image": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-projection\\female-source-prep\\right.png",
+      "image_sha256": "9fb70300450f0fd59f815f7110651b0a892ec8610f0476908e7c726ab3b9a522",
+      "source_image": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2\\originals\\female-walk-right.png",
+      "source_image_sha256": "2c48db21ec982ceaee96a414566a8833d79a02fd3e105e2df0111ef3c340541c",
+      "geometry_file": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2-female-refine\\blender\\female-walk-exterior.blend",
+      "geometry_sha256": "a668944a456fa2ba79de9617b4562501a690b060c5461ab12424e2cb6fee4cd4",
+      "frame": 72,
+      "shared_sheet_registration": {
+        "frames": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "translation": [
+          -1,
+          -3
+        ],
+        "mean_iou": 0.5525312952023933,
+        "frame_iou": [
+          0.5898520084566596,
+          0.5501770956316411,
+          0.5282485875706214,
+          0.541847489150651
+        ]
+      },
+      "native_grid": {
+        "size": 4,
+        "source": "autocorr",
+        "offset": [
+          1,
+          3
+        ],
+        "score": 1.1480451762000354,
+        "variance": 131.6351318359375,
+        "gated_out": false
+      },
+      "scale": 4,
+      "original_native_reference": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2-female-refine\\references\\female-walk-right-00.png",
+      "original_native_reference_sha256": "3b525608f406bb313fdf466027ae14e943b75058b95b2070ab9665b01f3ce850",
+      "source_guide": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2-female-refine\\guides\\female-walk-right.png",
+      "exact_generation_call": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-projection\\female-source-prep\\call-618.js",
+      "exact_generation_call_sha256": "9aaf12b3d0a5fc1bcbc4aceef630dfbb4391806b4169e9e186c85d59fa7dfc9a",
+      "use": "Surface appearance only; Blender geometry and visibility determine silhouette. Generated side/back silhouettes failed geometry gate and are not standalone accepted sprites.",
+      "geometry_input_verified": "Exact tool call618 uses starter-v2-female-refine guide for this direction; front call456 uses refined front guide."
+    },
+    {
+      "direction": "back",
+      "image": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-projection\\female-source-prep\\back.png",
+      "image_sha256": "7a5df87d04bdf1b0558348862616259be5134b722f594dc87b795bb9334e53b3",
+      "source_image": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2\\originals\\female-walk-back.png",
+      "source_image_sha256": "6e2b96160d88dac095f3292571736d24b16c000044d94da6d372215f3a0fad5a",
+      "geometry_file": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2-female-refine\\blender\\female-walk-exterior.blend",
+      "geometry_sha256": "a668944a456fa2ba79de9617b4562501a690b060c5461ab12424e2cb6fee4cd4",
+      "frame": 72,
+      "shared_sheet_registration": {
+        "frames": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "translation": [
+          0,
+          1
+        ],
+        "mean_iou": 0.6422872453428135,
+        "frame_iou": [
+          0.6425970873786407,
+          0.6516998075689544,
+          0.6514678326046222,
+          0.6233842538190364
+        ]
+      },
+      "native_grid": {
+        "size": 4,
+        "source": "autocorr",
+        "offset": [
+          2,
+          3
+        ],
+        "score": 1.0880531732007053,
+        "variance": 106.25880432128906,
+        "gated_out": false
+      },
+      "scale": 4,
+      "original_native_reference": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2-female-refine\\references\\female-walk-back-00.png",
+      "original_native_reference_sha256": "ae1a6b165ef1e43f01d2732775efb58fa5d0587b155362387d148888b16d4c0f",
+      "source_guide": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2-female-refine\\guides\\female-walk-back.png",
+      "exact_generation_call": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-projection\\female-source-prep\\call-618.js",
+      "exact_generation_call_sha256": "9aaf12b3d0a5fc1bcbc4aceef630dfbb4391806b4169e9e186c85d59fa7dfc9a",
+      "use": "Surface appearance only; Blender geometry and visibility determine silhouette. Generated side/back silhouettes failed geometry gate and are not standalone accepted sprites.",
+      "geometry_input_verified": "Exact tool call618 uses starter-v2-female-refine guide for this direction; front call456 uses refined front guide."
+    },
+    {
+      "direction": "left",
+      "image": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-projection\\female-source-prep\\left.png",
+      "image_sha256": "09ba71c80b6fdc7e908d45772253b14d1fdc56023c4226336ed7197a0c2a5994",
+      "source_image": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2\\originals\\female-walk-left.png",
+      "source_image_sha256": "5da8a18d79af219954811570e8da8b8b4ac6168619a062d93c66d0277fed4136",
+      "geometry_file": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2-female-refine\\blender\\female-walk-exterior.blend",
+      "geometry_sha256": "a668944a456fa2ba79de9617b4562501a690b060c5461ab12424e2cb6fee4cd4",
+      "frame": 72,
+      "shared_sheet_registration": {
+        "frames": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "translation": [
+          -2,
+          -2
+        ],
+        "mean_iou": 0.5507526032965854,
+        "frame_iou": [
+          0.6068965517241379,
+          0.5143540669856459,
+          0.5358381502890174,
+          0.5459216441875402
+        ]
+      },
+      "native_grid": {
+        "size": 4,
+        "source": "autocorr",
+        "offset": [
+          3,
+          3
+        ],
+        "score": 1.0878196508462594,
+        "variance": 109.15889739990234,
+        "gated_out": false
+      },
+      "scale": 4,
+      "original_native_reference": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2-female-refine\\references\\female-walk-left-00.png",
+      "original_native_reference_sha256": "64a446e1c43091e7b8123d205012b7b176340fc5d4c24cd456f7a68c981ce4d0",
+      "source_guide": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2-female-refine\\guides\\female-walk-left.png",
+      "exact_generation_call": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-projection\\female-source-prep\\call-618.js",
+      "exact_generation_call_sha256": "9aaf12b3d0a5fc1bcbc4aceef630dfbb4391806b4169e9e186c85d59fa7dfc9a",
+      "use": "Surface appearance only; Blender geometry and visibility determine silhouette. Generated side/back silhouettes failed geometry gate and are not standalone accepted sprites.",
+      "geometry_input_verified": "Exact tool call618 uses starter-v2-female-refine guide for this direction; front call456 uses refined front guide."
+    }
+  ]
+}

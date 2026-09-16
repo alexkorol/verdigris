@@ -1,0 +1,290 @@
+[
+  {
+    "frame": "male-unarmed-hit-front-00.png",
+    "bbox": [
+      29,
+      3,
+      67,
+      90
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-front-01.png",
+    "bbox": [
+      29,
+      3,
+      67,
+      90
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-front-02.png",
+    "bbox": [
+      29,
+      4,
+      67,
+      90
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-front-03.png",
+    "bbox": [
+      29,
+      4,
+      67,
+      90
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-front-04.png",
+    "bbox": [
+      29,
+      5,
+      67,
+      90
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-front-05.png",
+    "bbox": [
+      29,
+      6,
+      67,
+      90
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-front-06.png",
+    "bbox": [
+      29,
+      8,
+      67,
+      90
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-front-07.png",
+    "bbox": [
+      29,
+      9,
+      67,
+      90
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-right-00.png",
+    "bbox": [
+      32,
+      7,
+      66,
+      90
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-right-01.png",
+    "bbox": [
+      32,
+      7,
+      67,
+      90
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-right-02.png",
+    "bbox": [
+      32,
+      7,
+      69,
+      90
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-right-03.png",
+    "bbox": [
+      32,
+      7,
+      69,
+      90
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-right-04.png",
+    "bbox": [
+      32,
+      7,
+      68,
+      90
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-right-05.png",
+    "bbox": [
+      32,
+      7,
+      67,
+      90
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-right-06.png",
+    "bbox": [
+      33,
+      7,
+      65,
+      89
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-right-07.png",
+    "bbox": [
+      33,
+      7,
+      65,
+      89
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-back-00.png",
+    "bbox": [
+      30,
+      10,
+      66,
+      89
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-back-01.png",
+    "bbox": [
+      30,
+      9,
+      66,
+      89
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-back-02.png",
+    "bbox": [
+      30,
+      9,
+      66,
+      89
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-back-03.png",
+    "bbox": [
+      30,
+      8,
+      66,
+      89
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-back-04.png",
+    "bbox": [
+      30,
+      7,
+      66,
+      89
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-back-05.png",
+    "bbox": [
+      30,
+      5,
+      66,
+      89
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-back-06.png",
+    "bbox": [
+      29,
+      4,
+      66,
+      89
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-back-07.png",
+    "bbox": [
+      29,
+      3,
+      67,
+      88
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-left-00.png",
+    "bbox": [
+      29,
+      6,
+      64,
+      89
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-left-01.png",
+    "bbox": [
+      28,
+      6,
+      64,
+      89
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-left-02.png",
+    "bbox": [
+      27,
+      6,
+      64,
+      89
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-left-03.png",
+    "bbox": [
+      26,
+      5,
+      64,
+      88
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-left-04.png",
+    "bbox": [
+      27,
+      5,
+      64,
+      88
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-left-05.png",
+    "bbox": [
+      29,
+      5,
+      64,
+      88
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-left-06.png",
+    "bbox": [
+      31,
+      5,
+      63,
+      88
+    ]
+  },
+  {
+    "frame": "male-unarmed-hit-left-07.png",
+    "bbox": [
+      31,
+      6,
+      63,
+      88
+    ]
+  }
+]

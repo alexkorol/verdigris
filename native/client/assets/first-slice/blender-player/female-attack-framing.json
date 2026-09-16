@@ -1,0 +1,54 @@
+{
+  "front": {
+    "anchor": [
+      48,
+      80
+    ],
+    "logical_translation": [
+      0,
+      0
+    ],
+    "pixel_focal_length": 612.0,
+    "base_cell_px": 48,
+    "pixels_per_metre_at_player_plane": 48
+  },
+  "right": {
+    "anchor": [
+      48,
+      80
+    ],
+    "logical_translation": [
+      0,
+      0
+    ],
+    "pixel_focal_length": 612.0,
+    "base_cell_px": 48,
+    "pixels_per_metre_at_player_plane": 48
+  },
+  "back": {
+    "anchor": [
+      48,
+      80
+    ],
+    "logical_translation": [
+      0,
+      0
+    ],
+    "pixel_focal_length": 612.0,
+    "base_cell_px": 48,
+    "pixels_per_metre_at_player_plane": 48
+  },
+  "left": {
+    "anchor": [
+      48,
+      80
+    ],
+    "logical_translation": [
+      0,
+      0
+    ],
+    "pixel_focal_length": 612.0,
+    "base_cell_px": 48,
+    "pixels_per_metre_at_player_plane": 48
+  }
+}

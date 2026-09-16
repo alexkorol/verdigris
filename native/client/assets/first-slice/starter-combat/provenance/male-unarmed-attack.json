@@ -1,0 +1,316 @@
+{
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2\\blender\\male-walk-exterior.blend",
+  "source_sha256": "a0c181a36a4ed0aa41007328c0b214cb7d45813268141616bdd2d0d41b6749b3",
+  "motion": "Quaternius Universal Animation Library / Punch_Cross",
+  "source_frames": [
+    0,
+    3,
+    6,
+    9,
+    12,
+    15,
+    19,
+    24
+  ],
+  "frame_size": [
+    128,
+    128
+  ],
+  "anchor": [
+    64,
+    96
+  ],
+  "pixels_per_metre": 48,
+  "equipment": "unarmed",
+  "frames": [
+    {
+      "src": "references/male-unarmed-attack-front-00.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 0,
+      "sha256": "734c786701a6e2bccb916e5e8714cc1be0d9e81eb7c5b2d6b37141ef8114b7f7"
+    },
+    {
+      "src": "references/male-unarmed-attack-front-01.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 3,
+      "sha256": "6d9529f084fe19ab5fdd9b780d23d38b9391d7faeb45f297dd211d2b2fb33b0f"
+    },
+    {
+      "src": "references/male-unarmed-attack-front-02.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 6,
+      "sha256": "fa1a0e6730bc965c6e5a191dad2c75945a6577b48e6bcc573510ae1af0d6a114"
+    },
+    {
+      "src": "references/male-unarmed-attack-front-03.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 9,
+      "sha256": "4897b69cb0fd95b8aaca17e60693f1ab9a559cf661a696221178a555de019210"
+    },
+    {
+      "src": "references/male-unarmed-attack-front-04.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 12,
+      "sha256": "835910794879a34814879c64764d0d065fea152ad673cfb0de4773a5e4923d33"
+    },
+    {
+      "src": "references/male-unarmed-attack-front-05.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 15,
+      "sha256": "3b871aed20019446fdafcf56e4b169aeb356382be613b9e685a5c4fde20b828a"
+    },
+    {
+      "src": "references/male-unarmed-attack-front-06.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 19,
+      "sha256": "b77faf1af33c6a8d3fbef64efe68a091a1b123009f87ac90a35e386881856cf4"
+    },
+    {
+      "src": "references/male-unarmed-attack-front-07.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 24,
+      "sha256": "b97f8547c4b11803ab57c3c8bab45e12a67a3614dbf1cc258efcdb911ceb8d46"
+    },
+    {
+      "src": "references/male-unarmed-attack-right-00.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 0,
+      "sha256": "ce83c4cf168aa6bb2ba0d24ea587f6f7ba7aa1790701894f2e0af15d6795f5d4"
+    },
+    {
+      "src": "references/male-unarmed-attack-right-01.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 3,
+      "sha256": "763bfa867178003d01eb7c5e2232af8fcdf4b4d519f927765aa0b723ba0605d3"
+    },
+    {
+      "src": "references/male-unarmed-attack-right-02.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 6,
+      "sha256": "69c9e282311004ae509d018de66d248256ef7de4136e06b621b00b99ae0fc9d1"
+    },
+    {
+      "src": "references/male-unarmed-attack-right-03.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 9,
+      "sha256": "1c52a7377799b2bd01fbeea6986419239564bc61bbd7a6e5980b3984f07c7dbc"
+    },
+    {
+      "src": "references/male-unarmed-attack-right-04.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 12,
+      "sha256": "b3d38ac5a7074b1cf188b7bf2a8f461ff08b0eb2843339f6d23c65a838609458"
+    },
+    {
+      "src": "references/male-unarmed-attack-right-05.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 15,
+      "sha256": "dab69a631ed8f9feaf68c6dbeac08171854b67790c40e6512bdfc80c11c40edb"
+    },
+    {
+      "src": "references/male-unarmed-attack-right-06.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 19,
+      "sha256": "efc8c86afba3999e98d7d613e4cbadbf00181aaa891d529e04f2601484cc7c0c"
+    },
+    {
+      "src": "references/male-unarmed-attack-right-07.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 24,
+      "sha256": "dcbb39871fcd91025e5ce44522f30943fda167497db554fd83e80239c330aa55"
+    },
+    {
+      "src": "references/male-unarmed-attack-back-00.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 0,
+      "sha256": "0cfc53857ca46946cabacba5ab70fa94f856684318aa35b183b32d3d99c2ced2"
+    },
+    {
+      "src": "references/male-unarmed-attack-back-01.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 3,
+      "sha256": "3b0270b0fc56529d2b5ee3074634ed1691909d9c16a74f6ae33b6a63113d42f1"
+    },
+    {
+      "src": "references/male-unarmed-attack-back-02.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 6,
+      "sha256": "3bac20649f39e32fb080b1e117f442a2adf28718cdcff71f6ec45e1d7189b1be"
+    },
+    {
+      "src": "references/male-unarmed-attack-back-03.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 9,
+      "sha256": "a825f3867fa2cb0ff9b6aac9514c577ebe0d725112e6fe366cd05c76d79f37db"
+    },
+    {
+      "src": "references/male-unarmed-attack-back-04.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 12,
+      "sha256": "ac69837b4b8f125c5c7a185764dff3190294c06d41bcf60803cd8ee1c4bb8d72"
+    },
+    {
+      "src": "references/male-unarmed-attack-back-05.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 15,
+      "sha256": "32135ce2db65dca262f8cdc8346a4e4101061dc42ac4a8157444b6316062fa14"
+    },
+    {
+      "src": "references/male-unarmed-attack-back-06.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 19,
+      "sha256": "cdbdd52c7543633c6f4d413ef11ae08fb0ad3cef49b655594eb1df15598def93"
+    },
+    {
+      "src": "references/male-unarmed-attack-back-07.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 24,
+      "sha256": "63c4535009919f79e0dc44af0ae1569c9e980756041ed0fe935a99b78d03b472"
+    },
+    {
+      "src": "references/male-unarmed-attack-left-00.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 0,
+      "sha256": "2205b5ac7dac57ad23b1c58731a3068dd2478c85ab5d017d5eda69b82f63d401"
+    },
+    {
+      "src": "references/male-unarmed-attack-left-01.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 3,
+      "sha256": "1010bfd1ae254683330b51432fd09aa1645b10634429e042ac15396b84992d0f"
+    },
+    {
+      "src": "references/male-unarmed-attack-left-02.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 6,
+      "sha256": "76eaede4e901d608094f5696aa794f486e8290ab128cd34764f2626de6967753"
+    },
+    {
+      "src": "references/male-unarmed-attack-left-03.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 9,
+      "sha256": "7498030d4d39a05a55c4603dee209dd87bc6bfadbc4aa9a947c0f68319e5a62c"
+    },
+    {
+      "src": "references/male-unarmed-attack-left-04.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 12,
+      "sha256": "98936bd3e243022dc2c172477a662bf390eca9ae10351a8326625549c8003a46"
+    },
+    {
+      "src": "references/male-unarmed-attack-left-05.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 15,
+      "sha256": "3bbc9d981d862694d85821ac4b11ae9518bc92192eb0dc4dda577d3ba2a3450c"
+    },
+    {
+      "src": "references/male-unarmed-attack-left-06.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 19,
+      "sha256": "7fa6f27944a9cc9d3eb13a024721dfefcb05c9c047d3e22be7dd1c585ee3fccb"
+    },
+    {
+      "src": "references/male-unarmed-attack-left-07.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 24,
+      "sha256": "a726809c67835603993768bf9ff6250cde90a832482526e3558d28c5f6b6d1b5"
+    }
+  ],
+  "status": "motion-reference-reviewed; not painted final game art"
+}

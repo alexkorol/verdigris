@@ -1,0 +1,146 @@
+[
+  {
+    "frame": "female-club-idle-front-00.png",
+    "bbox": [
+      31,
+      8,
+      67,
+      87
+    ]
+  },
+  {
+    "frame": "female-club-idle-front-01.png",
+    "bbox": [
+      31,
+      8,
+      67,
+      87
+    ]
+  },
+  {
+    "frame": "female-club-idle-front-02.png",
+    "bbox": [
+      31,
+      8,
+      67,
+      87
+    ]
+  },
+  {
+    "frame": "female-club-idle-front-03.png",
+    "bbox": [
+      31,
+      8,
+      67,
+      87
+    ]
+  },
+  {
+    "frame": "female-club-idle-right-00.png",
+    "bbox": [
+      42,
+      6,
+      65,
+      85
+    ]
+  },
+  {
+    "frame": "female-club-idle-right-01.png",
+    "bbox": [
+      42,
+      6,
+      65,
+      85
+    ]
+  },
+  {
+    "frame": "female-club-idle-right-02.png",
+    "bbox": [
+      42,
+      6,
+      65,
+      85
+    ]
+  },
+  {
+    "frame": "female-club-idle-right-03.png",
+    "bbox": [
+      42,
+      6,
+      65,
+      85
+    ]
+  },
+  {
+    "frame": "female-club-idle-back-00.png",
+    "bbox": [
+      29,
+      5,
+      64,
+      82
+    ]
+  },
+  {
+    "frame": "female-club-idle-back-01.png",
+    "bbox": [
+      29,
+      5,
+      64,
+      82
+    ]
+  },
+  {
+    "frame": "female-club-idle-back-02.png",
+    "bbox": [
+      29,
+      5,
+      64,
+      82
+    ]
+  },
+  {
+    "frame": "female-club-idle-back-03.png",
+    "bbox": [
+      29,
+      5,
+      64,
+      82
+    ]
+  },
+  {
+    "frame": "female-club-idle-left-00.png",
+    "bbox": [
+      31,
+      7,
+      54,
+      87
+    ]
+  },
+  {
+    "frame": "female-club-idle-left-01.png",
+    "bbox": [
+      31,
+      7,
+      54,
+      87
+    ]
+  },
+  {
+    "frame": "female-club-idle-left-02.png",
+    "bbox": [
+      31,
+      7,
+      54,
+      87
+    ]
+  },
+  {
+    "frame": "female-club-idle-left-03.png",
+    "bbox": [
+      31,
+      7,
+      54,
+      87
+    ]
+  }
+]

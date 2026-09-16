@@ -1,0 +1,42 @@
+[
+  {
+    "from": 0,
+    "to": 1,
+    "centroid_motion_error": 0.8157905498288278
+  },
+  {
+    "from": 1,
+    "to": 2,
+    "centroid_motion_error": 2.7881425232404293
+  },
+  {
+    "from": 2,
+    "to": 3,
+    "centroid_motion_error": 1.1113258626084535
+  },
+  {
+    "from": 3,
+    "to": 4,
+    "centroid_motion_error": 0.8049302137278411
+  },
+  {
+    "from": 4,
+    "to": 5,
+    "centroid_motion_error": 1.5441571337565574
+  },
+  {
+    "from": 5,
+    "to": 6,
+    "centroid_motion_error": 1.036670234249157
+  },
+  {
+    "from": 6,
+    "to": 7,
+    "centroid_motion_error": 0.3711869382753993
+  },
+  {
+    "from": 7,
+    "to": 0,
+    "centroid_motion_error": 0.5362197190060071
+  }
+]

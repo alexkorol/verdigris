@@ -1,0 +1,96 @@
+{
+  "clip": "well-alpha-attack-back",
+  "source_sha256": "56c61eff514193021dbacbb3c6123793172ebf7c7e4174e68a8c728607d29c0a",
+  "selected_grid": {
+    "size": 4,
+    "source": "fine",
+    "offset": [
+      0,
+      2
+    ],
+    "score": 0.6937698825340086,
+    "variance": 52.13982009887695,
+    "gated_out": false
+  },
+  "frame": [
+    128,
+    96
+  ],
+  "anchor": [
+    64,
+    64
+  ],
+  "whole_cycle_translation": [
+    0,
+    0
+  ],
+  "registered_mean_iou": 0.8321588520023292,
+  "alpha_policy": "Native alpha threshold128, noRGBkey",
+  "visual_acceptance": false,
+  "frames": [
+    {
+      "file": "well-alpha-attack-back-00.png",
+      "reference": {
+        "src": "references/well-alpha-attack-back-00.png",
+        "sha256": "a1450982ad5293875960e505109360717c94a8e026e2c2dbb10ffeedc10434e2",
+        "blender_frame": 0
+      },
+      "bbox": [
+        52,
+        3,
+        76,
+        82
+      ],
+      "silhouette_iou": 0.8261464750171116,
+      "sha256": "9c89eadfb6fad8a982d8e983da2bc52889ba26ea159c7cf483ea99a5124fc7bb"
+    },
+    {
+      "file": "well-alpha-attack-back-01.png",
+      "reference": {
+        "src": "references/well-alpha-attack-back-01.png",
+        "sha256": "d668577df618477c6dee445a99afdfc240a2cec3e6d8b013b2b6854df94cd6cc",
+        "blender_frame": 1
+      },
+      "bbox": [
+        52,
+        7,
+        76,
+        82
+      ],
+      "silhouette_iou": 0.8322487346348517,
+      "sha256": "31ca11d3bc33c9711cc10063bf79c4a44221e0644611e8ecc965696277f70ec5"
+    },
+    {
+      "file": "well-alpha-attack-back-02.png",
+      "reference": {
+        "src": "references/well-alpha-attack-back-02.png",
+        "sha256": "99254a99910007b28665ef1191e8c6057a2f3e78ab59c5fec484a1e83cffeda3",
+        "blender_frame": 2
+      },
+      "bbox": [
+        52,
+        9,
+        76,
+        83
+      ],
+      "silhouette_iou": 0.8348148148148148,
+      "sha256": "8c0727bfa7b7cf6274025cb71fb865b532117736c38d1c9b66aa6c96e5c4ca84"
+    },
+    {
+      "file": "well-alpha-attack-back-03.png",
+      "reference": {
+        "src": "references/well-alpha-attack-back-03.png",
+        "sha256": "712e71953a22e3ab583563c964bd57bc97dad4b1cb20e3866b0c1f90e4794d4d",
+        "blender_frame": 3
+      },
+      "bbox": [
+        52,
+        4,
+        76,
+        83
+      ],
+      "silhouette_iou": 0.8354253835425384,
+      "sha256": "8111292dc39678fc147ab5e1f1187b54eb62b416184d2557316836d540882117"
+    }
+  ]
+}

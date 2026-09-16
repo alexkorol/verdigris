@@ -1,0 +1,254 @@
+{
+  "clip": "well-alpha-walk-front",
+  "source_sha256": "d65d51a67d62d47a7e756664d97c7cf577ac97ad7853aadeeaefa14d907fcb01",
+  "frame_size": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    64
+  ],
+  "base_cell": 48,
+  "alpha_policy": "Returned alpha threshold 128; no RGB key",
+  "grid_candidates": [
+    {
+      "size": 128,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 1.3716977382647257,
+      "variance": 1028.1041259765625,
+      "gated_out": true
+    },
+    {
+      "size": 23,
+      "source": "autocorr",
+      "offset": [
+        18,
+        6
+      ],
+      "score": 1.1476340407197752,
+      "variance": 586.021240234375,
+      "gated_out": false
+    },
+    {
+      "size": 20,
+      "source": "autocorr",
+      "offset": [
+        19,
+        11
+      ],
+      "score": 1.1129917460670173,
+      "variance": 558.3181762695312,
+      "gated_out": false
+    },
+    {
+      "size": 16,
+      "source": "autocorr",
+      "offset": [
+        0,
+        14
+      ],
+      "score": 1.099980032147194,
+      "variance": 448.35247802734375,
+      "gated_out": false
+    },
+    {
+      "size": 15,
+      "source": "autocorr",
+      "offset": [
+        7,
+        10
+      ],
+      "score": 1.0570308358144875,
+      "variance": 432.7780456542969,
+      "gated_out": false
+    },
+    {
+      "size": 12,
+      "source": "autocorr",
+      "offset": [
+        4,
+        7
+      ],
+      "score": 1.0526782155637715,
+      "variance": 345.926025390625,
+      "gated_out": false
+    },
+    {
+      "size": 11,
+      "source": "autocorr",
+      "offset": [
+        8,
+        9
+      ],
+      "score": 1.0186338457572075,
+      "variance": 328.5074768066406,
+      "gated_out": false
+    },
+    {
+      "size": 8,
+      "source": "fine",
+      "offset": [
+        0,
+        6
+      ],
+      "score": 0.9915001924953378,
+      "variance": 235.7975616455078,
+      "gated_out": false
+    },
+    {
+      "size": 4,
+      "source": "autocorr",
+      "offset": [
+        0,
+        2
+      ],
+      "score": 0.9841979464119456,
+      "variance": 100.11681365966797,
+      "gated_out": false
+    },
+    {
+      "size": 7,
+      "source": "autocorr",
+      "offset": [
+        6,
+        5
+      ],
+      "score": 0.9808981160339953,
+      "variance": 198.8114471435547,
+      "gated_out": false
+    },
+    {
+      "size": 6,
+      "source": "fine",
+      "offset": [
+        5,
+        5
+      ],
+      "score": 0.9530337384501495,
+      "variance": 174.3965301513672,
+      "gated_out": false
+    },
+    {
+      "size": 5,
+      "source": "fine",
+      "offset": [
+        1,
+        4
+      ],
+      "score": 0.920656720118207,
+      "variance": 147.41616821289062,
+      "gated_out": false
+    },
+    {
+      "size": 133,
+      "source": "fold",
+      "offset": [
+        118,
+        132
+      ],
+      "score": 0.9139963458168345,
+      "variance": 1800.8441162109375,
+      "gated_out": true
+    },
+    {
+      "size": 3,
+      "source": "fine",
+      "offset": [
+        0,
+        1
+      ],
+      "score": 0.8401458105328559,
+      "variance": 85.15831756591797,
+      "gated_out": false
+    },
+    {
+      "size": 153,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.6711418171535701,
+      "variance": 2555.55615234375,
+      "gated_out": true
+    },
+    {
+      "size": 152,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.6528872604724866,
+      "variance": 2597.301513671875,
+      "gated_out": true
+    },
+    {
+      "size": 191,
+      "source": "fold",
+      "offset": [
+        61,
+        62
+      ],
+      "score": 0.5438171679859213,
+      "variance": 2830.628173828125,
+      "gated_out": true
+    },
+    {
+      "size": 192,
+      "source": "fold",
+      "offset": [
+        60,
+        136
+      ],
+      "score": 0.48354887411863184,
+      "variance": 3157.943359375,
+      "gated_out": true
+    },
+    {
+      "size": 164,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.4803307182174458,
+      "variance": 2468.550048828125,
+      "gated_out": true
+    },
+    {
+      "size": 166,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.460983496146886,
+      "variance": 2537.352294921875,
+      "gated_out": true
+    }
+  ],
+  "visual_acceptance": false,
+  "frames": [],
+  "selected_grid": {
+    "size": 4,
+    "source": "autocorr",
+    "offset": [
+      0,
+      2
+    ],
+    "score": 0.9841979464119456,
+    "variance": 100.11681365966797,
+    "gated_out": false
+  },
+  "whole_cycle_translation": [
+    1,
+    9
+  ],
+  "registered_mean_iou": 0.4423245922848528
+}

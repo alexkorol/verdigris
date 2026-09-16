@@ -1,0 +1,31 @@
+{
+  "clip": "pack-wolf-death-front",
+  "source_sha256": "f65274e639bf7ba02df01b4604fbbc97fb3a1ea4292c10735efedb3eddd8b164",
+  "selected_grid": {
+    "size": 4,
+    "source": "fine",
+    "offset": [
+      0,
+      0
+    ],
+    "score": 0.5892312551536347,
+    "variance": 53.29198455810547,
+    "gated_out": false
+  },
+  "frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "whole_cycle_translation": [
+    -4,
+    0
+  ],
+  "registered_mean_iou": 0.4891064656374139,
+  "alpha_policy": "Native alpha threshold128, noRGBkey",
+  "visual_acceptance": false,
+  "frames": []
+}

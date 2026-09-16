@@ -1,0 +1,290 @@
+[
+  {
+    "frame": "female-unarmed-attack-front-00.png",
+    "bbox": [
+      48,
+      27,
+      79,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-front-01.png",
+    "bbox": [
+      48,
+      27,
+      79,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-front-02.png",
+    "bbox": [
+      47,
+      29,
+      81,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-front-03.png",
+    "bbox": [
+      47,
+      29,
+      81,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-front-04.png",
+    "bbox": [
+      48,
+      29,
+      82,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-front-05.png",
+    "bbox": [
+      49,
+      29,
+      83,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-front-06.png",
+    "bbox": [
+      47,
+      28,
+      79,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-front-07.png",
+    "bbox": [
+      48,
+      27,
+      79,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-right-00.png",
+    "bbox": [
+      49,
+      27,
+      79,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-right-01.png",
+    "bbox": [
+      49,
+      27,
+      79,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-right-02.png",
+    "bbox": [
+      47,
+      23,
+      97,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-right-03.png",
+    "bbox": [
+      47,
+      22,
+      97,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-right-04.png",
+    "bbox": [
+      47,
+      23,
+      97,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-right-05.png",
+    "bbox": [
+      47,
+      23,
+      95,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-right-06.png",
+    "bbox": [
+      48,
+      25,
+      87,
+      104
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-right-07.png",
+    "bbox": [
+      49,
+      27,
+      79,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-back-00.png",
+    "bbox": [
+      49,
+      24,
+      80,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-back-01.png",
+    "bbox": [
+      49,
+      24,
+      80,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-back-02.png",
+    "bbox": [
+      47,
+      21,
+      81,
+      101
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-back-03.png",
+    "bbox": [
+      47,
+      21,
+      81,
+      101
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-back-04.png",
+    "bbox": [
+      47,
+      21,
+      81,
+      101
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-back-05.png",
+    "bbox": [
+      46,
+      21,
+      79,
+      102
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-back-06.png",
+    "bbox": [
+      49,
+      23,
+      81,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-back-07.png",
+    "bbox": [
+      49,
+      24,
+      80,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-left-00.png",
+    "bbox": [
+      49,
+      25,
+      79,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-left-01.png",
+    "bbox": [
+      49,
+      25,
+      79,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-left-02.png",
+    "bbox": [
+      31,
+      27,
+      80,
+      104
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-left-03.png",
+    "bbox": [
+      31,
+      28,
+      80,
+      104
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-left-04.png",
+    "bbox": [
+      31,
+      28,
+      80,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-left-05.png",
+    "bbox": [
+      34,
+      27,
+      80,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-left-06.png",
+    "bbox": [
+      41,
+      26,
+      80,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-attack-left-07.png",
+    "bbox": [
+      49,
+      25,
+      79,
+      105
+    ]
+  }
+]

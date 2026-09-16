@@ -1,0 +1,12 @@
+[
+  {
+    "name": "existing",
+    "type": "BLACKMAN_HARRIS",
+    "width": 1.5
+  },
+  {
+    "name": "box",
+    "type": "BOX",
+    "width": 1.0
+  }
+]

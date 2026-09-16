@@ -1,0 +1,316 @@
+{
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2-female-refine\\blender\\female-walk-exterior.blend",
+  "source_sha256": "a668944a456fa2ba79de9617b4562501a690b060c5461ab12424e2cb6fee4cd4",
+  "motion": "Quaternius Universal Animation Library / Death01",
+  "source_frames": [
+    0,
+    7,
+    14,
+    21,
+    28,
+    37,
+    47,
+    57
+  ],
+  "frame_size": [
+    128,
+    128
+  ],
+  "anchor": [
+    64,
+    96
+  ],
+  "pixels_per_metre": 48,
+  "equipment": "branch-club",
+  "frames": [
+    {
+      "src": "references/female-death-front-00.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 0,
+      "sha256": "720eb95fdaae0270cb7b310f083b11a79964d925b33bc8584018804be2eb8bd3"
+    },
+    {
+      "src": "references/female-death-front-01.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 7,
+      "sha256": "53266e304280ad6c53ce2e2fb5ce7257f712a3d82286caf90f8df09b3a1986f2"
+    },
+    {
+      "src": "references/female-death-front-02.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 14,
+      "sha256": "613bfc0cb8e052433b1197ba4411d85eb959d1b4d6a812911fc682c3ea26e834"
+    },
+    {
+      "src": "references/female-death-front-03.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 21,
+      "sha256": "a4c81dc379a4742f472e1edad26f8f53d4616c4a11ea960e749b40fac185c303"
+    },
+    {
+      "src": "references/female-death-front-04.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 28,
+      "sha256": "31752f8dcae0d1d231396cc07eab6bb780c5507f3edc5b5ded8e6ca12394e13f"
+    },
+    {
+      "src": "references/female-death-front-05.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 37,
+      "sha256": "e0854664fdbcd9c6df670a365cffdb82dc75492a42777e97a41f6d50d694cb4a"
+    },
+    {
+      "src": "references/female-death-front-06.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 47,
+      "sha256": "bc851ee4731993ac82e34372e8b1c95d601deba0de06ccf2622a9aeeee6518d8"
+    },
+    {
+      "src": "references/female-death-front-07.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 57,
+      "sha256": "f766b755e07d5bc5cb3f01f8188a03c7c977df4bd663f0791f60401465dc2360"
+    },
+    {
+      "src": "references/female-death-right-00.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 0,
+      "sha256": "4252f46888644ba220e0d0cba87b31160b10cf6265c6bdc8dd30ab7b0ba053ca"
+    },
+    {
+      "src": "references/female-death-right-01.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 7,
+      "sha256": "0d09e4bcd04d2b1f6390ac9e74adaeb9801e0483be260e629955df978fa62b00"
+    },
+    {
+      "src": "references/female-death-right-02.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 14,
+      "sha256": "b6f4091db758e8a22729e10a1ca8c800202f23391ed33f9da8314f8c55842741"
+    },
+    {
+      "src": "references/female-death-right-03.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 21,
+      "sha256": "d979109197632725af4cf846f1a672c5f691c3a243bfdcd98df8b156f16ca39d"
+    },
+    {
+      "src": "references/female-death-right-04.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 28,
+      "sha256": "af8ed12c13f7afee22f20aae08b34cd26b40fae3f98da70a580c6282ae609833"
+    },
+    {
+      "src": "references/female-death-right-05.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 37,
+      "sha256": "d7048408f27df54f208bffdc02fb430b3845b0165029a4768578d4c79ea407c4"
+    },
+    {
+      "src": "references/female-death-right-06.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 47,
+      "sha256": "bd44a7117ef3c0d0a04dbfad44c387656eca8398a4dbc206cbda0c90e1f6bb5e"
+    },
+    {
+      "src": "references/female-death-right-07.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 57,
+      "sha256": "13ca2c1e4f39a9dedfeb3634badffebc676b07982d6858166135173b0d772cca"
+    },
+    {
+      "src": "references/female-death-back-00.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 0,
+      "sha256": "80929fc8614b7e084d52aa9d953afff2bba0ba88d291a242660c94a409065317"
+    },
+    {
+      "src": "references/female-death-back-01.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 7,
+      "sha256": "f6add0c6b2cbee0b1739b312df6664e2a0336640214d772d24ea3ee0a0f9ac28"
+    },
+    {
+      "src": "references/female-death-back-02.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 14,
+      "sha256": "d78b92011edeeae81e42b07d05121327bd1abfbcffbf76c710cd86f402154ddf"
+    },
+    {
+      "src": "references/female-death-back-03.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 21,
+      "sha256": "d587745a08439aa09b8e9c12c2bff3c4157e8337996bd97f87c65756fdef2daf"
+    },
+    {
+      "src": "references/female-death-back-04.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 28,
+      "sha256": "0bb6ca3c7346b8cd6135919ca9e2403fce2c2798b5c02bee045b95f64454b79f"
+    },
+    {
+      "src": "references/female-death-back-05.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 37,
+      "sha256": "dcd2de5bfff048637cba750db1b63f26c4b68b0d999d27600736bb0e57301604"
+    },
+    {
+      "src": "references/female-death-back-06.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 47,
+      "sha256": "dd03d32c59bae5817f1ed55561543dcfe0e8a4a47d84387b311eed5b979f05d8"
+    },
+    {
+      "src": "references/female-death-back-07.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 57,
+      "sha256": "3c56b6cad4bb0f10f06c44518e1ce21f6d6cd7bc4de8a3d869d2f1ac5e9ba76d"
+    },
+    {
+      "src": "references/female-death-left-00.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 0,
+      "sha256": "f3ec99ddc788b83314fc8d2e97064cd4c591ae7d87b8b6675b9fc3b19c880873"
+    },
+    {
+      "src": "references/female-death-left-01.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 7,
+      "sha256": "6cabc196104fdd987489156a3d52afbd53b96bf43ca801eb385a433ea444b96b"
+    },
+    {
+      "src": "references/female-death-left-02.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 14,
+      "sha256": "065bc64d50dbaff3a54169afb7e049edbb51f006d5a46564fa5155eec8758057"
+    },
+    {
+      "src": "references/female-death-left-03.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 21,
+      "sha256": "82ac2252379828d2fdf61cd0e135fc2c97041f94e499dfbdd8ffdb6e1fad9f49"
+    },
+    {
+      "src": "references/female-death-left-04.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 28,
+      "sha256": "cdcad687ec2be94012177d0fd0ab08cb29b2356c35ad83bdd0d98f5e41adb69b"
+    },
+    {
+      "src": "references/female-death-left-05.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 37,
+      "sha256": "1bb1bac67b4a52c6bb4416eb9c904c4b6e6a882055a9e1b2da20d2b6dae9e379"
+    },
+    {
+      "src": "references/female-death-left-06.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 47,
+      "sha256": "d52def0bd338a1e6ed96e56e70e5ee37114f7f940e339dc4be9860ec5e406237"
+    },
+    {
+      "src": "references/female-death-left-07.png",
+      "anchor": [
+        64,
+        96
+      ],
+      "source_frame": 57,
+      "sha256": "aab62890ff7c30dd5950630a7a873fadfd4adf862495d13968cae18d79da98f7"
+    }
+  ],
+  "status": "motion-reference-reviewed; not painted final game art"
+}

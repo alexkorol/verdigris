@@ -19,5 +19,8 @@
 !/starter-v2/
 /starter-v2/*
 !/starter-v2/accepted/
+!/starter-projection/
+/starter-projection/*
+!/starter-projection/accepted/
 !/runtime/
 !/runtime-imports/

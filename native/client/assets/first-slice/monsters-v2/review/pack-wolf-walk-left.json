@@ -1,0 +1,372 @@
+{
+  "clip": "pack-wolf-walk-left",
+  "source_sha256": "7950acb01db06212f39ed27513dafdbfb01542a5555fa6a29c1f5500ff9e10f2",
+  "frame_size": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "base_cell": 48,
+  "alpha_policy": "Returned alpha threshold 128; no RGB key",
+  "grid_candidates": [
+    {
+      "size": 19,
+      "source": "autocorr",
+      "offset": [
+        10,
+        16
+      ],
+      "score": 0.8793371208658743,
+      "variance": 242.66384887695312,
+      "gated_out": false
+    },
+    {
+      "size": 16,
+      "source": "autocorr",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.8380244940915725,
+      "variance": 222.1400146484375,
+      "gated_out": false
+    },
+    {
+      "size": 13,
+      "source": "autocorr",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.8318220636359717,
+      "variance": 179.6808319091797,
+      "gated_out": false
+    },
+    {
+      "size": 24,
+      "source": "autocorr",
+      "offset": [
+        15,
+        23
+      ],
+      "score": 0.8176238929163363,
+      "variance": 328.9417419433594,
+      "gated_out": false
+    },
+    {
+      "size": 11,
+      "source": "autocorr",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.8136217066758442,
+      "variance": 164.34031677246094,
+      "gated_out": false
+    },
+    {
+      "size": 8,
+      "source": "autocorr",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.7794913938192605,
+      "variance": 118.37547302246094,
+      "gated_out": false
+    },
+    {
+      "size": 7,
+      "source": "fine",
+      "offset": [
+        1,
+        1
+      ],
+      "score": 0.7344822360558141,
+      "variance": 111.00067901611328,
+      "gated_out": false
+    },
+    {
+      "size": 6,
+      "source": "fine",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.7235193670282868,
+      "variance": 94.20880889892578,
+      "gated_out": false
+    },
+    {
+      "size": 5,
+      "source": "autocorr",
+      "offset": [
+        2,
+        4
+      ],
+      "score": 0.7042620338843733,
+      "variance": 79.53639221191406,
+      "gated_out": false
+    },
+    {
+      "size": 4,
+      "source": "fine",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.6929039654112195,
+      "variance": 60.80769348144531,
+      "gated_out": false
+    },
+    {
+      "size": 3,
+      "source": "autocorr",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.6719966260759972,
+      "variance": 44.15959548950195,
+      "gated_out": false
+    },
+    {
+      "size": 128,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.5123186210207855,
+      "variance": 744.5098266601562,
+      "gated_out": true
+    },
+    {
+      "size": 190,
+      "source": "fold",
+      "offset": [
+        131,
+        111
+      ],
+      "score": 0.34740183647978623,
+      "variance": 1680.4215087890625,
+      "gated_out": true
+    },
+    {
+      "size": 192,
+      "source": "fold",
+      "offset": [
+        135,
+        109
+      ],
+      "score": 0.32485782093792004,
+      "variance": 1759.1427001953125,
+      "gated_out": true
+    },
+    {
+      "size": 191,
+      "source": "fold",
+      "offset": [
+        139,
+        110
+      ],
+      "score": 0.31704948121574117,
+      "variance": 1745.70703125,
+      "gated_out": true
+    },
+    {
+      "size": 189,
+      "source": "fold",
+      "offset": [
+        147,
+        112
+      ],
+      "score": 0.30132445362800836,
+      "variance": 1714.8861083984375,
+      "gated_out": true
+    },
+    {
+      "size": 188,
+      "source": "fold",
+      "offset": [
+        151,
+        113
+      ],
+      "score": 0.2933561844019676,
+      "variance": 1696.2364501953125,
+      "gated_out": true
+    },
+    {
+      "size": 184,
+      "source": "fold",
+      "offset": [
+        167,
+        117
+      ],
+      "score": 0.2628397907261513,
+      "variance": 1600.8553466796875,
+      "gated_out": true
+    },
+    {
+      "size": 182,
+      "source": "fold",
+      "offset": [
+        175,
+        119
+      ],
+      "score": 0.2540196906529818,
+      "variance": 1550.7880859375,
+      "gated_out": true
+    }
+  ],
+  "visual_acceptance": false,
+  "frames": [
+    {
+      "file": "pack-wolf-walk-left-00.png",
+      "bbox": [
+        16,
+        52,
+        79,
+        85
+      ],
+      "reference": {
+        "src": "references/pack-wolf-walk-left-00.png",
+        "sha256": "0b6876dcdc475c2dfe9be81e586672b901f1f45e0000dd7afb51986951a34c22",
+        "blender_frame": 0
+      },
+      "silhouette_iou": 0.9533898305084746,
+      "sha256": "7cf4579343afe702bbf686f1fe5c0990205dcaf210ca34e324ab7d3737ed8db3"
+    },
+    {
+      "file": "pack-wolf-walk-left-01.png",
+      "bbox": [
+        16,
+        51,
+        79,
+        86
+      ],
+      "reference": {
+        "src": "references/pack-wolf-walk-left-01.png",
+        "sha256": "fd4919e2d38443f2c3433edbd4f5be90e20e776eebb8794fbcc9e0f0ab6e54d2",
+        "blender_frame": 5
+      },
+      "silhouette_iou": 0.95,
+      "sha256": "a19c9be4299e635c95fac0370598df585f37699fe0571a56a2d1a8f42bd33a1c"
+    },
+    {
+      "file": "pack-wolf-walk-left-02.png",
+      "bbox": [
+        16,
+        50,
+        79,
+        86
+      ],
+      "reference": {
+        "src": "references/pack-wolf-walk-left-02.png",
+        "sha256": "4db0f9a61bb7cf2c3fa661b08db9f065bcd927af32b2c80839760fe5e3c790b8",
+        "blender_frame": 10
+      },
+      "silhouette_iou": 0.9559286463798531,
+      "sha256": "51c08b0d83a4a7569dbd554dab027f7ad4b47cbe413ffe6ed43fe7601ffebe32"
+    },
+    {
+      "file": "pack-wolf-walk-left-03.png",
+      "bbox": [
+        16,
+        51,
+        79,
+        87
+      ],
+      "reference": {
+        "src": "references/pack-wolf-walk-left-03.png",
+        "sha256": "36153e02000b090f91423f8e7290293ef2a2a9f2c5e6a6553f8931fecc9dca32",
+        "blender_frame": 15
+      },
+      "silhouette_iou": 0.9325025960539979,
+      "sha256": "255b3e9aea7f4135ec9e70dc62ee4113047e67bf5dc7d56788628fa584585243"
+    },
+    {
+      "file": "pack-wolf-walk-left-04.png",
+      "bbox": [
+        16,
+        51,
+        76,
+        86
+      ],
+      "reference": {
+        "src": "references/pack-wolf-walk-left-04.png",
+        "sha256": "4943bebc64b8ed66df9a14718f2fe3fe4c21c592b96305a47a7fbef7675655b9",
+        "blender_frame": 20
+      },
+      "silhouette_iou": 0.9506966773847803,
+      "sha256": "661c1687ea0c5f0912f953075fa6f695e38873640065914ff384cece3bf657b1"
+    },
+    {
+      "file": "pack-wolf-walk-left-05.png",
+      "bbox": [
+        16,
+        50,
+        79,
+        85
+      ],
+      "reference": {
+        "src": "references/pack-wolf-walk-left-05.png",
+        "sha256": "4265dffa29ce88b3a45488733be681b6bde55d41c76bbdcdda6b5a3ef6128f44",
+        "blender_frame": 25
+      },
+      "silhouette_iou": 0.9393627954779034,
+      "sha256": "ad7c6b1113d2d4d041519b4c69053082b70eff45816cf7c1ae1c653f4a846eb7"
+    },
+    {
+      "file": "pack-wolf-walk-left-06.png",
+      "bbox": [
+        16,
+        50,
+        79,
+        85
+      ],
+      "reference": {
+        "src": "references/pack-wolf-walk-left-06.png",
+        "sha256": "eb76c54f3ef2df077d479a39ba8320243b8558d65c21443e8b326aee31cea5de",
+        "blender_frame": 30
+      },
+      "silhouette_iou": 0.9546413502109705,
+      "sha256": "560d417adf4bd5e0f63883356fe6fd3c23626eedf81f9803c43c983e6988a4d9"
+    },
+    {
+      "file": "pack-wolf-walk-left-07.png",
+      "bbox": [
+        16,
+        51,
+        80,
+        85
+      ],
+      "reference": {
+        "src": "references/pack-wolf-walk-left-07.png",
+        "sha256": "59891da2e64e3afcb40c2edb9c399b48f93e4718641dbf4f4bcfe8a553293e5d",
+        "blender_frame": 35
+      },
+      "silhouette_iou": 0.931958762886598,
+      "sha256": "a7f7f5b9908e8412dea9f6fdf1a81d11c2d1f3c80a449de5f5b5981b02e6aeda"
+    }
+  ],
+  "selected_grid": {
+    "size": 4,
+    "source": "fine",
+    "offset": [
+      0,
+      0
+    ],
+    "score": 0.6929039654112195,
+    "variance": 60.80769348144531,
+    "gated_out": false
+  },
+  "whole_cycle_translation": [
+    0,
+    0
+  ],
+  "registered_mean_iou": 0.7973757832203269
+}

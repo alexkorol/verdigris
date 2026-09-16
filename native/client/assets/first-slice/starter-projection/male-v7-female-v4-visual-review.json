@@ -1,0 +1,23 @@
+{
+  "status": "lane visual review complete; independent parent and in-game review pending",
+  "reviewed_cohorts": [
+    "male-v7",
+    "female-v4"
+  ],
+  "visual_checks": [
+    "Native contacts inspected for both sexes: idle, walking with club, sprinting unarmed, club death, club/unarmed attack contact and recovery.",
+    "Facing directions remain consistent and all foreground bounds remain within native canvases.",
+    "Female braid remains visibly front-draped; identical local curve profile across every action.",
+    "Closed-fist source correction and grounded female corpse propagated through final packed scenes.",
+    "No screenshot checkerboard or background recoloring used; final alpha is binary and hidden RGB is zero."
+  ],
+  "remaining_limits": [
+    "Generated source paint carries baked directional lighting.",
+    "Unobserved surface color uses paint-derived material medians.",
+    "Native runtime integration and independent review belong to coordinator."
+  ],
+  "manifest_hashes": {
+    "male": "5c2e17eef749b38d3cef4166d396f1698df516fa0ddeee04dbc9a3e27fa2e3e0",
+    "female": "70915c2d8d2e8b48189b9267f1535aeaf67d14da7125f6d1b1e2660d7e75a078"
+  }
+}

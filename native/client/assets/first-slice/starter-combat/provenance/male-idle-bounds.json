@@ -1,0 +1,146 @@
+[
+  {
+    "frame": "male-idle-front-00.png",
+    "bbox": [
+      28,
+      6,
+      68,
+      86
+    ]
+  },
+  {
+    "frame": "male-idle-front-01.png",
+    "bbox": [
+      28,
+      6,
+      68,
+      86
+    ]
+  },
+  {
+    "frame": "male-idle-front-02.png",
+    "bbox": [
+      28,
+      6,
+      68,
+      86
+    ]
+  },
+  {
+    "frame": "male-idle-front-03.png",
+    "bbox": [
+      28,
+      6,
+      68,
+      86
+    ]
+  },
+  {
+    "frame": "male-idle-right-00.png",
+    "bbox": [
+      40,
+      5,
+      66,
+      86
+    ]
+  },
+  {
+    "frame": "male-idle-right-01.png",
+    "bbox": [
+      40,
+      5,
+      66,
+      86
+    ]
+  },
+  {
+    "frame": "male-idle-right-02.png",
+    "bbox": [
+      40,
+      5,
+      66,
+      86
+    ]
+  },
+  {
+    "frame": "male-idle-right-03.png",
+    "bbox": [
+      40,
+      5,
+      66,
+      86
+    ]
+  },
+  {
+    "frame": "male-idle-back-00.png",
+    "bbox": [
+      29,
+      3,
+      67,
+      84
+    ]
+  },
+  {
+    "frame": "male-idle-back-01.png",
+    "bbox": [
+      29,
+      3,
+      67,
+      84
+    ]
+  },
+  {
+    "frame": "male-idle-back-02.png",
+    "bbox": [
+      29,
+      3,
+      67,
+      84
+    ]
+  },
+  {
+    "frame": "male-idle-back-03.png",
+    "bbox": [
+      29,
+      3,
+      67,
+      84
+    ]
+  },
+  {
+    "frame": "male-idle-left-00.png",
+    "bbox": [
+      29,
+      5,
+      56,
+      86
+    ]
+  },
+  {
+    "frame": "male-idle-left-01.png",
+    "bbox": [
+      29,
+      5,
+      56,
+      86
+    ]
+  },
+  {
+    "frame": "male-idle-left-02.png",
+    "bbox": [
+      29,
+      5,
+      56,
+      86
+    ]
+  },
+  {
+    "frame": "male-idle-left-03.png",
+    "bbox": [
+      29,
+      5,
+      56,
+      86
+    ]
+  }
+]

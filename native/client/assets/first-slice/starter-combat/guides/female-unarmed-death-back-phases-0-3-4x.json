@@ -1,0 +1,65 @@
+{
+  "sheetSize": [
+    1024,
+    1024
+  ],
+  "scale": 4,
+  "cells": [
+    {
+      "row": 0,
+      "column": 0,
+      "phase": 0,
+      "reference": "references/female-unarmed-death-back-00.png",
+      "nativeSize": [
+        128,
+        128
+      ],
+      "nativeAnchor": [
+        64,
+        96
+      ]
+    },
+    {
+      "row": 0,
+      "column": 1,
+      "phase": 1,
+      "reference": "references/female-unarmed-death-back-01.png",
+      "nativeSize": [
+        128,
+        128
+      ],
+      "nativeAnchor": [
+        64,
+        96
+      ]
+    },
+    {
+      "row": 1,
+      "column": 0,
+      "phase": 2,
+      "reference": "references/female-unarmed-death-back-02.png",
+      "nativeSize": [
+        128,
+        128
+      ],
+      "nativeAnchor": [
+        64,
+        96
+      ]
+    },
+    {
+      "row": 1,
+      "column": 1,
+      "phase": 3,
+      "reference": "references/female-unarmed-death-back-03.png",
+      "nativeSize": [
+        128,
+        128
+      ],
+      "nativeAnchor": [
+        64,
+        96
+      ]
+    }
+  ]
+}

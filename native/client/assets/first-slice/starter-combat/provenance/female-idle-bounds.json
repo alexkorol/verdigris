@@ -1,0 +1,146 @@
+[
+  {
+    "frame": "female-idle-front-00.png",
+    "bbox": [
+      32,
+      8,
+      67,
+      87
+    ]
+  },
+  {
+    "frame": "female-idle-front-01.png",
+    "bbox": [
+      32,
+      8,
+      67,
+      87
+    ]
+  },
+  {
+    "frame": "female-idle-front-02.png",
+    "bbox": [
+      32,
+      8,
+      67,
+      87
+    ]
+  },
+  {
+    "frame": "female-idle-front-03.png",
+    "bbox": [
+      32,
+      8,
+      67,
+      87
+    ]
+  },
+  {
+    "frame": "female-idle-right-00.png",
+    "bbox": [
+      42,
+      6,
+      64,
+      85
+    ]
+  },
+  {
+    "frame": "female-idle-right-01.png",
+    "bbox": [
+      42,
+      6,
+      64,
+      85
+    ]
+  },
+  {
+    "frame": "female-idle-right-02.png",
+    "bbox": [
+      42,
+      6,
+      64,
+      85
+    ]
+  },
+  {
+    "frame": "female-idle-right-03.png",
+    "bbox": [
+      42,
+      6,
+      64,
+      85
+    ]
+  },
+  {
+    "frame": "female-idle-back-00.png",
+    "bbox": [
+      29,
+      5,
+      64,
+      82
+    ]
+  },
+  {
+    "frame": "female-idle-back-01.png",
+    "bbox": [
+      29,
+      5,
+      64,
+      82
+    ]
+  },
+  {
+    "frame": "female-idle-back-02.png",
+    "bbox": [
+      29,
+      5,
+      64,
+      82
+    ]
+  },
+  {
+    "frame": "female-idle-back-03.png",
+    "bbox": [
+      29,
+      5,
+      64,
+      82
+    ]
+  },
+  {
+    "frame": "female-idle-left-00.png",
+    "bbox": [
+      31,
+      7,
+      54,
+      87
+    ]
+  },
+  {
+    "frame": "female-idle-left-01.png",
+    "bbox": [
+      31,
+      7,
+      54,
+      87
+    ]
+  },
+  {
+    "frame": "female-idle-left-02.png",
+    "bbox": [
+      31,
+      7,
+      54,
+      87
+    ]
+  },
+  {
+    "frame": "female-idle-left-03.png",
+    "bbox": [
+      31,
+      7,
+      54,
+      87
+    ]
+  }
+]

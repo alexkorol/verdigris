@@ -1,0 +1,290 @@
+[
+  {
+    "frame": "female-unarmed-hit-front-00.png",
+    "bbox": [
+      33,
+      4,
+      66,
+      90
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-front-01.png",
+    "bbox": [
+      33,
+      4,
+      66,
+      90
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-front-02.png",
+    "bbox": [
+      33,
+      5,
+      67,
+      90
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-front-03.png",
+    "bbox": [
+      33,
+      6,
+      67,
+      90
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-front-04.png",
+    "bbox": [
+      33,
+      7,
+      67,
+      90
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-front-05.png",
+    "bbox": [
+      33,
+      9,
+      66,
+      90
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-front-06.png",
+    "bbox": [
+      33,
+      11,
+      66,
+      91
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-front-07.png",
+    "bbox": [
+      33,
+      11,
+      66,
+      91
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-right-00.png",
+    "bbox": [
+      34,
+      8,
+      64,
+      88
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-right-01.png",
+    "bbox": [
+      34,
+      8,
+      65,
+      88
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-right-02.png",
+    "bbox": [
+      34,
+      8,
+      67,
+      88
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-right-03.png",
+    "bbox": [
+      34,
+      7,
+      66,
+      88
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-right-04.png",
+    "bbox": [
+      34,
+      7,
+      65,
+      88
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-right-05.png",
+    "bbox": [
+      35,
+      7,
+      65,
+      88
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-right-06.png",
+    "bbox": [
+      35,
+      8,
+      65,
+      88
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-right-07.png",
+    "bbox": [
+      35,
+      8,
+      65,
+      88
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-back-00.png",
+    "bbox": [
+      30,
+      12,
+      63,
+      87
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-back-01.png",
+    "bbox": [
+      30,
+      12,
+      63,
+      87
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-back-02.png",
+    "bbox": [
+      30,
+      10,
+      63,
+      87
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-back-03.png",
+    "bbox": [
+      30,
+      9,
+      63,
+      87
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-back-04.png",
+    "bbox": [
+      30,
+      7,
+      63,
+      87
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-back-05.png",
+    "bbox": [
+      30,
+      6,
+      63,
+      87
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-back-06.png",
+    "bbox": [
+      30,
+      4,
+      63,
+      87
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-back-07.png",
+    "bbox": [
+      30,
+      4,
+      63,
+      87
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-left-00.png",
+    "bbox": [
+      31,
+      8,
+      62,
+      89
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-left-01.png",
+    "bbox": [
+      30,
+      8,
+      62,
+      89
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-left-02.png",
+    "bbox": [
+      28,
+      8,
+      62,
+      89
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-left-03.png",
+    "bbox": [
+      29,
+      7,
+      61,
+      89
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-left-04.png",
+    "bbox": [
+      31,
+      7,
+      61,
+      89
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-left-05.png",
+    "bbox": [
+      31,
+      7,
+      61,
+      89
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-left-06.png",
+    "bbox": [
+      31,
+      8,
+      61,
+      89
+    ]
+  },
+  {
+    "frame": "female-unarmed-hit-left-07.png",
+    "bbox": [
+      31,
+      8,
+      60,
+      89
+    ]
+  }
+]

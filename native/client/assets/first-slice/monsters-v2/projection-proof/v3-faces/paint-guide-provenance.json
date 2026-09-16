@@ -1,0 +1,25 @@
+{
+  "guide": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\projection-proof\\v3-faces\\pack-wolf-death-left-colored-guide.png",
+  "guide_sha256": "d25af865f6e71f3b1f47ca760ea8a9200e2b37c34c4aad056e5166e3f6fc09da",
+  "frames": [
+    {
+      "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\projection-proof\\v3-faces\\frames\\pack-wolf-death-left-00.png",
+      "sha256": "425f6a88eb7743707541d809e7432280cbd7d10156d388e7fd870b423a12fd25"
+    },
+    {
+      "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\projection-proof\\v3-faces\\frames\\pack-wolf-death-left-01.png",
+      "sha256": "371c636553aac5f6c46f874da0de295eaa86b87e5f52b265e177aae2421539c7"
+    },
+    {
+      "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\projection-proof\\v3-faces\\frames\\pack-wolf-death-left-02.png",
+      "sha256": "5087b4bce4e06f976589cb0551362ab5db22fcf05cc931af7510fc33b3cc9022"
+    },
+    {
+      "path": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\projection-proof\\v3-faces\\frames\\pack-wolf-death-left-03.png",
+      "sha256": "5088aae13b0a5c9e9f7bffd4f9f2759d8048701714c8d6a8186456702aee96ed"
+    }
+  ],
+  "geometry_reference": "death-v2/manifest.json",
+  "projection_report": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\projection-proof\\v3-faces\\reports\\pack-wolf-death-projection.json",
+  "note": "Exact Blender death geometry, source accepted idle paint projected as material; diagnostic surface detail to be improved, never reposed."
+}

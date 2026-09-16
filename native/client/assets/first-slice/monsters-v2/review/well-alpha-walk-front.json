@@ -1,0 +1,160 @@
+{
+  "clip": "well-alpha-walk-front",
+  "source_sha256": "c1437afbd594f3c404f1f3b7d4f4c5cd47bce7e3e4417072655b1de8edef4d59",
+  "selected_grid": {
+    "size": 4,
+    "source": "fine",
+    "offset": [
+      1,
+      1
+    ],
+    "score": 0.7281108803585027,
+    "variance": 86.92363739013672,
+    "gated_out": false
+  },
+  "frame": [
+    128,
+    96
+  ],
+  "anchor": [
+    64,
+    64
+  ],
+  "whole_cycle_translation": [
+    0,
+    0
+  ],
+  "registered_mean_iou": 0.8135552323295595,
+  "alpha_policy": "Native alpha threshold128, noRGBkey",
+  "visual_acceptance": false,
+  "frames": [
+    {
+      "file": "well-alpha-walk-front-00.png",
+      "reference": {
+        "src": "references/well-alpha-walk-front-00.png",
+        "sha256": "8782336bb2f8e311f3e8f68b768ade284a3b11726fd6f9810c622e481e4f2b6f",
+        "blender_frame": 0
+      },
+      "bbox": [
+        52,
+        24,
+        75,
+        84
+      ],
+      "silhouette_iou": 0.821689259645464,
+      "sha256": "36ea8f81c4d8d7e4fd11295747d635a87d1ef28e6876b867882a6e963b210733"
+    },
+    {
+      "file": "well-alpha-walk-front-01.png",
+      "reference": {
+        "src": "references/well-alpha-walk-front-01.png",
+        "sha256": "5aaaf49a21c92edf08dd679b2e314bb52deec7d433ca3520caf9ca8de79360fa",
+        "blender_frame": 5
+      },
+      "bbox": [
+        52,
+        23,
+        75,
+        83
+      ],
+      "silhouette_iou": 0.8189563365282215,
+      "sha256": "8b4a1bb762e2f062a9c7eba76926ece48359320d2eb927948e15d9581aca7ba3"
+    },
+    {
+      "file": "well-alpha-walk-front-02.png",
+      "reference": {
+        "src": "references/well-alpha-walk-front-02.png",
+        "sha256": "a36888ef984c55eb137871ef54985f7711bba01cbf63ce31aa9099f63ffd2ad3",
+        "blender_frame": 10
+      },
+      "bbox": [
+        52,
+        23,
+        76,
+        79
+      ],
+      "silhouette_iou": 0.7995666305525461,
+      "sha256": "f673a2f9e31ee2eb33747d94606077ece9d9f2c882b11558bc638418aacc5436"
+    },
+    {
+      "file": "well-alpha-walk-front-03.png",
+      "reference": {
+        "src": "references/well-alpha-walk-front-03.png",
+        "sha256": "c7ddc6c9892887b7fe200fa48f870a42470c25fd9081e016f22de0381363ae57",
+        "blender_frame": 15
+      },
+      "bbox": [
+        52,
+        23,
+        75,
+        81
+      ],
+      "silhouette_iou": 0.7972831765935214,
+      "sha256": "68e95734646494e3b7e047615f081501ba88eec6dff1f49cf23749cdc54aa22a"
+    },
+    {
+      "file": "well-alpha-walk-front-04.png",
+      "reference": {
+        "src": "references/well-alpha-walk-front-04.png",
+        "sha256": "66f6a37f5b174d62a02539bd30713639e7e15aceab68a724afc151244991ccee",
+        "blender_frame": 20
+      },
+      "bbox": [
+        52,
+        24,
+        75,
+        84
+      ],
+      "silhouette_iou": 0.8151609553478713,
+      "sha256": "5fe75ebc98623fa42e666f7f6744df1102fc6421603fa0d92a9aed854e3d029b"
+    },
+    {
+      "file": "well-alpha-walk-front-05.png",
+      "reference": {
+        "src": "references/well-alpha-walk-front-05.png",
+        "sha256": "1e666a4dd9d49dd873ef45d8348e12558865362937dd3f9f1195535bc7d21e7e",
+        "blender_frame": 25
+      },
+      "bbox": [
+        52,
+        24,
+        75,
+        82
+      ],
+      "silhouette_iou": 0.8220793140407289,
+      "sha256": "651536c2e0278c7dc437f07f942f987622f89271d8b8c6d3ef1680987ab234bc"
+    },
+    {
+      "file": "well-alpha-walk-front-06.png",
+      "reference": {
+        "src": "references/well-alpha-walk-front-06.png",
+        "sha256": "9a31b491dd5b5bba3f4cfae4c41067ec0c14c80b3d678c097f542d46d0e87fc8",
+        "blender_frame": 30
+      },
+      "bbox": [
+        52,
+        24,
+        76,
+        78
+      ],
+      "silhouette_iou": 0.8165938864628821,
+      "sha256": "24e364616b90d6eddc00b27e4bde8e96120e91ec16e0a9782dbb52fedcd68508"
+    },
+    {
+      "file": "well-alpha-walk-front-07.png",
+      "reference": {
+        "src": "references/well-alpha-walk-front-07.png",
+        "sha256": "bcd35bb064e19f895cdea598e86a410840437dd67a6f7f89e53e0f3c2be00e00",
+        "blender_frame": 35
+      },
+      "bbox": [
+        52,
+        24,
+        76,
+        81
+      ],
+      "silhouette_iou": 0.8171122994652407,
+      "sha256": "f43e573b9af1c4de5e9139cff31096e725c4e597329a57dc992f677da8a69a67"
+    }
+  ]
+}

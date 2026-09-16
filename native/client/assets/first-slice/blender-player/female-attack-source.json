@@ -1,0 +1,18 @@
+{
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\mocap\\02_05.bvh",
+  "sha256": "19e935a336e06981c1680b79c7db7cd9b2c95ff404696f6742181b9e4da39057",
+  "source_frames": [
+    120,
+    134,
+    148,
+    162,
+    176,
+    190,
+    204,
+    218
+  ],
+  "source_fps": 120,
+  "scale": 1.993940731717673,
+  "ground_translation": -0.008135462552309035,
+  "review_status": "unreviewed"
+}

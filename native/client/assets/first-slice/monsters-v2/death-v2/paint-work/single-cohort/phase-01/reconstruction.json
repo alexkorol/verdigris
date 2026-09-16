@@ -1,0 +1,30 @@
+{
+  "accepted": true,
+  "source_sha256": "69b537c1410e19b061bada0bcfb02b08b3d318faaac44b9e32144ffa200aa18b",
+  "reference_sha256": "1c884ec924135b75be7f3cce72704cb3798efdb023e1361efc6577bc69a58371",
+  "source_dimensions": [
+    1536,
+    1024
+  ],
+  "alpha_zero_fraction": 0.9697221120198568,
+  "detected_preferred_grid": 8,
+  "selected_authored_grid": {
+    "size": 8,
+    "source": "fine",
+    "offset": [
+      0,
+      0
+    ],
+    "score": 0.6496341656711511,
+    "variance": 51.12614822387695,
+    "gated_out": false
+  },
+  "fixed_placement_iou": 0.9442815249266863,
+  "best_registration_iou": 0.9442815249266863,
+  "diagnostic_only_translation": [
+    0,
+    0
+  ],
+  "rule": "Best-registration score is diagnostic only; no individual animation-frame recentering is authorized.",
+  "visual_acceptance": "Independent review by first_slice_world_assets: all four authored poses preserved; folded grounded corpse and coherent coat; no recentering. 2026-09-15."
+}

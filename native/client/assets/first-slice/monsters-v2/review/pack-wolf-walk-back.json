@@ -1,0 +1,361 @@
+{
+  "clip": "pack-wolf-walk-back",
+  "source_sha256": "066b78ceddd90d979015973a82cb680b5d1ff6275dcb55c54d1a3a482464e8d2",
+  "frame_size": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "base_cell": 48,
+  "alpha_policy": "Returned alpha threshold 128; no RGB key",
+  "grid_candidates": [
+    {
+      "size": 19,
+      "source": "autocorr",
+      "offset": [
+        14,
+        16
+      ],
+      "score": 0.7768828343880696,
+      "variance": 201.99110412597656,
+      "gated_out": false
+    },
+    {
+      "size": 16,
+      "source": "autocorr",
+      "offset": [
+        11,
+        8
+      ],
+      "score": 0.702332300132982,
+      "variance": 208.93161010742188,
+      "gated_out": false
+    },
+    {
+      "size": 3,
+      "source": "autocorr",
+      "offset": [
+        0,
+        1
+      ],
+      "score": 0.6991449147230182,
+      "variance": 28.81275749206543,
+      "gated_out": false
+    },
+    {
+      "size": 96,
+      "source": "fold",
+      "offset": [
+        28,
+        69
+      ],
+      "score": 0.6796004324242925,
+      "variance": 792.5359497070312,
+      "gated_out": true
+    },
+    {
+      "size": 14,
+      "source": "autocorr",
+      "offset": [
+        12,
+        13
+      ],
+      "score": 0.6659986308922368,
+      "variance": 187.09056091308594,
+      "gated_out": false
+    },
+    {
+      "size": 8,
+      "source": "autocorr",
+      "offset": [
+        3,
+        7
+      ],
+      "score": 0.6555494687804917,
+      "variance": 113.57024383544922,
+      "gated_out": false
+    },
+    {
+      "size": 7,
+      "source": "fine",
+      "offset": [
+        2,
+        6
+      ],
+      "score": 0.6543946815820461,
+      "variance": 97.38178253173828,
+      "gated_out": false
+    },
+    {
+      "size": 10,
+      "source": "autocorr",
+      "offset": [
+        1,
+        9
+      ],
+      "score": 0.6416812307363642,
+      "variance": 147.4245147705078,
+      "gated_out": false
+    },
+    {
+      "size": 6,
+      "source": "autocorr",
+      "offset": [
+        0,
+        1
+      ],
+      "score": 0.61512079708326,
+      "variance": 84.31159973144531,
+      "gated_out": false
+    },
+    {
+      "size": 5,
+      "source": "autocorr",
+      "offset": [
+        1,
+        1
+      ],
+      "score": 0.5970391519419199,
+      "variance": 72.7385482788086,
+      "gated_out": false
+    },
+    {
+      "size": 4,
+      "source": "fine",
+      "offset": [
+        2,
+        1
+      ],
+      "score": 0.5882040822990532,
+      "variance": 56.17795181274414,
+      "gated_out": false
+    },
+    {
+      "size": 127,
+      "source": "fold",
+      "offset": [
+        96,
+        100
+      ],
+      "score": 0.48042443319978995,
+      "variance": 1006.6561279296875,
+      "gated_out": true
+    },
+    {
+      "size": 128,
+      "source": "fold",
+      "offset": [
+        92,
+        101
+      ],
+      "score": 0.47808477677217215,
+      "variance": 1021.72412109375,
+      "gated_out": true
+    },
+    {
+      "size": 192,
+      "source": "fold",
+      "offset": [
+        28,
+        165
+      ],
+      "score": 0.29516776567344244,
+      "variance": 1478.3990478515625,
+      "gated_out": true
+    },
+    {
+      "size": 191,
+      "source": "fold",
+      "offset": [
+        29,
+        168
+      ],
+      "score": 0.29309084670249175,
+      "variance": 1494.7620849609375,
+      "gated_out": true
+    },
+    {
+      "size": 184,
+      "source": "fold",
+      "offset": [
+        36,
+        57
+      ],
+      "score": 0.28744234433321436,
+      "variance": 1064.3685302734375,
+      "gated_out": true
+    },
+    {
+      "size": 189,
+      "source": "fold",
+      "offset": [
+        31,
+        174
+      ],
+      "score": 0.2851907512675587,
+      "variance": 1532.50927734375,
+      "gated_out": true
+    },
+    {
+      "size": 165,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.27149452163650944,
+      "variance": 1033.8074951171875,
+      "gated_out": true
+    }
+  ],
+  "visual_acceptance": false,
+  "frames": [
+    {
+      "file": "pack-wolf-walk-back-00.png",
+      "bbox": [
+        40,
+        40,
+        55,
+        93
+      ],
+      "reference": {
+        "src": "references/pack-wolf-walk-back-00.png",
+        "sha256": "e97c4ae35903a394edce1a398aba61df579974b661e0442f55f475fc10fd4e22",
+        "blender_frame": 0
+      },
+      "silhouette_iou": 0.9326347305389222,
+      "sha256": "92a77bfb80a5416181b4b60002451def1fb20a4f34f48e83bfd58c1a3422515c"
+    },
+    {
+      "file": "pack-wolf-walk-back-01.png",
+      "bbox": [
+        40,
+        40,
+        55,
+        92
+      ],
+      "reference": {
+        "src": "references/pack-wolf-walk-back-01.png",
+        "sha256": "d118745136ff45c3a771391c3368c16354ab7892b813473b250cd24544c33e40",
+        "blender_frame": 5
+      },
+      "silhouette_iou": 0.9332344213649851,
+      "sha256": "8ee05ddd61a27336931660ab34ccedbe451bd90affa092d4cf2625b60a9addbb"
+    },
+    {
+      "file": "pack-wolf-walk-back-02.png",
+      "bbox": [
+        40,
+        39,
+        55,
+        94
+      ],
+      "reference": {
+        "src": "references/pack-wolf-walk-back-02.png",
+        "sha256": "6edd71d1e990627f7111dd9345586bfe8ad265cbf5536e08c6ec548e034bbb1f",
+        "blender_frame": 10
+      },
+      "silhouette_iou": 0.9271137026239067,
+      "sha256": "0de1805be843363aecfb1525114963b41467d1a14e3985f2ad947a101e8f44f4"
+    },
+    {
+      "file": "pack-wolf-walk-back-03.png",
+      "bbox": [
+        40,
+        39,
+        55,
+        93
+      ],
+      "reference": {
+        "src": "references/pack-wolf-walk-back-03.png",
+        "sha256": "df0844e0a70acaf7296e31415d8ff0d05af68d4b7dfaadb0b601054eb473b803",
+        "blender_frame": 15
+      },
+      "silhouette_iou": 0.9236417033773862,
+      "sha256": "792589467850487c35ccdd4d47afc01b91297dbd50a946fd800a9c3be579fc3f"
+    },
+    {
+      "file": "pack-wolf-walk-back-04.png",
+      "bbox": [
+        40,
+        39,
+        55,
+        93
+      ],
+      "reference": {
+        "src": "references/pack-wolf-walk-back-04.png",
+        "sha256": "2ce5902bc0da1acd10995fd7d300e9d8fa00afd2ab3f1de0ab814bd61ab089e3",
+        "blender_frame": 20
+      },
+      "silhouette_iou": 0.9384384384384384,
+      "sha256": "b070821c506eccd66799c9e25990084629aa8c2d749d8f6d49b51ace4bc57d79"
+    },
+    {
+      "file": "pack-wolf-walk-back-05.png",
+      "bbox": [
+        40,
+        39,
+        55,
+        93
+      ],
+      "reference": {
+        "src": "references/pack-wolf-walk-back-05.png",
+        "sha256": "dbea6edb79ba4aedff856eb8bb4437ecfe85677f7517f2628f08fdc449c1e015",
+        "blender_frame": 25
+      },
+      "silhouette_iou": 0.9171511627906976,
+      "sha256": "662e96ee8afef541b68c9374a13a2ccb1c0965c80eb9d40bf7663c832c60b17b"
+    },
+    {
+      "file": "pack-wolf-walk-back-06.png",
+      "bbox": [
+        40,
+        39,
+        55,
+        94
+      ],
+      "reference": {
+        "src": "references/pack-wolf-walk-back-06.png",
+        "sha256": "dc8fc2dd5c6e7b918d641189360c45b87015c050769e0bf1d418d0fba5830991",
+        "blender_frame": 30
+      },
+      "silhouette_iou": 0.9166666666666666,
+      "sha256": "5d1f24aa9c2cccb39d8b938301b2cd089b4af222228bedcffd13326cf4f04584"
+    },
+    {
+      "file": "pack-wolf-walk-back-07.png",
+      "bbox": [
+        40,
+        39,
+        55,
+        92
+      ],
+      "reference": {
+        "src": "references/pack-wolf-walk-back-07.png",
+        "sha256": "88fa8a63b3b698811ab021e36997cd8729200398ae917f003cf90fbcf83edd6d",
+        "blender_frame": 35
+      },
+      "silhouette_iou": 0.9142441860465116,
+      "sha256": "391578b53582446add738121f180c24c0b49550cd08b42a2a69447d47b3b3a97"
+    }
+  ],
+  "selected_grid": {
+    "size": 4,
+    "source": "fine",
+    "offset": [
+      2,
+      1
+    ],
+    "score": 0.5882040822990532,
+    "variance": 56.17795181274414,
+    "gated_out": false
+  },
+  "whole_cycle_translation": [
+    0,
+    0
+  ],
+  "registered_mean_iou": 0.8091177013143899
+}

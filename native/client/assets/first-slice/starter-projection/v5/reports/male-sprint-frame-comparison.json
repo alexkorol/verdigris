@@ -1,0 +1,450 @@
+[
+  {
+    "frame": "male-sprint-front-00.png",
+    "geometry_alpha_iou": 0.9932038834951457,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      32,
+      10,
+      65,
+      89
+    ]
+  },
+  {
+    "frame": "male-sprint-front-01.png",
+    "geometry_alpha_iou": 0.9931372549019608,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      31,
+      12,
+      64,
+      89
+    ]
+  },
+  {
+    "frame": "male-sprint-front-02.png",
+    "geometry_alpha_iou": 0.9930624380574826,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      32,
+      15,
+      63,
+      82
+    ]
+  },
+  {
+    "frame": "male-sprint-front-03.png",
+    "geometry_alpha_iou": 0.9908350305498982,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      31,
+      12,
+      61,
+      75
+    ]
+  },
+  {
+    "frame": "male-sprint-front-04.png",
+    "geometry_alpha_iou": 0.992,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      31,
+      10,
+      62,
+      90
+    ]
+  },
+  {
+    "frame": "male-sprint-front-05.png",
+    "geometry_alpha_iou": 0.9950396825396826,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      32,
+      12,
+      63,
+      90
+    ]
+  },
+  {
+    "frame": "male-sprint-front-06.png",
+    "geometry_alpha_iou": 0.9930966469428008,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      33,
+      13,
+      63,
+      82
+    ]
+  },
+  {
+    "frame": "male-sprint-front-07.png",
+    "geometry_alpha_iou": 0.9912959381044487,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      33,
+      11,
+      63,
+      78
+    ]
+  },
+  {
+    "frame": "male-sprint-right-00.png",
+    "geometry_alpha_iou": 0.9901671583087512,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      15,
+      6,
+      70,
+      83
+    ]
+  },
+  {
+    "frame": "male-sprint-right-01.png",
+    "geometry_alpha_iou": 0.9888888888888889,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      15,
+      8,
+      69,
+      83
+    ]
+  },
+  {
+    "frame": "male-sprint-right-02.png",
+    "geometry_alpha_iou": 0.9831045406546991,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      27,
+      11,
+      72,
+      83
+    ]
+  },
+  {
+    "frame": "male-sprint-right-03.png",
+    "geometry_alpha_iou": 0.9901960784313726,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      23,
+      9,
+      73,
+      82
+    ]
+  },
+  {
+    "frame": "male-sprint-right-04.png",
+    "geometry_alpha_iou": 0.9895833333333334,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      14,
+      6,
+      70,
+      79
+    ]
+  },
+  {
+    "frame": "male-sprint-right-05.png",
+    "geometry_alpha_iou": 0.9893719806763285,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      15,
+      8,
+      69,
+      80
+    ]
+  },
+  {
+    "frame": "male-sprint-right-06.png",
+    "geometry_alpha_iou": 0.983957219251337,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      27,
+      8,
+      72,
+      81
+    ]
+  },
+  {
+    "frame": "male-sprint-right-07.png",
+    "geometry_alpha_iou": 0.9861932938856016,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      25,
+      6,
+      71,
+      81
+    ]
+  },
+  {
+    "frame": "male-sprint-back-00.png",
+    "geometry_alpha_iou": 0.9943548387096774,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      31,
+      1,
+      64,
+      94
+    ]
+  },
+  {
+    "frame": "male-sprint-back-01.png",
+    "geometry_alpha_iou": 0.9959183673469387,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      32,
+      2,
+      65,
+      89
+    ]
+  },
+  {
+    "frame": "male-sprint-back-02.png",
+    "geometry_alpha_iou": 0.9941126997476871,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      33,
+      4,
+      64,
+      87
+    ]
+  },
+  {
+    "frame": "male-sprint-back-03.png",
+    "geometry_alpha_iou": 0.9905902480752781,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      34,
+      3,
+      64,
+      91
+    ]
+  },
+  {
+    "frame": "male-sprint-back-04.png",
+    "geometry_alpha_iou": 0.9932829554995802,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      35,
+      2,
+      65,
+      95
+    ]
+  },
+  {
+    "frame": "male-sprint-back-05.png",
+    "geometry_alpha_iou": 0.9957912457912458,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      33,
+      4,
+      64,
+      90
+    ]
+  },
+  {
+    "frame": "male-sprint-back-06.png",
+    "geometry_alpha_iou": 0.9933277731442869,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      33,
+      4,
+      62,
+      87
+    ]
+  },
+  {
+    "frame": "male-sprint-back-07.png",
+    "geometry_alpha_iou": 0.9941569282136895,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      33,
+      2,
+      63,
+      90
+    ]
+  },
+  {
+    "frame": "male-sprint-left-00.png",
+    "geometry_alpha_iou": 0.9932950191570882,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      26,
+      6,
+      81,
+      79
+    ]
+  },
+  {
+    "frame": "male-sprint-left-01.png",
+    "geometry_alpha_iou": 0.9931102362204725,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      27,
+      7,
+      82,
+      81
+    ]
+  },
+  {
+    "frame": "male-sprint-left-02.png",
+    "geometry_alpha_iou": 0.9855222337125129,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      25,
+      9,
+      69,
+      82
+    ]
+  },
+  {
+    "frame": "male-sprint-left-03.png",
+    "geometry_alpha_iou": 0.9951923076923077,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      24,
+      7,
+      73,
+      81
+    ]
+  },
+  {
+    "frame": "male-sprint-left-04.png",
+    "geometry_alpha_iou": 0.9895437262357415,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      26,
+      6,
+      81,
+      83
+    ]
+  },
+  {
+    "frame": "male-sprint-left-05.png",
+    "geometry_alpha_iou": 0.9930693069306931,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      28,
+      8,
+      80,
+      84
+    ]
+  },
+  {
+    "frame": "male-sprint-left-06.png",
+    "geometry_alpha_iou": 0.9851063829787234,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      23,
+      10,
+      69,
+      84
+    ]
+  },
+  {
+    "frame": "male-sprint-left-07.png",
+    "geometry_alpha_iou": 0.9951314508276533,
+    "dimensions": [
+      96,
+      96
+    ],
+    "bbox": [
+      25,
+      7,
+      72,
+      83
+    ]
+  }
+]

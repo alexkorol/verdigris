@@ -1,0 +1,328 @@
+{
+  "clips": {
+    "pack-wolf-death-left-single-00": {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "left",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\pack-wolf-death-left-00.png",
+          "sha256": "1f170f3e8ad08ce3dad3d465746d62feafedb9756e38d6005fa7f5b40e22da35",
+          "blender_frame": 0
+        }
+      ],
+      "source_sha256": "3aba8648e44f945f9fd1ec2098e0af02fcc5e8b6eed74e1be2c52c6441cc7fb1",
+      "blender": "death-v2/pack-wolf-death-v2.blend",
+      "authored_action": "Verdigris_pack-wolf_death_folded_v2",
+      "physical_poses": [
+        {
+          "phase": 0,
+          "roll_degrees": 0,
+          "fold_amount": 0.0,
+          "ground_lift": -1.669549419602845e-05,
+          "body_height_metres": 0.6644949255041865
+        },
+        {
+          "phase": 1,
+          "roll_degrees": 24,
+          "fold_amount": 0.3,
+          "ground_lift": 0.03397325053811073,
+          "body_height_metres": 0.628765556961298
+        },
+        {
+          "phase": 2,
+          "roll_degrees": 67,
+          "fold_amount": 0.8,
+          "ground_lift": 0.07463409006595612,
+          "body_height_metres": 0.37756429612636566
+        },
+        {
+          "phase": 3,
+          "roll_degrees": 94,
+          "fold_amount": 1.0,
+          "ground_lift": 0.15970979630947113,
+          "body_height_metres": 0.2935694009065628
+        }
+      ],
+      "visual_acceptance": false,
+      "blender_sha256": "45892d11a7dae3cc13461c80ed845ea613a2bf10dbbe365df8a815379a9f5275",
+      "layout": {
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "scale": 8,
+        "output": [
+          1536,
+          1024
+        ],
+        "fixed_translation": [
+          0,
+          0
+        ]
+      },
+      "guide": "death-v2/guides/pack-wolf-death-left.png",
+      "guide_sha256": "f2efe004f0aea7ba1e84903ae657994a009570c1c3a7672f8dc1670e0cdfb563",
+      "blender_source": "death-v2/pack-wolf-death-v2.blend"
+    },
+    "pack-wolf-death-left-single-01": {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "left",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\pack-wolf-death-left-01.png",
+          "sha256": "1c884ec924135b75be7f3cce72704cb3798efdb023e1361efc6577bc69a58371",
+          "blender_frame": 1
+        }
+      ],
+      "source_sha256": "3aba8648e44f945f9fd1ec2098e0af02fcc5e8b6eed74e1be2c52c6441cc7fb1",
+      "blender": "death-v2/pack-wolf-death-v2.blend",
+      "authored_action": "Verdigris_pack-wolf_death_folded_v2",
+      "physical_poses": [
+        {
+          "phase": 0,
+          "roll_degrees": 0,
+          "fold_amount": 0.0,
+          "ground_lift": -1.669549419602845e-05,
+          "body_height_metres": 0.6644949255041865
+        },
+        {
+          "phase": 1,
+          "roll_degrees": 24,
+          "fold_amount": 0.3,
+          "ground_lift": 0.03397325053811073,
+          "body_height_metres": 0.628765556961298
+        },
+        {
+          "phase": 2,
+          "roll_degrees": 67,
+          "fold_amount": 0.8,
+          "ground_lift": 0.07463409006595612,
+          "body_height_metres": 0.37756429612636566
+        },
+        {
+          "phase": 3,
+          "roll_degrees": 94,
+          "fold_amount": 1.0,
+          "ground_lift": 0.15970979630947113,
+          "body_height_metres": 0.2935694009065628
+        }
+      ],
+      "visual_acceptance": false,
+      "blender_sha256": "45892d11a7dae3cc13461c80ed845ea613a2bf10dbbe365df8a815379a9f5275",
+      "layout": {
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "scale": 8,
+        "output": [
+          1536,
+          1024
+        ],
+        "fixed_translation": [
+          0,
+          0
+        ]
+      },
+      "guide": "death-v2/guides/pack-wolf-death-left.png",
+      "guide_sha256": "f2efe004f0aea7ba1e84903ae657994a009570c1c3a7672f8dc1670e0cdfb563",
+      "blender_source": "death-v2/pack-wolf-death-v2.blend"
+    },
+    "pack-wolf-death-left-single-02": {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "left",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\pack-wolf-death-left-02.png",
+          "sha256": "e4aa0d6be27197a8aef392fb48346bd9583f78a5ef2c4e2fee5dde5fdc73ddd3",
+          "blender_frame": 2
+        }
+      ],
+      "source_sha256": "3aba8648e44f945f9fd1ec2098e0af02fcc5e8b6eed74e1be2c52c6441cc7fb1",
+      "blender": "death-v2/pack-wolf-death-v2.blend",
+      "authored_action": "Verdigris_pack-wolf_death_folded_v2",
+      "physical_poses": [
+        {
+          "phase": 0,
+          "roll_degrees": 0,
+          "fold_amount": 0.0,
+          "ground_lift": -1.669549419602845e-05,
+          "body_height_metres": 0.6644949255041865
+        },
+        {
+          "phase": 1,
+          "roll_degrees": 24,
+          "fold_amount": 0.3,
+          "ground_lift": 0.03397325053811073,
+          "body_height_metres": 0.628765556961298
+        },
+        {
+          "phase": 2,
+          "roll_degrees": 67,
+          "fold_amount": 0.8,
+          "ground_lift": 0.07463409006595612,
+          "body_height_metres": 0.37756429612636566
+        },
+        {
+          "phase": 3,
+          "roll_degrees": 94,
+          "fold_amount": 1.0,
+          "ground_lift": 0.15970979630947113,
+          "body_height_metres": 0.2935694009065628
+        }
+      ],
+      "visual_acceptance": false,
+      "blender_sha256": "45892d11a7dae3cc13461c80ed845ea613a2bf10dbbe365df8a815379a9f5275",
+      "layout": {
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "scale": 8,
+        "output": [
+          1536,
+          1024
+        ],
+        "fixed_translation": [
+          0,
+          0
+        ]
+      },
+      "guide": "death-v2/guides/pack-wolf-death-left.png",
+      "guide_sha256": "f2efe004f0aea7ba1e84903ae657994a009570c1c3a7672f8dc1670e0cdfb563",
+      "blender_source": "death-v2/pack-wolf-death-v2.blend"
+    },
+    "pack-wolf-death-left-single-03": {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "left",
+      "fps": 8,
+      "loop": false,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "frames": [
+        {
+          "src": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\death-v2\\pack-wolf-death-left-03.png",
+          "sha256": "dc815d64f7b03317c67b7b495cd8b55bd3a78988a8709d7c890325e01721c5fa",
+          "blender_frame": 3
+        }
+      ],
+      "source_sha256": "3aba8648e44f945f9fd1ec2098e0af02fcc5e8b6eed74e1be2c52c6441cc7fb1",
+      "blender": "death-v2/pack-wolf-death-v2.blend",
+      "authored_action": "Verdigris_pack-wolf_death_folded_v2",
+      "physical_poses": [
+        {
+          "phase": 0,
+          "roll_degrees": 0,
+          "fold_amount": 0.0,
+          "ground_lift": -1.669549419602845e-05,
+          "body_height_metres": 0.6644949255041865
+        },
+        {
+          "phase": 1,
+          "roll_degrees": 24,
+          "fold_amount": 0.3,
+          "ground_lift": 0.03397325053811073,
+          "body_height_metres": 0.628765556961298
+        },
+        {
+          "phase": 2,
+          "roll_degrees": 67,
+          "fold_amount": 0.8,
+          "ground_lift": 0.07463409006595612,
+          "body_height_metres": 0.37756429612636566
+        },
+        {
+          "phase": 3,
+          "roll_degrees": 94,
+          "fold_amount": 1.0,
+          "ground_lift": 0.15970979630947113,
+          "body_height_metres": 0.2935694009065628
+        }
+      ],
+      "visual_acceptance": false,
+      "blender_sha256": "45892d11a7dae3cc13461c80ed845ea613a2bf10dbbe365df8a815379a9f5275",
+      "layout": {
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "scale": 8,
+        "output": [
+          1536,
+          1024
+        ],
+        "fixed_translation": [
+          0,
+          0
+        ]
+      },
+      "guide": "death-v2/guides/pack-wolf-death-left.png",
+      "guide_sha256": "f2efe004f0aea7ba1e84903ae657994a009570c1c3a7672f8dc1670e0cdfb563",
+      "blender_source": "death-v2/pack-wolf-death-v2.blend"
+    }
+  }
+}

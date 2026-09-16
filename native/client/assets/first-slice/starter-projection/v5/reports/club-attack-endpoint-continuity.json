@@ -1,0 +1,50 @@
+[
+  {
+    "direction": "front",
+    "phase": 0,
+    "alpha_iou": 0.9939393939393939,
+    "mean_rgb_difference_on_overlap": 2.294969512195122
+  },
+  {
+    "direction": "front",
+    "phase": 15,
+    "alpha_iou": 0.9939393939393939,
+    "mean_rgb_difference_on_overlap": 2.294969512195122
+  },
+  {
+    "direction": "right",
+    "phase": 0,
+    "alpha_iou": 0.9898063200815495,
+    "mean_rgb_difference_on_overlap": 2.6350841057329215
+  },
+  {
+    "direction": "right",
+    "phase": 15,
+    "alpha_iou": 0.9898063200815495,
+    "mean_rgb_difference_on_overlap": 2.6350841057329215
+  },
+  {
+    "direction": "back",
+    "phase": 0,
+    "alpha_iou": 0.9913522012578616,
+    "mean_rgb_difference_on_overlap": 2.1747290510177106
+  },
+  {
+    "direction": "back",
+    "phase": 15,
+    "alpha_iou": 0.9913522012578616,
+    "mean_rgb_difference_on_overlap": 2.1747290510177106
+  },
+  {
+    "direction": "left",
+    "phase": 0,
+    "alpha_iou": 0.9861660079051383,
+    "mean_rgb_difference_on_overlap": 2.693386773547094
+  },
+  {
+    "direction": "left",
+    "phase": 15,
+    "alpha_iou": 0.9861660079051383,
+    "mean_rgb_difference_on_overlap": 2.693386773547094
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "original": "female-attack-front-0-3-imagegen-v1.png",
+  "actual_size": [
+    1254,
+    1254
+  ],
+  "logical_frame": [
+    128,
+    128
+  ],
+  "anchor": [
+    64,
+    96
+  ],
+  "layout": [
+    2,
+    2
+  ],
+  "sha256": "28986a172554a2df9735118467b71a88f9ee08827dc72da7560d6436986d0609",
+  "prompt_sha256": "089eff77fc9478bdeaa6aee60ffb8b800fea51ce80d20eea11ae835cdbb9d94a",
+  "alpha_zero_fraction": 0.8804438237830331,
+  "status": "paint-proof; pending native-grid recovery"
+}

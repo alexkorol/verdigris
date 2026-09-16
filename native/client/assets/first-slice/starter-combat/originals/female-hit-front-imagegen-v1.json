@@ -1,0 +1,45 @@
+{
+  "original": "female-hit-front-imagegen-v1.png",
+  "sha256": "b2af8900007c148c00f9fede143fe7da6de4d5f72750d402e148ca5b0307d8db",
+  "prompt": "female-hit-front-prompt.txt",
+  "prompt_sha256": "8f4ed9b4168027c6a803d46ce052dcb64404e66ae81ccbe5c5179493aaff6a72",
+  "tool": "built-in image_gen",
+  "actual_size": [
+    1536,
+    1024
+  ],
+  "native_frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "layout": [
+    4,
+    2
+  ],
+  "slot_size": [
+    384,
+    512
+  ],
+  "sprite_slot_offset": [
+    0,
+    64
+  ],
+  "pixels_per_metre": 48,
+  "equipment": "branch-club",
+  "alpha_zero_fraction": 0.8183218638102213,
+  "status": "paint-proof; pending native-grid recovery",
+  "references": [
+    "references/female-hit-front-00.png",
+    "references/female-hit-front-01.png",
+    "references/female-hit-front-02.png",
+    "references/female-hit-front-03.png",
+    "references/female-hit-front-04.png",
+    "references/female-hit-front-05.png",
+    "references/female-hit-front-06.png",
+    "references/female-hit-front-07.png"
+  ]
+}

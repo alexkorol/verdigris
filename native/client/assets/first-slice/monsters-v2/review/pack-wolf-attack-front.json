@@ -1,0 +1,96 @@
+{
+  "clip": "pack-wolf-attack-front",
+  "source_sha256": "526de134dce2a61d52b57e78e228188a16c1766c2569690a780ad378b197d50d",
+  "selected_grid": {
+    "size": 4,
+    "source": "fine",
+    "offset": [
+      3,
+      0
+    ],
+    "score": 0.35775650642660867,
+    "variance": 20.66597557067871,
+    "gated_out": false
+  },
+  "frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "whole_cycle_translation": [
+    0,
+    1
+  ],
+  "registered_mean_iou": 0.7699415505558596,
+  "alpha_policy": "Native alpha threshold128, noRGBkey",
+  "visual_acceptance": false,
+  "frames": [
+    {
+      "file": "pack-wolf-attack-front-00.png",
+      "reference": {
+        "src": "references/pack-wolf-attack-front-00.png",
+        "sha256": "b27eca2d892fbc6405692d0be14e57ad62650ec1ed779952087e164020e58084",
+        "blender_frame": 0
+      },
+      "bbox": [
+        40,
+        54,
+        57,
+        91
+      ],
+      "silhouette_iou": 0.7662921348314606,
+      "sha256": "d2dcfdfd63ce06fbe8bec05d0aca6a200d520496503978da8231b1ba38669552"
+    },
+    {
+      "file": "pack-wolf-attack-front-01.png",
+      "reference": {
+        "src": "references/pack-wolf-attack-front-01.png",
+        "sha256": "6f8b6f0758e5682688d81b0c8f113bccdb604f697544ee10e107bdadc6790dde",
+        "blender_frame": 1
+      },
+      "bbox": [
+        40,
+        54,
+        57,
+        91
+      ],
+      "silhouette_iou": 0.7735042735042735,
+      "sha256": "103c86fd1f20b32ab93f14888686bba10ab4772d3d1262e4f7e114aafa69a051"
+    },
+    {
+      "file": "pack-wolf-attack-front-02.png",
+      "reference": {
+        "src": "references/pack-wolf-attack-front-02.png",
+        "sha256": "fffc856e6ba2d692fb651268f066bdfb84b7a2851f4a639795a62faa277ef20b",
+        "blender_frame": 2
+      },
+      "bbox": [
+        40,
+        53,
+        57,
+        91
+      ],
+      "silhouette_iou": 0.7958333333333333,
+      "sha256": "f5a7ccf9dcf3109f028bfab853749a2be82f572585ef271734a6645eb486113a"
+    },
+    {
+      "file": "pack-wolf-attack-front-03.png",
+      "reference": {
+        "src": "references/pack-wolf-attack-front-03.png",
+        "sha256": "5776877d2793d1e637df192ab2ea9ed88b0d86f7fe708a5b58e4d4953bb43d19",
+        "blender_frame": 3
+      },
+      "bbox": [
+        40,
+        53,
+        57,
+        91
+      ],
+      "silhouette_iou": 0.744136460554371,
+      "sha256": "498a024812cc609bb854103c051bec0e1863bfc88a1a10e40d02e20b9053dce1"
+    }
+  ]
+}

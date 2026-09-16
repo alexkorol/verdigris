@@ -1,0 +1,22 @@
+[
+  {
+    "direction": "front",
+    "first_last_different_pixels": 0,
+    "idle_padded_mask_difference": 8
+  },
+  {
+    "direction": "right",
+    "first_last_different_pixels": 0,
+    "idle_padded_mask_difference": 10
+  },
+  {
+    "direction": "back",
+    "first_last_different_pixels": 0,
+    "idle_padded_mask_difference": 11
+  },
+  {
+    "direction": "left",
+    "first_last_different_pixels": 0,
+    "idle_padded_mask_difference": 14
+  }
+]

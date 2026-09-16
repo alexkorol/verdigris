@@ -1,0 +1,490 @@
+{
+  "clip": "male-walk-front",
+  "source_sha256": "f86a7242a0339ff4e2efe0671b41ebb15161a4f434d7f7ff5cd413b8ece562b4",
+  "frame_size": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "base_cell": 48,
+  "alpha_policy": "Returned alpha threshold 128; no RGB key",
+  "grid_candidates": [
+    {
+      "size": 22,
+      "source": "autocorr",
+      "offset": [
+        14,
+        6
+      ],
+      "score": 1.2031286341167697,
+      "variance": 555.5339965820312,
+      "gated_out": false
+    },
+    {
+      "size": 19,
+      "source": "autocorr",
+      "offset": [
+        7,
+        18
+      ],
+      "score": 1.2011983054164355,
+      "variance": 497.59735107421875,
+      "gated_out": false
+    },
+    {
+      "size": 16,
+      "source": "autocorr",
+      "offset": [
+        12,
+        14
+      ],
+      "score": 1.1897728319762184,
+      "variance": 438.5756530761719,
+      "gated_out": false
+    },
+    {
+      "size": 13,
+      "source": "autocorr",
+      "offset": [
+        3,
+        3
+      ],
+      "score": 1.1427846859690471,
+      "variance": 357.69708251953125,
+      "gated_out": false
+    },
+    {
+      "size": 8,
+      "source": "autocorr",
+      "offset": [
+        0,
+        7
+      ],
+      "score": 1.10092277906319,
+      "variance": 232.86842346191406,
+      "gated_out": false
+    },
+    {
+      "size": 9,
+      "source": "autocorr",
+      "offset": [
+        5,
+        6
+      ],
+      "score": 1.086657962442257,
+      "variance": 270.04278564453125,
+      "gated_out": false
+    },
+    {
+      "size": 7,
+      "source": "fine",
+      "offset": [
+        4,
+        1
+      ],
+      "score": 1.051099447929937,
+      "variance": 211.4700469970703,
+      "gated_out": false
+    },
+    {
+      "size": 6,
+      "source": "autocorr",
+      "offset": [
+        1,
+        3
+      ],
+      "score": 1.0348603625243384,
+      "variance": 186.36314392089844,
+      "gated_out": false
+    },
+    {
+      "size": 4,
+      "source": "fine",
+      "offset": [
+        0,
+        2
+      ],
+      "score": 1.0250833097617889,
+      "variance": 120.98589324951172,
+      "gated_out": false
+    },
+    {
+      "size": 3,
+      "source": "autocorr",
+      "offset": [
+        1,
+        0
+      ],
+      "score": 1.020970558556413,
+      "variance": 89.19588470458984,
+      "gated_out": false
+    },
+    {
+      "size": 5,
+      "source": "fine",
+      "offset": [
+        4,
+        3
+      ],
+      "score": 1.0202422935977993,
+      "variance": 156.65313720703125,
+      "gated_out": false
+    },
+    {
+      "size": 153,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.7043789392824475,
+      "variance": 2198.058349609375,
+      "gated_out": true
+    },
+    {
+      "size": 192,
+      "source": "fold",
+      "offset": [
+        62,
+        29
+      ],
+      "score": 0.5045704549630755,
+      "variance": 2438.660400390625,
+      "gated_out": true
+    },
+    {
+      "size": 185,
+      "source": "fold",
+      "offset": [
+        72,
+        104
+      ],
+      "score": 0.5019804949715626,
+      "variance": 2695.69140625,
+      "gated_out": true
+    },
+    {
+      "size": 184,
+      "source": "fold",
+      "offset": [
+        73,
+        108
+      ],
+      "score": 0.49926345141407025,
+      "variance": 2715.77783203125,
+      "gated_out": true
+    },
+    {
+      "size": 191,
+      "source": "fold",
+      "offset": [
+        139,
+        164
+      ],
+      "score": 0.4591095445945057,
+      "variance": 2661.864990234375,
+      "gated_out": true
+    },
+    {
+      "size": 176,
+      "source": "fold",
+      "offset": [
+        81,
+        50
+      ],
+      "score": 0.4359254380018556,
+      "variance": 2784.3203125,
+      "gated_out": true
+    },
+    {
+      "size": 167,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.4109120232105981,
+      "variance": 2441.796875,
+      "gated_out": true
+    },
+    {
+      "size": 190,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.2244217560629024,
+      "variance": 2991.994873046875,
+      "gated_out": true
+    }
+  ],
+  "visual_acceptance": false,
+  "frames": [
+    {
+      "file": "male-walk-front-00.png",
+      "bbox": [
+        34,
+        8,
+        64,
+        85
+      ],
+      "reference": {
+        "src": "references/male-walk-front-00.png",
+        "sha256": "fed515db577db94caaecf3b99723a2fe020ab7c1ea62ef41a6bd720f5ec3ad4e"
+      },
+      "silhouette_iou": 0.9325771896660365,
+      "slot_origin": [
+        0,
+        0
+      ],
+      "registration_translation": [
+        0,
+        1
+      ],
+      "output_anchor": [
+        48,
+        80
+      ],
+      "sha256": "dfe4971f8cc796241d822c11218ede0dddf5bd54e93907e069f55a3c8b920694"
+    },
+    {
+      "file": "male-walk-front-01.png",
+      "bbox": [
+        34,
+        9,
+        64,
+        92
+      ],
+      "reference": {
+        "src": "references/male-walk-front-01.png",
+        "sha256": "35173676a0689dd1525dea0fbae0d380ecda4639deeda3371db062e94c80ef4c"
+      },
+      "silhouette_iou": 0.949607329842932,
+      "slot_origin": [
+        96,
+        0
+      ],
+      "registration_translation": [
+        0,
+        1
+      ],
+      "output_anchor": [
+        48,
+        80
+      ],
+      "sha256": "aae789558856b886b524467681c8e5618a57f807553cf449ae8219bcd7c7c2e2"
+    },
+    {
+      "file": "male-walk-front-02.png",
+      "bbox": [
+        33,
+        9,
+        63,
+        93
+      ],
+      "reference": {
+        "src": "references/male-walk-front-02.png",
+        "sha256": "1689afca53ed0bbce00ec0110a9ec128135e9d7ff5e4e96e529845c543f89c10"
+      },
+      "silhouette_iou": 0.9407806191117093,
+      "slot_origin": [
+        192,
+        0
+      ],
+      "registration_translation": [
+        0,
+        1
+      ],
+      "output_anchor": [
+        48,
+        80
+      ],
+      "sha256": "b179e5e1c29071ffea2c7e83b182be2afb2f5bb479df4fc5070c67e46888582d"
+    },
+    {
+      "file": "male-walk-front-03.png",
+      "bbox": [
+        33,
+        8,
+        64,
+        88
+      ],
+      "reference": {
+        "src": "references/male-walk-front-03.png",
+        "sha256": "ed298bda182d51d44365f04c6330910c988c7270754cf0db82ad377e65262a33"
+      },
+      "silhouette_iou": 0.9455645161290323,
+      "slot_origin": [
+        288,
+        0
+      ],
+      "registration_translation": [
+        0,
+        1
+      ],
+      "output_anchor": [
+        48,
+        80
+      ],
+      "sha256": "38d4b5a4f45413635e831adecb639b5c470572597db3ae150e65594da82ea6fd"
+    },
+    {
+      "file": "male-walk-front-04.png",
+      "bbox": [
+        34,
+        6,
+        65,
+        83
+      ],
+      "reference": {
+        "src": "references/male-walk-front-04.png",
+        "sha256": "6acbdbfa1444e3311092395b1e5ff0170a7eb8eb2025d4bf76c21d16fd6a5ef3"
+      },
+      "silhouette_iou": 0.9248447204968944,
+      "slot_origin": [
+        0,
+        128
+      ],
+      "registration_translation": [
+        0,
+        1
+      ],
+      "output_anchor": [
+        48,
+        80
+      ],
+      "sha256": "0473fa80aac82e3b559d9c07d3451705352e60bf84e8faf981071b71c3c5c0f4"
+    },
+    {
+      "file": "male-walk-front-05.png",
+      "bbox": [
+        33,
+        7,
+        65,
+        93
+      ],
+      "reference": {
+        "src": "references/male-walk-front-05.png",
+        "sha256": "3a25c5992713a014eed55710589231bf28260d75402bfc2e538d5abd83e438e4"
+      },
+      "silhouette_iou": 0.9245283018867925,
+      "slot_origin": [
+        96,
+        128
+      ],
+      "registration_translation": [
+        0,
+        1
+      ],
+      "output_anchor": [
+        48,
+        80
+      ],
+      "sha256": "9dc368f2572b6ff23e1e52c4aec39b58b3fa96fd2ffb84cdcb9290ab16323370"
+    },
+    {
+      "file": "male-walk-front-06.png",
+      "bbox": [
+        33,
+        8,
+        63,
+        94
+      ],
+      "reference": {
+        "src": "references/male-walk-front-06.png",
+        "sha256": "f84eeead7c67c6ca7c7fe60623e8268e8970c14d47262df825ac232caf73a24f"
+      },
+      "silhouette_iou": 0.932013201320132,
+      "slot_origin": [
+        192,
+        128
+      ],
+      "registration_translation": [
+        0,
+        1
+      ],
+      "output_anchor": [
+        48,
+        80
+      ],
+      "sha256": "f4ea2a88b2b67154830860070bbfc2107829dd4a2e034ef4ac23f0c8e3ca7b58"
+    },
+    {
+      "file": "male-walk-front-07.png",
+      "bbox": [
+        34,
+        6,
+        64,
+        89
+      ],
+      "reference": {
+        "src": "references/male-walk-front-07.png",
+        "sha256": "7d310b05703a35dae5042fd02bc5064c508cb598a4f30c082ad5bb40da0aa65f"
+      },
+      "silhouette_iou": 0.9357190192180251,
+      "slot_origin": [
+        288,
+        128
+      ],
+      "registration_translation": [
+        0,
+        1
+      ],
+      "output_anchor": [
+        48,
+        80
+      ],
+      "sha256": "0f934ecd758671de75c2fdc23d3c02643416e8aea5ba763c64fcaf0bab6f6b0e"
+    }
+  ],
+  "selected_grid": {
+    "size": 4,
+    "source": "fine",
+    "offset": [
+      0,
+      2
+    ],
+    "score": 1.0250833097617889,
+    "variance": 120.98589324951172,
+    "gated_out": false
+  },
+  "registration_policy": "sheet",
+  "registrations": [
+    {
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "translation": [
+        0,
+        1
+      ],
+      "mean_iou": 0.8030613480710597,
+      "frame_iou": [
+        0.8002560819462228,
+        0.8127883981542519,
+        0.8244897959183674,
+        0.8302783435166328,
+        0.786833855799373,
+        0.7758730158730158,
+        0.786046511627907,
+        0.8079247817327065
+      ]
+    }
+  ],
+  "whole_cycle_translation": [
+    0,
+    1
+  ],
+  "registered_mean_iou": 0.8030613480710597
+}

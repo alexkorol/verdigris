@@ -1,0 +1,603 @@
+{
+  "status": "source QA pending full visual review",
+  "gameplay_timing": "No gameplay changes. Native melee effect300ms, sweep400ms; contact normalized.5. Preview20fps is only a review aid.",
+  "source_motion": "Punch_Cross",
+  "clips": [
+    {
+      "sex": "male",
+      "action": "unarmed-attack",
+      "equipment": "unarmed",
+      "direction": "front",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "playback_control": "normalized effect phase; frame=floor(phase*16), clamped0..15",
+      "contact_index": 8,
+      "normalized_contact_phase": 0.5,
+      "preview_fps_only": 20,
+      "frames": [
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/front-00.png",
+          "sha256": "d96a12705deda89793447dfbbc92b3eb5aeabae88514b18a58dfeab12b46c439",
+          "index": 0,
+          "normalized_effect_phase": 0.0,
+          "role": "preparation",
+          "source_pose": "idle"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/front-01.png",
+          "sha256": "e2fd203031545c14e0e3c498e17e7ed76ca986e588b73302dc33d053827c380b",
+          "index": 1,
+          "normalized_effect_phase": 0.0625,
+          "role": "preparation",
+          "source_pose": "entry-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/front-02.png",
+          "sha256": "9bacbbcfd3570a07d0db14007fa9a43b2a9b4462c42c2f67bc000053be14ee06",
+          "index": 2,
+          "normalized_effect_phase": 0.125,
+          "role": "preparation",
+          "source_pose": "entry-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/front-03.png",
+          "sha256": "4a14eb5d6ca7f3d1ad0f119850bf91eb11ec474f55029ac0f0ba848c53ba965e",
+          "index": 3,
+          "normalized_effect_phase": 0.1875,
+          "role": "preparation",
+          "source_pose": "entry-3"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/front-04.png",
+          "sha256": "566dc972feac85e4f65d88101f2d7a4339c16c2bfd20937dbf9947beb67f2bd2",
+          "index": 4,
+          "normalized_effect_phase": 0.25,
+          "role": "preparation",
+          "source_pose": "attack-0"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/front-05.png",
+          "sha256": "245b75283d53263c0908d0048056b3bf1cd1222a038700b3a793377063cc1281",
+          "index": 5,
+          "normalized_effect_phase": 0.3125,
+          "role": "preparation",
+          "source_pose": "attack-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/front-06.png",
+          "sha256": "fe8412e903948091dc2d6d7e434fe46c8b14bbca67f56ef7b7ade97e63529528",
+          "index": 6,
+          "normalized_effect_phase": 0.375,
+          "role": "preparation",
+          "source_pose": "punch-travel-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/front-07.png",
+          "sha256": "629a0abb3e790c5bd9424c6de818020555183cdcc28a2dd7afcb2436f41cb874",
+          "index": 7,
+          "normalized_effect_phase": 0.4375,
+          "role": "preparation",
+          "source_pose": "punch-travel-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/front-08.png",
+          "sha256": "a0644accffcd2ea0a1b8d172faf7c68220cad544dc083314ac8ebc70a4506eb3",
+          "index": 8,
+          "normalized_effect_phase": 0.5,
+          "role": "contact",
+          "source_pose": "attack-3"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/front-09.png",
+          "sha256": "c7192c3c6d501830803ab98c1ef8a997cadb772e5926d0ef4f3890f10189b953",
+          "index": 9,
+          "normalized_effect_phase": 0.5625,
+          "role": "recovery",
+          "source_pose": "attack-5"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/front-10.png",
+          "sha256": "64b6105710dc353999bc9828cd23d85b683b2ad0f27dc6258d3849e8ec8c6d2f",
+          "index": 10,
+          "normalized_effect_phase": 0.625,
+          "role": "recovery",
+          "source_pose": "attack-6"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/front-11.png",
+          "sha256": "828d818ffefad0e160c66bcf3c749b307d178705e77e3a930aec4612ee6c0523",
+          "index": 11,
+          "normalized_effect_phase": 0.6875,
+          "role": "recovery",
+          "source_pose": "attack-7"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/front-12.png",
+          "sha256": "27a4d3ffa926655e7578e54ad1826d364581b7af17fc96a0178f217164e0dafb",
+          "index": 12,
+          "normalized_effect_phase": 0.75,
+          "role": "recovery",
+          "source_pose": "recovery-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/front-13.png",
+          "sha256": "e4dbacab921378ffbd6975452e789edfbf267383da9cda8e54ebb42fef7d710f",
+          "index": 13,
+          "normalized_effect_phase": 0.8125,
+          "role": "recovery",
+          "source_pose": "recovery-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/front-14.png",
+          "sha256": "980d7518c7c7780d677fd5b52bc144a4af2dff0afecc04bc891cd9ca89217d96",
+          "index": 14,
+          "normalized_effect_phase": 0.875,
+          "role": "recovery",
+          "source_pose": "recovery-3"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/front-15.png",
+          "sha256": "efc3c0b99580ce9d8331bde06cf72bf3ced7a45bc3d0b3c371cbcca4728faa03",
+          "index": 15,
+          "normalized_effect_phase": 0.9375,
+          "role": "recovery",
+          "source_pose": "idle-end"
+        }
+      ]
+    },
+    {
+      "sex": "male",
+      "action": "unarmed-attack",
+      "equipment": "unarmed",
+      "direction": "right",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "playback_control": "normalized effect phase; frame=floor(phase*16), clamped0..15",
+      "contact_index": 8,
+      "normalized_contact_phase": 0.5,
+      "preview_fps_only": 20,
+      "frames": [
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/right-00.png",
+          "sha256": "6c14548aeae722a0011e21e030ef87868b2c5927cd6b02b15bd240408818bd10",
+          "index": 0,
+          "normalized_effect_phase": 0.0,
+          "role": "preparation",
+          "source_pose": "idle"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/right-01.png",
+          "sha256": "7b63e07673fd84faa5ed5f279bed7ce41ec14ae23fa50fd92e9c65cd70f8abd3",
+          "index": 1,
+          "normalized_effect_phase": 0.0625,
+          "role": "preparation",
+          "source_pose": "entry-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/right-02.png",
+          "sha256": "0e18d5445b807366772961dd83afed7b5465633168f31842d90821011a81befe",
+          "index": 2,
+          "normalized_effect_phase": 0.125,
+          "role": "preparation",
+          "source_pose": "entry-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/right-03.png",
+          "sha256": "d6d43b9633512f302e837f3052dc2d80ff9487715a231565807a138f2f8de57f",
+          "index": 3,
+          "normalized_effect_phase": 0.1875,
+          "role": "preparation",
+          "source_pose": "entry-3"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/right-04.png",
+          "sha256": "2283972451a5612b0885517d3f57806222ac1417248eba0416b879f7b34cdc6f",
+          "index": 4,
+          "normalized_effect_phase": 0.25,
+          "role": "preparation",
+          "source_pose": "attack-0"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/right-05.png",
+          "sha256": "55b49036b6a829c1f277f180a2c10838679c40d35b9c278ff8b8e0a0cf26c802",
+          "index": 5,
+          "normalized_effect_phase": 0.3125,
+          "role": "preparation",
+          "source_pose": "attack-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/right-06.png",
+          "sha256": "d390d19494396d8d9f619d67f7195d132a5bc4841088c0cf43400952c4832954",
+          "index": 6,
+          "normalized_effect_phase": 0.375,
+          "role": "preparation",
+          "source_pose": "punch-travel-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/right-07.png",
+          "sha256": "660f3c70d28a092df2dccff19df2e91198c9189288aab79c453c06923a70b996",
+          "index": 7,
+          "normalized_effect_phase": 0.4375,
+          "role": "preparation",
+          "source_pose": "punch-travel-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/right-08.png",
+          "sha256": "5c0690f77cc5f9f5d5e588053e80f69d45d1594dd64ecd13adf19800f4a6a834",
+          "index": 8,
+          "normalized_effect_phase": 0.5,
+          "role": "contact",
+          "source_pose": "attack-3"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/right-09.png",
+          "sha256": "3c0817eb441df90b97c21847552611d3200a37d0a42d45fc541d05050fff7e71",
+          "index": 9,
+          "normalized_effect_phase": 0.5625,
+          "role": "recovery",
+          "source_pose": "attack-5"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/right-10.png",
+          "sha256": "00c13960769c2b9cc3c189f9fffdd2d67c11c24de731c3087794fe62ba5627d1",
+          "index": 10,
+          "normalized_effect_phase": 0.625,
+          "role": "recovery",
+          "source_pose": "attack-6"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/right-11.png",
+          "sha256": "770cc9ee0ffb1269a09e06c7d3a521d9bc0068783d1eda5fe1a1ff9bcd6923e6",
+          "index": 11,
+          "normalized_effect_phase": 0.6875,
+          "role": "recovery",
+          "source_pose": "attack-7"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/right-12.png",
+          "sha256": "59fabd3de5f4231c0213f53c5baf1232f6c973c41b2617f9b31a398523c4ff37",
+          "index": 12,
+          "normalized_effect_phase": 0.75,
+          "role": "recovery",
+          "source_pose": "recovery-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/right-13.png",
+          "sha256": "812871453a09ac0dbffce6b1390a5e7e04cf66ed05838325c2082d3ca6f5ff78",
+          "index": 13,
+          "normalized_effect_phase": 0.8125,
+          "role": "recovery",
+          "source_pose": "recovery-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/right-14.png",
+          "sha256": "c7101f1ef4b398942d3d1f2f6a958035508642dca33930a5849e4f0e1ab6ac06",
+          "index": 14,
+          "normalized_effect_phase": 0.875,
+          "role": "recovery",
+          "source_pose": "recovery-3"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/right-15.png",
+          "sha256": "bdac860cec096af2e925a5a21644f485b007642517ff4aa35b7b0176d3e20fec",
+          "index": 15,
+          "normalized_effect_phase": 0.9375,
+          "role": "recovery",
+          "source_pose": "idle-end"
+        }
+      ]
+    },
+    {
+      "sex": "male",
+      "action": "unarmed-attack",
+      "equipment": "unarmed",
+      "direction": "back",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "playback_control": "normalized effect phase; frame=floor(phase*16), clamped0..15",
+      "contact_index": 8,
+      "normalized_contact_phase": 0.5,
+      "preview_fps_only": 20,
+      "frames": [
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/back-00.png",
+          "sha256": "e28dff7b72b9f92de19d269f9e276ded5912e1a251db890ef4ad1639552c1ced",
+          "index": 0,
+          "normalized_effect_phase": 0.0,
+          "role": "preparation",
+          "source_pose": "idle"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/back-01.png",
+          "sha256": "173930fb225dcbd8037c9c8121c41b2819688a3230ebe4f13849ebdcda8360ce",
+          "index": 1,
+          "normalized_effect_phase": 0.0625,
+          "role": "preparation",
+          "source_pose": "entry-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/back-02.png",
+          "sha256": "8c9f7def42ba7ab98f5469b28a4b63dd450e683c284edeed2d240855710ab049",
+          "index": 2,
+          "normalized_effect_phase": 0.125,
+          "role": "preparation",
+          "source_pose": "entry-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/back-03.png",
+          "sha256": "f356026144a6c285e1f9556c8d1710c54f5cf0eed5c6f28137964d9a464aef0a",
+          "index": 3,
+          "normalized_effect_phase": 0.1875,
+          "role": "preparation",
+          "source_pose": "entry-3"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/back-04.png",
+          "sha256": "fabedce5706b5bd092b4f60eac22c577dd0318cc0a706c112fffb8655df72b53",
+          "index": 4,
+          "normalized_effect_phase": 0.25,
+          "role": "preparation",
+          "source_pose": "attack-0"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/back-05.png",
+          "sha256": "ac2e1888dc3793b062a49699db140732c2a06e71997d8efb308a6d6fe2331938",
+          "index": 5,
+          "normalized_effect_phase": 0.3125,
+          "role": "preparation",
+          "source_pose": "attack-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/back-06.png",
+          "sha256": "f5bd1c403b41111dd01128ca124edb4acd9dae5ffe042695b505d4046d875ff5",
+          "index": 6,
+          "normalized_effect_phase": 0.375,
+          "role": "preparation",
+          "source_pose": "punch-travel-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/back-07.png",
+          "sha256": "1cf7eb32baf8106968e88fea2a7deedc4a29be43ab66cbbf816c9b9b4f63584a",
+          "index": 7,
+          "normalized_effect_phase": 0.4375,
+          "role": "preparation",
+          "source_pose": "punch-travel-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/back-08.png",
+          "sha256": "449cbf927ca586dbd69497b857adffba42a9bec02ae6ef09aa6579f2e39fc589",
+          "index": 8,
+          "normalized_effect_phase": 0.5,
+          "role": "contact",
+          "source_pose": "attack-3"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/back-09.png",
+          "sha256": "adcb88e935db9add9d8ff40598b53a8a89abfd9ebe0640bc3c120c3bcc72ff7b",
+          "index": 9,
+          "normalized_effect_phase": 0.5625,
+          "role": "recovery",
+          "source_pose": "attack-5"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/back-10.png",
+          "sha256": "8b1345e5bfdb86e8ab244ac7280b211bb0d1a70bd2393767d9f9478e51663a8e",
+          "index": 10,
+          "normalized_effect_phase": 0.625,
+          "role": "recovery",
+          "source_pose": "attack-6"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/back-11.png",
+          "sha256": "74515af6135f0ddf0adefcdbed3dd8bd488d6d3e0ee899803114f303f8ed431b",
+          "index": 11,
+          "normalized_effect_phase": 0.6875,
+          "role": "recovery",
+          "source_pose": "attack-7"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/back-12.png",
+          "sha256": "4d3d98d36e6662bbd8dac93d3a416f6f6785122160db96dcb0a69ec9903e1359",
+          "index": 12,
+          "normalized_effect_phase": 0.75,
+          "role": "recovery",
+          "source_pose": "recovery-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/back-13.png",
+          "sha256": "a79d80ca5f8f5c65a8e96c13b4c86676719ca4965633882416beef5f5eb09edd",
+          "index": 13,
+          "normalized_effect_phase": 0.8125,
+          "role": "recovery",
+          "source_pose": "recovery-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/back-14.png",
+          "sha256": "892771debf993a1a5ac50aff3a28fd4d7d15460271d20390c96bbbbabfbf9217",
+          "index": 14,
+          "normalized_effect_phase": 0.875,
+          "role": "recovery",
+          "source_pose": "recovery-3"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/back-15.png",
+          "sha256": "cd8b0ddb5ea0414bad2496c8bed747e05a112f87e2e8396d003ebf8d2d85f173",
+          "index": 15,
+          "normalized_effect_phase": 0.9375,
+          "role": "recovery",
+          "source_pose": "idle-end"
+        }
+      ]
+    },
+    {
+      "sex": "male",
+      "action": "unarmed-attack",
+      "equipment": "unarmed",
+      "direction": "left",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "playback_control": "normalized effect phase; frame=floor(phase*16), clamped0..15",
+      "contact_index": 8,
+      "normalized_contact_phase": 0.5,
+      "preview_fps_only": 20,
+      "frames": [
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/left-00.png",
+          "sha256": "9737643a243d3752344a6ac3ac398ca44a8c41e890b285a3e11bc49d66f44883",
+          "index": 0,
+          "normalized_effect_phase": 0.0,
+          "role": "preparation",
+          "source_pose": "idle"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/left-01.png",
+          "sha256": "10361cfcae4d4aadf658c9c6606b1b40b9cfec93562e22c0ee9a52cdc57d6b51",
+          "index": 1,
+          "normalized_effect_phase": 0.0625,
+          "role": "preparation",
+          "source_pose": "entry-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/left-02.png",
+          "sha256": "a17e47231bbb5a1c8e45a917f2ea73e9387ef15829e8a63d0a58b7505f6d7c87",
+          "index": 2,
+          "normalized_effect_phase": 0.125,
+          "role": "preparation",
+          "source_pose": "entry-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/left-03.png",
+          "sha256": "a6fb93c5f21d3595fd0738de9583904392c8369c0d43b43ff73d131fc3242092",
+          "index": 3,
+          "normalized_effect_phase": 0.1875,
+          "role": "preparation",
+          "source_pose": "entry-3"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/left-04.png",
+          "sha256": "844c84a49b52348a90e6326012a0665c65a8ccc9756c7df43b41982c7a3a3fe3",
+          "index": 4,
+          "normalized_effect_phase": 0.25,
+          "role": "preparation",
+          "source_pose": "attack-0"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/left-05.png",
+          "sha256": "a9cf477ef7050e815f88e6688fd7dbe3aa3e7b78b438ee9feddee3b8b9d4cb07",
+          "index": 5,
+          "normalized_effect_phase": 0.3125,
+          "role": "preparation",
+          "source_pose": "attack-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/left-06.png",
+          "sha256": "1d70f1ccb07c62e3640bf78b57330ecfb9ce4501f67152cfa6713c0459742807",
+          "index": 6,
+          "normalized_effect_phase": 0.375,
+          "role": "preparation",
+          "source_pose": "punch-travel-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/left-07.png",
+          "sha256": "d26da7e0610eb8d8047d08707b30bcd9bbf5761e9c78f9327f0d84d3831a4c3c",
+          "index": 7,
+          "normalized_effect_phase": 0.4375,
+          "role": "preparation",
+          "source_pose": "punch-travel-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/left-08.png",
+          "sha256": "5628ed87c104cd5b290a0d8f33da4dc7bd111c2daba746082e6b193164bce502",
+          "index": 8,
+          "normalized_effect_phase": 0.5,
+          "role": "contact",
+          "source_pose": "attack-3"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/left-09.png",
+          "sha256": "4a0a4d2193cdddd67c42cb2e22815ecb9de339b03fac1be452de30d7c34635d3",
+          "index": 9,
+          "normalized_effect_phase": 0.5625,
+          "role": "recovery",
+          "source_pose": "attack-5"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/left-10.png",
+          "sha256": "5504f124b8a6d0af594461660294fb73a753532abd8c71ecb8211dc208cc415f",
+          "index": 10,
+          "normalized_effect_phase": 0.625,
+          "role": "recovery",
+          "source_pose": "attack-6"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/left-11.png",
+          "sha256": "90846356f1b657f57fcdc28dc22e1459ce7067d37ca1b49f26fdcddad12f0f70",
+          "index": 11,
+          "normalized_effect_phase": 0.6875,
+          "role": "recovery",
+          "source_pose": "attack-7"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/left-12.png",
+          "sha256": "29549895860bbfc7c8207c9e9c5bf9cf0382f2e2381ac48419e2bf86fb51f263",
+          "index": 12,
+          "normalized_effect_phase": 0.75,
+          "role": "recovery",
+          "source_pose": "recovery-1"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/left-13.png",
+          "sha256": "a40d9534e9d2de7a9c8adc17aca6fdf71c52f00b84c63612ef14a8a9f23ae364",
+          "index": 13,
+          "normalized_effect_phase": 0.8125,
+          "role": "recovery",
+          "source_pose": "recovery-2"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/left-14.png",
+          "sha256": "19ff9e246885c2d456c0c27c7417f5e6b02e4f07df3043fa6f408b5749b7a357",
+          "index": 14,
+          "normalized_effect_phase": 0.875,
+          "role": "recovery",
+          "source_pose": "recovery-3"
+        },
+        {
+          "path": "contact-v4-repaired/male-unarmed-attack/references/left-15.png",
+          "sha256": "2d8fc0527dc83c5717d883bdf514df480984475c17cd1050d801411222634c14",
+          "index": 15,
+          "normalized_effect_phase": 0.9375,
+          "role": "recovery",
+          "source_pose": "idle-end"
+        }
+      ]
+    }
+  ]
+}

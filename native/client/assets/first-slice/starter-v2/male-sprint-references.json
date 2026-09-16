@@ -1,0 +1,166 @@
+{
+  "clips": {
+    "male-sprint-front": {
+      "anchor": [
+        48,
+        80
+      ],
+      "frames": [
+        {
+          "src": "references/male-sprint-front-00.png",
+          "sha256": "24ff8b2730f914285583b778f278bc81930dc5dbf7cffac1723889a638b8b3fd"
+        },
+        {
+          "src": "references/male-sprint-front-01.png",
+          "sha256": "8f4d390899c8d5744e5bf2f13427578e675cf97ada513110c5038d6fed24f154"
+        },
+        {
+          "src": "references/male-sprint-front-02.png",
+          "sha256": "8d9c42460ff32982e3e5ea218d848263711cdac5a2594e847839536752a7c47e"
+        },
+        {
+          "src": "references/male-sprint-front-03.png",
+          "sha256": "5e097ef8c38528c26c78c73eb2fbdd180b4b4a89460b08bab98a5bf2d560f228"
+        },
+        {
+          "src": "references/male-sprint-front-04.png",
+          "sha256": "40b3e7da8940a9bd4ef2ed8c0519b254fa606b8ffbfe9eee8c8dee48fbe72d40"
+        },
+        {
+          "src": "references/male-sprint-front-05.png",
+          "sha256": "802235bb13094f4027d2afeb0bd00bbe22a05f36d3804f59be676be6b683fea0"
+        },
+        {
+          "src": "references/male-sprint-front-06.png",
+          "sha256": "c7a6843570f8a192c6ea7a7463e05b692ef3f247b86dc9a2484dc149e057402b"
+        },
+        {
+          "src": "references/male-sprint-front-07.png",
+          "sha256": "219c159b840cc9faa88b6dc241d042668b3259bb554361e72a96a513648e4dee"
+        }
+      ]
+    },
+    "male-sprint-right": {
+      "anchor": [
+        48,
+        80
+      ],
+      "frames": [
+        {
+          "src": "references/male-sprint-right-00.png",
+          "sha256": "1a8e848d0d6bfe014b9e4f66954fec2a69170659d56353b740a1ebecff1256de"
+        },
+        {
+          "src": "references/male-sprint-right-01.png",
+          "sha256": "4da3db0ac5fe921ddeae07e6ecb2d0dfeb2fe37b42b38bb008e56e59c3039b1b"
+        },
+        {
+          "src": "references/male-sprint-right-02.png",
+          "sha256": "fc8f81a9c1b9b13b3471ed2d68caf57c7891c06e6244c93fd03f669d773b2360"
+        },
+        {
+          "src": "references/male-sprint-right-03.png",
+          "sha256": "02b0c065b099eea8d9c60126362d22cf56bb11600f5b195d1aacfbab793321e8"
+        },
+        {
+          "src": "references/male-sprint-right-04.png",
+          "sha256": "3f6f1b5fbeb6bb46c33cd09e8bc777edf4b8272861857923c66ad3b15828ed76"
+        },
+        {
+          "src": "references/male-sprint-right-05.png",
+          "sha256": "c0e3993d092631d141fe85366a5cd1e50007263ec2aa46d8673e21f2aabce888"
+        },
+        {
+          "src": "references/male-sprint-right-06.png",
+          "sha256": "72322eae34d4c6751b1f991e7895dc72a13cab4d4b426af9b4da4c49d3fb8192"
+        },
+        {
+          "src": "references/male-sprint-right-07.png",
+          "sha256": "475a5fb14eec580647db334d210f51adaebc11cae09782ad85f75e3a5338bb72"
+        }
+      ]
+    },
+    "male-sprint-back": {
+      "anchor": [
+        48,
+        80
+      ],
+      "frames": [
+        {
+          "src": "references/male-sprint-back-00.png",
+          "sha256": "6d6385e46fa5924eb27f0aced75b40238a0039051bbef54fce478ff013d38f80"
+        },
+        {
+          "src": "references/male-sprint-back-01.png",
+          "sha256": "9ba09283877c0f06b8b8d6e1fd7ea76f84932d8da0a18510fc9559b87ad4c560"
+        },
+        {
+          "src": "references/male-sprint-back-02.png",
+          "sha256": "3af29c6af8d5634f760fe005094886c9ecdc89b452f15ca873d0269a765d093b"
+        },
+        {
+          "src": "references/male-sprint-back-03.png",
+          "sha256": "a46d036f0d59941adbd7b4b60ebb10971059b4a2ccb19d38b09d2decd4aa2698"
+        },
+        {
+          "src": "references/male-sprint-back-04.png",
+          "sha256": "d6bbb423b8ddf3f0056e018926b662a49174ab85f298a48d2a2df55b5c88db4b"
+        },
+        {
+          "src": "references/male-sprint-back-05.png",
+          "sha256": "dd9fbfbbdd1e51b99e179647fef4884bfc3859fe8a1d79d6bae8f11203c45e1f"
+        },
+        {
+          "src": "references/male-sprint-back-06.png",
+          "sha256": "f2b7738db0519e0b4b5a0594c5f2df62ffe8830643d2d2b25b1077d5047ccf95"
+        },
+        {
+          "src": "references/male-sprint-back-07.png",
+          "sha256": "931632860932283a00e86e316c7072d03876285799645c15fd97f5d1e81a2b96"
+        }
+      ]
+    },
+    "male-sprint-left": {
+      "anchor": [
+        48,
+        80
+      ],
+      "frames": [
+        {
+          "src": "references/male-sprint-left-00.png",
+          "sha256": "b1b43948c8ec8b3cf040f5bd981b9dad5199b996ca71d137da85566f067e2e81"
+        },
+        {
+          "src": "references/male-sprint-left-01.png",
+          "sha256": "0231a404d7f3fefc8d3c1cc53f783476ae73cf112b06396d6e9c6e61cf7243c7"
+        },
+        {
+          "src": "references/male-sprint-left-02.png",
+          "sha256": "b8cba759f413741b315251f0b82144bef89b13fbae0d9d8376fd173835bf829a"
+        },
+        {
+          "src": "references/male-sprint-left-03.png",
+          "sha256": "3a7ac237a47b23464548b50c3bec440cf430066d399f3a48921e72acb4238962"
+        },
+        {
+          "src": "references/male-sprint-left-04.png",
+          "sha256": "e76c7fe05d2ceed271e341a8ae29cd04027cf954ffa2d15aa04f3d51a4aa8f29"
+        },
+        {
+          "src": "references/male-sprint-left-05.png",
+          "sha256": "0d8c4903058386f64adf06f5986294613305fc688bd9d330114aedbee015f9d7"
+        },
+        {
+          "src": "references/male-sprint-left-06.png",
+          "sha256": "88e37e49a5821a4c9d356953f3996b5d05e677f08ebd116ca8d880765c903288"
+        },
+        {
+          "src": "references/male-sprint-left-07.png",
+          "sha256": "9080f91d8cfa2cd576245db39d5caf977c45c281ef0488d8e7e627e1cb7123cc"
+        }
+      ]
+    }
+  },
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\reviewed\\blender\\male-sprint-linen.blend",
+  "source_sha256": "313d07649f699c2dfb666deb742a7031df004650d56f3e3a3a01359caaddc693"
+}

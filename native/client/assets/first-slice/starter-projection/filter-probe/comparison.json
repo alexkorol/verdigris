@@ -1,0 +1,26 @@
+[
+  {
+    "direction": "front",
+    "silhouette_iou": 0.9956101843722563,
+    "old_only": 3,
+    "box_only": 2
+  },
+  {
+    "direction": "right",
+    "silhouette_iou": 0.9964664310954063,
+    "old_only": 3,
+    "box_only": 0
+  },
+  {
+    "direction": "back",
+    "silhouette_iou": 0.9972041006523765,
+    "old_only": 2,
+    "box_only": 1
+  },
+  {
+    "direction": "left",
+    "silhouette_iou": 0.9925925925925926,
+    "old_only": 5,
+    "box_only": 1
+  }
+]

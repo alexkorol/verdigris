@@ -1,0 +1,492 @@
+{
+  "status": "source-correction-verified; final appearance and in-game acceptance owned by projection/integration",
+  "clips": [
+    {
+      "sex": "male",
+      "action": "club-death",
+      "direction": "front",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "duration_ms": 400,
+      "frames": [
+        {
+          "path": "transition-v3-skin/male-death/references/front-00.png",
+          "sha256": "3e9536bbfeca112665e982895c12c27b9a2ac13a09e11f2108295f2cee005cd6",
+          "phase": 0,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/front-01.png",
+          "sha256": "d767b86a7aaeb782bf37c07b846024756efd533ca734f9a0c5c558ba30ad6661",
+          "phase": 1,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/front-02.png",
+          "sha256": "9384937fb298334582f69b93e497aa9a5ff2929a0c3a4cc83d1a9327a83ac910",
+          "phase": 2,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/front-03.png",
+          "sha256": "5c59fadc9f12443fbe07c6156f10bc45e32fb38af8f2e77b08629dba73215e3b",
+          "phase": 3,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/front-04.png",
+          "sha256": "f6fad596a10cd0589d3ff7cfa0e8951b8e37e802bfa59501367823ffbcd99ea8",
+          "phase": 4,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/front-05.png",
+          "sha256": "6c53b60097c1883ab186715f40825c134290b068ee22d7fb1a204a4d190e88fe",
+          "phase": 5,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/front-06.png",
+          "sha256": "56e269cfcad4df4bd41b140797d002da4298df4cfdffd7bcc9960d9b5b62b338",
+          "phase": 6,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/front-07.png",
+          "sha256": "3e46bf3d5a2e15afed71c5e3c65c58c0ae76569a759aeead5c4359b8e3445272",
+          "phase": 7,
+          "duration_ms": 50
+        }
+      ]
+    },
+    {
+      "sex": "male",
+      "action": "club-death",
+      "direction": "right",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "duration_ms": 400,
+      "frames": [
+        {
+          "path": "transition-v3-skin/male-death/references/right-00.png",
+          "sha256": "57b82b2a7e410af3d5508880e7833ec53777023c4b6b8f400d8b69e21a83ca98",
+          "phase": 0,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/right-01.png",
+          "sha256": "7c80a162bcf5ec61a17ace15a8c69607d0d56ec2af71120516cf6621742e0e3e",
+          "phase": 1,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/right-02.png",
+          "sha256": "f2f4812782609f115291710b62fa906c6cf65ab1c46cf2eb8987bb6b0fd229b2",
+          "phase": 2,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/right-03.png",
+          "sha256": "e8dd9925cb608c51497508ce7da089627fce769cc102ccaa8c770446e34991ca",
+          "phase": 3,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/right-04.png",
+          "sha256": "af7b9e26392d55c0287ba1412bad141bd6c1d5ab35b47c317645624121742bc0",
+          "phase": 4,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/right-05.png",
+          "sha256": "2760a56d8865e53ec1543cd2b735c7aa3e5058d987f9c68b224873332374c10b",
+          "phase": 5,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/right-06.png",
+          "sha256": "666f5c4db154f0652301fa65b98a639b39e0cfcc37f795996d112c935e00f5a1",
+          "phase": 6,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/right-07.png",
+          "sha256": "eeee4206967990b1592a3b110a035ad856e314a6b17e7d9f43f1f8cad39d59fc",
+          "phase": 7,
+          "duration_ms": 50
+        }
+      ]
+    },
+    {
+      "sex": "male",
+      "action": "club-death",
+      "direction": "back",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "duration_ms": 400,
+      "frames": [
+        {
+          "path": "transition-v3-skin/male-death/references/back-00.png",
+          "sha256": "2ea31251dcfd319d5eca000e3abcc5af588c03ad84dad4c0229573029f53c568",
+          "phase": 0,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/back-01.png",
+          "sha256": "39c9fa3c643057e2b2894521235a08bcd9bb7bfdbd3a638f2205ce0b35ff6e53",
+          "phase": 1,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/back-02.png",
+          "sha256": "e09da02113e9cb33e7bcdf4530f126aee8b87cab23ea328c0052c67f6a891d95",
+          "phase": 2,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/back-03.png",
+          "sha256": "47079518b87ba25cc4fcdd8fb687febf06c3b0601888f3520b2b4806f6eb8f84",
+          "phase": 3,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/back-04.png",
+          "sha256": "8986310959d3f0bb62d90ac5432a0e7701ce01997795778e4cabcf14430f8ccf",
+          "phase": 4,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/back-05.png",
+          "sha256": "343ac290bc92c838146fd9d595ee7aad4ff5f57ed77e3da6221ad0b44d2c7f6f",
+          "phase": 5,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/back-06.png",
+          "sha256": "f8f4533caadab91b444a5ea2af65281c2c790b5edee14dbb127791ee5f77f9f4",
+          "phase": 6,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/back-07.png",
+          "sha256": "4567e9145d81909bb7fd8470a227f2aa1301d0b74b147c35997368449f2b8bbb",
+          "phase": 7,
+          "duration_ms": 50
+        }
+      ]
+    },
+    {
+      "sex": "male",
+      "action": "club-death",
+      "direction": "left",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "duration_ms": 400,
+      "frames": [
+        {
+          "path": "transition-v3-skin/male-death/references/left-00.png",
+          "sha256": "01e0a06d8d70401d0d24cd27291bc34db324d64f93b206cb9f823d08283e839a",
+          "phase": 0,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/left-01.png",
+          "sha256": "9297be3f8ea0f8f57770c823471f16ab2b9f05202cf3825346bbcf16047a3e97",
+          "phase": 1,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/left-02.png",
+          "sha256": "c1cc765b2a146016f6aa1af0c3ce2a2859ae57f0c9e9f56234a2f75af0223ba9",
+          "phase": 2,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/left-03.png",
+          "sha256": "dd8eaf627bf55387e363b16944cf7e4e90a2935b22bdf0103d23e6761eeebf0f",
+          "phase": 3,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/left-04.png",
+          "sha256": "2dee267641197da847db4c3292e7da8f7a7014a0d87457a662cd62d1f87b6310",
+          "phase": 4,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/left-05.png",
+          "sha256": "bb54ee961ccc0e6a2617fc362177cc042d65f3bb41a905a13869e60a0a1808d2",
+          "phase": 5,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/left-06.png",
+          "sha256": "488c261dbc1a1527ead20effc0e7f7a3766d61e6419eb545eeab91c9dd626124",
+          "phase": 6,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male-death/references/left-07.png",
+          "sha256": "343f9d843d9feabf04a9a376a540917e585d80b25cc9a68bc9d125f7c972d532",
+          "phase": 7,
+          "duration_ms": 50
+        }
+      ]
+    }
+  ],
+  "changes_from_transition_v2": [
+    {
+      "direction": "front",
+      "phase": 0,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "front",
+      "phase": 1,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "front",
+      "phase": 2,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "front",
+      "phase": 3,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "front",
+      "phase": 4,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "front",
+      "phase": 5,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "front",
+      "phase": 6,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "front",
+      "phase": 7,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "right",
+      "phase": 0,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 2
+    },
+    {
+      "direction": "right",
+      "phase": 1,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 2
+    },
+    {
+      "direction": "right",
+      "phase": 2,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 3
+    },
+    {
+      "direction": "right",
+      "phase": 3,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 5
+    },
+    {
+      "direction": "right",
+      "phase": 4,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 5
+    },
+    {
+      "direction": "right",
+      "phase": 5,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 2
+    },
+    {
+      "direction": "right",
+      "phase": 6,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 3
+    },
+    {
+      "direction": "right",
+      "phase": 7,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 3
+    },
+    {
+      "direction": "back",
+      "phase": 0,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 1,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 2,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 3,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 4,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 5,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 6,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 7,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "left",
+      "phase": 0,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 2
+    },
+    {
+      "direction": "left",
+      "phase": 1,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 6
+    },
+    {
+      "direction": "left",
+      "phase": 2,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "left",
+      "phase": 3,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "left",
+      "phase": 4,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 6
+    },
+    {
+      "direction": "left",
+      "phase": 5,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 9
+    },
+    {
+      "direction": "left",
+      "phase": 6,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 10
+    },
+    {
+      "direction": "left",
+      "phase": 7,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 10
+    }
+  ],
+  "visual_review": "Four cardinal directions at native scale and high-resolution torso views; no new visible skin protrusions. Dark underarm deformation shadow distinguished from missing skin using emission diagnostic."
+}

@@ -1,0 +1,77 @@
+{
+  "accepted": true,
+  "clip": "pack-wolf-death-left",
+  "frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    76
+  ],
+  "pixels_per_metre": 48,
+  "alignment": "authored position unchanged; no per-frame translation",
+  "frames": [
+    {
+      "phase": 0,
+      "frame": "phase-00/fixed-placement.png",
+      "sha256": "c11f31a59f37e6c5665d6a17560b0d1ee133fa8dc91e35e2fe17f3b87e6dd5d7",
+      "source": "phase-00/source.png",
+      "source_sha256": "46ee19e14893651b4dc35ec713481da5d830850d85f604d62d8d6e4910f23e00",
+      "prompt": "phase-00/prompt.txt",
+      "guide": "native\\client\\assets\\first-slice\\monsters-v2\\projection-proof\\v3-faces\\pack-wolf-death-left-phase0-single-guide.png",
+      "guide_sha256": "9c1cee7f071630c59d82924f2c1eeb697e1f5bfb8b898055075ccb34b959ee50",
+      "fixed_iou": 0.926490984743412,
+      "diagnostic_translation": [
+        0,
+        0
+      ]
+    },
+    {
+      "phase": 1,
+      "frame": "phase-01/fixed-placement.png",
+      "sha256": "7e8a5c93f13e4042eb8837ffacfede8477979032aec420c39b54c1f06738bc1e",
+      "source": "phase-01/source.png",
+      "source_sha256": "69b537c1410e19b061bada0bcfb02b08b3d318faaac44b9e32144ffa200aa18b",
+      "prompt": "phase-01/prompt.txt",
+      "guide": "native\\client\\assets\\first-slice\\monsters-v2\\projection-proof\\v3-faces\\pack-wolf-death-left-phase1-single-guide.png",
+      "guide_sha256": "8fca381aa5bff2b9d05dae7d4bc6a03630cf405be6d97225c50e5a60e9f2bd30",
+      "fixed_iou": 0.9442815249266863,
+      "diagnostic_translation": [
+        0,
+        0
+      ]
+    },
+    {
+      "phase": 2,
+      "frame": "phase-02/fixed-placement.png",
+      "sha256": "f70b22a185c34782db6d9376c481b9932835b934cc7f86249a5c3726f09ac8f0",
+      "source": "phase-02/source.png",
+      "source_sha256": "dc98d1f786b5b32a59e80a9e7eb35e654ebc747c543bebcd551b442691165e09",
+      "prompt": "phase-02/prompt.txt",
+      "guide": "native\\client\\assets\\first-slice\\monsters-v2\\projection-proof\\v3-faces\\pack-wolf-death-left-phase2-single-guide.png",
+      "guide_sha256": "1aa89e8a8efb73f1f87e63ef3f652a1fdb58ea6834ea99dfb5009da9e7ad95b6",
+      "fixed_iou": 0.9286821705426357,
+      "diagnostic_translation": [
+        0,
+        0
+      ]
+    },
+    {
+      "phase": 3,
+      "frame": "phase-03/fixed-placement.png",
+      "sha256": "a064f64e3faccf8686a506877f9952a3867d9ead38d9b70e3531ac886a7eb1a7",
+      "source": "phase-03/source.png",
+      "source_sha256": "e0b8fb469aed9807a0f4456e07d9df502f584175f91df053a7bdcea5545395f5",
+      "prompt": "phase-03/prompt.txt",
+      "guide": "native\\client\\assets\\first-slice\\monsters-v2\\projection-proof\\v3-faces\\pack-wolf-death-left-phase3-single-guide.png",
+      "guide_sha256": "306cd0a22471552aba7242b9d9a4290355450b206fb2d800d7b958ceddfce44d",
+      "fixed_iou": 0.8890756302521008,
+      "diagnostic_translation": [
+        0,
+        0
+      ]
+    }
+  ],
+  "visual_acceptance": "Independent review by first_slice_world_assets: all four authored poses preserved; folded grounded corpse and coherent coat; no recentering. 2026-09-15."
+}

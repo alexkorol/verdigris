@@ -1,0 +1,603 @@
+{
+  "status": "source-correction-verified; final appearance and in-game acceptance owned by projection/integration",
+  "gameplay_timing": "No gameplay changes. Native melee effect300ms, sweep400ms; contact normalized.5. Preview20fps is only a review aid.",
+  "source_motion": "Punch_Cross",
+  "clips": [
+    {
+      "sex": "female",
+      "action": "unarmed-attack",
+      "equipment": "unarmed",
+      "direction": "front",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "playback_control": "normalized effect phase; frame=floor(phase*16), clamped0..15",
+      "contact_index": 8,
+      "normalized_contact_phase": 0.5,
+      "preview_fps_only": 20,
+      "frames": [
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/front-00.png",
+          "sha256": "761bf48fa60cd514c25cd3cd16e3a14468f32b2d4e68567e720851c8d7245943",
+          "index": 0,
+          "normalized_effect_phase": 0.0,
+          "role": "preparation",
+          "source_pose": "idle"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/front-01.png",
+          "sha256": "765b593e0051335666dd280fe07f7cf0b56771a574b269f020fada1238753259",
+          "index": 1,
+          "normalized_effect_phase": 0.0625,
+          "role": "preparation",
+          "source_pose": "entry-1"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/front-02.png",
+          "sha256": "d38b9d8ef8cdcdffb7eed31ff00e5fcd39026df72da51cae92ce8839ce580302",
+          "index": 2,
+          "normalized_effect_phase": 0.125,
+          "role": "preparation",
+          "source_pose": "entry-2"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/front-03.png",
+          "sha256": "051e74dbbfcbecae062666e74a39b35f68c7777103b444ca2eff4ff19fc26a96",
+          "index": 3,
+          "normalized_effect_phase": 0.1875,
+          "role": "preparation",
+          "source_pose": "entry-3"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/front-04.png",
+          "sha256": "f3602aa69a41887d73c4cf84d72989c2b4c3188eb043c2f2262c7995798df51d",
+          "index": 4,
+          "normalized_effect_phase": 0.25,
+          "role": "preparation",
+          "source_pose": "attack-0"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/front-05.png",
+          "sha256": "b3f09b8b3b90bde4b12b8af9ef99df716b323bfc34656abc9e1aea3f4b4aeac7",
+          "index": 5,
+          "normalized_effect_phase": 0.3125,
+          "role": "preparation",
+          "source_pose": "attack-1"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/front-06.png",
+          "sha256": "915f7c139eebc8317274b4f842338cd660b1cdb6d0391fc06cf99847a3c520db",
+          "index": 6,
+          "normalized_effect_phase": 0.375,
+          "role": "preparation",
+          "source_pose": "punch-travel-1"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/front-07.png",
+          "sha256": "6052207523980333598fa8300e38d0b64a5604a52d72febaaaf6fbc11b07ea38",
+          "index": 7,
+          "normalized_effect_phase": 0.4375,
+          "role": "preparation",
+          "source_pose": "punch-travel-2"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/front-08.png",
+          "sha256": "7dc2e8da6a41c7be7d4c24e325343992cae065572ea3644a1921ae7dc3d71340",
+          "index": 8,
+          "normalized_effect_phase": 0.5,
+          "role": "contact",
+          "source_pose": "attack-3"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/front-09.png",
+          "sha256": "32989a05279d012e74f24d233bc5774511010cfdaac06428437c06b086cf2b2b",
+          "index": 9,
+          "normalized_effect_phase": 0.5625,
+          "role": "recovery",
+          "source_pose": "attack-5"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/front-10.png",
+          "sha256": "1a6386b7370398f162a815b8564c834d713c20268a14654969a41b3e97b65221",
+          "index": 10,
+          "normalized_effect_phase": 0.625,
+          "role": "recovery",
+          "source_pose": "attack-6"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/front-11.png",
+          "sha256": "10ea2253238dd2af60098624e8e279b22d1e755a8100b0489b0dc78671c84c95",
+          "index": 11,
+          "normalized_effect_phase": 0.6875,
+          "role": "recovery",
+          "source_pose": "attack-7"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/front-12.png",
+          "sha256": "c032dd899e09415b37e086b819a29a0b52c25b68454b2e0dbeecbae05efdea6e",
+          "index": 12,
+          "normalized_effect_phase": 0.75,
+          "role": "recovery",
+          "source_pose": "recovery-1"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/front-13.png",
+          "sha256": "81b2516b60ecb7ac001add41dc4e30a94caee4b4dd4511e2645e914a275247cd",
+          "index": 13,
+          "normalized_effect_phase": 0.8125,
+          "role": "recovery",
+          "source_pose": "recovery-2"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/front-14.png",
+          "sha256": "1a6b0427ad97baff2148bd9ba69052562b1d051065c2828f160f105ad198229b",
+          "index": 14,
+          "normalized_effect_phase": 0.875,
+          "role": "recovery",
+          "source_pose": "recovery-3"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/front-15.png",
+          "sha256": "b662a037b9aa8dfe48ae5d08acd567f17c25344c17bab5e2fb6b435246a1032f",
+          "index": 15,
+          "normalized_effect_phase": 0.9375,
+          "role": "recovery",
+          "source_pose": "idle-end"
+        }
+      ]
+    },
+    {
+      "sex": "female",
+      "action": "unarmed-attack",
+      "equipment": "unarmed",
+      "direction": "right",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "playback_control": "normalized effect phase; frame=floor(phase*16), clamped0..15",
+      "contact_index": 8,
+      "normalized_contact_phase": 0.5,
+      "preview_fps_only": 20,
+      "frames": [
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/right-00.png",
+          "sha256": "fea8b212aa7a34780051e996a32dc8e58d6b9d4ea6f95a371cc13fe4f0a6a46a",
+          "index": 0,
+          "normalized_effect_phase": 0.0,
+          "role": "preparation",
+          "source_pose": "idle"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/right-01.png",
+          "sha256": "2d4bb44ed469c92ef422d3c703114fda1f9aafe939559640ab3bbacf2d4bc331",
+          "index": 1,
+          "normalized_effect_phase": 0.0625,
+          "role": "preparation",
+          "source_pose": "entry-1"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/right-02.png",
+          "sha256": "3282b5f88a6416bc0424c79b6b8d3f3ceade5f16f0259d78e7bc2ac0f9faab67",
+          "index": 2,
+          "normalized_effect_phase": 0.125,
+          "role": "preparation",
+          "source_pose": "entry-2"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/right-03.png",
+          "sha256": "09d3dacfaae091e7023eea5b887c19ad48159a72808e7afa1cf83cfe8bfe223c",
+          "index": 3,
+          "normalized_effect_phase": 0.1875,
+          "role": "preparation",
+          "source_pose": "entry-3"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/right-04.png",
+          "sha256": "088f8252146a00813c48045f03ded94a0bdb195a3a049f6b0f8628b500c4c7f4",
+          "index": 4,
+          "normalized_effect_phase": 0.25,
+          "role": "preparation",
+          "source_pose": "attack-0"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/right-05.png",
+          "sha256": "fb7068afa8dcaf70487921b3d530244ada11bf2093ff272c43554a4c154c2834",
+          "index": 5,
+          "normalized_effect_phase": 0.3125,
+          "role": "preparation",
+          "source_pose": "attack-1"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/right-06.png",
+          "sha256": "4c48e1edfc143abaf5761d4845d630a4ac636a2ccf9d08db322ffd503c812ba4",
+          "index": 6,
+          "normalized_effect_phase": 0.375,
+          "role": "preparation",
+          "source_pose": "punch-travel-1"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/right-07.png",
+          "sha256": "2559d4808f219e247fe8804d9742ef5673b89fb99bf7bb1b1744c9e8d11b8ff7",
+          "index": 7,
+          "normalized_effect_phase": 0.4375,
+          "role": "preparation",
+          "source_pose": "punch-travel-2"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/right-08.png",
+          "sha256": "7a5b95de1d862e03d872385cfbfcdddae67b20bc6c8aa9e76710b50336aa3e96",
+          "index": 8,
+          "normalized_effect_phase": 0.5,
+          "role": "contact",
+          "source_pose": "attack-3"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/right-09.png",
+          "sha256": "89f82cd9d06930c5dbb3617d5132dd0d2a7c495657f9ef38dd232895dbb49c83",
+          "index": 9,
+          "normalized_effect_phase": 0.5625,
+          "role": "recovery",
+          "source_pose": "attack-5"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/right-10.png",
+          "sha256": "6a58369af68565e09a76ce08c8720518c744ce1dddf71ea5a218d89328441fac",
+          "index": 10,
+          "normalized_effect_phase": 0.625,
+          "role": "recovery",
+          "source_pose": "attack-6"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/right-11.png",
+          "sha256": "df0a768604eb827409b9d3f459cb4093868723fd3b52e11bc90cebb36f92d435",
+          "index": 11,
+          "normalized_effect_phase": 0.6875,
+          "role": "recovery",
+          "source_pose": "attack-7"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/right-12.png",
+          "sha256": "76097fb04268177932637e4273f490a5157ce46e34086b97a653da73cb73ca0e",
+          "index": 12,
+          "normalized_effect_phase": 0.75,
+          "role": "recovery",
+          "source_pose": "recovery-1"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/right-13.png",
+          "sha256": "52bc9823c9bfbdacba696b89c9387cefb5aaacc085ceb41a4fafc9e884b35003",
+          "index": 13,
+          "normalized_effect_phase": 0.8125,
+          "role": "recovery",
+          "source_pose": "recovery-2"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/right-14.png",
+          "sha256": "a38d9a80a88b70ba5915af556f5b7cee29b30f92fe3a7ef52e43dbec5c30a544",
+          "index": 14,
+          "normalized_effect_phase": 0.875,
+          "role": "recovery",
+          "source_pose": "recovery-3"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/right-15.png",
+          "sha256": "da550365b44041167b6e532e1f63a3cf5734bb993e266df67e2a676ea83ca521",
+          "index": 15,
+          "normalized_effect_phase": 0.9375,
+          "role": "recovery",
+          "source_pose": "idle-end"
+        }
+      ]
+    },
+    {
+      "sex": "female",
+      "action": "unarmed-attack",
+      "equipment": "unarmed",
+      "direction": "back",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "playback_control": "normalized effect phase; frame=floor(phase*16), clamped0..15",
+      "contact_index": 8,
+      "normalized_contact_phase": 0.5,
+      "preview_fps_only": 20,
+      "frames": [
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/back-00.png",
+          "sha256": "6cae2fbdb381de4f81f0bdebfa1d0e7b34a392d8955e79f8c1186079f4777f77",
+          "index": 0,
+          "normalized_effect_phase": 0.0,
+          "role": "preparation",
+          "source_pose": "idle"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/back-01.png",
+          "sha256": "19319a3903b2ec3aaf609513c649971a8fa5c350cf6684a43670c51554c53c15",
+          "index": 1,
+          "normalized_effect_phase": 0.0625,
+          "role": "preparation",
+          "source_pose": "entry-1"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/back-02.png",
+          "sha256": "3c8a326d7067187aaeebe7313c8d20f9baf07b094e1ddcc3a16494e43b69f1e6",
+          "index": 2,
+          "normalized_effect_phase": 0.125,
+          "role": "preparation",
+          "source_pose": "entry-2"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/back-03.png",
+          "sha256": "78cd013f75df66393bac0b65a25f49c8c6f5b3c1df4d67331ec3833e1b3aade0",
+          "index": 3,
+          "normalized_effect_phase": 0.1875,
+          "role": "preparation",
+          "source_pose": "entry-3"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/back-04.png",
+          "sha256": "0d01f5cc3d68ffb2c424ed700f45208bb7c4a06b56e599b84e37474e43f32a11",
+          "index": 4,
+          "normalized_effect_phase": 0.25,
+          "role": "preparation",
+          "source_pose": "attack-0"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/back-05.png",
+          "sha256": "ef35d70275efa56dcb580058f63d1786c10edd52afb01dd08c305bbb1526c0a7",
+          "index": 5,
+          "normalized_effect_phase": 0.3125,
+          "role": "preparation",
+          "source_pose": "attack-1"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/back-06.png",
+          "sha256": "0e48689df5c3fd174f65bbee398b3ddb0ef46d18b33c7f09d55eb2a388b6a55d",
+          "index": 6,
+          "normalized_effect_phase": 0.375,
+          "role": "preparation",
+          "source_pose": "punch-travel-1"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/back-07.png",
+          "sha256": "1096f41459d5aced95b2f5ec73317684ea258707d0acdd27aa6f209d496aab7d",
+          "index": 7,
+          "normalized_effect_phase": 0.4375,
+          "role": "preparation",
+          "source_pose": "punch-travel-2"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/back-08.png",
+          "sha256": "4b4d7ae3e624d8dc3e4ba85221646abe04542529bc81818576c986cd7d24c611",
+          "index": 8,
+          "normalized_effect_phase": 0.5,
+          "role": "contact",
+          "source_pose": "attack-3"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/back-09.png",
+          "sha256": "8bccc36734ae2c9b88a94789da141beb372e2129bb45c8fd2544c831a6bab967",
+          "index": 9,
+          "normalized_effect_phase": 0.5625,
+          "role": "recovery",
+          "source_pose": "attack-5"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/back-10.png",
+          "sha256": "4749b006c2591c57a2824ea49ca8da551381aa47283ca86e2e79e1cedad3d250",
+          "index": 10,
+          "normalized_effect_phase": 0.625,
+          "role": "recovery",
+          "source_pose": "attack-6"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/back-11.png",
+          "sha256": "8cd6910251fd53e4b8e4df49512f40c275a5b09585f0fa3c1690e4e8e4a02a13",
+          "index": 11,
+          "normalized_effect_phase": 0.6875,
+          "role": "recovery",
+          "source_pose": "attack-7"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/back-12.png",
+          "sha256": "d034c52083329650d3d5d09b814fa109d236265e8f03dd6858c627de137215f0",
+          "index": 12,
+          "normalized_effect_phase": 0.75,
+          "role": "recovery",
+          "source_pose": "recovery-1"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/back-13.png",
+          "sha256": "e52591ff9ee76c9b63ae528cfdd7ce470e3fa9890e2d3afdc8e05d3027aa5e4d",
+          "index": 13,
+          "normalized_effect_phase": 0.8125,
+          "role": "recovery",
+          "source_pose": "recovery-2"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/back-14.png",
+          "sha256": "68079f1d4921bccbccdf879684e7b80e6790ee553187c86057b5de87df5629ba",
+          "index": 14,
+          "normalized_effect_phase": 0.875,
+          "role": "recovery",
+          "source_pose": "recovery-3"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/back-15.png",
+          "sha256": "e520e9463931d808b92733bcfa70995f6aae30fe9d73cfdb0c0662b5e6581d27",
+          "index": 15,
+          "normalized_effect_phase": 0.9375,
+          "role": "recovery",
+          "source_pose": "idle-end"
+        }
+      ]
+    },
+    {
+      "sex": "female",
+      "action": "unarmed-attack",
+      "equipment": "unarmed",
+      "direction": "left",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "playback_control": "normalized effect phase; frame=floor(phase*16), clamped0..15",
+      "contact_index": 8,
+      "normalized_contact_phase": 0.5,
+      "preview_fps_only": 20,
+      "frames": [
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/left-00.png",
+          "sha256": "0126cbe5705668afb4beb4086d0183731691347b68b68c9178e24380b8e818ec",
+          "index": 0,
+          "normalized_effect_phase": 0.0,
+          "role": "preparation",
+          "source_pose": "idle"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/left-01.png",
+          "sha256": "ad22003011a2ec585eca96b4b5a9d4316f68259bec7f7442b8878ffd71f69306",
+          "index": 1,
+          "normalized_effect_phase": 0.0625,
+          "role": "preparation",
+          "source_pose": "entry-1"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/left-02.png",
+          "sha256": "63bd2debaf248fe690c8f8a096b38d20322feb74409688d80e2bb3d3758d87b6",
+          "index": 2,
+          "normalized_effect_phase": 0.125,
+          "role": "preparation",
+          "source_pose": "entry-2"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/left-03.png",
+          "sha256": "bd52f3ffb858820b78367e39d4e02a2184f20cbd441952d43e22b95b45d886b9",
+          "index": 3,
+          "normalized_effect_phase": 0.1875,
+          "role": "preparation",
+          "source_pose": "entry-3"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/left-04.png",
+          "sha256": "82d8faf1dadacb35277e9968a7ef4712204cc442a6cc682f2c7311df1c682b1d",
+          "index": 4,
+          "normalized_effect_phase": 0.25,
+          "role": "preparation",
+          "source_pose": "attack-0"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/left-05.png",
+          "sha256": "1b14a90a5ed5175cdc1c9186a70840c4e44e9e8469d3c91cb934cfeace90c3b1",
+          "index": 5,
+          "normalized_effect_phase": 0.3125,
+          "role": "preparation",
+          "source_pose": "attack-1"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/left-06.png",
+          "sha256": "0e94edfd09bb7d5835a3997101ff3f223ac8ca160683d5a8752390e311d13119",
+          "index": 6,
+          "normalized_effect_phase": 0.375,
+          "role": "preparation",
+          "source_pose": "punch-travel-1"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/left-07.png",
+          "sha256": "62f37a071a8fe083cc95f83daccd4060acc4624964f654c3d6e1af18246c454c",
+          "index": 7,
+          "normalized_effect_phase": 0.4375,
+          "role": "preparation",
+          "source_pose": "punch-travel-2"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/left-08.png",
+          "sha256": "e64109591fd4c6287697c0b21a7eda203d1d03a85ac399872606967e9757558c",
+          "index": 8,
+          "normalized_effect_phase": 0.5,
+          "role": "contact",
+          "source_pose": "attack-3"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/left-09.png",
+          "sha256": "10184669a11490ee941f69e1bedd09d86b9ea77a22e2a6922be9e5ddedeb1fc3",
+          "index": 9,
+          "normalized_effect_phase": 0.5625,
+          "role": "recovery",
+          "source_pose": "attack-5"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/left-10.png",
+          "sha256": "0e77e2d10830f7245d070c25cb96ff896ab3b045822694a7724ecefc4838471e",
+          "index": 10,
+          "normalized_effect_phase": 0.625,
+          "role": "recovery",
+          "source_pose": "attack-6"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/left-11.png",
+          "sha256": "bb9183d4834972a1559924ca4e3d744ff60d0637e6be3ca8405ab90b7be3790b",
+          "index": 11,
+          "normalized_effect_phase": 0.6875,
+          "role": "recovery",
+          "source_pose": "attack-7"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/left-12.png",
+          "sha256": "f079a3274876cc78fa7da9850a85437f3e11d20fbbfd5f070a6cbc14eedd3592",
+          "index": 12,
+          "normalized_effect_phase": 0.75,
+          "role": "recovery",
+          "source_pose": "recovery-1"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/left-13.png",
+          "sha256": "2552fd0fa2e3b8d3213d87609767074e540d4a4012fcc4b7749a530d02bad1fe",
+          "index": 13,
+          "normalized_effect_phase": 0.8125,
+          "role": "recovery",
+          "source_pose": "recovery-2"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/left-14.png",
+          "sha256": "df6b8f575858c03f7cff2fe6f7cf4edc88c1323d085993f0e4a38720aafd2cbd",
+          "index": 14,
+          "normalized_effect_phase": 0.875,
+          "role": "recovery",
+          "source_pose": "recovery-3"
+        },
+        {
+          "path": "contact-v5-fist/female-unarmed-attack/references/left-15.png",
+          "sha256": "e02f804170090cd6b3e3cfb8521f5d68a644e9dbe6cec75aeea714f587d4bda1",
+          "index": 15,
+          "normalized_effect_phase": 0.9375,
+          "role": "recovery",
+          "source_pose": "idle-end"
+        }
+      ]
+    }
+  ]
+}

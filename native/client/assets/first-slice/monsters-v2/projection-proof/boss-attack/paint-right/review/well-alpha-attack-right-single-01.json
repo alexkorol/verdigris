@@ -1,0 +1,48 @@
+{
+  "clip": "well-alpha-attack-right-single-01",
+  "source_sha256": "5bbeb36630753e5f476e051cc11439cacac15a621f174867c54576682e30caff",
+  "selected_grid": {
+    "size": 8,
+    "source": "fine",
+    "offset": [
+      0,
+      1
+    ],
+    "score": 0.7989268491939883,
+    "variance": 71.50287628173828,
+    "gated_out": false
+  },
+  "frame": [
+    128,
+    96
+  ],
+  "anchor": [
+    64,
+    64
+  ],
+  "whole_cycle_translation": [
+    0,
+    0
+  ],
+  "registered_mean_iou": 0.9604449938195303,
+  "alpha_policy": "Native alpha threshold128, noRGBkey",
+  "visual_acceptance": false,
+  "frames": [
+    {
+      "file": "well-alpha-attack-right-01.png",
+      "reference": {
+        "src": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\monsters-v2\\references\\well-alpha-attack-right-01.png",
+        "sha256": "fd4c81f8748d9e7b27a6151a81eff6f33c83473bdb88439adf6d4f8dfccc509d",
+        "blender_frame": 1
+      },
+      "bbox": [
+        21,
+        27,
+        112,
+        69
+      ],
+      "silhouette_iou": 0.9604449938195303,
+      "sha256": "662bad748becc04c06e55b8e5b638eac41c1ee430cbad11ebeab0106e494e173"
+    }
+  ]
+}

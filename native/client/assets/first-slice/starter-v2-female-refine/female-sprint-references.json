@@ -1,0 +1,166 @@
+{
+  "clips": {
+    "female-sprint-front": {
+      "anchor": [
+        48,
+        80
+      ],
+      "frames": [
+        {
+          "src": "references/female-sprint-front-00.png",
+          "sha256": "24214bc063f7f85beb84add877f6f8a6006a75d1b7256f483f04ea21ce85a1c2"
+        },
+        {
+          "src": "references/female-sprint-front-01.png",
+          "sha256": "6b9ca25015d895859165a8d847b549e3e5a61fdb17f12b5b0d09a9695a09d73a"
+        },
+        {
+          "src": "references/female-sprint-front-02.png",
+          "sha256": "e52ee3f81a641566ad4dbf6c04986264b440fd800a5bfa1681a47f9d634b8494"
+        },
+        {
+          "src": "references/female-sprint-front-03.png",
+          "sha256": "94fc50aa9ff3faa0116fdf39de3ade2e6cee129472ae37ff32ccac8f88adfadc"
+        },
+        {
+          "src": "references/female-sprint-front-04.png",
+          "sha256": "0d3b411381a37621c65ed0fcf07496d82b295f634c233f396681a01dbfc83641"
+        },
+        {
+          "src": "references/female-sprint-front-05.png",
+          "sha256": "9b596affcd4f6f473bf7d400d6365a74ad5929ad008b4252d38cda50bcfc731e"
+        },
+        {
+          "src": "references/female-sprint-front-06.png",
+          "sha256": "5d782f6a7e8761fe9b4bf0be2966809011e88e2291116e37c94ed127e090079c"
+        },
+        {
+          "src": "references/female-sprint-front-07.png",
+          "sha256": "950f7471e6447ec0e1a9861b8b1c2f42e26a487887a12b33ff801e48c1a80d16"
+        }
+      ]
+    },
+    "female-sprint-right": {
+      "anchor": [
+        48,
+        80
+      ],
+      "frames": [
+        {
+          "src": "references/female-sprint-right-00.png",
+          "sha256": "be93c211f205af71212a4e9ae6a280bb2301167ba2ffff894ed492f202ab3eeb"
+        },
+        {
+          "src": "references/female-sprint-right-01.png",
+          "sha256": "b16077ebaa1a732a218f94363a5f0eadf1310eb15a14f68f98fe1e56d7c2e2e3"
+        },
+        {
+          "src": "references/female-sprint-right-02.png",
+          "sha256": "24773b16ca5b3a10f9a9d6e1b692cfd4f8f9cd09573d8077c466a291818d1c14"
+        },
+        {
+          "src": "references/female-sprint-right-03.png",
+          "sha256": "40e7feff5f611487c9dd8c7fb7e428af4183dc12d926d77e756292cbbff95443"
+        },
+        {
+          "src": "references/female-sprint-right-04.png",
+          "sha256": "460596d17379ce47722b7a04634524db45fde9ad26c0819793eaf13c1ac7a6f3"
+        },
+        {
+          "src": "references/female-sprint-right-05.png",
+          "sha256": "2a8895d52ff6f8eaf7949784f13c954e06de08c8f10cf563f750ef9d89b69637"
+        },
+        {
+          "src": "references/female-sprint-right-06.png",
+          "sha256": "f7aafc734edc763501327bdf82fed040b7900f3cf1aae32de56090745422654e"
+        },
+        {
+          "src": "references/female-sprint-right-07.png",
+          "sha256": "07f79f9925a050f7afc09e9a0215e751378704e067edd49f2503bcf2d5564b90"
+        }
+      ]
+    },
+    "female-sprint-back": {
+      "anchor": [
+        48,
+        80
+      ],
+      "frames": [
+        {
+          "src": "references/female-sprint-back-00.png",
+          "sha256": "4a8bed055b6a3e427235214e49bdc35e8fdf022d1b86134ccbf68d153a49cecd"
+        },
+        {
+          "src": "references/female-sprint-back-01.png",
+          "sha256": "531c38568d233dde9bdab31e57494c322bad26746aaadf13659d045a53f476d0"
+        },
+        {
+          "src": "references/female-sprint-back-02.png",
+          "sha256": "b53bbb1c8341e2613e1b0d1c3830bf123e5fa0e5a214b5378f7ca0347ed2ef16"
+        },
+        {
+          "src": "references/female-sprint-back-03.png",
+          "sha256": "e59516dca46be10de17004bf53f459e3899c8753152d162b22a1255c90f4b710"
+        },
+        {
+          "src": "references/female-sprint-back-04.png",
+          "sha256": "be43d7dce421e479270301c9c635c6c06956a7c158feda2e9c2d85e3c6c5aae9"
+        },
+        {
+          "src": "references/female-sprint-back-05.png",
+          "sha256": "35168160fc91e2ba9977d7f51f4148fe4602706a8f6ab893fcb9f0686dfe47cd"
+        },
+        {
+          "src": "references/female-sprint-back-06.png",
+          "sha256": "efe025b8959973d92b98c24c15538656cb4cd387b9e71dfae68056b96a914379"
+        },
+        {
+          "src": "references/female-sprint-back-07.png",
+          "sha256": "cf07ce5975dea13d32c690faa240075e471b76a3af8dd010d52cd94d0b4eff0a"
+        }
+      ]
+    },
+    "female-sprint-left": {
+      "anchor": [
+        48,
+        80
+      ],
+      "frames": [
+        {
+          "src": "references/female-sprint-left-00.png",
+          "sha256": "3a2ad92cd413278c6507c869c1e1ab10261a210e1450ea8d72cbd7bf2094b2af"
+        },
+        {
+          "src": "references/female-sprint-left-01.png",
+          "sha256": "1fc1aea0ea1b9de8a756218cef0ab56c14dc68c0c2dea3986b0c5a308ead318d"
+        },
+        {
+          "src": "references/female-sprint-left-02.png",
+          "sha256": "85025267ad57f93b15df66e787f97b449dc914c58b21be5f0670f90492ee1c25"
+        },
+        {
+          "src": "references/female-sprint-left-03.png",
+          "sha256": "7358c46a8da441ca95338d84c9e455e148c32fbe9a882eb8a8b8bae29ccb6888"
+        },
+        {
+          "src": "references/female-sprint-left-04.png",
+          "sha256": "1bd8295449d62f926142de83d42c736ffd1d68af1f582242ebce85ed87effb2d"
+        },
+        {
+          "src": "references/female-sprint-left-05.png",
+          "sha256": "a5ad5fe8b704bce3d056d0774ca8601e960b8f692b3aa1d4c2c0e5f182187dd7"
+        },
+        {
+          "src": "references/female-sprint-left-06.png",
+          "sha256": "806a21a8777d8f9259582061f05eed18b1a8d767ed0ebe381ac7ad7e522b46eb"
+        },
+        {
+          "src": "references/female-sprint-left-07.png",
+          "sha256": "8cc575355a54b55ed3e4df604afbd728efba2ab7e60f62fb38cc5d61f598b99a"
+        }
+      ]
+    }
+  },
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\reviewed\\blender\\female-sprint-center-braid.blend",
+  "source_sha256": "b063bb779a9a2319d0051d6271797ec4f9fe1f798d870e6b9d6aae8635586052"
+}

@@ -1,0 +1,122 @@
+{
+  "method": "Alpha centroids in windows anchored to projected Blender bones. These are region diagnostics, not automatically detected anatomical landmarks.",
+  "regions": {
+    "head": {
+      "samples": [
+        {
+          "phase": 1,
+          "roi": [
+            55,
+            27,
+            72,
+            42
+          ],
+          "reference_centroid": [
+            62.883720930232556,
+            36.55038759689923
+          ],
+          "paint_centroid": [
+            62.167741935483875,
+            36.483870967741936
+          ]
+        },
+        {
+          "phase": 2,
+          "roi": [
+            60,
+            40,
+            77,
+            55
+          ],
+          "reference_centroid": [
+            67.6590909090909,
+            48.79545454545455
+          ],
+          "paint_centroid": [
+            67.35321100917432,
+            47.77064220183486
+          ]
+        }
+      ],
+      "motion_error_px": 1.0423588364565688
+    },
+    "spine_03": {
+      "samples": [
+        {
+          "phase": 1,
+          "roi": [
+            54,
+            49,
+            75,
+            60
+          ],
+          "reference_centroid": [
+            64.81516587677726,
+            53.91943127962085
+          ],
+          "paint_centroid": [
+            64.6745283018868,
+            53.867924528301884
+          ]
+        },
+        {
+          "phase": 2,
+          "roi": [
+            55,
+            54,
+            76,
+            65
+          ],
+          "reference_centroid": [
+            65.40366972477064,
+            58.92201834862385
+          ],
+          "paint_centroid": [
+            65.0,
+            58.906666666666666
+          ]
+        }
+      ],
+      "motion_error_px": 0.26550536889325255
+    },
+    "pelvis": {
+      "samples": [
+        {
+          "phase": 1,
+          "roi": [
+            52,
+            60,
+            77,
+            70
+          ],
+          "reference_centroid": [
+            63.705882352941174,
+            64.90196078431373
+          ],
+          "paint_centroid": [
+            63.84888888888889,
+            64.7911111111111
+          ]
+        },
+        {
+          "phase": 2,
+          "roi": [
+            52,
+            64,
+            77,
+            74
+          ],
+          "reference_centroid": [
+            64.05181347150258,
+            68.69430051813471
+          ],
+          "paint_centroid": [
+            63.95734597156398,
+            68.71563981042654
+          ]
+        }
+      ],
+      "motion_error_px": 0.2717863872945584
+    }
+  }
+}

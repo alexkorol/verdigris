@@ -1,0 +1,167 @@
+{
+  "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-v2-female-refine\\blender\\female-walk-exterior.blend",
+  "source_sha256": "a668944a456fa2ba79de9617b4562501a690b060c5461ab12424e2cb6fee4cd4",
+  "motion": "Anatomical rest with subtle breathing",
+  "source_frames": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "frame_size": [
+    96,
+    96
+  ],
+  "pixels_per_metre": 48,
+  "frames": [
+    {
+      "src": "references/female-idle-front-00.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "7e1b6eedd64c0e94b4169135029fbace3f6241ec48b84207b47704cd925867ff"
+    },
+    {
+      "src": "references/female-idle-front-01.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "bfa9ec48ea9d3cf66340ed992c7f0ae574e44e7a4d6660be50b5bff6ce385ffd"
+    },
+    {
+      "src": "references/female-idle-front-02.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "92122452ae432049e3369ec7c915ccd022c7f984ec96bf7e307d35937d6fbaf7"
+    },
+    {
+      "src": "references/female-idle-front-03.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "6406d5d7d51a2906992b8fe26d30d567dba4231d5532e09c6b112efc50526799"
+    },
+    {
+      "src": "references/female-idle-right-00.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "5acfb7e5781233a664ab008b4028b553da210f718aa3e77804e5e739c91767cc"
+    },
+    {
+      "src": "references/female-idle-right-01.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "d6856d2f6040cdc3881c06244c80dfcc09001ea803a385550e6c81d5119d0ad8"
+    },
+    {
+      "src": "references/female-idle-right-02.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "7035812aff71047e94ac1d049899519b7feb1f36a130b520aff4f75f6a4053ea"
+    },
+    {
+      "src": "references/female-idle-right-03.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "29da377580015b702e73bf5a1b92749c7c11c6850b853695f9655d6f5350b6b9"
+    },
+    {
+      "src": "references/female-idle-back-00.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "2949398cc0478176f722684b5b88a7533d6fbae5e6e3bc0ba9b24db5cd6ba6ae"
+    },
+    {
+      "src": "references/female-idle-back-01.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "a42e0a94dafee2b4a2f9dab2e97dcc4867501cc1f6e828783c057752ab6b8e17"
+    },
+    {
+      "src": "references/female-idle-back-02.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "1f2d1fbc5f4f91d1d2bc5376283d114216c5c7426ed71eedb23e4e8f9dd5e941"
+    },
+    {
+      "src": "references/female-idle-back-03.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "f55e5ef968bd7381fce1b2b71b86db2fe7379707c4a68554582af8dab0df0bd1"
+    },
+    {
+      "src": "references/female-idle-left-00.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "ce11b35ca2ea325d70ba04c6c3810287715890c759a26ebc7d6b01dfd950594f"
+    },
+    {
+      "src": "references/female-idle-left-01.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "65493f0d2e9f6ce4092c5b317ca466761da8a689c841542b701d992ddd0e6c71"
+    },
+    {
+      "src": "references/female-idle-left-02.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "c18befe026d9fc21414585bfa5b4ea77b6605b12025da4242f1fa2594ec14ada"
+    },
+    {
+      "src": "references/female-idle-left-03.png",
+      "anchor": [
+        48,
+        80
+      ],
+      "source_frame": 0,
+      "sha256": "08f1e35b2f527826f0f3a6752cf9d06c7bd6a99f14bba82c926bd7df69d6d331"
+    }
+  ],
+  "status": "motion-reference-reviewed; not painted final game art",
+  "anchor": [
+    48,
+    80
+  ]
+}

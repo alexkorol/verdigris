@@ -1,0 +1,452 @@
+{
+  "clips": {
+    "pack-wolf-walk-front": {
+      "frames": [
+        {
+          "file": "pack-wolf-walk-front-00.png",
+          "blender_frame": 0,
+          "src": "blender-wolves/pack-wolf-walk-front-00.png",
+          "sha256": "6952515d5f0615b63d299c4fa7f7399e84455c5901a0cfc87e66b733f742fde1"
+        },
+        {
+          "file": "pack-wolf-walk-front-01.png",
+          "blender_frame": 5,
+          "src": "blender-wolves/pack-wolf-walk-front-01.png",
+          "sha256": "d53c4b0ff0fda172e648703651aad339f18687369c21dcf05b1f7299c7596d5a"
+        },
+        {
+          "file": "pack-wolf-walk-front-02.png",
+          "blender_frame": 10,
+          "src": "blender-wolves/pack-wolf-walk-front-02.png",
+          "sha256": "9baed7e2ebb08b2f2edaee8d975fc1a3be787463948a994e9ae7f0b2883096ae"
+        },
+        {
+          "file": "pack-wolf-walk-front-03.png",
+          "blender_frame": 15,
+          "src": "blender-wolves/pack-wolf-walk-front-03.png",
+          "sha256": "ac7b6bc34276787532d032072d46adc46bd68a1d3b762e00a1b9b0a762b3f5ea"
+        },
+        {
+          "file": "pack-wolf-walk-front-04.png",
+          "blender_frame": 20,
+          "src": "blender-wolves/pack-wolf-walk-front-04.png",
+          "sha256": "c2093ab983a7cef80420549938b877929993834af6edc936fe44554d15d91503"
+        },
+        {
+          "file": "pack-wolf-walk-front-05.png",
+          "blender_frame": 25,
+          "src": "blender-wolves/pack-wolf-walk-front-05.png",
+          "sha256": "166bc94c2edaf5851693f2f90aca7addab5dc1c0a9c13f014f84359915544564"
+        },
+        {
+          "file": "pack-wolf-walk-front-06.png",
+          "blender_frame": 30,
+          "src": "blender-wolves/pack-wolf-walk-front-06.png",
+          "sha256": "4417c19db38234bf285b0334fd144d50a3285b1d3efcfceae31d1f45f18aae36"
+        },
+        {
+          "file": "pack-wolf-walk-front-07.png",
+          "blender_frame": 35,
+          "src": "blender-wolves/pack-wolf-walk-front-07.png",
+          "sha256": "097a0fb9ad2be577223d4f149d2be4b4c85ccf8746cd4e40fa2b7a3842e5697f"
+        }
+      ],
+      "anchor": [
+        48,
+        80
+      ]
+    },
+    "pack-wolf-walk-right": {
+      "frames": [
+        {
+          "file": "pack-wolf-walk-right-00.png",
+          "blender_frame": 0,
+          "src": "blender-wolves/pack-wolf-walk-right-00.png",
+          "sha256": "ae36b9a2ed2959e3f4a8e6fe2d519a715542ea54abd39fb24b9e8ec0f4ceef01"
+        },
+        {
+          "file": "pack-wolf-walk-right-01.png",
+          "blender_frame": 5,
+          "src": "blender-wolves/pack-wolf-walk-right-01.png",
+          "sha256": "6d29e4a9b0b92081d475d449642749ba725f7b5d00404e35fc00859eb8abfed5"
+        },
+        {
+          "file": "pack-wolf-walk-right-02.png",
+          "blender_frame": 10,
+          "src": "blender-wolves/pack-wolf-walk-right-02.png",
+          "sha256": "8bd2238df9cf0341376b78bcecb7daef6f4434254f0a6874b18276e1b682a7d9"
+        },
+        {
+          "file": "pack-wolf-walk-right-03.png",
+          "blender_frame": 15,
+          "src": "blender-wolves/pack-wolf-walk-right-03.png",
+          "sha256": "d173b8377527e391daa59a362b97344627eb04c42bd75eb1ed39de86e5c35269"
+        },
+        {
+          "file": "pack-wolf-walk-right-04.png",
+          "blender_frame": 20,
+          "src": "blender-wolves/pack-wolf-walk-right-04.png",
+          "sha256": "f543664fdcc96b6c735595d58bc4d0c3612cc34e514fc7620ea79812e2782bda"
+        },
+        {
+          "file": "pack-wolf-walk-right-05.png",
+          "blender_frame": 25,
+          "src": "blender-wolves/pack-wolf-walk-right-05.png",
+          "sha256": "a59581dc8219927c5d14de78c243213c7e7cf4085ec3af8741e5e4b49badee5f"
+        },
+        {
+          "file": "pack-wolf-walk-right-06.png",
+          "blender_frame": 30,
+          "src": "blender-wolves/pack-wolf-walk-right-06.png",
+          "sha256": "7a5aad79dcd33cf103c352d36652bacc988c619f0de19814c04106b2c1e41c67"
+        },
+        {
+          "file": "pack-wolf-walk-right-07.png",
+          "blender_frame": 35,
+          "src": "blender-wolves/pack-wolf-walk-right-07.png",
+          "sha256": "eeaae6e0858bfa0a3d756b09e755757e3da57ce1e3c228a008b76e706abcf9bf"
+        }
+      ],
+      "anchor": [
+        48,
+        80
+      ]
+    },
+    "pack-wolf-walk-back": {
+      "frames": [
+        {
+          "file": "pack-wolf-walk-back-00.png",
+          "blender_frame": 0,
+          "src": "blender-wolves/pack-wolf-walk-back-00.png",
+          "sha256": "e97c4ae35903a394edce1a398aba61df579974b661e0442f55f475fc10fd4e22"
+        },
+        {
+          "file": "pack-wolf-walk-back-01.png",
+          "blender_frame": 5,
+          "src": "blender-wolves/pack-wolf-walk-back-01.png",
+          "sha256": "d118745136ff45c3a771391c3368c16354ab7892b813473b250cd24544c33e40"
+        },
+        {
+          "file": "pack-wolf-walk-back-02.png",
+          "blender_frame": 10,
+          "src": "blender-wolves/pack-wolf-walk-back-02.png",
+          "sha256": "6edd71d1e990627f7111dd9345586bfe8ad265cbf5536e08c6ec548e034bbb1f"
+        },
+        {
+          "file": "pack-wolf-walk-back-03.png",
+          "blender_frame": 15,
+          "src": "blender-wolves/pack-wolf-walk-back-03.png",
+          "sha256": "df0844e0a70acaf7296e31415d8ff0d05af68d4b7dfaadb0b601054eb473b803"
+        },
+        {
+          "file": "pack-wolf-walk-back-04.png",
+          "blender_frame": 20,
+          "src": "blender-wolves/pack-wolf-walk-back-04.png",
+          "sha256": "2ce5902bc0da1acd10995fd7d300e9d8fa00afd2ab3f1de0ab814bd61ab089e3"
+        },
+        {
+          "file": "pack-wolf-walk-back-05.png",
+          "blender_frame": 25,
+          "src": "blender-wolves/pack-wolf-walk-back-05.png",
+          "sha256": "dbea6edb79ba4aedff856eb8bb4437ecfe85677f7517f2628f08fdc449c1e015"
+        },
+        {
+          "file": "pack-wolf-walk-back-06.png",
+          "blender_frame": 30,
+          "src": "blender-wolves/pack-wolf-walk-back-06.png",
+          "sha256": "dc8fc2dd5c6e7b918d641189360c45b87015c050769e0bf1d418d0fba5830991"
+        },
+        {
+          "file": "pack-wolf-walk-back-07.png",
+          "blender_frame": 35,
+          "src": "blender-wolves/pack-wolf-walk-back-07.png",
+          "sha256": "88fa8a63b3b698811ab021e36997cd8729200398ae917f003cf90fbcf83edd6d"
+        }
+      ],
+      "anchor": [
+        48,
+        80
+      ]
+    },
+    "pack-wolf-walk-left": {
+      "frames": [
+        {
+          "file": "pack-wolf-walk-left-00.png",
+          "blender_frame": 0,
+          "src": "blender-wolves/pack-wolf-walk-left-00.png",
+          "sha256": "0b6876dcdc475c2dfe9be81e586672b901f1f45e0000dd7afb51986951a34c22"
+        },
+        {
+          "file": "pack-wolf-walk-left-01.png",
+          "blender_frame": 5,
+          "src": "blender-wolves/pack-wolf-walk-left-01.png",
+          "sha256": "fd4919e2d38443f2c3433edbd4f5be90e20e776eebb8794fbcc9e0f0ab6e54d2"
+        },
+        {
+          "file": "pack-wolf-walk-left-02.png",
+          "blender_frame": 10,
+          "src": "blender-wolves/pack-wolf-walk-left-02.png",
+          "sha256": "4db0f9a61bb7cf2c3fa661b08db9f065bcd927af32b2c80839760fe5e3c790b8"
+        },
+        {
+          "file": "pack-wolf-walk-left-03.png",
+          "blender_frame": 15,
+          "src": "blender-wolves/pack-wolf-walk-left-03.png",
+          "sha256": "36153e02000b090f91423f8e7290293ef2a2a9f2c5e6a6553f8931fecc9dca32"
+        },
+        {
+          "file": "pack-wolf-walk-left-04.png",
+          "blender_frame": 20,
+          "src": "blender-wolves/pack-wolf-walk-left-04.png",
+          "sha256": "4943bebc64b8ed66df9a14718f2fe3fe4c21c592b96305a47a7fbef7675655b9"
+        },
+        {
+          "file": "pack-wolf-walk-left-05.png",
+          "blender_frame": 25,
+          "src": "blender-wolves/pack-wolf-walk-left-05.png",
+          "sha256": "4265dffa29ce88b3a45488733be681b6bde55d41c76bbdcdda6b5a3ef6128f44"
+        },
+        {
+          "file": "pack-wolf-walk-left-06.png",
+          "blender_frame": 30,
+          "src": "blender-wolves/pack-wolf-walk-left-06.png",
+          "sha256": "eb76c54f3ef2df077d479a39ba8320243b8558d65c21443e8b326aee31cea5de"
+        },
+        {
+          "file": "pack-wolf-walk-left-07.png",
+          "blender_frame": 35,
+          "src": "blender-wolves/pack-wolf-walk-left-07.png",
+          "sha256": "59891da2e64e3afcb40c2edb9c399b48f93e4718641dbf4f4bcfe8a553293e5d"
+        }
+      ],
+      "anchor": [
+        48,
+        80
+      ]
+    },
+    "well-alpha-walk-front": {
+      "frames": [
+        {
+          "file": "well-alpha-walk-front-00.png",
+          "blender_frame": 0,
+          "src": "blender-wolves/well-alpha-walk-front-00.png",
+          "sha256": "65a9d7d47fbb61e2a233d68a544bec9a77b70fa891917e54ee10d111a61296dd"
+        },
+        {
+          "file": "well-alpha-walk-front-01.png",
+          "blender_frame": 5,
+          "src": "blender-wolves/well-alpha-walk-front-01.png",
+          "sha256": "ab91a71e6cb244405f87815abce2deb0a6e8640ba0240ebb49231b1b502dcfbd"
+        },
+        {
+          "file": "well-alpha-walk-front-02.png",
+          "blender_frame": 10,
+          "src": "blender-wolves/well-alpha-walk-front-02.png",
+          "sha256": "87bfc4e5898ae9213962a90676ed8df62c24b7d01a7c9dc2d6b4846cd6d910cf"
+        },
+        {
+          "file": "well-alpha-walk-front-03.png",
+          "blender_frame": 15,
+          "src": "blender-wolves/well-alpha-walk-front-03.png",
+          "sha256": "6bb5870ce89a921f093fb09259b725abc2dc709bc02348dec08e8aa7e309de14"
+        },
+        {
+          "file": "well-alpha-walk-front-04.png",
+          "blender_frame": 20,
+          "src": "blender-wolves/well-alpha-walk-front-04.png",
+          "sha256": "7247adaa096b3c619e651719deb5e2e37712111dd723065da8953b211b43bd81"
+        },
+        {
+          "file": "well-alpha-walk-front-05.png",
+          "blender_frame": 25,
+          "src": "blender-wolves/well-alpha-walk-front-05.png",
+          "sha256": "04a6ca944e5cb40c0d7dc19e88e5e005e5146d99b956070d1b3ffcc876271db6"
+        },
+        {
+          "file": "well-alpha-walk-front-06.png",
+          "blender_frame": 30,
+          "src": "blender-wolves/well-alpha-walk-front-06.png",
+          "sha256": "abe987953a8d6f94d4d18a7589d7e2baf89405fd53f8819635cf1701c37774c9"
+        },
+        {
+          "file": "well-alpha-walk-front-07.png",
+          "blender_frame": 35,
+          "src": "blender-wolves/well-alpha-walk-front-07.png",
+          "sha256": "41bb56468d3c70bfb9c15ceb4045c766a1884a4f7fe79f4cd4f2a2a81a0c58b7"
+        }
+      ],
+      "anchor": [
+        48,
+        64
+      ]
+    },
+    "well-alpha-walk-right": {
+      "frames": [
+        {
+          "file": "well-alpha-walk-right-00.png",
+          "blender_frame": 0,
+          "src": "blender-wolves/well-alpha-walk-right-00.png",
+          "sha256": "d64e2797ba7ae4c2bf99d4da2b736ca54957caeb5cb9156b8ab59ff6b298a726"
+        },
+        {
+          "file": "well-alpha-walk-right-01.png",
+          "blender_frame": 5,
+          "src": "blender-wolves/well-alpha-walk-right-01.png",
+          "sha256": "763548de544117d180773af73f8b66dfe74fef46a3c110bb40a751370668669b"
+        },
+        {
+          "file": "well-alpha-walk-right-02.png",
+          "blender_frame": 10,
+          "src": "blender-wolves/well-alpha-walk-right-02.png",
+          "sha256": "5a8d23a7a2cecc13c7bd5b628d03deb0ecd2e605f3fb189dd47718a5b24ea12e"
+        },
+        {
+          "file": "well-alpha-walk-right-03.png",
+          "blender_frame": 15,
+          "src": "blender-wolves/well-alpha-walk-right-03.png",
+          "sha256": "101a207f0e0965746f74c1f3847e0c50a1bd1befd35d6860a39872450c85868b"
+        },
+        {
+          "file": "well-alpha-walk-right-04.png",
+          "blender_frame": 20,
+          "src": "blender-wolves/well-alpha-walk-right-04.png",
+          "sha256": "116c2004d624c5e608bd23b4ba37caee91ca21d9e25d9b571fb13140c13c23ed"
+        },
+        {
+          "file": "well-alpha-walk-right-05.png",
+          "blender_frame": 25,
+          "src": "blender-wolves/well-alpha-walk-right-05.png",
+          "sha256": "c175c4b50600e5c6e9ee18d55e3723fe73ac7dfb6fcae9b677ae2d97366a6209"
+        },
+        {
+          "file": "well-alpha-walk-right-06.png",
+          "blender_frame": 30,
+          "src": "blender-wolves/well-alpha-walk-right-06.png",
+          "sha256": "1f15769bc4c4dc8a9f12ac85e2487dbd27e6097733b77590526d50381a38a563"
+        },
+        {
+          "file": "well-alpha-walk-right-07.png",
+          "blender_frame": 35,
+          "src": "blender-wolves/well-alpha-walk-right-07.png",
+          "sha256": "45244fddad3ac97875ac879f40922434c316f1c2f3fd8116d023508b458c5dc4"
+        }
+      ],
+      "anchor": [
+        48,
+        64
+      ]
+    },
+    "well-alpha-walk-back": {
+      "frames": [
+        {
+          "file": "well-alpha-walk-back-00.png",
+          "blender_frame": 0,
+          "src": "blender-wolves/well-alpha-walk-back-00.png",
+          "sha256": "7cbfbc593b597d8aa985a111c07a476da16b0ca445b39a0912b2357528057c87"
+        },
+        {
+          "file": "well-alpha-walk-back-01.png",
+          "blender_frame": 5,
+          "src": "blender-wolves/well-alpha-walk-back-01.png",
+          "sha256": "d9bfcfbf5b9c57abe1c17095f08f706e30b72d39ca01f0ee7e14b1a0e61e0173"
+        },
+        {
+          "file": "well-alpha-walk-back-02.png",
+          "blender_frame": 10,
+          "src": "blender-wolves/well-alpha-walk-back-02.png",
+          "sha256": "943d3ff73fc565ef0b9a68e4f566b9cd282d8d646383703caf95329e3ff282d3"
+        },
+        {
+          "file": "well-alpha-walk-back-03.png",
+          "blender_frame": 15,
+          "src": "blender-wolves/well-alpha-walk-back-03.png",
+          "sha256": "c64370d06de9f9b45affe77383269556b956c419a811dd5979516faa97903b95"
+        },
+        {
+          "file": "well-alpha-walk-back-04.png",
+          "blender_frame": 20,
+          "src": "blender-wolves/well-alpha-walk-back-04.png",
+          "sha256": "92ccd9e5198c8b317add7193f66b70ec73677f1ee5049909f25c459c76842c13"
+        },
+        {
+          "file": "well-alpha-walk-back-05.png",
+          "blender_frame": 25,
+          "src": "blender-wolves/well-alpha-walk-back-05.png",
+          "sha256": "1a30d432833d9aee7d7f0202d3cb20178c12eae75dce17ebd84163856bbdeacf"
+        },
+        {
+          "file": "well-alpha-walk-back-06.png",
+          "blender_frame": 30,
+          "src": "blender-wolves/well-alpha-walk-back-06.png",
+          "sha256": "c05541fdea255f4fd79fcd3533bbaa8c5750bd7631c06f4d552d3343929a3332"
+        },
+        {
+          "file": "well-alpha-walk-back-07.png",
+          "blender_frame": 35,
+          "src": "blender-wolves/well-alpha-walk-back-07.png",
+          "sha256": "9ce03301dd319ca32371a4f04392aa7832a50ebbdac8e747a43baa119a24d446"
+        }
+      ],
+      "anchor": [
+        48,
+        64
+      ]
+    },
+    "well-alpha-walk-left": {
+      "frames": [
+        {
+          "file": "well-alpha-walk-left-00.png",
+          "blender_frame": 0,
+          "src": "blender-wolves/well-alpha-walk-left-00.png",
+          "sha256": "9eaacef15166d84da279d37827633cd6c0f274b30ec8fed1cba573f17b1dca2a"
+        },
+        {
+          "file": "well-alpha-walk-left-01.png",
+          "blender_frame": 5,
+          "src": "blender-wolves/well-alpha-walk-left-01.png",
+          "sha256": "e1d1132b81f80c87cbf82fd6ce310cd5361992da5620f3a277490536abd7bbe3"
+        },
+        {
+          "file": "well-alpha-walk-left-02.png",
+          "blender_frame": 10,
+          "src": "blender-wolves/well-alpha-walk-left-02.png",
+          "sha256": "fee1b97d929d445f5fda0872e1a3e95c9f3a4de32c06b750935baca6bc6ec0d7"
+        },
+        {
+          "file": "well-alpha-walk-left-03.png",
+          "blender_frame": 15,
+          "src": "blender-wolves/well-alpha-walk-left-03.png",
+          "sha256": "a338b82d0ecf1fa2a10ba3ffb5b725b8a5464793e94bf58d6826bc2bce4ebd77"
+        },
+        {
+          "file": "well-alpha-walk-left-04.png",
+          "blender_frame": 20,
+          "src": "blender-wolves/well-alpha-walk-left-04.png",
+          "sha256": "d927f0a3dacd5af4bab3569ad49e89e59811b11e8bc6065ed93afa3380ab5ee6"
+        },
+        {
+          "file": "well-alpha-walk-left-05.png",
+          "blender_frame": 25,
+          "src": "blender-wolves/well-alpha-walk-left-05.png",
+          "sha256": "d8b3246b674144a3859a9e3b423a9e8758325d3a649f4225eb220ff2e64a1e25"
+        },
+        {
+          "file": "well-alpha-walk-left-06.png",
+          "blender_frame": 30,
+          "src": "blender-wolves/well-alpha-walk-left-06.png",
+          "sha256": "e02d4c7945f2d9cbf364c7dd7e395efadf30558f1e373ed05fa685be7cfdaebc"
+        },
+        {
+          "file": "well-alpha-walk-left-07.png",
+          "blender_frame": 35,
+          "src": "blender-wolves/well-alpha-walk-left-07.png",
+          "sha256": "4c2eabb31f5db3ed96fe3b414c33de6a5e1d616fd17837ac7c81164226d6eede"
+        }
+      ],
+      "anchor": [
+        48,
+        64
+      ]
+    }
+  }
+}

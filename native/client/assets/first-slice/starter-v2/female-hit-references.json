@@ -1,0 +1,44 @@
+{
+  "clips": {
+    "female-club-hit-front": {
+      "anchor": [
+        48,
+        80
+      ],
+      "frames": [
+        {
+          "src": "../starter-combat/references/female-hit-front-00.png",
+          "sha256": "e3684c62b5073c30aff9ffd49fad35eae6197b431e8b474d4ac0322b078ad230"
+        },
+        {
+          "src": "../starter-combat/references/female-hit-front-01.png",
+          "sha256": "998c5443336a28cf77f9d75e1e92ea3fea1e6b7d42c7a8d4f8da14f0ef1f1edc"
+        },
+        {
+          "src": "../starter-combat/references/female-hit-front-02.png",
+          "sha256": "350ac5b95aad55d0975260bb02e1fe9c9847e02447d2b59622eebec5193dbf72"
+        },
+        {
+          "src": "../starter-combat/references/female-hit-front-03.png",
+          "sha256": "b8e8c69daa2ee633f19b30956f05331718fff126715af1e770e911d27f9d4ddd"
+        },
+        {
+          "src": "../starter-combat/references/female-hit-front-04.png",
+          "sha256": "fcd950f854733a4517fae010bf0eacb09a6d1125efd14a1eda94c2316b689dd1"
+        },
+        {
+          "src": "../starter-combat/references/female-hit-front-05.png",
+          "sha256": "75583e84d911e6d6cef5fbe45714009f1966feb6d439410b406aa24f081fbbeb"
+        },
+        {
+          "src": "../starter-combat/references/female-hit-front-06.png",
+          "sha256": "b00470822cd617e53ba21d37415d57c7b2d380abd875fc3d03f2109bbe9a1e56"
+        },
+        {
+          "src": "../starter-combat/references/female-hit-front-07.png",
+          "sha256": "bf53790aa2ff5cf7d93afd8f7ed777ffdce1cb9cdf9f0f45c150e0c0ce486ba1"
+        }
+      ]
+    }
+  }
+}

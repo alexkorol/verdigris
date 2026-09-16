@@ -1,0 +1,542 @@
+[
+  {
+    "sex": "male",
+    "action": "hit",
+    "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\transition-v3-skin\\male-hit\\club-hit.blend",
+    "frames": [
+      {
+        "phase": 0,
+        "root_location": [
+          0.0,
+          0.0,
+          -0.007919983007013798
+        ],
+        "head_world": [
+          -0.020844006910920143,
+          0.10852327197790146,
+          1.5709275007247925
+        ],
+        "ankles_world": {
+          "l": [
+            0.22689026594161987,
+            -0.12142857164144516,
+            0.10327690094709396
+          ],
+          "r": [
+            -0.18124908208847046,
+            0.2445984184741974,
+            0.11077743768692017
+          ]
+        },
+        "lowest_visible_meshes": [
+          {
+            "object": "male_sandal_sole_-1",
+            "min_z": 0.008000120520591736
+          },
+          {
+            "object": "male_sandal_sole_1",
+            "min_z": 0.01004899013787508
+          },
+          {
+            "object": "MH_male_Body",
+            "min_z": 0.01841706410050392
+          },
+          {
+            "object": "male_sandal_strap_-1_0",
+            "min_z": 0.024629227817058563
+          },
+          {
+            "object": "male_sandal_strap_1_0",
+            "min_z": 0.030783021822571754
+          },
+          {
+            "object": "male_sandal_strap_-1_1",
+            "min_z": 0.03121773526072502
+          },
+          {
+            "object": "male_sandal_strap_1_1",
+            "min_z": 0.032166775315999985
+          },
+          {
+            "object": "male_walk_baked_cloth_samples",
+            "min_z": 0.7051132321357727
+          }
+        ],
+        "world_origin_pixel": [
+          48.0,
+          79.99999952316284
+        ],
+        "pixels_per_metre_at_origin": 48.00000858306885
+      },
+      {
+        "phase": 7,
+        "root_location": [
+          0.0,
+          0.0,
+          0.007321898825466633
+        ],
+        "head_world": [
+          -0.020803621038794518,
+          -0.08510686457157135,
+          1.5826245546340942
+        ],
+        "ankles_world": {
+          "l": [
+            0.22661489248275757,
+            -0.14113716781139374,
+            0.1107013002038002
+          ],
+          "r": [
+            -0.18089072406291962,
+            0.2239668369293213,
+            0.1116006001830101
+          ]
+        },
+        "lowest_visible_meshes": [
+          {
+            "object": "male_sandal_sole_-1",
+            "min_z": 0.008000005036592484
+          },
+          {
+            "object": "male_sandal_sole_1",
+            "min_z": 0.017396224662661552
+          },
+          {
+            "object": "MH_male_Body",
+            "min_z": 0.01817282848060131
+          },
+          {
+            "object": "male_sandal_strap_-1_0",
+            "min_z": 0.02432819828391075
+          },
+          {
+            "object": "male_sandal_strap_-1_1",
+            "min_z": 0.031400054693222046
+          },
+          {
+            "object": "male_sandal_strap_1_0",
+            "min_z": 0.03784726932644844
+          },
+          {
+            "object": "male_sandal_strap_1_1",
+            "min_z": 0.039697520434856415
+          },
+          {
+            "object": "male_walk_baked_cloth_samples",
+            "min_z": 0.7194668650627136
+          }
+        ],
+        "world_origin_pixel": [
+          48.0,
+          79.99999952316284
+        ],
+        "pixels_per_metre_at_origin": 48.00000858306885
+      }
+    ]
+  },
+  {
+    "sex": "male",
+    "action": "death",
+    "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\transition-v3-skin\\male-death\\club-death.blend",
+    "frames": [
+      {
+        "phase": 0,
+        "root_location": [
+          0.0,
+          0.0,
+          0.00950629822909832
+        ],
+        "head_world": [
+          -0.01669933833181858,
+          -0.07998230308294296,
+          1.5860005617141724
+        ],
+        "ankles_world": {
+          "l": [
+            0.22904135286808014,
+            -0.1435137689113617,
+            0.1116195023059845
+          ],
+          "r": [
+            -0.17833928763866425,
+            0.22143012285232544,
+            0.11168549954891205
+          ]
+        },
+        "lowest_visible_meshes": [
+          {
+            "object": "male_sandal_sole_-1",
+            "min_z": 0.007998919114470482
+          },
+          {
+            "object": "MH_male_Body",
+            "min_z": 0.01814449205994606
+          },
+          {
+            "object": "male_sandal_sole_1",
+            "min_z": 0.018281007185578346
+          },
+          {
+            "object": "male_sandal_strap_-1_0",
+            "min_z": 0.024294842034578323
+          },
+          {
+            "object": "male_sandal_strap_-1_1",
+            "min_z": 0.03141968697309494
+          },
+          {
+            "object": "male_sandal_strap_1_0",
+            "min_z": 0.03861115500330925
+          },
+          {
+            "object": "male_sandal_strap_1_1",
+            "min_z": 0.04066247493028641
+          },
+          {
+            "object": "male_walk_baked_cloth_samples",
+            "min_z": 0.7213820815086365
+          }
+        ],
+        "world_origin_pixel": [
+          64.0,
+          96.0
+        ],
+        "pixels_per_metre_at_origin": 48.000003814697266
+      },
+      {
+        "phase": 7,
+        "root_location": [
+          0.0,
+          0.0,
+          -0.7502930164337158
+        ],
+        "head_world": [
+          -0.0029114463832229376,
+          0.5885076522827148,
+          0.36880967020988464
+        ],
+        "ankles_world": {
+          "l": [
+            0.25123053789138794,
+            -0.8224557042121887,
+            0.10372663289308548
+          ],
+          "r": [
+            -0.38182345032691956,
+            -0.7909186482429504,
+            0.14458653330802917
+          ]
+        },
+        "lowest_visible_meshes": [
+          {
+            "object": "male_sandal_sole_1",
+            "min_z": 0.008000041358172894
+          },
+          {
+            "object": "male_walk_baked_cloth_samples",
+            "min_z": 0.02118736505508423
+          },
+          {
+            "object": "MH_male_Body",
+            "min_z": 0.030555620789527893
+          },
+          {
+            "object": "male_sandal_sole_-1",
+            "min_z": 0.051883894950151443
+          },
+          {
+            "object": "male_sandal_strap_1_1",
+            "min_z": 0.08645130693912506
+          },
+          {
+            "object": "male_sandal_strap_-1_1",
+            "min_z": 0.12937912344932556
+          },
+          {
+            "object": "male_sandal_strap_1_0",
+            "min_z": 0.17084570229053497
+          },
+          {
+            "object": "male_sandal_strap_-1_0",
+            "min_z": 0.21412888169288635
+          }
+        ],
+        "world_origin_pixel": [
+          64.0,
+          96.0
+        ],
+        "pixels_per_metre_at_origin": 48.000003814697266
+      }
+    ]
+  },
+  {
+    "sex": "female",
+    "action": "hit",
+    "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\transition-v3-skin\\female-hit\\club-hit.blend",
+    "frames": [
+      {
+        "phase": 0,
+        "root_location": [
+          0.0,
+          0.0,
+          -0.014665610156953335
+        ],
+        "head_world": [
+          0.003307867795228958,
+          0.12791384756565094,
+          1.5360406637191772
+        ],
+        "ankles_world": {
+          "l": [
+            0.23716582357883453,
+            -0.14086009562015533,
+            0.09905204176902771
+          ],
+          "r": [
+            -0.14495591819286346,
+            0.2048279047012329,
+            0.1058378517627716
+          ]
+        },
+        "lowest_visible_meshes": [
+          {
+            "object": "female_sandal_sole_-1",
+            "min_z": 0.007005291059613228
+          },
+          {
+            "object": "female_sandal_sole_1",
+            "min_z": 0.009962113574147224
+          },
+          {
+            "object": "MH_female_Body",
+            "min_z": 0.016659939661622047
+          },
+          {
+            "object": "female_sandal_strap_-1_0",
+            "min_z": 0.02396736666560173
+          },
+          {
+            "object": "female_sandal_strap_1_1",
+            "min_z": 0.026259364560246468
+          },
+          {
+            "object": "female_sandal_strap_1_0",
+            "min_z": 0.030500026419758797
+          },
+          {
+            "object": "female_sandal_strap_-1_1",
+            "min_z": 0.030507635325193405
+          },
+          {
+            "object": "female_walk_baked_cloth_samples",
+            "min_z": 0.725409984588623
+          }
+        ],
+        "world_origin_pixel": [
+          48.0,
+          79.99999952316284
+        ],
+        "pixels_per_metre_at_origin": 48.00000858306885
+      },
+      {
+        "phase": 7,
+        "root_location": [
+          0.0,
+          0.0,
+          0.0016665529692545533
+        ],
+        "head_world": [
+          0.003216950222849846,
+          -0.09046851098537445,
+          1.552832841873169
+        ],
+        "ankles_world": {
+          "l": [
+            0.2368665635585785,
+            -0.16156861186027527,
+            0.10806158185005188
+          ],
+          "r": [
+            -0.1442224383354187,
+            0.18297918140888214,
+            0.10790716111660004
+          ]
+        },
+        "lowest_visible_meshes": [
+          {
+            "object": "female_sandal_sole_-1",
+            "min_z": 0.008113055489957333
+          },
+          {
+            "object": "MH_female_Body",
+            "min_z": 0.0176246277987957
+          },
+          {
+            "object": "female_sandal_sole_1",
+            "min_z": 0.01891160197556019
+          },
+          {
+            "object": "female_sandal_strap_-1_0",
+            "min_z": 0.024743512272834778
+          },
+          {
+            "object": "female_sandal_strap_-1_1",
+            "min_z": 0.031840983778238297
+          },
+          {
+            "object": "female_sandal_strap_1_1",
+            "min_z": 0.03538554161787033
+          },
+          {
+            "object": "female_sandal_strap_1_0",
+            "min_z": 0.03973021358251572
+          },
+          {
+            "object": "female_walk_baked_cloth_samples",
+            "min_z": 0.7442623972892761
+          }
+        ],
+        "world_origin_pixel": [
+          48.0,
+          79.99999952316284
+        ],
+        "pixels_per_metre_at_origin": 48.00000858306885
+      }
+    ]
+  },
+  {
+    "sex": "female",
+    "action": "death",
+    "source": "Z:\\Code\\.worktrees\\verdigris-first-slice-art\\native\\client\\assets\\first-slice\\starter-combat\\transition-v3-skin\\female-death\\club-death.blend",
+    "frames": [
+      {
+        "phase": 0,
+        "root_location": [
+          0.0,
+          0.0,
+          0.0017665313789620996
+        ],
+        "head_world": [
+          0.007449517026543617,
+          -0.07239435613155365,
+          1.5564355850219727
+        ],
+        "ankles_world": {
+          "l": [
+            0.23917436599731445,
+            -0.16133050620555878,
+            0.10800140351057053
+          ],
+          "r": [
+            -0.14191323518753052,
+            0.18317143619060516,
+            0.10785014182329178
+          ]
+        },
+        "lowest_visible_meshes": [
+          {
+            "object": "female_sandal_sole_-1",
+            "min_z": 0.008119803853332996
+          },
+          {
+            "object": "MH_female_Body",
+            "min_z": 0.017642181366682053
+          },
+          {
+            "object": "female_sandal_sole_1",
+            "min_z": 0.018823377788066864
+          },
+          {
+            "object": "female_sandal_strap_-1_0",
+            "min_z": 0.02477288991212845
+          },
+          {
+            "object": "female_sandal_strap_-1_1",
+            "min_z": 0.03183186054229736
+          },
+          {
+            "object": "female_sandal_strap_1_1",
+            "min_z": 0.035357553511857986
+          },
+          {
+            "object": "female_sandal_strap_1_0",
+            "min_z": 0.03957229107618332
+          },
+          {
+            "object": "female_walk_baked_cloth_samples",
+            "min_z": 0.7442141771316528
+          }
+        ],
+        "world_origin_pixel": [
+          64.0,
+          96.0
+        ],
+        "pixels_per_metre_at_origin": 48.000003814697266
+      },
+      {
+        "phase": 7,
+        "root_location": [
+          0.0,
+          0.0,
+          -0.7309625148773193
+        ],
+        "head_world": [
+          0.023829996585845947,
+          0.6103580594062805,
+          0.2739219665527344
+        ],
+        "ankles_world": {
+          "l": [
+            0.2604970932006836,
+            -0.8002265095710754,
+            0.034633759409189224
+          ],
+          "r": [
+            -0.3336087465286255,
+            -0.7703892588615417,
+            0.0731135681271553
+          ]
+        },
+        "lowest_visible_meshes": [
+          {
+            "object": "female_sandal_sole_1",
+            "min_z": -0.041574809700250626
+          },
+          {
+            "object": "MH_female_Body",
+            "min_z": -0.03207818791270256
+          },
+          {
+            "object": "female_walk_baked_cloth_samples",
+            "min_z": -0.018254578113555908
+          },
+          {
+            "object": "female_sandal_sole_-1",
+            "min_z": 0.0005507620517164469
+          },
+          {
+            "object": "female_sandal_strap_1_1",
+            "min_z": 0.024933546781539917
+          },
+          {
+            "object": "female_sandal_strap_-1_1",
+            "min_z": 0.06663844734430313
+          },
+          {
+            "object": "female_sandal_strap_1_0",
+            "min_z": 0.10112512111663818
+          },
+          {
+            "object": "female_sandal_strap_-1_0",
+            "min_z": 0.1400572806596756
+          }
+        ],
+        "world_origin_pixel": [
+          64.0,
+          96.0
+        ],
+        "pixels_per_metre_at_origin": 48.000003814697266
+      }
+    ]
+  }
+]

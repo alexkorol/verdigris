@@ -1,0 +1,31 @@
+{
+  "clip": "pack-wolf-hit-right-fromcombat",
+  "source_sha256": "4c7a27d3b4671e8e7f63961d3b29bd0aaf72ea582c81249a7bb33a400d6a2801",
+  "selected_grid": {
+    "size": 4,
+    "source": "fine",
+    "offset": [
+      1,
+      0
+    ],
+    "score": 0.6664979811947824,
+    "variance": 79.34394836425781,
+    "gated_out": false
+  },
+  "frame": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "whole_cycle_translation": [
+    1,
+    2
+  ],
+  "registered_mean_iou": 0.6830871481951454,
+  "alpha_policy": "Native alpha threshold128, noRGBkey",
+  "visual_acceptance": false,
+  "frames": []
+}

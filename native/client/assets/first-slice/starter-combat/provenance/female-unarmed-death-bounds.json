@@ -1,0 +1,290 @@
+[
+  {
+    "frame": "female-unarmed-death-front-00.png",
+    "bbox": [
+      49,
+      26,
+      81,
+      106
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-front-01.png",
+    "bbox": [
+      42,
+      36,
+      81,
+      109
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-front-02.png",
+    "bbox": [
+      42,
+      40,
+      83,
+      110
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-front-03.png",
+    "bbox": [
+      44,
+      43,
+      80,
+      123
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-front-04.png",
+    "bbox": [
+      39,
+      56,
+      87,
+      114
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-front-05.png",
+    "bbox": [
+      39,
+      61,
+      87,
+      125
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-front-06.png",
+    "bbox": [
+      39,
+      60,
+      87,
+      125
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-front-07.png",
+    "bbox": [
+      39,
+      60,
+      87,
+      125
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-right-00.png",
+    "bbox": [
+      51,
+      23,
+      81,
+      104
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-right-01.png",
+    "bbox": [
+      57,
+      33,
+      84,
+      106
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-right-02.png",
+    "bbox": [
+      58,
+      36,
+      85,
+      107
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-right-03.png",
+    "bbox": [
+      45,
+      50,
+      108,
+      103
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-right-04.png",
+    "bbox": [
+      23,
+      65,
+      108,
+      101
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-right-05.png",
+    "bbox": [
+      20,
+      71,
+      110,
+      108
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-right-06.png",
+    "bbox": [
+      19,
+      71,
+      110,
+      108
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-right-07.png",
+    "bbox": [
+      19,
+      71,
+      110,
+      108
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-back-00.png",
+    "bbox": [
+      47,
+      21,
+      79,
+      103
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-back-01.png",
+    "bbox": [
+      47,
+      27,
+      86,
+      100
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-back-02.png",
+    "bbox": [
+      45,
+      30,
+      86,
+      99
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-back-03.png",
+    "bbox": [
+      49,
+      53,
+      83,
+      90
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-back-04.png",
+    "bbox": [
+      39,
+      50,
+      92,
+      118
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-back-05.png",
+    "bbox": [
+      40,
+      62,
+      92,
+      115
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-back-06.png",
+    "bbox": [
+      40,
+      62,
+      91,
+      114
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-back-07.png",
+    "bbox": [
+      40,
+      62,
+      91,
+      114
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-left-00.png",
+    "bbox": [
+      46,
+      23,
+      77,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-left-01.png",
+    "bbox": [
+      43,
+      30,
+      71,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-left-02.png",
+    "bbox": [
+      42,
+      33,
+      70,
+      105
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-left-03.png",
+    "bbox": [
+      19,
+      50,
+      83,
+      106
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-left-04.png",
+    "bbox": [
+      19,
+      55,
+      104,
+      106
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-left-05.png",
+    "bbox": [
+      17,
+      70,
+      106,
+      107
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-left-06.png",
+    "bbox": [
+      17,
+      70,
+      106,
+      107
+    ]
+  },
+  {
+    "frame": "female-unarmed-death-left-07.png",
+    "bbox": [
+      17,
+      70,
+      106,
+      107
+    ]
+  }
+]

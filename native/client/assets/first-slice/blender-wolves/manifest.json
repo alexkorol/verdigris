@@ -1,0 +1,370 @@
+[
+  {
+    "clip": "pack-wolf-walk-front",
+    "frames": [
+      {
+        "file": "pack-wolf-walk-front-00.png",
+        "blender_frame": 0
+      },
+      {
+        "file": "pack-wolf-walk-front-01.png",
+        "blender_frame": 5
+      },
+      {
+        "file": "pack-wolf-walk-front-02.png",
+        "blender_frame": 10
+      },
+      {
+        "file": "pack-wolf-walk-front-03.png",
+        "blender_frame": 15
+      },
+      {
+        "file": "pack-wolf-walk-front-04.png",
+        "blender_frame": 20
+      },
+      {
+        "file": "pack-wolf-walk-front-05.png",
+        "blender_frame": 25
+      },
+      {
+        "file": "pack-wolf-walk-front-06.png",
+        "blender_frame": 30
+      },
+      {
+        "file": "pack-wolf-walk-front-07.png",
+        "blender_frame": 35
+      }
+    ],
+    "frame": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      80
+    ],
+    "pixels_per_metre": 48
+  },
+  {
+    "clip": "pack-wolf-walk-right",
+    "frames": [
+      {
+        "file": "pack-wolf-walk-right-00.png",
+        "blender_frame": 0
+      },
+      {
+        "file": "pack-wolf-walk-right-01.png",
+        "blender_frame": 5
+      },
+      {
+        "file": "pack-wolf-walk-right-02.png",
+        "blender_frame": 10
+      },
+      {
+        "file": "pack-wolf-walk-right-03.png",
+        "blender_frame": 15
+      },
+      {
+        "file": "pack-wolf-walk-right-04.png",
+        "blender_frame": 20
+      },
+      {
+        "file": "pack-wolf-walk-right-05.png",
+        "blender_frame": 25
+      },
+      {
+        "file": "pack-wolf-walk-right-06.png",
+        "blender_frame": 30
+      },
+      {
+        "file": "pack-wolf-walk-right-07.png",
+        "blender_frame": 35
+      }
+    ],
+    "frame": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      80
+    ],
+    "pixels_per_metre": 48
+  },
+  {
+    "clip": "pack-wolf-walk-back",
+    "frames": [
+      {
+        "file": "pack-wolf-walk-back-00.png",
+        "blender_frame": 0
+      },
+      {
+        "file": "pack-wolf-walk-back-01.png",
+        "blender_frame": 5
+      },
+      {
+        "file": "pack-wolf-walk-back-02.png",
+        "blender_frame": 10
+      },
+      {
+        "file": "pack-wolf-walk-back-03.png",
+        "blender_frame": 15
+      },
+      {
+        "file": "pack-wolf-walk-back-04.png",
+        "blender_frame": 20
+      },
+      {
+        "file": "pack-wolf-walk-back-05.png",
+        "blender_frame": 25
+      },
+      {
+        "file": "pack-wolf-walk-back-06.png",
+        "blender_frame": 30
+      },
+      {
+        "file": "pack-wolf-walk-back-07.png",
+        "blender_frame": 35
+      }
+    ],
+    "frame": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      80
+    ],
+    "pixels_per_metre": 48
+  },
+  {
+    "clip": "pack-wolf-walk-left",
+    "frames": [
+      {
+        "file": "pack-wolf-walk-left-00.png",
+        "blender_frame": 0
+      },
+      {
+        "file": "pack-wolf-walk-left-01.png",
+        "blender_frame": 5
+      },
+      {
+        "file": "pack-wolf-walk-left-02.png",
+        "blender_frame": 10
+      },
+      {
+        "file": "pack-wolf-walk-left-03.png",
+        "blender_frame": 15
+      },
+      {
+        "file": "pack-wolf-walk-left-04.png",
+        "blender_frame": 20
+      },
+      {
+        "file": "pack-wolf-walk-left-05.png",
+        "blender_frame": 25
+      },
+      {
+        "file": "pack-wolf-walk-left-06.png",
+        "blender_frame": 30
+      },
+      {
+        "file": "pack-wolf-walk-left-07.png",
+        "blender_frame": 35
+      }
+    ],
+    "frame": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      80
+    ],
+    "pixels_per_metre": 48
+  },
+  {
+    "clip": "well-alpha-walk-front",
+    "frames": [
+      {
+        "file": "well-alpha-walk-front-00.png",
+        "blender_frame": 0
+      },
+      {
+        "file": "well-alpha-walk-front-01.png",
+        "blender_frame": 5
+      },
+      {
+        "file": "well-alpha-walk-front-02.png",
+        "blender_frame": 10
+      },
+      {
+        "file": "well-alpha-walk-front-03.png",
+        "blender_frame": 15
+      },
+      {
+        "file": "well-alpha-walk-front-04.png",
+        "blender_frame": 20
+      },
+      {
+        "file": "well-alpha-walk-front-05.png",
+        "blender_frame": 25
+      },
+      {
+        "file": "well-alpha-walk-front-06.png",
+        "blender_frame": 30
+      },
+      {
+        "file": "well-alpha-walk-front-07.png",
+        "blender_frame": 35
+      }
+    ],
+    "frame": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      64
+    ],
+    "pixels_per_metre": 48
+  },
+  {
+    "clip": "well-alpha-walk-right",
+    "frames": [
+      {
+        "file": "well-alpha-walk-right-00.png",
+        "blender_frame": 0
+      },
+      {
+        "file": "well-alpha-walk-right-01.png",
+        "blender_frame": 5
+      },
+      {
+        "file": "well-alpha-walk-right-02.png",
+        "blender_frame": 10
+      },
+      {
+        "file": "well-alpha-walk-right-03.png",
+        "blender_frame": 15
+      },
+      {
+        "file": "well-alpha-walk-right-04.png",
+        "blender_frame": 20
+      },
+      {
+        "file": "well-alpha-walk-right-05.png",
+        "blender_frame": 25
+      },
+      {
+        "file": "well-alpha-walk-right-06.png",
+        "blender_frame": 30
+      },
+      {
+        "file": "well-alpha-walk-right-07.png",
+        "blender_frame": 35
+      }
+    ],
+    "frame": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      64
+    ],
+    "pixels_per_metre": 48
+  },
+  {
+    "clip": "well-alpha-walk-back",
+    "frames": [
+      {
+        "file": "well-alpha-walk-back-00.png",
+        "blender_frame": 0
+      },
+      {
+        "file": "well-alpha-walk-back-01.png",
+        "blender_frame": 5
+      },
+      {
+        "file": "well-alpha-walk-back-02.png",
+        "blender_frame": 10
+      },
+      {
+        "file": "well-alpha-walk-back-03.png",
+        "blender_frame": 15
+      },
+      {
+        "file": "well-alpha-walk-back-04.png",
+        "blender_frame": 20
+      },
+      {
+        "file": "well-alpha-walk-back-05.png",
+        "blender_frame": 25
+      },
+      {
+        "file": "well-alpha-walk-back-06.png",
+        "blender_frame": 30
+      },
+      {
+        "file": "well-alpha-walk-back-07.png",
+        "blender_frame": 35
+      }
+    ],
+    "frame": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      64
+    ],
+    "pixels_per_metre": 48
+  },
+  {
+    "clip": "well-alpha-walk-left",
+    "frames": [
+      {
+        "file": "well-alpha-walk-left-00.png",
+        "blender_frame": 0
+      },
+      {
+        "file": "well-alpha-walk-left-01.png",
+        "blender_frame": 5
+      },
+      {
+        "file": "well-alpha-walk-left-02.png",
+        "blender_frame": 10
+      },
+      {
+        "file": "well-alpha-walk-left-03.png",
+        "blender_frame": 15
+      },
+      {
+        "file": "well-alpha-walk-left-04.png",
+        "blender_frame": 20
+      },
+      {
+        "file": "well-alpha-walk-left-05.png",
+        "blender_frame": 25
+      },
+      {
+        "file": "well-alpha-walk-left-06.png",
+        "blender_frame": 30
+      },
+      {
+        "file": "well-alpha-walk-left-07.png",
+        "blender_frame": 35
+      }
+    ],
+    "frame": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      64
+    ],
+    "pixels_per_metre": 48
+  }
+]

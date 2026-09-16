@@ -1,0 +1,423 @@
+{
+  "clip": "male-walk-back",
+  "source_sha256": "018cd9650597452c33fdd89a1810debceb6461b4c78dc068eca3bd2c8643fa65",
+  "frame_size": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "base_cell": 48,
+  "alpha_policy": "Returned alpha threshold 128; no RGB key",
+  "grid_candidates": [
+    {
+      "size": 22,
+      "source": "autocorr",
+      "offset": [
+        10,
+        13
+      ],
+      "score": 1.0984835419522228,
+      "variance": 589.7164306640625,
+      "gated_out": false
+    },
+    {
+      "size": 16,
+      "source": "autocorr",
+      "offset": [
+        6,
+        15
+      ],
+      "score": 1.0923896675853968,
+      "variance": 439.257080078125,
+      "gated_out": false
+    },
+    {
+      "size": 19,
+      "source": "autocorr",
+      "offset": [
+        6,
+        16
+      ],
+      "score": 1.0861218255567264,
+      "variance": 526.8446044921875,
+      "gated_out": false
+    },
+    {
+      "size": 9,
+      "source": "autocorr",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 1.0377326115140575,
+      "variance": 263.6395263671875,
+      "gated_out": false
+    },
+    {
+      "size": 8,
+      "source": "fine",
+      "offset": [
+        6,
+        1
+      ],
+      "score": 1.0366622672331103,
+      "variance": 238.56936645507812,
+      "gated_out": false
+    },
+    {
+      "size": 12,
+      "source": "autocorr",
+      "offset": [
+        0,
+        7
+      ],
+      "score": 1.0357033737137329,
+      "variance": 366.0245056152344,
+      "gated_out": false
+    },
+    {
+      "size": 7,
+      "source": "autocorr",
+      "offset": [
+        2,
+        3
+      ],
+      "score": 1.0174356322727347,
+      "variance": 214.67750549316406,
+      "gated_out": false
+    },
+    {
+      "size": 6,
+      "source": "fine",
+      "offset": [
+        4,
+        5
+      ],
+      "score": 0.9869232384879829,
+      "variance": 187.67665100097656,
+      "gated_out": false
+    },
+    {
+      "size": 5,
+      "source": "autocorr",
+      "offset": [
+        1,
+        4
+      ],
+      "score": 0.9767441464557652,
+      "variance": 152.1904754638672,
+      "gated_out": false
+    },
+    {
+      "size": 4,
+      "source": "fine",
+      "offset": [
+        3,
+        1
+      ],
+      "score": 0.9315303629488915,
+      "variance": 124.33564758300781,
+      "gated_out": false
+    },
+    {
+      "size": 3,
+      "source": "fine",
+      "offset": [
+        0,
+        2
+      ],
+      "score": 0.9273544055645063,
+      "variance": 86.72415161132812,
+      "gated_out": false
+    },
+    {
+      "size": 2,
+      "source": "autocorr",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.9253482061883196,
+      "variance": 50.736228942871094,
+      "gated_out": false
+    },
+    {
+      "size": 158,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.41583629366416214,
+      "variance": 1905.01806640625,
+      "gated_out": true
+    },
+    {
+      "size": 187,
+      "source": "fold",
+      "offset": [
+        164,
+        95
+      ],
+      "score": 0.3612889502157074,
+      "variance": 2370.10546875,
+      "gated_out": true
+    },
+    {
+      "size": 189,
+      "source": "fold",
+      "offset": [
+        37,
+        93
+      ],
+      "score": 0.3384392501732774,
+      "variance": 2541.652587890625,
+      "gated_out": true
+    },
+    {
+      "size": 185,
+      "source": "fold",
+      "offset": [
+        181,
+        45
+      ],
+      "score": 0.2951988453276948,
+      "variance": 2170.70654296875,
+      "gated_out": true
+    },
+    {
+      "size": 188,
+      "source": "fold",
+      "offset": [
+        17,
+        93
+      ],
+      "score": 0.19684179239101873,
+      "variance": 2801.6298828125,
+      "gated_out": true
+    },
+    {
+      "size": 192,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.16859732130171873,
+      "variance": 2461.940673828125,
+      "gated_out": true
+    },
+    {
+      "size": 190,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.16836936640152747,
+      "variance": 2464.289794921875,
+      "gated_out": true
+    },
+    {
+      "size": 191,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.16175275186942603,
+      "variance": 2465.006591796875,
+      "gated_out": true
+    }
+  ],
+  "visual_acceptance": false,
+  "frames": [
+    {
+      "file": "male-walk-back-00.png",
+      "bbox": [
+        34,
+        7,
+        62,
+        85
+      ],
+      "reference": {
+        "src": "paint-v2/linen-frames/male-walk-back-1.png",
+        "sha256": "fbdc8e5e593fdce54f9cd51bd71f6f6cd1b394c4e8c9959496b8f0a36705b295",
+        "width": 96,
+        "height": 96,
+        "anchor": [
+          48,
+          80
+        ]
+      },
+      "silhouette_iou": 0.916403785488959,
+      "sha256": "ce82c1a047c5348bab407f503deb20f63aa88ccc474c0cdecd3bca0ac21fc527"
+    },
+    {
+      "file": "male-walk-back-01.png",
+      "bbox": [
+        34,
+        8,
+        62,
+        91
+      ],
+      "reference": {
+        "src": "paint-v2/linen-frames/male-walk-back-2.png",
+        "sha256": "60d82c253404eddb39f06693814e39b82b357e8a8598d5c2dd0146ca0c1a972c",
+        "width": 96,
+        "height": 96,
+        "anchor": [
+          48,
+          80
+        ]
+      },
+      "silhouette_iou": 0.8955102040816326,
+      "sha256": "edde661d2b69d2f463ecb82fcf7e03309f6fbeba48f5cc9c02d568607e821cd7"
+    },
+    {
+      "file": "male-walk-back-02.png",
+      "bbox": [
+        34,
+        9,
+        62,
+        94
+      ],
+      "reference": {
+        "src": "paint-v2/linen-frames/male-walk-back-3.png",
+        "sha256": "03f633e661099b6e51d59cf2984c7e8c1b236e042f2da9ddfaa884a19d39d216",
+        "width": 96,
+        "height": 96,
+        "anchor": [
+          48,
+          80
+        ]
+      },
+      "silhouette_iou": 0.8783570300157978,
+      "sha256": "af53568c1f01541ffa8532f5394b13b46b0baced75b825547d727311536420a5"
+    },
+    {
+      "file": "male-walk-back-03.png",
+      "bbox": [
+        34,
+        7,
+        62,
+        87
+      ],
+      "reference": {
+        "src": "paint-v2/linen-frames/male-walk-back-4.png",
+        "sha256": "2940b40f1028977f59ffecbe3f9f742065472c77e41d33af10395ce472c6a79e",
+        "width": 96,
+        "height": 96,
+        "anchor": [
+          48,
+          80
+        ]
+      },
+      "silhouette_iou": 0.9118804091266719,
+      "sha256": "7b7fcaaaaebceae68f07a7fe1dfc5548b6b6e5352706fa6be2d90c6b24cda24c"
+    },
+    {
+      "file": "male-walk-back-04.png",
+      "bbox": [
+        34,
+        6,
+        62,
+        86
+      ],
+      "reference": {
+        "src": "paint-v2/linen-frames/male-walk-back-5.png",
+        "sha256": "123460e2eb2a4385d431891f4a924cb9dec118bcb621b707f8417d10f93d8037",
+        "width": 96,
+        "height": 96,
+        "anchor": [
+          48,
+          80
+        ]
+      },
+      "silhouette_iou": 0.9153846153846154,
+      "sha256": "6caf3ddc93847b0fdc64c0b7f81f16e8d739b457e8e0accff3695f48477cac72"
+    },
+    {
+      "file": "male-walk-back-05.png",
+      "bbox": [
+        34,
+        6,
+        63,
+        90
+      ],
+      "reference": {
+        "src": "paint-v2/linen-frames/male-walk-back-6.png",
+        "sha256": "c2a854009b2a9846783de2135ee0b30757c6308748f48f9486b6f7a62ea03154",
+        "width": 96,
+        "height": 96,
+        "anchor": [
+          48,
+          80
+        ]
+      },
+      "silhouette_iou": 0.8829953198127926,
+      "sha256": "c8b6dcf3570a223d5abe824839f61bde35c9f090c4db1d9dc3ebb5f9c16512d8"
+    },
+    {
+      "file": "male-walk-back-06.png",
+      "bbox": [
+        34,
+        7,
+        62,
+        93
+      ],
+      "reference": {
+        "src": "paint-v2/linen-frames/male-walk-back-7.png",
+        "sha256": "d06f5b28ef4bfabae5b72fabf449b4d76e4b57a4c569502aa296bebe85f3a99d",
+        "width": 96,
+        "height": 96,
+        "anchor": [
+          48,
+          80
+        ]
+      },
+      "silhouette_iou": 0.909727626459144,
+      "sha256": "e80a5f2507f492e63102841ab5ede624b439b75a91f105b39cfcef1aff788cd5"
+    },
+    {
+      "file": "male-walk-back-07.png",
+      "bbox": [
+        34,
+        6,
+        62,
+        88
+      ],
+      "reference": {
+        "src": "paint-v2/linen-frames/male-walk-back-8.png",
+        "sha256": "abb569bd972e72c191bfc14fb3e7401960c76cdcca0c12baa453a4ec9cf3c834",
+        "width": 96,
+        "height": 96,
+        "anchor": [
+          48,
+          80
+        ]
+      },
+      "silhouette_iou": 0.8802122820318423,
+      "sha256": "aff5b780f64bee9731974fc0f10313762a773879871f996db35bf39ec63cfba4"
+    }
+  ],
+  "selected_grid": {
+    "size": 4,
+    "source": "fine",
+    "offset": [
+      3,
+      1
+    ],
+    "score": 0.9315303629488915,
+    "variance": 124.33564758300781,
+    "gated_out": false
+  },
+  "whole_cycle_translation": [
+    0,
+    0
+  ],
+  "registered_mean_iou": 0.8988089090501821
+}

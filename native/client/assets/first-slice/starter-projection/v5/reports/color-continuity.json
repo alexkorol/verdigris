@@ -1,0 +1,279 @@
+{
+  "method": "Median source-painted RGB from interior semantic mesh pixels; measured phases0 and4 in each direction. Baked directional lighting naturally changes luminance. Chromaticity separates hue change from illumination.",
+  "surface_medians_rgb": {
+    "walk": {
+      "front": {
+        "cloth": [
+          146.0,
+          124.0,
+          100.0
+        ],
+        "skin": [
+          145.0,
+          106.0,
+          76.0
+        ],
+        "hair": [
+          115.0,
+          78.0,
+          49.0
+        ]
+      },
+      "right": {
+        "cloth": [
+          143.0,
+          121.0,
+          99.0
+        ],
+        "skin": [
+          166.0,
+          121.0,
+          91.0
+        ],
+        "hair": [
+          106.5,
+          70.5,
+          47.0
+        ]
+      },
+      "back": {
+        "cloth": [
+          140.0,
+          119.0,
+          100.0
+        ],
+        "skin": [
+          172.0,
+          122.0,
+          92.0
+        ],
+        "hair": [
+          95.0,
+          64.0,
+          44.0
+        ]
+      },
+      "left": {
+        "cloth": [
+          136.0,
+          114.0,
+          92.0
+        ],
+        "skin": [
+          148.0,
+          106.0,
+          79.0
+        ],
+        "hair": [
+          108.5,
+          73.0,
+          49.0
+        ]
+      }
+    },
+    "sprint": {
+      "front": {
+        "cloth": [
+          159.0,
+          134.0,
+          107.0
+        ],
+        "skin": [
+          144.0,
+          104.0,
+          75.0
+        ],
+        "hair": [
+          116.0,
+          80.0,
+          49.0
+        ]
+      },
+      "right": {
+        "cloth": [
+          145.0,
+          123.0,
+          101.0
+        ],
+        "skin": [
+          160.0,
+          115.0,
+          85.0
+        ],
+        "hair": [
+          104.5,
+          70.5,
+          46.0
+        ]
+      },
+      "back": {
+        "cloth": [
+          139.0,
+          119.0,
+          99.0
+        ],
+        "skin": [
+          170.0,
+          121.0,
+          92.0
+        ],
+        "hair": [
+          96.0,
+          64.0,
+          44.0
+        ]
+      },
+      "left": {
+        "cloth": [
+          141.5,
+          119.0,
+          98.0
+        ],
+        "skin": [
+          146.0,
+          106.0,
+          79.0
+        ],
+        "hair": [
+          108.0,
+          72.0,
+          48.5
+        ]
+      }
+    }
+  },
+  "comparisons": [
+    {
+      "gait": "walk",
+      "views": [
+        "front",
+        "right"
+      ],
+      "material": "cloth",
+      "median_rgb_delta": [
+        -3.0,
+        -3.0,
+        -1.0
+      ],
+      "luminance_delta_8bit": -2.86,
+      "normalized_chromaticity_distance": 0.0031
+    },
+    {
+      "gait": "walk",
+      "views": [
+        "front",
+        "right"
+      ],
+      "material": "skin",
+      "median_rgb_delta": [
+        21.0,
+        15.0,
+        15.0
+      ],
+      "luminance_delta_8bit": 16.28,
+      "normalized_chromaticity_distance": 0.0102
+    },
+    {
+      "gait": "walk",
+      "views": [
+        "front",
+        "left"
+      ],
+      "material": "cloth",
+      "median_rgb_delta": [
+        -10.0,
+        -10.0,
+        -8.0
+      ],
+      "luminance_delta_8bit": -9.86,
+      "normalized_chromaticity_distance": 0.0038
+    },
+    {
+      "gait": "walk",
+      "views": [
+        "front",
+        "left"
+      ],
+      "material": "skin",
+      "median_rgb_delta": [
+        3.0,
+        0.0,
+        3.0
+      ],
+      "luminance_delta_8bit": 0.85,
+      "normalized_chromaticity_distance": 0.0076
+    },
+    {
+      "gait": "sprint",
+      "views": [
+        "front",
+        "right"
+      ],
+      "material": "cloth",
+      "median_rgb_delta": [
+        -14.0,
+        -11.0,
+        -6.0
+      ],
+      "luminance_delta_8bit": -11.28,
+      "normalized_chromaticity_distance": 0.0079
+    },
+    {
+      "gait": "sprint",
+      "views": [
+        "front",
+        "right"
+      ],
+      "material": "skin",
+      "median_rgb_delta": [
+        16.0,
+        11.0,
+        10.0
+      ],
+      "luminance_delta_8bit": 11.99,
+      "normalized_chromaticity_distance": 0.0049
+    },
+    {
+      "gait": "sprint",
+      "views": [
+        "front",
+        "left"
+      ],
+      "material": "cloth",
+      "median_rgb_delta": [
+        -17.5,
+        -15.0,
+        -9.0
+      ],
+      "luminance_delta_8bit": -15.1,
+      "normalized_chromaticity_distance": 0.0072
+    },
+    {
+      "gait": "sprint",
+      "views": [
+        "front",
+        "left"
+      ],
+      "material": "skin",
+      "median_rgb_delta": [
+        2.0,
+        2.0,
+        4.0
+      ],
+      "luminance_delta_8bit": 2.14,
+      "normalized_chromaticity_distance": 0.0082
+    }
+  ],
+  "geometry": {
+    "walk": {
+      "before": "56ff6e7485c44cf508a6377f378754a0d0b9e740aa51ee438953d35cdc9e44a9",
+      "after": "56ff6e7485c44cf508a6377f378754a0d0b9e740aa51ee438953d35cdc9e44a9",
+      "exact_match": true
+    },
+    "sprint": {
+      "before": "c3e19851684ab555ce438e75a4abb3a393a1ba74524e900872fe91ee9b4f76d9",
+      "after": "c3e19851684ab555ce438e75a4abb3a393a1ba74524e900872fe91ee9b4f76d9",
+      "exact_match": true
+    }
+  }
+}

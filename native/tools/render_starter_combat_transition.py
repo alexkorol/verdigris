@@ -9,11 +9,11 @@ from mathutils.kdtree import KDTree
 from bpy_extras.object_utils import world_to_camera_view
 
 OUT=Path(__file__).resolve().parents[1]/'client/assets/first-slice/starter-combat'
-sex=sys.argv[sys.argv.index('--')+1]
-DEST=OUT/'transition-v2'/sex
+args=sys.argv[sys.argv.index('--')+1:];sex=args[0];action=args[1] if len(args)>1 else 'attack';aligned='aligned' in args
+DEST=OUT/'contact-v4-source'/f'{sex}-{action}' if aligned else OUT/'transition-v2'/sex
 for d in ['references','inspection']:(DEST/d).mkdir(parents=True,exist_ok=True)
-idlefile=OUT/'blender'/f'{sex}-club-idle.blend'
-attackfile=OUT/'blender'/f'{sex}-attack.blend'
+idlefile=OUT/'blender'/f'{sex}-{"idle" if action=="unarmed-attack" else "club-idle"}.blend'
+attackfile=OUT/'blender'/f'{sex}-{action}.blend'
 bpy.ops.wm.open_mainfile(filepath=str(idlefile))
 bpy.context.scene.frame_set(1)
 idle={b.name:b.matrix_basis.copy() for b in bpy.data.objects[f'MH_{sex}_Rig'].pose.bones}
@@ -45,7 +45,7 @@ for i,v in enumerate(cloth.evaluated_get(deps).data.vertices):tree.insert(cloth.
 tree.balance();transport=[];originalcloth={}
 for o in list(s.objects):
  if o.type!='MESH' or not o.data.shape_keys or o.hide_render or not(o==cloth or 'cloth_bound' in o.name or 'ropebelt_turn' in o.name):continue
- originalcloth[o.name]=[[v.co.copy() for v in o.data.shape_keys.key_blocks[f'attack_{i:02d}'].data] for i in range(8)]
+ originalcloth[o.name]=[[v.co.copy() for v in o.data.shape_keys.key_blocks[f'{action}_{i:02d}'].data] for i in range(8)]
  bound=[]
  for i,v in enumerate(o.evaluated_get(deps).data.vertices):
   co=o.matrix_world@v.co;w=weights[i] if o==cloth else weights[tree.find(co)[1]]
@@ -63,6 +63,19 @@ def blend(a,b,t):
 samples=[('idle',idle),('entry-1',blend(idle,attack[0],.25)),('entry-2',blend(idle,attack[0],.5)),('entry-3',blend(idle,attack[0],.75))]
 samples += [(f'attack-{i}',p) for i,p in enumerate(attack)]
 samples += [('recovery-1',blend(attack[-1],idle,.25)),('recovery-2',blend(attack[-1],idle,.5)),('recovery-3',blend(attack[-1],idle,.75)),('idle-end',idle)]
+if aligned:
+ samples=[('idle',idle),('entry-1',blend(idle,attack[0],.25)),('entry-2',blend(idle,attack[0],.5)),('entry-3',blend(idle,attack[0],.75))]
+ if action=='attack':
+  # Maximum club forward extension is original sample5/sourceframe19.
+  # The near-duplicate source12 sample is omitted during preparation.
+  samples += [(f'attack-{i}',attack[i]) for i in [0,1,2,4,5,6,7]]
+  samples += [(f'recovery-{i}',blend(attack[-1],idle,i/5)) for i in range(1,5)]+[('idle-end',idle)]
+ else:
+  # Punch_Cross sample3/sourceframe9 is maximum fist extension. Two actual
+  # skeletal travel poses replace the redundant extended-punch hold samples.
+  samples += [('attack-0',attack[0]),('attack-1',attack[1]),('punch-travel-1',blend(attack[1],attack[3],1/3)),('punch-travel-2',blend(attack[1],attack[3],2/3)),('attack-3',attack[3]),('attack-5',attack[5]),('attack-6',attack[6]),('attack-7',attack[7])]
+  samples += [(f'recovery-{i}',blend(attack[-1],idle,i/4)) for i in range(1,4)]+[('idle-end',idle)]
+ assert len(samples)==16 and samples[8][0]==('attack-5' if action=='attack' else 'attack-3')
 allpoints=[]
 for i,(label,pose) in enumerate(samples):
  s.frame_set(1+i*4)
@@ -103,5 +116,5 @@ for direction,angle in [('front',0),('right',90),('back',180),('left',270)]:
    s.render.resolution_x=s.render.resolution_y=384;s.render.filepath=str(DEST/'inspection'/f'{direction}-{i:02d}-{label}.png');bpy.ops.render.render(write_still=True)
 for o,m in transforms:o.matrix_world=m
 s.frame_set(1);s.render.resolution_x=s.render.resolution_y=128
-bpy.ops.wm.save_as_mainfile(filepath=str(DEST/'club-attack-transition.blend'),compress=True)
-(DEST/'diagnosis.json').write_text(json.dumps({'source_sha256':hashlib.sha256(attackfile.read_bytes()).hexdigest(),'idle_sha256':hashlib.sha256(idlefile.read_bytes()).hexdigest(),'frame_size':[128,128],'anchor':[64,96],'pixels_per_metre':48,'method':'Quaternion skeletal blends; sole height contact; original eight source phases unchanged. No raster shifts. Horizontal foot planting is not constrained.','source_attack_landmarks':landmarks,'transition_landmarks':allpoints,'status':'candidate-needs-visual-review'},indent=2))
+bpy.ops.wm.save_as_mainfile(filepath=str(DEST/('unarmed-attack-transition.blend' if action=='unarmed-attack' else 'club-attack-transition.blend')),compress=True)
+(DEST/'diagnosis.json').write_text(json.dumps({'action':action,'equipment':'unarmed' if action=='unarmed-attack' else 'branch-club','source_motion':'Punch_Cross' if action=='unarmed-attack' else 'Sword_Attack','source_sha256':hashlib.sha256(attackfile.read_bytes()).hexdigest(),'idle_sha256':hashlib.sha256(idlefile.read_bytes()).hexdigest(),'frame_size':[128,128],'anchor':[64,96],'pixels_per_metre':48,'method':'Quaternion skeletal blends and source sample remapping; sole height contact. No raster shifts. Horizontal foot planting is not constrained.','normalized_contact_phase':.5 if aligned else None,'contact_index':8 if aligned else None,'contact_source_index':(3 if action=='unarmed-attack' else 5) if aligned else None,'source_attack_landmarks':landmarks,'transition_landmarks':allpoints,'status':'candidate-needs-visual-review'},indent=2))

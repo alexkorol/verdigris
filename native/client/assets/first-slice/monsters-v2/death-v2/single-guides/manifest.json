@@ -1,0 +1,1221 @@
+{
+  "status": "paint-input-only",
+  "frames": [
+    {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "front",
+      "phase": 0,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/pack-wolf-death-front-00.png",
+      "guide_sha256": "be56e9e6d934f15d34178e96feb663ca8f47f7c3abd21cf6d1bbce8181d26041",
+      "source_color_reference": "projection-proof/v3-faces/frames/pack-wolf-death-front-00.png",
+      "source_color_reference_sha256": "36c285cfbf4909bdf6caed9deb940cf58100de3f2780368d40b3bdb84b2b6897",
+      "geometry_reference": "death-v2/pack-wolf-death-front-00.png",
+      "geometry_reference_sha256": "2c83b45820cfba115c2c99355572cfbb5f5c312d79bc347aaeda231c7f657867",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "front",
+      "phase": 1,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/pack-wolf-death-front-01.png",
+      "guide_sha256": "d00db99e3fe02eb1fce9c9f986fd3e6e030657a338d53f91f76b8c8592b0ba32",
+      "source_color_reference": "projection-proof/v3-faces/frames/pack-wolf-death-front-01.png",
+      "source_color_reference_sha256": "12546a382e6fd6879db70fbd05a4d8fe017a6c79a54913cb6e92dc8514b22917",
+      "geometry_reference": "death-v2/pack-wolf-death-front-01.png",
+      "geometry_reference_sha256": "e4ded52669b8ced0ff1c203bf1dc04db16f90b03be7226b61d352fdbf5ec7377",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "front",
+      "phase": 2,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/pack-wolf-death-front-02.png",
+      "guide_sha256": "8d46a552b9ab0d43c004359ae4dc7e9a9189e341e3808d64ce29c840b58f51b7",
+      "source_color_reference": "projection-proof/v3-faces/frames/pack-wolf-death-front-02.png",
+      "source_color_reference_sha256": "5538607ca717bd29a1237b6a1316d793f5ef4068e70a84754473aa3eec92f524",
+      "geometry_reference": "death-v2/pack-wolf-death-front-02.png",
+      "geometry_reference_sha256": "ee5711c18d31b9f324a947c3beade2511591274564898721da2f6b468c96ef00",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "front",
+      "phase": 3,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/pack-wolf-death-front-03.png",
+      "guide_sha256": "08bb2812b19b2db9e74f3a8a1d17de3772dd30d50abf2fc6a3a64ad1fb5a1b7d",
+      "source_color_reference": "projection-proof/v3-faces/frames/pack-wolf-death-front-03.png",
+      "source_color_reference_sha256": "8088ed2eefe076a066e5689458b9b63dc20eca13075f5937d3febf28ce7d791a",
+      "geometry_reference": "death-v2/pack-wolf-death-front-03.png",
+      "geometry_reference_sha256": "fc6431710270de58f37be6488177d62a9578b42057ddd2e6dcc7647bbe6647e1",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "right",
+      "phase": 0,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/pack-wolf-death-right-00.png",
+      "guide_sha256": "98fe2150fb3cd0771bcafc2a6fbf066156e655b42699b1679dba222abdbbe7f7",
+      "source_color_reference": "projection-proof/v3-faces/frames/pack-wolf-death-right-00.png",
+      "source_color_reference_sha256": "783bbedfdeac260a3357a712162464cddcf570e4ce53f1716cda599d46de2196",
+      "geometry_reference": "death-v2/pack-wolf-death-right-00.png",
+      "geometry_reference_sha256": "bfb3c6e3b19ddabed06195dac6a246c4f61cd3d5e05b52d6567d61e821f788c0",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "right",
+      "phase": 1,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/pack-wolf-death-right-01.png",
+      "guide_sha256": "e978033328c52bda362700b9f8c64d5b248974728699b7a905de31fa9c98643d",
+      "source_color_reference": "projection-proof/v3-faces/frames/pack-wolf-death-right-01.png",
+      "source_color_reference_sha256": "693831bb8dec5c92206e7c060412285e5708a7fb31d85559a87ac81a99c13d72",
+      "geometry_reference": "death-v2/pack-wolf-death-right-01.png",
+      "geometry_reference_sha256": "0526048e409b2c288a2ee77129c5e4b5868ff54da35cd976cf1e0f0322d4c400",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "right",
+      "phase": 2,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/pack-wolf-death-right-02.png",
+      "guide_sha256": "eab92cda134c51800e71dc6db8f32930d96c93c4daa45d1dc7e8559941580cd3",
+      "source_color_reference": "projection-proof/v3-faces/frames/pack-wolf-death-right-02.png",
+      "source_color_reference_sha256": "8fc66b3121df49f3963593d465667ace0c43f7868a366ba81166390801807d32",
+      "geometry_reference": "death-v2/pack-wolf-death-right-02.png",
+      "geometry_reference_sha256": "d865a7b8cd6e132bf76de03a2a0bfe16ba348d6854563a711f4c592b2f1488f6",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "right",
+      "phase": 3,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/pack-wolf-death-right-03.png",
+      "guide_sha256": "9555660e7312087b571d1d16edeae215c65db10c9da85d5e196b2eb237670abd",
+      "source_color_reference": "projection-proof/v3-faces/frames/pack-wolf-death-right-03.png",
+      "source_color_reference_sha256": "423c6cc129d7560edd86f5989b2bf2485fed523d900b9737d481890010cd6eef",
+      "geometry_reference": "death-v2/pack-wolf-death-right-03.png",
+      "geometry_reference_sha256": "6628e9781661b03961f20f7adef3877148f227a0d78c5e1b59334627de31b2ce",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "back",
+      "phase": 0,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/pack-wolf-death-back-00.png",
+      "guide_sha256": "b0adc43bc44e4781d63cd5769f1b5f8a671f1fbf715666502840b35b13b3da62",
+      "source_color_reference": "projection-proof/v3-faces/frames/pack-wolf-death-back-00.png",
+      "source_color_reference_sha256": "92f4b987aaec4c856a15450f0b1abdc154cc7c666f307b4cce5bce4bccd61f0a",
+      "geometry_reference": "death-v2/pack-wolf-death-back-00.png",
+      "geometry_reference_sha256": "2208d6fada4e08bc4616e91e25e2d26b8df52117d2d0a63c8fd98e9e9eb5f1e7",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "back",
+      "phase": 1,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/pack-wolf-death-back-01.png",
+      "guide_sha256": "8782bf65d72411b7f5278e43effa866f12632d7282d4aeaf7fe3dc53480d8f80",
+      "source_color_reference": "projection-proof/v3-faces/frames/pack-wolf-death-back-01.png",
+      "source_color_reference_sha256": "22999825e7708f6bb5080207822b7fe360cac012cf7328448267c4165a3dc907",
+      "geometry_reference": "death-v2/pack-wolf-death-back-01.png",
+      "geometry_reference_sha256": "ef699dca113fd23ad4f259d31222d0bd75026036f90e2f8288ad98ab55110b06",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "back",
+      "phase": 2,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/pack-wolf-death-back-02.png",
+      "guide_sha256": "b818049b5550a50039df52bf62fd4f3a5dedeece0bf842c0a3620e43618543e6",
+      "source_color_reference": "projection-proof/v3-faces/frames/pack-wolf-death-back-02.png",
+      "source_color_reference_sha256": "84f548b68d978690558095e965635a21629d31b559585cf5269ba66727b34d59",
+      "geometry_reference": "death-v2/pack-wolf-death-back-02.png",
+      "geometry_reference_sha256": "50f06e30c640c8119d523718c96e5dd8404067422425d9b5338fb0a149b53306",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "back",
+      "phase": 3,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/pack-wolf-death-back-03.png",
+      "guide_sha256": "e536cf7e3bf43e37e4152c2ac97a85213c6a5d1859a39c85cf48a48b41878499",
+      "source_color_reference": "projection-proof/v3-faces/frames/pack-wolf-death-back-03.png",
+      "source_color_reference_sha256": "598ac27572e8e0d4e5f07c74732c9516017abdf85da8dc6e35d6bbf039424b2a",
+      "geometry_reference": "death-v2/pack-wolf-death-back-03.png",
+      "geometry_reference_sha256": "535bcdf71d7ca44cc3d49be3b25a4b8fff4ffcf1598a49d01ba88c5440c9bcf9",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "left",
+      "phase": 0,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/pack-wolf-death-left-00.png",
+      "guide_sha256": "9c1cee7f071630c59d82924f2c1eeb697e1f5bfb8b898055075ccb34b959ee50",
+      "source_color_reference": "projection-proof/v3-faces/frames/pack-wolf-death-left-00.png",
+      "source_color_reference_sha256": "425f6a88eb7743707541d809e7432280cbd7d10156d388e7fd870b423a12fd25",
+      "geometry_reference": "death-v2/pack-wolf-death-left-00.png",
+      "geometry_reference_sha256": "1f170f3e8ad08ce3dad3d465746d62feafedb9756e38d6005fa7f5b40e22da35",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "left",
+      "phase": 1,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/pack-wolf-death-left-01.png",
+      "guide_sha256": "8fca381aa5bff2b9d05dae7d4bc6a03630cf405be6d97225c50e5a60e9f2bd30",
+      "source_color_reference": "projection-proof/v3-faces/frames/pack-wolf-death-left-01.png",
+      "source_color_reference_sha256": "371c636553aac5f6c46f874da0de295eaa86b87e5f52b265e177aae2421539c7",
+      "geometry_reference": "death-v2/pack-wolf-death-left-01.png",
+      "geometry_reference_sha256": "1c884ec924135b75be7f3cce72704cb3798efdb023e1361efc6577bc69a58371",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "left",
+      "phase": 2,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/pack-wolf-death-left-02.png",
+      "guide_sha256": "1aa89e8a8efb73f1f87e63ef3f652a1fdb58ea6834ea99dfb5009da9e7ad95b6",
+      "source_color_reference": "projection-proof/v3-faces/frames/pack-wolf-death-left-02.png",
+      "source_color_reference_sha256": "5087b4bce4e06f976589cb0551362ab5db22fcf05cc931af7510fc33b3cc9022",
+      "geometry_reference": "death-v2/pack-wolf-death-left-02.png",
+      "geometry_reference_sha256": "e4aa0d6be27197a8aef392fb48346bd9583f78a5ef2c4e2fee5dde5fdc73ddd3",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "pack-wolf",
+      "action": "death",
+      "direction": "left",
+      "phase": 3,
+      "frame": [
+        96,
+        96
+      ],
+      "anchor": [
+        48,
+        76
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          48,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/pack-wolf-death-left-03.png",
+      "guide_sha256": "306cd0a22471552aba7242b9d9a4290355450b206fb2d800d7b958ceddfce44d",
+      "source_color_reference": "projection-proof/v3-faces/frames/pack-wolf-death-left-03.png",
+      "source_color_reference_sha256": "5088aae13b0a5c9e9f7bffd4f9f2759d8048701714c8d6a8186456702aee96ed",
+      "geometry_reference": "death-v2/pack-wolf-death-left-03.png",
+      "geometry_reference_sha256": "dc815d64f7b03317c67b7b495cd8b55bd3a78988a8709d7c890325e01721c5fa",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "front",
+      "phase": 0,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/well-alpha-death-front-00.png",
+      "guide_sha256": "1c329b43065ece2bb31e9694a11337253cc1751e3cbab78fe4ccd81829629e51",
+      "source_color_reference": "projection-proof/boss-v3-faces/frames/well-alpha-death-front-00.png",
+      "source_color_reference_sha256": "028e2a3018542bf7be60cefb20c2b4d20671237dd89d815b5af97f9779c2d206",
+      "geometry_reference": "death-v2/well-alpha-death-front-00.png",
+      "geometry_reference_sha256": "1b4ba9b6843e7a558b99cdf8040b77821a7df605c28b3795ebaf81d32d9c4f53",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "front",
+      "phase": 1,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/well-alpha-death-front-01.png",
+      "guide_sha256": "675db8224c395063cc0823abf119dbdddb7ff3b09614db9a9d18431fa9d936cd",
+      "source_color_reference": "projection-proof/boss-v3-faces/frames/well-alpha-death-front-01.png",
+      "source_color_reference_sha256": "3846e678062b88e57f43b4d85d3d28c21dd73e3f07a0de0a69bba548fa8bf407",
+      "geometry_reference": "death-v2/well-alpha-death-front-01.png",
+      "geometry_reference_sha256": "aa1bdbf98b730c05e9050ac104257359c0d65eb6bb5d11e9976947fe8cd3a086",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "front",
+      "phase": 2,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/well-alpha-death-front-02.png",
+      "guide_sha256": "66549d245c27807569d962e1add106928b75f41e3acea9fc7361a5548d64a1fd",
+      "source_color_reference": "projection-proof/boss-v3-faces/frames/well-alpha-death-front-02.png",
+      "source_color_reference_sha256": "93f1f7c52b17ef2f582ca2b6b1858042dcace1e65690e8de778a78a07526a5aa",
+      "geometry_reference": "death-v2/well-alpha-death-front-02.png",
+      "geometry_reference_sha256": "9f7b56d2397fc55aa8231410bde38c14b0425230abbcdf4f2cdd3a4e928e2b0b",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "front",
+      "phase": 3,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/well-alpha-death-front-03.png",
+      "guide_sha256": "0f4e1782cdcc6111171d5bbc8616c1ddee3e1ffa59a72f96a8ee3774c6eaf834",
+      "source_color_reference": "projection-proof/boss-v3-faces/frames/well-alpha-death-front-03.png",
+      "source_color_reference_sha256": "736feacbe3aa5a7e824b38a5d1c4f4f42b350897a4af3efec7c909610e624e49",
+      "geometry_reference": "death-v2/well-alpha-death-front-03.png",
+      "geometry_reference_sha256": "b7b83444bac952e122afc25648581ca5a14a0f78574907412db9ade497bc5d4e",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "right",
+      "phase": 0,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/well-alpha-death-right-00.png",
+      "guide_sha256": "ce3a13d6c676ab1c08507938615e31617b534b91c3cafaf0a0410663e5e45760",
+      "source_color_reference": "projection-proof/boss-v3-faces/frames/well-alpha-death-right-00.png",
+      "source_color_reference_sha256": "6fba7bd7e59454274e2e28278559aadcc3f3a81a621a7ab30dd18a8adad1a4d9",
+      "geometry_reference": "death-v2/well-alpha-death-right-00.png",
+      "geometry_reference_sha256": "38d1b2bd82f93e35b707517dab95db91944d42a01f66ed641b262b4201fdd947",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "right",
+      "phase": 1,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/well-alpha-death-right-01.png",
+      "guide_sha256": "1aae4ceb6f34a335c2fb330ce4268f365708e649fece3477a2201f4a53aa2ffc",
+      "source_color_reference": "projection-proof/boss-v3-faces/frames/well-alpha-death-right-01.png",
+      "source_color_reference_sha256": "b118f3ab2304110547884648a9ab227fe3040affc3fd33eb30600c43bc44248c",
+      "geometry_reference": "death-v2/well-alpha-death-right-01.png",
+      "geometry_reference_sha256": "bb087dec27f0b1d13398d8cdde640c67a05c4248af76df0fcee5de65faae6200",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "right",
+      "phase": 2,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/well-alpha-death-right-02.png",
+      "guide_sha256": "b9079ac5f5d9b7e081a3a80d8b1d1617c526f03f7074ebc9cb09f54625350e59",
+      "source_color_reference": "projection-proof/boss-v3-faces/frames/well-alpha-death-right-02.png",
+      "source_color_reference_sha256": "815e9030de7d62488863f7e5b7b8b7ca643ed76cd53b88b839d70c74c921d3a5",
+      "geometry_reference": "death-v2/well-alpha-death-right-02.png",
+      "geometry_reference_sha256": "8e923d5b10791bd06ef7a821df5fd672850f36f93c0f9a45423f99919ea0dba6",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "right",
+      "phase": 3,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/well-alpha-death-right-03.png",
+      "guide_sha256": "c217629f60e5e7c66a5934e3a0fa59371277703b900820fb3660857155ab3ab8",
+      "source_color_reference": "projection-proof/boss-v3-faces/frames/well-alpha-death-right-03.png",
+      "source_color_reference_sha256": "044f7d3d8f0ed8d925db5c1de6ebbd3cd23b042e7469a07800dd3c98a74d2867",
+      "geometry_reference": "death-v2/well-alpha-death-right-03.png",
+      "geometry_reference_sha256": "1d8d2468f4acba80b4ad897e7c78dd45ddd1bfa79218f03c901f90a1f1996cab",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "back",
+      "phase": 0,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/well-alpha-death-back-00.png",
+      "guide_sha256": "c7d27a10b258223aa206336a31a84cf179097e4d38c5bc507ac3d78b25779197",
+      "source_color_reference": "projection-proof/boss-v3-faces/frames/well-alpha-death-back-00.png",
+      "source_color_reference_sha256": "933f049d003df59a8dc3b8381d75872a3b6223369ddddb98bd85aa18bef93e89",
+      "geometry_reference": "death-v2/well-alpha-death-back-00.png",
+      "geometry_reference_sha256": "b4346b47e9fb645ad332797c28295b0a2695a671dfb746817da3346c9a71a315",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "back",
+      "phase": 1,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/well-alpha-death-back-01.png",
+      "guide_sha256": "e95aad2ed2c0f1ba396e0ab2cb4e0474e27f575fc751a5fc6b3e8222bba90069",
+      "source_color_reference": "projection-proof/boss-v3-faces/frames/well-alpha-death-back-01.png",
+      "source_color_reference_sha256": "60ca96abc53f3bb404da0ced0b8617179f3dab3ceb39277f47bff554945900ab",
+      "geometry_reference": "death-v2/well-alpha-death-back-01.png",
+      "geometry_reference_sha256": "9b7e193bc463412a98655c4b54b2ffcc90cc5dfdc9f6972309b1c760fdb49358",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "back",
+      "phase": 2,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/well-alpha-death-back-02.png",
+      "guide_sha256": "9e381d2555238e631029957b93abe8edcc80e506488f2c92bb9c018fd97b7931",
+      "source_color_reference": "projection-proof/boss-v3-faces/frames/well-alpha-death-back-02.png",
+      "source_color_reference_sha256": "6916138a1369e6b0e13614cac3408f938b5ddb41e68b09b253128daee180747a",
+      "geometry_reference": "death-v2/well-alpha-death-back-02.png",
+      "geometry_reference_sha256": "feb1c65110ea6fcd7be8f92db42b37cf8e9f4316651b496ea210572fc009f6f8",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "back",
+      "phase": 3,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/well-alpha-death-back-03.png",
+      "guide_sha256": "da72fa6a9f9cb91d497cb0a2fff819b3b59ecb3bc6d2f37e2b6ecd1cf482133e",
+      "source_color_reference": "projection-proof/boss-v3-faces/frames/well-alpha-death-back-03.png",
+      "source_color_reference_sha256": "d44caf21d7854535697d745cde41b4d32f852cfec2c0279905fae1aa55fe4d30",
+      "geometry_reference": "death-v2/well-alpha-death-back-03.png",
+      "geometry_reference_sha256": "3189d1296bcf260b69f1f6f5e6258610b319ec084b09da119b2fafee2f1c675f",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "left",
+      "phase": 0,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/well-alpha-death-left-00.png",
+      "guide_sha256": "e26baabb312021aba2d6268b02e0ffcfca4fb79e65ad27a517d48cdf4a17ce6c",
+      "source_color_reference": "projection-proof/boss-v3-faces/frames/well-alpha-death-left-00.png",
+      "source_color_reference_sha256": "39f4e6ed423dd8b16837c5febc5f94de0293e50d3a97edb3362cb91bb241b4d9",
+      "geometry_reference": "death-v2/well-alpha-death-left-00.png",
+      "geometry_reference_sha256": "dd6f4a0f50efc6b2ab47005d051220f62ccce7c9915f24a062c22b179454e250",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "left",
+      "phase": 1,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/well-alpha-death-left-01.png",
+      "guide_sha256": "303c79d6429163ca430cf2594e4063edfbd1ec1b0215bf2c48aa9e9c732cd8fa",
+      "source_color_reference": "projection-proof/boss-v3-faces/frames/well-alpha-death-left-01.png",
+      "source_color_reference_sha256": "e493abe2855f3f117c6a8afbfc287ac2ca63a226585ce8023b8101eba0697b8c",
+      "geometry_reference": "death-v2/well-alpha-death-left-01.png",
+      "geometry_reference_sha256": "3bde84f6c0a053d209ff279d6ddffc9a3925414e7ae1b9fcc97a5d83742a0e17",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "left",
+      "phase": 2,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/well-alpha-death-left-02.png",
+      "guide_sha256": "8d1dc16ed74a0bded8e5f5324e6328985b2431f18a58fb6feed4807fb72dbadb",
+      "source_color_reference": "projection-proof/boss-v3-faces/frames/well-alpha-death-left-02.png",
+      "source_color_reference_sha256": "4ca70444f9dae734d915f41b1f01d5353366feb0608de62a79a9f69e76f23def",
+      "geometry_reference": "death-v2/well-alpha-death-left-02.png",
+      "geometry_reference_sha256": "c78adb82240a9a57c4f3d3c2b8a9a134f7486176036473627817a53dfad21833",
+      "registration": "fixed authored position only; do not center phases individually"
+    },
+    {
+      "actor": "well-alpha",
+      "action": "death",
+      "direction": "left",
+      "phase": 3,
+      "frame": [
+        128,
+        96
+      ],
+      "anchor": [
+        64,
+        64
+      ],
+      "pixels_per_metre": 48,
+      "layout": {
+        "scale": 8,
+        "columns": 1,
+        "slot": [
+          192,
+          128
+        ],
+        "inset": [
+          32,
+          16
+        ],
+        "output": [
+          1536,
+          1024
+        ]
+      },
+      "guide": "death-v2/single-guides/well-alpha-death-left-03.png",
+      "guide_sha256": "56c28f1c10401294cc0aabdb94d06aa6adbd9dd3868827620fe4161512a2090a",
+      "source_color_reference": "projection-proof/boss-v3-faces/frames/well-alpha-death-left-03.png",
+      "source_color_reference_sha256": "8882ccc492e0ed6a4ed2b7091f1d515fcb5d098b0e281e4e479e023e8c14bbae",
+      "geometry_reference": "death-v2/well-alpha-death-left-03.png",
+      "geometry_reference_sha256": "1ccd658cbfb6c22eb84ec644f3f10b2d0eeabdab69565b1246f91dfead64083d",
+      "registration": "fixed authored position only; do not center phases individually"
+    }
+  ]
+}

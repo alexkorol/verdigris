@@ -1,0 +1,908 @@
+{
+  "status": "source-mask-repair-verified; appearance-projection-pending",
+  "clips": [
+    {
+      "sex": "male",
+      "action": "club-attack",
+      "direction": "front",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "duration_ms": 800,
+      "frames": [
+        {
+          "path": "transition-v3-skin/male/references/front-00.png",
+          "sha256": "2d81b550f24dc113dbe16b3cc34428f3436eba19be7f0e507640b13764770737",
+          "phase": 0,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/front-01.png",
+          "sha256": "5ad1d9068ac7b2e206a8ff37891f2a654c4f4d91c5babb41c18bac0bbd695b2c",
+          "phase": 1,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/front-02.png",
+          "sha256": "d05315bfb84586aa3bb03bb6dda6b1f824bb0cd40d958e68f866490a85cd6d31",
+          "phase": 2,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/front-03.png",
+          "sha256": "0edbdf7a9fba2151e06c523c56e7dea0ac388936df0e2fc6914707c291907f7c",
+          "phase": 3,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/front-04.png",
+          "sha256": "f9526a72a9e400df2d7be061b1cdec43ab54118a703fefc8f7eb54d58ed93323",
+          "phase": 4,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/front-05.png",
+          "sha256": "d0943b0d5eac58064c3da0c9c6c9a5039bd33b95fbdfaeb98bf328e3ecd10a21",
+          "phase": 5,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/front-06.png",
+          "sha256": "4f3466d51529bfb9b9a78d562bb71f2d4aed579e51560a214ecee1afad8cb18a",
+          "phase": 6,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/front-07.png",
+          "sha256": "1aa276b768e1bdf3afa287bb9f4720cae0ed8b5e35db85c08e2bef79e200afa7",
+          "phase": 7,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/front-08.png",
+          "sha256": "a9628b14c51f8bb8bc8feba343c2d3f9cb7b60651c6747d545e8c08aea459d95",
+          "phase": 8,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/front-09.png",
+          "sha256": "04e797d15a87d4c3da8fcc4c3b76718abc8b7556824b179412d2fcbfc55aede8",
+          "phase": 9,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/front-10.png",
+          "sha256": "9ba1932548db4818470f11ccd0ed16c83b3e166864828b70a3bbdfaea5354f61",
+          "phase": 10,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/front-11.png",
+          "sha256": "816b73179138282ca773e7f9b551f81996f6ef779275fbd3b5e61ca9f88d89bc",
+          "phase": 11,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/front-12.png",
+          "sha256": "36e00cd520ee5de709fc637f1d59eb95b44567476dad1656debcc4da7aa10b9f",
+          "phase": 12,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/front-13.png",
+          "sha256": "c7510631dc7015b79b2d563a6393b455f0ad5db4fbffe6733342df1940bc931b",
+          "phase": 13,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/front-14.png",
+          "sha256": "27dfe55bc230cad9eb46c13455467f6c2ec7494154efea9106705f464aa38c70",
+          "phase": 14,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/front-15.png",
+          "sha256": "db41c00d62352681a6c1b2667233a3dc0787088c74d852f94f4cb2d35c21e575",
+          "phase": 15,
+          "duration_ms": 50
+        }
+      ]
+    },
+    {
+      "sex": "male",
+      "action": "club-attack",
+      "direction": "right",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "duration_ms": 800,
+      "frames": [
+        {
+          "path": "transition-v3-skin/male/references/right-00.png",
+          "sha256": "2755311bb5a2990e26eb34d5275e01d7f14fffbe7ef429c77b9beec70f3ec574",
+          "phase": 0,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/right-01.png",
+          "sha256": "97a583b09c378506cd530086697c95f3336658d8e53df0e88e6547c5faf323fb",
+          "phase": 1,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/right-02.png",
+          "sha256": "1fbcc9a807fc7e090008b3997b2c403fada5d87614bb71907c0ac9231d77bb4b",
+          "phase": 2,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/right-03.png",
+          "sha256": "8ea8af22179694a43030c9bd3d2e06d16135d0abeb2417a83d95483b2a12dcad",
+          "phase": 3,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/right-04.png",
+          "sha256": "42b994ce2052219d15853c63c6173051abda3ac0e4529527a31dc706c7819183",
+          "phase": 4,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/right-05.png",
+          "sha256": "ceecb4776e022cf66185512a6f305d8ca01c426d8f3d54bb4a42e01b17a45736",
+          "phase": 5,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/right-06.png",
+          "sha256": "224fb2d1763370cde0182f5f0bb37d507fbdab70de0ca830012737a70e08eba2",
+          "phase": 6,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/right-07.png",
+          "sha256": "a79ad5f0181fbe288a6189967cdc7fbc9262e065dbc8fde32a0c947bc79adb54",
+          "phase": 7,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/right-08.png",
+          "sha256": "0e55acb5ba8ec9493c7228dc50ee6924770cfb1a50b96c486cabd954f2edc047",
+          "phase": 8,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/right-09.png",
+          "sha256": "6e3bba1e914be3186d84605c8457c246213d766d66e7695e75ca65d9e88f924d",
+          "phase": 9,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/right-10.png",
+          "sha256": "fe655e8063b1f2f31e25bd79de8bd1eef93d5e3a8d824541216b7b999bc2ec53",
+          "phase": 10,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/right-11.png",
+          "sha256": "10007c579febcac2264b909c097f4f4cbddb23cc844696c9b728c53383af4aa4",
+          "phase": 11,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/right-12.png",
+          "sha256": "0531322dc4ca8905719cec8986892adde4e10eeecc765a66344a39203c9e441a",
+          "phase": 12,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/right-13.png",
+          "sha256": "f4b9027f427a26c59ca176cb16a541b9ca0d923bba720db8323bb099c1a6e3c5",
+          "phase": 13,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/right-14.png",
+          "sha256": "c69d6e09f20cdd8fb19288d3bf34f542cc5a6f856f11d3eb0aa1b873910faaf8",
+          "phase": 14,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/right-15.png",
+          "sha256": "32e699f51fcfc6c4bb67612297b9633d966d50fd34194bb9afb73b9355d02eb3",
+          "phase": 15,
+          "duration_ms": 50
+        }
+      ]
+    },
+    {
+      "sex": "male",
+      "action": "club-attack",
+      "direction": "back",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "duration_ms": 800,
+      "frames": [
+        {
+          "path": "transition-v3-skin/male/references/back-00.png",
+          "sha256": "633d2aa86855e4f5f0cbad118748e6461fb6918a546da1b12265533add693dac",
+          "phase": 0,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/back-01.png",
+          "sha256": "a760a66741add260e65fa026d9ee833398ce56d1f7704014b6f2848b9986457c",
+          "phase": 1,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/back-02.png",
+          "sha256": "83039e685296bd48c631e24dd484fa724a7bf17e465cbf2c6fa99e80d663f49c",
+          "phase": 2,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/back-03.png",
+          "sha256": "ecb350984469584b677e761f490410598bc01d1fe23d97b2aac619adbbcdc8b7",
+          "phase": 3,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/back-04.png",
+          "sha256": "4c16f2cc4332e1edfebbed62b3491df5e858fb9c4ee74bc1e45d1c0bb94cf341",
+          "phase": 4,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/back-05.png",
+          "sha256": "14ee9339ddda9060c58b4df54f118f692e8e8fdf256070d8628b035a9c7ee0a4",
+          "phase": 5,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/back-06.png",
+          "sha256": "1077f0ad0b3e995b60940705f8a949f09010bfe1fb9c361e0fee0ee077346917",
+          "phase": 6,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/back-07.png",
+          "sha256": "014025d505a2350ed64c482ec8312807440aea6b075b3affccefe5d0016d53eb",
+          "phase": 7,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/back-08.png",
+          "sha256": "9a34cc82f862736bb01255d8655be80da4f56a3c1a78f03e29e13be359dd83b7",
+          "phase": 8,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/back-09.png",
+          "sha256": "2db2bc76e3121be6bb86a8ca74277950dd6ede01bbd7ae74233f40369aae2203",
+          "phase": 9,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/back-10.png",
+          "sha256": "1b0adae429f1737608d05f0e55f3272f0297c47b62a1771b1d40d17d5b740438",
+          "phase": 10,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/back-11.png",
+          "sha256": "999272c6dd8dc5fdb5605810080ee5cbcd8f3fa12763eb951d077383aac75379",
+          "phase": 11,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/back-12.png",
+          "sha256": "33c8d805512b904308cba515faec11b81a1cb09d3ef1fc91a088fb3b741335f8",
+          "phase": 12,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/back-13.png",
+          "sha256": "6f78cc4215531fcdb22798da13aaa5a0caf0a2a5cebe661033567e98df009152",
+          "phase": 13,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/back-14.png",
+          "sha256": "ae349f65c72b9cb218655b83a45d708742c7ea49020357ed0b62a9c8711a77ea",
+          "phase": 14,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/back-15.png",
+          "sha256": "3f7cd0602904e9c52f27c6a531877f85e5ca28fbf2043aaf0198ed42e25504c2",
+          "phase": 15,
+          "duration_ms": 50
+        }
+      ]
+    },
+    {
+      "sex": "male",
+      "action": "club-attack",
+      "direction": "left",
+      "frame_size": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "pixels_per_metre": 48,
+      "duration_ms": 800,
+      "frames": [
+        {
+          "path": "transition-v3-skin/male/references/left-00.png",
+          "sha256": "1d2734f4092bfa3f68f44116232664eff0356be862dcfc82c5dd4a9b09a10976",
+          "phase": 0,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/left-01.png",
+          "sha256": "f7c4d9d32b537e219d913aa8ec4ff29e25f2f934c6724e49fa17c465decd0c25",
+          "phase": 1,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/left-02.png",
+          "sha256": "e0b53a7975ca74fe21f8afb3d2139281be3eb3bde8075598bb12d9cd9018b4f9",
+          "phase": 2,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/left-03.png",
+          "sha256": "acbf71bb7dcea8864318eb4030e1d07dbc20358c5622257973caf6502b2e7c24",
+          "phase": 3,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/left-04.png",
+          "sha256": "03f5fceae3baa06103374156ee860d20d5d0bb8e4d8e5dcf01ee5c5d9295d63f",
+          "phase": 4,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/left-05.png",
+          "sha256": "4a008b25c7f62159c46193d3f0b321ba4d43427978799e908c87732434011b57",
+          "phase": 5,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/left-06.png",
+          "sha256": "136d7d6510df13ffc297da57497d162c2a24a7ec395fb2ddcad18fc79e3940a2",
+          "phase": 6,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/left-07.png",
+          "sha256": "440ebdc40425e57f3cff0e4639ba9a57220f065bc5528bbefda4422b13dd68fe",
+          "phase": 7,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/left-08.png",
+          "sha256": "3045c2cfe0d981b5655623a27de940a4187281bba72e4102faddee03e832d1d6",
+          "phase": 8,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/left-09.png",
+          "sha256": "72d4282f2f6dc2aa9c8c0b50860b6675fe6c10cbcd350dc2e105c0b10f910153",
+          "phase": 9,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/left-10.png",
+          "sha256": "d6ccf9e59058d06aa0800fc5b119435fb1a60c692d27413a33b2640138f0cd8b",
+          "phase": 10,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/left-11.png",
+          "sha256": "1ad5769debef3d1562c390b14923b37c6c843e7b528d10067d6410872af5f373",
+          "phase": 11,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/left-12.png",
+          "sha256": "538cf7a94507fd255966b9f6e28811da5c11b6dc3447630354d237a7fd1d7ecd",
+          "phase": 12,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/left-13.png",
+          "sha256": "f972322e5313fc4de40f019a38e8701412f2bff950ca80b3ae5ebda6f5942e50",
+          "phase": 13,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/left-14.png",
+          "sha256": "812b5f80396bc4fad8079ee763bfc6e0bee15abbe034e7c3937d0e4ea30ac872",
+          "phase": 14,
+          "duration_ms": 50
+        },
+        {
+          "path": "transition-v3-skin/male/references/left-15.png",
+          "sha256": "ab49db3ef35817b7507eddf83115f5723b164cdd082c89127af41fc2b70d7660",
+          "phase": 15,
+          "duration_ms": 50
+        }
+      ]
+    }
+  ],
+  "changes_from_transition_v2": [
+    {
+      "direction": "front",
+      "phase": 0,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "front",
+      "phase": 1,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "front",
+      "phase": 2,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "front",
+      "phase": 3,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "front",
+      "phase": 4,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "front",
+      "phase": 5,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "front",
+      "phase": 6,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "front",
+      "phase": 7,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "front",
+      "phase": 8,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "front",
+      "phase": 9,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "front",
+      "phase": 10,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "front",
+      "phase": 11,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "front",
+      "phase": 12,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "front",
+      "phase": 13,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "front",
+      "phase": 14,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "front",
+      "phase": 15,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "right",
+      "phase": 0,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 5
+    },
+    {
+      "direction": "right",
+      "phase": 1,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 4
+    },
+    {
+      "direction": "right",
+      "phase": 2,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 4
+    },
+    {
+      "direction": "right",
+      "phase": 3,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 5
+    },
+    {
+      "direction": "right",
+      "phase": 4,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 5
+    },
+    {
+      "direction": "right",
+      "phase": 5,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 7
+    },
+    {
+      "direction": "right",
+      "phase": 6,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 2
+    },
+    {
+      "direction": "right",
+      "phase": 7,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 20
+    },
+    {
+      "direction": "right",
+      "phase": 8,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 16
+    },
+    {
+      "direction": "right",
+      "phase": 9,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 13
+    },
+    {
+      "direction": "right",
+      "phase": 10,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 7
+    },
+    {
+      "direction": "right",
+      "phase": 11,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 6
+    },
+    {
+      "direction": "right",
+      "phase": 12,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 6
+    },
+    {
+      "direction": "right",
+      "phase": 13,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 4
+    },
+    {
+      "direction": "right",
+      "phase": 14,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 4
+    },
+    {
+      "direction": "right",
+      "phase": 15,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 5
+    },
+    {
+      "direction": "back",
+      "phase": 0,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 1,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 2,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 3,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 4,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 5,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 6,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "back",
+      "phase": 7,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 2
+    },
+    {
+      "direction": "back",
+      "phase": 8,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 3
+    },
+    {
+      "direction": "back",
+      "phase": 9,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 2
+    },
+    {
+      "direction": "back",
+      "phase": 10,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 1
+    },
+    {
+      "direction": "back",
+      "phase": 11,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 12,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 13,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 14,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "back",
+      "phase": 15,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "left",
+      "phase": 0,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "left",
+      "phase": 1,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "left",
+      "phase": 2,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "left",
+      "phase": 3,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "left",
+      "phase": 4,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 2
+    },
+    {
+      "direction": "left",
+      "phase": 5,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 9
+    },
+    {
+      "direction": "left",
+      "phase": 6,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 6
+    },
+    {
+      "direction": "left",
+      "phase": 7,
+      "alpha_pixels_added": 1,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 5
+    },
+    {
+      "direction": "left",
+      "phase": 8,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 4
+    },
+    {
+      "direction": "left",
+      "phase": 9,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 9
+    },
+    {
+      "direction": "left",
+      "phase": 10,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "left",
+      "phase": 11,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 2
+    },
+    {
+      "direction": "left",
+      "phase": 12,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "left",
+      "phase": 13,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "left",
+      "phase": 14,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    },
+    {
+      "direction": "left",
+      "phase": 15,
+      "alpha_pixels_added": 0,
+      "alpha_pixels_removed": 0,
+      "rgba_pixels_changed_gt4": 0
+    }
+  ],
+  "visual_review": "Four cardinal directions at native scale and high-resolution torso views; no new visible skin protrusions. Dark underarm deformation shadow distinguished from missing skin using emission diagnostic."
+}

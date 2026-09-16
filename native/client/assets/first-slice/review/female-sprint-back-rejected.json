@@ -1,0 +1,254 @@
+{
+  "clip": "female-sprint-back",
+  "source_sha256": "26ec21b4d9b10bf1ffe5d3ee7b40fa1a129434c7b55ccc62e57d8807b7c6d39d",
+  "frame_size": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "base_cell": 48,
+  "alpha_policy": "Returned alpha threshold 128; no RGB key",
+  "grid_candidates": [
+    {
+      "size": 20,
+      "source": "autocorr",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 1.3023605008609818,
+      "variance": 496.785888671875,
+      "gated_out": false
+    },
+    {
+      "size": 32,
+      "source": "autocorr",
+      "offset": [
+        31,
+        17
+      ],
+      "score": 1.2977408560080537,
+      "variance": 736.1597290039062,
+      "gated_out": true
+    },
+    {
+      "size": 28,
+      "source": "autocorr",
+      "offset": [
+        23,
+        24
+      ],
+      "score": 1.2818056120178534,
+      "variance": 677.40966796875,
+      "gated_out": true
+    },
+    {
+      "size": 24,
+      "source": "autocorr",
+      "offset": [
+        9,
+        7
+      ],
+      "score": 1.2782167212469273,
+      "variance": 596.1113891601562,
+      "gated_out": false
+    },
+    {
+      "size": 16,
+      "source": "autocorr",
+      "offset": [
+        0,
+        12
+      ],
+      "score": 1.2607271621947538,
+      "variance": 427.9017639160156,
+      "gated_out": false
+    },
+    {
+      "size": 12,
+      "source": "autocorr",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 1.209398189586174,
+      "variance": 326.4803771972656,
+      "gated_out": false
+    },
+    {
+      "size": 8,
+      "source": "autocorr",
+      "offset": [
+        0,
+        4
+      ],
+      "score": 1.1928367087752667,
+      "variance": 209.22169494628906,
+      "gated_out": false
+    },
+    {
+      "size": 4,
+      "source": "autocorr",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 1.1427547409099579,
+      "variance": 88.46662139892578,
+      "gated_out": false
+    },
+    {
+      "size": 7,
+      "source": "fine",
+      "offset": [
+        0,
+        3
+      ],
+      "score": 1.1142022056301741,
+      "variance": 195.35630798339844,
+      "gated_out": false
+    },
+    {
+      "size": 6,
+      "source": "fine",
+      "offset": [
+        0,
+        1
+      ],
+      "score": 1.0644369967095604,
+      "variance": 170.06651306152344,
+      "gated_out": false
+    },
+    {
+      "size": 5,
+      "source": "fine",
+      "offset": [
+        1,
+        2
+      ],
+      "score": 1.0453523851855209,
+      "variance": 138.52969360351562,
+      "gated_out": false
+    },
+    {
+      "size": 3,
+      "source": "fine",
+      "offset": [
+        0,
+        1
+      ],
+      "score": 0.9583984397819499,
+      "variance": 77.15950012207031,
+      "gated_out": false
+    },
+    {
+      "size": 148,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.6069892149409927,
+      "variance": 2204.508056640625,
+      "gated_out": true
+    },
+    {
+      "size": 141,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.5443591800833557,
+      "variance": 2241.053955078125,
+      "gated_out": true
+    },
+    {
+      "size": 189,
+      "source": "fold",
+      "offset": [
+        158,
+        79
+      ],
+      "score": 0.40290084360821565,
+      "variance": 2511.259765625,
+      "gated_out": true
+    },
+    {
+      "size": 182,
+      "source": "fold",
+      "offset": [
+        172,
+        37
+      ],
+      "score": 0.4009689616023858,
+      "variance": 2208.692626953125,
+      "gated_out": true
+    },
+    {
+      "size": 188,
+      "source": "fold",
+      "offset": [
+        160,
+        39
+      ],
+      "score": 0.3946576269019103,
+      "variance": 2389.744384765625,
+      "gated_out": true
+    },
+    {
+      "size": 180,
+      "source": "fold",
+      "offset": [
+        56,
+        45
+      ],
+      "score": 0.37206786463697417,
+      "variance": 2653.4560546875,
+      "gated_out": true
+    },
+    {
+      "size": 168,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.3508242847637549,
+      "variance": 2474.819091796875,
+      "gated_out": true
+    },
+    {
+      "size": 192,
+      "source": "fold",
+      "offset": [
+        0,
+        0
+      ],
+      "score": 0.17743024927356416,
+      "variance": 2733.984130859375,
+      "gated_out": true
+    }
+  ],
+  "visual_acceptance": false,
+  "frames": [],
+  "selected_grid": {
+    "size": 4,
+    "source": "autocorr",
+    "offset": [
+      0,
+      0
+    ],
+    "score": 1.1427547409099579,
+    "variance": 88.46662139892578,
+    "gated_out": false
+  },
+  "whole_cycle_translation": [
+    -1,
+    -1
+  ],
+  "registered_mean_iou": 0.6614386414628481
+}
