@@ -1,0 +1,53 @@
+{
+  "fixture_id": "TASK-0136/counter-confusion",
+  "schema_version": "1.0.0",
+  "purpose": "Negative control (expected nonzero exit): the budget context collapses the two structurally distinct ledgers into one merged counter sourced from quests.questPoints, exactly the COUNTER_CONFUSION shape named by the accepted TASK-0112 contract (counter_separation) and NEG-007. Identifiers and numbers are synthetic; nothing is player-facing content or balance.",
+  "context": {
+    "approved_graph_versions": [2],
+    "graph": {
+      "envelope": "verdigris.passive-tree-authority/graph@1",
+      "graph_version": 2,
+      "origin": "n:000",
+      "nodes": [
+        { "node_id": "n:000" },
+        { "node_id": "n:001" },
+        { "node_id": "n:002" },
+        { "node_id": "n:003" }
+      ],
+      "edges": [
+        { "edge_id": "e:001", "from_node": "n:000", "to_node": "n:001", "variants": ["v:0"] },
+        { "edge_id": "e:002", "from_node": "n:001", "to_node": "n:002", "variants": ["v:0", "v:1"] },
+        { "edge_id": "e:003", "from_node": "n:002", "to_node": "n:003", "variants": ["v:0"] }
+      ]
+    },
+    "budget": {
+      "persistent_commission_points": 0,
+      "live_tree_points": 2,
+      "points": {
+        "value": 5,
+        "source": "quests.questPoints",
+        "used_for": "both_commission_record_and_tree_budget"
+      },
+      "earned": 2,
+      "spent": 2,
+      "unspent": 0,
+      "designated_earned_source": "both",
+      "cost_rule": {
+        "per_non_origin_node": 1,
+        "per_edge_choice": 1
+      }
+    },
+    "registered_migrations": {}
+  },
+  "candidate": {
+    "kind": "allocation",
+    "payload": {
+      "envelope": "verdigris.passive-tree-authority/allocation@1",
+      "graph_version": 2,
+      "allocated_nodes": ["n:000", "n:001"],
+      "edge_choices": [
+        { "edge_id": "e:001", "variant": "v:0" }
+      ]
+    }
+  }
+}

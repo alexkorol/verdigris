@@ -1,0 +1,50 @@
+{
+  "fixture_id": "TASK-0136/valid-synthetic",
+  "schema_version": "1.0.0",
+  "purpose": "Content-neutral valid candidate: allocation claim that satisfies every accepted TASK-0112 envelope and invariant. Graph, identifiers, and numbers are obviously synthetic (n:000/e:001/v:0 style), copied from the TASK-0112 negative-case conventions; the cost_rule values restate the observed one-point-per-choice convention recorded in TASK-0112 REPORT provenance. Nothing here is player-facing content, topology commitment, or balance.",
+  "context": {
+    "approved_graph_versions": [2],
+    "graph": {
+      "envelope": "verdigris.passive-tree-authority/graph@1",
+      "graph_version": 2,
+      "origin": "n:000",
+      "nodes": [
+        { "node_id": "n:000" },
+        { "node_id": "n:001" },
+        { "node_id": "n:002" },
+        { "node_id": "n:003" }
+      ],
+      "edges": [
+        { "edge_id": "e:001", "from_node": "n:000", "to_node": "n:001", "variants": ["v:0"] },
+        { "edge_id": "e:002", "from_node": "n:001", "to_node": "n:002", "variants": ["v:0", "v:1"] },
+        { "edge_id": "e:003", "from_node": "n:002", "to_node": "n:003", "variants": ["v:0"] }
+      ]
+    },
+    "budget": {
+      "persistent_commission_points": 0,
+      "live_tree_points": 2,
+      "earned": 2,
+      "spent": 2,
+      "unspent": 0,
+      "designated_earned_source": "live_tree_points",
+      "cost_rule": {
+        "per_non_origin_node": 1,
+        "per_edge_choice": 1
+      }
+    },
+    "registered_migrations": {}
+  },
+  "candidate": {
+    "kind": "allocation",
+    "payload": {
+      "envelope": "verdigris.passive-tree-authority/allocation@1",
+      "graph_version": 2,
+      "allocated_nodes": ["n:000", "n:001"],
+      "edge_choices": [
+        { "edge_id": "e:001", "variant": "v:0" }
+      ],
+      "selected_node": null,
+      "calling_order": []
+    }
+  }
+}
