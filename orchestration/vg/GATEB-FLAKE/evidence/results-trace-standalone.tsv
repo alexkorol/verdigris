@@ -1,0 +1,5 @@
+﻿run	exit	elapsed_s	fail_signature	log
+1	0	62	0	Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\gateb-flake\orchestration\vg\GATEB-FLAKE\evidence\trace-standalone-run1.log
+1	0	62	0	Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\gateb-flake\orchestration\vg\GATEB-FLAKE\evidence\trace-standalone-run1.log
+2	0	74	0	Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\gateb-flake\orchestration\vg\GATEB-FLAKE\evidence\trace-standalone-run2.log
+3	1	106	1	Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\gateb-flake\orchestration\vg\GATEB-FLAKE\evidence\trace-standalone-run3.log

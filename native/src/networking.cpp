@@ -5,6 +5,7 @@
 #include <atomic>
 #include <chrono>
 #include <cctype>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <iomanip>
@@ -3994,6 +3995,32 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
       actor->stats.level, engaged_here ? player_power : 0, actor->stats.life,
       actor->stats.life_max, now, &actor->stats.resource,
       actor->stats.resource_max);
+  // GATEB-FLAKE diagnostics (env-gated, inert unless VERDIGRIS_GATEB_TRACE=1):
+  // dump every combat event with attacker position so the intermittent
+  // successor death can be attributed to an exact monster/skill/cadence.
+  {
+    static const bool gateb_trace = std::getenv("VERDIGRIS_GATEB_TRACE") != nullptr;
+    if (gateb_trace && !events.empty()) {
+      const Vec2 trace_tile = tile_movement::occupied_tile(world_->position());
+      for (const auto& event : events) {
+        int ax = -1, ay = -1, alive = -1;
+        for (const auto& m : world_->monsters()) {
+          if (m.uuid == event.attacker_id) {
+            ax = m.x; ay = m.y; alive = m.alive ? 1 : 0;
+            break;
+          }
+        }
+        std::printf(
+            "GATEB-TRACE t=%lld type=%s attacker=%s(%d,%d,alive=%d) skill=%s "
+            "target=%s amount=%d health=%d/%d died=%d player_at=(%d,%d)\n",
+            static_cast<long long>(now), event.type.c_str(),
+            event.attacker_name.c_str(), ax, ay, alive, event.skill_id.c_str(),
+            event.target_id == identity_ ? "PLAYER" : event.target_name.c_str(),
+            event.amount, event.health, event.health_max, event.died ? 1 : 0,
+            trace_tile.x, trace_tile.y);
+      }
+    }
+  }
   // N5 respawn ward: monsters cannot damage a freshly-respawned scion until
   // the scion acts. Absorb monster damage here (the player still lands hits);
   // the skill handler ends the ward.
