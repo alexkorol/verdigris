@@ -1,4 +1,4 @@
-{
+﻿{
   "schema_version": 1,
   "pack": "rpg_inventory_items",
   "provenance": {
@@ -91,7 +91,7 @@
     },
     {
       "id": "bird_omen",
-      "category": "trophy",
+      "category": "weapon",
       "display_name": "Bird Omen",
       "path": "bird_omen.png",
       "source_path": "tools/rpg_inventory/assets/bird_omen.png",
@@ -101,7 +101,7 @@
     },
     {
       "id": "blood_omen",
-      "category": "trophy",
+      "category": "weapon",
       "display_name": "Blood Omen",
       "path": "blood_omen.png",
       "source_path": "tools/rpg_inventory/assets/blood_omen.png",
