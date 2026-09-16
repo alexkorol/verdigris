@@ -29,6 +29,18 @@
 #include "local_session.hpp"
 #include "presentation_state.hpp"
 #include "session.hpp"
+#include "build_identity.hpp"
+#ifndef VERDIGRIS_BUILD_ID
+#define VERDIGRIS_BUILD_ID "unknown"
+#endif
+#ifndef VERDIGRIS_BUILD_DIRTY
+#define VERDIGRIS_BUILD_DIRTY 0
+#endif
+
+std::string native_build_identity() {
+  return std::string("Build ") + VERDIGRIS_BUILD_ID +
+      (VERDIGRIS_BUILD_DIRTY ? " (modified source)" : "");
+}
 
 // TASK-0122 Phase A: the single named presentation constants table.
 namespace phase_a = verdigris::client::phase_a;
@@ -360,7 +372,7 @@ HudRect gear_pane_rect(int width, int height) {
   // measured world lane from the character sheet at the shipped 960-wide
   // side-by-side size, while retaining a usable minimum on narrow debug
   // windows.
-  const int pane_w = 380 * s;
+  const int pane_w = 680 * s;
   const int pane_top = 24 * s;
   const int x = std::max(24, width - pane_w - 24);
   // End above the mana orb's upper edge at the 960x600 side-by-side size;
@@ -2145,9 +2157,14 @@ void submit_pick_up(ClientState& state, const std::string& id) {
     queue_local_command(state, verdigris::Command::pick_up(id));
 }
 
-void submit_equip(ClientState& state, const std::string& id) {
-  if (state.session)
-    state.session->submit(verdigris::client::ClientCommand::equip(id));
+void submit_equip(ClientState& state, const std::string& id,
+                  const std::string& seat = {}) {
+  verdigris::client::ui::request_equip(state.equip_view, id);
+  if (state.session) {
+    auto command = verdigris::client::ClientCommand::equip(id);
+    command.extra = seat;
+    state.session->submit(command);
+  }
   else if (state.simulation)
     queue_local_command(state, verdigris::Command::equip(id));
 }
@@ -4245,8 +4262,11 @@ std::vector<char> loot_nameplate_mask(
   return mask;
 }
 
-constexpr int kPackColumns = 4;
-constexpr int kPackRows = 6;
+constexpr int kPackColumns = verdigris::PlayerInventory::kColumns;
+constexpr int kPackRows = verdigris::PlayerInventory::kRows;
+static constexpr const char* kDollSeats[] = {
+    "head", "necklace", "right_hand", "armor", "back", "left_hand",
+    "gloves", "belt", "feet", "ring", "ring2", "warhorn", "quick_rig", "attendant"};
 constexpr int kDollSlotW = 54;
 constexpr int kDollSlotH = 28;
 constexpr int kDollGap = 4;
@@ -4290,6 +4310,7 @@ struct PackGeom {
   int grid_left = 0;
   int grid_top = 0;
   RECT seat{};
+  std::array<RECT, paper_doll::kSlotCount> seats{};
 };
 
 PackGeom make_pack_geom(int width, int height) {
@@ -4301,16 +4322,18 @@ PackGeom make_pack_geom(int width, int height) {
   const int right = left + pane.w;
   geom.seat = paper_doll_slot_rect(width, height,
                                    paper_doll::slot_index(paper_doll::Slot::MainHand));
+  for (std::size_t i = 0; i < geom.seats.size(); ++i)
+    geom.seats[i] = paper_doll_slot_rect(width, height, i);
   // Keep this offset in lockstep with paint_gear_overlay. Two type-floor
   // stats lines sit above the weapon seat; 62px collides with DEF/LVL.
-  geom.gap = 6 * geom.s;
+  geom.gap = 4 * geom.s;
   const int grid_left = left + 190 * geom.s;
   geom.cell_w =
-      (right - grid_left - 14 * geom.s - (kPackColumns - 1) * 6 * geom.s) /
+      (right - grid_left - 14 * geom.s - (kPackColumns - 1) * geom.gap) /
       kPackColumns;
   geom.cell_h = 30 * geom.s;
   geom.grid_left = grid_left;
-  geom.grid_top = top + 148 * geom.s;
+  geom.grid_top = top + 98 * geom.s;
   return geom;
 }
 
@@ -4327,17 +4350,18 @@ bool pack_hit_cell(const PackGeom& geom, int mx, int my, int& gx, int& gy) {
   return mx < cx + geom.cell_w && my < cy + geom.cell_h;
 }
 
-bool pack_hit_seat(const PackGeom& geom, int mx, int my) {
-  return mx >= geom.seat.left && mx < geom.seat.right && my >= geom.seat.top &&
-         my < geom.seat.bottom;
+int pack_hit_seat(const PackGeom& geom, int mx, int my) {
+  for (std::size_t i = 0; i < geom.seats.size(); ++i)
+    if (PtInRect(&geom.seats[i], POINT{mx, my})) return static_cast<int>(i);
+  return -1;
 }
 
 void pack_first_free(const inventory_grid::State& grid, std::uint8_t& x,
-                     std::uint8_t& y, bool& found) {
+                     std::uint8_t& y, bool& found, int width, int height) {
   found = false;
   for (std::uint8_t row = 0; row < grid.height; ++row) {
     for (std::uint8_t col = 0; col < grid.width; ++col) {
-      if (inventory_grid::can_place(grid, col, row, 1, 1)) {
+      if (inventory_grid::can_place(grid, col, row, width, height)) {
         x = col;
         y = row;
         found = true;
@@ -4349,7 +4373,9 @@ void pack_first_free(const inventory_grid::State& grid, std::uint8_t& x,
 
 void reconcile_pack_grid(ClientState& state) {
   std::string fingerprint;
-  for (const auto& item : state.world.carried) fingerprint += item.id + ",";
+  for (const auto& item : state.world.carried)
+    fingerprint += item.id + ":" + std::to_string(item.equipped) + ":" +
+        std::to_string(item.width) + "x" + std::to_string(item.height) + ",";
   if (fingerprint == state.pack_fingerprint && state.pack_grid.valid() &&
       state.pack_grid.width == kPackColumns &&
       state.pack_grid.height == kPackRows)
@@ -4359,11 +4385,12 @@ void reconcile_pack_grid(ClientState& state) {
   next.height = kPackRows;
   (void)inventory_grid::rebuild_occupancy(next);
   for (const auto& carried : state.world.carried) {
+    if (carried.equipped) continue;
     const std::uint32_t id = pack_stable_id(carried.id);
     inventory_grid::Item placed{};
     placed.id = id;
-    placed.width = 1;
-    placed.height = 1;
+    placed.width = static_cast<std::uint8_t>(std::clamp(carried.width, 1, kPackColumns));
+    placed.height = static_cast<std::uint8_t>(std::clamp(carried.height, 1, kPackRows));
     placed.stack_count = 1;
     placed.stack_max = 1;
     const std::size_t old = inventory_grid::find_index(state.pack_grid, id);
@@ -4371,10 +4398,10 @@ void reconcile_pack_grid(ClientState& state) {
     if (old != inventory_grid::kMaxItems) {
       placed.x = state.pack_grid.items[old].x;
       placed.y = state.pack_grid.items[old].y;
-      if (inventory_grid::can_place(next, placed.x, placed.y, 1, 1))
+      if (inventory_grid::can_place(next, placed.x, placed.y, placed.width, placed.height))
         found = true;
     }
-    if (!found) pack_first_free(next, placed.x, placed.y, found);
+    if (!found) pack_first_free(next, placed.x, placed.y, found, placed.width, placed.height);
     if (!found) continue;
     (void)inventory_grid::place(next, placed);
   }
@@ -4396,7 +4423,11 @@ bool pack_can_land(const inventory_grid::State& grid, std::uint32_t id, int x,
   const auto uy = static_cast<std::uint8_t>(y);
   const std::uint32_t occupant = inventory_grid::item_at(grid, ux, uy);
   if (occupant == 0 || occupant == id)
-    return inventory_grid::can_place(grid, ux, uy, 1, 1, id);
+    {
+      const auto index = inventory_grid::find_index(grid, id);
+      return index != inventory_grid::kMaxItems && inventory_grid::can_place(
+          grid, ux, uy, grid.items[index].width, grid.items[index].height, id);
+    }
   inventory_grid::State scratch = grid;
   return inventory_grid::swap(scratch, id, occupant) == inventory_grid::Status::Ok;
 }
@@ -4416,22 +4447,41 @@ void pack_begin_drag(ClientState& state, int gx, int gy) {
   if (index < state.world.carried.size()) state.selected_item = index;
 }
 
-bool pack_commit_drop(ClientState& state, bool onto_weapon_seat) {
+void cancel_pack_drag(ClientState& state) {
+  state.pack_drag_live = false;
+  state.pack_drag_id = 0;
+  state.pack_preview_x = state.pack_preview_y = -1;
+  state.pack_preview_ok = false;
+}
+
+bool pack_commit_drop(ClientState& state, int seat_index) {
   if (!state.pack_drag_live || state.pack_drag_id == 0) {
     state.pack_last_drop = "idle";
     return false;
   }
   const std::uint32_t id = state.pack_drag_id;
   state.pack_drag_live = false;
-  if (onto_weapon_seat) {
+  state.pack_drag_id = 0;
+  if (seat_index >= 0) {
     const std::size_t index = carried_index_for_pack_id(state, id);
     if (index >= state.world.carried.size()) {
       state.pack_last_drop = "reject";
       return false;
     }
+    const auto& item = state.world.carried[index];
+    const std::string target_seat = kDollSeats[seat_index];
+    const std::string source_seat = item.equip_seat.empty() && !state.session
+        ? "right_hand" : item.equip_seat;
+    const bool ring = (source_seat == "ring" || source_seat == "ring2") &&
+                      (target_seat == "ring" || target_seat == "ring2");
+    if (item.equipped || (source_seat != target_seat && !ring)) {
+      state.pack_last_drop = "reject";
+      show_hint(state, "This item does not fit that seat");
+      return false;
+    }
     state.selected_item = index;
     const std::string before = state.world.carried[index].id;
-    submit_equip(state, before);
+    submit_equip(state, before, target_seat);
     state.pack_last_drop = "equip";
     show_hint(state, "Equip requested");
     return true;
@@ -13554,8 +13604,27 @@ int scenario_remote_render_list() {
 
   bool saw_monster = false, saw_swing = false, saw_drop = false;
   for (int step = 0; step < 240; ++step) {
-    state.session->submit(verdigris::client::ClientCommand::use_action("melee"));
-    if (step % 4 == 0) state.session->submit(verdigris::client::ClientCommand::move(1, 0));
+    const auto& model = state.session->model();
+    const verdigris::client::ClientMonster* nearest = nullptr;
+    double distance = 1e9;
+    for (const auto& monster : model.monsters) {
+      if (!monster.alive) continue;
+      const double candidate = std::hypot(monster.x - model.player.x, monster.y - model.player.y);
+      if (candidate < distance) { distance = candidate; nearest = &monster; }
+    }
+    if (nearest && distance > 1.15) {
+      // This render fixture uses the existing scene-placement seam, then
+      // waits for its echo. A distant swing no longer proves physical contact.
+      auto* remote = static_cast<verdigris::client::RemoteProtocolSession*>(state.session.get());
+      remote->send_raw("dev:teleport", verdigris::networking::JsonValue::Object{
+          {"x", static_cast<int>(std::lround(nearest->x))},
+          {"y", static_cast<int>(std::lround(nearest->y))}});
+    } else if (nearest) {
+      const int dx = nearest->x > model.player.x + 0.05 ? 1 : nearest->x < model.player.x - 0.05 ? -1 : 0;
+      const int dy = nearest->y > model.player.y + 0.05 ? 1 : nearest->y < model.player.y - 0.05 ? -1 : 0;
+      if (dx || dy) state.session->submit(verdigris::client::ClientCommand::aim(dx, dy));
+      state.session->submit(verdigris::client::ClientCommand::use_action("melee"));
+    }
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
     state.session->poll();
     ingest_session_events(state);

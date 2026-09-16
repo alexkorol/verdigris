@@ -20,6 +20,11 @@ foreach ($entry in $manifest.files) {
 }
 Write-Output "PASS package hashes: $($manifest.files.Count)"
 Write-Output "PASS required runtime resources: $($required.Count)"
+$embeddedBuild = (& (Join-Path $packageRoot 'native/build/verdigris_client.exe') --build-info | Out-String).Trim()
+if ($LASTEXITCODE -ne 0 -or $embeddedBuild -ne ($manifest.sourceCommit + ' clean')) {
+  throw "Packaged client embedded source identity does not match manifest: $embeddedBuild"
+}
+Write-Output "PASS embedded executable source identity: $embeddedBuild"
 # Exercise the packaged production lock method, not a duplicate implementation.
 # The old hash-mutex code allowed both aliases to hold locks simultaneously.
 $assembly = [Reflection.Assembly]::LoadFile((Join-Path $packageRoot 'Verdigris.exe'))

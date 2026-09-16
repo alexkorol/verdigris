@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include "verdigris/networking.hpp"
 
 #include <algorithm>
@@ -92,20 +93,20 @@ void test_continuous_movement() {
   const double start_y = state_axis(start, "y");
   const double start_x = state_axis(start, "x");
 
-  // One held-key sample advances exactly 1/3 tile and stays fractional.
+  // The slower starting walk advances one fifth tile per held-key sample.
   session.handle(Envelope{"player:move", JsonValue::Object{{"direction", "down"}}}, [](const Envelope&) {});
   const auto after_one = request_state(session, "m-1");
   const double one_y = state_axis(after_one, "y");
   check(one_y > start_y, "one sample moves down");
   check(std::abs(one_y - std::round(one_y)) > 1e-9, "position stays fractional mid-tile");
-  check(std::abs(one_y - (start_y + 1.0 / 3.0)) < 0.01, "sample distance is one third tile");
+  check(std::abs(one_y - (start_y + 0.2)) < 0.01, "starting sample distance is one fifth tile");
 
-  // Eight more samples complete three tiles of travel.
-  for (int i = 0; i < 8; ++i) {
+  // Fourteen more samples complete three tiles of travel.
+  for (int i = 0; i < 14; ++i) {
     session.handle(Envelope{"player:move", JsonValue::Object{{"direction", "down"}}}, [](const Envelope&) {});
   }
-  const auto after_nine = request_state(session, "m-2");
-  check(std::abs(state_axis(after_nine, "y") - (start_y + 3.0)) < 0.01, "nine samples travel three tiles");
+  const auto after_fifteen = request_state(session, "m-2");
+  check(std::abs(state_axis(after_fifteen, "y") - (start_y + 3.0)) < 0.01, "fifteen starting-walk samples travel three tiles");
 
   // A movement broadcast carries the player payload plus the step metadata.
   std::optional<Envelope> movement;
@@ -534,7 +535,174 @@ void test_gate_a_equip_totals_and_unknown_uuid() {
 }
 }  // namespace
 
+void test_earned_level_survives_disk_restart_and_scion_switch() {
+  const auto file = std::filesystem::temp_directory_path() /
+      ("verdigris-earned-level-" + std::to_string(
+          std::chrono::steady_clock::now().time_since_epoch().count()) + ".json");
+  const auto discard = [](const Envelope&) {};
+  std::string house, veteran, novice;
+  JsonValue earned;
+  {
+    ProtocolSession session("earned-level-review", "earned-level-socket", 79, false);
+    session.attach_persistence(file);
+    session.handle(Envelope{"chronicles:house:found", JsonValue::Object{{"name", "House of the Test Road"}}},
+                   [&](const Envelope& e) {
+      if (const auto* houses = e.data["chronicle"]["houses"].array(); houses && !houses->empty())
+        house = *houses->front()["id"].string();
+    });
+    auto create = [&](const char* name) {
+      std::string id;
+      session.handle(Envelope{"chronicles:scion:create", JsonValue::Object{{"houseId", house}, {"name", name}}},
+                     [&](const Envelope& e) {
+        if (const auto* value = e.data["createdScionId"].string()) id = *value;
+      });
+      check(!id.empty(), "progression fixture creates a Scion");
+      return id;
+    };
+    veteran = create("Roadwalker"); novice = create("Newcomer");
+    session.handle(Envelope{"chronicles:scion:set-out", JsonValue::Object{{"scionId", veteran}}}, discard);
+    session.handle(Envelope{"instance:enterSolo", JsonValue::Object{{"template", "crypt"}, {"layout", "warren"}}}, discard);
+    auto world = session.shared_world();
+    const auto& grid = world->grid();
+    verdigris::Vec2 place{};
+    bool found = false;
+    for (int y = 3; y < grid.height - 3 && !found; ++y)
+      for (int x = 3; x < grid.width - 3 && !found; ++x)
+        if (grid.walkable_at(x, y) && grid.walkable_at(x - 1, y) &&
+            !(world->metadata().stairs_up.x == x && world->metadata().stairs_up.y == y) &&
+            !(world->metadata().stairs_down.x == x && world->metadata().stairs_down.y == y)) {
+          place = {x, y}; found = true;
+        }
+    check(found, "progression fixture finds real open contact tiles");
+    world->teleport(place.x, place.y, 0);
+    auto& monsters = const_cast<std::vector<verdigris::WorldMonster>&>(world->monsters());
+    verdigris::WorldMonster* target = nullptr;
+    for (auto& monster : monsters) {
+      if (!target && !monster.boss && monster.level == 4 && monster.behaviour_type == "melee") target = &monster;
+      monster.continuous_position = {-1000.0 - double(&monster - monsters.data()) * 2, -1000};
+      monster.has_continuous_position = true;
+      monster.x = int(monster.continuous_position.x); monster.y = -1000;
+      monster.pursuit_home = monster.continuous_position;
+    }
+    check(target != nullptr, "progression uses an authored level-four crypt melee monster");
+    session.set_direct_emit(discard);
+    auto now = std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::system_clock::now().time_since_epoch()).count();
+    // Isolate contact and repeat the authored monster at its actual stats.
+    // No XP/level grant: two real kill events award 96 XP, crossing level 2.
+    for (int kill = 0; kill < 2; ++kill) {
+      session.handle(Envelope{"dev:heal", JsonValue::Object{}}, discard);
+      world->reset_monster(target->uuid, 0);
+      target->continuous_position = {double(place.x - 1), double(place.y)};
+      target->x = place.x - 1; target->y = place.y;
+      target->pursuit_home = target->continuous_position;
+      target->movement_from = target->continuous_position;
+      session.handle(Envelope{"player:skill:trigger", JsonValue::Object{{"direction", "left"}}}, discard);
+      for (int tick = 0; tick < 100 && target->alive; ++tick) session.tick(now += 150);
+      check(!target->alive, "real authoritative combat kills the progression target");
+    }
+    check(verdigris::networking::parse_json(session.state_payload("earned"), earned), "earned state parses");
+    check(earned["state"]["level"].number().value_or(0) == 2 &&
+          earned["state"]["xp"]["current"].number().value_or(0) == 96,
+          "two authored crypt kills produce authoritative level two and 96 XP");
+    // Do not explicitly persist here: the final kill's ordinary server tick
+    // must have written the progression even without another client command.
+  }
+  ProtocolSession loaded("earned-level-review", "restarted-socket", 79, false);
+  loaded.attach_persistence(file);
+  auto assert_progress = [&](int level, int xp) {
+    JsonValue state;
+    check(verdigris::networking::parse_json(loaded.state_payload("restarted"), state), "restored state parses");
+    check(state["state"]["level"].number().value_or(0) == level &&
+          state["state"]["xp"]["current"].number().value_or(-1) == xp,
+          "restored level and XP belong to the selected Scion");
+    JsonValue login;
+    check(verdigris::networking::parse_json(loaded.login_payload(), login), "restored login parses");
+    check(login["player"]["level"].number().value_or(0) == level,
+          "normal login exposes the persisted level to the client");
+  };
+  assert_progress(2, 96);
+  loaded.reset_world_for_new_socket();
+  assert_progress(2, 96);
+  loaded.handle(Envelope{"chronicles:scion:set-out", JsonValue::Object{{"scionId", novice}}}, discard);
+  assert_progress(1, 0);
+  loaded.handle(Envelope{"chronicles:scion:set-out", JsonValue::Object{{"scionId", veteran}}}, discard);
+  assert_progress(2, 96);
+  loaded.handle(Envelope{"player:chronicles:select", JsonValue::Object{{"houseId", house}, {"scionId", novice}}}, discard);
+  assert_progress(1, 0);
+  loaded.handle(Envelope{"player:chronicles:select", JsonValue::Object{{"houseId", house}, {"scionId", veteran}}}, discard);
+  assert_progress(2, 96);
+  loaded.persist();
+  if (const char* review_dir = std::getenv("VERDIGRIS_LEVEL_REVIEW_SAVE_DIR")) {
+    std::filesystem::create_directories(review_dir);
+    std::filesystem::copy_file(file, std::filesystem::path(review_dir) / "earned-level-review.json",
+                               std::filesystem::copy_options::overwrite_existing);
+  }
+  // Simulate the previous save format: roster level exists, XP map does not.
+  JsonValue legacy;
+  {
+    std::ifstream input(file);
+    const std::string contents((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
+    check(verdigris::networking::parse_json(contents, legacy), "legacy migration fixture parses");
+  }
+  legacy.object()->erase("scionCombatXp");
+  {
+    std::ofstream output(file, std::ios::trunc);
+    output << legacy.stringify();
+  }
+  ProtocolSession migrated("earned-level-review", "migrated-socket", 79, false);
+  migrated.attach_persistence(file);
+  JsonValue restored;
+  check(verdigris::networking::parse_json(migrated.state_payload("migrated"), restored), "migrated state parses");
+  check(restored["state"]["level"].number().value_or(0) == 2 &&
+        restored["state"]["xp"]["current"].number().value_or(0) == 73,
+        "legacy roster level two survives at the existing 73 XP level-two floor");
+  std::filesystem::remove(file);
+}
+
+void test_set_out_resolves_the_saved_living_house() {
+  ProtocolSession session("multi-house", "house-socket", 29, false);
+  const JsonValue chronicle = JsonValue::Object{{"version", 3}, {"houses", JsonValue::Array{
+      JsonValue::Object{{"id", "house-first"}, {"name", "First House"},
+          {"scions", JsonValue::Array{JsonValue::Object{{"id", "first-female"}, {"name", "Iria"}, {"appearance", "female"}}}},
+          {"crypt", JsonValue::Array{JsonValue::Object{{"id", "fallen-female"}, {"name", "Ancestor"}, {"appearance", "female"}}}}},
+      JsonValue::Object{{"id", "house-second"}, {"name", "Second House"},
+          {"scions", JsonValue::Array{JsonValue::Object{{"id", "second-male"}, {"name", "Taran"}, {"appearance", "male"}}}},
+          {"crypt", JsonValue::Array{}}}}}};
+  session.handle(Envelope{"player:chronicles:save", JsonValue::Object{{"state", chronicle}}}, [](const Envelope&) {});
+  auto set_out = [&](const char* id, const char* expected_house, const char* appearance) {
+    bool admitted = false;
+    session.handle(Envelope{"chronicles:scion:set-out", JsonValue::Object{
+        {"scionId", id}, {"houseId", "untrusted-house"}, {"appearance", "untrusted-appearance"}}}, [&](const Envelope& e) {
+      if (e.event != "player:login") return;
+      const auto& player = e.data["player"];
+      admitted = player["chronicles"]["houseId"].string() && *player["chronicles"]["houseId"].string() == expected_house &&
+          player["chronicles"]["scionId"].string() && *player["chronicles"]["scionId"].string() == id &&
+          player["appearance"].string() && *player["appearance"].string() == appearance;
+    });
+    check(admitted, "set-out resolves the living Scion's saved House and appearance on the server");
+  };
+  set_out("second-male", "house-second", "male");
+  set_out("first-female", "house-first", "female");
+  const auto before = request_state(session, "before-invalid-admission");
+  for (const char* id : {"fallen-female", "missing-scion", ""}) {
+    bool admitted = false, explained = false;
+    session.handle(Envelope{"chronicles:scion:set-out", JsonValue::Object{{"scionId", id}}}, [&](const Envelope& e) {
+      admitted |= e.event == "player:login";
+      explained |= e.event == "game:send:message";
+    });
+    const auto after = request_state(session, "after-invalid-admission");
+    check(!admitted && explained && after["state"]["chronicles"].stringify() == before["state"]["chronicles"].stringify() &&
+          after["state"]["appearance"].stringify() == before["state"]["appearance"].stringify() &&
+          after["state"]["inventory"].stringify() == before["state"]["inventory"].stringify(),
+          "fallen, missing and empty IDs cannot change admission, appearance or grant a new kit");
+  }
+}
+
 int main() {
+  test_earned_level_survives_disk_restart_and_scion_switch();
+  test_set_out_resolves_the_saved_living_house();
+
   try {
     test_envelope_round_trip();
     test_session_lifecycle();

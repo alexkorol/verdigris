@@ -25,6 +25,9 @@ struct ClientPlayer {
   int resource_max = 50;
   int attack = 12;
   bool alive = true;
+  int defense = 0;
+  int gear_attack = 0;
+  bool combat_stats_present = false;
 };
 
 struct ClientMonster {

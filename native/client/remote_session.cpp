@@ -135,8 +135,22 @@ void apply_wear_details(const JsonValue& source, ClientModel& model) {
     if (worn.seat == "right_hand") model.equipped = worn.item;
     model.worn.push_back(std::move(worn));
   }
-  if (model.equipped.uuid.empty() && !model.worn.empty())
-    model.equipped = model.worn.front().item;
+}
+
+void apply_combat_fields(const JsonValue& combat, ClientPlayer& player) {
+  auto valid = [](const JsonValue* value) {
+    if (!value || !value->number()) return false;
+    const double n = *value->number();
+    return std::isfinite(n) && n >= 0 && n <= 1000000 && std::floor(n) == n;
+  };
+  const auto* attack = combat.get("baseAttack");
+  const auto* defense = combat.get("baseDefense");
+  const auto* gear = combat.get("gearAttack");
+  if (!valid(attack) || !valid(defense) || !valid(gear)) return;
+  player.attack = static_cast<int>(*attack->number());
+  player.defense = static_cast<int>(*defense->number());
+  player.gear_attack = static_cast<int>(*gear->number());
+  player.combat_stats_present = true;
 }
 
 // TASK-0156: mirror the authoritative `passiveTree` envelope (schemaVersion
@@ -223,7 +237,17 @@ void apply_passive_tree(const JsonValue& tree, ClientModel& model,
     model.progression.selected_node = *selected->string();
 }
 
+void apply_player_level(ClientPlayer& player, const JsonValue& source) {
+  // Login, scene admission and state snapshots all carry the actor's level.
+  // Missing fields in movement deltas must retain the last authoritative value.
+  const double level = json_number(source.get("level"), player.level);
+  if (std::isfinite(level) && level >= 1 && level <= 2147483647.0 &&
+      std::floor(level) == level)
+    player.level = static_cast<int>(level);
+}
+
 void apply_player_fields(ClientPlayer& player, const JsonValue& source) {
+  apply_player_level(player, source);
   if (const auto* uuid = json_string(source.get("uuid"))) player.uuid = *uuid;
   if (const auto* scene = json_string(source.get("sceneId"))) player.scene_id = *scene;
   if (source.get("x") && source.get("x")->number()) player.x = *source.get("x")->number();
@@ -562,6 +586,8 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
       envelope.event = "item:equip";
       envelope.data = JsonValue::Object{
           {"item", JsonValue::Object{{"uuid", JsonValue(command.target)}}}};
+      if (!command.extra.empty())
+        (*(*envelope.data.object())["item"].object())["targetSlot"] = JsonValue(command.extra);
       break;
     case ClientCommand::Type::EnterZone:
       model_.chart.open = false;
@@ -928,8 +954,27 @@ void RemoteProtocolSession::sample_monster_display() {
 }
 
 void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
+  if (envelope.event == "player:equippedAnItem") {
+    const auto* actor = json_string(envelope.data.get("uuid"));
+    if (!actor || *actor != model_.player.uuid) return;
+    if (const auto* wear = envelope.data.get("wearDetails")) apply_wear_details(*wear, model_);
+    if (const auto* combat = envelope.data.get("combat")) apply_combat_fields(*combat, model_.player);
+    // Inventory and wear are both authoritative; only a published worn item
+    // establishes a successful equip. A missing inventory item alone cannot.
+    if (!pending_equip_uuid_.empty()) {
+      for (const auto& worn : model_.worn) {
+        if (worn.item.uuid != pending_equip_uuid_) continue;
+        pending_events_.push_back({PresentationEventType::ItemEquipped, model_.player.uuid,
+                                  worn.item.uuid, worn.item.name, worn.item.attack_rating});
+        pending_equip_uuid_.clear();
+        break;
+      }
+    }
+    return;
+  }
   if (envelope.event == "player:login") {
     clear_monster_display();
+    model_.player.combat_stats_present = false;
     if (const auto* player = envelope.data.get("player")) {
       apply_player_fields(model_.player, *player);
       if (const auto* username = json_string(player->get("username")))
@@ -944,6 +989,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       }
       if (const auto* wear = player->get("wearDetails"))
         apply_wear_details(*wear, model_);
+      if (const auto* combat = player->get("combat"))
+        apply_combat_fields(*combat, model_.player);
       last_facing_ = model_.player.facing.empty() ? last_facing_ : model_.player.facing;
       model_.inventory.clear();
       if (const auto* inventory = player->get("inventory")) {
@@ -1283,6 +1330,9 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
   if (envelope.event == "dev:state") {
     const auto* state = envelope.data.get("state");
     if (!state) return;
+    if (const auto* combat = state->get("combat"))
+      apply_combat_fields(*combat, model_.player);
+    apply_player_level(model_.player, *state);
     // Authoritative lifecycle + oath visibility (snapshot puts these at the
     // top of dev:state). Keeps death/successor states honest between
     // chronicle payloads.

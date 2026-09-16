@@ -74,6 +74,18 @@ target_link_libraries(verdigris_user_settings_tests PRIVATE verdigris_audio)
 
 add_executable(verdigris_client client/main.cpp client/remote_play.cpp)
 target_include_directories(verdigris_client PRIVATE client)
+execute_process(COMMAND git rev-parse HEAD WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  OUTPUT_VARIABLE VERDIGRIS_SOURCE_COMMIT OUTPUT_STRIP_TRAILING_WHITESPACE RESULT_VARIABLE VERDIGRIS_GIT_RESULT)
+execute_process(COMMAND git status --porcelain WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  OUTPUT_VARIABLE VERDIGRIS_SOURCE_STATUS OUTPUT_STRIP_TRAILING_WHITESPACE)
+set(VERDIGRIS_SOURCE_DIRTY 1)
+if(NOT VERDIGRIS_GIT_RESULT EQUAL 0)
+  set(VERDIGRIS_SOURCE_COMMIT "unknown")
+elseif(VERDIGRIS_SOURCE_STATUS STREQUAL "")
+  set(VERDIGRIS_SOURCE_DIRTY 0)
+endif()
+configure_file(build_identity.in.hpp ${CMAKE_CURRENT_BINARY_DIR}/verdigris_build_generated.hpp @ONLY)
+target_include_directories(verdigris_client PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(verdigris_client PRIVATE verdigris_core verdigris_client_session)
 if (WIN32)
   target_compile_definitions(verdigris_client PRIVATE VERDIGRIS_NATIVE_WINDOWS=1)
