@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildKit, GENERATOR_VERSION } from './generate-assets.mjs';
+import { buildKit, buildVariants, GENERATOR_VERSION } from './generate-assets.mjs';
 
 const TASK_DIR = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(TASK_DIR, '..', '..', '..');

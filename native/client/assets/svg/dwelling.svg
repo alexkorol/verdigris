@@ -4,13 +4,41 @@
   <polygon points="16,33 19,33 19,58 16,58" fill="#4a3623"/>
   <polygon points="45,33 48,33 48,58 45,58" fill="#4a3623"/>
   <polygon points="16,33 48,33 48,36 16,36" fill="#4a3623"/>
+  <polyline points="19.5,37 25,45" fill="none" stroke="#4a3623" stroke-width="2" stroke-linejoin="round"/>
+  <polyline points="44.5,37 39,45" fill="none" stroke="#4a3623" stroke-width="2" stroke-linejoin="round"/>
+  <polygon points="16,53 48,53 48,58 16,58" fill="#8d8f94"/>
+  <polyline points="22,53.5 22,57.5" fill="none" stroke="#76787d" stroke-width="0.8" stroke-linejoin="round"/>
+  <polyline points="30,53.5 30,57.5" fill="none" stroke="#76787d" stroke-width="0.8" stroke-linejoin="round"/>
+  <polyline points="38,53.5 38,57.5" fill="none" stroke="#76787d" stroke-width="0.8" stroke-linejoin="round"/>
+  <polyline points="16,55.5 48,55.5" fill="none" stroke="#76787d" stroke-width="0.8" stroke-linejoin="round"/>
   <polygon points="11,33 32,11 53,33" fill="#b98f3e"/>
+  <polyline points="22,26 18.5,31.5" fill="none" stroke="#8a6a2c" stroke-width="0.9" stroke-linejoin="round"/>
+  <polyline points="26,20 21,28" fill="none" stroke="#8a6a2c" stroke-width="0.9" stroke-linejoin="round"/>
+  <polyline points="38,20 43,28" fill="none" stroke="#8a6a2c" stroke-width="0.9" stroke-linejoin="round"/>
+  <polyline points="42,26 46,31.5" fill="none" stroke="#8a6a2c" stroke-width="0.9" stroke-linejoin="round"/>
   <polygon points="9,32 55,32 55,36 9,36" fill="#8a6a2c"/>
-  <polygon points="32,11 35,14.5 32,14.5 29,14.5" fill="#caa04a"/>
+  <polygon points="30.5,11.5 32,10 33.5,11.5 32,13" fill="#caa04a"/>
+  <polygon points="40,15 44,15 44,24 40,24" fill="#8d8f94"/>
+  <polyline points="40,18 44,18" fill="none" stroke="#76787d" stroke-width="0.8" stroke-linejoin="round"/>
+  <polyline points="40,21 44,21" fill="none" stroke="#76787d" stroke-width="0.8" stroke-linejoin="round"/>
+  <polygon points="39,14 45,14 45,15.5 39,15.5" fill="#a3a5aa"/>
+  <circle cx="45.5" cy="10.5" r="2.2" fill="#ffffff59"/>
+  <circle cx="47.5" cy="7" r="1.7" fill="#ffffff40"/>
+  <circle cx="49.3" cy="4.2" r="1.2" fill="#ffffff2e"/>
   <polygon points="28,43 36,43 36,58 28,58" fill="#3c2a18"/>
-  <circle cx="34.5" cy="51" r="0.9" fill="#b98f3e"/>
+  <polyline points="30.7,43.5 30.7,57.5" fill="none" stroke="#2b1d10" stroke-width="0.7" stroke-linejoin="round"/>
+  <polyline points="33.4,43.5 33.4,57.5" fill="none" stroke="#2b1d10" stroke-width="0.7" stroke-linejoin="round"/>
+  <polyline points="28.4,46 30.4,46" fill="none" stroke="#5b5b60" stroke-width="1.2" stroke-linejoin="round"/>
+  <polyline points="28.4,52 30.4,52" fill="none" stroke="#5b5b60" stroke-width="1.2" stroke-linejoin="round"/>
+  <circle cx="34.6" cy="51" r="0.9" fill="#b98f3e"/>
+  <polygon points="17.5,39 19.5,39 19.5,45 17.5,45" fill="#5b4326"/>
   <polygon points="20,39 26,39 26,45 20,45" fill="#4a3623"/>
   <polygon points="21,40 25,40 25,44 21,44" fill="#ffd98a"/>
+  <polyline points="23,40 23,44" fill="none" stroke="#4a3623" stroke-width="0.6" stroke-linejoin="round"/>
+  <polyline points="21,42 25,42" fill="none" stroke="#4a3623" stroke-width="0.6" stroke-linejoin="round"/>
   <polygon points="38,39 44,39 44,45 38,45" fill="#4a3623"/>
   <polygon points="39,40 43,40 43,44 39,44" fill="#ffd98a"/>
+  <polyline points="41,40 41,44" fill="none" stroke="#4a3623" stroke-width="0.6" stroke-linejoin="round"/>
+  <polyline points="39,42 43,42" fill="none" stroke="#4a3623" stroke-width="0.6" stroke-linejoin="round"/>
+  <polygon points="44.5,39 46.5,39 46.5,45 44.5,45" fill="#5b4326"/>
 </svg>

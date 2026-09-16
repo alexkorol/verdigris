@@ -1,15 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
   <ellipse cx="33" cy="57.5" rx="13" ry="3.5" fill="#00000040"/>
-  <polygon points="20,30 44,28 47,50 42,47 38,52 33,48 28,53 23,48 18,51" fill="#6e2a22"/>
-  <polygon points="24,30 42,26 44,38 26,42" fill="#8a4a2f"/>
-  <polygon points="38,32 50,34 50,38 38,40" fill="#7c3e28"/>
-  <polygon points="44,34 50,35 50,38 44,37" fill="#3a2a1a"/>
-  <polygon points="48,26 62,30 61,35 52,36 50,33 48,34" fill="#b7bcc2"/>
-  <polygon points="26,20 38,17 40,25 28,27" fill="#3c2f26"/>
+  <polygon points="20,28 16,36 18,46 22,52 26,47 24,38 26,30" fill="#4a2018"/>
+  <polygon points="22,32 20,40 22,47 24,44 23.5,35" fill="#5c2a1e"/>
+  <polygon points="24,26 40,23 44,36 40,44 28,45 23,36" fill="#6e2a22"/>
+  <polygon points="24,27 28.5,25.5 26.5,44 23,36" fill="#57201a"/>
+  <polygon points="27,26.5 30,25.5 40,40 37.5,41.5" fill="#3c2f26"/>
+  <polygon points="24,25 38,22 40,26 36,28 26,29" fill="#3c2f26"/>
+  <polygon points="26,24.5 28,21.5 29.5,24" fill="#57432f"/>
+  <polygon points="31,23.5 33,20.5 34.5,23.5" fill="#57432f"/>
+  <polygon points="26,20 38,17 40,24 28,27" fill="#3c2f26"/>
   <polygon points="25,20 18,12 27,18" fill="#d9c9a3"/>
-  <polygon points="39,17 46,9 42,21" fill="#d9c9a3"/>
+  <polygon points="39,17 46,9 42,20.5" fill="#d9c9a3"/>
+  <polygon points="28.5,19.5 38.5,17.5 39,19.5 29,21.5" fill="#241a12"/>
   <circle cx="31" cy="22" r="1.4" fill="#ffcf5e"/>
-  <circle cx="36" cy="21" r="1.4" fill="#ffcf5e"/>
-  <polygon points="24,48 30,48 30,55 24,55" fill="#33241b"/>
-  <polygon points="36,47 42,47 42,54 36,54" fill="#33241b"/>
+  <circle cx="36" cy="21.2" r="1.4" fill="#ffcf5e"/>
+  <polygon points="30,25.5 37,24.5 37.5,27 30.5,28" fill="#d9c9a3"/>
+  <polyline points="32,25.3 32.2,27.6" fill="none" stroke="#a89a78" stroke-width="0.8" stroke-linejoin="round"/>
+  <polyline points="34,25 34.2,27.3" fill="none" stroke="#a89a78" stroke-width="0.8" stroke-linejoin="round"/>
+  <polyline points="36,24.7 36.2,27" fill="none" stroke="#a89a78" stroke-width="0.8" stroke-linejoin="round"/>
+  <polygon points="36,30 44,32 43.5,36 36.5,34" fill="#8a4a2f"/>
+  <polygon points="42,33 49,34.5 48.5,38 42,37" fill="#3c2f26"/>
+  <circle cx="49.5" cy="36.8" r="2.2" fill="#a5794f"/>
+  <polygon points="50,30 62,28 63,33 58,36 54.5,33.5 52,35.5 50,34" fill="#b7bcc2"/>
+  <polygon points="57,30 59.5,29.5 58.5,33" fill="#8f959c"/>
+  <polygon points="48.5,32.5 51.5,32 51.8,35.5 48.8,36" fill="#3a2a1a"/>
+  <polygon points="26,44 32,44 31.5,53 26,53" fill="#33241b"/>
+  <polyline points="26.5,47 31.3,47" fill="none" stroke="#57432f" stroke-width="1" stroke-linejoin="round"/>
+  <polyline points="26.5,50 31.2,50" fill="none" stroke="#57432f" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="36,44 42,44 42.5,53 36.5,53" fill="#2b1c15"/>
+  <polygon points="25,53.5 32,53.5 32,57.5 25,57.5" fill="#231a10"/>
+  <polygon points="36,53.5 43.5,53.5 43.5,57.5 36.5,57.5" fill="#231a10"/>
+  <circle cx="23.5" cy="45" r="3.4" fill="#6b5a3e"/>
+  <polygon points="21.5,42.5 25,42 25.5,44 22,44.5" fill="#57432f"/>
 </svg>
